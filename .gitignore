@@ -1,0 +1,12 @@
+node_modules
+*~
+.cow*
+.monad*
+.main*
+.Fm*
+.Mai*
+.REA*
+space.js
+Monad.js
+cycleT*
+.cycleT*
