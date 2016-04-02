@@ -8,7 +8,7 @@ This page picks up where [JS-monads-part5](http://schalk.net:3077) left off. The
   var Monad = function Monad(z, g) {
     var _this = this;
 
-    uthis.x = z;
+    this.x = z;
     if (arguments.length === 1) {
       this.id = 'anonymous';
     } else {
