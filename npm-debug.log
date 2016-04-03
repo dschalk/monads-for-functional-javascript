@@ -1,5 +1,5 @@
-0 info it worked if it ends with ok
-1 verbose cli [ '/mnt/B/node-v4.3.1/bin/node',
+
+
 1 verbose cli   '/mnt/B/node-v4.3.1/bin/npm',
 1 verbose cli   'run',
 1 verbose cli   'build' ]

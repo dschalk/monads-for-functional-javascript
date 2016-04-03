@@ -19267,7 +19267,9 @@ function main(sources) {
       mMsender.ret(v[2]);
       mMextra.ret(v[3]);
       mMextra2.ret(v[4]);
-      mMprefix.ret(v[0]).bnd(next, 'CA#$42', mMZ10).bnd(next, 'CB#$42', mMZ11).bnd(next, 'CC#$42', mMZ12).bnd(next, 'CD#$42', mMZ13).bnd(next, 'CE#$42', mMZ14).bnd(next, 'CF#$42', mMZ15).bnd(next, 'EE#$42', mMZ16);
+      mMprefix.ret(v[0]).bnd(next, 'CA#$42', mMZ10).bnd(next, 'CB#$42', mMZ11).bnd(next, 'CC#$42', mMZ12).bnd(next, 'CD#$42', mMZ13).bnd(next, 'CE#$42', mMZ14).bnd(next, 'CF#$42', mMZ15).bnd(next, 'EE#$42', mMZ16).bnd(function () {
+        return console.log('In messages$ e is ', e);
+      });
     });
   });
   mMZ10.bnd(function () {
@@ -19295,7 +19297,7 @@ function main(sources) {
     return O.mMar.bnd(splice, 0, 5, mMhelper).bnd(reduce, function (a, b) {
       return a + ', ' + b;
     }, mMhelper).bnd(function (v) {
-      return O.mM$taskList.bnd(push, (0, _motorcycleDom.h)('div.todo', [(0, _motorcycleDom.h)('span.task3', { style: { color: 'yellow', textDecoration: 'none' } }, 'Task: ' + v), (0, _motorcycleDom.h)('br'), (0, _motorcycleDom.h)('span#author.tao', 'Author: ' + O.mMextra.x + ' / ' + 'Responsibility: ' + O.mMextra2.x), (0, _motorcycleDom.h)('br'), (0, _motorcycleDom.h)('input.cb', { props: { type: 'checkbox' } }), (0, _motorcycleDom.h)('label.cbox', { props: { 'for': 'cb' } }, 'Completed'), (0, _motorcycleDom.h)('button.delete', 'Delete'), (0, _motorcycleDom.h)('br'), (0, _motorcycleDom.h)('hr')]), O.mM$taskList);
+      return O.mM$task.bnd(unshift, { 'task': v, 'author': O.mMextra.x, 'responsible': O.mMextra2.x }, mM$task);
     });
   });
   mMZ16.bnd(function () {
@@ -19319,6 +19321,10 @@ function main(sources) {
     }
   });
 
+  var mM$taskAction$ = mM$task.stream.map(function (obList) {
+    O.mM$taskList.bnd(unshift, (0, _motorcycleDom.h)('div.todo', [(0, _motorcycleDom.h)('span.task3', { style: { color: 'yellow', textDecoration: 'none' } }, 'Task: ' + obList[0].task), (0, _motorcycleDom.h)('br'), (0, _motorcycleDom.h)('span#author.tao', 'Author: ' + obList[0].author + ' / ' + 'Responsibility: ' + obList[0].responsible), (0, _motorcycleDom.h)('br'), (0, _motorcycleDom.h)('input.cb', { props: { type: 'checkbox' } }), (0, _motorcycleDom.h)('label.cbox', { props: { 'for': 'cb' } }, 'Completed'), (0, _motorcycleDom.h)('button.delete', 'Delete'), (0, _motorcycleDom.h)('br'), (0, _motorcycleDom.h)('hr')]), mM$taskList);
+  });
+
   var groupPress$ = sources.DOM.select('input.group').events('keypress');
 
   var groupPressAction$ = groupPress$.map(function (e) {
@@ -19329,14 +19335,6 @@ function main(sources) {
     if (e.keyCode == 13) mMgroup.ret(e.target.value);
     socket.send('CO#$42,' + e.target.value + ',' + O.mMname.x.trim() + ',' + e.target.value);
   });
-
-  var addS = function addS(x, y) {
-    if (typeof x === 'number') {
-      return ret(x + y);
-    } else if (typeof x.product === 'number') {
-      return ret(x.product + y);
-    } else console.log('Problem in addS');
-  };
 
   var messagePress$ = sources.DOM.select('input.inputMessage').events('keydown');
 
@@ -19351,7 +19349,11 @@ function main(sources) {
 
   var newTaskAction$ = newTask$.map(function (e) {
     if (e.keyCode == 13) {
-      console.log('In newTaskAction$ ', e);
+      console.log('In newTaskAction$  e.target.value ', e.target.value);
+      if (e.target.value.split(',').length < 3) {
+        console.log('You must enter "author, responsible party, task" separated by commas');
+        return;
+      }
       socket.send('CF#$42,' + O.mMgroup.x.trim() + ',' + O.mMname.x.trim() + ',' + e.target.value);
       e.target.value = '';
     }
@@ -19360,19 +19362,33 @@ function main(sources) {
   var colorClick$ = sources.DOM.select('.cb').events('click');
 
   var colorAction$ = colorClick$.map(function (e) {
-    var el = e.currentTarget.parentNode.childNodes[0];
-    console.log('In colorAction$  e, el: ', e, el);
+    var index = getIndex(e);
+    console.log('e and index in colorAction$ ', e, index);
+    var style = O.mM$taskList.x[index].children[0].elm.style;
 
-    el.style.color == 'yellow' ? el.style.color = '#00ff6a' : el.style.color = 'yellow';
+    style.color == 'yellow' ? style.color = '#00ff6a' : style.color = 'yellow';
 
-    el.style.textDecoration == 'none' ? el.style.textDecoration = 'line-through' : el.style.textDecoration = 'none';
+    style.textDecoration == 'none' ? style.textDecoration = 'line-through' : style.textDecoration = 'none';
   });
 
   var deleteClick$ = sources.DOM.select('.delete').events('click');
 
   var deleteAction$ = deleteClick$.map(function (e) {
-    e.currentTarget.parentNode.outerHTML = null;
+    var index = getIndex(e);
+    console.log('e and index in deleteAction$ ', e, index);
+    O.mM$task.bnd(splice, index, 1, O.mM$task).bnd(function (ar) {
+      return refreshTasks(ar);
+    });
   });
+
+  function refreshTasks(ar) {
+    mM28.ret([]);
+    var keys = Object.keys(ar);
+    for (var k in keys) {
+      O.mM28.bnd(push, (0, _motorcycleDom.h)('div.todo', [(0, _motorcycleDom.h)('span.task3', { style: { color: 'yellow', textDecoration: 'none' } }, 'Task: ' + ar[k].task), (0, _motorcycleDom.h)('br'), (0, _motorcycleDom.h)('span#author.tao', 'Author: ' + ar[k].author + ' / ' + 'Responsibility: ' + ar[k].responsible), (0, _motorcycleDom.h)('br'), (0, _motorcycleDom.h)('input.cb', { props: { type: 'checkbox' } }), (0, _motorcycleDom.h)('label.cbox', { props: { 'for': 'cb' } }, 'Completed'), (0, _motorcycleDom.h)('button.delete', 'Delete'), (0, _motorcycleDom.h)('br'), (0, _motorcycleDom.h)('hr')]), mM28);
+    }
+    mM$taskList.ret(O.mM28.x);
+  }
 
   var chatClick$ = sources.DOM.select('#chat2').events('click');
 
@@ -19460,6 +19476,7 @@ function main(sources) {
   });
 
   var mM$1Action$ = mM$1.stream.map(function (v) {
+    console.log('In mM$Action$ v is ', v);
     if (Array.isArray(v)) {
       O.mMhistorymM1.bnd(spliceAdd, O.mMindex2.x, v, O.mMhistorymM1);
       document.getElementById('0').innerHTML = O.mMhistorymM1.x[O.mMindex2.x][0];
@@ -19485,16 +19502,11 @@ function main(sources) {
     console.log('From mM$2.stream: ', v);
   });
 
-  var mM$taskListAction$ = mM$taskList.stream.map(function (v) {
-    O.mMtasks.bnd(unshift, v, O.mMtasks);
-    console.log('********************O.mMtaskList.x ', O.mM$taskList.x);
-  });
-
-  var calcStream$ = (0, _most.merge)(mM$taskListAction$, colorAction$, deleteAction$, newTaskAction$, chatClickAction$, gameClickAction$, todoClickAction$, mM$3Action$, mM$2Action$, mM$1Action$, backClickAction$, forwardClickAction$, fibPressAction$, groupPressAction$, rollClickAction$, messagePressAction$, loginPressAction$, messages$, numClickAction$, opClickAction$);
+  var calcStream$ = (0, _most.merge)(mM$taskAction$, colorAction$, deleteAction$, newTaskAction$, chatClickAction$, gameClickAction$, todoClickAction$, mM$3Action$, mM$2Action$, mM$1Action$, backClickAction$, forwardClickAction$, fibPressAction$, groupPressAction$, rollClickAction$, messagePressAction$, loginPressAction$, messages$, numClickAction$, opClickAction$);
 
   return {
     DOM: calcStream$.map(function () {
-      return (0, _motorcycleDom.h)('div.content', [(0, _motorcycleDom.h)('div#rightPanel', { style: tempStyle2 }, [(0, _motorcycleDom.h)('span#tog', { style: tempStyle2 }, [(0, _motorcycleDom.h)('button#game', { style: { fontSize: '16px' } }, 'TOGGLE GAME'), (0, _motorcycleDom.h)('span.tao', ' '), (0, _motorcycleDom.h)('button#todoButton', { style: { fontSize: '16px' } }, 'TOGGLE TODO LIST'), (0, _motorcycleDom.h)('br'), (0, _motorcycleDom.h)('br'), (0, _motorcycleDom.h)('button#chat2', { style: { fontSize: '16px' } }, 'TOGGLE CHAT')]), (0, _motorcycleDom.h)('div#gameDiv', [(0, _motorcycleDom.h)('br'), (0, _motorcycleDom.h)('span', 'Group: ' + O.mMgroup.x), (0, _motorcycleDom.h)('br'), (0, _motorcycleDom.h)('span', 'Goals: ' + O.mMgoals.x), (0, _motorcycleDom.h)('br'), (0, _motorcycleDom.h)('span', 'Name: ' + O.mMname.x), (0, _motorcycleDom.h)('br'), (0, _motorcycleDom.h)('span', 'player[score][goals]'), (0, _motorcycleDom.h)('div', O.mMscoreboard.x)]), (0, _motorcycleDom.h)('br'), (0, _motorcycleDom.h)('br'), (0, _motorcycleDom.h)('br'), (0, _motorcycleDom.h)('br'), (0, _motorcycleDom.h)('div#todoDiv', [(0, _motorcycleDom.h)('div.taskList', O.mM$taskList.x), (0, _motorcycleDom.h)('span', 'Author, Responsible Person, Task: '), (0, _motorcycleDom.h)('input.newTask', { style: tempStyle2 })]), (0, _motorcycleDom.h)('br'), (0, _motorcycleDom.h)('br'), (0, _motorcycleDom.h)('br'), (0, _motorcycleDom.h)('br'), (0, _motorcycleDom.h)('div#chatDiv', [(0, _motorcycleDom.h)('div#messages', [(0, _motorcycleDom.h)('p', { style: tempStyle2 }, 'Message: '), (0, _motorcycleDom.h)('input.inputMessage', { style: tempStyle2 }), (0, _motorcycleDom.h)('div', O.mMmsg.x)])])]), (0, _motorcycleDom.h)('div.leftPanel', { style: { width: '60%' } }, [(0, _motorcycleDom.h)('br'), (0, _motorcycleDom.h)('h2', 'JS-monads-part5 - Specialized Monads'), (0, _motorcycleDom.h)('span', ' Here are the basic rules:'), (0, _motorcycleDom.h)('p', 'RULES: If clicking two numbers and an operator (in any order) results in 20 or 18, the score increases by 1 or 3, respectively. If the score becomes 0 mod 5, 5 points are added. A score of 25 results in one goal. That can only be achieved by arriving at a score of 20, which jumps the score to 25. Directly computing 25 results in a score of 30, and no goal. Each time ROLL is clicked, one point is deducted. Three goals wins the game. '), (0, _motorcycleDom.h)('br'), (0, _motorcycleDom.h)('br'), (0, _motorcycleDom.h)('button#0.num'), (0, _motorcycleDom.h)('button#1.num'), (0, _motorcycleDom.h)('button#2.num'), (0, _motorcycleDom.h)('button#3.num'), (0, _motorcycleDom.h)('br'), (0, _motorcycleDom.h)('button#4.op', 'add'), (0, _motorcycleDom.h)('button#5.op', 'subtract'), (0, _motorcycleDom.h)('button#5.op', 'mult'), (0, _motorcycleDom.h)('button#5.op', 'div'), (0, _motorcycleDom.h)('button#5.op', 'concat'), (0, _motorcycleDom.h)('br'), (0, _motorcycleDom.h)('button.roll', { style: tempStyle2 }, 'ROLL'), (0, _motorcycleDom.h)('br'), (0, _motorcycleDom.h)('button#back2', { style: tempStyle2 }, 'FORWARD'), (0, _motorcycleDom.h)('button#forward2', { style: tempStyle2 }, 'BACK'), (0, _motorcycleDom.h)('br'), (0, _motorcycleDom.h)('div.winner', O.mMgoals2.x + ''), (0, _motorcycleDom.h)('p.login', { style: tempStyle }, 'Please enter some name.'), (0, _motorcycleDom.h)('br'), (0, _motorcycleDom.h)('input.login', { style: tempStyle }), (0, _motorcycleDom.h)('p', O.mM6.x.toString()), (0, _motorcycleDom.h)('p.group', { style: tempStyle2 }, 'Change group: '), (0, _motorcycleDom.h)('input.group', { style: tempStyle2 }), (0, _motorcycleDom.h)('br'), (0, _motorcycleDom.h)('br'), (0, _motorcycleDom.h)('span', 'People in the same group, other than solo, share text messages and dice rolls. '), (0, _motorcycleDom.h)('hr'), (0, _motorcycleDom.h)('p', 'As is apparent from the definition of Monad, when some monad "m" uses its "bnd" method on some function "f(x,v)", the first argument is the value of m (which is m.x). The return value of m.bnd(f,v) is f(m.x, v). Here is a function which takes two arguments: '), _codeJs2['default'].fib, (0, _motorcycleDom.h)('p', 'If you enter some number "n" in the box below, mMfib, whose initial value is [0,1], uses its bnd method as follows:'), (0, _motorcycleDom.h)('p', { style: { color: '#FF0000' } }, 'mMfib.bnd(fib,n)'), (0, _motorcycleDom.h)('p', 'The result will be displayed underneath the input box. '), (0, _motorcycleDom.h)('br'), (0, _motorcycleDom.h)('input#code'), (0, _motorcycleDom.h)('p#code2', O.mM19.x), (0, _motorcycleDom.h)('br'), (0, _motorcycleDom.h)('p'), (0, _motorcycleDom.h)('hr'), (0, _motorcycleDom.h)('hr'), (0, _motorcycleDom.h)('p', ' . '), (0, _motorcycleDom.h)('p'), (0, _motorcycleDom.h)('p')])]);
+      return (0, _motorcycleDom.h)('div.content', [(0, _motorcycleDom.h)('div#rightPanel', { style: tempStyle2 }, [(0, _motorcycleDom.h)('span#tog', { style: tempStyle2 }, [(0, _motorcycleDom.h)('button#game', { style: { fontSize: '16px' } }, 'TOGGLE GAME'), (0, _motorcycleDom.h)('span.tao', ' '), (0, _motorcycleDom.h)('button#todoButton', { style: { fontSize: '16px' } }, 'TOGGLE TODO LIST'), (0, _motorcycleDom.h)('br'), (0, _motorcycleDom.h)('br'), (0, _motorcycleDom.h)('button#chat2', { style: { fontSize: '16px' } }, 'TOGGLE CHAT')]), (0, _motorcycleDom.h)('br'), (0, _motorcycleDom.h)('br'), (0, _motorcycleDom.h)('br'), (0, _motorcycleDom.h)('hr'), (0, _motorcycleDom.h)('div#gameDiv', [(0, _motorcycleDom.h)('span', 'Group: ' + O.mMgroup.x), (0, _motorcycleDom.h)('br'), (0, _motorcycleDom.h)('span', 'Goals: ' + O.mMgoals.x), (0, _motorcycleDom.h)('br'), (0, _motorcycleDom.h)('span', 'Name: ' + O.mMname.x), (0, _motorcycleDom.h)('br'), (0, _motorcycleDom.h)('span', 'player[score][goals]'), (0, _motorcycleDom.h)('div', O.mMscoreboard.x)]), (0, _motorcycleDom.h)('br'), (0, _motorcycleDom.h)('br'), (0, _motorcycleDom.h)('br'), (0, _motorcycleDom.h)('hr'), (0, _motorcycleDom.h)('div#todoDiv', [(0, _motorcycleDom.h)('div#taskList', O.mM$taskList.x), (0, _motorcycleDom.h)('span', 'Author, Responsible Person, Task: '), (0, _motorcycleDom.h)('input.newTask', { style: tempStyle2 })]), (0, _motorcycleDom.h)('br'), (0, _motorcycleDom.h)('br'), (0, _motorcycleDom.h)('br'), (0, _motorcycleDom.h)('br'), (0, _motorcycleDom.h)('div#chatDiv', [(0, _motorcycleDom.h)('div#messages', [(0, _motorcycleDom.h)('p', { style: tempStyle2 }, 'Message: '), (0, _motorcycleDom.h)('input.inputMessage', { style: tempStyle2 }), (0, _motorcycleDom.h)('div', O.mMmsg.x)])])]), (0, _motorcycleDom.h)('div.leftPanel', { style: { width: '60%' } }, [(0, _motorcycleDom.h)('br'), (0, _motorcycleDom.h)('h2', 'JS-monads-part6 - Shared Todo List'), (0, _motorcycleDom.h)('span', ' Here are the basic rules:'), (0, _motorcycleDom.h)('p', 'This installment of the Javascript monad series features a shared todo list, along with the game from the previous installment. Here are the rules: '), (0, _motorcycleDom.h)('p', 'RULES: If clicking two numbers and an operator (in any order) results in 20 or 18, the score increases by 1 or 3, respectively. If the score becomes 0 mod 5, 5 points are added. A score of 25 results in one goal. That can only be achieved by arriving at a score of 20, which jumps the score to 25. Directly computing 25 results in a score of 30, and no goal. Each time ROLL is clicked, one point is deducted. Three goals wins the game. '), (0, _motorcycleDom.h)('br'), (0, _motorcycleDom.h)('br'), (0, _motorcycleDom.h)('button#0.num'), (0, _motorcycleDom.h)('button#1.num'), (0, _motorcycleDom.h)('button#2.num'), (0, _motorcycleDom.h)('button#3.num'), (0, _motorcycleDom.h)('br'), (0, _motorcycleDom.h)('button#4.op', 'add'), (0, _motorcycleDom.h)('button#5.op', 'subtract'), (0, _motorcycleDom.h)('button#5.op', 'mult'), (0, _motorcycleDom.h)('button#5.op', 'div'), (0, _motorcycleDom.h)('button#5.op', 'concat'), (0, _motorcycleDom.h)('br'), (0, _motorcycleDom.h)('button.roll', { style: tempStyle2 }, 'ROLL'), (0, _motorcycleDom.h)('br'), (0, _motorcycleDom.h)('button#back2', { style: tempStyle2 }, 'FORWARD'), (0, _motorcycleDom.h)('button#forward2', { style: tempStyle2 }, 'BACK'), (0, _motorcycleDom.h)('br'), (0, _motorcycleDom.h)('div.winner', O.mMgoals2.x + ''), (0, _motorcycleDom.h)('p.login', { style: tempStyle }, 'IN ORDER TO SEE THE DEMONSTRATIONS, YOU MUSH ENTER SOMETHING BELOW.'), (0, _motorcycleDom.h)('br'), (0, _motorcycleDom.h)('span', 'Name: '), (0, _motorcycleDom.h)('input.login', { style: tempStyle }), (0, _motorcycleDom.h)('p', O.mM6.x.toString()), (0, _motorcycleDom.h)('p.group', { style: tempStyle2 }, 'Change group: '), (0, _motorcycleDom.h)('input.group', { style: tempStyle2 }), (0, _motorcycleDom.h)('br'), (0, _motorcycleDom.h)('br'), (0, _motorcycleDom.h)('span', 'People in the same group, other than solo, share text messages and dice rolls. '), (0, _motorcycleDom.h)('hr'), (0, _motorcycleDom.h)('p', 'As is apparent from the definition of Monad, when some monad "m" uses its "bnd" method on some function "f(x,v)", the first argument is the value of m (which is m.x). The return value of m.bnd(f,v) is f(m.x, v). Here is a function which takes two arguments: '), _codeJs2['default'].fib, (0, _motorcycleDom.h)('p', 'If you enter some number "n" in the box below, mMfib, whose initial value is [0,1], uses its bnd method as follows:'), (0, _motorcycleDom.h)('p', { style: { color: '#FF0000' } }, 'mMfib.bnd(fib,n)'), (0, _motorcycleDom.h)('p', 'The result will be displayed underneath the input box. '), (0, _motorcycleDom.h)('br'), (0, _motorcycleDom.h)('input#code'), (0, _motorcycleDom.h)('p#code2', O.mM19.x), (0, _motorcycleDom.h)('br'), (0, _motorcycleDom.h)('p'), (0, _motorcycleDom.h)('hr'), (0, _motorcycleDom.h)('hr'), (0, _motorcycleDom.h)('p', ' . '), (0, _motorcycleDom.h)('p'), (0, _motorcycleDom.h)('p')])]);
     }) };
 }
 

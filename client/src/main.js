@@ -67,6 +67,7 @@ function main(sources) {
       .bnd(next, 'CE#$42', mMZ14)
       .bnd(next, 'CF#$42', mMZ15)
       .bnd(next, 'EE#$42', mMZ16)
+      .bnd(() => console.log('In messages$ e is ', e))
     } ));
     mMZ10.bnd(() => mM$1
       .ret([O.mMar.x[3], O.mMar.x[4], O.mMar.x[5], O.mMar.x[6]])
@@ -82,18 +83,9 @@ function main(sources) {
     mMZ15.bnd(() => O.mMar
       .bnd(splice, 0, 5, mMhelper)
       .bnd(reduce, ((a,b) => {return a + ', ' + b}), mMhelper)
-      .bnd(v => O.mM$taskList.bnd(push, 
-        h('div.todo',  [
-          h('span.task3', {style: {color: 'yellow', textDecoration: 'none'}}, 'Task: ' + v ),  
-          h('br'),
-          h('span#author.tao', 'Author: ' + O.mMextra.x + ' / ' + 'Responsibility: ' + O.mMextra2.x ),
-          h('br'),
-          h('input.cb', {props: {type: 'checkbox'}}, ), 
-          h('label.cbox', { props: {for: 'cb'}}, 'Completed' ),
-          h('button.delete', 'Delete'  ),  
-          h('br'),
-          h('hr'),
-                  ]),  O.mM$taskList )));
+      .bnd(v => O.mM$task
+           .bnd(unshift, {'task': v, 'author': O.mMextra.x, 'responsible': O.mMextra2.x},  mM$task)
+          ));
     mMZ16.bnd(() => mMgoals2.ret('A player named ' + 
         O.mMname.x + 'is currently logged in. Page will refresh in 4 seconds.')
       .bnd(refresh));
@@ -116,6 +108,20 @@ function main(sources) {
     }
   });
 
+  const mM$taskAction$ = mM$task.stream.map(obList => {
+      O.mM$taskList.bnd(unshift,
+        h('div.todo',  [
+          h('span.task3', {style: {color: 'yellow', textDecoration: 'none'}}, 'Task: ' + obList[0].task ),  
+          h('br'),
+          h('span#author.tao', 'Author: ' + obList[0].author  + ' / ' + 'Responsibility: ' + obList[0].responsible ),
+          h('br'),
+          h('input.cb', {props: {type: 'checkbox'}}, ), 
+          h('label.cbox', { props: {for: 'cb'}}, 'Completed' ),
+          h('button.delete', 'Delete'  ),  
+          h('br'),
+          h('hr')]), mM$taskList)
+  })
+
   const groupPress$ = sources.DOM
     .select('input.group').events('keypress');
 
@@ -129,16 +135,6 @@ function main(sources) {
       socket.send(`CO#$42,${e.target.value},${O.mMname.x.trim()},${e.target.value}`);
   });
 
-  var addS = function addS (x,y) {
-    if (typeof x === 'number') {
-      return ret(x + y);
-    }
-    else if (typeof x.product === 'number') {
-      return ret(x.product + y);
-    }
-    else console.log('Problem in addS');
-  }
-  
   const messagePress$ = sources.DOM
     .select('input.inputMessage').events('keydown');
 
@@ -154,41 +150,60 @@ function main(sources) {
 
   const newTaskAction$ = newTask$.map(e => {
     if( e.keyCode == 13 ) {
-      console.log('In newTaskAction$ ', e);
+      console.log('In newTaskAction$  e.target.value ', e.target.value);
+      if ( e.target.value.split(',').length < 3 ) {
+        console.log('You must enter "author, responsible party, task" separated by commas');
+        return;
+      }
       socket.send(`CF#$42,${O.mMgroup.x.trim()},${O.mMname.x.trim()},${e.target.value}`);
       e.target.value = '';
     }
   });
 
-
-
-
   const colorClick$ = sources.DOM
     .select('.cb').events('click')
     
   const colorAction$ = colorClick$.map(e => {
-    let el = e.currentTarget.parentNode.childNodes[0];
-    console.log('In colorAction$  e, el: ', e, el);
+    let index = getIndex(e);
+    console.log('e and index in colorAction$ ', e, index);
+    let style = O.mM$taskList.x[index].children[0].elm.style;
 
-    el.style.color == 'yellow' ?
-       el.style.color = '#00ff6a' :
-       el.style.color = 'yellow'  
+    style.color == 'yellow' ?
+       style.color = '#00ff6a' :
+       style.color = 'yellow'  
 
-    el.style.textDecoration == 'none' ?
-      el.style.textDecoration = 'line-through' :
-      el.style.textDecoration = 'none'  
+    style.textDecoration == 'none' ?
+      style.textDecoration = 'line-through' :
+      style.textDecoration = 'none'  
   });
-
-
-
-
 
   const deleteClick$ = sources.DOM
     .select('.delete').events('click')
     
   const deleteAction$ = deleteClick$.map(e => {
-    e.currentTarget.parentNode.outerHTML = null;
+    let index = getIndex(e);
+    console.log('e and index in deleteAction$ ', e, index);
+    O.mM$task.bnd(splice, index, 1, O.mM$task).bnd(ar => refreshTasks(ar))
   });
+
+  function refreshTasks (ar) {
+    mM28.ret([]);
+    let keys = Object.keys(ar);
+    for(let k in keys) {
+      O.mM28.bnd(push,
+        h('div.todo',  [
+          h('span.task3', {style: {color: 'yellow', textDecoration: 'none'}}, 'Task: ' + ar[k].task),  
+          h('br'),
+          h('span#author.tao', 'Author: ' + ar[k].author  + ' / ' + 'Responsibility: ' + ar[k].responsible),
+          h('br'),
+          h('input.cb', {props: {type: 'checkbox'}}, ), 
+          h('label.cbox', { props: {for: 'cb'}}, 'Completed' ),
+          h('button.delete', 'Delete'  ),  
+          h('br'),
+          h('hr')]), mM28)
+    }
+    mM$taskList.ret(O.mM28.x);
+  }
 
   const chatClick$ = sources.DOM
     .select('#chat2').events('click');
@@ -291,6 +306,7 @@ function main(sources) {
   });
 
   const mM$1Action$ = mM$1.stream.map(v => {
+    console.log('In mM$Action$ v is ', v);
     if (Array.isArray(v)) {
       O.mMhistorymM1.bnd(spliceAdd, O.mMindex2.x, v, O.mMhistorymM1);
       document.getElementById('0').innerHTML = (O.mMhistorymM1.x[O.mMindex2.x])[0]; 
@@ -317,12 +333,7 @@ function main(sources) {
     console.log('From mM$2.stream: ', v);
   });
 
-  const mM$taskListAction$ = mM$taskList.stream.map(v => {
-    O.mMtasks.bnd(unshift, v, O.mMtasks);
-    console.log('********************O.mMtaskList.x ', O.mM$taskList.x);
-  })
-
-  const calcStream$ = merge( mM$taskListAction$, colorAction$, deleteAction$, newTaskAction$, chatClickAction$, gameClickAction$, todoClickAction$, mM$3Action$, mM$2Action$, mM$1Action$, backClickAction$, forwardClickAction$, fibPressAction$, groupPressAction$, rollClickAction$, messagePressAction$, loginPressAction$, messages$, numClickAction$, opClickAction$ );
+  const calcStream$ = merge(mM$taskAction$, colorAction$, deleteAction$, newTaskAction$, chatClickAction$, gameClickAction$, todoClickAction$, mM$3Action$, mM$2Action$, mM$1Action$, backClickAction$, forwardClickAction$, fibPressAction$, groupPressAction$, rollClickAction$, messagePressAction$, loginPressAction$, messages$, numClickAction$, opClickAction$ );
 
   return {
     DOM: 
@@ -336,8 +347,12 @@ function main(sources) {
         h('br'),
         h('br'),
         h('button#chat2',  {style: {fontSize: '16px'}}, 'TOGGLE CHAT'  )  ]),
+        h('br'),
+        h('br'),
+        h('br'),
+        h('br'),
+
         h('div#gameDiv',   [
-        h('br'),  
         h('span',  'Group: ' + O.mMgroup.x ),
         h('br'),
         h('span',  'Goals: ' + O.mMgoals.x ),
@@ -347,12 +362,12 @@ function main(sources) {
         h('span', 'player[score][goals]' ),
         h('div', O.mMscoreboard.x ) ]) ,
         h('br'),
-        h('br'),
-        h('br'),
-        h('br'),
+        h('br'),  
+        h('br'),  
+        h('hr'),  
   
         h('div#todoDiv',  [ 
-          h('div.taskList', O.mM$taskList.x  ),
+          h('div#taskList', O.mM$taskList.x ),
           h('span', 'Author, Responsible Person, Task: '  ),  
           h('input.newTask', {style: tempStyle2} ) ]),
         h('br'),
@@ -368,8 +383,9 @@ function main(sources) {
       ]),
       h('div.leftPanel', {  style: {width: '60%'   }},   [  
       h('br'),
-      h('h2', 'JS-monads-part5 - Specialized Monads' ),
+      h('h2', 'JS-monads-part6 - Shared Todo List' ),
       h('span', ' Here are the basic rules:' ), 
+      h('p', 'This installment of the Javascript monad series features a shared todo list, along with the game from the previous installment. Here are the rules: '   ),
       h('p', 'RULES: If clicking two numbers and an operator (in any order) results in 20 or 18, the score increases by 1 or 3, respectively. If the score becomes 0 mod 5, 5 points are added. A score of 25 results in one goal. That can only be achieved by arriving at a score of 20, which jumps the score to 25. Directly computing 25 results in a score of 30, and no goal. Each time ROLL is clicked, one point is deducted. Three goals wins the game. '    ),
       h('br'),
       h('br'),
@@ -390,9 +406,10 @@ function main(sources) {
       h('button#forward2', {style: tempStyle2}, 'BACK'  ),
       h('br'),
       h('div.winner', O.mMgoals2.x+''  ),
-      h('p.login', {style: tempStyle}, 'Please enter some name.'  ),
+      h('p.login', {style: tempStyle}, 'IN ORDER TO SEE THE DEMONSTRATIONS, YOU MUSH ENTER SOMETHING BELOW.'  ),
       h('br'),
-      h('input.login', {style: tempStyle }   ),
+      h('span', 'Name: '  ),
+      h('input.login', {style: tempStyle }  ),
       h('p', O.mM6.x.toString() ),
       h('p.group', {style: tempStyle2}, 'Change group: '  ),
       h('input.group', {style: tempStyle2} ),

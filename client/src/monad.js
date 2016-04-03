@@ -29,6 +29,7 @@ var Monad$ = function Monad$(z, g) {
   this.ret = function (a) {
     O[_this.id] = new Monad$(a,_this.id);
     _this.observer.next(a);
+    console.log('Streaming from ', _this.id);
     return O[_this.id];
   };
 };
@@ -73,7 +74,7 @@ var mM$todo = new Monad$(['alpha', 'beta', 'gamma'], 'mM$todo');
 mM$todo.ret(mM$todo.x);
 
 var mM$task = new Monad$([], 'mM$task');
-mM$todo.ret(mM$task.x);
+mM$task.ret(mM$task.x);
 
 var mM$todo2 = new Monad$([], 'mM$todo2');
 mM$todo2.ret(mM$todo2.x);
@@ -444,12 +445,12 @@ var spliceAdd = function spliceAdd(x, index, value, mon) {
   return ret(x);
 };
 
-var splice = function splice(x, start, end, mon) {
+var splice = function splice(x, start, n, mon) {
   if (Array.isArray(x)) {
     let ar = [];
     let keys = Object.keys(x);
     for (let k in keys) {ar[k] = x[k]};
-    ar.splice(start, end);
+    ar.splice(start, n);
     return mon.ret(ar);  
   }
   console.log('The value provided to splice is not an array');
@@ -573,17 +574,18 @@ var log = function log(x, message, mon) {
     return uniqueId;
   }
 
-    var getChildIndex = function getChildIndex (child) {
-        var parent = child.parentNode;
-        var children = parent.children;
-        var i = children.length - 1;
-        for (; i >= 0; i--){
-            if (child == children[i]){
-                break;
-            }
+    var getIndex = function getChildIndex (event_object) {
+      var task = event_object.currentTarget.parentNode.innerText;
+      var possibilities = event_object.currentTarget.parentNode.parentNode.childNodes;
+      var keys = Object.keys(possibilities);
+      for (let k in keys) {
+        if (task == possibilities[k].innerText) {
+          console.log('In getIndex. index is: ', k);
+          return k
         }
-        return i;
-    };
+        console.log('In getIndex. No match');
+      }
+    }
 
 /*
 var delay = function delay(x, mon) {
