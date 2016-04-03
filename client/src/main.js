@@ -14,18 +14,12 @@ console.log(ar2);
 
 var tempStyle = {display: 'inline'}
 var tempStyle2 = {display: 'none'}
-var style3 = {display: 'inline'}
-var style4 = {display: 'inline'}
-var style5 = {display: 'inline'}
-var style6 = {display: 'inline'}
-var style7 = {color: 'red'}
-var style8 = {color: 'green'}
 mM6.ret('');
 
 function createWebSocket(path) {
     let host = window.location.hostname;
     if(host == '') host = 'localhost';
-    let uri = 'ws://' + host + ':3077' + path;
+    let uri = 'ws://' + host + ':3055' + path;
     let Socket = "MozWebSocket" in window ? MozWebSocket : WebSocket;
     return new Socket(uri);
 }

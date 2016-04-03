@@ -580,7 +580,6 @@ var log = function log(x, message, mon) {
       var keys = Object.keys(possibilities);
       for (let k in keys) {
         if (task == possibilities[k].innerText) {
-          console.log('In getIndex. index is: ', k);
           return k
         }
         console.log('In getIndex. No match');
