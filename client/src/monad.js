@@ -280,6 +280,7 @@ mMgoals.ret(mMgoals.x)
 mMgoals2.ret(mMgoals2.x)
 mM3.ret(mM3.x)
 mM6.ret(mM6.x)
+mM24.ret(mM24.x)
 mMmsg.ret(mMmsg.x)
 mMmessages.ret(mMmessages.x)
 mMgroup.ret(mMgroup.x)
@@ -574,7 +575,7 @@ var log = function log(x, message, mon) {
     return uniqueId;
   }
 
-    var getIndex = function getChildIndex (event_object) {
+    var getIndex = function getIndex (event_object) {
       var task = event_object.currentTarget.parentNode.innerText;
       var possibilities = event_object.currentTarget.parentNode.parentNode.childNodes;
       var keys = Object.keys(possibilities);
@@ -583,6 +584,19 @@ var log = function log(x, message, mon) {
           return k
         }
         console.log('In getIndex. No match');
+      }
+    }
+
+    var getIndex2 = function getIndex2 (e) {
+      var elem = e.currentTarget.parentNode.children[0].innerHTML
+      var elem2 = e.currentTarget.parentNode.parentNode.childNodes
+      var keys = Object.keys(elem2);
+      for (let k in keys) {
+        console.log('&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&& ', elem == elem2[k].childNodes[0].innerHTML);
+        if (elem == elem2[k].childNodes[0].innerHTML) {
+          return k
+        }
+        console.log('In getIndex2. No match');
       }
     }
 

@@ -12,8 +12,6 @@ db.insert(ar);
 var ar2 = db.find(ar);
 console.log(ar2);
 
-var tempStyle = {display: 'inline'}
-var tempStyle2 = {display: 'none'}
 mM6.ret('');
 
 function createWebSocket(path) {
@@ -52,7 +50,8 @@ function main(sources) {
     .bnd(v => {
       mMsender.ret(v[2]);
       mMextra.ret(v[3]);
-      mMextra2.ret(v[4]);
+      mMextra2.ret(v[4])
+      .bnd(() => console.log('In messages$ e is ', e));
       mMprefix.ret(v[0])
       .bnd(next, 'CA#$42', mMZ10)
       .bnd(next, 'CB#$42', mMZ11)
@@ -61,7 +60,8 @@ function main(sources) {
       .bnd(next, 'CE#$42', mMZ14)
       .bnd(next, 'CF#$42', mMZ15)
       .bnd(next, 'EE#$42', mMZ16)
-      .bnd(() => console.log('In messages$ e is ', e))
+      .bnd(next, 'CH#$42', mMZ17)
+      .bnd(next, 'CK#$42', mMZ18)
     } ));
     mMZ10.bnd(() => mM$1
       .ret([O.mMar.x[3], O.mMar.x[4], O.mMar.x[5], O.mMar.x[6]])
@@ -73,7 +73,7 @@ function main(sources) {
       .bnd(splice, 0, 3, mMhelper)
       .bnd(reduce, ((a,b) => {return a + ', ' + b}), mMhelper)
       .bnd(v => O.mMmsg.bnd(unshift, h('div', O.mMsender.x + ': ' + v), O.mMmsg)));
-    mMZ14.bnd(() => mMgoals2.ret('The winner is ' + O.mMname.x ));
+    mMZ14.bnd(() => mMgoals2.ret('The winner is ' + O.mMsender.x ));
     mMZ15.bnd(() => O.mMar
       .bnd(splice, 0, 5, mMhelper)
       .bnd(reduce, ((a,b) => {return a + ', ' + b}), mMhelper)
@@ -83,9 +83,19 @@ function main(sources) {
     mMZ16.bnd(() => mMgoals2.ret('A player named ' + 
         O.mMname.x + 'is currently logged in. Page will refresh in 4 seconds.')
       .bnd(refresh));
+    mMZ17.bnd(() => {
+      console.log('sender and name: ', O.mMsender.x, O.mMname.x);
+      if (O.mMsender.x == O.mMname.x) {
+        checkBox2(O.mMextra.x);
+        return;
+      }
+      checkBox(O.mMextra.x);
+    });
+    mMZ18.bnd(() => O.mM24.bnd(log, '************in mMZ18 ')
+      .bnd(() => edit(O.mMextra.x, O.mMextra2.x)));
   
   const loginPress$ = sources.DOM
-    .select('input.login').events('keypress');
+    .select('input#login').events('keypress');
 
   const loginPressAction$ = loginPress$.map(e => {
     let v = (e.target.value);
@@ -97,27 +107,17 @@ function main(sources) {
       mMname.ret(v.trim())
       mM3.ret([]).bnd(mM2.ret);
       e.target.value = '';
-      tempStyle = {display: 'none'}
-      tempStyle2 = {display: 'inline'}
+      document.getElementById('dice').style.display = 'block';
+      document.getElementById('rightPanel').style.display = 'block';
+      document.getElementById('log1').style.display = 'none';
+      document.getElementById('log2').style.display = 'block';
     }
   });
 
-  const mM$taskAction$ = mM$task.stream.map(obList => {
-      O.mM$taskList.bnd(unshift,
-        h('div.todo',  [
-          h('span.task3', {style: {color: 'yellow', textDecoration: 'none'}}, 'Task: ' + obList[0].task ),  
-          h('br'),
-          h('span#author.tao', 'Author: ' + obList[0].author  + ' / ' + 'Responsibility: ' + obList[0].responsible ),
-          h('br'),
-          h('input.cb', {props: {type: 'checkbox'}}, ), 
-          h('label.cbox', { props: {for: 'cb'}}, 'Completed' ),
-          h('button.delete', 'Delete'  ),  
-          h('br'),
-          h('hr')]), mM$taskList)
-  })
+  const mM$taskAction$ = mM$task.stream.map(obList => refreshTasks(obList));
 
   const groupPress$ = sources.DOM
-    .select('input.group').events('keypress');
+    .select('input#group').events('keypress');
 
   const groupPressAction$ = groupPress$.map(e => {
     let v = e.target.value;
@@ -144,7 +144,6 @@ function main(sources) {
 
   const newTaskAction$ = newTask$.map(e => {
     if( e.keyCode == 13 ) {
-      console.log('In newTaskAction$  e.target.value ', e.target.value);
       if ( e.target.value.split(',').length < 3 ) {
         console.log('You must enter "author, responsible party, task" separated by commas');
         return;
@@ -155,21 +154,67 @@ function main(sources) {
   });
 
   const colorClick$ = sources.DOM
-    .select('.cb').events('click')
+    .select('#cb').events('click')
     
   const colorAction$ = colorClick$.map(e => {
     let index = getIndex(e);
-    console.log('e and index in colorAction$ ', e, index);
-    let style = O.mM$taskList.x[index].children[0].elm.style;
-
-    style.color == 'yellow' ?
-       style.color = '#00ff6a' :
-       style.color = 'yellow'  
-
-    style.textDecoration == 'none' ?
-      style.textDecoration = 'line-through' :
-      style.textDecoration = 'none'  
+    console.log('In colorAction$  e and index are: ', e, index);
+    socket.send(`CH#$42,${O.mMgroup.x.trim()},${O.mMname.x.trim()},${index}`);
   });
+
+  function checkBox (index) {
+    let elem = O.mM$taskList.x[index].children[0].elm;
+    let elem2 = O.mM$taskList.x[index].children[6].elm;
+    elem.style.color == 'yellow' ?
+       elem.style.color = '#00ff6a' :
+       elem.style.color = 'yellow'  
+
+    elem.style.textDecoration == 'none' ?
+      elem.style.textDecoration = 'line-through' :
+      elem.style.textDecoration = 'none'  
+
+    elem2.checked ?
+      elem2.checked = false :
+      elem2.checked = true  
+
+  }
+
+  function checkBox2 (index) {
+    let elem = O.mM$taskList.x[index].children[0].elm;
+    let elem2 = O.mM$taskList.x[index].children[6].elm;
+    elem.style.color == 'yellow' ?
+       elem.style.color = '#00ff6a' :
+       elem.style.color = 'yellow'  
+
+    elem.style.textDecoration == 'none' ?
+      elem.style.textDecoration = 'line-through' :
+      elem.style.textDecoration = 'none'  
+  }
+
+  const edit1$ = sources.DOM
+    .select('#edit1').events('click')
+    
+  const edit1Action$ = edit1$.map(e => {
+    let index = getIndex2(e);
+    console.log('e and getIndex2(e) in colorAction$ ', e, index);
+    O.mM$taskList.x[index].children[3].elm.style.display = 'block';
+  });
+
+  const edit2$ = sources.DOM
+    .select('input#edit2').events('keydown');
+
+  const edit2Action$ = edit2$.map(e => {
+    if( e.keyCode == 13 ) {
+      let index = getIndex2(e);
+      socket.send('CK#$42,' + O.mMgroup.x.trim() + ',' + O.mMname.x.trim() + ',' + index + ',' + e.target.value);
+      O.mM$taskList.x[index].children[3].elm.style.display = 'none';
+    }
+  });
+
+  var edit = function edit (index, task) {
+    O.mM$task.x[index].task = task;
+    mM$task.ret(O.mM$task.x) 
+  }
 
   const deleteClick$ = sources.DOM
     .select('.delete').events('click')
@@ -186,12 +231,14 @@ function main(sources) {
     for(let k in keys) {
       O.mM28.bnd(push,
         h('div.todo',  [
-          h('span.task3', {style: {color: 'yellow', textDecoration: 'none'}}, 'Task: ' + ar[k].task),  
+          h('span.task3', {style: {color: 'yellow', textDecoration: 'none'}}, 'Task: ' + ar[k].task  ),  
           h('br'),
+          h('button#edit1', 'Edit'  ),
+          h('input#edit2', {props: {type: 'textarea', value: ar[k].task}, style: {display: 'none'}}  ), 
           h('span#author.tao', 'Author: ' + ar[k].author  + ' / ' + 'Responsibility: ' + ar[k].responsible),
           h('br'),
-          h('input.cb', {props: {type: 'checkbox'}}, ), 
-          h('label.cbox', { props: {for: 'cb'}}, 'Completed' ),
+          h('input#cb', {props: {type: 'checkbox'}}, ), 
+          h('label.cbox', { props: {for: '#cb'}}, 'Completed' ),
           h('button.delete', 'Delete'  ),  
           h('br'),
           h('hr')]), mM28)
@@ -327,14 +374,14 @@ function main(sources) {
     console.log('From mM$2.stream: ', v);
   });
 
-  const calcStream$ = merge(mM$taskAction$, colorAction$, deleteAction$, newTaskAction$, chatClickAction$, gameClickAction$, todoClickAction$, mM$3Action$, mM$2Action$, mM$1Action$, backClickAction$, forwardClickAction$, fibPressAction$, groupPressAction$, rollClickAction$, messagePressAction$, loginPressAction$, messages$, numClickAction$, opClickAction$ );
+  const calcStream$ = merge( edit1Action$, edit2Action$,  mM$taskAction$, colorAction$, deleteAction$, newTaskAction$, chatClickAction$, gameClickAction$, todoClickAction$, mM$3Action$, mM$2Action$, mM$1Action$, backClickAction$, forwardClickAction$, fibPressAction$, groupPressAction$, rollClickAction$, messagePressAction$, loginPressAction$, messages$, numClickAction$, opClickAction$ );
 
   return {
     DOM: 
       calcStream$.map(() => 
       h('div.content', [ 
-      h('div#rightPanel',  {style: tempStyle2}, [
-        h('span#tog',  {style: tempStyle2}, [
+      h('div#rightPanel',  {style: {display: 'none'}}, [
+        h('span#tog', [
         h('button#game',  {style: {fontSize: '16px'}}, 'TOGGLE GAME'  ), 
         h('span.tao',' ' ),
         h('button#todoButton',  {style: {fontSize: '16px'}}, 'TOGGLE TODO LIST'  ),  
@@ -358,12 +405,11 @@ function main(sources) {
         h('br'),
         h('br'),  
         h('br'),  
-        h('hr'),  
   
         h('div#todoDiv',  [ 
           h('div#taskList', O.mM$taskList.x ),
           h('span', 'Author, Responsible Person, Task: '  ),  
-          h('input.newTask', {style: tempStyle2} ) ]),
+          h('input.newTask', ) ]),
         h('br'),
         h('br'),
         h('br'),
@@ -371,8 +417,8 @@ function main(sources) {
 
         h('div#chatDiv', [ 
         h('div#messages',  [
-        h('p', {style: tempStyle2}, 'Message: '  ),
-        h('input.inputMessage', {style: tempStyle2} ),
+        h('span', 'Message: '  ),
+        h('input.inputMessage', ),
         h('div', O.mMmsg.x  ) ]) ]) 
       ]),
       h('div.leftPanel', {  style: {width: '60%'   }},   [  
@@ -394,19 +440,21 @@ function main(sources) {
       h('button#5.op', 'div' ),
       h('button#5.op', 'concat' ),
       h('br'),
-      h('button.roll', {style: tempStyle2}, 'ROLL' ),
+      h('div#dice', {style: {display: 'none'}}, [ 
+      h('button.roll', 'ROLL' ),
       h('br'),
-      h('button#back2', {style: tempStyle2}, 'FORWARD'  ),
-      h('button#forward2', {style: tempStyle2}, 'BACK'  ),
+      h('button#back2', 'FORWARD'  ),
+      h('button#forward2', 'BACK'  ) ]),
       h('br'),
       h('div.winner', O.mMgoals2.x+''  ),
-      h('p.login', {style: tempStyle}, 'IN ORDER TO SEE THE DEMONSTRATIONS, YOU MUSH ENTER SOMETHING BELOW.'  ),
-      h('br'),
-      h('span', 'Name: '  ),
-      h('input.login', {style: tempStyle }  ),
+      h('div#log1', [
+      h('p', 'IN ORDER TO SEE THE DEMONSTRATIONS, YOU MUSH ENTER SOMETHING BELOW.'  ),
+      h('span', 'Name: ' ),
+      h('input#login', ) ]),
       h('p', O.mM6.x.toString() ),
-      h('p.group', {style: tempStyle2}, 'Change group: '  ),
-      h('input.group', {style: tempStyle2} ),
+      h('div#log2', {style: {display: 'none'}}, [
+      h('span', 'Change group: '  ),
+      h('input#group', ) ]),
       h('br'),
       h('br'),
       h('span', 'People in the same group, other than solo, share text messages and dice rolls. '  ),
