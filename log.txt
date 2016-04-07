@@ -1,2 +1,1 @@
-hello
-bye
+{Yes, they do}

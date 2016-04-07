@@ -19,7 +19,7 @@ initLogger = do
   return l
 -- >>
 f :: FilePath
-f = "log.txt"
+f = "log.js"
 
 logger :: Logger -> IO ()
 logger (Logger m) = loop
@@ -28,8 +28,8 @@ logger (Logger m) = loop
     cmd <- atomically $ takeTMVar m
     case cmd of
       Message msg -> do
-        -- putStrLn msg
-        appendFile f (msg ++ "\n")
+        putStrLn msg
+        writeFile f (msg)
         loop
       Stop s -> do
         putStrLn "logger: stop"

@@ -258,6 +258,8 @@ var mMid = new Monad('cow', 'mMid');
 var mMhelper = new Monad('helper', 'mMhelper');
 var mMtasks = new Monad([], 'mMtasks');
 var mMid = new Monad(42, 'mMid');
+var mMalert = new Monad('nothing');
+var fibMon = new Monad([0,1]);
 
 var mMtasksPersist = new Monad(['Be here now'], 'mMtasksPersist');
 mMtasksPersist.ret(mMtasksPersist.x)
@@ -297,6 +299,9 @@ mMhistory.ret(mMhistory.x)
 mMindex2.ret(mMindex2.x);
 mMhelper.ret(mMhelper.x);
 mMtasks.ret(mMtasks.x);
+mMalert.ret(mMalert.x);
+mMfib.ret(mMfib.x);
+fibMon.ret(fibMon.x);
 
 
 var mMZ1 = MI();
@@ -335,15 +340,10 @@ var trim = function trim(x,str) {
   return ret(str.trim());
 };
 
-var fib = function fib(x,k) {
-  let j = k;
-
-  while (j > 0) {
-    x = [x[1], x[0] + x[1]];
-    j -= 1;
-  }
-  return ret('fibonacci ' + k + ' = ' + x[0]);
-};
+var intArray = function intArray (x, n) {
+  let ar = Array(n).fill().map((_, i) => i * 1);
+  return ret(ar);
+}
 
 var toNums = function toNums(x) {
   let y = x.map(x => parseFloat(x));
@@ -351,7 +351,6 @@ var toNums = function toNums(x) {
 };
 
 var calc = function calc(a,op,b) { 
-  console.log('From calc. a, op, b ', a, op, b)
   var result;
   switch (op) {
       case "add": result = (parseFloat(a) + parseFloat(b));
@@ -410,7 +409,6 @@ var clean = function clean(x, mon) {
 }
 
 var push = function push(y,v,mon) {
-  console.log(mon);
   if (Array.isArray(y)) {
     let ar = [];
     let keys = Object.keys(y);
@@ -430,7 +428,6 @@ var spliceRemove = function spliceRemove(x, j, mon) {
     ar.splice(j,1);
     return mon.ret(ar);  
   }
-  console.log('The value provided to spliceRemove is not an array');
   return ret(x);
 };
 
@@ -463,7 +460,7 @@ var sliceFront = function sliceFront(x, n, mon) {
     let ar = x.slice(n);
     return mon.ret(ar);  
   }
-  console.log('The value provided to splice is not an array');
+  console.log('The value provided to sliceFront is not an array');
   return ret(x);
 };
 
@@ -492,7 +489,7 @@ var map = function map(x, f, mon) {
       return mon.ret(ar);  
     }
   }
-  console.log('The value provided to splice is not an array');
+  console.log('The value provided to map is not an array');
   return ret(x);
 };
 

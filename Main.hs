@@ -46,6 +46,10 @@ get5 :: [String] -> [Double]
 get5 [_,_,_,a,b,c,d,e] = fmap read [a,b,c,d,e]
 get5 _ = [-1,-1,-1,-1,-1]
 
+getTask :: [String] -> String
+getTask [_,d] = d
+getTask _ = "Strange argument in getTask"
+
 subState :: Text -> Text -> [(Text,Int,Int,Text,WS.Connection)] -> [(Text,Int,Int,Text,WS.Connection)]
 subState name gr state  | gr /= solo  = [ (a,b,c,d,e) | (a,b,c,d,e) <- state, gr == d ]
                         | gr == solo = [ (a,b,c,d,e) | (a,b,c,d,e) <- state, name == a]
@@ -206,8 +210,7 @@ talk conn state (_, _, _, _, _) = forever $ do
         "CQ#$42" `T.isPrefixOf` msg || "CF#$42" `T.isPrefixOf` msg || "DI#$42" `T.isPrefixOf` msg ||
         "CY#$42" `T.isPrefixOf` msg || "CR#$42" `T.isPrefixOf` msg || "CD#$42" `T.isPrefixOf` msg ||
         "IA#$42" `T.isPrefixOf` msg || "DY#$42" `T.isPrefixOf` msg || "DQ#$42" `T.isPrefixOf` msg ||
-        "EQ#$42" `T.isPrefixOf` msg || "FQ#$42" `T.isPrefixOf` msg || "GQ#$42" `T.isPrefixOf` msg ||
-        "HQ#$42" `T.isPrefixOf` msg
+        "EQ#$42" `T.isPrefixOf` msg || "FQ#$42" `T.isPrefixOf` msg || "GQ#$42" `T.isPrefixOf` msg
 
         then
             do
@@ -261,9 +264,24 @@ talk conn state (_, _, _, _, _) = forever $ do
                    else
                    return ()
 
+
+    else if "HQ#$42" `T.isPrefixOf` msg
+        then
+            mask_ $ do
+                s <- atomically $ takeTMVar state
+                let subSt = subState sender group s
+                broadcast msg subSt
+                broadcast ("CB#$42," `mappend` group `mappend` ","
+                    `mappend` sender `mappend` "," `mappend` T.concat (intersperse "<br>" (textState subSt))) subSt
+
+
+
+
+
     else if "XXXXX" `T.isPrefixOf` msg
-      then
-            logMessage l (T.unpack msg)
+      then do
+            let taskArray = splitOn "@" (T.unpack msg)
+            logMessage l $ getTask taskArray
 
       else do
         print "*********************************************************"
