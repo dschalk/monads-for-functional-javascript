@@ -12,6 +12,10 @@ body {
   font-size: 22px;
 } 
 
+.codeColor {
+  color: '00ffe1';
+}
+
 .caption {
   font-size: 36px;
   color: #ffb600;

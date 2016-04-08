@@ -340,8 +340,18 @@ var trim = function trim(x,str) {
   return ret(str.trim());
 };
 
+var fib = function fib(x,mon) {
+  return mon.ret([ O.mMfib.x[1], O.mMfib.x[0] + O.mMfib.x[1] ]);
+}
+
+var fibCalc = function(x, n) {
+  mMfib.ret([0,1])
+  for(let k in Array(n).fill(1)) mMfib.bnd(fib, mMfib)
+  return ret(O.mMfib.x[0])
+}
+
 var intArray = function intArray (x, n) {
-  let ar = Array(n).fill().map((_, i) => i * 1);
+  let ar = Array(n).fill().map((_, i) => i + 1);
   return ret(ar);
 }
 

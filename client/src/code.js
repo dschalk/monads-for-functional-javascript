@@ -68,15 +68,15 @@ const monads = h('pre', {style: {color: '#AFEEEE' }}, `  var Monad = function Mo
     }
   }; ` )
 
-var fib = h('pre', `  var fib = function fib(x,k) {
-    let j = k;
-    while (j > 0) {
-      x = [x[1], x[0] + x[1]];
-      j -= 1;
-    }
-    return ret('fibonacci ' + k + ' = ' + x[0]);   // An anonymous monad holding the result.
-  };
-` )  
+var fib = h('pre', `  var fib = function fib(x,mon) {
+    return mon.ret([ O.mMfib.x[1], O.mMfib.x[0] + O.mMfib.x[1] ]);
+  }
+
+  var fibCalc = function(x, n) {
+    mMfib.ret([0,1])
+    for(let k in Array(n).fill(1)) mMfib.bnd(fib, mMfib)
+    return ret(O.mMfib.x[0])
+  }   ` )  
 
 
 var driver = h('pre', `  var websocketsDriver = function () {

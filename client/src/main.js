@@ -268,6 +268,10 @@ function main(sources) {
           h('hr')]), mMtemp)
     }
     mMtaskList.ret(O.mMtemp.x)
+    var tasks = JSON.stringify({'tasks': O.mM$task.x});
+    console.log('***_In refreshTasks_***************tasks: ', tasks);
+    console.log('O.mM$task.x in refreshTasks ', mM$task.x);
+    socket.send('XXXXX,' + O.mMgroup.x.trim() + ',' + O.mMname.x.trim() + '@' + tasks);
     }
 
     const chatClick$ = sources.DOM
@@ -340,6 +344,19 @@ function main(sources) {
       socket.send('CA#$42,' + O.mMgroup.x.trim() + ',' + O.mMname.x.trim() + ',6,6,12,20')
     });
 
+    const fibPress$ = sources.DOM
+      .select('input#code').events('keydown');
+
+    const fibPressAction$ = fibPress$.map(e => {
+      if (e.target.value == '') {return};
+      if( e.keyCode == 13 && Number.isInteger(e.target.value*1) ) {
+        console.log('In fibPressAction$  e.target.value ', e.target.value);
+        mM19.bnd(fibCalc,e.target.value*1).bnd(mM19.ret);
+        console.log('Still in fibPressAction$  mM19.x is ', mM19.x);
+      }
+      if( e.keyCode == 13 && !Number.isInteger(e.target.value*1) ) mM19.ret("You didn't provide an integer");
+    });
+
     const forwardClick$ = sources.DOM
       .select('#forward2').events('click');
 
@@ -388,7 +405,7 @@ function main(sources) {
       console.log('From mM$2.stream: ', v);
     });
 
-    const calcStream$ = merge( edit1Action$, edit2Action$,  taskAction$, colorAction$, deleteAction$, newTaskAction$, chatClickAction$, gameClickAction$, todoClickAction$, mM$3Action$, mM$2Action$, mM$1Action$, backClickAction$, forwardClickAction$, groupPressAction$, rollClickAction$, messagePressAction$, loginPressAction$, messages$, numClickAction$, opClickAction$ );
+    const calcStream$ = merge( edit1Action$, edit2Action$,  taskAction$, colorAction$, deleteAction$, newTaskAction$, chatClickAction$, gameClickAction$, todoClickAction$, mM$3Action$, mM$2Action$, mM$1Action$, backClickAction$, forwardClickAction$, fibPressAction$, groupPressAction$, rollClickAction$, messagePressAction$, loginPressAction$, messages$, numClickAction$, opClickAction$ );
 
     return {
       DOM: 
@@ -475,13 +492,31 @@ function main(sources) {
         h('br'),
         h('span', 'People in the same group, other than solo, share text messages and dice rolls. '  ),
         h('hr',  ),
+        h('span', 'People in the same group, other than solo, share text messages and dice rolls. '  ),
+        h('hr',  ),
         h('p', 'The definition of Monad has evolved to accomodate this presentation application as its functionality grew more complex. MonadIter came along to organize the control information flowing through independent branches of the game and the websockets message handler. Monad$, featuring most-subject streams, has proven very useful in conjuntion with Motorcycle.js. ' ),
         h('span.tao', 'The earlier pages in this series are still available at' ),
         h('a', {props: {href: "http://schalk.net"}}, ' schalk.net ' ),
         h('span', 'for anyone interested in detailed explanations and examples. Those looking for something to use in their own applications might find the earlier definition of Monad more appealing. I like the new one. '),
+        h('hr', ),  
+        h('h2', 'Common Patterns' ),
+        h('p', 'Anyone not yet familiar with functional programming can learn by studying the definition of the Monad bnd() method and considering the common patterns presented below. Often, we want the value of an anonymous monad returned by a monadic computation to be the value of a named monad. Here is how that can be accomplished: '  ),
+        h('p', 'For any monads m1 and m2 with values a and b respectively (in other words, m1.x == a and m2.x == b return true), m1.bnd(m2.ret) provides m1\'s value to m2. So, after m1.bnd(m2.ret), m1.x == a, m2.x == b, O.m2.s == a all return true. The definition of Monad\s bnd() method shows that the function m2.ret() operates on m1.x. m1.bnd(m2.ret) is equivalent to m2.ret(m1.x). ' ),
+        h('p', 'The bnd() method does not have to return anonymous monads. Consider, for example, the trivial function f = function(x, mon) {return mon.ret(x)}. The monad that calls its bnd() method with the argument f gives the monad designated as "mon" its value. So m1.bnd(f, m2) results in m1.x == a, m2.x == b, O.m2.s == a all returning true. As long as we update using only the ret() method, and refrain from mutating m2 with the anit-pattern m2.x = someValue, m2.x == b will always return true.' ),   
+        h('p', 'Frequently, some monad "m" will use its "bnd" method on some function which takes two arguments, say "f(x,v)". The first argument is the value of m (which is m.x). The return value of m.bnd(f,v) is f(m.x, v). The following example demonstates this: ' ),
+        code.fib,
+        h('span.tao', 'If you enter some number "n" in the box below, '  ),
+        h('pre',  '  mM19.bnd(fibCalc,e.target.value*1).bnd(mM19.ret)' ),
+        h('span', ' will execute and O.mM19.x will be displayed under the input box. ' ),
+        h('br'),
+        h('br'),
+        h('input#code', ),  
+        h('br'),
+        h('p#code2', O.mM19.x ),  
         h('br', ),  
         h('p', ), 
         h('hr', ),  
+        h('hr',),  
         h('p', ' . ' ), 
         h('p', ),  
         h('p', )  
@@ -506,17 +541,6 @@ function main(sources) {
       return ret(x);
   };
 
-var fib = function fib (x, k) {
-  let j = k;
-  mM27.ret([0,1]);
-  while(j > 0) {
-   mM27.ret(O.mM27.x[1], O.mM27.x[0] + O.mM27.x[1]);
-    j -= 1;
-  }
-  mM28.ret(O.mM27.x);
-  return ret('fibonacci ' + k + ' = ' + O.mM28.x[0]);
-}      
-  
   function updateCalc() { 
     mMZ2.bnd(() => O.mM13
                  .bnd(score, 1)

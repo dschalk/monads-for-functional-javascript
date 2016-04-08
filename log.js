@@ -1,1 +1,1 @@
-{"tasks":[{"color":"yellow","textDecoration":"none","checked":false,"author":"a","responsible":"b","task":"1"}]}
+{"tasks":[]}
