@@ -110,7 +110,6 @@ function main(sources) {
       document.getElementById('rightPanel').style.display = 'block';
       document.getElementById('log1').style.display = 'none';
       document.getElementById('log2').style.display = 'block';
-      document.getElementById('getList').style.display = 'block';
     }
   });
 
@@ -125,6 +124,7 @@ function main(sources) {
     if( e.keyCode == 13 ) 
       mMgroup.ret(e.target.value);
       socket.send(`CO#$42,${e.target.value},${O.mMname.x.trim()},${e.target.value}`);
+      socket.send('DD#$42,' + e.target.value + ',' + O.mMname.x.trim() + ',nothing');
   });
 
   const messagePress$ = sources.DOM
@@ -152,13 +152,6 @@ function main(sources) {
         document.getElementById('alert').innerHTML = '';
       } 
     } 
-  });
-
-  const fetchTasks$ = sources.DOM
-    .select('#fetchTasks').events('click')
-
-  const fetchAction$ = fetchTasks$.map(e => {
-    socket.send('DD#$42,' + O.mMgroup.x.trim() + ',' + O.mMname.x.trim() + ',nothing');
   });
 
   const process = function(a) {
@@ -442,7 +435,7 @@ function main(sources) {
       console.log('From mM$2.stream: ', v);
     });
 
-    const calcStream$ = merge( fetchAction$, edit1Action$, edit2Action$,  taskAction$, colorAction$, deleteAction$, newTaskAction$, chatClickAction$, gameClickAction$, todoClickAction$, mM$3Action$, mM$2Action$, mM$1Action$, backClickAction$, forwardClickAction$, fibPressAction$, groupPressAction$, rollClickAction$, messagePressAction$, loginPressAction$, messages$, numClickAction$, opClickAction$ );
+    const calcStream$ = merge( edit1Action$, edit2Action$,  taskAction$, colorAction$, deleteAction$, newTaskAction$, chatClickAction$, gameClickAction$, todoClickAction$, mM$3Action$, mM$2Action$, mM$1Action$, backClickAction$, forwardClickAction$, fibPressAction$, groupPressAction$, rollClickAction$, messagePressAction$, loginPressAction$, messages$, numClickAction$, opClickAction$ );
 
     return {
       DOM: 
@@ -529,9 +522,6 @@ function main(sources) {
         h('br'),
         h('span', 'People in the same group, other than solo, share text messages and dice rolls. '  ),
         h('br'),
-        h('div#getList', {style: {display: 'none'}}, [
-        h('p', 'If you join a group that has a task list, you can obtain it here: ' ),
-        h('button#fetchTasks', 'Fetch Tasks'  ) ]),
         h('hr', ),
         h('p', 'The definition of Monad has evolved to accomodate this presentation application as its functionality grew more complex. MonadIter came along to organize the control information flowing through independent branches of the game and the websockets message handler. Monad$, featuring most-subject streams, has proven very useful in conjuntion with Motorcycle.js. ' ),
         h('span.tao', 'The earlier pages in this series are still available at' ),
