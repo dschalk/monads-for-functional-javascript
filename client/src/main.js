@@ -110,6 +110,7 @@ function main(sources) {
       document.getElementById('rightPanel').style.display = 'block';
       document.getElementById('log1').style.display = 'none';
       document.getElementById('log2').style.display = 'block';
+      document.getElementById('getList').style.display = 'block';
     }
   });
 
@@ -161,6 +162,7 @@ function main(sources) {
   });
 
   const process = function(a) {
+    console.log('************_In process.  a, a.length: ', a, a.length );
     let newArray = [];
     let ob = {};
     if (a.length < 6) {
@@ -170,6 +172,7 @@ function main(sources) {
     let ar = a.slice(3);
     let n = ar.length/6;
     let keys = Array(n).fill(1);
+    console.log(' ************_Later in process. ar, n, keys: ', ar, n, keys );
     for (let k in keys) {
       newArray.push(
         {
@@ -526,8 +529,9 @@ function main(sources) {
         h('br'),
         h('span', 'People in the same group, other than solo, share text messages and dice rolls. '  ),
         h('br'),
-        h('p', 'If you join a group that has a task list, you can obtain it here:
-        h('button#fetchTasks', 'Fetch Tasks'  ),
+        h('div#getList', {style: {display: 'none'}}, [
+        h('p', 'If you join a group that has a task list, you can obtain it here: ' ),
+        h('button#fetchTasks', 'Fetch Tasks'  ) ]),
         h('hr', ),
         h('p', 'The definition of Monad has evolved to accomodate this presentation application as its functionality grew more complex. MonadIter came along to organize the control information flowing through independent branches of the game and the websockets message handler. Monad$, featuring most-subject streams, has proven very useful in conjuntion with Motorcycle.js. ' ),
         h('span.tao', 'The earlier pages in this series are still available at' ),
