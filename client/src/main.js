@@ -55,6 +55,7 @@ function main(sources) {
       .bnd(next, 'CH#$42', mMZ17)
       .bnd(next, 'CK#$42', mMZ18)
       .bnd(next, 'CQ#$42', mMZ19)
+      .bnd(next, 'DD#$42', mMZ20)
     } ));
     mMZ10.bnd(() => mM$1
       .ret([O.mMar.x[3], O.mMar.x[4], O.mMar.x[5], O.mMar.x[6]])
@@ -90,6 +91,7 @@ function main(sources) {
     mMZ18.bnd(() => O.mM24.bnd(log, '************in mMZ18 ')
       .bnd(() => edit(O.mMextra.x, O.mMextra2.x)));
     mMZ19.bnd(() => O.mM$task.bnd(spliceRemove, O.mMar.x[3], mM$task));
+    mMZ20.bnd(() => process(O.mMar.x));
   
   const loginPress$ = sources.DOM
     .select('input#login').events('keypress');
@@ -144,12 +146,44 @@ function main(sources) {
         document.getElementById('alert').innerHTML = alert;
       }
       else {
-        socket.send('CF#$42,' + O.mMgroup.x.trim() + ',' + O.mMname.x.trim() + ',false, yellow, none' + ',' + e.target.value);
+        socket.send('CF#$42,' + O.mMgroup.x.trim() + ',' + O.mMname.x.trim() + ',false, yellow, none,' + e.target.value );
         e.target.value = '';
         document.getElementById('alert').innerHTML = '';
-      }
-    }
+      } 
+    } 
   });
+
+  const fetchTasks$ = sources.DOM
+    .select('#fetchTasks').events('click')
+
+  const fetchAction$ = fetchTasks$.map(e => {
+    socket.send('DD#$42,' + O.mMgroup.x.trim() + ',' + O.mMname.x.trim() + ',nothing');
+  });
+
+  const process = function(a) {
+    let newArray = [];
+    let ob = {};
+    if (a.length < 6) {
+      console.log('________________________Ran process on short array ');
+      return
+    }
+    let ar = a.slice(3);
+    let n = ar.length/6;
+    let keys = Array(n).fill(1);
+    for (let k in keys) {
+      newArray.push(
+        {
+          task: ar.shift(),
+          color: ar.shift(),
+          textDecoration: ar.shift(),
+          checked: ar.shift() === 'true',
+          author: ar.shift(),
+          responsible: ar.shift()
+        }
+      )
+    }
+    mM$task.ret(newArray);
+  };
 
   const colorClick$ = sources.DOM
     .select('#cb').events('click')
@@ -268,10 +302,10 @@ function main(sources) {
           h('hr')]), mMtemp)
     }
     mMtaskList.ret(O.mMtemp.x)
-    var tasks = JSON.stringify({'tasks': O.mM$task.x});
+    var tasks = (ar.map(stringify)).toString();
     console.log('***_In refreshTasks_***************tasks: ', tasks);
     console.log('O.mM$task.x in refreshTasks ', mM$task.x);
-    socket.send('XXXXX,' + O.mMgroup.x.trim() + ',' + O.mMname.x.trim() + '@' + tasks);
+    socket.send('TD#$42,' + O.mMgroup.x.trim() + ',' + O.mMname.x.trim() + ',@' + tasks);
     }
 
     const chatClick$ = sources.DOM
@@ -405,7 +439,7 @@ function main(sources) {
       console.log('From mM$2.stream: ', v);
     });
 
-    const calcStream$ = merge( edit1Action$, edit2Action$,  taskAction$, colorAction$, deleteAction$, newTaskAction$, chatClickAction$, gameClickAction$, todoClickAction$, mM$3Action$, mM$2Action$, mM$1Action$, backClickAction$, forwardClickAction$, fibPressAction$, groupPressAction$, rollClickAction$, messagePressAction$, loginPressAction$, messages$, numClickAction$, opClickAction$ );
+    const calcStream$ = merge( fetchAction$, edit1Action$, edit2Action$,  taskAction$, colorAction$, deleteAction$, newTaskAction$, chatClickAction$, gameClickAction$, todoClickAction$, mM$3Action$, mM$2Action$, mM$1Action$, backClickAction$, forwardClickAction$, fibPressAction$, groupPressAction$, rollClickAction$, messagePressAction$, loginPressAction$, messages$, numClickAction$, opClickAction$ );
 
     return {
       DOM: 
@@ -491,7 +525,10 @@ function main(sources) {
         h('br'),
         h('br'),
         h('span', 'People in the same group, other than solo, share text messages and dice rolls. '  ),
-        h('hr',  ),
+        h('br'),
+        h('p', 'If you join a group that has a task list, you can obtain it here:
+        h('button#fetchTasks', 'Fetch Tasks'  ),
+        h('hr', ),
         h('p', 'The definition of Monad has evolved to accomodate this presentation application as its functionality grew more complex. MonadIter came along to organize the control information flowing through independent branches of the game and the websockets message handler. Monad$, featuring most-subject streams, has proven very useful in conjuntion with Motorcycle.js. ' ),
         h('span.tao', 'The earlier pages in this series are still available at' ),
         h('a', {props: {href: "http://schalk.net"}}, ' schalk.net ' ),

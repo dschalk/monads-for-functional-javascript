@@ -1,8 +1,10 @@
 {-# LANGUAGE OverloadedStrings, TemplateHaskell #-}
 import Data.Monoid (mappend)
 import Data.Text (Text)
+import Data.Text.IO as D
 import Control.Exception (finally)
 import Control.Monad (forM_, forever)
+import Control.Concurrent (forkIO)
 import Control.Concurrent.STM
 import Control.Monad.IO.Class (liftIO)
 import Network.WebSockets.Connection (sendClose)
@@ -19,8 +21,8 @@ import Impossibles hiding (main)
 import Data.List (intersperse)
 import Control.Exception.Base (mask_)
 import Data.List.Split (splitOn)
+import Tasks hiding (main)
 -- import System.Environment (getEnv)
-import Logger2 hiding (main)
 
 solo :: Text
 solo = "solo"
@@ -35,6 +37,9 @@ type ServerState = [Client]
 getName :: Client -> Name
 getName (a,_,_,_,_) = a
 
+findGroup :: Client -> Name
+findGroup (_,_,_,d,_) = d
+
 getConn :: Client -> WS.Connection
 getConn (_,_,_,_,e) = e
 
@@ -45,10 +50,6 @@ get4 _ = [-1,-1,-1,-1]
 get5 :: [String] -> [Double]
 get5 [_,_,_,a,b,c,d,e] = fmap read [a,b,c,d,e]
 get5 _ = [-1,-1,-1,-1,-1]
-
-getTask :: [String] -> String
-getTask [_,d] = d
-getTask _ = "Strange argument in getTask"
 
 subState :: Text -> Text -> [(Text,Int,Int,Text,WS.Connection)] -> [(Text,Int,Int,Text,WS.Connection)]
 subState name gr state  | gr /= solo  = [ (a,b,c,d,e) | (a,b,c,d,e) <- state, gr == d ]
@@ -74,7 +75,7 @@ textState s = [ a `mappend` " [ "  `mappend` T.pack (show b) `mappend` " ] " `ma
 
 newGroup :: Text -> Text -> Client -> Client
 newGroup name group (a, b, c, d, e)   | name == a  = (a, 0, 0, group, e)
-                                   | otherwise = (a, b, c, d, e)
+                                      | otherwise = (a, b, c, d, e)
 
 newGroupKeepScore :: Text -> Text -> Client -> Client
 newGroupKeepScore name group (a, b, c, d, e)  | name == a  = (a, b, c, group, e)
@@ -102,6 +103,13 @@ matches a ss = [ x | x <- ss, getName x == a]
 clientExists :: Text -> ServerState -> Bool
 clientExists a ss  | null (matches a ss)   = False
                    | otherwise             = True
+
+matchesGroup :: Text -> ServerState -> [Client]
+matchesGroup a ss = [ x | x <- ss, findGroup x == a]
+
+groupExists :: Text -> ServerState -> Bool
+groupExists a ss   | null (matchesGroup a ss) = False
+                   | otherwise                = True
 
 addClient :: Client -> ServerState -> ServerState
 addClient client clients = client : clients
@@ -168,7 +176,7 @@ application state pending = do
 talk :: WS.Connection -> TMVar ServerState -> Client -> IO ()
 talk conn state (_, _, _, _, _) = forever $ do
     msg <- WS.receiveData conn
-    print msg   
+    print $ "Incoming msg " ++ (T.unpack msg)
     let msgArray = splitOn "," (T.unpack msg)
     let group = T.pack (msgArray !! 1)
     let sender = T.pack (msgArray !! 2)
@@ -176,7 +184,6 @@ talk conn state (_, _, _, _, _) = forever $ do
     let extraNum = read (msgArray !! 3) :: Int
     let extraNum2 = read (msgArray !! 4) :: Int
 
-    l <- initLogger     -- See XXXXX at the end of this file.
 
     if "CA#$42" `T.isPrefixOf` msg
         then
@@ -207,11 +214,11 @@ talk conn state (_, _, _, _, _) = forever $ do
 
     else if "CC#$42" `T.isPrefixOf` msg || "CE#$42" `T.isPrefixOf` msg ||
         "CH#$42" `T.isPrefixOf` msg || "CK#$42" `T.isPrefixOf` msg || "XY#$42" `T.isPrefixOf` msg ||
-        "CQ#$42" `T.isPrefixOf` msg || "CF#$42" `T.isPrefixOf` msg || "DI#$42" `T.isPrefixOf` msg ||
+        "CQ#$42" `T.isPrefixOf` msg || "DI#$42" `T.isPrefixOf` msg || "EQ#$42" `T.isPrefixOf` msg || 
+        "GQ#$42" `T.isPrefixOf` msg || "CF#$42" `T.isPrefixOf` msg ||
         "CY#$42" `T.isPrefixOf` msg || "CR#$42" `T.isPrefixOf` msg || "CD#$42" `T.isPrefixOf` msg ||
-        "IA#$42" `T.isPrefixOf` msg || "DY#$42" `T.isPrefixOf` msg || "DQ#$42" `T.isPrefixOf` msg ||
-        "EQ#$42" `T.isPrefixOf` msg || "FQ#$42" `T.isPrefixOf` msg || "GQ#$42" `T.isPrefixOf` msg
-
+        "IA#$42" `T.isPrefixOf` msg || "DY#$42" `T.isPrefixOf` msg || "DQ#$42" `T.isPrefixOf` msg
+         
         then
             do
                 st <- atomically $ readTMVar state
@@ -258,12 +265,14 @@ talk conn state (_, _, _, _, _) = forever $ do
                 let x = "CB#$42," `mappend` group `mappend` "," `mappend` sender `mappend` "," `mappend` T.concat (intersperse "<br>" (textState subState1))
                 let y = "CB#$42," `mappend` extra `mappend` "," `mappend` sender `mappend` "," `mappend` T.concat (intersperse "<br>" (textState subState2))
                 broadcast y subState2
-                if group /= "solo"
+                if (group /= "solo" && (groupExists group old) == True)
                    then
                    broadcast x subState1
-                   else
-                   return ()
-
+                else if (group /= "solo" && (groupExists group old) == False)
+                   then do
+                     broadcast x subState1
+                else
+                  return ()
 
     else if "HQ#$42" `T.isPrefixOf` msg
         then
@@ -274,14 +283,20 @@ talk conn state (_, _, _, _, _) = forever $ do
                 broadcast ("CB#$42," `mappend` group `mappend` ","
                     `mappend` sender `mappend` "," `mappend` T.concat (intersperse "<br>" (textState subSt))) subSt
 
+    else if "DD#$42" `T.isPrefixOf` msg
+            then do
+                tasks <- liftIO $ read2 (msgArray !! 1)
 
+                st <- atomically $ readTMVar state
+                let subSt = subState sender group st
+                broadcast ("DD#$42," `mappend` group `mappend` ","
+                    `mappend` sender `mappend` "," `mappend` tasks) subSt
 
-
-
-    else if "XXXXX" `T.isPrefixOf` msg
-      then do
-            let taskArray = splitOn "@" (T.unpack msg)
-            logMessage l $ getTask taskArray
+    else if "TD#$42" `T.isPrefixOf` msg
+        then
+            do
+                let tasks = (splitOn "@" (T.unpack msg)) !! 1
+                save (msgArray !! 1) $ T.pack tasks
 
       else do
         print "*********************************************************"

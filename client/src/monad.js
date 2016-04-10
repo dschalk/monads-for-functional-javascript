@@ -82,10 +82,6 @@ mM$todo2.ret(mM$todo2.x);
 var mM$todo3 = new Monad$([], 'mM$todo3');
 mM$todo3.ret(mM$todo3.x);
 
-
-
-
-
 var mMsaved = new MonadSave({}, 'mMsaved');
 var mMid = new MonadSave('waiting', 'mMid');
 var mMnewval = new MonadSave('waiting', 'mMnewval');
@@ -350,6 +346,11 @@ var fibCalc = function(x, n) {
   return ret(O.mMfib.x[0])
 }
 
+var stringify = function stringify (ob) {
+  let str = ob.task + ',' + ob.color  + ',' + ob.textDecoration + ',' + ob.checked.toString() + ',' +  ob.author + ',' + ob.responsible;
+  return str;
+}
+
 var intArray = function intArray (x, n) {
   let ar = Array(n).fill().map((_, i) => i + 1);
   return ret(ar);
@@ -590,8 +591,8 @@ var log = function log(x, message, mon) {
         if (task == possibilities[k].innerText) {
           return k
         }
-        console.log('In getIndex. No match');
       }
+      console.log('In getIndex. No match');
     }
 
     var getIndex2 = function getIndex2 (e) {
