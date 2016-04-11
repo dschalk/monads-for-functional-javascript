@@ -339,13 +339,13 @@ var trim = function trim(x,str) {
   return ret(str.trim());
 };
 
-var fib = function fib(x,mon) {
-  return mon.ret([ O.mMfib.x[1], O.mMfib.x[0] + O.mMfib.x[1] ]);
+var fib = function fib(x) {
+  return mMfib.ret([ O.mMfib.x[1], O.mMfib.x[0] + O.mMfib.x[1] ]);
 }
 
 var fibCalc = function(x, n) {
   mMfib.ret([0,1])
-  for(let k in Array(n).fill(1)) mMfib.bnd(fib, mMfib)
+  for(let k in Array(n).fill(1)) mMfib.bnd(fib)
   return ret(O.mMfib.x[0])
 }
 

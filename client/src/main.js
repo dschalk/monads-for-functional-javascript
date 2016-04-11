@@ -380,9 +380,7 @@ function main(sources) {
     const fibPressAction$ = fibPress$.map(e => {
       if (e.target.value == '') {return};
       if( e.keyCode == 13 && Number.isInteger(e.target.value*1) ) {
-        console.log('In fibPressAction$  e.target.value ', e.target.value);
         mM19.bnd(fibCalc,e.target.value*1).bnd(mM19.ret);
-        console.log('Still in fibPressAction$  mM19.x is ', mM19.x);
       }
       if( e.keyCode == 13 && !Number.isInteger(e.target.value*1) ) mM19.ret("You didn't provide an integer");
     });
@@ -534,7 +532,7 @@ function main(sources) {
         h('p', 'The bnd() method does not have to return anonymous monads. Consider, for example, the trivial function f = function(x, mon) {return mon.ret(x)}. The monad that calls its bnd() method with the argument f gives the monad designated as "mon" its value. So m1.bnd(f, m2) results in m1.x == a, m2.x == b, O.m2.s == a all returning true. As long as we update using only the ret() method, and refrain from mutating m2 with the anit-pattern m2.x = someValue, m2.x == b will always return true.' ),   
         h('p', 'Frequently, some monad "m" will use its "bnd" method on some function which takes two arguments, say "f(x,v)". The first argument is the value of m (which is m.x). The return value of m.bnd(f,v) is f(m.x, v). The following example demonstates this: ' ),
         code.fib,
-        h('span.tao', 'In both functions, the first argument is ignored. It must be included, however, in order to make the bnd() method return the desired result. If you enter some number "n" in the box below, '  ),
+        h('span.tao', 'In both functions, the "x" argument is ignored. It must be included, however, in order to make the bnd() method return the desired result. If you enter some number "n" in the box below, '  ),
         h('pre',  '  mM19.bnd(fibCalc, e.target.value*1).bnd(mM19.ret)' ),
         h('span', ' will execute and O.mM19.x will be displayed under the input box. ' ),
         h('br'),
