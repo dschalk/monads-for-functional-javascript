@@ -131,9 +131,12 @@ var MonadIter = function MonadIter() {
   };
 };
 
-var ret = function ret(v) {
-  var mon = new Monad(v, 'anonymous');
-  return mon;
+var ret = function ret(v, id) {
+  if (arguments.length === 1) {
+    return (new Monad(v, 'anonymous'));
+  }
+  window[id] = new Monad(v, id);
+  return window[id];
 }
 
 var cube = function(v,mon) {

@@ -133,14 +133,16 @@ main = do
     -- por <- getEnv "PORT"
     -- let port = read por
     state <- atomically $ newTMVar newServerState
-    Warp.runSettings Warp.defaultSettings
-      { Warp.settingsTimeout = 36000,
-        Warp.settingsPort = 3055 
-      } $ WaiWS.websocketsOr WS.defaultConnectionOptions (application state) staticApp
+    Warp.runSettings
+     (Warp.setPort 3055 $ 
+       Warp.setTimeout 36000 $ 
+         Warp.defaultSettings) $ 
+           WaiWS.websocketsOr WS.defaultConnectionOptions (application state) staticApp
 staticApp :: Network.Wai.Application
 staticApp = Static.staticApp $ Static.embeddedSettings $(embedDir "client")
 application :: TMVar ServerState -> WS.ServerApp
 application state pending = do
+    print "App is fired up"
     conn <- WS.acceptRequest pending
     msg <- WS.receiveData conn
     clients <- atomically $ readTMVar state
@@ -175,6 +177,7 @@ application state pending = do
 
 talk :: WS.Connection -> TMVar ServerState -> Client -> IO ()
 talk conn state (_, _, _, _, _) = forever $ do
+    print "In talk"
     msg <- WS.receiveData conn
     print $ "Incoming msg " ++ (T.unpack msg)
     let msgArray = splitOn "," (T.unpack msg)

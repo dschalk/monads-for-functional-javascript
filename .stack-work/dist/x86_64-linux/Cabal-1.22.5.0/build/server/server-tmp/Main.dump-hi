@@ -1,0 +1,325 @@
+
+==================== FINAL INTERFACE ====================
+2016-04-11 05:29:37.69194 UTC
+
+interface main@main:Main 7103
+  interface hash: 386b445b05f67866c6f80ce4cfb10321
+  ABI hash: 8df3e08c60e801ff9a86d7ee3eaf89e1
+  export-list hash: 2f9efd25b7647d5b73ab6774835f97b2
+  orphan hash: 276323d23bdb3224e26fb4d203ffca48
+  flag hash: aba9a6cef4096fb7b2458f6da3a9f95d
+  sig of: Nothing
+  used TH splices: True
+  where
+exports:
+  Main.main
+module dependencies: Fm Impossibles Tasks
+package dependencies: SHA-1.6.4.2@SHA_0ooW8jYoKWjDUFkZlEvhJX
+                      appar-0.1.4@appar_0ov5bpGH3STIB4U7WU8MFi
+                      array-0.5.1.0@array_67iodizgJQIIxYVTp4emlA
+                      attoparsec-0.13.0.1@attop_54A7v0tHtb8HdWcVFvNqIQ
+                      auto-update-0.1.3@autou_19qtEoqMgV6FQlA1CkY9Cg base-4.8.2.0
+                      base64-bytestring-1.0.0.1@base6_AkCk8zInckjJsyQ4AIFHPN
+                      binary-0.7.5.0@binar_3uXFWMoAGBg0xKP9MHKRwi
+                      blaze-markup-0.7.0.3@blaze_0GHhaMWFHoQLer0aTKr3fi
+                      blaze-html-0.8.1.1@blaze_8uBsT1Ot9JRCmtYCOlWBzS
+                      blaze-builder-0.4.0.1@blaze_GoSGMrJXTmeEBoF3sgxwrM
+                      byteable-0.1.1@bytea_38yjJsjDRm9KusCn8Yo4aB
+                      byteorder-1.0.4@byteo_6yQGE3rJo3bBqr3CFoBQ27
+                      bytestring-0.10.6.0@bytes_6VWy06pWzJq9evDvK2d4w6
+                      case-insensitive-1.2.0.5@casei_6T7oZR091WBGvJZgBIj0us
+                      conduit-1.2.6.1@condu_3LmfJOWxZjnD3tTr8H5LcU
+                      conduit-extra-1.1.9.2@condu_C71mt40EZrdHkLKiwhzJNm
+                      containers-0.5.6.2@conta_2C3ZI8RgPO2LBMidXKTvIU
+                      cryptohash-0.11.6@crypt_3Cwvwq9ssRY1dmVI1qI6C2
+                      cryptohash-conduit-0.1.1@crypt_9N3q0yXvjlM5HA3xEFTi7N
+                      deepseq-1.4.1.1@deeps_6vMKxt5sPFR0XsbRWvvq59
+                      directory-1.2.2.0@direc_0hFG6ZxK1nk4zsyOqbNHfm
+                      entropy-0.3.7@entro_7gYJ61Ci0NNBp8LB4CGmrG
+                      exceptions-0.8.0.2@excep_4vYwHtqpI6VHuGNdUrX8YB
+                      file-embed-0.0.9@filee_LhdavtSLEuo1Rrmo0IrLCH
+                      filepath-1.4.0.0@filep_Ey7a1in9roBAE8bUFJ5R9m ghc-prim-0.4.0.0
+                      hashable-1.2.3.3@hasha_IaQA1SDHWk38xS0I3H2vFd
+                      http2-1.3.1@http2_FFrPfxFWE6c05EkyVbOfVR
+                      http-date-0.0.6.1@httpd_85NDCZeMco484Y2RIv87xx
+                      http-types-0.9@httpt_1KX9s0Zu9csGvIhI0TZbFz integer-gmp-1.0.0.0
+                      iproute-1.7.0@iprou_51qGM7UdLbAGjwdVd1zynT
+                      lifted-base-0.2.3.6@lifte_Eodtp1tnegOElwU6jqYtb3
+                      mime-types-0.1.0.6@mimet_Auf3arlsqyh1vk2EtUPwQu
+                      mmorph-1.0.4@mmorp_0WMtEvhRyfO23HVwiVqzqf
+                      monad-control-1.0.0.4@monad_DMkcM2ySGCbGNS1cYyq1TZ
+                      mtl-2.2.1@mtl_Aue4leSeVkpKLsfHIV51E8
+                      network-2.6.2.1@netwo_A6pE0dLgMEk2GtUa1JtTJQ
+                      pretty-1.1.2.0@prett_JItwetRppk1H5Uq3xbjDGC
+                      primitive-0.6.1.0@primi_EphY2c7CCxSCBKjAN0YTR3
+                      psqueues-0.2.0.3@psque_ANp61hFdZlOJ7epOhIWY3q
+                      random-1.1@rando_9Kgekc9yEaLHLNUuw6paWL
+                      resourcet-1.1.7@resou_9XIKS0XwpGbGvn1xsAPQVY
+                      scientific-0.3.4.4@scien_JFBiyTx55sAHqQuoa5wc8T
+                      simple-sendfile-0.2.21@simpl_1s4YZSsjn6TCbK7MVn1EXz
+                      split-0.2.2@split_2HX8EqgvDIgHYwxogxhVQv
+                      stm-2.4.4.1@stm_EyxFXFfnfY05IrjGaqCxeD
+                      streaming-commons-0.1.15@strea_3e8TuBnfkBU5pVfOKBg2n7
+                      template-haskell-2.10.0.0 text-1.2.2.0@text_5c7VCmRXJenGcMPs3kwpkI
+                      time-1.5.0.1@time_FTheb6LSxyX1UABIbBXRfn
+                      transformers-base-0.4.4@trans_74WedXVmfaHHDJItmBRTVp
+                      transformers-0.4.2.0@trans_GZTjP9K5WFq01xC9BAGQpF
+                      unix-2.7.1.0@unix_KZL8h98IqDM57kQSPo1mKx
+                      unix-compat-0.4.1.4@unixc_Km8uiabmElX5mrb8D4Fywe
+                      unordered-containers-0.2.5.1@unord_AVCiZNWwoYY6sQkLg2Yoz3
+                      vault-0.3.0.5@vault_KUhFsxp6VPF0TFRjuKVzqs
+                      vector-0.11.0.0@vecto_LmZ3LQW4ivu8MsQuVgukln
+                      wai-3.0.5.0@wai_60IFwvTEcZz1oBkSWh7kbj
+                      wai-app-static-3.1.4.1@waiap_HhDbdx8dlrPIsuf7OxdjMS
+                      wai-websockets-3.0.0.8@waiwe_6cc4LdpSAaBBPYYjiq5mkI
+                      warp-3.1.12@warp_JemNmElUBTyGZl9ogfH3mf
+                      websockets-0.9.6.1@webso_3OcLF436IbtGP9BsmBvARh
+                      word8-0.1.2@word8_6yKBsGbmsbLB2UCORShr75
+                      zlib-0.6.1.1@zlib_7LjT7TSHX8U3VTy3t378Vu
+orphans: attoparsec-0.13.0.1@attop_54A7v0tHtb8HdWcVFvNqIQ:Data.Attoparsec.ByteString.Char8
+         base-4.8.2.0:GHC.Base base-4.8.2.0:GHC.Float
+         binary-0.7.5.0@binar_3uXFWMoAGBg0xKP9MHKRwi:Data.Binary.Generic
+         bytestring-0.10.6.0@bytes_6VWy06pWzJq9evDvK2d4w6:Data.ByteString.Builder
+         hashable-1.2.3.3@hasha_IaQA1SDHWk38xS0I3H2vFd:Data.Hashable.Generic
+         network-2.6.2.1@netwo_A6pE0dLgMEk2GtUa1JtTJQ:Network.Socket
+         network-2.6.2.1@netwo_A6pE0dLgMEk2GtUa1JtTJQ:Network.Socket.Types
+         stm-2.4.4.1@stm_EyxFXFfnfY05IrjGaqCxeD:Control.Monad.STM
+         text-1.2.2.0@text_5c7VCmRXJenGcMPs3kwpkI:Data.Text
+         text-1.2.2.0@text_5c7VCmRXJenGcMPs3kwpkI:Data.Text.Lazy
+         text-1.2.2.0@text_5c7VCmRXJenGcMPs3kwpkI:Data.Text.Show
+         time-1.5.0.1@time_FTheb6LSxyX1UABIbBXRfn:Data.Time.Calendar.Gregorian
+         time-1.5.0.1@time_FTheb6LSxyX1UABIbBXRfn:Data.Time.Format.Parse
+         time-1.5.0.1@time_FTheb6LSxyX1UABIbBXRfn:Data.Time.LocalTime.LocalTime
+         transformers-0.4.2.0@trans_GZTjP9K5WFq01xC9BAGQpF:Control.Monad.Trans.Error
+         vector-0.11.0.0@vecto_LmZ3LQW4ivu8MsQuVgukln:Data.Vector.Fusion.Bundle
+family instance modules: attoparsec-0.13.0.1@attop_54A7v0tHtb8HdWcVFvNqIQ:Data.Attoparsec.Internal.Types
+                         base-4.8.2.0:Control.Applicative base-4.8.2.0:Data.Either
+                         base-4.8.2.0:Data.Functor.Identity base-4.8.2.0:Data.Monoid
+                         base-4.8.2.0:Data.Type.Equality base-4.8.2.0:Data.Void
+                         base-4.8.2.0:GHC.Exts base-4.8.2.0:GHC.Generics
+                         containers-0.5.6.2@conta_2C3ZI8RgPO2LBMidXKTvIU:Data.IntMap.Base
+                         containers-0.5.6.2@conta_2C3ZI8RgPO2LBMidXKTvIU:Data.IntSet.Base
+                         containers-0.5.6.2@conta_2C3ZI8RgPO2LBMidXKTvIU:Data.Map.Base
+                         containers-0.5.6.2@conta_2C3ZI8RgPO2LBMidXKTvIU:Data.Sequence
+                         containers-0.5.6.2@conta_2C3ZI8RgPO2LBMidXKTvIU:Data.Set.Base
+                         iproute-1.7.0@iprou_51qGM7UdLbAGjwdVd1zynT:Data.IP.Addr
+                         iproute-1.7.0@iprou_51qGM7UdLbAGjwdVd1zynT:Data.IP.Range
+                         monad-control-1.0.0.4@monad_DMkcM2ySGCbGNS1cYyq1TZ:Control.Monad.Trans.Control
+                         pretty-1.1.2.0@prett_JItwetRppk1H5Uq3xbjDGC:Text.PrettyPrint.HughesPJ
+                         primitive-0.6.1.0@primi_EphY2c7CCxSCBKjAN0YTR3:Control.Monad.Primitive
+                         resourcet-1.1.7@resou_9XIKS0XwpGbGvn1xsAPQVY:Control.Monad.Trans.Resource.Internal
+                         template-haskell-2.10.0.0:Language.Haskell.TH.Syntax
+                         text-1.2.2.0@text_5c7VCmRXJenGcMPs3kwpkI:Data.Text
+                         text-1.2.2.0@text_5c7VCmRXJenGcMPs3kwpkI:Data.Text.Lazy
+                         unordered-containers-0.2.5.1@unord_AVCiZNWwoYY6sQkLg2Yoz3:Data.HashMap.Base
+                         vector-0.11.0.0@vecto_LmZ3LQW4ivu8MsQuVgukln:Data.Vector
+                         zlib-0.6.1.1@zlib_7LjT7TSHX8U3VTy3t378Vu:Codec.Compression.Zlib.Stream
+import  -/  base-4.8.2.0:Control.Concurrent 1268fba2c60b0505ec9e8731d08a8e75
+import  -/  base-4.8.2.0:Control.Exception e9090e246fba030faecf7b81b3e8e320
+import  -/  base-4.8.2.0:Control.Exception.Base b99410eaf0cc6bb119b1d45a497c1b10
+import  -/  base-4.8.2.0:Control.Monad 480c5067477275068c9b98be08410df9
+import  -/  base-4.8.2.0:Data.Foldable 2ce969969ad5231eb40bd713f94f05ad
+import  -/  base-4.8.2.0:Data.List 3f0782c8d4bf50eecefcd5ea1798aac8
+import  -/  base-4.8.2.0:Data.Monoid 85b292b52bfd80ed619cddb767d638d3
+import  -/  base-4.8.2.0:Data.OldList d8fd80b0e14aa085ce6219cd89dad356
+import  -/  base-4.8.2.0:GHC.Base 1db77db5dae73d8c424c85b09fbadb89
+import  -/  base-4.8.2.0:GHC.Conc.Sync e56817ef33471434aa51ef212cff6db1
+import  -/  base-4.8.2.0:GHC.IO bb5b81adcea33b14bd4abe16d7dde45f
+import  -/  base-4.8.2.0:GHC.List 0c736920522bbd14b770342776012ab6
+import  -/  base-4.8.2.0:GHC.Num 9f42750c866f5832ca565146bd660c60
+import  -/  base-4.8.2.0:GHC.Show 0e1d8380a8fb0cfb07ebeda3b70cbf38
+import  -/  base-4.8.2.0:Prelude 694dcaf039efe62df1c44834e2dbd2fb
+import  -/  base-4.8.2.0:System.IO 0248c1e850b7ea124cf7a2e1669ebf67
+import  -/  base-4.8.2.0:Text.Read ef0ef92fb7358ae94bab089940adfd2a
+import  -/  bytestring-0.10.6.0@bytes_6VWy06pWzJq9evDvK2d4w6:Data.ByteString.Internal dfa34e211eb5d18268ce7a397234e851
+import  -/  bytestring-0.10.6.0@bytes_6VWy06pWzJq9evDvK2d4w6:Data.ByteString.Unsafe 741899719f39bacc24bec8eb3dd612dd
+import  -/  file-embed-0.0.9@filee_LhdavtSLEuo1Rrmo0IrLCH:Data.FileEmbed 4e4432f457fa08f799afa79aded25d90
+import  -/  ghc-prim-0.4.0.0:GHC.Classes e1f4ff80f7b5262008a595d29986fb18
+import  -/  ghc-prim-0.4.0.0:GHC.Types 6b27fb3fdbd0e3f0925a4496c66513bb
+import  -/  Fm 4c3102596ab602a6904b650093edf9df
+  exports: 2bd7032af0fc7548005e1c6dad38070c
+  rText f3095bc4a66dc8323ce0e4fb6d418624
+  truck 9109abc39634877024ec43edca5f7572
+import  -/  Impossibles d02a99d6ed7dd33a7b2c17fbe8629395
+  exports: 82e201a1754cffbd9ed38387ad4d4db5
+import  -/  Tasks ced1f00b0206f8489101a04cac5e597f
+  exports: 1729817c0b7c4ef71650121ad2e4e88c
+  read2 540b75905beecbfa15a7d71a94232f95
+  save 1fcc9943d41e880aa50719ff6c5c160b
+import  -/  split-0.2.2@split_2HX8EqgvDIgHYwxogxhVQv:Data.List.Split 8d77d043aa595cb6e716267a4e74b5b4
+import  -/  split-0.2.2@split_2HX8EqgvDIgHYwxogxhVQv:Data.List.Split.Internals 6f1f92c429a66cd52bd6872439d2ab48
+import  -/  stm-2.4.4.1@stm_EyxFXFfnfY05IrjGaqCxeD:Control.Concurrent.STM 94fd33d8f93fbb7122113ac894592f2a
+import  -/  stm-2.4.4.1@stm_EyxFXFfnfY05IrjGaqCxeD:Control.Concurrent.STM.TMVar 4e0cacf863e7f152b6338e24ddbab04d
+import  -/  text-1.2.2.0@text_5c7VCmRXJenGcMPs3kwpkI:Data.Text 86fbb7ba59f4e0e286e698c3b32fab21
+import  -/  text-1.2.2.0@text_5c7VCmRXJenGcMPs3kwpkI:Data.Text.IO 0a48508e3b9ee9d99ac4c439753e1561
+import  -/  text-1.2.2.0@text_5c7VCmRXJenGcMPs3kwpkI:Data.Text.Internal 77121723701b5baab16c0e5e3254bc11
+import  -/  text-1.2.2.0@text_5c7VCmRXJenGcMPs3kwpkI:Data.Text.Show 1e4fbd1e7bf5770e724fd9b39474dff2
+import  -/  transformers-0.4.2.0@trans_GZTjP9K5WFq01xC9BAGQpF:Control.Monad.IO.Class 37487179a2f5eb2ea7922b911abcae56
+import  -/  wai-3.0.5.0@wai_60IFwvTEcZz1oBkSWh7kbj:Network.Wai 859632da06ccc98ddba6b98072c5ee97
+import  -/  wai-app-static-3.1.4.1@waiap_HhDbdx8dlrPIsuf7OxdjMS:Network.Wai.Application.Static 56338e03c7c7b57f519066a03f80f3cf
+import  -/  wai-app-static-3.1.4.1@waiap_HhDbdx8dlrPIsuf7OxdjMS:WaiAppStatic.Storage.Embedded.Runtime b1e2e60d2daf566fd8d09e61c10872ec
+import  -/  wai-websockets-3.0.0.8@waiwe_6cc4LdpSAaBBPYYjiq5mkI:Network.Wai.Handler.WebSockets 57a1b1e0e2603a86029d9cbd339673ee
+import  -/  warp-3.1.12@warp_JemNmElUBTyGZl9ogfH3mf:Network.Wai.Handler.Warp fe080f53fa0f345651bf1f2c74001671
+import  -/  warp-3.1.12@warp_JemNmElUBTyGZl9ogfH3mf:Network.Wai.Handler.Warp.Run d294339ced63d7c442a4ce633ed48043
+import  -/  warp-3.1.12@warp_JemNmElUBTyGZl9ogfH3mf:Network.Wai.Handler.Warp.Settings 67f253f12664ca14e30a6fce26968b4d
+import  -/  websockets-0.9.6.1@webso_3OcLF436IbtGP9BsmBvARh:Network.WebSockets 85995c25d9f21bae2162706f22b42cac
+import  -/  websockets-0.9.6.1@webso_3OcLF436IbtGP9BsmBvARh:Network.WebSockets.Connection a5ab4f6fd2385510cb9c1e5a69726c22
+import  -/  websockets-0.9.6.1@webso_3OcLF436IbtGP9BsmBvARh:Network.WebSockets.Server d87e887059e8f104684b53edf2bd3908
+import  -/  websockets-0.9.6.1@webso_3OcLF436IbtGP9BsmBvARh:Network.WebSockets.Types 9825ce52aad08e79184446c007caa055
+addDependentFile "client/dist/main.js"
+addDependentFile "client/src/code.js"
+addDependentFile "client/src/most-subject.js"
+addDependentFile "client/src/monad.js~"
+addDependentFile "client/src/save.js"
+addDependentFile "client/src/monad.js"
+addDependentFile "client/src/index.js"
+addDependentFile "client/src/main.js"
+addDependentFile "client/bower_components/when/es6-shim/Promise.min.js"
+addDependentFile "client/bower_components/when/es6-shim/Promise.js"
+addDependentFile "client/bower_components/when/es6-shim/Promise.min.js.map"
+addDependentFile "client/bower_components/when/es6-shim/Promise.js.map"
+addDependentFile "client/bower_components/when/es6-shim/Promise.browserify-es6.js"
+addDependentFile "client/bower_components/when/node/function.js"
+addDependentFile "client/bower_components/when/lib/decorators/flow.js"
+addDependentFile "client/bower_components/when/lib/decorators/inspect.js"
+addDependentFile "client/bower_components/when/lib/decorators/progress.js"
+addDependentFile "client/bower_components/when/lib/decorators/timed.js"
+addDependentFile "client/bower_components/when/lib/decorators/iterate.js"
+addDependentFile "client/bower_components/when/lib/decorators/unhandledRejection.js"
+addDependentFile "client/bower_components/when/lib/decorators/fold.js"
+addDependentFile "client/bower_components/when/lib/decorators/with.js"
+addDependentFile "client/bower_components/when/lib/decorators/array.js"
+addDependentFile "client/bower_components/when/lib/TimeoutError.js"
+addDependentFile "client/bower_components/when/lib/Promise.js"
+addDependentFile "client/bower_components/when/lib/makePromise.js"
+addDependentFile "client/bower_components/when/lib/env.js"
+addDependentFile "client/bower_components/when/lib/state.js"
+addDependentFile "client/bower_components/when/lib/liftAll.js"
+addDependentFile "client/bower_components/when/lib/format.js"
+addDependentFile "client/bower_components/when/lib/Scheduler.js"
+addDependentFile "client/bower_components/when/lib/apply.js"
+addDependentFile "client/bower_components/when/unfold/list.js"
+addDependentFile "client/bower_components/when/monitor/ConsoleReporter.js"
+addDependentFile "client/bower_components/when/monitor/console.js"
+addDependentFile "client/bower_components/when/monitor/error.js"
+addDependentFile "client/bower_components/when/monitor/PromiseMonitor.js"
+addDependentFile "client/bower_components/when/delay.js"
+addDependentFile "client/bower_components/when/when.js"
+addDependentFile "client/bower_components/when/monitor.js"
+addDependentFile "client/bower_components/when/cancelable.js"
+addDependentFile "client/bower_components/when/parallel.js"
+addDependentFile "client/bower_components/when/generator.js"
+addDependentFile "client/bower_components/when/guard.js"
+addDependentFile "client/bower_components/when/bower.json"
+addDependentFile "client/bower_components/when/pipeline.js"
+addDependentFile "client/bower_components/when/LICENSE.txt"
+addDependentFile "client/bower_components/when/timeout.js"
+addDependentFile "client/bower_components/when/function.js"
+addDependentFile "client/bower_components/when/poll.js"
+addDependentFile "client/bower_components/when/keys.js"
+addDependentFile "client/bower_components/when/sequence.js"
+addDependentFile "client/bower_components/when/package.json"
+addDependentFile "client/bower_components/when/node.js"
+addDependentFile "client/bower_components/when/unfold.js"
+addDependentFile "client/bower_components/when/callbacks.js"
+addDependentFile "client/bower_components/most/docs/recipes/unfold-promises.md"
+addDependentFile "client/bower_components/most/docs/recipes/event-delegation.md"
+addDependentFile "client/bower_components/most/docs/recipes/README.md"
+addDependentFile "client/bower_components/most/docs/api.md"
+addDependentFile "client/bower_components/most/docs/concepts.md"
+addDependentFile "client/bower_components/most/dist/most.js"
+addDependentFile "client/bower_components/most/dist/most.min.js"
+addDependentFile "client/bower_components/most/README.md"
+addDependentFile "client/bower_components/most/bower.json"
+addDependentFile "client/bower_components/most-subject/test/index.js"
+addDependentFile "client/bower_components/most-subject/dist/most-subject.js"
+addDependentFile "client/bower_components/most-subject/dist/most-subject.min.js"
+addDependentFile "client/bower_components/most-subject/lib/Observer.js"
+addDependentFile "client/bower_components/most-subject/lib/Replay.js"
+addDependentFile "client/bower_components/most-subject/lib/index.js"
+addDependentFile "client/bower_components/most-subject/README.md"
+addDependentFile "client/bower_components/most-subject/CONTRIBUTING.md"
+addDependentFile "client/bower_components/most-subject/package.json"
+addDependentFile "client/bower_components/most-subject/LICENSE.md"
+addDependentFile "client/bower_components/fetch/bower.json"
+addDependentFile "client/bower_components/fetch/LICENSE"
+addDependentFile "client/bower_components/fetch/fetch.js"
+addDependentFile "client/mostSub.js"
+addDependentFile "client/index.html"
+addDependentFile "client/bundle.js"
+addDependentFile "client/main.js.map"
+addDependentFile "client/style.css"
+addDependentFile "client/package.json"
+addDependentFile "client/fetch.js"
+addDependentFile "client/index.js"
+8fbc6c93b882a452d72df59744d3773d
+  $sread :: GHC.Base.String -> GHC.Types.Int
+  {- Arity: 1, Strictness: <L,U>,
+     Unfolding: InlineRule (1, True, False)
+                (\ s :: GHC.Base.String ->
+                 case Text.Read.readEither
+                        @ GHC.Types.Int
+                        GHC.Read.$fReadInt
+                        s of wild {
+                   Data.Either.Left x -> GHC.Err.error @ GHC.Types.Int x
+                   Data.Either.Right y -> y }) -}
+228738d9084f39155306a3cda5c340d9
+  $sread1 :: GHC.Base.String -> GHC.Types.Double
+  {- Arity: 1, Strictness: <L,U>,
+     Unfolding: InlineRule (1, True, False)
+                (\ s :: GHC.Base.String ->
+                 case Text.Read.readEither
+                        @ GHC.Types.Double
+                        GHC.Read.$fReadDouble
+                        s of wild {
+                   Data.Either.Left x -> GHC.Err.error @ GHC.Types.Double x
+                   Data.Either.Right y -> y }) -}
+fc7889f93a767b868ccf9e5637d16975
+  type Client =
+    (Main.Name,
+     Main.Score,
+     Main.Goal,
+     Main.Group,
+     Network.WebSockets.Connection.Connection)
+e23b1dbb60d1b7841a59cd7d35a85b3d
+  type Goal = GHC.Types.Int
+dda0a1b37fd337342f97eb93ca668814
+  type Group = Data.Text.Internal.Text
+f3e510d40bcfdd4a939f5b94611fce09
+  type Name = Data.Text.Internal.Text
+2708c8f61b5e86fc460031522a88bbb2
+  type Score = GHC.Types.Int
+06a6ec368432eece8ab1165553bff81a
+  type ServerState = [Main.Client]
+ee6590a2ab0ffaa5074d93f2d3fc4c03
+  main :: GHC.Types.IO ()
+  {- Arity: 1, Strictness: <L,U>,
+     Unfolding: InlineRule (0, True, True)
+                Main.main1 `cast` (Sym (GHC.Types.NTCo:IO[0] <()>_R)) -}
+e3bd864fe81295cabb6b36ca45539f6f
+  main1 ::
+    GHC.Prim.State# GHC.Prim.RealWorld
+    -> (# GHC.Prim.State# GHC.Prim.RealWorld, () #)
+  {- Arity: 1, Strictness: <L,U> -}
+20688fff09df92565d9be8c5f0313411
+  main2 ::
+    GHC.Prim.State# GHC.Prim.RealWorld
+    -> (# GHC.Prim.State# GHC.Prim.RealWorld, () #)
+  {- Arity: 1,
+     Unfolding: (GHC.TopHandler.runMainIO1
+                   @ ()
+                   Main.main1 `cast` (Sym (GHC.Types.NTCo:IO[0] <()>_R))) -}
+"SPEC/Main read @ Double" [ALWAYS] forall $dRead :: GHC.Read.Read
+                                                      GHC.Types.Double
+  Text.Read.read @ GHC.Types.Double $dRead = Main.$sread1
+"SPEC/Main read @ Int" [ALWAYS] forall $dRead :: GHC.Read.Read
+                                                   GHC.Types.Int
+  Text.Read.read @ GHC.Types.Int $dRead = Main.$sread
+vectorised variables:
+vectorised tycons:
+vectorised reused tycons:
+parallel variables:
+parallel tycons:
+trusted: none
+require own pkg trusted: False
+
