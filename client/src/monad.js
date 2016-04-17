@@ -108,7 +108,6 @@ var Monad = function Monad(z, g) {
     for (var _len = arguments.length, args = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
       args[_key - 1] = arguments[_key];
     }
-
     return func.apply(undefined, [_this.x].concat(args));
   };
 
@@ -118,16 +117,21 @@ var Monad = function Monad(z, g) {
   };
 };
 
-var MonadIter = function MonadIter() {
+var MonadIter = function MonadIter(z) {
   var _this = this;
-  this.p = function () {};
+  this.x = z;
+  this.p = function (x) {};
 
   this.release = function () {
-    return _this.p();
+    return _this.p(_this.x);
   };
 
   this.bnd = function (func) {
     _this.p = func;
+  };
+
+  this.ret = function (a) {
+    _this.x = a;
   };
 };
 
@@ -169,8 +173,8 @@ var M = function M(a,b) {
   return mon;
 };
 
-var MI = function MI() {
-  return new MonadIter();
+var MI = function MI(x) {
+  return new MonadIter(x);
 };
 
 var Count = 0;
@@ -268,7 +272,7 @@ mMtodoList.ret(mMtodoList.x);
 var mMtaskList = new Monad([], 'mMtaskList');
 mMtaskList.ret(mMtaskList.x);
 
-var mM$taskList = new Monad$([], 'mM$taskList');
+var mM$taskList = new Monad$('', 'mM$taskList');
 mM$taskList.ret(mM$taskList.x);
 
 var mMsenderList = new Monad([], 'mMsenderList');
@@ -276,6 +280,15 @@ mMsenderList.ret(mMsenderList.x);
 
 var mMauthorList = new Monad([], 'mMauthorList');
 mMauthorList.ret(mMauthorList.x);
+
+var mMsoloAlert = new Monad('', 'mMsoloAlert');
+mMsoloAlert.ret(mMsoloAlert.x);
+
+var mMe = new Monad('', 'mMe');
+mMe.ret(mMe.x);
+
+var mMtaskList2 = new Monad$([], 'mMtaskList2');
+mMtaskList2.ret(mMtaskList2.x);
 
 mMgoals.ret(mMgoals.x)
 mMgoals2.ret(mMgoals2.x)
@@ -303,41 +316,76 @@ mMfib.ret(mMfib.x);
 fibMon.ret(fibMon.x);
 
 
-var mMZ1 = MI();
-var mMZ2 = MI();
-var mMZ3 = MI();
-var mMZ4 = MI();
-var mMZ5 = MI();
-var mMZ6 = MI();
-var mMZ7 = MI();
-var mMZ8 = MI();
-var mMZ9 = MI();
+var mMZ1 = MI(0);
+var mMZ2 = MI(0);
+var mMZ3 = MI(0);
+var mMZ4 = MI(0);
+var mMZ5 = MI(0);
+var mMZ6 = MI(0);
+var mMZ7 = MI(0);
+var mMZ8 = MI(0);
+var mMZ9 = MI(0);
 
-var mMZ10 = MI();
-var mMZ11 = MI();
-var mMZ12 = MI();
-var mMZ13 = MI();
-var mMZ14 = MI();
-var mMZ15 = MI();
-var mMZ16 = MI();
-var mMZ17 = MI();
-var mMZ18 = MI();
-var mMZ19 = MI();
+var mMZ10 = MI(0);
+var mMZ11 = MI(0);
+var mMZ12 = MI(0);
+var mMZ13 = MI(0);
+var mMZ14 = MI(0);
+var mMZ15 = MI(0);
+var mMZ16 = MI(0);
+var mMZ17 = MI(0);
+var mMZ18 = MI(0);
+var mMZ19 = MI(0);
 
-var mMZ20 = MI();
-var mMZ21 = MI();
-var mMZ22 = MI();
-var mMZ23 = MI();
-var mMZ24 = MI();
-var mMZ25 = MI();
-var mMZ26 = MI();
-var mMZ27 = MI();
-var mMZ28 = MI();
-var mMZ29 = MI();
+var mMZ20 = MI(0);
+var mMZ21 = MI(0);
+var mMZ22 = MI(0);
+var mMZ23 = MI(0);
+var mMZ24 = MI(0);
+var mMZ25 = MI(0);
+var mMZ26 = MI(0);
+var mMZ27 = MI(0);
+var mMZ28 = MI(0);
+var mMZ29 = MI(0);
 
-var trim = function trim(x,str) {
+var trim = function trim(str) {
   return ret(str.trim());
 };
+
+var convertBack = function convertBack(str) {
+  let ar = str.split('$*$*$');
+  let s = str;
+  if (ar.length > 1) {
+    s = ar.reduce((a,b) => a + ', ' + b)
+  }
+  return s
+}
+
+var convertFromString = function convertBack(str) {
+  return str.split(',').reduce((a,b) => a + '$*$*$' + b)
+}
+
+var split = function split(x, mon) {
+  return mon.ret(x.split(','));
+}
+
+var convertFromArray = function convert(ar) {
+  return ar.reduce((a,b) => a + '$*$*$' + b)
+}
+
+var stringify = function stringify (ob) {
+  let str = ob.task + ',' + ob.color  + ',' + ob.textDecoration + ',' + ob.checked.toString() + 
+    ',' +  ob.author + ',' + ob.responsible;
+  return str;
+}
+
+var addString = function addString (x, str, mon) {
+  var s = str;
+  if (x.length > 4) {
+  s = x + ',' + str;
+  }
+  return mon.ret(s);
+}
 
 var fib = function fib(x) {
   return mMfib.ret([ O.mMfib.x[1], O.mMfib.x[0] + O.mMfib.x[1] ]);
@@ -347,11 +395,6 @@ var fibCalc = function(x, n) {
   mMfib.ret([0,1])
   for(let k in Array(n).fill(1)) mMfib.bnd(fib)
   return ret(O.mMfib.x[0])
-}
-
-var stringify = function stringify (ob) {
-  let str = ob.task + ',' + ob.color  + ',' + ob.textDecoration + ',' + ob.checked.toString() + ',' +  ob.author + ',' + ob.responsible;
-  return str;
 }
 
 var intArray = function intArray (x, n) {
@@ -469,6 +512,10 @@ var splice = function splice(x, start, n, mon) {
   return ret(x);
 };
 
+var concat = function concat(x, str, mon) {
+  mon.ret(x + str)
+}
+
 var sliceFront = function sliceFront(x, n, mon) {
   if (Array.isArray(x)) {
     let ar = x.slice(n);
@@ -508,6 +555,7 @@ var map = function map(x, f, mon) {
 };
 
 var reduce = function reduce(x, f, mon) {
+  console.log('In reduce.  Array.isArray(x), x.length: ', Array.isArray(x), x.length);
   if (Array.isArray(x) && x.length > 0) {
     let ar = [];
     let keys = Object.keys(x);
@@ -528,6 +576,14 @@ var next = function next(x, y, mon2) {
 
 var next2 = function next(x, condition, mon2) {
   if (condition) {
+    mon2.release();
+  }
+  return ret(x);
+}
+
+var next3 = function next(x, y, z, mon2) {
+  if (x === y) {
+    mon2.ret(z);
     mon2.release();
   }
   return ret(x);
@@ -565,51 +621,30 @@ var log = function log(x, message, mon) {
   return ret(x);
 };
 
-
-  function newId() {
-    let keys = Object.keys(O.mM$taskList.x)
-    let ar = [];
-    let i = 0;
-    let uniqueId;
+  var getIndex = function getIndex (event_object) {
+    var task = event_object.currentTarget.parentNode.innerText;
+    var possibilities = event_object.currentTarget.parentNode.parentNode.childNodes;
+    var keys = Object.keys(possibilities);
     for (let k in keys) {
-      ar.push(O.mM$taskList.x[k].children[0].elm.id);
+      if (task == possibilities[k].innerText) {
+        return k
+      }
     }
-    function f(n) {  
-      var j = n;
-      if (ar.includes(n)) {
-        f(n + 1)
-      }  
-      uniqueId = j;
-      console.log('uniqueId, j, n ', uniqueId, j, n);
-    }(10);
-    console.log('uniqueId', uniqueId);
-    return uniqueId;
+    console.log('In getIndex. No match');
   }
 
-    var getIndex = function getIndex (event_object) {
-      var task = event_object.currentTarget.parentNode.innerText;
-      var possibilities = event_object.currentTarget.parentNode.parentNode.childNodes;
-      var keys = Object.keys(possibilities);
-      for (let k in keys) {
-        if (task == possibilities[k].innerText) {
-          return k
-        }
+  var getIndex2 = function getIndex2 (e) {
+    var elem = e.currentTarget.parentNode.children[0].innerHTML
+    var elem2 = e.currentTarget.parentNode.parentNode.childNodes
+    var keys = Object.keys(elem2);
+    for (let k in keys) {
+      console.log('&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&& ', elem == elem2[k].childNodes[0].innerHTML);
+      if (elem == elem2[k].childNodes[0].innerHTML) {
+        return k
       }
-      console.log('In getIndex. No match');
+      console.log('In getIndex2. No match');
     }
-
-    var getIndex2 = function getIndex2 (e) {
-      var elem = e.currentTarget.parentNode.children[0].innerHTML
-      var elem2 = e.currentTarget.parentNode.parentNode.childNodes
-      var keys = Object.keys(elem2);
-      for (let k in keys) {
-        console.log('&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&& ', elem == elem2[k].childNodes[0].innerHTML);
-        if (elem == elem2[k].childNodes[0].innerHTML) {
-          return k
-        }
-        console.log('In getIndex2. No match');
-      }
-    }
+  }
 
 /*
 var delay = function delay(x, mon) {

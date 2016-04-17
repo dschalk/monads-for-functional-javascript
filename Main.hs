@@ -22,6 +22,7 @@ import Data.List (intersperse)
 import Control.Exception.Base (mask_)
 import Data.List.Split (splitOn)
 import Tasks hiding (main)
+import System.Directory
 -- import System.Environment (getEnv)
 
 solo :: Text
@@ -220,7 +221,7 @@ talk conn state (_, _, _, _, _) = forever $ do
         "CQ#$42" `T.isPrefixOf` msg || "DI#$42" `T.isPrefixOf` msg || "EQ#$42" `T.isPrefixOf` msg || 
         "GQ#$42" `T.isPrefixOf` msg || "CF#$42" `T.isPrefixOf` msg ||
         "CY#$42" `T.isPrefixOf` msg || "CR#$42" `T.isPrefixOf` msg || "CD#$42" `T.isPrefixOf` msg ||
-        "IA#$42" `T.isPrefixOf` msg || "DY#$42" `T.isPrefixOf` msg || "DQ#$42" `T.isPrefixOf` msg
+        "IA#$42" `T.isPrefixOf` msg || "DY#$42" `T.isPrefixOf` msg 
          
         then
             do
@@ -248,9 +249,12 @@ talk conn state (_, _, _, _, _) = forever $ do
                 atomically $ putTMVar state new
                 let subState1 = subState sender group new
                 let subState2 = subState sender extra new
+                tasks <- liftIO $ read2 (msgArray !! 1)
                 let x = "CB#$42," `mappend` group `mappend` "," `mappend` sender `mappend` "," `mappend` T.concat (intersperse "<br>" (textState subState1))
                 let y = "CB#$42," `mappend` extra `mappend` "," `mappend` sender `mappend` "," `mappend` T.concat (intersperse "<br>" (textState subState2))
+                let z = "DQ#$42," `mappend` extra `mappend` "," `mappend` sender `mappend` "," `mappend` tasks
                 broadcast y subState2
+                broadcast z subState2
                 if group /= "solo"
                    then
                    broadcast x subState1
@@ -265,9 +269,12 @@ talk conn state (_, _, _, _, _) = forever $ do
                 atomically $ putTMVar state new
                 let subState1 = subState sender group new
                 let subState2 = subState sender extra new
+                tasks <- liftIO $ read2 (msgArray !! 1)
                 let x = "CB#$42," `mappend` group `mappend` "," `mappend` sender `mappend` "," `mappend` T.concat (intersperse "<br>" (textState subState1))
                 let y = "CB#$42," `mappend` extra `mappend` "," `mappend` sender `mappend` "," `mappend` T.concat (intersperse "<br>" (textState subState2))
+                let z = "DD#$42," `mappend` extra `mappend` "," `mappend` sender `mappend` "," `mappend` tasks
                 broadcast y subState2
+                broadcast z subState2
                 if (group /= "solo" && (groupExists group old) == True)
                    then
                    broadcast x subState1
@@ -289,7 +296,6 @@ talk conn state (_, _, _, _, _) = forever $ do
     else if "DD#$42" `T.isPrefixOf` msg
             then do
                 tasks <- liftIO $ read2 (msgArray !! 1)
-
                 st <- atomically $ readTMVar state
                 let subSt = subState sender group st
                 broadcast ("DD#$42," `mappend` group `mappend` ","
@@ -298,8 +304,29 @@ talk conn state (_, _, _, _, _) = forever $ do
     else if "TD#$42" `T.isPrefixOf` msg
         then
             do
-                let tasks = (splitOn "@" (T.unpack msg)) !! 1
-                save (msgArray !! 1) $ T.pack tasks
+                let tasks = (T.splitOn "@" (msg)) !! 1
+                print tasks
+                save (msgArray !! 1) $ tasks
+                st <- atomically $ readTMVar state
+                let subSt = subState sender group st
+                broadcast ("DD#$42," `mappend` group `mappend` ","
+                    `mappend` sender `mappend` "," `mappend` tasks) subSt
+
+    else if "TX#$42" `T.isPrefixOf` msg
+        then
+            do
+                removeFile (msgArray !! 1)
+
+    else if "NT#$42" `T.isPrefixOf` msg
+        then
+            do
+                let task = (T.splitOn "@" (msg)) !! 1
+                save(msgArray !! 1) $ task
+                st <- atomically $ readTMVar state
+                let subSt = subState sender group st
+                tasks <- liftIO $ read2 (msgArray !! 1)
+                broadcast ("DD#$42," `mappend` group `mappend` ","
+                    `mappend` sender `mappend` "," `mappend` tasks) subSt
 
       else do
         print "*********************************************************"

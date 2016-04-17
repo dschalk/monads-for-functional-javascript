@@ -37,62 +37,40 @@ function main(sources) {
   mMfib.ret([0,1]);
   mMpause.ret(0);
   
-  const messages$ = (sources.WS).map(e => 
-    mMar.ret(e.data.split(','))
-    .bnd(v => {
-      mMsender.ret(v[2]);
-      mMextra.ret(v[3]);
-      mMextra2.ret(v[4])
-      .bnd(() => console.log('In messages$ e is ', e));
-      mMprefix.ret(v[0])
+  const messages$ = (sources.WS).map(e => {
+    console.log('In messages$  e.data is: ', e.data)
+    mMtem.ret(e.data.split(',')).bnd(v => {
+    mMZ10.bnd(() => mM$1
+      .ret([v[3], v[4], v[5], v[6]])
+      .bnd(() => mM$2.ret([])))
+    mMZ11.bnd(() => updateScoreboard(v[3]));
+    mMZ12.bnd(() => mM6
+      .ret(v[2] + ' successfully logged in.'))
+    mMZ13.bnd(() => updateMessages(v))
+    mMZ14.bnd(() => mMgoals2.ret('The winner is ' + O.mMsender.x ))
+    mMZ15.bnd(() => mMgoals2.ret('A player named ' + 
+        O.mMname.x + 'is currently logged in. Page will refresh in 4 seconds.')
+      .bnd(refresh))
+    mMZ16.bnd(() => process(e.data))
+    mMtemp.ret(e.data.split(',')[0])
       .bnd(next, 'CA#$42', mMZ10)
       .bnd(next, 'CB#$42', mMZ11)
       .bnd(next, 'CC#$42', mMZ12)
       .bnd(next, 'CD#$42', mMZ13)
       .bnd(next, 'CE#$42', mMZ14)
-      .bnd(next, 'CF#$42', mMZ15)
-      .bnd(next, 'EE#$42', mMZ16)
-      .bnd(next, 'CH#$42', mMZ17)
-      .bnd(next, 'CK#$42', mMZ18)
-      .bnd(next, 'CQ#$42', mMZ19)
-      .bnd(next, 'DD#$42', mMZ20)
-    } ));
-    mMZ10.bnd(() => mM$1
-      .ret([O.mMar.x[3], O.mMar.x[4], O.mMar.x[5], O.mMar.x[6]])
-      .bnd(() => mM$2.ret([])))
-    mMZ11.bnd(() => updateScoreboard(O.mMar.x[3]));
-    mMZ12.bnd(() => mM6
-      .ret(O.mMar.x[2] + ' successfully logged in.'));
-    mMZ13.bnd(() => O.mMar
+      .bnd(next, 'EE#$42', mMZ15)
+      .bnd(next, 'DD#$42', mMZ16)
+    }) 
+  });
+  
+  const updateMessages = function updateMessages (ar) {
+    var sender = ar[2];
+    mMhelper.ret(ar)
       .bnd(splice, 0, 3, mMhelper)
       .bnd(reduce, ((a,b) => {return a + ', ' + b}), mMhelper)
-      .bnd(v => O.mMmsg.bnd(unshift, h('div', O.mMsender.x + ': ' + v), O.mMmsg)));
-    mMZ14.bnd(() => mMgoals2.ret('The winner is ' + O.mMsender.x ));
-    mMZ15.bnd(() => {
-      var ob = {'color': 'yellow', 'textDecoration': 'none', 'checked': false, 
-        'author': O.mMar.x[6], 'responsible': O.mMar.x[7]} 
-       O.mMar.bnd(sliceFront, 8, mMar)
-        .bnd(reduce, ((a,b) => {return a + ', ' + b}), mMar)
-      ob.task = O.mMar.x
-      O.mM$task.bnd(unshift, ob, mM$task) });
-    mMZ16.bnd(() => mMgoals2.ret('A player named ' + 
-        O.mMname.x + 'is currently logged in. Page will refresh in 4 seconds.')
-      .bnd(refresh));
-    mMZ17.bnd(() => {
-      console.log('sender and name: ', O.mMsender.x, O.mMname.x);
-      if (O.mMsender.x == O.mMname.x) {
-        checkBox2(O.mMextra.x);
-        return;
-      }
-      else if (O.mMsender.x != O.mMname.x) {
-        checkBox1(O.mMextra.x);
-      }
-    });
-    mMZ18.bnd(() => O.mM24.bnd(log, '************in mMZ18 ')
-      .bnd(() => edit(O.mMextra.x, O.mMextra2.x)));
-    mMZ19.bnd(() => O.mM$task.bnd(spliceRemove, O.mMar.x[3], mM$task));
-    mMZ20.bnd(() => process(O.mMar.x));
-  
+      .bnd(v => O.mMmsg.bnd(unshift, h('div', sender + ': ' + v), O.mMmsg));
+  }
+
   const loginPress$ = sources.DOM
     .select('input#login').events('keypress');
 
@@ -118,13 +96,10 @@ function main(sources) {
 
   const groupPressAction$ = groupPress$.map(e => {
     let v = e.target.value;
-    if (v == '' ) {
-      return;
-    } 
-    if( e.keyCode == 13 ) 
-      mMgroup.ret(e.target.value);
-      socket.send(`CO#$42,${e.target.value},${O.mMname.x.trim()},${e.target.value}`);
-      socket.send('DD#$42,' + e.target.value + ',' + O.mMname.x.trim() + ',nothing');
+    if( e.keyCode == 13 ) {
+      mMgroup.ret(v);
+      socket.send(`CO#$42,${v},${O.mMname.x.trim()},${v}`);
+    }
   });
 
   const messagePress$ = sources.DOM
@@ -141,35 +116,61 @@ function main(sources) {
     .select('input.newTask').events('keydown');
 
   const newTaskAction$ = newTask$.map(e => {
-    if( e.keyCode == 13 ) {
-      if ( e.target.value.split(',').length < 3 ) {
-        let alert = 'You should enter "author, responsible party, task" separated by commas';
-        document.getElementById('alert').innerHTML = alert;
+      console.log('In newTaskAction.  e is: ', e);
+      let ob = {};
+      var alert = '';
+      var ar = e.target.value.split(',');
+      var ar2 = ar.slice(2);
+      var task = '';
+      if (ar.length < 4) {
+        task = ar[2];
       }
-      else {
-        socket.send('CF#$42,' + O.mMgroup.x.trim() + ',' + O.mMname.x.trim() + ',false, yellow, none,' + e.target.value );
-        e.target.value = '';
-        document.getElementById('alert').innerHTML = '';
+      if (ar.length > 3) {
+        task = ar2.reduce((a,b) => a + '$*$*$' + b);
+      }
+      if( e.keyCode == 13 ) {
+        if ( ar.length < 3 ) {
+          alert = 'You should enter "author, responsible party, task" separated by commas';
+          document.getElementById('alert').innerHTML = alert;
+        }
+        if ( ar.length > 2 ) {
+          O.mM$taskList.bnd(addString, task + ',yellow, none, false,' +  ar[0] + ',' + ar[1], mM$taskList);
+          e.target.value = '';
+          document.getElementById('alert').innerHTML = '';
+        } 
       } 
-    } 
   });
 
-  const process = function(a) {
-    console.log('************_In process.  a, a.length: ', a, a.length );
-    let newArray = [];
-    let ob = {};
-    if (a.length < 6) {
-      console.log('________________________Ran process on short array ');
+  const process = function(str) {
+    let a = str.split(",");
+    console.log('In process. str and a are: ', str, a);
+    if (a == undefined) {
+      console.log('a is undefined');
+      return;
+    };
+    if (a.length < 9) {
+      console.log('In process. a.length is less than 9. a: ', a)
       return
+    };
+    console.log('^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^In process.  str is: ', str);
+    let ob = {};
+    let ar = a.slice(3)
+    let s = ar.reduce((a,b) => a + ',' + b);
+    if (mM$taskList.x.length < 5) {
+      console.log('In process, in length < 5  s is: ', s);
+      O.mM$taskList.ret(s);
     }
-    let ar = a.slice(3);
-    let n = ar.length/6;
-    let keys = Array(n).fill(1);
-    console.log(' ************_Later in process. ar, n, keys: ', ar, n, keys );
-    for (let k in keys) {
-      newArray.push(
+    let ar2 = [];
+    let tempArray = [];
+    if (ar.length < 6) {return};
+    if ((ar.length % 6) !== 0) {
+      document.getElementById('alert').innerHTML = 'Error: array length is: ' + length;
+    }
+    let keys = Array(ar.length/6).fill(1);
+    keys.map(_ => {
+      ar2.push(
         {
-          task: ar.shift(),
+          task: convertBack(ar.shift()),
           color: ar.shift(),
           textDecoration: ar.shift(),
           checked: ar.shift() === 'true',
@@ -177,8 +178,28 @@ function main(sources) {
           responsible: ar.shift()
         }
       )
+    })
+    console.log('In process  ar2 is: ', ar2)
+    let keys2 = Object.keys(ar2);
+    for (let k in keys) {
+      tempArray.push(
+        h('div.todo',  [
+          h('span.task3', {style: {color: ar2[k].color, textDecoration: ar2[k].textDecoration}},
+              'Task: ' + ar2[k].task  ),  
+          h('br'),
+          h('button#edit1', 'Edit'  ),
+          h('input#edit2', {props: {type: 'textarea', value: ar2[k].task}, style: {display: 'none'}}  ), 
+          h('span#author.tao', 'Author: ' + ar2[k].author  + ' / ' + 'Responsibility: ' + ar2[k].responsible),
+          h('br'),
+          h('input#cb', {props: {type: 'checkbox', checked: ar2[k].checked}, style: {color: ar2[k].color,
+               textDecoration: ar2[k].textDecoration} } ), 
+          h('label.cbox', { props: {for: '#cb'}}, 'Completed' ),
+          h('button.delete', 'Delete'  ),  
+          h('br'),
+          h('hr')])
+      )
     }
-    mM$task.ret(newArray);
+    mMtaskList.ret(tempArray)
   };
 
   const colorClick$ = sources.DOM
@@ -186,76 +207,67 @@ function main(sources) {
     
   const colorAction$ = colorClick$.map(e => {
     let index = getIndex(e);
-    console.log('In colorAction$  e and index are: ', e, index);
-    socket.send(`CH#$42,${O.mMgroup.x.trim()},${O.mMname.x.trim()},${index}`);
+    let ar = O.mM$taskList.x.split(',');
+    let n = 6 * index + 3;
+    let j = 6 * index + 2;
+    let k = 6 * index + 1;
+    let checked = ar[n];
+    console.log('In colorAction$  checked is: ', checked);
+    if (checked == 'true')  {
+      ar[n] = 'false'; 
+      ar[k] = 'yellow'; 
+      ar[j] = 'none'; 
+    }
+    else {
+      ar[n] = 'true'; 
+      ar[k] = 'lightGreen'; 
+      ar[j] = 'line-through'; 
+    }
+    let s = ar.reduce((a,b) => a + ',' + b)
+    mM$taskList.ret(s);
+    console.log('index and s in colorAction$ ', index, s);
   });
-
-  function checkBox1 (index) {
-    let elem2 = O.mMtaskList.x[index].children[6].elm;
-
-    if (elem2.checked) {
-      console.log('In checkBox1  elem2.checked is false');
-      O.mM$task.x[index].checked = false; 
-      O.mM$task.x[index].color = 'yellow'; 
-      O.mM$task.x[index].textDecoration = 'none'; 
-      mM$task.ret(O.mM$task.x)
-    }
-    else if (!elem2.checked) {
-      console.log('In checkBox1  elem2.checked is true');
-      O.mM$task.x[index].checked = true; 
-      O.mM$task.x[index].color = 'lightGreen'; 
-      O.mM$task.x[index].textDecoration = 'line-through'; 
-      mM$task.ret(O.mM$task.x)
-    }
-    mM$task.ret(O.mM$task.x);
-    console.log('index and O.mM$task.x in checkbox ', index, O.mM$task.x);
-  }
-
-  function checkBox2 (index) {
-    let elem2 = O.mMtaskList.x[index].children[6].elm;
-    if (elem2.checked) {
-      console.log('In checkBox2  elem2.checked is true');
-      O.mM$task.x[index].checked = true; 
-      O.mM$task.x[index].color = 'lightGreen'; 
-      O.mM$task.x[index].textDecoration = 'line-through'; 
-    } else {
-      console.log('In checkBox2  elem2.checked is false');
-      O.mM$task.x[index].checked = false; 
-      O.mM$task.x[index].color = 'yellow'; 
-      O.mM$task.x[index].textDecoration = 'none'; 
-    }
-    mM$task.ret(O.mM$task.x);
-    console.log('index and O.mM$task.x in checkBox2 ', index, O.mM$task.x);
-  }
 
   const edit1$ = sources.DOM
     .select('#edit1').events('click')
     
   const edit1Action$ = edit1$.map(e => {
     let index = getIndex2(e);
-    console.log('e and getIndex2(e) in colorAction$ ', e, index);
+    console.log('e and getIndex2(e) in edit1Action$ ', e, index);
     O.mMtaskList.x[index].children[3].elm.style.display = 'block';
   });
 
   const edit2$ = sources.DOM
-    .select('input#edit2').events('keydown');
-
+    .select('#edit2').events('keypress')
+    
   const edit2Action$ = edit2$.map(e => {
+    let v = e.target.value;
+    let index = getIndex2(e);
+    console.log('e and getIndex2(e) in edit2Action$ ', e, index);
     if( e.keyCode == 13 ) {
-      let index = getIndex2(e);
-      socket.send('CK#$42,' + O.mMgroup.x.trim() + ',' + O.mMname.x.trim() + ',' + index + ',' + e.target.value);
-      O.mMtaskList.x[index].children[3].elm.style.display = 'none';
+      process2(v, index);
+    O.mMtaskList.x[index].children[3].elm.style.display = 'none';
     }
   });
 
+  const process2 = function(str, index) {
+    let a = O.mM$taskList.x.split(',');
+    let task = str.split(',').reduce((a,b) => a + '$*$*$' + b)
+    console.log('In process2  a is: ', a );
+    a[index * 6] = task;
+    let s = a.reduce((a,b) => a + ',' + b);
+    console.log('In process2  s is: ', s );
+    mM$taskList.ret(s);
+  };
+
   var edit = function edit (index, task) {
     let ar = [];
-    let keys = Object.keys(O.mM$task.x);
+    let keys = Object.keys(O.mM$taskList.x);
     for (let k in keys) {
-      ar[k] = O.mM$task.x[k];
+      ar[k] = O.mM$taskList.x[k];
     };
     ar[index].task = task;
-    mM$task.ret(ar);
+    mM$taskList.ret(ar);
   }
 
   const deleteClick$ = sources.DOM
@@ -263,46 +275,23 @@ function main(sources) {
     
   const deleteAction$ = deleteClick$.map(e => {
     let index = getIndex(e);
-    socket.send('CQ#$42,' + O.mMgroup.x.trim() + ',' + O.mMname.x.trim() + ',' + index);
+    let s = O.mM$taskList.x;
+    let ar = s.split(',');
+    let str = '';
+    ar.splice(index*6, 6);
+    if (ar.length > 0) {
+      mM$taskList.ret(ar.reduce((a,b) => a + ',' + b));
+    } else {
+      socket.send('TX#$42' + ',' + O.mMgroup.x.trim() + ',' + O.mMname.x.trim() ); 
+      mMtaskList.ret('');
+    } 
   });
 
-  var deleteTask = function deleteTask (index) {
-    console.log('In deleteTask  index is: ', index);
-    O.mM$task.bnd(spliceRemove, index, mM$task)
-  };
-
-  const taskAction$ = mM$task.stream.map(v => {
-    refreshTasks(v);
-    console.log('In taskAction$  v (O.mM$task.x) is: ', v);
-  });
-
-  function refreshTasks (ar) {
-    console.log('In refreshTasks. ar is: ', ar);
-    mMtemp.ret([]);
-    let keys = Object.keys(ar);
-    for(let k in keys) {
-      console.log('ar[k] in refreshTasks: ', ar[k]);
-      O.mMtemp.bnd(push,
-        h('div.todo',  [
-          h('span.task3', {style: {color: ar[k].color, textDecoration: ar[k].textDecoration}}, 'Task: ' + ar[k].task  ),  
-          h('br'),
-          h('button#edit1', 'Edit'  ),
-          h('input#edit2', {props: {type: 'textarea', value: ar[k].task}, style: {display: 'none'}}  ), 
-          h('span#author.tao', 'Author: ' + ar[k].author  + ' / ' + 'Responsibility: ' + ar[k].responsible),
-          h('br'),
-          h('input#cb', {props: {type: 'checkbox', checked: ar[k].checked}, style: {color: ar[k].color,
-               textDecoration: ar[k].textDecoration} } ), 
-          h('label.cbox', { props: {for: '#cb'}}, 'Completed' ),
-          h('button.delete', 'Delete'  ),  
-          h('br'),
-          h('hr')]), mMtemp)
-    }
-    mMtaskList.ret(O.mMtemp.x)
-    var tasks = (ar.map(stringify)).toString();
-    console.log('***_In refreshTasks_***************tasks: ', tasks);
-    console.log('O.mM$task.x in refreshTasks ', mM$task.x);
-    socket.send('TD#$42,' + O.mMgroup.x.trim() + ',' + O.mMname.x.trim() + ',@' + tasks);
-    }
+  const taskAction$ = mM$taskList.stream.map(ar => {
+    var mess = 'TD#$42' + ',' + O.mMgroup.x.trim() + ',' + O.mMname.x.trim() + ',' + '@' + ar
+    console.log('In taskAction$. ar is: ', ar);
+    socket.send(mess);
+    });
 
     const chatClick$ = sources.DOM
       .select('#chat2').events('click');
@@ -433,7 +422,7 @@ function main(sources) {
       console.log('From mM$2.stream: ', v);
     });
 
-    const calcStream$ = merge( edit1Action$, edit2Action$,  taskAction$, colorAction$, deleteAction$, newTaskAction$, chatClickAction$, gameClickAction$, todoClickAction$, mM$3Action$, mM$2Action$, mM$1Action$, backClickAction$, forwardClickAction$, fibPressAction$, groupPressAction$, rollClickAction$, messagePressAction$, loginPressAction$, messages$, numClickAction$, opClickAction$ );
+    const calcStream$ = merge( edit1Action$, edit2Action$, taskAction$, colorAction$, deleteAction$, newTaskAction$, chatClickAction$, gameClickAction$, todoClickAction$, mM$3Action$, mM$2Action$, mM$1Action$, backClickAction$, forwardClickAction$, fibPressAction$, groupPressAction$, rollClickAction$, messagePressAction$, loginPressAction$, messages$, numClickAction$, opClickAction$ );
 
     return {
       DOM: 
@@ -516,21 +505,40 @@ function main(sources) {
         h('div#log2', {style: {display: 'none'}}, [
         h('span', 'Change group: '  ),
         h('input#group', ) ]),
+        h('p', ' O.mMsoloAlert.x ' ),
         h('br'),
         h('br'),
         h('span', 'People in the same group, other than solo, share text messages and dice rolls. '  ),
         h('br'),
         h('hr', ),
-        h('p', 'The definition of Monad has evolved to accomodate this presentation application as its functionality grew more complex. MonadIter came along to organize the control information flowing through independent branches of the game and the websockets message handler. Monad$, featuring most-subject streams, has proven very useful in conjuntion with Motorcycle.js. ' ),
-        h('span.tao', 'The earlier pages in this series are still available at' ),
-        h('a', {props: {href: "http://schalk.net"}}, ' schalk.net ' ),
-        h('span', 'for anyone interested in detailed explanations and examples. Those looking for something to use in their own applications might find the earlier definition of Monad more appealing. I like the new one. '),
-        h('hr', ),  
+        h('h2', 'Monad Definitions'  ),
+        h('p', 'This JS-monads project began as an exploration into the potential usefulness of simple composable objects whose "bnd()" and "ret()" methods behave like Haskell\'s ">=" (prornounced "bind") and "return". The stand-alone function "ret()" is also similar to Haskell\'s "return". I named the little objects "monads" and demonstrated, earlier in this series, that in their simplest use cases they obey the Haskell monad laws. In other cases, they might do anything Javascript allows. '),
+        h('p', 'I have settled on definitions of Monad and Monad$ that provide for updating the values they carry without mutating them. For any monad m, m.x = newValue mutates m. But m.ret(newValue) creates a new monad O.m carrying newValue instead of oldValue. ret(newValue, "m") returns a new monad named "m" whose value is newValue. The earlier version can be preserved; for example, by assigning it to a variable or placing it in an array. ' ),
+        h('span.tao', ' Earlier pages in this series. some of which define Monad differently, are still available at ' ),
+        h('a', {props: {href: "http://schalk.net"}}, 'schalk.net' ),
+        h('span', '. They contain examples and detailed explanations which the reader might find enlightening, despite the sometimes differnt definitions of Monad. This is how Monad, Monad$, MonadIter, and ret() are currently defined: '),
+        code.monads,  
+        h('p', 'MonadIter instances can be given arguments for the functions they store on the fly. I haven\'t needed this functionality. ' ),
+        h('hr', ),   
         h('h2', 'Common Patterns' ),
-        h('p', 'Anyone not yet familiar with functional programming can learn by studying the definition of the Monad bnd() method and considering the common patterns presented below. Often, we want the value of an anonymous monad returned by a monadic computation to be the value of a named monad. Here is how that can be accomplished: '  ),
-        h('p', 'For any monads m1 and m2 with values a and b respectively (in other words, m1.x == a and m2.x == b return true), m1.bnd(m2.ret) provides m1\'s value to m2. So, after m1.bnd(m2.ret), m1.x == a, m2.x == b, O.m2.s == a all return true. The definition of Monad\s bnd() method shows that the function m2.ret() operates on m1.x. m1.bnd(m2.ret) is equivalent to m2.ret(m1.x). ' ),
-        h('p', 'The bnd() method does not have to return anonymous monads. Consider, for example, the trivial function f = function(x, mon) {return mon.ret(x)}. The monad that calls its bnd() method with the argument f gives the monad designated as "mon" its value. So m1.bnd(f, m2) results in m1.x == a, m2.x == b, O.m2.x == a all returning true. As long as we update using only the ret() method, and refrain from mutating m2 with the anit-pattern m2.x = someValue, m2.x == b will always return true.' ),   
-        h('p', 'Frequently, some monad "m" will use its "bnd" method on some function which takes two arguments, say "f(x,v)". The first argument is the value of m (which is m.x). The return value of m.bnd(f,v) is f(m.x, v). The following example demonstates this: ' ),
+        h('p', 'Anyone not yet familiar with functional programming can learn by studying the definition of the Monad bnd() method and considering the common patterns presented below. Often, we want to give a named monad the value of an anonymous monad returned by a monadic computation. Here are some ways to accomplish that: '  ),
+        h('p', 'For any monads m1 and m2 with values a and b respectively (in other words, m1.x == a and m2.x == b return true), m1.bnd(m2.ret) provides m1\'s value to m2. So, after m1.bnd(m2.ret), m1.x == a, m2.x == b, O.m2.x == a all return true. The definition of Monad\s bnd() method shows that the function m2.ret() operates on m1.x. m1.bnd(m2.ret) is equivalent to m2.ret(m1.x). The stand-alone ret() function can be used to alter the current value of m2, rather than altering the value of O.m2. Here is one way of accomplishing this: m1.bnd(x => ret(x,"m2"). These relationships are verified in the following tests: ' ),
+        h('pre', 
+`             ret('m1Val','m1')
+             m1.x === 'm1Val'  // true
+             ret('m2Val', 'm2')
+             m2.x === 'm2Val'  // true
+
+             m1.bnd(m2.ret)
+             O.m2.x === 'm1Val' // true
+
+             m1.ret('newVal')
+             O.m1.bnd(v => ret(v, 'm2'))
+             m2.x === 'newVal'  // true
+             O.m2.x === 'm1Val' // true   still the same  `   ),
+        h('p', 'The bnd() method does not have to return anonymous monads. Consider, for example, the trivial function f = function(x, mon) {return mon.ret(x)}. The monad that calls its bnd() method with the argument f gives the monad designated as "mon" its value. So m1.bnd(f, m2) results in m1.x == a, m2.x == b, O.m2.x == a all returning true. ' ), 
+        h('p',   ), 
+        h('p', 'Frequently, some monad "m" will use its "bnd" method on some function which takes two arguments, say "f(x,v)". The first argument is the value of m (which is m.x). m.bnd(f,v) is equivalent to f(m.x, v). The following example demonstates the use of a two-argument function: ' ),
         code.fib,
         h('span.tao', 'In both functions, the "x" argument is ignored. It must be included, however, in order to make the bnd() method return the desired result. If you enter some number "n" in the box below, '  ),
         h('pre',  '  mM19.bnd(fibCalc, e.target.value*1).bnd(mM19.ret)' ),
@@ -543,7 +551,10 @@ function main(sources) {
         h('br', ),  
         h('p', ), 
         h('hr', ),  
-        h('p', ' . ' ), 
+        h('p', ),  
+        h('p', ),  
+        h('p','.' ),  
+        h('p', ),  
         h('p', ),  
         h('p', )  
         ])
@@ -556,14 +567,14 @@ function main(sources) {
       let target2 = document.getElementById('2');
       let target3 = document.getElementById('3');
       let targetAr = [target0, target1, target2, target3];
-      for (let i in [0,1,2,3]) {
+      [0,1,2,3].map(i => {
         if (targetAr[i].innerHTML == 'undefined' )    {
           targetAr[i].style.display = 'none';
         }
         else {
           targetAr[i].style.display = 'inline';
         }
-      }
+      });
       return ret(x);
   };
 
@@ -600,11 +611,11 @@ function main(sources) {
     let ar2 = v.split("<br>");
     let keys = Object.keys(ar2);
     let ar = [];
-    for (let k in keys) {
+    keys.map(k => {
       ar.push(h('div', ar2[k]))
-    }
+    });
     return mMscoreboard.ret(ar);
-  }
+  };
 
   var displayOff = function displayOff(x,a) {
       document.getElementById(a).style.display = 'none';

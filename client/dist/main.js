@@ -9270,13 +9270,13 @@ var Monad = function Monad(z, g) {
 
 var mMname = new Monad('Fred', 'mMname');
 
-var monads = (0, _motorcycleDom.h)('pre', { style: { color: '#AFEEEE' } }, '  var Monad = function Monad(z, g) {\n    var _this = this;\n\n    this.x = z;\n    if (arguments.length === 1) {\n      this.id = \'anonymous\';\n    } else {\n      this.id = g;\n    };\n\n    this.bnd = function (func, ...args) {\n       return func(_this.x, ...args);\n    };\n\n    this.ret = function (a) {\n      O.[_this.id] = new Monad(a, _this.id);\n      return O.[_this.id]\n    };\n  };               \n\n  class MonadIter {                \n\n    constructor() {\n\n      this.p = function() {};\n\n      this.release = function () {\n        return this.p();\n      }\n \n      this.bnd = function (func) {\n          this.p = func;\n      }\n    }\n  }; ');
+var monads = (0, _motorcycleDom.h)('pre', { style: { color: '#AFEEEE' } }, '  var Monad = function Monad(z, g) {\n    var _this = this;\n\n    this.x = z;\n    if (arguments.length === 1) {\n      this.id = \'anonymous\';\n    } else {\n      this.id = g;\n    };\n\n    this.bnd = function (func, ...args) {\n       return func(_this.x, ...args);\n    };\n\n    this.ret = function (a) {\n      O.[_this.id] = new Monad(a, _this.id);\n      return O.[_this.id]\n    };\n  };               \n\n  var Monad$ = function Monad$(z, g) {\n    var _this = this;\n    this.subject = subject();\n    this.observer = this.subject.observer;\n    this.stream = this.subject.stream;\n    this.x = z;\n    this.id = g;\n\n    this.bnd = function (func, ...args) {\n       return func(_this.x, ...args);\n    };\n\n    this.ret = function (a) {\n      O[_this.id] = new Monad$(a,_this.id);\n      _this.observer.next(a);\n      console.log(\'Streaming from \', _this.id);\n      return O[_this.id];\n    };\n  };\n\n  var MonadIter = function MonadIter(z) {\n    var _this = this;\n    this.x = z;\n    this.p = function (x) {};\n  \n    this.release = function () {\n      return _this.p(_this.x);\n    };\n  \n    this.bnd = function (func) {\n      _this.p = func;\n    };\n  \n    this.ret = function (a) {\n      _this.x = a;\n    };\n  };\n\n  var ret = function ret(v, id) {\n    if (arguments.length === 1) {\n      return (new Monad(v, \'anonymous\'));\n    }\n    window[id] = new Monad(v, id);\n    return window[id];\n  }; ');
 
 var fib = (0, _motorcycleDom.h)('pre', '  var fib = function fib(x) {\n    return mMfib.ret([ O.mMfib.x[1], O.mMfib.x[0] + O.mMfib.x[1] ]);\n  }\n\n  var fibCalc = function(x, n) {\n    mMfib.ret([0,1])\n    for(let k in Array(n).fill(1)) mMfib.bnd(fib)\n    return ret(O.mMfib.x[0])\n  }   ');
 
 var driver = (0, _motorcycleDom.h)('pre', '  var websocketsDriver = function () {\n      return create((add) => {\n        socket.onmessage = msg => add(msg)\n      })\n  };\n');
 
-var messages = (0, _motorcycleDom.h)('pre', '  const messages$ = (sources.WS).map(e => \n    mMar.ret(e.data.split(\',\'))\n    .bnd(array => mMscores.ret(array[3].split("<br>"))\n    .bnd(() => mMsender.ret(O.mMar.x[2])\n    .bnd(() => mMprefix.ret(O.mMar.x[0])\n      .bnd(next, \'CA#$42\', mMZ10)\n      .bnd(next, \'CB#$42\', mMZ11)\n      .bnd(next, \'CC#$42\', mMZ12)\n      .bnd(next, \'CD#$42\', mMZ13)\n      .bnd(next, \'CE#$42\', mMZ14)\n      .bnd(next, \'EE#$42\', mMZ15)))));\n    mMZ10.bnd(() => mM$1\n      .ret([O.mMar.x[3], O.mMar.x[4], O.mMar.x[5], O.mMar.x[6]])\n      .bnd(() => mM$2.ret([]))\n      .bnd(displayInline,\'0\')\n      .bnd(displayInline,\'1\')\n      .bnd(displayInline,\'2\')\n      .bnd(displayInline,\'3\'));\n    mMZ11.bnd(() => mMscbd\n      .ret(O.mMscores.x)\n      .bnd(updateScoreboard)\n      .bnd(() => mM3.ret([])\n      .bnd(() => mM8.ret(0) )));\n    mMZ12.bnd(() => mM6\n      .ret( O.mMsender.x + \' successfully logged in.\'));\n    mMZ13.bnd(() => O.mMar\n      .bnd(splice, 0, 3, O.mMar)\n      .bnd(reduce, (a,b) => a + ", " + b)\n      .bnd(() => O.mMmsg\n      .bnd(unshift, h(\'div\', O.mMsender.x + \': \' + O.mMar.x), O.mMmsg)\n      ));\n    mMZ14.bnd(() => mMgoals2.ret(\'The winner is \' + O.mMname.x ));\n    mMZ15.bnd(() => mMgoals2.ret(\'A player named \' + \n        O.mMname.x + \'is currently logged in. Page will refresh in 4 seconds.\')\n      .bnd(refresh));');
+var messages = (0, _motorcycleDom.h)('pre', '  const messages$ = (sources.WS).map(e => \n    console.log(\'In messages$  e.data is: \', e.data)\n    mMtem.ret(e.data.split(\',\')).bnd(v => {\n    mMZ10.bnd(() => mM$1\n      .ret([v[3], v[4], v[5], v[6]])\n      .bnd(() => mM$2.ret([])))\n    mMZ11.bnd(() => updateScoreboard(v[3]));\n    mMZ12.bnd(() => mM6\n      .ret(v[2] + \' successfully logged in.\'))\n    mMZ13.bnd(() => updateMessages(v))\n    mMZ14.bnd(() => mMgoals2.ret(\'The winner is \' + O.mMsender.x ))\n    mMZ15.bnd(() => mMgoals2.ret(\'A player named \' + \n        O.mMname.x + \'is currently logged in. Page will refresh in 4 seconds.\')\n      .bnd(refresh))\n    mMZ16.bnd(() => process(e.data))\n    mMtemp.ret(e.data.split(\',\')[0])\n      .bnd(next, \'CA#$42\', mMZ10)\n      .bnd(next, \'CB#$42\', mMZ11)\n      .bnd(next, \'CC#$42\', mMZ12)\n      .bnd(next, \'CD#$42\', mMZ13)\n      .bnd(next, \'CE#$42\', mMZ14)\n      .bnd(next, \'EE#$42\', mMZ15)\n      .bnd(next, \'DD#$42\', mMZ16)\n    }) \n  });\n      ');
 
 var next = (0, _motorcycleDom.h)('pre', '  var next = function next(x, y, mon2) {\n    if (x === y) {\n      mon2.release();\n    }\n    return ret(x);  // An anonymous monad with the value of the calling monad.\n  } ');
 
@@ -9296,6 +9296,18 @@ var ret = (0, _motorcycleDom.h)('pre', '  var ret = function ret(v) {\n    var m
 
 var C42 = (0, _motorcycleDom.h)('pre', '  mMZ10.bnd(() => mM$1\n     .ret([O.mMar.x[3], O.mMar.x[4], O.mMar.x[5], O.mMar.x[6]])\n     .bnd(() => mM$2.ret([]))\n     .bnd(displayInline,\'0\')\n     .bnd(displayInline,\'1\')\n     .bnd(displayInline,\'2\')\n     .bnd(displayInline,\'3\'));  ');
 
+var taskStream = (0, _motorcycleDom.h)('pre', '  const taskAction$ = mM$task.stream.map(ar => {\n    console.log(\'In refreshTasks. ar is: \', ar);\n    mMtemp.ret([]);\n    let keys = Object.keys(ar);\n    keys.map(k => {\n      console.log(\'ar[k] in refreshTasks: \', ar[k]);\n      O.mMtemp.bnd(push,\n        h(\'div.todo\',  [\n          h(\'span.task3\', {style: {color: ar[k].color, textDecoration: ar[k].textDecoration}}, \'Task: \' + ar[k].task  ),  \n          h(\'br\'),\n          h(\'button#edit1\', \'Edit\'  ),\n          h(\'input#edit2\', {props: {type: \'textarea\', value: ar[k].task}, style: {display: \'none\'}}  ), \n          h(\'span#author.tao\', \'Author: \' + ar[k].author  + \' / \' + \'Responsibility: \' + ar[k].responsible),\n          h(\'br\'),\n          h(\'input#cb\', {props: {type: \'checkbox\', checked: ar[k].checked}, style: {color: ar[k].color,\n               textDecoration: ar[k].textDecoration} } ), \n          h(\'label.cbox\', { props: {for: \'#cb\'}}, \'Completed\' ),\n          h(\'button.delete\', \'Delete\'  ),  \n          h(\'br\'),\n          h(\'hr\')]), mMtemp)\n    }):\n    mMtaskList.ret(O.mMtemp.x)\n    var tasks = (ar.map(stringify)).toString();\n    socket.send(\'TD#$42,\' + O.mMgroup.x.trim() + \',\' + O.mMname.x.trim() + \',@\' + tasks);\n    });  ');
+
+var newTask = (0, _motorcycleDom.h)('pre', '  const newTask$ = sources.DOM\n    .select(\'input.newTask\').events(\'keydown\');\n\n  const newTaskAction$ = newTask$.map(e => {\n    var alert = \'\';\n    if( e.keyCode == 13 ) {\n      if ( e.target.value.split(\',\').length < 3 ) {\n        alert = \'You should enter "author, responsible party, task" separated by commas\';\n        document.getElementById(\'alert\').innerHTML = alert;\n      }\n      else {\n        socket.send(\'CF#$42,\' + O.mMgroup.x.trim() + \',\' + O.mMname.x.trim() + \',false, yellow, none,\' + e.target.value );\n        e.target.value = \'\';\n        document.getElementById(\'alert\').innerHTML = \'\';\n      } \n    } \n  });  ');
+
+var deleteTask = (0, _motorcycleDom.h)('pre', '  const deleteClick$ = sources.DOM\n    .select(\'.delete\').events(\'click\')\n    \n  const deleteAction$ = deleteClick$.map(e => {\n    let index = getIndex(e);\n    socket.send(\'CQ#$42,\' + O.mMgroup.x.trim() + \',\' + O.mMname.x.trim() + \',\' + index);\n  });  ');
+
+var deleteTask2 = (0, _motorcycleDom.h)('pre', '  mMZ19.bnd(() => O.mM$task.bnd(spliceRemove, O.mMar.x[3], mM$task));\n  ');
+
+var process = (0, _motorcycleDom.h)('pre', '  const process = function(a) {\n    let newArray = [];\n    let ob = {};\n    if (a.length < 6) {\n      mM$task.ret([]);\n      return\n    }\n    let ar = a.slice(3);\n    let n = ar.length/6;\n    let keys = Array(n).fill(1);\n    for (let k in keys) {\n      newArray.push(\n        {\n          task: ar.shift(),\n          color: ar.shift(),\n          textDecoration: ar.shift(),\n          checked: ar.shift() === \'true\',\n          author: ar.shift(),\n          responsible: ar.shift()\n        }\n      )\n    }\n    mM$task.ret(newArray);\n  };  ');
+
+var p7 = (0, _motorcycleDom.h)('pre', '  \n  ');
+
 var p6 = (0, _motorcycleDom.h)('pre', '  \n  ');
 
 var p5 = (0, _motorcycleDom.h)('pre', '  \n  ');
@@ -9308,9 +9320,7 @@ var p2 = (0, _motorcycleDom.h)('pre', '  \n  ');
 
 var p1 = (0, _motorcycleDom.h)('pre', '  \n  ');
 
-var p7 = (0, _motorcycleDom.h)('pre', '  \n  ');
-
-exports['default'] = { monads: monads, fib: fib, driver: driver, messages: messages, next: next, Monad$: Monad$, updateCalc: updateCalc, stream: stream, arrayFuncs: arrayFuncs, travel: travel, nums: nums, cleanup: cleanup, ret: ret, C42: C42 };
+exports['default'] = { monads: monads, fib: fib, driver: driver, messages: messages, next: next, Monad$: Monad$, updateCalc: updateCalc, stream: stream, arrayFuncs: arrayFuncs, travel: travel, nums: nums, cleanup: cleanup, ret: ret, C42: C42, taskStream: taskStream, newTask: newTask, deleteTask: deleteTask, deleteTask2: deleteTask2, process: process };
 module.exports = exports['default'];
 
 },{"@motorcycle/dom":75,"most-subject":117}],185:[function(require,module,exports){
@@ -9368,68 +9378,43 @@ function main(sources) {
   mMpause.ret(0);
 
   var messages$ = sources.WS.map(function (e) {
-    return mMar.ret(e.data.split(',')).bnd(function (v) {
-      mMsender.ret(v[2]);
-      mMextra.ret(v[3]);
-      mMextra2.ret(v[4]).bnd(function () {
-        return console.log('In messages$ e is ', e);
+    console.log('In messages$  e.data is: ', e.data);
+    mMtem.ret(e.data.split(',')).bnd(function (v) {
+      mMZ10.bnd(function () {
+        return mM$1.ret([v[3], v[4], v[5], v[6]]).bnd(function () {
+          return mM$2.ret([]);
+        });
       });
-      mMprefix.ret(v[0]).bnd(next, 'CA#$42', mMZ10).bnd(next, 'CB#$42', mMZ11).bnd(next, 'CC#$42', mMZ12).bnd(next, 'CD#$42', mMZ13).bnd(next, 'CE#$42', mMZ14).bnd(next, 'CF#$42', mMZ15).bnd(next, 'EE#$42', mMZ16).bnd(next, 'CH#$42', mMZ17).bnd(next, 'CK#$42', mMZ18).bnd(next, 'CQ#$42', mMZ19).bnd(next, 'DD#$42', mMZ20);
+      mMZ11.bnd(function () {
+        return updateScoreboard(v[3]);
+      });
+      mMZ12.bnd(function () {
+        return mM6.ret(v[2] + ' successfully logged in.');
+      });
+      mMZ13.bnd(function () {
+        return updateMessages(v);
+      });
+      mMZ14.bnd(function () {
+        return mMgoals2.ret('The winner is ' + O.mMsender.x);
+      });
+      mMZ15.bnd(function () {
+        return mMgoals2.ret('A player named ' + O.mMname.x + 'is currently logged in. Page will refresh in 4 seconds.').bnd(refresh);
+      });
+      mMZ16.bnd(function () {
+        return process(e.data);
+      });
+      mMtemp.ret(e.data.split(',')[0]).bnd(next, 'CA#$42', mMZ10).bnd(next, 'CB#$42', mMZ11).bnd(next, 'CC#$42', mMZ12).bnd(next, 'CD#$42', mMZ13).bnd(next, 'CE#$42', mMZ14).bnd(next, 'EE#$42', mMZ15).bnd(next, 'DD#$42', mMZ16);
     });
   });
-  mMZ10.bnd(function () {
-    return mM$1.ret([O.mMar.x[3], O.mMar.x[4], O.mMar.x[5], O.mMar.x[6]]).bnd(function () {
-      return mM$2.ret([]);
-    });
-  });
-  mMZ11.bnd(function () {
-    return updateScoreboard(O.mMar.x[3]);
-  });
-  mMZ12.bnd(function () {
-    return mM6.ret(O.mMar.x[2] + ' successfully logged in.');
-  });
-  mMZ13.bnd(function () {
-    return O.mMar.bnd(splice, 0, 3, mMhelper).bnd(reduce, function (a, b) {
+
+  var updateMessages = function updateMessages(ar) {
+    var sender = ar[2];
+    mMhelper.ret(ar).bnd(splice, 0, 3, mMhelper).bnd(reduce, function (a, b) {
       return a + ', ' + b;
     }, mMhelper).bnd(function (v) {
-      return O.mMmsg.bnd(unshift, (0, _motorcycleDom.h)('div', O.mMsender.x + ': ' + v), O.mMmsg);
+      return O.mMmsg.bnd(unshift, (0, _motorcycleDom.h)('div', sender + ': ' + v), O.mMmsg);
     });
-  });
-  mMZ14.bnd(function () {
-    return mMgoals2.ret('The winner is ' + O.mMsender.x);
-  });
-  mMZ15.bnd(function () {
-    var ob = { 'color': 'yellow', 'textDecoration': 'none', 'checked': false,
-      'author': O.mMar.x[6], 'responsible': O.mMar.x[7] };
-    O.mMar.bnd(sliceFront, 8, mMar).bnd(reduce, function (a, b) {
-      return a + ', ' + b;
-    }, mMar);
-    ob.task = O.mMar.x;
-    O.mM$task.bnd(unshift, ob, mM$task);
-  });
-  mMZ16.bnd(function () {
-    return mMgoals2.ret('A player named ' + O.mMname.x + 'is currently logged in. Page will refresh in 4 seconds.').bnd(refresh);
-  });
-  mMZ17.bnd(function () {
-    console.log('sender and name: ', O.mMsender.x, O.mMname.x);
-    if (O.mMsender.x == O.mMname.x) {
-      checkBox2(O.mMextra.x);
-      return;
-    } else if (O.mMsender.x != O.mMname.x) {
-      checkBox1(O.mMextra.x);
-    }
-  });
-  mMZ18.bnd(function () {
-    return O.mM24.bnd(log, '************in mMZ18 ').bnd(function () {
-      return edit(O.mMextra.x, O.mMextra2.x);
-    });
-  });
-  mMZ19.bnd(function () {
-    return O.mM$task.bnd(spliceRemove, O.mMar.x[3], mM$task);
-  });
-  mMZ20.bnd(function () {
-    return process(O.mMar.x);
-  });
+  };
 
   var loginPress$ = sources.DOM.select('input#login').events('keypress');
 
@@ -9454,12 +9439,10 @@ function main(sources) {
 
   var groupPressAction$ = groupPress$.map(function (e) {
     var v = e.target.value;
-    if (v == '') {
-      return;
+    if (e.keyCode == 13) {
+      mMgroup.ret(v);
+      socket.send('CO#$42,' + v + ',' + O.mMname.x.trim() + ',' + v);
     }
-    if (e.keyCode == 13) mMgroup.ret(e.target.value);
-    socket.send('CO#$42,' + e.target.value + ',' + O.mMname.x.trim() + ',' + e.target.value);
-    socket.send('DD#$42,' + e.target.value + ',' + O.mMname.x.trim() + ',nothing');
   });
 
   var messagePress$ = sources.DOM.select('input.inputMessage').events('keydown');
@@ -9474,148 +9457,175 @@ function main(sources) {
   var newTask$ = sources.DOM.select('input.newTask').events('keydown');
 
   var newTaskAction$ = newTask$.map(function (e) {
+    console.log('In newTaskAction.  e is: ', e);
+    var ob = {};
+    var alert = '';
+    var ar = e.target.value.split(',');
+    var ar2 = ar.slice(2);
+    var task = '';
+    if (ar.length < 4) {
+      task = ar[2];
+    }
+    if (ar.length > 3) {
+      task = ar2.reduce(function (a, b) {
+        return a + '$*$*$' + b;
+      });
+    }
     if (e.keyCode == 13) {
-      if (e.target.value.split(',').length < 3) {
-        var _alert = 'You should enter "author, responsible party, task" separated by commas';
-        document.getElementById('alert').innerHTML = _alert;
-      } else {
-        socket.send('CF#$42,' + O.mMgroup.x.trim() + ',' + O.mMname.x.trim() + ',false, yellow, none,' + e.target.value);
+      if (ar.length < 3) {
+        alert = 'You should enter "author, responsible party, task" separated by commas';
+        document.getElementById('alert').innerHTML = alert;
+      }
+      if (ar.length > 2) {
+        O.mM$taskList.bnd(addString, task + ',yellow, none, false,' + ar[0] + ',' + ar[1], mM$taskList);
         e.target.value = '';
         document.getElementById('alert').innerHTML = '';
       }
     }
   });
 
-  var process = function process(a) {
-    console.log('************_In process.  a, a.length: ', a, a.length);
-    var newArray = [];
-    var ob = {};
-    if (a.length < 6) {
-      console.log('________________________Ran process on short array ');
+  var process = function process(str) {
+    var a = str.split(",");
+    console.log('In process. str and a are: ', str, a);
+    if (a == undefined) {
+      console.log('a is undefined');
       return;
-    }
+    };
+    if (a.length < 9) {
+      console.log('In process. a.length is less than 9. a: ', a);
+      return;
+    };
+    console.log('^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^In process.  str is: ', str);
+    var ob = {};
     var ar = a.slice(3);
-    var n = ar.length / 6;
-    var keys = Array(n).fill(1);
-    console.log(' ************_Later in process. ar, n, keys: ', ar, n, keys);
-    for (var k in keys) {
-      newArray.push({
-        task: ar.shift(),
+    var s = ar.reduce(function (a, b) {
+      return a + ',' + b;
+    });
+    if (mM$taskList.x.length < 5) {
+      console.log('In process, in length < 5  s is: ', s);
+      O.mM$taskList.ret(s);
+    }
+    var ar2 = [];
+    var tempArray = [];
+    if (ar.length < 6) {
+      return;
+    };
+    if (ar.length % 6 !== 0) {
+      document.getElementById('alert').innerHTML = 'Error: array length is: ' + length;
+    }
+    var keys = Array(ar.length / 6).fill(1);
+    keys.map(function (_) {
+      ar2.push({
+        task: convertBack(ar.shift()),
         color: ar.shift(),
         textDecoration: ar.shift(),
         checked: ar.shift() === 'true',
         author: ar.shift(),
         responsible: ar.shift()
       });
+    });
+    console.log('In process  ar2 is: ', ar2);
+    var keys2 = Object.keys(ar2);
+    for (var k in keys) {
+      tempArray.push((0, _motorcycleDom.h)('div.todo', [(0, _motorcycleDom.h)('span.task3', { style: { color: ar2[k].color, textDecoration: ar2[k].textDecoration } }, 'Task: ' + ar2[k].task), (0, _motorcycleDom.h)('br'), (0, _motorcycleDom.h)('button#edit1', 'Edit'), (0, _motorcycleDom.h)('input#edit2', { props: { type: 'textarea', value: ar2[k].task }, style: { display: 'none' } }), (0, _motorcycleDom.h)('span#author.tao', 'Author: ' + ar2[k].author + ' / ' + 'Responsibility: ' + ar2[k].responsible), (0, _motorcycleDom.h)('br'), (0, _motorcycleDom.h)('input#cb', { props: { type: 'checkbox', checked: ar2[k].checked }, style: { color: ar2[k].color,
+          textDecoration: ar2[k].textDecoration } }), (0, _motorcycleDom.h)('label.cbox', { props: { 'for': '#cb' } }, 'Completed'), (0, _motorcycleDom.h)('button.delete', 'Delete'), (0, _motorcycleDom.h)('br'), (0, _motorcycleDom.h)('hr')]));
     }
-    mM$task.ret(newArray);
+    mMtaskList.ret(tempArray);
   };
 
   var colorClick$ = sources.DOM.select('#cb').events('click');
 
   var colorAction$ = colorClick$.map(function (e) {
     var index = getIndex(e);
-    console.log('In colorAction$  e and index are: ', e, index);
-    socket.send('CH#$42,' + O.mMgroup.x.trim() + ',' + O.mMname.x.trim() + ',' + index);
-  });
-
-  function checkBox1(index) {
-    var elem2 = O.mMtaskList.x[index].children[6].elm;
-
-    if (elem2.checked) {
-      console.log('In checkBox1  elem2.checked is false');
-      O.mM$task.x[index].checked = false;
-      O.mM$task.x[index].color = 'yellow';
-      O.mM$task.x[index].textDecoration = 'none';
-      mM$task.ret(O.mM$task.x);
-    } else if (!elem2.checked) {
-      console.log('In checkBox1  elem2.checked is true');
-      O.mM$task.x[index].checked = true;
-      O.mM$task.x[index].color = 'lightGreen';
-      O.mM$task.x[index].textDecoration = 'line-through';
-      mM$task.ret(O.mM$task.x);
-    }
-    mM$task.ret(O.mM$task.x);
-    console.log('index and O.mM$task.x in checkbox ', index, O.mM$task.x);
-  }
-
-  function checkBox2(index) {
-    var elem2 = O.mMtaskList.x[index].children[6].elm;
-    if (elem2.checked) {
-      console.log('In checkBox2  elem2.checked is true');
-      O.mM$task.x[index].checked = true;
-      O.mM$task.x[index].color = 'lightGreen';
-      O.mM$task.x[index].textDecoration = 'line-through';
+    var ar = O.mM$taskList.x.split(',');
+    var n = 6 * index + 3;
+    var j = 6 * index + 2;
+    var k = 6 * index + 1;
+    var checked = ar[n];
+    console.log('In colorAction$  checked is: ', checked);
+    if (checked == 'true') {
+      ar[n] = 'false';
+      ar[k] = 'yellow';
+      ar[j] = 'none';
     } else {
-      console.log('In checkBox2  elem2.checked is false');
-      O.mM$task.x[index].checked = false;
-      O.mM$task.x[index].color = 'yellow';
-      O.mM$task.x[index].textDecoration = 'none';
+      ar[n] = 'true';
+      ar[k] = 'lightGreen';
+      ar[j] = 'line-through';
     }
-    mM$task.ret(O.mM$task.x);
-    console.log('index and O.mM$task.x in checkBox2 ', index, O.mM$task.x);
-  }
+    var s = ar.reduce(function (a, b) {
+      return a + ',' + b;
+    });
+    mM$taskList.ret(s);
+    console.log('index and s in colorAction$ ', index, s);
+  });
 
   var edit1$ = sources.DOM.select('#edit1').events('click');
 
   var edit1Action$ = edit1$.map(function (e) {
     var index = getIndex2(e);
-    console.log('e and getIndex2(e) in colorAction$ ', e, index);
+    console.log('e and getIndex2(e) in edit1Action$ ', e, index);
     O.mMtaskList.x[index].children[3].elm.style.display = 'block';
   });
 
-  var edit2$ = sources.DOM.select('input#edit2').events('keydown');
+  var edit2$ = sources.DOM.select('#edit2').events('keypress');
 
   var edit2Action$ = edit2$.map(function (e) {
+    var v = e.target.value;
+    var index = getIndex2(e);
+    console.log('e and getIndex2(e) in edit2Action$ ', e, index);
     if (e.keyCode == 13) {
-      var index = getIndex2(e);
-      socket.send('CK#$42,' + O.mMgroup.x.trim() + ',' + O.mMname.x.trim() + ',' + index + ',' + e.target.value);
+      process2(v, index);
       O.mMtaskList.x[index].children[3].elm.style.display = 'none';
     }
   });
 
+  var process2 = function process2(str, index) {
+    var a = O.mM$taskList.x.split(',');
+    var task = str.split(',').reduce(function (a, b) {
+      return a + '$*$*$' + b;
+    });
+    console.log('In process2  a is: ', a);
+    a[index * 6] = task;
+    var s = a.reduce(function (a, b) {
+      return a + ',' + b;
+    });
+    console.log('In process2  s is: ', s);
+    mM$taskList.ret(s);
+  };
+
   var edit = function edit(index, task) {
     var ar = [];
-    var keys = Object.keys(O.mM$task.x);
+    var keys = Object.keys(O.mM$taskList.x);
     for (var k in keys) {
-      ar[k] = O.mM$task.x[k];
+      ar[k] = O.mM$taskList.x[k];
     };
     ar[index].task = task;
-    mM$task.ret(ar);
+    mM$taskList.ret(ar);
   };
 
   var deleteClick$ = sources.DOM.select('.delete').events('click');
 
   var deleteAction$ = deleteClick$.map(function (e) {
     var index = getIndex(e);
-    socket.send('CQ#$42,' + O.mMgroup.x.trim() + ',' + O.mMname.x.trim() + ',' + index);
-  });
-
-  var deleteTask = function deleteTask(index) {
-    console.log('In deleteTask  index is: ', index);
-    O.mM$task.bnd(spliceRemove, index, mM$task);
-  };
-
-  var taskAction$ = mM$task.stream.map(function (v) {
-    refreshTasks(v);
-    console.log('In taskAction$  v (O.mM$task.x) is: ', v);
-  });
-
-  function refreshTasks(ar) {
-    console.log('In refreshTasks. ar is: ', ar);
-    mMtemp.ret([]);
-    var keys = Object.keys(ar);
-    for (var k in keys) {
-      console.log('ar[k] in refreshTasks: ', ar[k]);
-      O.mMtemp.bnd(push, (0, _motorcycleDom.h)('div.todo', [(0, _motorcycleDom.h)('span.task3', { style: { color: ar[k].color, textDecoration: ar[k].textDecoration } }, 'Task: ' + ar[k].task), (0, _motorcycleDom.h)('br'), (0, _motorcycleDom.h)('button#edit1', 'Edit'), (0, _motorcycleDom.h)('input#edit2', { props: { type: 'textarea', value: ar[k].task }, style: { display: 'none' } }), (0, _motorcycleDom.h)('span#author.tao', 'Author: ' + ar[k].author + ' / ' + 'Responsibility: ' + ar[k].responsible), (0, _motorcycleDom.h)('br'), (0, _motorcycleDom.h)('input#cb', { props: { type: 'checkbox', checked: ar[k].checked }, style: { color: ar[k].color,
-          textDecoration: ar[k].textDecoration } }), (0, _motorcycleDom.h)('label.cbox', { props: { 'for': '#cb' } }, 'Completed'), (0, _motorcycleDom.h)('button.delete', 'Delete'), (0, _motorcycleDom.h)('br'), (0, _motorcycleDom.h)('hr')]), mMtemp);
+    var s = O.mM$taskList.x;
+    var ar = s.split(',');
+    var str = '';
+    ar.splice(index * 6, 6);
+    if (ar.length > 0) {
+      mM$taskList.ret(ar.reduce(function (a, b) {
+        return a + ',' + b;
+      }));
+    } else {
+      socket.send('TX#$42' + ',' + O.mMgroup.x.trim() + ',' + O.mMname.x.trim());
+      mMtaskList.ret('');
     }
-    mMtaskList.ret(O.mMtemp.x);
-    var tasks = ar.map(stringify).toString();
-    console.log('***_In refreshTasks_***************tasks: ', tasks);
-    console.log('O.mM$task.x in refreshTasks ', mM$task.x);
-    socket.send('TD#$42,' + O.mMgroup.x.trim() + ',' + O.mMname.x.trim() + ',@' + tasks);
-  }
+  });
+
+  var taskAction$ = mM$taskList.stream.map(function (ar) {
+    var mess = 'TD#$42' + ',' + O.mMgroup.x.trim() + ',' + O.mMname.x.trim() + ',' + '@' + ar;
+    console.log('In taskAction$. ar is: ', ar);
+    socket.send(mess);
+  });
 
   var chatClick$ = sources.DOM.select('#chat2').events('click');
 
@@ -9734,7 +9744,7 @@ function main(sources) {
 
   return {
     DOM: calcStream$.map(function () {
-      return (0, _motorcycleDom.h)('div.content', [(0, _motorcycleDom.h)('div#rightPanel', { style: { display: 'none' } }, [(0, _motorcycleDom.h)('span#tog', [(0, _motorcycleDom.h)('button#game', { style: { fontSize: '16px' } }, 'TOGGLE GAME'), (0, _motorcycleDom.h)('span.tao', ' '), (0, _motorcycleDom.h)('button#todoButton', { style: { fontSize: '16px' } }, 'TOGGLE TODO LIST'), (0, _motorcycleDom.h)('br'), (0, _motorcycleDom.h)('br'), (0, _motorcycleDom.h)('button#chat2', { style: { fontSize: '16px' } }, 'TOGGLE CHAT')]), (0, _motorcycleDom.h)('br'), (0, _motorcycleDom.h)('br'), (0, _motorcycleDom.h)('br'), (0, _motorcycleDom.h)('br'), (0, _motorcycleDom.h)('div#gameDiv', [(0, _motorcycleDom.h)('span', 'Group: ' + O.mMgroup.x), (0, _motorcycleDom.h)('br'), (0, _motorcycleDom.h)('span', 'Goals: ' + O.mMgoals.x), (0, _motorcycleDom.h)('br'), (0, _motorcycleDom.h)('span', 'Name: ' + O.mMname.x), (0, _motorcycleDom.h)('br'), (0, _motorcycleDom.h)('span', 'player[score][goals]'), (0, _motorcycleDom.h)('div', O.mMscoreboard.x)]), (0, _motorcycleDom.h)('br'), (0, _motorcycleDom.h)('br'), (0, _motorcycleDom.h)('br'), (0, _motorcycleDom.h)('div#todoDiv', [(0, _motorcycleDom.h)('div#taskList', O.mMtaskList.x), (0, _motorcycleDom.h)('span', 'Author, Responsible Person, Task: '), (0, _motorcycleDom.h)('input.newTask')]), (0, _motorcycleDom.h)('br'), (0, _motorcycleDom.h)('span#alert'), (0, _motorcycleDom.h)('br'), (0, _motorcycleDom.h)('br'), (0, _motorcycleDom.h)('div#chatDiv', [(0, _motorcycleDom.h)('div#messages', [(0, _motorcycleDom.h)('span', 'Message: '), (0, _motorcycleDom.h)('input.inputMessage'), (0, _motorcycleDom.h)('div', O.mMmsg.x)])])]), (0, _motorcycleDom.h)('div.leftPanel', { style: { width: '60%' } }, [(0, _motorcycleDom.h)('br'), (0, _motorcycleDom.h)('h2', 'JS-monads-part6 - Shared Todo List'), (0, _motorcycleDom.h)('span', ' Here are the basic rules:'), (0, _motorcycleDom.h)('p', 'This installment of the Javascript monad series features a shared todo list, along with chat messaging and the game from the previous installment. If any of these are distracting, please note that they can be hidden using the toggle buttons in the upper right corner. '), (0, _motorcycleDom.h)('p', 'People who are in the same group, other than solo, share the same todo list, messages, and simulated dice game. In order to see any of these, you must establish a unique socket by logging in. '), (0, _motorcycleDom.h)('div#gameDiv2', [(0, _motorcycleDom.h)('p', 'RULES: If clicking two numbers and an operator (in any order) results in 20 or 18, the score increases by 1 or 3, respectively. If the score becomes 0 mod 5, 5 points are added. A score of 25 results in one goal. That can only be achieved by arriving at a score of 20, which jumps the score to 25. Directly computing 25 results in a score of 30, and no goal. Each time ROLL is clicked, one point is deducted. Three goals wins the game. '), (0, _motorcycleDom.h)('br'), (0, _motorcycleDom.h)('button#0.num'), (0, _motorcycleDom.h)('button#1.num'), (0, _motorcycleDom.h)('button#2.num'), (0, _motorcycleDom.h)('button#3.num'), (0, _motorcycleDom.h)('br'), (0, _motorcycleDom.h)('button#4.op', 'add'), (0, _motorcycleDom.h)('button#5.op', 'subtract'), (0, _motorcycleDom.h)('button#5.op', 'mult'), (0, _motorcycleDom.h)('button#5.op', 'div'), (0, _motorcycleDom.h)('button#5.op', 'concat'), (0, _motorcycleDom.h)('br'), (0, _motorcycleDom.h)('div#dice', { style: { display: 'none' } }, [(0, _motorcycleDom.h)('button.roll', 'ROLL'), (0, _motorcycleDom.h)('br'), (0, _motorcycleDom.h)('button#back2', 'FORWARD'), (0, _motorcycleDom.h)('button#forward2', 'BACK')])]), (0, _motorcycleDom.h)('br'), (0, _motorcycleDom.h)('div.winner', O.mMgoals2.x + ''), (0, _motorcycleDom.h)('div#log1', [(0, _motorcycleDom.h)('p', 'IN ORDER TO SEE THE DEMONSTRATIONS, YOU MUSH ENTER SOMETHING BELOW.'), (0, _motorcycleDom.h)('span', 'Name: '), (0, _motorcycleDom.h)('input#login')]), (0, _motorcycleDom.h)('p', O.mM6.x.toString()), (0, _motorcycleDom.h)('div#log2', { style: { display: 'none' } }, [(0, _motorcycleDom.h)('span', 'Change group: '), (0, _motorcycleDom.h)('input#group')]), (0, _motorcycleDom.h)('br'), (0, _motorcycleDom.h)('br'), (0, _motorcycleDom.h)('span', 'People in the same group, other than solo, share text messages and dice rolls. '), (0, _motorcycleDom.h)('br'), (0, _motorcycleDom.h)('hr'), (0, _motorcycleDom.h)('p', 'The definition of Monad has evolved to accomodate this presentation application as its functionality grew more complex. MonadIter came along to organize the control information flowing through independent branches of the game and the websockets message handler. Monad$, featuring most-subject streams, has proven very useful in conjuntion with Motorcycle.js. '), (0, _motorcycleDom.h)('span.tao', 'The earlier pages in this series are still available at'), (0, _motorcycleDom.h)('a', { props: { href: "http://schalk.net" } }, ' schalk.net '), (0, _motorcycleDom.h)('span', 'for anyone interested in detailed explanations and examples. Those looking for something to use in their own applications might find the earlier definition of Monad more appealing. I like the new one. '), (0, _motorcycleDom.h)('hr'), (0, _motorcycleDom.h)('h2', 'Common Patterns'), (0, _motorcycleDom.h)('p', 'Anyone not yet familiar with functional programming can learn by studying the definition of the Monad bnd() method and considering the common patterns presented below. Often, we want the value of an anonymous monad returned by a monadic computation to be the value of a named monad. Here is how that can be accomplished: '), (0, _motorcycleDom.h)('p', 'For any monads m1 and m2 with values a and b respectively (in other words, m1.x == a and m2.x == b return true), m1.bnd(m2.ret) provides m1\'s value to m2. So, after m1.bnd(m2.ret), m1.x == a, m2.x == b, O.m2.s == a all return true. The definition of Monad\s bnd() method shows that the function m2.ret() operates on m1.x. m1.bnd(m2.ret) is equivalent to m2.ret(m1.x). '), (0, _motorcycleDom.h)('p', 'The bnd() method does not have to return anonymous monads. Consider, for example, the trivial function f = function(x, mon) {return mon.ret(x)}. The monad that calls its bnd() method with the argument f gives the monad designated as "mon" its value. So m1.bnd(f, m2) results in m1.x == a, m2.x == b, O.m2.x == a all returning true. As long as we update using only the ret() method, and refrain from mutating m2 with the anit-pattern m2.x = someValue, m2.x == b will always return true.'), (0, _motorcycleDom.h)('p', 'Frequently, some monad "m" will use its "bnd" method on some function which takes two arguments, say "f(x,v)". The first argument is the value of m (which is m.x). The return value of m.bnd(f,v) is f(m.x, v). The following example demonstates this: '), _codeJs2['default'].fib, (0, _motorcycleDom.h)('span.tao', 'In both functions, the "x" argument is ignored. It must be included, however, in order to make the bnd() method return the desired result. If you enter some number "n" in the box below, '), (0, _motorcycleDom.h)('pre', '  mM19.bnd(fibCalc, e.target.value*1).bnd(mM19.ret)'), (0, _motorcycleDom.h)('span', ' will execute and O.mM19.x will be displayed under the input box. '), (0, _motorcycleDom.h)('br'), (0, _motorcycleDom.h)('br'), (0, _motorcycleDom.h)('input#code'), (0, _motorcycleDom.h)('br'), (0, _motorcycleDom.h)('p#code2', O.mM19.x), (0, _motorcycleDom.h)('br'), (0, _motorcycleDom.h)('p'), (0, _motorcycleDom.h)('hr'), (0, _motorcycleDom.h)('p', ' . '), (0, _motorcycleDom.h)('p'), (0, _motorcycleDom.h)('p')])]);
+      return (0, _motorcycleDom.h)('div.content', [(0, _motorcycleDom.h)('div#rightPanel', { style: { display: 'none' } }, [(0, _motorcycleDom.h)('span#tog', [(0, _motorcycleDom.h)('button#game', { style: { fontSize: '16px' } }, 'TOGGLE GAME'), (0, _motorcycleDom.h)('span.tao', ' '), (0, _motorcycleDom.h)('button#todoButton', { style: { fontSize: '16px' } }, 'TOGGLE TODO LIST'), (0, _motorcycleDom.h)('br'), (0, _motorcycleDom.h)('br'), (0, _motorcycleDom.h)('button#chat2', { style: { fontSize: '16px' } }, 'TOGGLE CHAT')]), (0, _motorcycleDom.h)('br'), (0, _motorcycleDom.h)('br'), (0, _motorcycleDom.h)('br'), (0, _motorcycleDom.h)('br'), (0, _motorcycleDom.h)('div#gameDiv', [(0, _motorcycleDom.h)('span', 'Group: ' + O.mMgroup.x), (0, _motorcycleDom.h)('br'), (0, _motorcycleDom.h)('span', 'Goals: ' + O.mMgoals.x), (0, _motorcycleDom.h)('br'), (0, _motorcycleDom.h)('span', 'Name: ' + O.mMname.x), (0, _motorcycleDom.h)('br'), (0, _motorcycleDom.h)('span', 'player[score][goals]'), (0, _motorcycleDom.h)('div', O.mMscoreboard.x)]), (0, _motorcycleDom.h)('br'), (0, _motorcycleDom.h)('br'), (0, _motorcycleDom.h)('br'), (0, _motorcycleDom.h)('div#todoDiv', [(0, _motorcycleDom.h)('div#taskList', O.mMtaskList.x), (0, _motorcycleDom.h)('span', 'Author, Responsible Person, Task: '), (0, _motorcycleDom.h)('input.newTask')]), (0, _motorcycleDom.h)('br'), (0, _motorcycleDom.h)('span#alert'), (0, _motorcycleDom.h)('br'), (0, _motorcycleDom.h)('br'), (0, _motorcycleDom.h)('div#chatDiv', [(0, _motorcycleDom.h)('div#messages', [(0, _motorcycleDom.h)('span', 'Message: '), (0, _motorcycleDom.h)('input.inputMessage'), (0, _motorcycleDom.h)('div', O.mMmsg.x)])])]), (0, _motorcycleDom.h)('div.leftPanel', { style: { width: '60%' } }, [(0, _motorcycleDom.h)('br'), (0, _motorcycleDom.h)('h2', 'JS-monads-part6 - Shared Todo List'), (0, _motorcycleDom.h)('span', ' Here are the basic rules:'), (0, _motorcycleDom.h)('p', 'This installment of the Javascript monad series features a shared todo list, along with chat messaging and the game from the previous installment. If any of these are distracting, please note that they can be hidden using the toggle buttons in the upper right corner. '), (0, _motorcycleDom.h)('p', 'People who are in the same group, other than solo, share the same todo list, messages, and simulated dice game. In order to see any of these, you must establish a unique socket by logging in. '), (0, _motorcycleDom.h)('div#gameDiv2', [(0, _motorcycleDom.h)('p', 'RULES: If clicking two numbers and an operator (in any order) results in 20 or 18, the score increases by 1 or 3, respectively. If the score becomes 0 mod 5, 5 points are added. A score of 25 results in one goal. That can only be achieved by arriving at a score of 20, which jumps the score to 25. Directly computing 25 results in a score of 30, and no goal. Each time ROLL is clicked, one point is deducted. Three goals wins the game. '), (0, _motorcycleDom.h)('br'), (0, _motorcycleDom.h)('button#0.num'), (0, _motorcycleDom.h)('button#1.num'), (0, _motorcycleDom.h)('button#2.num'), (0, _motorcycleDom.h)('button#3.num'), (0, _motorcycleDom.h)('br'), (0, _motorcycleDom.h)('button#4.op', 'add'), (0, _motorcycleDom.h)('button#5.op', 'subtract'), (0, _motorcycleDom.h)('button#5.op', 'mult'), (0, _motorcycleDom.h)('button#5.op', 'div'), (0, _motorcycleDom.h)('button#5.op', 'concat'), (0, _motorcycleDom.h)('br'), (0, _motorcycleDom.h)('div#dice', { style: { display: 'none' } }, [(0, _motorcycleDom.h)('button.roll', 'ROLL'), (0, _motorcycleDom.h)('br'), (0, _motorcycleDom.h)('button#back2', 'FORWARD'), (0, _motorcycleDom.h)('button#forward2', 'BACK')])]), (0, _motorcycleDom.h)('br'), (0, _motorcycleDom.h)('div.winner', O.mMgoals2.x + ''), (0, _motorcycleDom.h)('div#log1', [(0, _motorcycleDom.h)('p', 'IN ORDER TO SEE THE DEMONSTRATIONS, YOU MUSH ENTER SOMETHING BELOW.'), (0, _motorcycleDom.h)('span', 'Name: '), (0, _motorcycleDom.h)('input#login')]), (0, _motorcycleDom.h)('p', O.mM6.x.toString()), (0, _motorcycleDom.h)('div#log2', { style: { display: 'none' } }, [(0, _motorcycleDom.h)('span', 'Change group: '), (0, _motorcycleDom.h)('input#group')]), (0, _motorcycleDom.h)('p', ' O.mMsoloAlert.x '), (0, _motorcycleDom.h)('br'), (0, _motorcycleDom.h)('br'), (0, _motorcycleDom.h)('span', 'People in the same group, other than solo, share text messages and dice rolls. '), (0, _motorcycleDom.h)('br'), (0, _motorcycleDom.h)('hr'), (0, _motorcycleDom.h)('h2', 'Monad Definitions'), (0, _motorcycleDom.h)('p', 'This JS-monads project began as an exploration into the potential usefulness of simple composable objects whose "bnd()" and "ret()" methods behave like Haskell\'s ">=" (prornounced "bind") and "return". The stand-alone function "ret()" is also similar to Haskell\'s "return". I named the little objects "monads" and demonstrated, earlier in this series, that in their simplest use cases they obey the Haskell monad laws. In other cases, they might do anything Javascript allows. '), (0, _motorcycleDom.h)('p', 'I have settled on definitions of Monad and Monad$ that provide for updating the values they carry without mutating them. For any monad m, m.x = newValue mutates m. But m.ret(newValue) creates a new monad O.m carrying newValue instead of oldValue. ret(newValue, "m") returns a new monad named "m" whose value is newValue. The earlier version can be preserved; for example, by assigning it to a variable or placing it in an array. '), (0, _motorcycleDom.h)('span.tao', ' Earlier pages in this series. some of which define Monad differently, are still available at '), (0, _motorcycleDom.h)('a', { props: { href: "http://schalk.net" } }, 'schalk.net'), (0, _motorcycleDom.h)('span', '. They contain examples and detailed explanations which the reader might find enlightening, despite the sometimes differnt definitions of Monad. This is how Monad, Monad$, MonadIter, and ret() are currently defined: '), _codeJs2['default'].monads, (0, _motorcycleDom.h)('p', 'MonadIter instances can be given arguments for the functions they store on the fly. I haven\'t needed this functionality. '), (0, _motorcycleDom.h)('hr'), (0, _motorcycleDom.h)('h2', 'Common Patterns'), (0, _motorcycleDom.h)('p', 'Anyone not yet familiar with functional programming can learn by studying the definition of the Monad bnd() method and considering the common patterns presented below. Often, we want to give a named monad the value of an anonymous monad returned by a monadic computation. Here are some ways to accomplish that: '), (0, _motorcycleDom.h)('p', 'For any monads m1 and m2 with values a and b respectively (in other words, m1.x == a and m2.x == b return true), m1.bnd(m2.ret) provides m1\'s value to m2. So, after m1.bnd(m2.ret), m1.x == a, m2.x == b, O.m2.x == a all return true. The definition of Monad\s bnd() method shows that the function m2.ret() operates on m1.x. m1.bnd(m2.ret) is equivalent to m2.ret(m1.x). The stand-alone ret() function can be used to alter the current value of m2, rather than altering the value of O.m2. Here is one way of accomplishing this: m1.bnd(x => ret(x,"m2"). These relationships are verified in the following tests: '), (0, _motorcycleDom.h)('pre', '             ret(\'m1Val\',\'m1\')\n             m1.x === \'m1Val\'  // true\n             ret(\'m2Val\', \'m2\')\n             m2.x === \'m2Val\'  // true\n\n             m1.bnd(m2.ret)\n             O.m2.x === \'m1Val\' // true\n\n             m1.ret(\'newVal\')\n             O.m1.bnd(v => ret(v, \'m2\'))\n             m2.x === \'newVal\'  // true\n             O.m2.x === \'m1Val\' // true   still the same  '), (0, _motorcycleDom.h)('p', 'The bnd() method does not have to return anonymous monads. Consider, for example, the trivial function f = function(x, mon) {return mon.ret(x)}. The monad that calls its bnd() method with the argument f gives the monad designated as "mon" its value. So m1.bnd(f, m2) results in m1.x == a, m2.x == b, O.m2.x == a all returning true. '), (0, _motorcycleDom.h)('p'), (0, _motorcycleDom.h)('p', 'Frequently, some monad "m" will use its "bnd" method on some function which takes two arguments, say "f(x,v)". The first argument is the value of m (which is m.x). m.bnd(f,v) is equivalent to f(m.x, v). The following example demonstates the use of a two-argument function: '), _codeJs2['default'].fib, (0, _motorcycleDom.h)('span.tao', 'In both functions, the "x" argument is ignored. It must be included, however, in order to make the bnd() method return the desired result. If you enter some number "n" in the box below, '), (0, _motorcycleDom.h)('pre', '  mM19.bnd(fibCalc, e.target.value*1).bnd(mM19.ret)'), (0, _motorcycleDom.h)('span', ' will execute and O.mM19.x will be displayed under the input box. '), (0, _motorcycleDom.h)('br'), (0, _motorcycleDom.h)('br'), (0, _motorcycleDom.h)('input#code'), (0, _motorcycleDom.h)('br'), (0, _motorcycleDom.h)('p#code2', O.mM19.x), (0, _motorcycleDom.h)('br'), (0, _motorcycleDom.h)('p'), (0, _motorcycleDom.h)('hr'), (0, _motorcycleDom.h)('p'), (0, _motorcycleDom.h)('p'), (0, _motorcycleDom.h)('p', '.'), (0, _motorcycleDom.h)('p'), (0, _motorcycleDom.h)('p'), (0, _motorcycleDom.h)('p')])]);
     }) };
 }
 
@@ -9744,13 +9754,13 @@ function cleanup(x) {
   var target2 = document.getElementById('2');
   var target3 = document.getElementById('3');
   var targetAr = [target0, target1, target2, target3];
-  for (var i in [0, 1, 2, 3]) {
+  [0, 1, 2, 3].map(function (i) {
     if (targetAr[i].innerHTML == 'undefined') {
       targetAr[i].style.display = 'none';
     } else {
       targetAr[i].style.display = 'inline';
     }
-  }
+  });
   return ret(x);
 };
 
@@ -9788,9 +9798,9 @@ var updateScoreboard = function updateScoreboard(v) {
   var ar2 = v.split("<br>");
   var keys = Object.keys(ar2);
   var ar = [];
-  for (var k in keys) {
+  keys.map(function (k) {
     ar.push((0, _motorcycleDom.h)('div', ar2[k]));
-  }
+  });
   return mMscoreboard.ret(ar);
 };
 

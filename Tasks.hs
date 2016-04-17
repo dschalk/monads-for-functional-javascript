@@ -2,10 +2,13 @@ module Tasks where
 import Data.Text
 import Data.Text.IO
 import Control.Exception
-import Prelude hiding (catch, readFile, writeFile)
+import Prelude hiding (catch, readFile, writeFile, appendFile)
 
 save :: FilePath -> Text -> IO ()
 save fh f = writeFile fh f
+
+append :: FilePath -> Text -> IO()
+append fh f = appendFile fh f
 
 read2 :: FilePath -> IO Text
 read2 f = do
@@ -13,7 +16,7 @@ read2 f = do
         (\e -> do 
             let err = show (e :: IOException)
             print ("Warning: Couldn't open " ++ f ++ ": " ++ err)
-            return $ pack "")
+            return $ pack "no file")
     return t
 
 main = do

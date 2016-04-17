@@ -52,20 +52,50 @@ const monads = h('pre', {style: {color: '#AFEEEE' }}, `  var Monad = function Mo
     };
   };               
 
-  class MonadIter {                
+  var Monad$ = function Monad$(z, g) {
+    var _this = this;
+    this.subject = subject();
+    this.observer = this.subject.observer;
+    this.stream = this.subject.stream;
+    this.x = z;
+    this.id = g;
 
-    constructor() {
+    this.bnd = function (func, ...args) {
+       return func(_this.x, ...args);
+    };
 
-      this.p = function() {};
+    this.ret = function (a) {
+      O[_this.id] = new Monad$(a,_this.id);
+      _this.observer.next(a);
+      console.log('Streaming from ', _this.id);
+      return O[_this.id];
+    };
+  };
 
-      this.release = function () {
-        return this.p();
-      }
- 
-      this.bnd = function (func) {
-          this.p = func;
-      }
+  var MonadIter = function MonadIter(z) {
+    var _this = this;
+    this.x = z;
+    this.p = function (x) {};
+  
+    this.release = function () {
+      return _this.p(_this.x);
+    };
+  
+    this.bnd = function (func) {
+      _this.p = func;
+    };
+  
+    this.ret = function (a) {
+      _this.x = a;
+    };
+  };
+
+  var ret = function ret(v, id) {
+    if (arguments.length === 1) {
+      return (new Monad(v, 'anonymous'));
     }
+    window[id] = new Monad(v, id);
+    return window[id];
   }; ` )
 
 var fib = h('pre', `  var fib = function fib(x) {
@@ -87,40 +117,31 @@ var driver = h('pre', `  var websocketsDriver = function () {
 ` )
 
 var messages = h('pre', `  const messages$ = (sources.WS).map(e => 
-    mMar.ret(e.data.split(','))
-    .bnd(array => mMscores.ret(array[3].split("<br>"))
-    .bnd(() => mMsender.ret(O.mMar.x[2])
-    .bnd(() => mMprefix.ret(O.mMar.x[0])
+    console.log('In messages$  e.data is: ', e.data)
+    mMtem.ret(e.data.split(',')).bnd(v => {
+    mMZ10.bnd(() => mM$1
+      .ret([v[3], v[4], v[5], v[6]])
+      .bnd(() => mM$2.ret([])))
+    mMZ11.bnd(() => updateScoreboard(v[3]));
+    mMZ12.bnd(() => mM6
+      .ret(v[2] + ' successfully logged in.'))
+    mMZ13.bnd(() => updateMessages(v))
+    mMZ14.bnd(() => mMgoals2.ret('The winner is ' + O.mMsender.x ))
+    mMZ15.bnd(() => mMgoals2.ret('A player named ' + 
+        O.mMname.x + 'is currently logged in. Page will refresh in 4 seconds.')
+      .bnd(refresh))
+    mMZ16.bnd(() => process(e.data))
+    mMtemp.ret(e.data.split(',')[0])
       .bnd(next, 'CA#$42', mMZ10)
       .bnd(next, 'CB#$42', mMZ11)
       .bnd(next, 'CC#$42', mMZ12)
       .bnd(next, 'CD#$42', mMZ13)
       .bnd(next, 'CE#$42', mMZ14)
-      .bnd(next, 'EE#$42', mMZ15)))));
-    mMZ10.bnd(() => mM$1
-      .ret([O.mMar.x[3], O.mMar.x[4], O.mMar.x[5], O.mMar.x[6]])
-      .bnd(() => mM$2.ret([]))
-      .bnd(displayInline,'0')
-      .bnd(displayInline,'1')
-      .bnd(displayInline,'2')
-      .bnd(displayInline,'3'));
-    mMZ11.bnd(() => mMscbd
-      .ret(O.mMscores.x)
-      .bnd(updateScoreboard)
-      .bnd(() => mM3.ret([])
-      .bnd(() => mM8.ret(0) )));
-    mMZ12.bnd(() => mM6
-      .ret( O.mMsender.x + ' successfully logged in.'));
-    mMZ13.bnd(() => O.mMar
-      .bnd(splice, 0, 3, O.mMar)
-      .bnd(reduce, (a,b) => a + ", " + b)
-      .bnd(() => O.mMmsg
-      .bnd(unshift, h('div', O.mMsender.x + ': ' + O.mMar.x), O.mMmsg)
-      ));
-    mMZ14.bnd(() => mMgoals2.ret('The winner is ' + O.mMname.x ));
-    mMZ15.bnd(() => mMgoals2.ret('A player named ' + 
-        O.mMname.x + 'is currently logged in. Page will refresh in 4 seconds.')
-      .bnd(refresh));`  )
+      .bnd(next, 'EE#$42', mMZ15)
+      .bnd(next, 'DD#$42', mMZ16)
+    }) 
+  });
+      `  )
 
 var next = h('pre',  `  var next = function next(x, y, mon2) {
     if (x === y) {
@@ -328,6 +349,89 @@ var cleanup = h('pre',  `  function cleanup (x) {
      .bnd(displayInline,'2')
      .bnd(displayInline,'3'));  `  )
 
+  var taskStream = h('pre',  `  const taskAction$ = mM$task.stream.map(ar => {
+    console.log('In refreshTasks. ar is: ', ar);
+    mMtemp.ret([]);
+    let keys = Object.keys(ar);
+    keys.map(k => {
+      console.log('ar[k] in refreshTasks: ', ar[k]);
+      O.mMtemp.bnd(push,
+        h('div.todo',  [
+          h('span.task3', {style: {color: ar[k].color, textDecoration: ar[k].textDecoration}}, 'Task: ' + ar[k].task  ),  
+          h('br'),
+          h('button#edit1', 'Edit'  ),
+          h('input#edit2', {props: {type: 'textarea', value: ar[k].task}, style: {display: 'none'}}  ), 
+          h('span#author.tao', 'Author: ' + ar[k].author  + ' / ' + 'Responsibility: ' + ar[k].responsible),
+          h('br'),
+          h('input#cb', {props: {type: 'checkbox', checked: ar[k].checked}, style: {color: ar[k].color,
+               textDecoration: ar[k].textDecoration} } ), 
+          h('label.cbox', { props: {for: '#cb'}}, 'Completed' ),
+          h('button.delete', 'Delete'  ),  
+          h('br'),
+          h('hr')]), mMtemp)
+    }):
+    mMtaskList.ret(O.mMtemp.x)
+    var tasks = (ar.map(stringify)).toString();
+    socket.send('TD#$42,' + O.mMgroup.x.trim() + ',' + O.mMname.x.trim() + ',@' + tasks);
+    });  `  )
+
+  var newTask = h('pre',  `  const newTask$ = sources.DOM
+    .select('input.newTask').events('keydown');
+
+  const newTaskAction$ = newTask$.map(e => {
+    var alert = '';
+    if( e.keyCode == 13 ) {
+      if ( e.target.value.split(',').length < 3 ) {
+        alert = 'You should enter "author, responsible party, task" separated by commas';
+        document.getElementById('alert').innerHTML = alert;
+      }
+      else {
+        socket.send('CF#$42,' + O.mMgroup.x.trim() + ',' + O.mMname.x.trim() + ',false, yellow, none,' + e.target.value );
+        e.target.value = '';
+        document.getElementById('alert').innerHTML = '';
+      } 
+    } 
+  });  `  )
+
+  var deleteTask = h('pre',  `  const deleteClick$ = sources.DOM
+    .select('.delete').events('click')
+    
+  const deleteAction$ = deleteClick$.map(e => {
+    let index = getIndex(e);
+    socket.send('CQ#$42,' + O.mMgroup.x.trim() + ',' + O.mMname.x.trim() + ',' + index);
+  });  `  )
+
+  var deleteTask2 = h('pre',  `  mMZ19.bnd(() => O.mM$task.bnd(spliceRemove, O.mMar.x[3], mM$task));
+  `  )
+
+  var process = h('pre',  `  const process = function(a) {
+    let newArray = [];
+    let ob = {};
+    if (a.length < 6) {
+      mM$task.ret([]);
+      return
+    }
+    let ar = a.slice(3);
+    let n = ar.length/6;
+    let keys = Array(n).fill(1);
+    for (let k in keys) {
+      newArray.push(
+        {
+          task: ar.shift(),
+          color: ar.shift(),
+          textDecoration: ar.shift(),
+          checked: ar.shift() === 'true',
+          author: ar.shift(),
+          responsible: ar.shift()
+        }
+      )
+    }
+    mM$task.ret(newArray);
+  };  `  )
+
+  var p7 = h('pre',  `  
+  `  )
+
   var p6 = h('pre',  `  
   `  )
 
@@ -346,11 +450,8 @@ var cleanup = h('pre',  `  function cleanup (x) {
   var p1 = h('pre',  `  
   `  )
 
-  var p7 = h('pre',  `  
-  `  )
 
 
 
 
-
-export default {monads, fib, driver, messages, next, Monad$, updateCalc, stream, arrayFuncs, travel, nums, cleanup, ret, C42 }
+export default {monads, fib, driver, messages, next, Monad$, updateCalc, stream, arrayFuncs, travel, nums, cleanup, ret, C42, taskStream, newTask, deleteTask, deleteTask2, process }
