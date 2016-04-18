@@ -8,9 +8,9 @@
         code.monads,  
         h('p', 'Todo list processing relies on an instance of Monad$ named mM$taskList. It hold a string with all of the information necessary for displaying todo list updates. When users click buttons or enter data in text boxes, mM$taskList processes the data and sends its updated string to the Haskell server, where it is received as Text. The server keeps a text file for each group, updating it and distribuing its content whenever a change is made or a user signs into a group. The message stream sorts messages and distributes them to functions that parse them into Snabbdom blocks of code that are then fed into the stream that updates the DOM on the next cycle. ' ),
         h('hr', ),  
-        h('h2', 'Complex Functionality Concisely Stated' ),
-        h('p', ' The game is fairly complex, and has been described in earlier installments of this series. The shared, persistent todo list is new. When any member of a group adds a task, crosses it out as completed, edits its description, or removes it, the change is immediately seen by all of the other members of the group. When someone signs into a group, the current todo list immediately appears in the browser. This is different from chat messages. People who sign into a group don\'t see the current messages. They see only the messages that are exchanged after they sign in. '  ),
-        h('p', 'The flow of the game and the routing of websockets messages are handled by these little blocks of code:'),
+        h('h2', 'Complex Functionality Organized In Concise Code Blocks' ),
+        h('p', ' Incoming websockets messages trigger updates to the game display, the chat display, and the todo list display. The members of a group see what other members are doing; and in the case of the todo list, they see the current list when they sign into the group. When any member of a group adds a task, crosses it out as completed, edits its description, or removes it, the server updates the persistent file and all members of the group immediately see the revised list.  '  ),
+        h('p', 'The flow of the game and the routing of websockets messages are handled by these little blocks of code: ' ),
 h('pre', `  const messages$ = (sources.WS).map(e => 
     console.log('In messages$  e.data is: ', e.data)
     mMtem.ret(e.data.split(',')).bnd(v => {
@@ -66,11 +66,8 @@ h('pre', `  const messages$ = (sources.WS).map(e =>
                  ))))
   }
   `  ),
-        h('p', ' The "mMZ" prefix designates instances of MonadIter. Their bnd() method holds functions which execute if and when the release() method is called. Their ret() method fetches values on the fly and provides them as arguments to the function obtained by bnd(). I didn\'t need that feature for the game or the todo application, so the MonadIter values are disregarded.  '  ),  
-
-
-
-
+        h('p', ' The "mMZ" prefix designates instances of MonadIter. Their bnd() method holds functions which execute if and when the release() method is called. The next() function releases a specified MonadIter instance when the calling monad\'s value matches the specified value. next2() releases the specified monad when the specified condition returns true. This syntactic sugar for callbacks provides much the same functionality as Ecmascript 2015 iterators, promises, and generators, as was demonstated in earlier installments of this series. Here are the definitions of next() and next2(): ' ),
+        code.next,
 
         h('h2', 'The Todo List  ' ),
         h('p', 'Just as mM$1 is the key to understanding the flow of the game, mM$task is the key to understanding the Todo application. The first thing to note is that every time mM$task.ret() is executed, mM$task.stream triggers the construction of an updated virtual Todo list which is sent to the websockets server. Here is the code: ' ),

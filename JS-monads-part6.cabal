@@ -22,7 +22,7 @@ executable server
   main-is:             Main.hs
   other-modules: Fm, Tasks
   other-extensions:    OverloadedStrings, TemplateHaskell
-  build-depends:       base >=4.7, text >=1.2, random >=1.1 && <1.2, 
+  build-depends:       base >=4.7, text >=1.2, random >=1.1 && <1.2, directory, 
                          stm >=2.4, transformers >=0.3, wai, warp, 
                            websockets, wai-websockets, wai-app-static, file-embed, split
   default-language:    Haskell2010

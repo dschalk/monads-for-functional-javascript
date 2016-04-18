@@ -141,13 +141,48 @@ var messages = h('pre', `  const messages$ = (sources.WS).map(e =>
       .bnd(next, 'DD#$42', mMZ16)
     }) 
   });
-      `  )
+
+  function updateCalc() { 
+    mMZ2.bnd(() => O.mM13
+                 .bnd(score, 1)
+                 .bnd(next2, (O.mM13.x % 5 === 0), mMZ5) 
+                 .bnd(newRoll));
+    mMZ4.bnd(() => O.mM13
+                 .bnd(score, 3)
+                 .bnd(next2, (O.mM13.x % 5 === 0), mMZ5) 
+                 .bnd(newRoll));
+        mMZ5.bnd(() => O.mM13
+                     .bnd(score,5)
+                     .bnd(v => mM13.ret(v)
+                     .bnd(next, 25, mMZ6)));
+            mMZ6.bnd(() => mM9.bnd(score2) 
+                         .bnd(next,3,mMZ7));
+               mMZ7.bnd(() => mM13.bnd(winner));               
+    O.mM3.bnd(x => mM7
+                 .ret(calc(x[0], O.mM8.x, x[1]))
+                 .bnd(next, 18, mMZ4)  
+                 .bnd(next, 20, mMZ2) // Releases mMZ2 (above)
+                 .bnd(() => O.mM$1.bnd(push, O.mM7.x, mM$1)
+                 .bnd(() => mM3
+                 .ret([])
+                 .bnd(() => mM4
+                 .ret(0).bnd(mM8.ret)
+                 .bnd(cleanup)
+                 ))))
+  }  `  )
 
 var next = h('pre',  `  var next = function next(x, y, mon2) {
     if (x === y) {
       mon2.release();
     }
-    return ret(x);  // An anonymous monad with the value of the calling monad.
+    return ret(x);
+  }
+  
+  var next2 = function next(x, condition, mon2) {
+    if (condition) {
+      mon2.release();
+    }
+    return ret(x);
   } `  )
 
 
@@ -349,100 +384,182 @@ var cleanup = h('pre',  `  function cleanup (x) {
      .bnd(displayInline,'2')
      .bnd(displayInline,'3'));  `  )
 
-  var taskStream = h('pre',  `  const taskAction$ = mM$task.stream.map(ar => {
-    console.log('In refreshTasks. ar is: ', ar);
-    mMtemp.ret([]);
-    let keys = Object.keys(ar);
-    keys.map(k => {
-      console.log('ar[k] in refreshTasks: ', ar[k]);
-      O.mMtemp.bnd(push,
-        h('div.todo',  [
-          h('span.task3', {style: {color: ar[k].color, textDecoration: ar[k].textDecoration}}, 'Task: ' + ar[k].task  ),  
-          h('br'),
-          h('button#edit1', 'Edit'  ),
-          h('input#edit2', {props: {type: 'textarea', value: ar[k].task}, style: {display: 'none'}}  ), 
-          h('span#author.tao', 'Author: ' + ar[k].author  + ' / ' + 'Responsibility: ' + ar[k].responsible),
-          h('br'),
-          h('input#cb', {props: {type: 'checkbox', checked: ar[k].checked}, style: {color: ar[k].color,
-               textDecoration: ar[k].textDecoration} } ), 
-          h('label.cbox', { props: {for: '#cb'}}, 'Completed' ),
-          h('button.delete', 'Delete'  ),  
-          h('br'),
-          h('hr')]), mMtemp)
-    }):
-    mMtaskList.ret(O.mMtemp.x)
-    var tasks = (ar.map(stringify)).toString();
-    socket.send('TD#$42,' + O.mMgroup.x.trim() + ',' + O.mMname.x.trim() + ',@' + tasks);
+  var taskStream = h('pre',  `  
     });  `  )
-
-  var newTask = h('pre',  `  const newTask$ = sources.DOM
-    .select('input.newTask').events('keydown');
-
-  const newTaskAction$ = newTask$.map(e => {
-    var alert = '';
-    if( e.keyCode == 13 ) {
-      if ( e.target.value.split(',').length < 3 ) {
-        alert = 'You should enter "author, responsible party, task" separated by commas';
-        document.getElementById('alert').innerHTML = alert;
-      }
-      else {
-        socket.send('CF#$42,' + O.mMgroup.x.trim() + ',' + O.mMname.x.trim() + ',false, yellow, none,' + e.target.value );
-        e.target.value = '';
-        document.getElementById('alert').innerHTML = '';
-      } 
-    } 
-  });  `  )
-
-  var deleteTask = h('pre',  `  const deleteClick$ = sources.DOM
-    .select('.delete').events('click')
-    
-  const deleteAction$ = deleteClick$.map(e => {
-    let index = getIndex(e);
-    socket.send('CQ#$42,' + O.mMgroup.x.trim() + ',' + O.mMname.x.trim() + ',' + index);
-  });  `  )
 
   var deleteTask2 = h('pre',  `  mMZ19.bnd(() => O.mM$task.bnd(spliceRemove, O.mMar.x[3], mM$task));
   `  )
 
-  var process = h('pre',  `  const process = function(a) {
-    let newArray = [];
-    let ob = {};
-    if (a.length < 6) {
-      mM$task.ret([]);
-      return
-    }
-    let ar = a.slice(3);
-    let n = ar.length/6;
-    let keys = Array(n).fill(1);
-    for (let k in keys) {
-      newArray.push(
-        {
-          task: ar.shift(),
-          color: ar.shift(),
-          textDecoration: ar.shift(),
-          checked: ar.shift() === 'true',
-          author: ar.shift(),
-          responsible: ar.shift()
+  var newTask = h('pre',  `  const newTask$ = sources.DOM
+    .select('input.newTask').events('keydown'); 
+
+  const newTaskAction$ = newTask$.map(e => {
+      let ob = {};
+      var alert = '';
+      var ar = e.target.value.split(',');
+      var ar2 = ar.slice(2);
+      var task = '';
+      if (ar.length < 4) {
+        task = ar[2];
+      }
+      if (ar.length > 3) {
+        task = ar2.reduce((a,b) => a + '$*$*$' + b);
+      }
+      if( e.keyCode == 13 ) {
+        if ( ar.length < 3 ) {
+          alert = 'You should enter "author, responsible party, task" separated by commas';
+          document.getElementById('alert').innerHTML = alert;
         }
-      )
+        if ( ar.length > 2 ) {
+          O.mM$taskList.bnd(addString, task + ',yellow, none, false,' +  ar[0] + ',' + ar[1], mM$taskList);
+          e.target.value = '';
+          document.getElementById('alert').innerHTML = '';
+        } 
+      } 
+  });  
+                  
+  var addString = function addString (x, str, mon) {
+    var s = str;
+    if (x.length > 4) {
+    s = x + ',' + str;
     }
-    mM$task.ret(newArray);
+    return mon.ret(s);
+  };  ` )
+
+  var process = h('pre',  `  const process = function(str) {
+    let a = str.split(",");
+    console.log('In process. str and a are: ', str, a);
+    if (a == undefined) {
+      return;
+    };
+    if (a.length < 9) {
+      return
+    };
+    let ob = {};
+    let ar = a.slice(3)
+    let s = ar.reduce((a,b) => a + ',' + b);
+    if (mM$taskList.x.length < 5) {
+      O.mM$taskList.ret(s);
+    }
+    let ar2 = [];
+    let tempArray = [];
+    if (ar.length < 6) {return};
+    if ((ar.length % 6) !== 0) {
+      document.getElementById('alert').innerHTML = 'Error: array length is: ' + length;
+    } else {
+      let keys = Array(ar.length/6).fill(1);
+      keys.map(_ => {
+        ar2.push(
+          {
+            task: convertBack(ar.shift()),
+            color: ar.shift(),
+            textDecoration: ar.shift(),
+            checked: ar.shift() === 'true',
+            author: ar.shift(),
+            responsible: ar.shift()
+          }
+        )
+      })
+      console.log('In process  ar2 is: ', ar2)
+      let keys2 = Object.keys(ar2);
+      for (let k in keys) {
+        tempArray.push(
+          h('div.todo',  [
+            h('span.task3', {style: {color: ar2[k].color, textDecoration: ar2[k].textDecoration}},
+                'Task: ' + ar2[k].task  ),  
+            h('br'),
+            h('button#edit1', 'Edit'  ),
+            h('input#edit2', {props: {type: 'textarea', value: ar2[k].task}, style: {display: 'none'}}  ), 
+            h('span#author.tao', 'Author: ' + ar2[k].author  + ' / ' + 'Responsibility: ' + ar2[k].responsible),
+            h('br'),
+            h('input#cb', {props: {type: 'checkbox', checked: ar2[k].checked}, style: {color: ar2[k].color,
+                 textDecoration: ar2[k].textDecoration} } ), 
+            h('label.cbox', { props: {for: '#cb'}}, 'Completed' ),
+            h('button.delete', 'Delete'  ),  
+            h('br'),
+            h('hr')])
+        )
+      }
+      mMtaskList.ret(tempArray)
+    }
   };  `  )
 
-  var p7 = h('pre',  `  
-  `  )
+  var colorClick = h('pre',  `  const colorClick$ = sources.DOM
+    .select('#cb').events('click')
+    
+  const colorAction$ = colorClick$.map(e => {
+    let index = getIndex(e);
+    let s = O.mM$taskList.x;
+    let ar = s.split(',');
+    let n = 6 * index + 3;
+    let j = 6 * index + 2;
+    let k = 6 * index + 1;
+    let checked = ar[n];
+    if (checked == 'true')  {
+      ar[n] = 'false'; 
+      ar[k] = 'yellow'; 
+      ar[j] = 'none'; 
+    }
+    else {
+      ar[n] = 'true'; 
+      ar[k] = 'lightGreen'; 
+      ar[j] = 'line-through'; 
+    }
+    mM$taskList.ret( ar.reduce((a,b) => a + ',' + b) )
+  });  
+                     
+  var getIndex = function getIndex (event_object) {
+    var task = event_object.currentTarget.parentNode.innerText;
+    var possibilities = event_object.currentTarget.parentNode.parentNode.childNodes;
+    var keys = Object.keys(possibilities);
+    for (let k in keys) {
+      if (task == possibilities[k].innerText) {
+        return k
+      }
+    }
+    console.log('In getIndex. No match');
+  }  `  )
 
-  var p6 = h('pre',  `  
-  `  )
+  var edit = h('pre',  `  const edit1$ = sources.DOM
+    .select('#edit1').events('click')
+    
+  const edit1Action$ = edit1$.map(e => {
+    let index = getIndex2(e);
+    O.mMtaskList.x[index].children[3].elm.style.display = 'block';
+  });
 
-  var p5 = h('pre',  `  
-  `  )
+  const edit2$ = sources.DOM
+    .select('#edit2').events('keypress')
+    
+  const edit2Action$ = edit2$.map(e => {
+    let v = e.target.value;
+    let index = getIndex2(e);
+    if( e.keyCode == 13 ) {
+      process2(v, index);
+    O.mMtaskList.x[index].children[3].elm.style.display = 'none';
+    }
+  });
 
-  var p4 = h('pre',  `  
-  `  )
+  const process2 = function(str, index) {
+    let a = O.mM$taskList.x;
+    let ar = a.split(',');
+    let task = str.split(',').reduce((a,b) => ar + '$*$*$' + b)
+    ar[index * 6] = task;
+    let s = ar.reduce((a,b) => a + ',' + b);
+    mM$taskList.ret(s);
+  };
 
-  var p3 = h('pre',  `  
-  `  )
+  var getIndex2 = function getIndex2 (e) {
+    var elem = e.currentTarget.parentNode.children[0].innerHTML
+    var elem2 = e.currentTarget.parentNode.parentNode.childNodes
+    var keys = Object.keys(elem2);
+    for (let k in keys) {
+      if (elem == elem2[k].childNodes[0].innerHTML) {
+        return k
+      }
+      console.log('In getIndex2. No match');
+    }
+  }  `  )
 
   var p2 = h('pre',  `  
   `  )
@@ -450,8 +567,13 @@ var cleanup = h('pre',  `  function cleanup (x) {
   var p1 = h('pre',  `  
   `  )
 
+  var mM$task = h('pre',  `  const taskAction$ = mM$taskList.stream.map(ar => {
+    socket.send('TD#$42' + ',' + O.mMgroup.x.trim() + 
+        ',' + O.mMname.x.trim() + ',' + '@' + ar);
+  });  `  )
 
 
 
 
-export default {monads, fib, driver, messages, next, Monad$, updateCalc, stream, arrayFuncs, travel, nums, cleanup, ret, C42, taskStream, newTask, deleteTask, deleteTask2, process }
+
+export default {monads, fib, driver, messages, next, Monad$, updateCalc, stream, arrayFuncs, travel, nums, cleanup, ret, C42, taskStream, newTask, process, mM$task, addString, colorClick, edit }
