@@ -1,9 +1,9 @@
 
 ==================== FINAL INTERFACE ====================
-2016-04-21 04:06:44.44987 UTC
+2016-04-21 04:45:12.31094 UTC
 
 interface main@main:Main 7103
-  interface hash: 529ca49edb82dc72ef2b3a437f70037c
+  interface hash: daec9459d8ca543de5c85f6404f8b053
   ABI hash: 8df3e08c60e801ff9a86d7ee3eaf89e1
   export-list hash: 2f9efd25b7647d5b73ab6774835f97b2
   orphan hash: 276323d23bdb3224e26fb4d203ffca48
