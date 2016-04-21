@@ -548,7 +548,6 @@ var cleanup = h('pre',  `  function cleanup (x) {
         socket.send('CE#$42,' + O.mMgroup.x + ',' + O.mMname.x + ',nothing '); 
       }
       socket.send('CA#$42,' + O.mMgroup.x.trim() + ',' + O.mMname.x.trim() + ',6,6,12,20');
-      console.log('$$$$$$$********************$$$$$$$$$$$$$$$$$$*********************s == 20  ');
       return;
     }
     if ((x + j) % 5 == 0) {
@@ -556,13 +555,11 @@ var cleanup = h('pre',  `  function cleanup (x) {
       socket.send('CG#$42,' + O.mMgroup.x + ',' + O.mMname.x + ','+(j+5)+',' + O.mMgoals.x); 
       mM13.ret(x + j + 5);
       socket.send('CA#$42,' + O.mMgroup.x.trim() + ',' + O.mMname.x.trim() + ',6,6,12,20');
-      console.log('$$$$$$$********************$$$$$$$$$$$$$$$$$$****___cow___************s % 5 == 0  ');
       return;
     } 
     socket.send('CG#$42,' + O.mMgroup.x + ',' + O.mMname.x + ','+j+',' + O.mMgoals.x); 
     mM13.ret(x + j);
     socket.send('CA#$42,' + O.mMgroup.x.trim() + ',' + O.mMname.x.trim() + ',6,6,12,20');
-    console.log('$$$$$$$*******$$$$$$$$$$$$$$$$$$****___horse___************O.mM13.x, O.mMscoreChange.x ', O.mM13.x, O.mMscoreChange.x  );
   };  `  )
 
   var p1 = h('pre',  `  
