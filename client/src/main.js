@@ -4,8 +4,6 @@ import {just, create, merge, combine, fromEvent, periodic, observe, delay, filte
 import code from './code.js';
 import {subject} from 'most-subject'
 
-mM6.ret('');
-
 function createWebSocket(path) {
     let host = window.location.hostname;
     if(host == '') host = 'localhost';
@@ -38,7 +36,7 @@ function main(sources) {
   mMpause.ret(0);
   
   const messages$ = (sources.WS).map(e => {
-    console.log('In messages$  e.data is: ', e.data)
+    console.log('******____&&&&&&&&&&&&&&&&&&&____**************_In messages$  e.data is: ', e.data)
     mMtem.ret(e.data.split(',')).bnd(v => {
     mMZ10.bnd(() => mM$1
       .ret([v[3], v[4], v[5], v[6]])
@@ -47,7 +45,7 @@ function main(sources) {
     mMZ12.bnd(() => mM6
       .ret(v[2] + ' successfully logged in.'))
     mMZ13.bnd(() => updateMessages(v))
-    mMZ14.bnd(() => mMgoals2.ret('The winner is ' + O.mMsender.x ))
+    mMZ14.bnd(() => mMgoals2.ret('The winner is ' + v.x ))
     mMZ15.bnd(() => mMgoals2.ret('A player named ' + 
       O.mMname.x + 'is currently logged in. Page will refresh in 4 seconds.')
       .bnd(refresh))
@@ -378,14 +376,16 @@ function main(sources) {
   });
 
   const mM$1Action$ = mM$1.stream.map(v => {
-    console.log('In mM$Action$ v is ', v);
+    console.log('In mM1$Action$ v is ', v);
     if (Array.isArray(v)) {
+      console.log('*****************************************In mM$1Action, above history splice');
       O.mMhistorymM1.bnd(spliceAdd, O.mMindex2.x, v, O.mMhistorymM1);
+      console.log('*****************************************In mM$1Action, under history splice');
       document.getElementById('0').innerHTML = (O.mMhistorymM1.x[O.mMindex2.x])[0]; 
       document.getElementById('1').innerHTML = (O.mMhistorymM1.x[O.mMindex2.x])[1]; 
       document.getElementById('2').innerHTML = (O.mMhistorymM1.x[O.mMindex2.x])[2]; 
       document.getElementById('3').innerHTML = (O.mMhistorymM1.x[O.mMindex2.x])[3]; 
-      cleanup()
+      cleanup(7)
     }
     else {
       console.log('O.mM$1.stream is providing defective data to O.mM$1Action');
@@ -397,13 +397,34 @@ function main(sources) {
     document.getElementById('1').innerHTML = (O.mMhistorymM1.x[O.mMindex2.x])[1]; 
     document.getElementById('2').innerHTML = (O.mMhistorymM1.x[O.mMindex2.x])[2]; 
     document.getElementById('3').innerHTML = (O.mMhistorymM1.x[O.mMindex2.x])[3]; 
-    cleanup();
+    cleanup(11);
   })
 
   const mM$2Action$ = mM$2.stream.map(v => {
     O.mMhistorymM3.bnd(push, v, O.mMhistorymM3);
     console.log('From mM$2.stream: ', v);
   });
+
+  /*
+var chance = function chance () {
+  mM$chance.stream.map(v => 
+  socket.send('GA#$42,' + O.mMgroup.x.trim() + ',' + O.mMname.x.trim() + ',6,6,12,20')
+mMZ20.bnd(() => mMprocess.bnd(proc));
+mMZ20.bnd(() => mMprocess.bnd(proc));
+mMZ20.bnd(() => mMprocess.bnd(proc));
+mMZ20.bnd(() => mMprocess.bnd(proc));
+mMZ20.bnd(() => mMprocess.bnd(proc));
+var proc = function proc (x, mon) {
+  
+  socket.send('CA#$42,' + O.mMgroup.x.trim() + ',' + O.mMname.x.trim() + ',6,6,12,20')
+
+var obj = { };
+for (var i = 0, j = arr.length; i < j; i++) {
+   obj[arr[i]] = (obj[arr[i]] || 0) + 1;
+}
+*/
+
+
 
   const calcStream$ = merge( edit1Action$, edit2Action$, taskAction$, colorAction$, deleteAction$, newTaskAction$, chatClickAction$, gameClickAction$, todoClickAction$, mM$3Action$, mM$2Action$, mM$1Action$, backClickAction$, forwardClickAction$, fibPressAction$, groupPressAction$, rollClickAction$, messagePressAction$, loginPressAction$, messages$, numClickAction$, opClickAction$ );
 
@@ -508,14 +529,14 @@ function main(sources) {
         h('p', ' Incoming websockets messages trigger updates to the game display, the chat display, and the todo list display. The members of a group see what other members are doing; and in the case of the todo list, they see the current list when they sign in to the group. When any member of a group adds a task, crosses it out as completed, edits its description, or removes it, the server updates the persistent file and all members of the group immediately see the revised list.  '  ),
         h('p', 'The flow of the game and the routing of websockets messages are handled by these little blocks of code: ' ),
         code.messages,
-        h('p', ' The "mMZ" prefix designates instances of MonadIter. Their bnd() method holds functions which execute if and when the release() method is called. The next() function releases a specified MonadIter instance when the calling monad\'s value matches the specified value. next2() releases the specified monad when the specified condition returns true. This syntactic sugar for callbacks provides provides the same functionality as Ecmascript 2015 iterators, promises, and generators, only without error handling. This was demonstated in earlier installments of this series, where it was pointed out that code for handling errors would be superfluous in the applications presented so far in this series. They might have been helpful for de-bugging during development, but now that things are running smoothly, no errors are likely to reach MonadIter instances. If the server goes down, no messages reach the websockets driver. I can\'t think of anything, other than  a serious operating system malfunction, could cause the game to function incorrectly. These examples don\'t make AJAX requests or interact with a database. MonadIter provides a simple way to chain computations that each one doesn\t proceed to the next step until it work is done and a value is returned. Here are the definitions of next() and next2(): ' ),
+        h('p', ' The "mMZ" prefix designates instances of MonadIter. Their bnd() method holds functions which execute if and when the release() method is called. The next() function releases a specified MonadIter instance when the calling monad\'s value matches the specified value. next2() releases the specified monad when the specified condition returns true. This syntactic sugar for callbacks provides provides the same functionality as Ecmascript 2015 iterators, promises, and generators, only without error handling. This was demonstated in earlier installments of this series, where it was pointed out that code for handling errors would be superfluous in the applications presented so far in this series. They might have been helpful for de-bugging during development, but now that things are running smoothly, no errors are likely to reach MonadIter instances. If the server goes down, no messages reach the websockets driver. I can\'t think of anything, other than  a serious operating system malfunction, could cause the game to function incorrectly. Here are the definitions of next() and next2(): ' ),
         code.next,
-        h('p', ' Now, an explanation of the todo list application. This will show how the monads function, and also demonstate the use of Cycle.js / Motorcycle.js. Let\'s begin with the creation of a task. If you enter something like Susan, Fred, Pay the water bill, the editable task should appear. If you have loaded this page in another tab and changed to the same group in both, the new task should appear in both tabs. The task has a delete button, an edit button, and a "Completeted" checkbox. It shows that Susan authorized the task and Fred is responsible for making sure it gets done. Instead of entering an authority and responsible person, you can just enter two commas before the task description. Without two commas, a message appears requesting more information.  ' ),
+        h('p', ' Next, I\'ll explain some features of the todo list application. This will show how the monads function, and also demonstate the use of Cycle.js / Motorcycle.js. Let\'s begin with the creation of a task. If you enter something like Susan, Fred, Pay the water bill, the editable task should appear. If you have loaded this page in another tab and changed to the same group in both, the new task should appear in both tabs. The task has a delete button, an edit button, and a "Completed" checkbox. It shows that Susan authorized the task and Fred is responsible for making sure it gets done. Instead of entering an authority and responsible person, you can just enter two commas before the task description. Without two commas, a message appears requesting more information.  ' ),
         h('p', ' Any commas in the task description are replaced by $*$*$ to facilitate transforming the string in an array of six-attribute objects. This is done only once, when it is time to re-render the DOM.  mM$taskList is the todo application\'s worker function. Every time it executes its ret() method, the argument to ret() is added to its stream, causing the following code to run: ' ),
         code.mM$task,
         h('p', 'mM$taskList caries a string representing the task list. mM$taskList.x.split(",") produces an array whose length is a multiple of six. Commas in the task description are replaced by "$*$*$" so split(",") places the whole description in a single element. Commas are re-inserted when the list arrives from the server as a websockets message. Although a task list is a nested virtual DOM object, it can be conveniently passed back and forth to the server as a string without resorting to JSON.stringify. It is always a string on the server and also in the working part of the application, becomming virtual DOM node only once, when it arrives from the server prefixed by "DD#$42" causing "process(e.data) to run. Here is process(): ' ),
         code.process,
-        h('span.tao', 'As you see, the string becomes a list of six-element objects, then those objects are used to create the Snabbdom node virtual node which which mM$taskList.ret( in an updated, non-streaming O attribute named mMtaskList. O.mMtaskList.x sits permanently in the main virtual DOM description. When its value gets refreshed, the DOM re-renders because taskStream$ is merged into the stream that is mapped into the virtural DOM description inside the object returned by "main". "main" and "sources" are the arguments provided to Cycle.run(). "sources" is the argument provided to "main". The code is at '  ),
+        h('span.tao', 'As you see, the string becomes a list of six-element objects, then those objects are used to create a Snabbdom virtual node which is handed to mM$taskList.ret() leading to the update of O.mMtaskList. O.mMtaskList.x sits permanently in the main virtual DOM description. When its value gets refreshed, the DOM re-renders because taskStream$ is merged into the stream that is mapped into the virtural DOM description inside the object returned by "main". "main" and "sources" are the arguments provided to Cycle.run(). "sources" is the argument provided to "main". The code is at '  ),
         h('a', {props: {href: "https://github.com/dschalk/JS-monads-part6"}}, 'https://github.com/dschalk/JS-monads-part6' ),
         h('br'),
         h('p', ' Here is what happens when the "Completed" button is clicked.         '  ),
@@ -549,17 +570,31 @@ function main(sources) {
         h('span.tao', 'In both functions, the "x" argument is ignored. It must be included, however, in order to make the bnd() method return the desired result. If you enter some number "n" in the box below, '  ),
         h('pre',  '  mM19.bnd(fibCalc, e.target.value*1).bnd(mM19.ret)' ),
         h('span', ' will execute and O.mM19.x will be displayed under the input box. ' ),
-        h('br'),
-        h('br'),
         h('input#code', ),  
         h('br'),
         h('p#code2', O.mM19.x ),  
-        h('br', ),  
+        h('hr'),
+        h('h3', 'Immutable Data And The State Object "O" ' ),
+        h('p',  'The server updates scores in response to messages prefixed by "CG#$42". Each such message carries an integer specifying the amount of the change. The ServerState list of Client tupples is pulled from the game state TMVar and replaced by a new tupple whose Score field differs from the previous one.' ),
+        h('p', 'In front end code, mutating variables which are defined inside of functions often seems inocuous in applications written in an object oriented programming style. This is not the case in a Motorcycle.js application where the primary structure is two functions cyclically interacting with one another. These functions are called only once, when the program initializes. One is Cycle.run and in this application, I named the other one "main". main()\'s only argument is an array holding the application\'s drivers. That array is named "resources". Cycle.run\'s arguments are the same "resources" array of drivers along with main(). In this environment, it seems best to maintain a general policy of avoiding mutations. I do this by keeping the ever-changing state of the application in an object named "O". In score(), where score and goals changes are calculated, all changes are made using mMscoreChange.ret(). For example, if a calculation results in the number 18 but not a number evenly divisable by 5, mM13.ret(mM13.x + 3) runs and O.mM13 is replaced by an updated attribute which is also named "O.mM13". Nothing is mutated, so historical versions of O.mM13 can be preserved. Only the state object "O" gets mutated. This is very similar to swapping out ServerState in the Haskell server\'s state TMVar. Historical versions of ServerState can be preserved there just as prior versions of O.mM13 can be preserved, by direct references to them or by putting them in some named entity, such as a list or array. This is how the flow of outgoing game information is handled in the main(): ' ),     
+        code.updateCalc,
+        h('p', 'The socket messages prompt the server to update its application state and to broadcast messages to all members of the group whose member sent the message to the server. Let\'s take another look at the way incoming messages are handled.'  ),  
+        code.messages,
+        h('p', ' Messages prefixed by CB#$42 release mMZ11, causing the scoreboard to update. CE#$42 prefixed messages cause the release of mMZ14 which changes O.mMgoals2.x to change from an empty string to an anouncement of the name of the winner. ' ),  
+        h('p', ),  
+        h('p', ),  
+        h('p', ),  
+        h('p', ),  
+        h('p', ),  
+        h('br' ),
         h('p', ), 
-        h('hr', ),  
         h('p', ),  
         h('p', ),  
-        h('p','.' ),  
+        h('p', ),  
+        h('hr',),  
+        h('p', ),  
+        h('p', ),  
+        h('p', ),  
         h('p', ),  
         h('p', ),  
         h('p', )  
@@ -585,32 +620,53 @@ function main(sources) {
   };
 
   function updateCalc() { 
-    mMZ2.bnd(() => O.mM13
-                 .bnd(score, 1)
-                 .bnd(next2, (O.mM13.x % 5 === 0), mMZ5) 
-                 .bnd(newRoll));
-    mMZ4.bnd(() => O.mM13
-                 .bnd(score, 3)
-                 .bnd(next2, (O.mM13.x % 5 === 0), mMZ5) 
-                 .bnd(newRoll));
-        mMZ5.bnd(() => O.mM13
-                     .bnd(score,5)
-                     .bnd(v => mM13.ret(v)
-                     .bnd(next, 25, mMZ6)));
-            mMZ6.bnd(() => mM9.bnd(score2) 
-                         .bnd(next,3,mMZ7));
-               mMZ7.bnd(() => mM13.bnd(winner));               
     O.mM3.bnd(x => mM7
-                 .ret(calc(x[0], O.mM8.x, x[1]))
-                 .bnd(next, 18, mMZ4)  
-                 .bnd(next, 20, mMZ2) // Releases mMZ2 (above)
-                 .bnd(() => O.mM$1.bnd(push, O.mM7.x, mM$1)
-                 .bnd(() => mM3
-                 .ret([])
-                 .bnd(() => mM4
-                 .ret(0).bnd(mM8.ret)
-                 .bnd(cleanup)
-                 ))))
+    .ret(calc(x[0], O.mM8.x, x[1]))
+    .bnd(result => {if (result == 20) {score(O.mM13.x, 1)}; return O.mM7}) 
+    .bnd(result => {if (result == 18) {score(O.mM13.x, 3)}; return O.mM$1}) 
+    .bnd(push, O.mM7.x, mM$1)
+    .bnd(reset))
+  };
+
+  var score = function score(x,j) {
+    if ((x + j) == 20) {
+      mMgoals.ret(O.mMgoals.x == 2 ? 0 : (O.mMgoals.x + 1)); 
+      mM13.ret(0);
+      socket.send('CG#$42,' + O.mMgroup.x + ',' + O.mMname.x + ',' + -x + ',' + O.mMgoals.x); 
+      if (O.mMgoals.x == 0) {
+        socket.send('CE#$42,' + O.mMgroup.x + ',' + O.mMname.x + ',nothing ');
+      }
+      socket.send('CA#$42,' + O.mMgroup.x.trim() + ',' + O.mMname.x.trim() + ',6,6,12,20');
+      console.log('$$$$$$$********************$$$$$$$$$$$$$$$$$$*********************s == 20  ');
+      return;
+    }
+    if ((x + j) % 5 == 0) {
+      mMscoreChange.ret(j + 5);  
+      socket.send('CG#$42,' + O.mMgroup.x + ',' + O.mMname.x + ','+(j+5)+',' + O.mMgoals.x); 
+      mM13.ret(x + j + 5);
+      socket.send('CA#$42,' + O.mMgroup.x.trim() + ',' + O.mMname.x.trim() + ',6,6,12,20');
+      console.log('$$$$$$$********************$$$$$$$$$$$$$$$$$$****___cow___************s % 5 == 0  ');
+      return;
+    } 
+    socket.send('CG#$42,' + O.mMgroup.x + ',' + O.mMname.x + ','+j+',' + O.mMgoals.x); 
+    mM13.ret(x + j);
+    socket.send('CA#$42,' + O.mMgroup.x.trim() + ',' + O.mMname.x.trim() + ',6,6,12,20');
+    console.log('$$$$$$$*******$$$$$$$$$$$$$$$$$$****___horse___************O.mM13.x, O.mMscoreChange.x ', O.mM13.x, O.mMscoreChange.x  );
+ };
+
+  var reset = function reset () {
+      mM3.ret([])
+      .bnd(() => mM4.ret(0)
+      .bnd(mM8.ret)
+      .bnd(cleanup))
+  }
+
+  var score2 = function score2() {
+    mMgoals.ret(mMgoals.x + 1);
+    let j = -25;
+    socket.send('CG#$42,' + O.mMgroup.x + ',' + O.mMname.x + ',' + j + ',' + O.mMgoals.x);
+    mM13.ret(0);
+    return mMgoals;
   }
 
   var updateScoreboard = function updateScoreboard(v) {
@@ -632,27 +688,6 @@ function main(sources) {
       if (document.getElementById(a)) document.getElementById(a).style.display = 'inline';
       return ret(x);
   };
-
-  var score = function score(v,j) {
-    socket.send('CG#$42,' + O.mMgroup.x + ',' + O.mMname.x + ',' + j + ',' + O.mMgoals.x);
-    return mM13.ret(v + j);
-  }
-
-  var score2 = function score2() {
-    mMgoals.ret(mMgoals.x + 1);
-    let j = -25;
-    socket.send('CG#$42,' + O.mMgroup.x + ',' + O.mMname.x + ',' + j + ',' + O.mMgoals.x);
-    mM13.ret(0);
-    return mMgoals;
-  }
-
-  var winner = function winner() {
-    let k = -3
-    mMgoals.ret(mMgoals.x - 3);
-    socket.send('CG#$42,' + O.mMgroup.x + ',' + O.mMname.x + ',' + 0 + ',' + O.mMgoals.x);
-    socket.send('CE#$42,' + O.mMgroup.x + ',' + O.mMname.x + ',nothing ');
-    return ret(0);
-  }
 
   var newRoll = function(v) {
     socket.send('CA#$42,' + O.mMgroup.x.trim() + ',' + O.mMname.x.trim() + ',6,6,12,20' )

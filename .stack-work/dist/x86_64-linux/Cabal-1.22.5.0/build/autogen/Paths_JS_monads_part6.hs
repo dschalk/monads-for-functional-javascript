@@ -17,7 +17,7 @@ version = Version [0,7,0,0] []
 bindir, libdir, datadir, libexecdir, sysconfdir :: FilePath
 
 bindir     = "/mnt/B/StackZone/JS-monads-part6/.stack-work/install/x86_64-linux/lts-4.1/7.10.3/bin"
-libdir     = "/mnt/B/StackZone/JS-monads-part6/.stack-work/install/x86_64-linux/lts-4.1/7.10.3/lib/x86_64-linux-ghc-7.10.3/JS-monads-part6-0.7.0.0-8Hcs8WOCd136xnJnMGtCX3"
+libdir     = "/mnt/B/StackZone/JS-monads-part6/.stack-work/install/x86_64-linux/lts-4.1/7.10.3/lib/x86_64-linux-ghc-7.10.3/JS-monads-part6-0.7.0.0-ALl9uar2MG7I34g43Fy5pg"
 datadir    = "/mnt/B/StackZone/JS-monads-part6/.stack-work/install/x86_64-linux/lts-4.1/7.10.3/share/x86_64-linux-ghc-7.10.3/JS-monads-part6-0.7.0.0"
 libexecdir = "/mnt/B/StackZone/JS-monads-part6/.stack-work/install/x86_64-linux/lts-4.1/7.10.3/libexec"
 sysconfdir = "/mnt/B/StackZone/JS-monads-part6/.stack-work/install/x86_64-linux/lts-4.1/7.10.3/etc"

@@ -1,9 +1,9 @@
 
 ==================== FINAL INTERFACE ====================
-2016-04-13 12:30:12.099113 UTC
+2016-04-21 04:06:44.44987 UTC
 
 interface main@main:Main 7103
-  interface hash: 091ddd61c313d77054205f6cd7c91893
+  interface hash: 529ca49edb82dc72ef2b3a437f70037c
   ABI hash: 8df3e08c60e801ff9a86d7ee3eaf89e1
   export-list hash: 2f9efd25b7647d5b73ab6774835f97b2
   orphan hash: 276323d23bdb3224e26fb4d203ffca48
@@ -133,6 +133,7 @@ import  -/  base-4.8.2.0:System.IO 0248c1e850b7ea124cf7a2e1669ebf67
 import  -/  base-4.8.2.0:Text.Read ef0ef92fb7358ae94bab089940adfd2a
 import  -/  bytestring-0.10.6.0@bytes_6VWy06pWzJq9evDvK2d4w6:Data.ByteString.Internal dfa34e211eb5d18268ce7a397234e851
 import  -/  bytestring-0.10.6.0@bytes_6VWy06pWzJq9evDvK2d4w6:Data.ByteString.Unsafe 741899719f39bacc24bec8eb3dd612dd
+import  -/  directory-1.2.2.0@direc_0hFG6ZxK1nk4zsyOqbNHfm:System.Directory a1cb5f7691abbe7dfb17405086904f1c
 import  -/  file-embed-0.0.9@filee_LhdavtSLEuo1Rrmo0IrLCH:Data.FileEmbed 4e4432f457fa08f799afa79aded25d90
 import  -/  ghc-prim-0.4.0.0:GHC.Classes e1f4ff80f7b5262008a595d29986fb18
 import  -/  ghc-prim-0.4.0.0:GHC.Types 6b27fb3fdbd0e3f0925a4496c66513bb
@@ -142,8 +143,8 @@ import  -/  Fm 4c3102596ab602a6904b650093edf9df
   truck 9109abc39634877024ec43edca5f7572
 import  -/  Impossibles d02a99d6ed7dd33a7b2c17fbe8629395
   exports: 82e201a1754cffbd9ed38387ad4d4db5
-import  -/  Tasks a89ae6c30aa7227e9195162a80233574
-  exports: 1729817c0b7c4ef71650121ad2e4e88c
+import  -/  Tasks 4775e3c5b3514fed4c2be354e73ea1c0
+  exports: 0967e7a603c6dbc1d495469a8c7a82d9
   read2 9a8ecf5bacc1f503c6b823cddbe376f8
   save 1fcc9943d41e880aa50719ff6c5c160b
 import  -/  split-0.2.2@split_2HX8EqgvDIgHYwxogxhVQv:Data.List.Split 8d77d043aa595cb6e716267a4e74b5b4
@@ -168,6 +169,7 @@ import  -/  websockets-0.9.6.1@webso_3OcLF436IbtGP9BsmBvARh:Network.WebSockets.S
 import  -/  websockets-0.9.6.1@webso_3OcLF436IbtGP9BsmBvARh:Network.WebSockets.Types 9825ce52aad08e79184446c007caa055
 addDependentFile "client/dist/main.js"
 addDependentFile "client/src/code.js"
+addDependentFile "client/src/store.js"
 addDependentFile "client/src/most-subject.js"
 addDependentFile "client/src/code.js~"
 addDependentFile "client/src/monad.js~"
@@ -175,6 +177,7 @@ addDependentFile "client/src/save.js"
 addDependentFile "client/src/main.js~"
 addDependentFile "client/src/monad.js"
 addDependentFile "client/src/index.js"
+addDependentFile "client/src/store.js~"
 addDependentFile "client/src/main.js"
 addDependentFile "client/bower_components/when/es6-shim/Promise.min.js"
 addDependentFile "client/bower_components/when/es6-shim/Promise.js"

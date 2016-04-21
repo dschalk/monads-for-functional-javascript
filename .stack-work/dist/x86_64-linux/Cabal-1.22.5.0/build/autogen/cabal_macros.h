@@ -7,6 +7,13 @@
   (major1) == 4 && (major2) <  8 || \
   (major1) == 4 && (major2) == 8 && (minor) <= 2)
 
+/* package directory-1.2.2.0 */
+#define VERSION_directory "1.2.2.0"
+#define MIN_VERSION_directory(major1,major2,minor) (\
+  (major1) <  1 || \
+  (major1) == 1 && (major2) <  2 || \
+  (major1) == 1 && (major2) == 2 && (minor) <= 2)
+
 /* package file-embed-0.0.9 */
 #define VERSION_file_embed "0.0.9"
 #define MIN_VERSION_file_embed(major1,major2,minor) (\
@@ -168,5 +175,5 @@
   (major1) == 2 && (major2) <  24 || \
   (major1) == 2 && (major2) == 24 && (minor) <= 0)
 
-#define CURRENT_PACKAGE_KEY "JSmon_8Hcs8WOCd136xnJnMGtCX3"
+#define CURRENT_PACKAGE_KEY "JSmon_ALl9uar2MG7I34g43Fy5pg"
 

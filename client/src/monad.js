@@ -116,22 +116,40 @@ var Monad = function Monad(z, g) {
     return O[_this.id];
   };
 };
+/*
 
-var MonadIter = function MonadIter(z) {
+var MonadIter = function MonadIter() {
   var _this = this;
-  this.x = z;
-  this.p = function (x) {};
+  this.p = function (a, ... args) {};
 
-  this.release = function () {
-    return _this.p(_this.x);
+  this.release = function (x, ...args) {
+    return this.p(x, ...args);
   };
 
   this.bnd = function (func) {
     _this.p = func;
+    return _this;
+  };
+};
+
+
+*/
+
+
+var MonadIter = function MonadIter() {
+  var _this = this;
+  this.p = function (a) {};
+
+  this.release = function (x) {
+    for (var _len = arguments.length, args = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
+      args[_key - 1] = arguments[_key];
+    }
+
+    this.p.apply(this, [x].concat(args));
   };
 
-  this.ret = function (a) {
-    _this.x = a;
+  this.bnd = function (func) {
+    _this.p = func;
   };
 };
 
@@ -143,25 +161,32 @@ var ret = function ret(v, id) {
   return window[id];
 }
 
+var testScore = function testScore (v) {
+  if ((v % 5) === 0) {
+    mMZ25.release();
+  };
+  return ret(v);
+};
+
 var cube = function(v,mon) {
   if (arguments.length === 2) {
-    return mon(v*v*v);
+    return mon.ret(v*v*v);
   }
   return ret(v*v*v);
 }
 
 var double = function(v) {
   if (arguments.length === 2) {
-    return mon(v*v);
+    return mon.ret(v*v);
   }
   return ret(v + v);
 }
 
 var add = function(x,b,mon) {
   if (arguments.length === 3) {
-    return mon(x + b);
+    return mon.ret(x + b);
   }
-  return ret(a+b);
+  return ret(x+b);
 }
 
 var addAr = function(a,b) {
@@ -211,7 +236,6 @@ var mMscbd = M([],'mMscbd');
 var mMmessages = M([],'mMmessages');
 var mMscoreboard = M([],'mMscoreboard');
 var mMmsg = M([],'mMmsg');
-var mMgoals = M(0,'mMgoals');
 var mMgoals2 = M('','mMgoals2');
 var mMnbrs = M([],'mMnbrs');
 var mMnumbers = M([],'mMnumbers');
@@ -263,7 +287,8 @@ var mMtasks = new Monad([], 'mMtasks');
 var mMid = new Monad(42, 'mMid');
 var mMalert = new Monad('nothing');
 var fibMon = new Monad([0,1]);
-
+var mMscoreChange = new Monad(0, 'mMscoreChange');
+mMscoreChange.ret(mMscoreChange.x);
 var mMtasksPersist = new Monad(['Be here now'], 'mMtasksPersist');
 mMtasksPersist.ret(mMtasksPersist.x)
 var mMtodoList = new Monad([], 'mMtodoList');
@@ -290,6 +315,9 @@ mMe.ret(mMe.x);
 var mMtaskList2 = new Monad$([], 'mMtaskList2');
 mMtaskList2.ret(mMtaskList2.x);
 
+var mMgoals = M(0,'mMgoals');
+mMgoals.ret(mMgoals.x);
+
 mMgoals.ret(mMgoals.x)
 mMgoals2.ret(mMgoals2.x)
 mM3.ret(mM3.x)
@@ -314,39 +342,42 @@ mMtasks.ret(mMtasks.x);
 mMalert.ret(mMalert.x);
 mMfib.ret(mMfib.x);
 fibMon.ret(fibMon.x);
+mM5.ret(mM5.x);
+mM6.ret(mM6.x);
+mM27.ret(mM27.x);
 
 
-var mMZ1 = MI(0);
-var mMZ2 = MI(0);
-var mMZ3 = MI(0);
-var mMZ4 = MI(0);
-var mMZ5 = MI(0);
-var mMZ6 = MI(0);
-var mMZ7 = MI(0);
-var mMZ8 = MI(0);
-var mMZ9 = MI(0);
+var mMZ1 = MI();
+var mMZ2 = MI();
+var mMZ3 = MI();
+var mMZ4 = MI();
+var mMZ5 = MI();
+var mMZ6 = MI();
+var mMZ7 = MI();
+var mMZ8 = MI();
+var mMZ9 = MI();
 
-var mMZ10 = MI(0);
-var mMZ11 = MI(0);
-var mMZ12 = MI(0);
-var mMZ13 = MI(0);
-var mMZ14 = MI(0);
-var mMZ15 = MI(0);
-var mMZ16 = MI(0);
-var mMZ17 = MI(0);
-var mMZ18 = MI(0);
-var mMZ19 = MI(0);
+var mMZ10 = MI();
+var mMZ11 = MI();
+var mMZ12 = MI();
+var mMZ13 = MI();
+var mMZ14 = MI();
+var mMZ15 = MI();
+var mMZ16 = MI();
+var mMZ17 = MI();
+var mMZ18 = MI();
+var mMZ19 = MI();
 
-var mMZ20 = MI(0);
-var mMZ21 = MI(0);
-var mMZ22 = MI(0);
-var mMZ23 = MI(0);
-var mMZ24 = MI(0);
-var mMZ25 = MI(0);
-var mMZ26 = MI(0);
-var mMZ27 = MI(0);
-var mMZ28 = MI(0);
-var mMZ29 = MI(0);
+var mMZ20 = MI();
+var mMZ21 = MI();
+var mMZ22 = MI();
+var mMZ23 = MI();
+var mMZ24 = MI();
+var mMZ25 = MI();
+var mMZ26 = MI();
+var mMZ27 = MI();
+var mMZ28 = MI();
+var mMZ29 = MI();
 
 var trim = function trim(str) {
   return ret(str.trim());
@@ -466,6 +497,7 @@ var clean = function clean(x, mon) {
 }
 
 var push = function push(y,v,mon) {
+  console.log('In push. y, v, mon are: ', y, v, mon);
   if (Array.isArray(y)) {
     let ar = [];
     let keys = Object.keys(y);
@@ -567,9 +599,9 @@ var reduce = function reduce(x, f, mon) {
   return ret(x);
 };
 
-var next = function next(x, y, mon2) {
+var next = function next(x, y, mon2, a1, a2) {
   if (x === y) {
-    mon2.release();
+    mon2.release(a1, a2);
   }
   return ret(x);
 }
@@ -591,34 +623,28 @@ var next3 = function next(x, y, z, mon2) {
 
 var doub = function doub(v,mon) {
   if (arguments.length === 2) {
-    return mon(v + v);
+    return mon.ret(v + v);
   }
   return ret(v + v);
 };
 
 var square = function square(v,mon) {
   if (arguments.length === 2) {
-    return mon(x * b);
+    return mon.ret(x * b);
   }
   return ret(v * v);
 };
 
 var mult = function mult(x, y, mon) {
   if (arguments.length === 3) {
-    return mon(x * y);
+    return mon.ret(x * y);
   }
   return ret(x * y);
 };
 
-var log = function log(x, message, mon) {
+var log = function log(x, message) {
   console.log('In log.  message is: ', message);
-  if (Array.isArray(message) && message.length > 0) {
-    let str = message.reduce((a,b) => {a + b});
-    console.log(str);
-    return mon.ret(x);
-  }
-  console.log('log message must be a non-empty array');
-  return ret(x);
+    return ret(x);
 };
 
   var getIndex = function getIndex (event_object) {
@@ -638,7 +664,6 @@ var log = function log(x, message, mon) {
     var elem2 = e.currentTarget.parentNode.parentNode.childNodes
     var keys = Object.keys(elem2);
     for (let k in keys) {
-      console.log('&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&& ', elem == elem2[k].childNodes[0].innerHTML);
       if (elem == elem2[k].childNodes[0].innerHTML) {
         return k
       }

@@ -1,17 +1,18 @@
 
 ==================== FINAL INTERFACE ====================
-2016-04-13 12:30:04.235589 UTC
+2016-04-18 03:49:28.485979 UTC
 
 interface main@main:Tasks 7103
-  interface hash: aeb252d1d518e9af4f57fe6b1404fd27
-  ABI hash: a89ae6c30aa7227e9195162a80233574
-  export-list hash: 1729817c0b7c4ef71650121ad2e4e88c
+  interface hash: e0b6fec158798aa266a7c54d85e90efa
+  ABI hash: 4775e3c5b3514fed4c2be354e73ea1c0
+  export-list hash: 0967e7a603c6dbc1d495469a8c7a82d9
   orphan hash: 693e9af84d3dfcc71e640e005bdc5e2e
   flag hash: cbf5f5978d1a8903081cdc7839072a1d
   sig of: Nothing
   used TH splices: False
   where
 exports:
+  Tasks.append
   Tasks.main
   Tasks.read2
   Tasks.save
@@ -50,6 +51,16 @@ import  -/  ghc-prim-0.4.0.0:GHC.Types 6b27fb3fdbd0e3f0925a4496c66513bb
 import  -/  text-1.2.2.0@text_5c7VCmRXJenGcMPs3kwpkI:Data.Text 86fbb7ba59f4e0e286e698c3b32fab21
 import  -/  text-1.2.2.0@text_5c7VCmRXJenGcMPs3kwpkI:Data.Text.IO 0a48508e3b9ee9d99ac4c439753e1561
 import  -/  text-1.2.2.0@text_5c7VCmRXJenGcMPs3kwpkI:Data.Text.Internal 77121723701b5baab16c0e5e3254bc11
+de9486a2bd3b6d73d1070e7ddb3394c3
+  append ::
+    GHC.IO.FilePath -> Data.Text.Internal.Text -> GHC.Types.IO ()
+  {- Arity: 3, Strictness: <L,U><L,1*U(U,U,U)><L,U>,
+     Unfolding: InlineRule (0, True, True)
+                Data.Text.IO.appendFile1
+                  `cast`
+                (<GHC.IO.FilePath>_R
+                 ->_R <Data.Text.Internal.Text>_R
+                 ->_R Sym (GHC.Types.NTCo:IO[0] <()>_R)) -}
 0f517241c9487bf50780ada912a71503
   main :: GHC.Types.IO Data.Text.Internal.Text
   {- Arity: 1, Strictness: <L,U>,

@@ -20,7 +20,6 @@ var Monad = function Monad(z, g) {
     for (var _len = arguments.length, args = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
       args[_key - 1] = arguments[_key];
     }
-
     return func.apply(undefined, [_this.x].concat(args));
   };
 
@@ -72,21 +71,16 @@ const monads = h('pre', {style: {color: '#AFEEEE' }}, `  var Monad = function Mo
     };
   };
 
-  var MonadIter = function MonadIter(z) {
+  var MonadIter = function MonadIter() {
     var _this = this;
-    this.x = z;
-    this.p = function (x) {};
+    this.p = function (a, ... args) {};
   
-    this.release = function () {
-      return _this.p(_this.x);
+    this.release = function (x, ...args) {
+      return this.p(x, ...args);
     };
   
     this.bnd = function (func) {
       _this.p = func;
-    };
-  
-    this.ret = function (a) {
-      _this.x = a;
     };
   };
 
@@ -117,7 +111,6 @@ var driver = h('pre', `  var websocketsDriver = function () {
 ` )
 
 var messages = h('pre', `  const messages$ = (sources.WS).map(e => 
-    console.log('In messages$  e.data is: ', e.data)
     mMtem.ret(e.data.split(',')).bnd(v => {
     mMZ10.bnd(() => mM$1
       .ret([v[3], v[4], v[5], v[6]])
@@ -126,9 +119,9 @@ var messages = h('pre', `  const messages$ = (sources.WS).map(e =>
     mMZ12.bnd(() => mM6
       .ret(v[2] + ' successfully logged in.'))
     mMZ13.bnd(() => updateMessages(v))
-    mMZ14.bnd(() => mMgoals2.ret('The winner is ' + O.mMsender.x ))
+    mMZ14.bnd(() => mMgoals2.ret('The winner is ' + v.x ))
     mMZ15.bnd(() => mMgoals2.ret('A player named ' + 
-        O.mMname.x + 'is currently logged in. Page will refresh in 4 seconds.')
+      O.mMname.x + 'is currently logged in. Page will refresh in 4 seconds.')
       .bnd(refresh))
     mMZ16.bnd(() => process(e.data))
     mMtemp.ret(e.data.split(',')[0])
@@ -140,36 +133,7 @@ var messages = h('pre', `  const messages$ = (sources.WS).map(e =>
       .bnd(next, 'EE#$42', mMZ15)
       .bnd(next, 'DD#$42', mMZ16)
     }) 
-  });
-
-  function updateCalc() { 
-    mMZ2.bnd(() => O.mM13
-                 .bnd(score, 1)
-                 .bnd(next2, (O.mM13.x % 5 === 0), mMZ5) 
-                 .bnd(newRoll));
-    mMZ4.bnd(() => O.mM13
-                 .bnd(score, 3)
-                 .bnd(next2, (O.mM13.x % 5 === 0), mMZ5) 
-                 .bnd(newRoll));
-        mMZ5.bnd(() => O.mM13
-                     .bnd(score,5)
-                     .bnd(v => mM13.ret(v)
-                     .bnd(next, 25, mMZ6)));
-            mMZ6.bnd(() => mM9.bnd(score2) 
-                         .bnd(next,3,mMZ7));
-               mMZ7.bnd(() => mM13.bnd(winner));               
-    O.mM3.bnd(x => mM7
-                 .ret(calc(x[0], O.mM8.x, x[1]))
-                 .bnd(next, 18, mMZ4)  
-                 .bnd(next, 20, mMZ2) // Releases mMZ2 (above)
-                 .bnd(() => O.mM$1.bnd(push, O.mM7.x, mM$1)
-                 .bnd(() => mM3
-                 .ret([])
-                 .bnd(() => mM4
-                 .ret(0).bnd(mM8.ret)
-                 .bnd(cleanup)
-                 ))))
-  }  `  )
+  );  `  )
 
 var next = h('pre',  `  var next = function next(x, y, mon2) {
     if (x === y) {
@@ -561,16 +525,60 @@ var cleanup = h('pre',  `  function cleanup (x) {
     }
   }  `  )
 
+  var mM$task = h('pre',  `  const taskAction$ = mM$taskList.stream.map(ar => {
+    socket.send('TD#$42' + ',' + O.mMgroup.x.trim() + 
+        ',' + O.mMname.x.trim() + ',' + '@' + ar);
+  });  `  )
+
+  var updateCalc = h('pre',  `  function updateCalc() { 
+    O.mM3.bnd(x => mM7
+    .ret(calc(x[0], O.mM8.x, x[1]))
+    .bnd(result => {if (result == 20) {score(O.mM13.x, 1)}; return O.mM7}) 
+    .bnd(result => {if (result == 18) {score(O.mM13.x, 3)}; return O.mM$1}) 
+    .bnd(push, O.mM7.x, mM$1)
+    .bnd(reset))
+  };
+
+  var score = function score(x,j) {
+    if ((x + j) == 20) { // The score of 20 jumps to 25. Round over.
+      mMgoals.ret(O.mMgoals.x == 2 ? 0 : (O.mMgoals.x + 1)); 
+      mM13.ret(0);
+      socket.send('CG#$42,' + O.mMgroup.x + ',' + O.mMname.x + ',' + -x + ',' + O.mMgoals.x); 
+      if (O.mMgoals.x == 0) {  The third goal has been earned. The game is over.
+        socket.send('CE#$42,' + O.mMgroup.x + ',' + O.mMname.x + ',nothing '); 
+      }
+      socket.send('CA#$42,' + O.mMgroup.x.trim() + ',' + O.mMname.x.trim() + ',6,6,12,20');
+      console.log('$$$$$$$********************$$$$$$$$$$$$$$$$$$*********************s == 20  ');
+      return;
+    }
+    if ((x + j) % 5 == 0) {
+      mMscoreChange.ret(j + 5);  
+      socket.send('CG#$42,' + O.mMgroup.x + ',' + O.mMname.x + ','+(j+5)+',' + O.mMgoals.x); 
+      mM13.ret(x + j + 5);
+      socket.send('CA#$42,' + O.mMgroup.x.trim() + ',' + O.mMname.x.trim() + ',6,6,12,20');
+      console.log('$$$$$$$********************$$$$$$$$$$$$$$$$$$****___cow___************s % 5 == 0  ');
+      return;
+    } 
+    socket.send('CG#$42,' + O.mMgroup.x + ',' + O.mMname.x + ','+j+',' + O.mMgoals.x); 
+    mM13.ret(x + j);
+    socket.send('CA#$42,' + O.mMgroup.x.trim() + ',' + O.mMname.x.trim() + ',6,6,12,20');
+    console.log('$$$$$$$*******$$$$$$$$$$$$$$$$$$****___horse___************O.mM13.x, O.mMscoreChange.x ', O.mM13.x, O.mMscoreChange.x  );
+  };  `  )
+
+  var p1 = h('pre',  `  
+  `  )
+
   var p2 = h('pre',  `  
   `  )
 
   var p1 = h('pre',  `  
   `  )
 
-  var mM$task = h('pre',  `  const taskAction$ = mM$taskList.stream.map(ar => {
-    socket.send('TD#$42' + ',' + O.mMgroup.x.trim() + 
-        ',' + O.mMname.x.trim() + ',' + '@' + ar);
-  });  `  )
+  var p2 = h('pre',  `  
+  `  )
+
+  var p1 = h('pre',  `  
+  `  )
 
 
 
