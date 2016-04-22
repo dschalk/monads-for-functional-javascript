@@ -562,6 +562,10 @@ var cleanup = h('pre',  `  function cleanup (x) {
     socket.send('CA#$42,' + O.mMgroup.x.trim() + ',' + O.mMname.x.trim() + ',6,6,12,20');
   };  `  )
 
+
+  var testZ = h('pre',  `  mMZ1.bnd(v => O.mMt1.bnd(add,v,mMt1)
+  .bnd(cube,mMt2)
+  .bnd(() => mMt3.ret(O.mMt1.x + ' cubed is ' + O.mMt2.x)))  `  )
   var p1 = h('pre',  `  
   `  )
 
@@ -581,4 +585,4 @@ var cleanup = h('pre',  `  function cleanup (x) {
 
 
 
-export default {monads, fib, driver, messages, next, Monad$, updateCalc, stream, arrayFuncs, travel, nums, cleanup, ret, C42, taskStream, newTask, process, mM$task, addString, colorClick, edit }
+export default {monads, fib, driver, messages, next, Monad$, updateCalc, stream, arrayFuncs, travel, nums, cleanup, ret, C42, taskStream, newTask, process, mM$task, addString, colorClick, edit, testZ }

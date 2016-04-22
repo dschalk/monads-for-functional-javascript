@@ -100,11 +100,9 @@
       key: 'run',
       value: function run(sink, scheduler) {
         var n = this.add(sink);
-
         if (n === 1) {
           this._disposable = this.source.run(this, scheduler);
         }
-
         return new MulticastDisposable(this, sink);
       }
     }, {
@@ -130,12 +128,10 @@
       key: 'event',
       value: function event(time, value) {
         var s = this.sinks;
-
         if (s.length === 1) {
-          tryEvent(time, value, s[0]);
+          s[0].event(time, value);
           return;
         }
-
         for (var i = 0; i < s.length; ++i) {
           tryEvent(time, value, s[i]);
         }
@@ -144,12 +140,10 @@
       key: 'end',
       value: function end(time, value) {
         var s = this.sinks;
-
         if (s.length === 1) {
-          tryEnd(time, value, s[0]);
+          s[0].end(time, value);
           return;
         }
-
         for (var i = 0; i < s.length; ++i) {
           tryEnd(time, value, s[i]);
         }
@@ -158,12 +152,6 @@
       key: 'error',
       value: function error(time, err) {
         var s = this.sinks;
-
-        if (s.length === 1) {
-          s[0].error(time, err);
-          return;
-        }
-
         for (var i = 0; i < s.length; ++i) {
           s[i].error(time, err);
         }
@@ -3917,7 +3905,7 @@ var isNode = typeof process === 'object'
 module.exports = new Scheduler(isNode ? nodeTimer : setTimeoutTimer);
 
 }).call(this,require('_process'))
-},{"./Scheduler":50,"./nodeTimer":52,"./timeoutTimer":53,"_process":114}],52:[function(require,module,exports){
+},{"./Scheduler":50,"./nodeTimer":52,"./timeoutTimer":53,"_process":180}],52:[function(require,module,exports){
 /** @license MIT License (c) copyright 2010-2016 original author or authors */
 /** @author Brian Cavalier */
 /** @author John Hann */
@@ -5772,7 +5760,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 var hh = require('hyperscript-helpers')(_h2.default);
 
 module.exports = (0, _assign2.default)({ makeDOMDriver: _makeDOMDriver2.default, h: _h2.default, thunk: _thunk2.default }, hh);
-},{"./makeDOMDriver":77,"fast.js/object/assign":99,"hyperscript-helpers":100,"snabbdom/h":105,"snabbdom/thunk":112}],76:[function(require,module,exports){
+},{"./makeDOMDriver":77,"fast.js/object/assign":99,"hyperscript-helpers":100,"snabbdom/h":171,"snabbdom/thunk":178}],76:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -5921,7 +5909,7 @@ var makeDOMDriver = function makeDOMDriver(containerElementSelectors) {
 
 exports.default = makeDOMDriver;
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./isolate":76,"./select":78,"./utils":79,"./vTreeParser":80,"@most/hold":82,"snabbdom":111,"snabbdom-selector/lib/classNameFromVNode":102,"snabbdom-selector/lib/selectorParser":103,"snabbdom/h":105,"snabbdom/modules/attributes":107,"snabbdom/modules/class":108,"snabbdom/modules/props":109,"snabbdom/modules/style":110}],78:[function(require,module,exports){
+},{"./isolate":76,"./select":78,"./utils":79,"./vTreeParser":80,"@most/hold":82,"snabbdom":177,"snabbdom-selector/lib/classNameFromVNode":168,"snabbdom-selector/lib/selectorParser":169,"snabbdom/h":171,"snabbdom/modules/attributes":173,"snabbdom/modules/class":174,"snabbdom/modules/props":175,"snabbdom/modules/style":176}],78:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -6086,7 +6074,7 @@ var vTreeParser = function vTreeParser(vTree) {
 };
 
 exports.default = vTreeParser;
-},{"fast.js/array/filter":87,"fast.js/array/map":92,"most":183}],81:[function(require,module,exports){
+},{"fast.js/array/filter":87,"fast.js/array/map":92,"most":165}],81:[function(require,module,exports){
 (function (global, factory) {
     if (typeof define === "function" && define.amd) {
         define('@most/dom-event', ['exports', 'most'], factory);
@@ -6413,9 +6401,9 @@ exports.default = vTreeParser;
     exports.touchcancel = touchcancel;
 });
 
-},{"most":183}],82:[function(require,module,exports){
+},{"most":165}],82:[function(require,module,exports){
 arguments[4][4][0].apply(exports,arguments)
-},{"dup":4,"most/lib/source/MulticastSource":170}],83:[function(require,module,exports){
+},{"dup":4,"most/lib/source/MulticastSource":236}],83:[function(require,module,exports){
 'use strict';
 
 /**
@@ -6954,6 +6942,1678 @@ function match(el, selector) {
   return false;
 }
 },{}],102:[function(require,module,exports){
+arguments[4][8][0].apply(exports,arguments)
+},{"dup":8}],103:[function(require,module,exports){
+arguments[4][9][0].apply(exports,arguments)
+},{"dup":9}],104:[function(require,module,exports){
+arguments[4][10][0].apply(exports,arguments)
+},{"dup":10}],105:[function(require,module,exports){
+arguments[4][11][0].apply(exports,arguments)
+},{"dup":11}],106:[function(require,module,exports){
+arguments[4][12][0].apply(exports,arguments)
+},{"dup":12}],107:[function(require,module,exports){
+arguments[4][13][0].apply(exports,arguments)
+},{"../Stream":105,"../base":106,"../runSource":141,"../sink/Pipe":150,"./build":109,"dup":13}],108:[function(require,module,exports){
+arguments[4][14][0].apply(exports,arguments)
+},{"../base":106,"./combine":110,"dup":14}],109:[function(require,module,exports){
+/** @license MIT License (c) copyright 2010-2016 original author or authors */
+/** @author Brian Cavalier */
+/** @author John Hann */
+
+var streamOf = require('../source/core').of;
+var continueWith = require('./continueWith').continueWith;
+
+exports.concat = concat;
+exports.cycle = cycle;
+exports.cons = cons;
+
+/**
+ * @param {*} x value to prepend
+ * @param {Stream} stream
+ * @returns {Stream} new stream with x prepended
+ */
+function cons(x, stream) {
+	return concat(streamOf(x), stream);
+}
+
+/**
+ * @param {Stream} left
+ * @param {Stream} right
+ * @returns {Stream} new stream containing all events in left followed by all
+ *  events in right.  This *timeshifts* right to the end of left.
+ */
+function concat(left, right) {
+	return continueWith(function() {
+		return right;
+	}, left);
+}
+
+/**
+ * @deprecated
+ * Tie stream into a circle, creating an infinite stream
+ * @param {Stream} stream
+ * @returns {Stream} new infinite stream
+ */
+function cycle(stream) {
+	return continueWith(function cycleNext() {
+		return cycle(stream);
+	}, stream);
+}
+
+},{"../source/core":154,"./continueWith":112}],110:[function(require,module,exports){
+/** @license MIT License (c) copyright 2010-2016 original author or authors */
+/** @author Brian Cavalier */
+/** @author John Hann */
+
+var Stream = require('../Stream');
+var transform = require('./transform');
+var core = require('../source/core');
+var Pipe = require('../sink/Pipe');
+var IndexSink = require('../sink/IndexSink');
+var dispose = require('../disposable/dispose');
+var base = require('../base');
+var invoke = require('../invoke');
+
+var hasValue = IndexSink.hasValue;
+
+var map = base.map;
+var tail = base.tail;
+
+exports.combineArray = combineArray;
+exports.combine = combine;
+
+/**
+ * Combine latest events from all input streams
+ * @param {function(...events):*} f function to combine most recent events
+ * @returns {Stream} stream containing the result of applying f to the most recent
+ *  event of each input stream, whenever a new event arrives on any stream.
+ */
+function combine(f /*, ...streams */) {
+	return combineArray(f, tail(arguments));
+}
+
+/**
+ * Combine latest events from all input streams
+ * @param {function(...events):*} f function to combine most recent events
+ * @param {[Stream]} streams most recent events
+ * @returns {Stream} stream containing the result of applying f to the most recent
+ *  event of each input stream, whenever a new event arrives on any stream.
+ */
+function combineArray(f, streams) {
+	var l = streams.length;
+	return l === 0 ? core.empty()
+		 : l === 1 ? transform.map(f, streams[0])
+		 : new Stream(combineSources(f, streams));
+}
+
+function combineSources(f, streams) {
+	return new Combine(f, map(getSource, streams))
+}
+
+function getSource(stream) {
+	return stream.source;
+}
+
+function Combine(f, sources) {
+	this.f = f;
+	this.sources = sources;
+}
+
+Combine.prototype.run = function(sink, scheduler) {
+	var l = this.sources.length;
+	var disposables = new Array(l);
+	var sinks = new Array(l);
+
+	var mergeSink = new CombineSink(disposables, sinks, sink, this.f);
+
+	for(var indexSink, i=0; i<l; ++i) {
+		indexSink = sinks[i] = new IndexSink(i, mergeSink);
+		disposables[i] = this.sources[i].run(indexSink, scheduler);
+	}
+
+	return dispose.all(disposables);
+};
+
+function CombineSink(disposables, sinks, sink, f) {
+	this.sink = sink;
+	this.disposables = disposables;
+	this.sinks = sinks;
+	this.f = f;
+	this.values = new Array(sinks.length);
+	this.ready = false;
+	this.activeCount = sinks.length;
+}
+
+CombineSink.prototype.error = Pipe.prototype.error;
+
+CombineSink.prototype.event = function(t, indexedValue) {
+	if(!this.ready) {
+		this.ready = this.sinks.every(hasValue);
+	}
+
+	this.values[indexedValue.index] = indexedValue.value;
+	if(this.ready) {
+		this.sink.event(t, invoke(this.f, this.values));
+	}
+};
+
+CombineSink.prototype.end = function(t, indexedValue) {
+	dispose.tryDispose(t, this.disposables[indexedValue.index], this.sink);
+	if(--this.activeCount === 0) {
+		this.sink.end(t, indexedValue.value);
+	}
+};
+
+},{"../Stream":105,"../base":106,"../disposable/dispose":134,"../invoke":139,"../sink/IndexSink":148,"../sink/Pipe":150,"../source/core":154,"./transform":129}],111:[function(require,module,exports){
+arguments[4][17][0].apply(exports,arguments)
+},{"./mergeConcurrently":120,"./transform":129,"dup":17}],112:[function(require,module,exports){
+arguments[4][18][0].apply(exports,arguments)
+},{"../Promise":103,"../Stream":105,"../disposable/dispose":134,"../sink/Pipe":150,"dup":18}],113:[function(require,module,exports){
+arguments[4][19][0].apply(exports,arguments)
+},{"../Stream":105,"../disposable/dispose":134,"../scheduler/PropagateTask":142,"../sink/Pipe":150,"dup":19}],114:[function(require,module,exports){
+arguments[4][20][0].apply(exports,arguments)
+},{"../Stream":105,"../base":106,"../disposable/dispose":134,"../source/ValueSource":153,"../source/tryEvent":163,"dup":20}],115:[function(require,module,exports){
+arguments[4][21][0].apply(exports,arguments)
+},{"../Stream":105,"../fusion/Filter":136,"../sink/Pipe":150,"dup":21}],116:[function(require,module,exports){
+arguments[4][22][0].apply(exports,arguments)
+},{"./mergeConcurrently":120,"./transform":129,"dup":22}],117:[function(require,module,exports){
+arguments[4][23][0].apply(exports,arguments)
+},{"../Stream":105,"../disposable/dispose":134,"../scheduler/PropagateTask":142,"../sink/Pipe":150,"dup":23}],118:[function(require,module,exports){
+arguments[4][24][0].apply(exports,arguments)
+},{"../Stream":105,"../sink/Pipe":150,"dup":24}],119:[function(require,module,exports){
+/** @license MIT License (c) copyright 2010-2016 original author or authors */
+/** @author Brian Cavalier */
+/** @author John Hann */
+
+var Stream = require('../Stream');
+var Pipe = require('../sink/Pipe');
+var IndexSink = require('../sink/IndexSink');
+var empty = require('../source/core').empty;
+var dispose = require('../disposable/dispose');
+var base = require('../base');
+
+var copy = base.copy;
+var reduce = base.reduce;
+
+exports.merge = merge;
+exports.mergeArray = mergeArray;
+
+/**
+ * @returns {Stream} stream containing events from all streams in the argument
+ * list in time order.  If two events are simultaneous they will be merged in
+ * arbitrary order.
+ */
+function merge(/*...streams*/) {
+	return mergeArray(copy(arguments));
+}
+
+/**
+ * @param {Array} streams array of stream to merge
+ * @returns {Stream} stream containing events from all input observables
+ * in time order.  If two events are simultaneous they will be merged in
+ * arbitrary order.
+ */
+function mergeArray(streams) {
+    var l = streams.length;
+    return l === 0 ? empty()
+		 : l === 1 ? streams[0]
+		 : new Stream(mergeSources(streams));
+}
+
+/**
+ * This implements fusion/flattening for merge.  It will
+ * fuse adjacent merge operations.  For example:
+ * - a.merge(b).merge(c) effectively becomes merge(a, b, c)
+ * - merge(a, merge(b, c)) effectively becomes merge(a, b, c)
+ * It does this by concatenating the sources arrays of
+ * any nested Merge sources, in effect "flattening" nested
+ * merge operations into a single merge.
+ */
+function mergeSources(streams) {
+	return new Merge(reduce(appendSources, [], streams))
+}
+
+function appendSources(sources, stream) {
+	var source = stream.source;
+	return source instanceof Merge
+		? sources.concat(source.sources)
+		: sources.concat(source)
+}
+
+function Merge(sources) {
+	this.sources = sources;
+}
+
+Merge.prototype.run = function(sink, scheduler) {
+	var l = this.sources.length;
+	var disposables = new Array(l);
+	var sinks = new Array(l);
+
+	var mergeSink = new MergeSink(disposables, sinks, sink);
+
+	for(var indexSink, i=0; i<l; ++i) {
+		indexSink = sinks[i] = new IndexSink(i, mergeSink);
+		disposables[i] = this.sources[i].run(indexSink, scheduler);
+	}
+
+	return dispose.all(disposables);
+};
+
+function MergeSink(disposables, sinks, sink) {
+	this.sink = sink;
+	this.disposables = disposables;
+	this.activeCount = sinks.length;
+}
+
+MergeSink.prototype.error = Pipe.prototype.error;
+
+MergeSink.prototype.event = function(t, indexValue) {
+	this.sink.event(t, indexValue.value);
+};
+
+MergeSink.prototype.end = function(t, indexedValue) {
+	dispose.tryDispose(t, this.disposables[indexedValue.index], this.sink);
+	if(--this.activeCount === 0) {
+		this.sink.end(t, indexedValue.value);
+	}
+};
+
+},{"../Stream":105,"../base":106,"../disposable/dispose":134,"../sink/IndexSink":148,"../sink/Pipe":150,"../source/core":154}],120:[function(require,module,exports){
+/** @license MIT License (c) copyright 2010-2016 original author or authors */
+/** @author Brian Cavalier */
+/** @author John Hann */
+
+var Stream = require('../Stream');
+var dispose = require('../disposable/dispose');
+var LinkedList = require('../LinkedList');
+
+exports.mergeConcurrently = mergeConcurrently;
+
+function mergeConcurrently(concurrency, stream) {
+	return new Stream(new MergeConcurrently(concurrency, stream.source));
+}
+
+function MergeConcurrently(concurrency, source) {
+	this.concurrency = concurrency;
+	this.source = source;
+}
+
+MergeConcurrently.prototype.run = function(sink, scheduler) {
+	return new Outer(this.concurrency, this.source, sink, scheduler);
+};
+
+function Outer(concurrency, source, sink, scheduler) {
+	this.concurrency = concurrency;
+	this.sink = sink;
+	this.scheduler = scheduler;
+	this.pending = [];
+	this.current = new LinkedList();
+	this.disposable = dispose.once(source.run(this, scheduler));
+	this.active = true;
+}
+
+Outer.prototype.event = function(t, x) {
+	this._addInner(t, x);
+};
+
+Outer.prototype._addInner = function(t, stream) {
+	if(this.current.length < this.concurrency) {
+		this._startInner(t, stream);
+	} else {
+		this.pending.push(stream);
+	}
+};
+
+Outer.prototype._startInner = function(t, stream) {
+	var innerSink = new Inner(t, this, this.sink);
+	this.current.add(innerSink);
+	innerSink.disposable = stream.source.run(innerSink, this.scheduler);
+};
+
+Outer.prototype.end = function(t, x) {
+	this.active = false;
+	dispose.tryDispose(t, this.disposable, this.sink);
+	this._checkEnd(t, x);
+};
+
+Outer.prototype.error = function(t, e) {
+	this.active = false;
+	this.sink.error(t, e);
+};
+
+Outer.prototype.dispose = function() {
+	this.active = false;
+	this.pending.length = 0;
+	return Promise.all([this.disposable.dispose(), this.current.dispose()]);
+};
+
+Outer.prototype._endInner = function(t, x, inner) {
+	this.current.remove(inner);
+	dispose.tryDispose(t, inner, this);
+
+	if(this.pending.length === 0) {
+		this._checkEnd(t, x);
+	} else {
+		this._startInner(t, this.pending.shift());
+	}
+};
+
+Outer.prototype._checkEnd = function(t, x) {
+	if(!this.active && this.current.isEmpty()) {
+		this.sink.end(t, x);
+	}
+};
+
+function Inner(time, outer, sink) {
+	this.prev = this.next = null;
+	this.time = time;
+	this.outer = outer;
+	this.sink = sink;
+	this.disposable = void 0;
+}
+
+Inner.prototype.event = function(t, x) {
+	this.sink.event(Math.max(t, this.time), x);
+};
+
+Inner.prototype.end = function(t, x) {
+	this.outer._endInner(Math.max(t, this.time), x, this);
+};
+
+Inner.prototype.error = function(t, e) {
+	this.outer.error(Math.max(t, this.time), e);
+};
+
+Inner.prototype.dispose = function() {
+	return this.disposable.dispose();
+};
+
+},{"../LinkedList":102,"../Stream":105,"../disposable/dispose":134}],121:[function(require,module,exports){
+arguments[4][28][0].apply(exports,arguments)
+},{"../base":106,"../runSource":141,"dup":28}],122:[function(require,module,exports){
+/** @license MIT License (c) copyright 2010-2016 original author or authors */
+/** @author Brian Cavalier */
+/** @author John Hann */
+
+var Stream = require('../Stream');
+var fatal = require('../fatalError');
+var just = require('../source/core').of;
+
+exports.fromPromise = fromPromise;
+exports.awaitPromises = awaitPromises;
+
+/**
+ * Create a stream containing only the promise's fulfillment
+ * value at the time it fulfills.
+ * @param {Promise<T>} p promise
+ * @return {Stream<T>} stream containing promise's fulfillment value.
+ *  If the promise rejects, the stream will error
+ */
+function fromPromise(p) {
+	return awaitPromises(just(p));
+}
+
+/**
+ * Turn a Stream<Promise<T>> into Stream<T> by awaiting each promise.
+ * Event order is preserved.
+ * @param {Stream<Promise<T>>} stream
+ * @return {Stream<T>} stream of fulfillment values.  The stream will
+ * error if any promise rejects.
+ */
+function awaitPromises(stream) {
+	return new Stream(new Await(stream.source));
+}
+
+function Await(source) {
+	this.source = source;
+}
+
+Await.prototype.run = function(sink, scheduler) {
+	return this.source.run(new AwaitSink(sink, scheduler), scheduler);
+};
+
+function AwaitSink(sink, scheduler) {
+	this.sink = sink;
+	this.scheduler = scheduler;
+	this.queue = Promise.resolve();
+	var self = this;
+
+	// Pre-create closures, to avoid creating them per event
+	this._eventBound = function(x) {
+		self.sink.event(self.scheduler.now(), x);
+	};
+
+	this._endBound = function(x) {
+		self.sink.end(self.scheduler.now(), x);
+	};
+
+	this._errorBound = function(e) {
+		self.sink.error(self.scheduler.now(), e);
+	};
+}
+
+AwaitSink.prototype.event = function(t, promise) {
+	var self = this;
+	this.queue = this.queue.then(function() {
+		return self._event(promise);
+	}).catch(this._errorBound);
+};
+
+AwaitSink.prototype.end = function(t, x) {
+	var self = this;
+	this.queue = this.queue.then(function() {
+		return self._end(x);
+	}).catch(this._errorBound);
+};
+
+AwaitSink.prototype.error = function(t, e) {
+	var self = this;
+	// Don't resolve error values, propagate directly
+	this.queue = this.queue.then(function() {
+		return self._errorBound(e);
+	}).catch(fatal);
+};
+
+AwaitSink.prototype._event = function(promise) {
+	return promise.then(this._eventBound);
+};
+
+AwaitSink.prototype._end = function(x) {
+	return Promise.resolve(x).then(this._endBound);
+};
+
+},{"../Stream":105,"../fatalError":135,"../source/core":154}],123:[function(require,module,exports){
+arguments[4][30][0].apply(exports,arguments)
+},{"../Stream":105,"../base":106,"../disposable/dispose":134,"../invoke":139,"../sink/Pipe":150,"dup":30}],124:[function(require,module,exports){
+arguments[4][31][0].apply(exports,arguments)
+},{"../Stream":105,"../disposable/dispose":134,"../sink/Pipe":150,"../source/core":154,"dup":31}],125:[function(require,module,exports){
+/** @license MIT License (c) copyright 2010-2016 original author or authors */
+/** @author Brian Cavalier */
+/** @author John Hann */
+
+var Stream = require('../Stream');
+var MulticastSource = require('@most/multicast').MulticastSource;
+var until = require('./timeslice').takeUntil;
+var mergeConcurrently = require('./mergeConcurrently').mergeConcurrently;
+var map = require('./transform').map;
+
+exports.switch = switchLatest;
+
+/**
+ * Given a stream of streams, return a new stream that adopts the behavior
+ * of the most recent inner stream.
+ * @param {Stream} stream of streams on which to switch
+ * @returns {Stream} switching stream
+ */
+function switchLatest(stream) {
+	var upstream = new Stream(new MulticastSource(stream.source));
+
+	return mergeConcurrently(1, map(untilNext, upstream));
+
+	function untilNext(s) {
+		return until(upstream, s);
+	}
+}
+
+},{"../Stream":105,"./mergeConcurrently":120,"./timeslice":126,"./transform":129,"@most/multicast":166}],126:[function(require,module,exports){
+arguments[4][33][0].apply(exports,arguments)
+},{"../Stream":105,"../base":106,"../combinator/flatMap":116,"../disposable/dispose":134,"../sink/Pipe":150,"dup":33}],127:[function(require,module,exports){
+arguments[4][34][0].apply(exports,arguments)
+},{"../Stream":105,"../sink/Pipe":150,"dup":34}],128:[function(require,module,exports){
+arguments[4][35][0].apply(exports,arguments)
+},{"../Stream":105,"dup":35}],129:[function(require,module,exports){
+arguments[4][36][0].apply(exports,arguments)
+},{"../Stream":105,"../fusion/Map":138,"dup":36}],130:[function(require,module,exports){
+arguments[4][37][0].apply(exports,arguments)
+},{"../Queue":104,"../Stream":105,"../base":106,"../disposable/dispose":134,"../invoke":139,"../sink/IndexSink":148,"../sink/Pipe":150,"../source/core":154,"./transform":129,"dup":37}],131:[function(require,module,exports){
+arguments[4][38][0].apply(exports,arguments)
+},{"dup":38}],132:[function(require,module,exports){
+arguments[4][39][0].apply(exports,arguments)
+},{"dup":39}],133:[function(require,module,exports){
+arguments[4][40][0].apply(exports,arguments)
+},{"dup":40}],134:[function(require,module,exports){
+arguments[4][41][0].apply(exports,arguments)
+},{"../Promise":103,"../base":106,"./Disposable":132,"./SettableDisposable":133,"dup":41}],135:[function(require,module,exports){
+arguments[4][42][0].apply(exports,arguments)
+},{"dup":42}],136:[function(require,module,exports){
+arguments[4][43][0].apply(exports,arguments)
+},{"../sink/Pipe":150,"dup":43}],137:[function(require,module,exports){
+arguments[4][44][0].apply(exports,arguments)
+},{"../sink/Pipe":150,"dup":44}],138:[function(require,module,exports){
+arguments[4][45][0].apply(exports,arguments)
+},{"../base":106,"../sink/Pipe":150,"./Filter":136,"./FilterMap":137,"dup":45}],139:[function(require,module,exports){
+arguments[4][46][0].apply(exports,arguments)
+},{"dup":46}],140:[function(require,module,exports){
+arguments[4][47][0].apply(exports,arguments)
+},{"dup":47}],141:[function(require,module,exports){
+arguments[4][48][0].apply(exports,arguments)
+},{"./disposable/dispose":134,"./scheduler/defaultScheduler":144,"./sink/Observer":149,"dup":48}],142:[function(require,module,exports){
+arguments[4][49][0].apply(exports,arguments)
+},{"../fatalError":135,"dup":49}],143:[function(require,module,exports){
+/** @license MIT License (c) copyright 2010-2016 original author or authors */
+/** @author Brian Cavalier */
+/** @author John Hann */
+
+var base = require('./../base');
+
+module.exports = Scheduler;
+
+function ScheduledTask(delay, period, task, scheduler) {
+	this.time = delay;
+	this.period = period;
+	this.task = task;
+	this.scheduler = scheduler;
+	this.active = true;
+}
+
+ScheduledTask.prototype.run = function() {
+	return this.task.run(this.time);
+};
+
+ScheduledTask.prototype.error = function(e) {
+	return this.task.error(this.time, e);
+};
+
+ScheduledTask.prototype.cancel = function() {
+	this.scheduler.cancel(this);
+	return this.task.dispose();
+};
+
+function runTask(task) {
+	try {
+		return task.run();
+	} catch(e) {
+		return task.error(e);
+	}
+}
+
+function Scheduler(timer) {
+	this.timer = timer;
+
+	this._timer = null;
+	this._nextArrival = 0;
+	this._tasks = [];
+
+	var self = this;
+	this._runReadyTasksBound = function() {
+		self._runReadyTasks(self.now());
+	};
+}
+
+Scheduler.prototype.now = function() {
+	return this.timer.now();
+};
+
+Scheduler.prototype.asap = function(task) {
+	return this.schedule(0, -1, task);
+};
+
+Scheduler.prototype.delay = function(delay, task) {
+	return this.schedule(delay, -1, task);
+};
+
+Scheduler.prototype.periodic = function(period, task) {
+	return this.schedule(0, period, task);
+};
+
+Scheduler.prototype.schedule = function(delay, period, task) {
+	var now = this.now();
+	var st = new ScheduledTask(now + Math.max(0, delay), period, task, this);
+
+	insertByTime(st, this._tasks);
+	this._scheduleNextRun(now);
+	return st;
+};
+
+Scheduler.prototype.cancel = function(task) {
+	task.active = false;
+	var i = binarySearch(task.time, this._tasks);
+
+	if(i >= 0 && i < this._tasks.length) {
+		var at = base.findIndex(task, this._tasks[i].events);
+		if(at >= 0) {
+			this._tasks[i].events.splice(at, 1);
+			this._reschedule();
+		}
+	}
+};
+
+Scheduler.prototype.cancelAll = function(f) {
+	for(var i=0; i<this._tasks.length; ++i) {
+		removeAllFrom(f, this._tasks[i]);
+	}
+	this._reschedule();
+};
+
+function removeAllFrom(f, timeslot) {
+	timeslot.events = base.removeAll(f, timeslot.events);
+}
+
+Scheduler.prototype._reschedule = function() {
+	if(this._tasks.length === 0) {
+		this._unschedule();
+	} else {
+		this._scheduleNextRun(this.now());
+	}
+};
+
+Scheduler.prototype._unschedule = function() {
+	this.timer.clearTimer(this._timer);
+	this._timer = null;
+};
+
+Scheduler.prototype._scheduleNextRun = function(now) {
+	if(this._tasks.length === 0) {
+		return;
+	}
+
+	var nextArrival = this._tasks[0].time;
+
+	if(this._timer === null) {
+		this._scheduleNextArrival(nextArrival, now);
+	} else if(nextArrival < this._nextArrival) {
+		this._unschedule();
+		this._scheduleNextArrival(nextArrival, now);
+	}
+};
+
+Scheduler.prototype._scheduleNextArrival = function(nextArrival, now) {
+	this._nextArrival = nextArrival;
+	var delay = Math.max(0, nextArrival - now);
+	this._timer = this.timer.setTimer(this._runReadyTasksBound, delay);
+};
+
+
+Scheduler.prototype._runReadyTasks = function(now) {
+	this._timer = null;
+
+	this._tasks = this._findAndRunTasks(now);
+
+	this._scheduleNextRun(this.now());
+};
+
+Scheduler.prototype._findAndRunTasks = function(now) {
+	var tasks = this._tasks;
+	var l = tasks.length;
+	var i = 0;
+
+	while(i < l && tasks[i].time <= now) {
+		++i;
+	}
+
+	this._tasks = tasks.slice(i);
+
+	// Run all ready tasks
+	for (var j = 0; j < i; ++j) {
+		this._tasks = runTasks(tasks[j], this._tasks);
+	}
+	return this._tasks;
+};
+
+function runTasks(timeslot, tasks) {
+	var events = timeslot.events;
+	for(var i=0; i<events.length; ++i) {
+		var task = events[i];
+
+		if(task.active) {
+			runTask(task);
+
+			// Reschedule periodic repeating tasks
+			// Check active again, since a task may have canceled itself
+			if(task.period >= 0) {
+				task.time = task.time + task.period;
+				insertByTime(task, tasks);
+			}
+		}
+	}
+
+	return tasks;
+}
+
+function insertByTime(task, timeslots) {
+	var l = timeslots.length;
+
+	if(l === 0) {
+		timeslots.push(newTimeslot(task.time, [task]));
+		return;
+	}
+
+	var i = binarySearch(task.time, timeslots);
+
+	if(i >= l) {
+		timeslots.push(newTimeslot(task.time, [task]));
+	} else if(task.time === timeslots[i].time) {
+		timeslots[i].events.push(task);
+	} else {
+		timeslots.splice(i, 0, newTimeslot(task.time, [task]));
+	}
+}
+
+function binarySearch(t, sortedArray) {
+	var lo = 0;
+	var hi = sortedArray.length;
+	var mid, y;
+
+	while (lo < hi) {
+		mid = Math.floor((lo + hi) / 2);
+		y = sortedArray[mid];
+
+		if (t === y.time) {
+			return mid;
+		} else if (t < y.time) {
+			hi = mid;
+		} else {
+			lo = mid + 1;
+		}
+	}
+	return hi;
+}
+
+function newTimeslot(t, events) {
+	return { time: t, events: events };
+}
+
+},{"./../base":106}],144:[function(require,module,exports){
+arguments[4][51][0].apply(exports,arguments)
+},{"./Scheduler":143,"./nodeTimer":145,"./timeoutTimer":146,"_process":180,"dup":51}],145:[function(require,module,exports){
+arguments[4][52][0].apply(exports,arguments)
+},{"../defer":131,"dup":52}],146:[function(require,module,exports){
+arguments[4][53][0].apply(exports,arguments)
+},{"dup":53}],147:[function(require,module,exports){
+arguments[4][54][0].apply(exports,arguments)
+},{"../defer":131,"dup":54}],148:[function(require,module,exports){
+arguments[4][55][0].apply(exports,arguments)
+},{"./Pipe":150,"dup":55}],149:[function(require,module,exports){
+arguments[4][56][0].apply(exports,arguments)
+},{"dup":56}],150:[function(require,module,exports){
+arguments[4][57][0].apply(exports,arguments)
+},{"dup":57}],151:[function(require,module,exports){
+arguments[4][58][0].apply(exports,arguments)
+},{"../disposable/dispose":134,"../sink/DeferredSink":147,"./tryEvent":163,"dup":58}],152:[function(require,module,exports){
+arguments[4][59][0].apply(exports,arguments)
+},{"../disposable/dispose":134,"./tryEvent":163,"dup":59}],153:[function(require,module,exports){
+/** @license MIT License (c) copyright 2010-2016 original author or authors */
+/** @author Brian Cavalier */
+/** @author John Hann */
+
+var PropagateTask = require('../scheduler/PropagateTask');
+
+module.exports = ValueSource;
+
+function ValueSource(emit, x) {
+	this.emit = emit;
+	this.value = x;
+}
+
+ValueSource.prototype.run = function(sink, scheduler) {
+	return new ValueProducer(this.emit, this.value, sink, scheduler);
+};
+
+function ValueProducer(emit, x, sink, scheduler) {
+	this.task = scheduler.asap(new PropagateTask(emit, x, sink));
+}
+
+ValueProducer.prototype.dispose = function() {
+	return this.task.cancel();
+};
+
+},{"../scheduler/PropagateTask":142}],154:[function(require,module,exports){
+arguments[4][62][0].apply(exports,arguments)
+},{"../Stream":105,"../disposable/dispose":134,"../scheduler/PropagateTask":142,"../source/ValueSource":153,"dup":62}],155:[function(require,module,exports){
+/** @license MIT License (c) copyright 2010-2016 original author or authors */
+/** @author Brian Cavalier */
+/** @author John Hann */
+
+var Stream = require('../Stream');
+var MulticastSource = require('@most/multicast').MulticastSource;
+var DeferredSink = require('../sink/DeferredSink');
+var tryEvent = require('./tryEvent');
+
+exports.create = create;
+
+function create(run) {
+	return new Stream(new MulticastSource(new SubscriberSource(run)));
+}
+
+function SubscriberSource(subscribe) {
+	this._subscribe = subscribe;
+}
+
+SubscriberSource.prototype.run = function(sink, scheduler) {
+	return new Subscription(new DeferredSink(sink), scheduler, this._subscribe);
+};
+
+function Subscription(sink, scheduler, subscribe) {
+	this.sink = sink;
+	this.scheduler = scheduler;
+	this.active = true;
+	this._unsubscribe = this._init(subscribe);
+}
+
+Subscription.prototype._init = function(subscribe) {
+	var s = this;
+
+	try {
+		return subscribe(add, end, error);
+	} catch(e) {
+		error(e);
+	}
+
+	function add(x) {
+		s._add(x);
+	}
+	function end(x) {
+		s._end(x);
+	}
+	function error(e) {
+		s._error(e);
+	}
+};
+
+Subscription.prototype._add = function(x) {
+	if(!this.active) {
+		return;
+	}
+	tryEvent.tryEvent(this.scheduler.now(), x, this.sink);
+};
+
+Subscription.prototype._end = function(x) {
+	if(!this.active) {
+		return;
+	}
+	this.active = false;
+	tryEvent.tryEnd(this.scheduler.now(), x, this.sink);
+};
+
+Subscription.prototype._error = function(x) {
+	this.active = false;
+	this.sink.error(this.scheduler.now(), x);
+};
+
+Subscription.prototype.dispose = function() {
+	this.active = false;
+	if(typeof this._unsubscribe === 'function') {
+		return this._unsubscribe.call(void 0);
+	}
+};
+
+},{"../Stream":105,"../sink/DeferredSink":147,"./tryEvent":163,"@most/multicast":166}],156:[function(require,module,exports){
+arguments[4][64][0].apply(exports,arguments)
+},{"../base":106,"../iterable":140,"./fromArray":157,"./fromIterable":159,"dup":64}],157:[function(require,module,exports){
+arguments[4][65][0].apply(exports,arguments)
+},{"../Stream":105,"../scheduler/PropagateTask":142,"dup":65}],158:[function(require,module,exports){
+/** @license MIT License (c) copyright 2010-2016 original author or authors */
+/** @author Brian Cavalier */
+/** @author John Hann */
+
+var Stream = require('../Stream');
+var MulticastSource = require('@most/multicast').MulticastSource;
+var EventTargetSource = require('./EventTargetSource');
+var EventEmitterSource = require('./EventEmitterSource');
+
+exports.fromEvent = fromEvent;
+
+/**
+ * Create a stream from an EventTarget, such as a DOM Node, or EventEmitter.
+ * @param {String} event event type name, e.g. 'click'
+ * @param {EventTarget|EventEmitter} source EventTarget or EventEmitter
+ * @param {boolean?} useCapture for DOM events, whether to use
+ *  capturing--passed as 3rd parameter to addEventListener.
+ * @returns {Stream} stream containing all events of the specified type
+ * from the source.
+ */
+function fromEvent(event, source /*, useCapture = false */) {
+	var s;
+
+	if(typeof source.addEventListener === 'function' && typeof source.removeEventListener === 'function') {
+		var capture = arguments.length > 2 && !!arguments[2];
+		s = new MulticastSource(new EventTargetSource(event, source, capture));
+	} else if(typeof source.addListener === 'function' && typeof source.removeListener === 'function') {
+		s = new EventEmitterSource(event, source);
+	} else {
+		throw new Error('source must support addEventListener/removeEventListener or addListener/removeListener');
+	}
+
+	return new Stream(s);
+}
+
+},{"../Stream":105,"./EventEmitterSource":151,"./EventTargetSource":152,"@most/multicast":166}],159:[function(require,module,exports){
+arguments[4][67][0].apply(exports,arguments)
+},{"../Stream":105,"../iterable":140,"../scheduler/PropagateTask":142,"dup":67}],160:[function(require,module,exports){
+arguments[4][68][0].apply(exports,arguments)
+},{"../Stream":105,"../base":106,"dup":68}],161:[function(require,module,exports){
+arguments[4][69][0].apply(exports,arguments)
+},{"../Stream":105,"dup":69}],162:[function(require,module,exports){
+/** @license MIT License (c) copyright 2010-2016 original author or authors */
+/** @author Brian Cavalier */
+/** @author John Hann */
+
+var Stream = require('../Stream');
+var dispose = require('../disposable/dispose');
+var MulticastSource = require('@most/multicast').MulticastSource;
+var PropagateTask = require('../scheduler/PropagateTask');
+
+exports.periodic = periodic;
+
+/**
+ * Create a stream that emits the current time periodically
+ * @param {Number} period periodicity of events in millis
+ * @param {*) value value to emit each period
+ * @returns {Stream} new stream that emits the current time every period
+ */
+function periodic(period, value) {
+	return new Stream(new MulticastSource(new Periodic(period, value)));
+}
+
+function Periodic(period, value) {
+	this.period = period;
+	this.value = value;
+}
+
+Periodic.prototype.run = function(sink, scheduler) {
+	var task = scheduler.periodic(this.period, new PropagateTask(emit, this.value, sink));
+	return dispose.create(cancelTask, task);
+};
+
+function cancelTask(task) {
+	task.cancel();
+}
+
+function emit(t, x, sink) {
+	sink.event(t, x);
+}
+
+},{"../Stream":105,"../disposable/dispose":134,"../scheduler/PropagateTask":142,"@most/multicast":166}],163:[function(require,module,exports){
+arguments[4][71][0].apply(exports,arguments)
+},{"dup":71}],164:[function(require,module,exports){
+arguments[4][72][0].apply(exports,arguments)
+},{"../Stream":105,"dup":72}],165:[function(require,module,exports){
+/** @license MIT License (c) copyright 2010-2016 original author or authors */
+/** @author Brian Cavalier */
+/** @author John Hann */
+
+var Stream = require('./lib/Stream');
+var base = require('./lib/base');
+var core = require('./lib/source/core');
+var from = require('./lib/source/from').from;
+var periodic = require('./lib/source/periodic').periodic;
+
+/**
+ * Core stream type
+ * @type {Stream}
+ */
+exports.Stream = Stream;
+
+// Add of and empty to constructor for fantasy-land compat
+exports.of       = Stream.of    = core.of;
+exports.just     = core.of; // easier ES6 import alias
+exports.empty    = Stream.empty = core.empty;
+exports.never    = core.never;
+exports.from     = from;
+exports.periodic = periodic;
+
+//-----------------------------------------------------------------------
+// Creating
+
+var create = require('./lib/source/create');
+
+/**
+ * Create a stream by imperatively pushing events.
+ * @param {function(add:function(x), end:function(e)):function} run function
+ *  that will receive 2 functions as arguments, the first to add new values to the
+ *  stream and the second to end the stream. It may *return* a function that
+ *  will be called once all consumers have stopped observing the stream.
+ * @returns {Stream} stream containing all events added by run before end
+ */
+exports.create = create.create;
+
+//-----------------------------------------------------------------------
+// Adapting other sources
+
+var events = require('./lib/source/fromEvent');
+
+/**
+ * Create a stream of events from the supplied EventTarget or EventEmitter
+ * @param {String} event event name
+ * @param {EventTarget|EventEmitter} source EventTarget or EventEmitter. The source
+ *  must support either addEventListener/removeEventListener (w3c EventTarget:
+ *  http://www.w3.org/TR/DOM-Level-2-Events/events.html#Events-EventTarget),
+ *  or addListener/removeListener (node EventEmitter: http://nodejs.org/api/events.html)
+ * @returns {Stream} stream of events of the specified type from the source
+ */
+exports.fromEvent = events.fromEvent;
+
+//-----------------------------------------------------------------------
+// Observing
+
+var observe = require('./lib/combinator/observe');
+
+exports.observe = observe.observe;
+exports.forEach = observe.observe;
+exports.drain   = observe.drain;
+
+/**
+ * Process all the events in the stream
+ * @returns {Promise} promise that fulfills when the stream ends, or rejects
+ *  if the stream fails with an unhandled error.
+ */
+Stream.prototype.observe = Stream.prototype.forEach = function(f) {
+	return observe.observe(f, this);
+};
+
+/**
+ * Consume all events in the stream, without providing a function to process each.
+ * This causes a stream to become active and begin emitting events, and is useful
+ * in cases where all processing has been setup upstream via other combinators, and
+ * there is no need to process the terminal events.
+ * @returns {Promise} promise that fulfills when the stream ends, or rejects
+ *  if the stream fails with an unhandled error.
+ */
+Stream.prototype.drain = function() {
+	return observe.drain(this);
+};
+
+//-------------------------------------------------------
+
+var loop = require('./lib/combinator/loop').loop;
+
+exports.loop = loop;
+
+/**
+ * Generalized feedback loop. Call a stepper function for each event. The stepper
+ * will be called with 2 params: the current seed and the an event value.  It must
+ * return a new { seed, value } pair. The `seed` will be fed back into the next
+ * invocation of stepper, and the `value` will be propagated as the event value.
+ * @param {function(seed:*, value:*):{seed:*, value:*}} stepper loop step function
+ * @param {*} seed initial seed value passed to first stepper call
+ * @returns {Stream} new stream whose values are the `value` field of the objects
+ * returned by the stepper
+ */
+Stream.prototype.loop = function(stepper, seed) {
+	return loop(stepper, seed, this);
+};
+
+//-------------------------------------------------------
+
+var accumulate = require('./lib/combinator/accumulate');
+
+exports.scan   = accumulate.scan;
+exports.reduce = accumulate.reduce;
+
+/**
+ * Create a stream containing successive reduce results of applying f to
+ * the previous reduce result and the current stream item.
+ * @param {function(result:*, x:*):*} f reducer function
+ * @param {*} initial initial value
+ * @returns {Stream} new stream containing successive reduce results
+ */
+Stream.prototype.scan = function(f, initial) {
+	return accumulate.scan(f, initial, this);
+};
+
+/**
+ * Reduce the stream to produce a single result.  Note that reducing an infinite
+ * stream will return a Promise that never fulfills, but that may reject if an error
+ * occurs.
+ * @param {function(result:*, x:*):*} f reducer function
+ * @param {*} initial optional initial value
+ * @returns {Promise} promise for the file result of the reduce
+ */
+Stream.prototype.reduce = function(f, initial) {
+	return accumulate.reduce(f, initial, this);
+};
+
+//-----------------------------------------------------------------------
+// Building and extending
+
+var unfold = require('./lib/source/unfold');
+var iterate = require('./lib/source/iterate');
+var generate = require('./lib/source/generate');
+var build = require('./lib/combinator/build');
+
+exports.unfold    = unfold.unfold;
+exports.iterate   = iterate.iterate;
+exports.generate  = generate.generate;
+exports.cycle     = build.cycle;
+exports.concat    = build.concat;
+exports.startWith = build.cons;
+
+/**
+ * @deprecated
+ * Tie this stream into a circle, thus creating an infinite stream
+ * @returns {Stream} new infinite stream
+ */
+Stream.prototype.cycle = function() {
+	return build.cycle(this);
+};
+
+/**
+ * @param {Stream} tail
+ * @returns {Stream} new stream containing all items in this followed by
+ *  all items in tail
+ */
+Stream.prototype.concat = function(tail) {
+	return build.concat(this, tail);
+};
+
+/**
+ * @param {*} x value to prepend
+ * @returns {Stream} a new stream with x prepended
+ */
+Stream.prototype.startWith = function(x) {
+	return build.cons(x, this);
+};
+
+//-----------------------------------------------------------------------
+// Transforming
+
+var transform = require('./lib/combinator/transform');
+var applicative = require('./lib/combinator/applicative');
+
+exports.map      = transform.map;
+exports.constant = transform.constant;
+exports.tap      = transform.tap;
+exports.ap       = applicative.ap;
+
+/**
+ * Transform each value in the stream by applying f to each
+ * @param {function(*):*} f mapping function
+ * @returns {Stream} stream containing items transformed by f
+ */
+Stream.prototype.map = function(f) {
+	return transform.map(f, this);
+};
+
+/**
+ * Assume this stream contains functions, and apply each function to each item
+ * in the provided stream.  This generates, in effect, a cross product.
+ * @param {Stream} xs stream of items to which
+ * @returns {Stream} stream containing the cross product of items
+ */
+Stream.prototype.ap = function(xs) {
+	return applicative.ap(this, xs);
+};
+
+/**
+ * Replace each value in the stream with x
+ * @param {*} x
+ * @returns {Stream} stream containing items replaced with x
+ */
+Stream.prototype.constant = function(x) {
+	return transform.constant(x, this);
+};
+
+/**
+ * Perform a side effect for each item in the stream
+ * @param {function(x:*):*} f side effect to execute for each item. The
+ *  return value will be discarded.
+ * @returns {Stream} new stream containing the same items as this stream
+ */
+Stream.prototype.tap = function(f) {
+	return transform.tap(f, this);
+};
+
+//-----------------------------------------------------------------------
+// Transducer support
+
+var transduce = require('./lib/combinator/transduce');
+
+exports.transduce = transduce.transduce;
+
+/**
+ * Transform this stream by passing its events through a transducer.
+ * @param  {function} transducer transducer function
+ * @return {Stream} stream of events transformed by the transducer
+ */
+Stream.prototype.transduce = function(transducer) {
+	return transduce.transduce(transducer, this);
+};
+
+//-----------------------------------------------------------------------
+// FlatMapping
+
+var flatMap = require('./lib/combinator/flatMap');
+
+exports.flatMap = exports.chain = flatMap.flatMap;
+exports.join    = flatMap.join;
+
+/**
+ * Map each value in the stream to a new stream, and merge it into the
+ * returned outer stream. Event arrival times are preserved.
+ * @param {function(x:*):Stream} f chaining function, must return a Stream
+ * @returns {Stream} new stream containing all events from each stream returned by f
+ */
+Stream.prototype.flatMap = Stream.prototype.chain = function(f) {
+	return flatMap.flatMap(f, this);
+};
+
+/**
+ * Monadic join. Flatten a Stream<Stream<X>> to Stream<X> by merging inner
+ * streams to the outer. Event arrival times are preserved.
+ * @returns {Stream<X>} new stream containing all events of all inner streams
+ */
+Stream.prototype.join = function() {
+	return flatMap.join(this);
+};
+
+var continueWith = require('./lib/combinator/continueWith').continueWith;
+
+exports.continueWith = continueWith;
+exports.flatMapEnd = continueWith;
+
+/**
+ * Map the end event to a new stream, and begin emitting its values.
+ * @param {function(x:*):Stream} f function that receives the end event value,
+ * and *must* return a new Stream to continue with.
+ * @returns {Stream} new stream that emits all events from the original stream,
+ * followed by all events from the stream returned by f.
+ */
+Stream.prototype.continueWith = Stream.prototype.flatMapEnd = function(f) {
+	return continueWith(f, this);
+};
+
+var concatMap = require('./lib/combinator/concatMap').concatMap;
+
+exports.concatMap = concatMap;
+
+Stream.prototype.concatMap = function(f) {
+	return concatMap(f, this);
+};
+
+//-----------------------------------------------------------------------
+// Concurrent merging
+
+var mergeConcurrently = require('./lib/combinator/mergeConcurrently');
+
+exports.mergeConcurrently = mergeConcurrently.mergeConcurrently;
+
+/**
+ * Flatten a Stream<Stream<X>> to Stream<X> by merging inner
+ * streams to the outer, limiting the number of inner streams that may
+ * be active concurrently.
+ * @param {number} concurrency at most this many inner streams will be
+ *  allowed to be active concurrently.
+ * @return {Stream<X>} new stream containing all events of all inner
+ *  streams, with limited concurrency.
+ */
+Stream.prototype.mergeConcurrently = function(concurrency) {
+	return mergeConcurrently.mergeConcurrently(concurrency, this);
+};
+
+//-----------------------------------------------------------------------
+// Merging
+
+var merge = require('./lib/combinator/merge');
+
+exports.merge = merge.merge;
+exports.mergeArray = merge.mergeArray;
+
+/**
+ * Merge this stream and all the provided streams
+ * @returns {Stream} stream containing items from this stream and s in time
+ * order.  If two events are simultaneous they will be merged in
+ * arbitrary order.
+ */
+Stream.prototype.merge = function(/*...streams*/) {
+	return merge.mergeArray(base.cons(this, arguments));
+};
+
+//-----------------------------------------------------------------------
+// Combining
+
+var combine = require('./lib/combinator/combine');
+
+exports.combine = combine.combine;
+exports.combineArray = combine.combineArray;
+
+/**
+ * Combine latest events from all input streams
+ * @param {function(...events):*} f function to combine most recent events
+ * @returns {Stream} stream containing the result of applying f to the most recent
+ *  event of each input stream, whenever a new event arrives on any stream.
+ */
+Stream.prototype.combine = function(f /*, ...streams*/) {
+	return combine.combineArray(f, base.replace(this, 0, arguments));
+};
+
+//-----------------------------------------------------------------------
+// Sampling
+
+var sample = require('./lib/combinator/sample');
+
+exports.sample = sample.sample;
+exports.sampleWith = sample.sampleWith;
+
+/**
+ * When an event arrives on sampler, emit the latest event value from stream.
+ * @param {Stream} sampler stream of events at whose arrival time
+ *  signal's latest value will be propagated
+ * @returns {Stream} sampled stream of values
+ */
+Stream.prototype.sampleWith = function(sampler) {
+	return sample.sampleWith(sampler, this);
+};
+
+/**
+ * When an event arrives on this stream, emit the result of calling f with the latest
+ * values of all streams being sampled
+ * @param {function(...values):*} f function to apply to each set of sampled values
+ * @returns {Stream} stream of sampled and transformed values
+ */
+Stream.prototype.sample = function(f /* ...streams */) {
+	return sample.sampleArray(f, this, base.tail(arguments));
+};
+
+//-----------------------------------------------------------------------
+// Zipping
+
+var zip = require('./lib/combinator/zip');
+
+exports.zip = zip.zip;
+
+/**
+ * Pair-wise combine items with those in s. Given 2 streams:
+ * [1,2,3] zipWith f [4,5,6] -> [f(1,4),f(2,5),f(3,6)]
+ * Note: zip causes fast streams to buffer and wait for slow streams.
+ * @param {function(a:Stream, b:Stream, ...):*} f function to combine items
+ * @returns {Stream} new stream containing pairs
+ */
+Stream.prototype.zip = function(f /*, ...streams*/) {
+	return zip.zipArray(f, base.replace(this, 0, arguments));
+};
+
+//-----------------------------------------------------------------------
+// Switching
+
+var switchLatest = require('./lib/combinator/switch').switch;
+
+exports.switch       = switchLatest;
+exports.switchLatest = switchLatest;
+
+/**
+ * Given a stream of streams, return a new stream that adopts the behavior
+ * of the most recent inner stream.
+ * @returns {Stream} switching stream
+ */
+Stream.prototype.switch = Stream.prototype.switchLatest = function() {
+	return switchLatest(this);
+};
+
+//-----------------------------------------------------------------------
+// Filtering
+
+var filter = require('./lib/combinator/filter');
+
+exports.filter          = filter.filter;
+exports.skipRepeats     = exports.distinct   = filter.skipRepeats;
+exports.skipRepeatsWith = exports.distinctBy = filter.skipRepeatsWith;
+
+/**
+ * Retain only items matching a predicate
+ * stream:                           -12345678-
+ * filter(x => x % 2 === 0, stream): --2-4-6-8-
+ * @param {function(x:*):boolean} p filtering predicate called for each item
+ * @returns {Stream} stream containing only items for which predicate returns truthy
+ */
+Stream.prototype.filter = function(p) {
+	return filter.filter(p, this);
+};
+
+/**
+ * Skip repeated events, using === to compare items
+ * stream:           -abbcd-
+ * distinct(stream): -ab-cd-
+ * @returns {Stream} stream with no repeated events
+ */
+Stream.prototype.skipRepeats = function() {
+	return filter.skipRepeats(this);
+};
+
+/**
+ * Skip repeated events, using supplied equals function to compare items
+ * @param {function(a:*, b:*):boolean} equals function to compare items
+ * @returns {Stream} stream with no repeated events
+ */
+Stream.prototype.skipRepeatsWith = function(equals) {
+	return filter.skipRepeatsWith(equals, this);
+};
+
+//-----------------------------------------------------------------------
+// Slicing
+
+var slice = require('./lib/combinator/slice');
+
+exports.take      = slice.take;
+exports.skip      = slice.skip;
+exports.slice     = slice.slice;
+exports.takeWhile = slice.takeWhile;
+exports.skipWhile = slice.skipWhile;
+
+/**
+ * stream:          -abcd-
+ * take(2, stream): -ab|
+ * @param {Number} n take up to this many events
+ * @returns {Stream} stream containing at most the first n items from this stream
+ */
+Stream.prototype.take = function(n) {
+	return slice.take(n, this);
+};
+
+/**
+ * stream:          -abcd->
+ * skip(2, stream): ---cd->
+ * @param {Number} n skip this many events
+ * @returns {Stream} stream not containing the first n events
+ */
+Stream.prototype.skip = function(n) {
+	return slice.skip(n, this);
+};
+
+/**
+ * Slice a stream by event index. Equivalent to, but more efficient than
+ * stream.take(end).skip(start);
+ * NOTE: Negative start and end are not supported
+ * @param {Number} start skip all events before the start index
+ * @param {Number} end allow all events from the start index to the end index
+ * @returns {Stream} stream containing items where start <= index < end
+ */
+Stream.prototype.slice = function(start, end) {
+	return slice.slice(start, end, this);
+};
+
+/**
+ * stream:                        -123451234->
+ * takeWhile(x => x < 5, stream): -1234|
+ * @param {function(x:*):boolean} p predicate
+ * @returns {Stream} stream containing items up to, but not including, the
+ * first item for which p returns falsy.
+ */
+Stream.prototype.takeWhile = function(p) {
+	return slice.takeWhile(p, this);
+};
+
+/**
+ * stream:                        -123451234->
+ * skipWhile(x => x < 5, stream): -----51234->
+ * @param {function(x:*):boolean} p predicate
+ * @returns {Stream} stream containing items following *and including* the
+ * first item for which p returns falsy.
+ */
+Stream.prototype.skipWhile = function(p) {
+	return slice.skipWhile(p, this);
+};
+
+//-----------------------------------------------------------------------
+// Time slicing
+
+var timeslice = require('./lib/combinator/timeslice');
+
+exports.until  = exports.takeUntil = timeslice.takeUntil;
+exports.since  = exports.skipUntil = timeslice.skipUntil;
+exports.during = timeslice.during;
+
+/**
+ * stream:                    -a-b-c-d-e-f-g->
+ * signal:                    -------x
+ * takeUntil(signal, stream): -a-b-c-|
+ * @param {Stream} signal retain only events in stream before the first
+ * event in signal
+ * @returns {Stream} new stream containing only events that occur before
+ * the first event in signal.
+ */
+Stream.prototype.until = Stream.prototype.takeUntil = function(signal) {
+	return timeslice.takeUntil(signal, this);
+};
+
+/**
+ * stream:                    -a-b-c-d-e-f-g->
+ * signal:                    -------x
+ * takeUntil(signal, stream): -------d-e-f-g->
+ * @param {Stream} signal retain only events in stream at or after the first
+ * event in signal
+ * @returns {Stream} new stream containing only events that occur after
+ * the first event in signal.
+ */
+Stream.prototype.since = Stream.prototype.skipUntil = function(signal) {
+	return timeslice.skipUntil(signal, this);
+};
+
+/**
+ * stream:                    -a-b-c-d-e-f-g->
+ * timeWindow:                -----s
+ * s:                               -----t
+ * stream.during(timeWindow): -----c-d-e-|
+ * @param {Stream<Stream>} timeWindow a stream whose first event (s) represents
+ *  the window start time.  That event (s) is itself a stream whose first event (t)
+ *  represents the window end time
+ * @returns {Stream} new stream containing only events within the provided timespan
+ */
+Stream.prototype.during = function(timeWindow) {
+	return timeslice.during(timeWindow, this);
+};
+
+//-----------------------------------------------------------------------
+// Delaying
+
+var delay = require('./lib/combinator/delay').delay;
+
+exports.delay = delay;
+
+/**
+ * @param {Number} delayTime milliseconds to delay each item
+ * @returns {Stream} new stream containing the same items, but delayed by ms
+ */
+Stream.prototype.delay = function(delayTime) {
+	return delay(delayTime, this);
+};
+
+//-----------------------------------------------------------------------
+// Getting event timestamp
+
+var timestamp = require('./lib/combinator/timestamp').timestamp;
+
+exports.timestamp = timestamp;
+
+/**
+ * Expose event timestamps into the stream. Turns a Stream<X> into
+ * Stream<{time:t, value:X}>
+ * @returns {Stream<{time:number, value:*}>}
+ */
+Stream.prototype.timestamp = function() {
+	return timestamp(this);
+};
+
+//-----------------------------------------------------------------------
+// Rate limiting
+
+var limit = require('./lib/combinator/limit');
+
+exports.throttle = limit.throttle;
+exports.debounce = limit.debounce;
+
+/**
+ * Limit the rate of events
+ * stream:              abcd----abcd----
+ * throttle(2, stream): a-c-----a-c-----
+ * @param {Number} period time to suppress events
+ * @returns {Stream} new stream that skips events for throttle period
+ */
+Stream.prototype.throttle = function(period) {
+	return limit.throttle(period, this);
+};
+
+/**
+ * Wait for a burst of events to subside and emit only the last event in the burst
+ * stream:              abcd----abcd----
+ * debounce(2, stream): -----d-------d--
+ * @param {Number} period events occuring more frequently than this
+ *  on the provided scheduler will be suppressed
+ * @returns {Stream} new debounced stream
+ */
+Stream.prototype.debounce = function(period) {
+	return limit.debounce(period, this);
+};
+
+//-----------------------------------------------------------------------
+// Awaiting Promises
+
+var promises = require('./lib/combinator/promises');
+
+exports.fromPromise = promises.fromPromise;
+exports.await       = promises.awaitPromises;
+
+/**
+ * Await promises, turning a Stream<Promise<X>> into Stream<X>.  Preserves
+ * event order, but timeshifts events based on promise resolution time.
+ * @returns {Stream<X>} stream containing non-promise values
+ */
+Stream.prototype.await = function() {
+	return promises.awaitPromises(this);
+};
+
+//-----------------------------------------------------------------------
+// Error handling
+
+var errors = require('./lib/combinator/errors');
+
+exports.recoverWith  = errors.flatMapError;
+exports.flatMapError = errors.flatMapError;
+exports.throwError   = errors.throwError;
+
+/**
+ * If this stream encounters an error, recover and continue with items from stream
+ * returned by f.
+ * stream:                  -a-b-c-X-
+ * f(X):                           d-e-f-g-
+ * flatMapError(f, stream): -a-b-c-d-e-f-g-
+ * @param {function(error:*):Stream} f function which returns a new stream
+ * @returns {Stream} new stream which will recover from an error by calling f
+ */
+Stream.prototype.recoverWith = Stream.prototype.flatMapError = function(f) {
+	return errors.flatMapError(f, this);
+};
+
+//-----------------------------------------------------------------------
+// Multicasting
+
+var multicast = require('@most/multicast').default;
+
+exports.multicast = multicast;
+
+/**
+ * Transform the stream into multicast stream.  That means that many subscribers
+ * to the stream will not cause multiple invocations of the internal machinery.
+ * @returns {Stream} new stream which will multicast events to all observers.
+ */
+Stream.prototype.multicast = function() {
+	return multicast(this);
+};
+
+},{"./lib/Stream":105,"./lib/base":106,"./lib/combinator/accumulate":107,"./lib/combinator/applicative":108,"./lib/combinator/build":109,"./lib/combinator/combine":110,"./lib/combinator/concatMap":111,"./lib/combinator/continueWith":112,"./lib/combinator/delay":113,"./lib/combinator/errors":114,"./lib/combinator/filter":115,"./lib/combinator/flatMap":116,"./lib/combinator/limit":117,"./lib/combinator/loop":118,"./lib/combinator/merge":119,"./lib/combinator/mergeConcurrently":120,"./lib/combinator/observe":121,"./lib/combinator/promises":122,"./lib/combinator/sample":123,"./lib/combinator/slice":124,"./lib/combinator/switch":125,"./lib/combinator/timeslice":126,"./lib/combinator/timestamp":127,"./lib/combinator/transduce":128,"./lib/combinator/transform":129,"./lib/combinator/zip":130,"./lib/source/core":154,"./lib/source/create":155,"./lib/source/from":156,"./lib/source/fromEvent":158,"./lib/source/generate":160,"./lib/source/iterate":161,"./lib/source/periodic":162,"./lib/source/unfold":164,"@most/multicast":166}],166:[function(require,module,exports){
+arguments[4][1][0].apply(exports,arguments)
+},{"@most/prelude":167,"dup":1}],167:[function(require,module,exports){
+arguments[4][2][0].apply(exports,arguments)
+},{"dup":2}],168:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -6993,7 +8653,7 @@ function classNameFromVNode(vNode) {
 
   return cn.trim();
 }
-},{"./selectorParser":103}],103:[function(require,module,exports){
+},{"./selectorParser":169}],169:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -7051,7 +8711,7 @@ function selectorParser() {
     className: classes.join(' ')
   };
 }
-},{"browser-split":104}],104:[function(require,module,exports){
+},{"browser-split":170}],170:[function(require,module,exports){
 /*!
  * Cross-Browser Split 1.1.1
  * Copyright 2007-2012 Steven Levithan <stevenlevithan.com>
@@ -7159,7 +8819,7 @@ module.exports = (function split(undef) {
   return self;
 })();
 
-},{}],105:[function(require,module,exports){
+},{}],171:[function(require,module,exports){
 var VNode = require('./vnode');
 var is = require('./is');
 
@@ -7194,13 +8854,13 @@ module.exports = function h(sel, b, c) {
   return VNode(sel, data, children, text, undefined);
 };
 
-},{"./is":106,"./vnode":113}],106:[function(require,module,exports){
+},{"./is":172,"./vnode":179}],172:[function(require,module,exports){
 module.exports = {
   array: Array.isArray,
   primitive: function(s) { return typeof s === 'string' || typeof s === 'number'; },
 };
 
-},{}],107:[function(require,module,exports){
+},{}],173:[function(require,module,exports){
 var booleanAttrs = ["allowfullscreen", "async", "autofocus", "autoplay", "checked", "compact", "controls", "declare", 
                 "default", "defaultchecked", "defaultmuted", "defaultselected", "defer", "disabled", "draggable", 
                 "enabled", "formnovalidate", "hidden", "indeterminate", "inert", "ismap", "itemscope", "loop", "multiple", 
@@ -7241,7 +8901,7 @@ function updateAttrs(oldVnode, vnode) {
 
 module.exports = {create: updateAttrs, update: updateAttrs};
 
-},{}],108:[function(require,module,exports){
+},{}],174:[function(require,module,exports){
 function updateClass(oldVnode, vnode) {
   var cur, name, elm = vnode.elm,
       oldClass = oldVnode.data.class || {},
@@ -7261,7 +8921,7 @@ function updateClass(oldVnode, vnode) {
 
 module.exports = {create: updateClass, update: updateClass};
 
-},{}],109:[function(require,module,exports){
+},{}],175:[function(require,module,exports){
 function updateProps(oldVnode, vnode) {
   var key, cur, old, elm = vnode.elm,
       oldProps = oldVnode.data.props || {}, props = vnode.data.props || {};
@@ -7281,7 +8941,7 @@ function updateProps(oldVnode, vnode) {
 
 module.exports = {create: updateProps, update: updateProps};
 
-},{}],110:[function(require,module,exports){
+},{}],176:[function(require,module,exports){
 var raf = (window && window.requestAnimationFrame) || setTimeout;
 var nextFrame = function(fn) { raf(function() { raf(fn); }); };
 
@@ -7347,7 +9007,7 @@ function applyRemoveStyle(vnode, rm) {
 
 module.exports = {create: updateStyle, update: updateStyle, destroy: applyDestroyStyle, remove: applyRemoveStyle};
 
-},{}],111:[function(require,module,exports){
+},{}],177:[function(require,module,exports){
 // jshint newcap: false
 /* global require, module, document, Element */
 'use strict';
@@ -7582,7 +9242,7 @@ function init(modules) {
 
 module.exports = {init: init};
 
-},{"./is":106,"./vnode":113}],112:[function(require,module,exports){
+},{"./is":172,"./vnode":179}],178:[function(require,module,exports){
 var h = require('./h');
 
 function init(thunk) {
@@ -7617,14 +9277,14 @@ module.exports = function(name, fn /* args */) {
   });
 };
 
-},{"./h":105}],113:[function(require,module,exports){
+},{"./h":171}],179:[function(require,module,exports){
 module.exports = function(sel, data, children, text, elm) {
   var key = data === undefined ? undefined : data.key;
   return {sel: sel, data: data, children: children,
           text: text, elm: elm, key: key};
 };
 
-},{}],114:[function(require,module,exports){
+},{}],180:[function(require,module,exports){
 // shim for using process in browser
 
 var process = module.exports = {};
@@ -7717,7 +9377,7 @@ process.chdir = function (dir) {
 };
 process.umask = function() { return 0; };
 
-},{}],115:[function(require,module,exports){
+},{}],181:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -7806,7 +9466,7 @@ var Observer = function () {
 }();
 
 exports.Observer = Observer;
-},{}],116:[function(require,module,exports){
+},{}],182:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -7885,7 +9545,7 @@ var replay = function replay(bufferSize, stream) {
 };
 
 exports.replay = replay;
-},{"@most/multicast":1,"most":183}],117:[function(require,module,exports){
+},{"@most/multicast":1,"most":249}],183:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -7930,624 +9590,137 @@ function holdSubject() {
 
 exports.subject = subject;
 exports.holdSubject = holdSubject;
-},{"./Observer":115,"./Replay":116,"@most/multicast":1,"most":183}],118:[function(require,module,exports){
+},{"./Observer":181,"./Replay":182,"@most/multicast":1,"most":249}],184:[function(require,module,exports){
 arguments[4][8][0].apply(exports,arguments)
-},{"dup":8}],119:[function(require,module,exports){
+},{"dup":8}],185:[function(require,module,exports){
 arguments[4][9][0].apply(exports,arguments)
-},{"dup":9}],120:[function(require,module,exports){
+},{"dup":9}],186:[function(require,module,exports){
 arguments[4][10][0].apply(exports,arguments)
-},{"dup":10}],121:[function(require,module,exports){
+},{"dup":10}],187:[function(require,module,exports){
 arguments[4][11][0].apply(exports,arguments)
-},{"dup":11}],122:[function(require,module,exports){
+},{"dup":11}],188:[function(require,module,exports){
 arguments[4][12][0].apply(exports,arguments)
-},{"dup":12}],123:[function(require,module,exports){
+},{"dup":12}],189:[function(require,module,exports){
 arguments[4][13][0].apply(exports,arguments)
-},{"../Stream":121,"../base":122,"../runSource":158,"../sink/Pipe":167,"./build":125,"dup":13}],124:[function(require,module,exports){
+},{"../Stream":187,"../base":188,"../runSource":224,"../sink/Pipe":233,"./build":191,"dup":13}],190:[function(require,module,exports){
 arguments[4][14][0].apply(exports,arguments)
-},{"../base":122,"./combine":126,"dup":14}],125:[function(require,module,exports){
-/** @license MIT License (c) copyright 2010-2016 original author or authors */
-/** @author Brian Cavalier */
-/** @author John Hann */
-
-var streamOf = require('../source/core').of;
-var continueWith = require('./continueWith').continueWith;
-
-exports.concat = concat;
-exports.cycle = cycle;
-exports.cons = cons;
-
-/**
- * @param {*} x value to prepend
- * @param {Stream} stream
- * @returns {Stream} new stream with x prepended
- */
-function cons(x, stream) {
-	return concat(streamOf(x), stream);
-}
-
-/**
- * @param {Stream} left
- * @param {Stream} right
- * @returns {Stream} new stream containing all events in left followed by all
- *  events in right.  This *timeshifts* right to the end of left.
- */
-function concat(left, right) {
-	return continueWith(function() {
-		return right;
-	}, left);
-}
-
-/**
- * @deprecated
- * Tie stream into a circle, creating an infinite stream
- * @param {Stream} stream
- * @returns {Stream} new infinite stream
- */
-function cycle(stream) {
-	return continueWith(function cycleNext() {
-		return cycle(stream);
-	}, stream);
-}
-
-},{"../source/core":172,"./continueWith":128}],126:[function(require,module,exports){
+},{"../base":188,"./combine":192,"dup":14}],191:[function(require,module,exports){
+arguments[4][109][0].apply(exports,arguments)
+},{"../source/core":238,"./continueWith":194,"dup":109}],192:[function(require,module,exports){
 arguments[4][16][0].apply(exports,arguments)
-},{"../Stream":121,"../base":122,"../disposable/dispose":151,"../invoke":156,"../sink/IndexSink":165,"../sink/Pipe":167,"../source/core":172,"./merge":135,"./transform":146,"dup":16}],127:[function(require,module,exports){
+},{"../Stream":187,"../base":188,"../disposable/dispose":217,"../invoke":222,"../sink/IndexSink":231,"../sink/Pipe":233,"../source/core":238,"./merge":201,"./transform":212,"dup":16}],193:[function(require,module,exports){
 arguments[4][17][0].apply(exports,arguments)
-},{"./mergeConcurrently":136,"./transform":146,"dup":17}],128:[function(require,module,exports){
+},{"./mergeConcurrently":202,"./transform":212,"dup":17}],194:[function(require,module,exports){
 arguments[4][18][0].apply(exports,arguments)
-},{"../Promise":119,"../Stream":121,"../disposable/dispose":151,"../sink/Pipe":167,"dup":18}],129:[function(require,module,exports){
+},{"../Promise":185,"../Stream":187,"../disposable/dispose":217,"../sink/Pipe":233,"dup":18}],195:[function(require,module,exports){
 arguments[4][19][0].apply(exports,arguments)
-},{"../Stream":121,"../disposable/dispose":151,"../scheduler/PropagateTask":159,"../sink/Pipe":167,"dup":19}],130:[function(require,module,exports){
+},{"../Stream":187,"../disposable/dispose":217,"../scheduler/PropagateTask":225,"../sink/Pipe":233,"dup":19}],196:[function(require,module,exports){
 arguments[4][20][0].apply(exports,arguments)
-},{"../Stream":121,"../base":122,"../disposable/dispose":151,"../source/ValueSource":171,"../source/tryEvent":181,"dup":20}],131:[function(require,module,exports){
+},{"../Stream":187,"../base":188,"../disposable/dispose":217,"../source/ValueSource":237,"../source/tryEvent":247,"dup":20}],197:[function(require,module,exports){
 arguments[4][21][0].apply(exports,arguments)
-},{"../Stream":121,"../fusion/Filter":153,"../sink/Pipe":167,"dup":21}],132:[function(require,module,exports){
+},{"../Stream":187,"../fusion/Filter":219,"../sink/Pipe":233,"dup":21}],198:[function(require,module,exports){
 arguments[4][22][0].apply(exports,arguments)
-},{"./mergeConcurrently":136,"./transform":146,"dup":22}],133:[function(require,module,exports){
+},{"./mergeConcurrently":202,"./transform":212,"dup":22}],199:[function(require,module,exports){
 arguments[4][23][0].apply(exports,arguments)
-},{"../Stream":121,"../disposable/dispose":151,"../scheduler/PropagateTask":159,"../sink/Pipe":167,"dup":23}],134:[function(require,module,exports){
+},{"../Stream":187,"../disposable/dispose":217,"../scheduler/PropagateTask":225,"../sink/Pipe":233,"dup":23}],200:[function(require,module,exports){
 arguments[4][24][0].apply(exports,arguments)
-},{"../Stream":121,"../sink/Pipe":167,"dup":24}],135:[function(require,module,exports){
+},{"../Stream":187,"../sink/Pipe":233,"dup":24}],201:[function(require,module,exports){
 arguments[4][25][0].apply(exports,arguments)
-},{"../Stream":121,"../base":122,"../disposable/dispose":151,"../sink/IndexSink":165,"../sink/Pipe":167,"../source/core":172,"dup":25}],136:[function(require,module,exports){
-/** @license MIT License (c) copyright 2010-2016 original author or authors */
-/** @author Brian Cavalier */
-/** @author John Hann */
-
-var Stream = require('../Stream');
-var dispose = require('../disposable/dispose');
-var LinkedList = require('../LinkedList');
-
-exports.mergeConcurrently = mergeConcurrently;
-
-function mergeConcurrently(concurrency, stream) {
-	return new Stream(new MergeConcurrently(concurrency, stream.source));
-}
-
-function MergeConcurrently(concurrency, source) {
-	this.concurrency = concurrency;
-	this.source = source;
-}
-
-MergeConcurrently.prototype.run = function(sink, scheduler) {
-	return new Outer(this.concurrency, this.source, sink, scheduler);
-};
-
-function Outer(concurrency, source, sink, scheduler) {
-	this.concurrency = concurrency;
-	this.sink = sink;
-	this.scheduler = scheduler;
-	this.pending = [];
-	this.current = new LinkedList();
-	this.disposable = dispose.once(source.run(this, scheduler));
-	this.active = true;
-}
-
-Outer.prototype.event = function(t, x) {
-	this._addInner(t, x);
-};
-
-Outer.prototype._addInner = function(t, stream) {
-	if(this.current.length < this.concurrency) {
-		this._startInner(t, stream);
-	} else {
-		this.pending.push(stream);
-	}
-};
-
-Outer.prototype._startInner = function(t, stream) {
-	var innerSink = new Inner(t, this, this.sink);
-	this.current.add(innerSink);
-	innerSink.disposable = stream.source.run(innerSink, this.scheduler);
-};
-
-Outer.prototype.end = function(t, x) {
-	this.active = false;
-	dispose.tryDispose(t, this.disposable, this.sink);
-	this._checkEnd(t, x);
-};
-
-Outer.prototype.error = function(t, e) {
-	this.active = false;
-	this.sink.error(t, e);
-};
-
-Outer.prototype.dispose = function() {
-	this.active = false;
-	this.pending.length = 0;
-	return Promise.all([this.disposable.dispose(), this.current.dispose()]);
-};
-
-Outer.prototype._endInner = function(t, x, inner) {
-	this.current.remove(inner);
-	dispose.tryDispose(t, inner, this);
-
-	if(this.pending.length === 0) {
-		this._checkEnd(t, x);
-	} else {
-		this._startInner(t, this.pending.shift());
-	}
-};
-
-Outer.prototype._checkEnd = function(t, x) {
-	if(!this.active && this.current.isEmpty()) {
-		this.sink.end(t, x);
-	}
-};
-
-function Inner(time, outer, sink) {
-	this.prev = this.next = null;
-	this.time = time;
-	this.outer = outer;
-	this.sink = sink;
-	this.disposable = void 0;
-}
-
-Inner.prototype.event = function(t, x) {
-	this.sink.event(Math.max(t, this.time), x);
-};
-
-Inner.prototype.end = function(t, x) {
-	this.outer._endInner(Math.max(t, this.time), x, this);
-};
-
-Inner.prototype.error = function(t, e) {
-	this.outer.error(Math.max(t, this.time), e);
-};
-
-Inner.prototype.dispose = function() {
-	return this.disposable.dispose();
-};
-
-},{"../LinkedList":118,"../Stream":121,"../disposable/dispose":151}],137:[function(require,module,exports){
+},{"../Stream":187,"../base":188,"../disposable/dispose":217,"../sink/IndexSink":231,"../sink/Pipe":233,"../source/core":238,"dup":25}],202:[function(require,module,exports){
+arguments[4][120][0].apply(exports,arguments)
+},{"../LinkedList":184,"../Stream":187,"../disposable/dispose":217,"dup":120}],203:[function(require,module,exports){
 arguments[4][27][0].apply(exports,arguments)
-},{"../Stream":121,"../source/MulticastSource":170,"dup":27}],138:[function(require,module,exports){
+},{"../Stream":187,"../source/MulticastSource":236,"dup":27}],204:[function(require,module,exports){
 arguments[4][28][0].apply(exports,arguments)
-},{"../base":122,"../runSource":158,"dup":28}],139:[function(require,module,exports){
-/** @license MIT License (c) copyright 2010-2016 original author or authors */
-/** @author Brian Cavalier */
-/** @author John Hann */
-
-var Stream = require('../Stream');
-var fatal = require('../fatalError');
-var just = require('../source/core').of;
-
-exports.fromPromise = fromPromise;
-exports.awaitPromises = awaitPromises;
-
-/**
- * Create a stream containing only the promise's fulfillment
- * value at the time it fulfills.
- * @param {Promise<T>} p promise
- * @return {Stream<T>} stream containing promise's fulfillment value.
- *  If the promise rejects, the stream will error
- */
-function fromPromise(p) {
-	return awaitPromises(just(p));
-}
-
-/**
- * Turn a Stream<Promise<T>> into Stream<T> by awaiting each promise.
- * Event order is preserved.
- * @param {Stream<Promise<T>>} stream
- * @return {Stream<T>} stream of fulfillment values.  The stream will
- * error if any promise rejects.
- */
-function awaitPromises(stream) {
-	return new Stream(new Await(stream.source));
-}
-
-function Await(source) {
-	this.source = source;
-}
-
-Await.prototype.run = function(sink, scheduler) {
-	return this.source.run(new AwaitSink(sink, scheduler), scheduler);
-};
-
-function AwaitSink(sink, scheduler) {
-	this.sink = sink;
-	this.scheduler = scheduler;
-	this.queue = Promise.resolve();
-	var self = this;
-
-	// Pre-create closures, to avoid creating them per event
-	this._eventBound = function(x) {
-		self.sink.event(self.scheduler.now(), x);
-	};
-
-	this._endBound = function(x) {
-		self.sink.end(self.scheduler.now(), x);
-	};
-
-	this._errorBound = function(e) {
-		self.sink.error(self.scheduler.now(), e);
-	};
-}
-
-AwaitSink.prototype.event = function(t, promise) {
-	var self = this;
-	this.queue = this.queue.then(function() {
-		return self._event(promise);
-	}).catch(this._errorBound);
-};
-
-AwaitSink.prototype.end = function(t, x) {
-	var self = this;
-	this.queue = this.queue.then(function() {
-		return self._end(x);
-	}).catch(this._errorBound);
-};
-
-AwaitSink.prototype.error = function(t, e) {
-	var self = this;
-	// Don't resolve error values, propagate directly
-	this.queue = this.queue.then(function() {
-		return self._errorBound(e);
-	}).catch(fatal);
-};
-
-AwaitSink.prototype._event = function(promise) {
-	return promise.then(this._eventBound);
-};
-
-AwaitSink.prototype._end = function(x) {
-	return Promise.resolve(x).then(this._endBound);
-};
-
-},{"../Stream":121,"../fatalError":152,"../source/core":172}],140:[function(require,module,exports){
+},{"../base":188,"../runSource":224,"dup":28}],205:[function(require,module,exports){
+arguments[4][122][0].apply(exports,arguments)
+},{"../Stream":187,"../fatalError":218,"../source/core":238,"dup":122}],206:[function(require,module,exports){
 arguments[4][30][0].apply(exports,arguments)
-},{"../Stream":121,"../base":122,"../disposable/dispose":151,"../invoke":156,"../sink/Pipe":167,"dup":30}],141:[function(require,module,exports){
+},{"../Stream":187,"../base":188,"../disposable/dispose":217,"../invoke":222,"../sink/Pipe":233,"dup":30}],207:[function(require,module,exports){
 arguments[4][31][0].apply(exports,arguments)
-},{"../Stream":121,"../disposable/dispose":151,"../sink/Pipe":167,"../source/core":172,"dup":31}],142:[function(require,module,exports){
+},{"../Stream":187,"../disposable/dispose":217,"../sink/Pipe":233,"../source/core":238,"dup":31}],208:[function(require,module,exports){
 arguments[4][32][0].apply(exports,arguments)
-},{"../Stream":121,"../source/MulticastSource":170,"./mergeConcurrently":136,"./timeslice":143,"./transform":146,"dup":32}],143:[function(require,module,exports){
+},{"../Stream":187,"../source/MulticastSource":236,"./mergeConcurrently":202,"./timeslice":209,"./transform":212,"dup":32}],209:[function(require,module,exports){
 arguments[4][33][0].apply(exports,arguments)
-},{"../Stream":121,"../base":122,"../combinator/flatMap":132,"../disposable/dispose":151,"../sink/Pipe":167,"dup":33}],144:[function(require,module,exports){
+},{"../Stream":187,"../base":188,"../combinator/flatMap":198,"../disposable/dispose":217,"../sink/Pipe":233,"dup":33}],210:[function(require,module,exports){
 arguments[4][34][0].apply(exports,arguments)
-},{"../Stream":121,"../sink/Pipe":167,"dup":34}],145:[function(require,module,exports){
+},{"../Stream":187,"../sink/Pipe":233,"dup":34}],211:[function(require,module,exports){
 arguments[4][35][0].apply(exports,arguments)
-},{"../Stream":121,"dup":35}],146:[function(require,module,exports){
+},{"../Stream":187,"dup":35}],212:[function(require,module,exports){
 arguments[4][36][0].apply(exports,arguments)
-},{"../Stream":121,"../fusion/Map":155,"dup":36}],147:[function(require,module,exports){
+},{"../Stream":187,"../fusion/Map":221,"dup":36}],213:[function(require,module,exports){
 arguments[4][37][0].apply(exports,arguments)
-},{"../Queue":120,"../Stream":121,"../base":122,"../disposable/dispose":151,"../invoke":156,"../sink/IndexSink":165,"../sink/Pipe":167,"../source/core":172,"./transform":146,"dup":37}],148:[function(require,module,exports){
+},{"../Queue":186,"../Stream":187,"../base":188,"../disposable/dispose":217,"../invoke":222,"../sink/IndexSink":231,"../sink/Pipe":233,"../source/core":238,"./transform":212,"dup":37}],214:[function(require,module,exports){
 arguments[4][38][0].apply(exports,arguments)
-},{"dup":38}],149:[function(require,module,exports){
+},{"dup":38}],215:[function(require,module,exports){
 arguments[4][39][0].apply(exports,arguments)
-},{"dup":39}],150:[function(require,module,exports){
+},{"dup":39}],216:[function(require,module,exports){
 arguments[4][40][0].apply(exports,arguments)
-},{"dup":40}],151:[function(require,module,exports){
+},{"dup":40}],217:[function(require,module,exports){
 arguments[4][41][0].apply(exports,arguments)
-},{"../Promise":119,"../base":122,"./Disposable":149,"./SettableDisposable":150,"dup":41}],152:[function(require,module,exports){
+},{"../Promise":185,"../base":188,"./Disposable":215,"./SettableDisposable":216,"dup":41}],218:[function(require,module,exports){
 arguments[4][42][0].apply(exports,arguments)
-},{"dup":42}],153:[function(require,module,exports){
+},{"dup":42}],219:[function(require,module,exports){
 arguments[4][43][0].apply(exports,arguments)
-},{"../sink/Pipe":167,"dup":43}],154:[function(require,module,exports){
+},{"../sink/Pipe":233,"dup":43}],220:[function(require,module,exports){
 arguments[4][44][0].apply(exports,arguments)
-},{"../sink/Pipe":167,"dup":44}],155:[function(require,module,exports){
+},{"../sink/Pipe":233,"dup":44}],221:[function(require,module,exports){
 arguments[4][45][0].apply(exports,arguments)
-},{"../base":122,"../sink/Pipe":167,"./Filter":153,"./FilterMap":154,"dup":45}],156:[function(require,module,exports){
+},{"../base":188,"../sink/Pipe":233,"./Filter":219,"./FilterMap":220,"dup":45}],222:[function(require,module,exports){
 arguments[4][46][0].apply(exports,arguments)
-},{"dup":46}],157:[function(require,module,exports){
+},{"dup":46}],223:[function(require,module,exports){
 arguments[4][47][0].apply(exports,arguments)
-},{"dup":47}],158:[function(require,module,exports){
+},{"dup":47}],224:[function(require,module,exports){
 arguments[4][48][0].apply(exports,arguments)
-},{"./disposable/dispose":151,"./scheduler/defaultScheduler":161,"./sink/Observer":166,"dup":48}],159:[function(require,module,exports){
+},{"./disposable/dispose":217,"./scheduler/defaultScheduler":227,"./sink/Observer":232,"dup":48}],225:[function(require,module,exports){
 arguments[4][49][0].apply(exports,arguments)
-},{"../fatalError":152,"dup":49}],160:[function(require,module,exports){
-/** @license MIT License (c) copyright 2010-2016 original author or authors */
-/** @author Brian Cavalier */
-/** @author John Hann */
-
-var base = require('./../base');
-
-module.exports = Scheduler;
-
-function ScheduledTask(delay, period, task, scheduler) {
-	this.time = delay;
-	this.period = period;
-	this.task = task;
-	this.scheduler = scheduler;
-	this.active = true;
-}
-
-ScheduledTask.prototype.run = function() {
-	return this.task.run(this.time);
-};
-
-ScheduledTask.prototype.error = function(e) {
-	return this.task.error(this.time, e);
-};
-
-ScheduledTask.prototype.cancel = function() {
-	this.scheduler.cancel(this);
-	return this.task.dispose();
-};
-
-function runTask(task) {
-	try {
-		return task.run();
-	} catch(e) {
-		return task.error(e);
-	}
-}
-
-function Scheduler(timer) {
-	this.timer = timer;
-
-	this._timer = null;
-	this._nextArrival = 0;
-	this._tasks = [];
-
-	var self = this;
-	this._runReadyTasksBound = function() {
-		self._runReadyTasks(self.now());
-	};
-}
-
-Scheduler.prototype.now = function() {
-	return this.timer.now();
-};
-
-Scheduler.prototype.asap = function(task) {
-	return this.schedule(0, -1, task);
-};
-
-Scheduler.prototype.delay = function(delay, task) {
-	return this.schedule(delay, -1, task);
-};
-
-Scheduler.prototype.periodic = function(period, task) {
-	return this.schedule(0, period, task);
-};
-
-Scheduler.prototype.schedule = function(delay, period, task) {
-	var now = this.now();
-	var st = new ScheduledTask(now + Math.max(0, delay), period, task, this);
-
-	insertByTime(st, this._tasks);
-	this._scheduleNextRun(now);
-	return st;
-};
-
-Scheduler.prototype.cancel = function(task) {
-	task.active = false;
-	var i = binarySearch(task.time, this._tasks);
-
-	if(i >= 0 && i < this._tasks.length) {
-		var at = base.findIndex(task, this._tasks[i].events);
-		if(at >= 0) {
-			this._tasks[i].events.splice(at, 1);
-			this._reschedule();
-		}
-	}
-};
-
-Scheduler.prototype.cancelAll = function(f) {
-	for(var i=0; i<this._tasks.length; ++i) {
-		removeAllFrom(f, this._tasks[i]);
-	}
-	this._reschedule();
-};
-
-function removeAllFrom(f, timeslot) {
-	timeslot.events = base.removeAll(f, timeslot.events);
-}
-
-Scheduler.prototype._reschedule = function() {
-	if(this._tasks.length === 0) {
-		this._unschedule();
-	} else {
-		this._scheduleNextRun(this.now());
-	}
-};
-
-Scheduler.prototype._unschedule = function() {
-	this.timer.clearTimer(this._timer);
-	this._timer = null;
-};
-
-Scheduler.prototype._scheduleNextRun = function(now) {
-	if(this._tasks.length === 0) {
-		return;
-	}
-
-	var nextArrival = this._tasks[0].time;
-
-	if(this._timer === null) {
-		this._scheduleNextArrival(nextArrival, now);
-	} else if(nextArrival < this._nextArrival) {
-		this._unschedule();
-		this._scheduleNextArrival(nextArrival, now);
-	}
-};
-
-Scheduler.prototype._scheduleNextArrival = function(nextArrival, now) {
-	this._nextArrival = nextArrival;
-	var delay = Math.max(0, nextArrival - now);
-	this._timer = this.timer.setTimer(this._runReadyTasksBound, delay);
-};
-
-
-Scheduler.prototype._runReadyTasks = function(now) {
-	this._timer = null;
-
-	this._tasks = this._findAndRunTasks(now);
-
-	this._scheduleNextRun(this.now());
-};
-
-Scheduler.prototype._findAndRunTasks = function(now) {
-	var tasks = this._tasks;
-	var l = tasks.length;
-	var i = 0;
-
-	while(i < l && tasks[i].time <= now) {
-		++i;
-	}
-
-	this._tasks = tasks.slice(i);
-
-	// Run all ready tasks
-	for (var j = 0; j < i; ++j) {
-		this._tasks = runTasks(tasks[j], this._tasks);
-	}
-	return this._tasks;
-};
-
-function runTasks(timeslot, tasks) {
-	var events = timeslot.events;
-	for(var i=0; i<events.length; ++i) {
-		var task = events[i];
-
-		if(task.active) {
-			runTask(task);
-
-			// Reschedule periodic repeating tasks
-			// Check active again, since a task may have canceled itself
-			if(task.period >= 0) {
-				task.time = task.time + task.period;
-				insertByTime(task, tasks);
-			}
-		}
-	}
-
-	return tasks;
-}
-
-function insertByTime(task, timeslots) {
-	var l = timeslots.length;
-
-	if(l === 0) {
-		timeslots.push(newTimeslot(task.time, [task]));
-		return;
-	}
-
-	var i = binarySearch(task.time, timeslots);
-
-	if(i >= l) {
-		timeslots.push(newTimeslot(task.time, [task]));
-	} else if(task.time === timeslots[i].time) {
-		timeslots[i].events.push(task);
-	} else {
-		timeslots.splice(i, 0, newTimeslot(task.time, [task]));
-	}
-}
-
-function binarySearch(t, sortedArray) {
-	var lo = 0;
-	var hi = sortedArray.length;
-	var mid, y;
-
-	while (lo < hi) {
-		mid = Math.floor((lo + hi) / 2);
-		y = sortedArray[mid];
-
-		if (t === y.time) {
-			return mid;
-		} else if (t < y.time) {
-			hi = mid;
-		} else {
-			lo = mid + 1;
-		}
-	}
-	return hi;
-}
-
-function newTimeslot(t, events) {
-	return { time: t, events: events };
-}
-
-},{"./../base":122}],161:[function(require,module,exports){
+},{"../fatalError":218,"dup":49}],226:[function(require,module,exports){
+arguments[4][143][0].apply(exports,arguments)
+},{"./../base":188,"dup":143}],227:[function(require,module,exports){
 arguments[4][51][0].apply(exports,arguments)
-},{"./Scheduler":160,"./nodeTimer":162,"./timeoutTimer":163,"_process":114,"dup":51}],162:[function(require,module,exports){
+},{"./Scheduler":226,"./nodeTimer":228,"./timeoutTimer":229,"_process":180,"dup":51}],228:[function(require,module,exports){
 arguments[4][52][0].apply(exports,arguments)
-},{"../defer":148,"dup":52}],163:[function(require,module,exports){
+},{"../defer":214,"dup":52}],229:[function(require,module,exports){
 arguments[4][53][0].apply(exports,arguments)
-},{"dup":53}],164:[function(require,module,exports){
+},{"dup":53}],230:[function(require,module,exports){
 arguments[4][54][0].apply(exports,arguments)
-},{"../defer":148,"dup":54}],165:[function(require,module,exports){
+},{"../defer":214,"dup":54}],231:[function(require,module,exports){
 arguments[4][55][0].apply(exports,arguments)
-},{"./Pipe":167,"dup":55}],166:[function(require,module,exports){
+},{"./Pipe":233,"dup":55}],232:[function(require,module,exports){
 arguments[4][56][0].apply(exports,arguments)
-},{"dup":56}],167:[function(require,module,exports){
+},{"dup":56}],233:[function(require,module,exports){
 arguments[4][57][0].apply(exports,arguments)
-},{"dup":57}],168:[function(require,module,exports){
+},{"dup":57}],234:[function(require,module,exports){
 arguments[4][58][0].apply(exports,arguments)
-},{"../disposable/dispose":151,"../sink/DeferredSink":164,"./tryEvent":181,"dup":58}],169:[function(require,module,exports){
+},{"../disposable/dispose":217,"../sink/DeferredSink":230,"./tryEvent":247,"dup":58}],235:[function(require,module,exports){
 arguments[4][59][0].apply(exports,arguments)
-},{"../disposable/dispose":151,"./tryEvent":181,"dup":59}],170:[function(require,module,exports){
+},{"../disposable/dispose":217,"./tryEvent":247,"dup":59}],236:[function(require,module,exports){
 arguments[4][60][0].apply(exports,arguments)
-},{"../base":122,"dup":60}],171:[function(require,module,exports){
-/** @license MIT License (c) copyright 2010-2016 original author or authors */
-/** @author Brian Cavalier */
-/** @author John Hann */
-
-var PropagateTask = require('../scheduler/PropagateTask');
-
-module.exports = ValueSource;
-
-function ValueSource(emit, x) {
-	this.emit = emit;
-	this.value = x;
-}
-
-ValueSource.prototype.run = function(sink, scheduler) {
-	return new ValueProducer(this.emit, this.value, sink, scheduler);
-};
-
-function ValueProducer(emit, x, sink, scheduler) {
-	this.task = scheduler.asap(new PropagateTask(emit, x, sink));
-}
-
-ValueProducer.prototype.dispose = function() {
-	return this.task.cancel();
-};
-
-},{"../scheduler/PropagateTask":159}],172:[function(require,module,exports){
+},{"../base":188,"dup":60}],237:[function(require,module,exports){
+arguments[4][153][0].apply(exports,arguments)
+},{"../scheduler/PropagateTask":225,"dup":153}],238:[function(require,module,exports){
 arguments[4][62][0].apply(exports,arguments)
-},{"../Stream":121,"../disposable/dispose":151,"../scheduler/PropagateTask":159,"../source/ValueSource":171,"dup":62}],173:[function(require,module,exports){
+},{"../Stream":187,"../disposable/dispose":217,"../scheduler/PropagateTask":225,"../source/ValueSource":237,"dup":62}],239:[function(require,module,exports){
 arguments[4][63][0].apply(exports,arguments)
-},{"../Stream":121,"../sink/DeferredSink":164,"./MulticastSource":170,"./tryEvent":181,"dup":63}],174:[function(require,module,exports){
+},{"../Stream":187,"../sink/DeferredSink":230,"./MulticastSource":236,"./tryEvent":247,"dup":63}],240:[function(require,module,exports){
 arguments[4][64][0].apply(exports,arguments)
-},{"../base":122,"../iterable":157,"./fromArray":175,"./fromIterable":177,"dup":64}],175:[function(require,module,exports){
+},{"../base":188,"../iterable":223,"./fromArray":241,"./fromIterable":243,"dup":64}],241:[function(require,module,exports){
 arguments[4][65][0].apply(exports,arguments)
-},{"../Stream":121,"../scheduler/PropagateTask":159,"dup":65}],176:[function(require,module,exports){
+},{"../Stream":187,"../scheduler/PropagateTask":225,"dup":65}],242:[function(require,module,exports){
 arguments[4][66][0].apply(exports,arguments)
-},{"../Stream":121,"./EventEmitterSource":168,"./EventTargetSource":169,"./MulticastSource":170,"dup":66}],177:[function(require,module,exports){
+},{"../Stream":187,"./EventEmitterSource":234,"./EventTargetSource":235,"./MulticastSource":236,"dup":66}],243:[function(require,module,exports){
 arguments[4][67][0].apply(exports,arguments)
-},{"../Stream":121,"../iterable":157,"../scheduler/PropagateTask":159,"dup":67}],178:[function(require,module,exports){
+},{"../Stream":187,"../iterable":223,"../scheduler/PropagateTask":225,"dup":67}],244:[function(require,module,exports){
 arguments[4][68][0].apply(exports,arguments)
-},{"../Stream":121,"../base":122,"dup":68}],179:[function(require,module,exports){
+},{"../Stream":187,"../base":188,"dup":68}],245:[function(require,module,exports){
 arguments[4][69][0].apply(exports,arguments)
-},{"../Stream":121,"dup":69}],180:[function(require,module,exports){
+},{"../Stream":187,"dup":69}],246:[function(require,module,exports){
 arguments[4][70][0].apply(exports,arguments)
-},{"../Stream":121,"../disposable/dispose":151,"../scheduler/PropagateTask":159,"./MulticastSource":170,"dup":70}],181:[function(require,module,exports){
+},{"../Stream":187,"../disposable/dispose":217,"../scheduler/PropagateTask":225,"./MulticastSource":236,"dup":70}],247:[function(require,module,exports){
 arguments[4][71][0].apply(exports,arguments)
-},{"dup":71}],182:[function(require,module,exports){
+},{"dup":71}],248:[function(require,module,exports){
 arguments[4][72][0].apply(exports,arguments)
-},{"../Stream":121,"dup":72}],183:[function(require,module,exports){
+},{"../Stream":187,"dup":72}],249:[function(require,module,exports){
 /** @license MIT License (c) copyright 2010-2016 original author or authors */
 /** @author Brian Cavalier */
 /** @author John Hann */
@@ -9229,7 +10402,7 @@ Stream.prototype.multicast = function() {
 	return multicast(this);
 };
 
-},{"./lib/Stream":121,"./lib/base":122,"./lib/combinator/accumulate":123,"./lib/combinator/applicative":124,"./lib/combinator/build":125,"./lib/combinator/combine":126,"./lib/combinator/concatMap":127,"./lib/combinator/continueWith":128,"./lib/combinator/delay":129,"./lib/combinator/errors":130,"./lib/combinator/filter":131,"./lib/combinator/flatMap":132,"./lib/combinator/limit":133,"./lib/combinator/loop":134,"./lib/combinator/merge":135,"./lib/combinator/mergeConcurrently":136,"./lib/combinator/multicast":137,"./lib/combinator/observe":138,"./lib/combinator/promises":139,"./lib/combinator/sample":140,"./lib/combinator/slice":141,"./lib/combinator/switch":142,"./lib/combinator/timeslice":143,"./lib/combinator/timestamp":144,"./lib/combinator/transduce":145,"./lib/combinator/transform":146,"./lib/combinator/zip":147,"./lib/source/core":172,"./lib/source/create":173,"./lib/source/from":174,"./lib/source/fromEvent":176,"./lib/source/generate":178,"./lib/source/iterate":179,"./lib/source/periodic":180,"./lib/source/unfold":182}],184:[function(require,module,exports){
+},{"./lib/Stream":187,"./lib/base":188,"./lib/combinator/accumulate":189,"./lib/combinator/applicative":190,"./lib/combinator/build":191,"./lib/combinator/combine":192,"./lib/combinator/concatMap":193,"./lib/combinator/continueWith":194,"./lib/combinator/delay":195,"./lib/combinator/errors":196,"./lib/combinator/filter":197,"./lib/combinator/flatMap":198,"./lib/combinator/limit":199,"./lib/combinator/loop":200,"./lib/combinator/merge":201,"./lib/combinator/mergeConcurrently":202,"./lib/combinator/multicast":203,"./lib/combinator/observe":204,"./lib/combinator/promises":205,"./lib/combinator/sample":206,"./lib/combinator/slice":207,"./lib/combinator/switch":208,"./lib/combinator/timeslice":209,"./lib/combinator/timestamp":210,"./lib/combinator/transduce":211,"./lib/combinator/transform":212,"./lib/combinator/zip":213,"./lib/source/core":238,"./lib/source/create":239,"./lib/source/from":240,"./lib/source/fromEvent":242,"./lib/source/generate":244,"./lib/source/iterate":245,"./lib/source/periodic":246,"./lib/source/unfold":248}],250:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -9311,6 +10484,7 @@ var mM$task = (0, _motorcycleDom.h)('pre', '  const taskAction$ = mM$taskList.st
 
 var updateCalc = (0, _motorcycleDom.h)('pre', '  function updateCalc() { \n    O.mM3.bnd(x => mM7\n    .ret(calc(x[0], O.mM8.x, x[1]))\n    .bnd(result => {if (result == 20) {score(O.mM13.x, 1)}; return O.mM7}) \n    .bnd(result => {if (result == 18) {score(O.mM13.x, 3)}; return O.mM$1}) \n    .bnd(push, O.mM7.x, mM$1)\n    .bnd(reset))\n  };\n\n  var score = function score(x,j) {\n    if ((x + j) == 20) { // The score of 20 jumps to 25. Round over.\n      mMgoals.ret(O.mMgoals.x == 2 ? 0 : (O.mMgoals.x + 1)); \n      mM13.ret(0);\n      socket.send(\'CG#$42,\' + O.mMgroup.x + \',\' + O.mMname.x + \',\' + -x + \',\' + O.mMgoals.x); \n      if (O.mMgoals.x == 0) {  The third goal has been earned. The game is over.\n        socket.send(\'CE#$42,\' + O.mMgroup.x + \',\' + O.mMname.x + \',nothing \'); \n      }\n      socket.send(\'CA#$42,\' + O.mMgroup.x.trim() + \',\' + O.mMname.x.trim() + \',6,6,12,20\');\n      return;\n    }\n    if ((x + j) % 5 == 0) {\n      mMscoreChange.ret(j + 5);  \n      socket.send(\'CG#$42,\' + O.mMgroup.x + \',\' + O.mMname.x + \',\'+(j+5)+\',\' + O.mMgoals.x); \n      mM13.ret(x + j + 5);\n      socket.send(\'CA#$42,\' + O.mMgroup.x.trim() + \',\' + O.mMname.x.trim() + \',6,6,12,20\');\n      return;\n    } \n    socket.send(\'CG#$42,\' + O.mMgroup.x + \',\' + O.mMname.x + \',\'+j+\',\' + O.mMgoals.x); \n    mM13.ret(x + j);\n    socket.send(\'CA#$42,\' + O.mMgroup.x.trim() + \',\' + O.mMname.x.trim() + \',6,6,12,20\');\n  };  ');
 
+var testZ = (0, _motorcycleDom.h)('pre', '  mMZ1.bnd(v => O.mMt1.bnd(add,v,mMt1)\n  .bnd(cube,mMt2)\n  .bnd(() => mMt3.ret(O.mMt1.x + \' cubed is \' + O.mMt2.x)))  ');
 var p1 = (0, _motorcycleDom.h)('pre', '  \n  ');
 
 var p2 = (0, _motorcycleDom.h)('pre', '  \n  ');
@@ -9321,10 +10495,10 @@ var p2 = (0, _motorcycleDom.h)('pre', '  \n  ');
 
 var p1 = (0, _motorcycleDom.h)('pre', '  \n  ');
 
-exports['default'] = { monads: monads, fib: fib, driver: driver, messages: messages, next: next, Monad$: Monad$, updateCalc: updateCalc, stream: stream, arrayFuncs: arrayFuncs, travel: travel, nums: nums, cleanup: cleanup, ret: ret, C42: C42, taskStream: taskStream, newTask: newTask, process: process, mM$task: mM$task, addString: addString, colorClick: colorClick, edit: edit };
+exports['default'] = { monads: monads, fib: fib, driver: driver, messages: messages, next: next, Monad$: Monad$, updateCalc: updateCalc, stream: stream, arrayFuncs: arrayFuncs, travel: travel, nums: nums, cleanup: cleanup, ret: ret, C42: C42, taskStream: taskStream, newTask: newTask, process: process, mM$task: mM$task, addString: addString, colorClick: colorClick, edit: edit, testZ: testZ };
 module.exports = exports['default'];
 
-},{"@motorcycle/dom":75,"most-subject":117}],185:[function(require,module,exports){
+},{"@motorcycle/dom":75,"most-subject":183}],251:[function(require,module,exports){
 'use strict';
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
@@ -9375,6 +10549,12 @@ function main(sources) {
 
   mMfib.ret([0, 1]);
   mMpause.ret(0);
+
+  mMZ1.bnd(function (v) {
+    return O.mMt1.bnd(add, v, mMt1).bnd(cube, mMt2).bnd(function () {
+      return mMt3.ret(O.mMt1.x + ' cubed is ' + O.mMt2.x);
+    });
+  });
 
   var messages$ = sources.WS.map(function (e) {
     console.log('******____&&&&&&&&&&&&&&&&&&&____**************_In messages$  e.data is: ', e.data);
@@ -9740,11 +10920,21 @@ function main(sources) {
   }
   */
 
-  var calcStream$ = (0, _most.merge)(edit1Action$, edit2Action$, taskAction$, colorAction$, deleteAction$, newTaskAction$, chatClickAction$, gameClickAction$, todoClickAction$, mM$3Action$, mM$2Action$, mM$1Action$, backClickAction$, forwardClickAction$, fibPressAction$, groupPressAction$, rollClickAction$, messagePressAction$, loginPressAction$, messages$, numClickAction$, opClickAction$);
+  var testZ = sources.DOM.select('#testZ').events('click');
+  var testZAction$ = testZ.map(function () {
+    return mMZ1.release(1);
+  });
+
+  var testQ = sources.DOM.select('#testQ').events('click');
+  var testQAction$ = testQ.map(function () {
+    return mMt1.ret(0).bnd(mM2.ret);
+  });
+
+  var calcStream$ = (0, _most.merge)(testZAction$, testQAction$, edit1Action$, edit2Action$, taskAction$, colorAction$, deleteAction$, newTaskAction$, chatClickAction$, gameClickAction$, todoClickAction$, mM$3Action$, mM$2Action$, mM$1Action$, backClickAction$, forwardClickAction$, fibPressAction$, groupPressAction$, rollClickAction$, messagePressAction$, loginPressAction$, messages$, numClickAction$, opClickAction$);
 
   return {
     DOM: calcStream$.map(function () {
-      return (0, _motorcycleDom.h)('div.content', [(0, _motorcycleDom.h)('div#rightPanel', { style: { display: 'none' } }, [(0, _motorcycleDom.h)('span#tog', [(0, _motorcycleDom.h)('button#game', { style: { fontSize: '16px' } }, 'TOGGLE GAME'), (0, _motorcycleDom.h)('span.tao', ' '), (0, _motorcycleDom.h)('button#todoButton', { style: { fontSize: '16px' } }, 'TOGGLE TODO LIST'), (0, _motorcycleDom.h)('br'), (0, _motorcycleDom.h)('br'), (0, _motorcycleDom.h)('button#chat2', { style: { fontSize: '16px' } }, 'TOGGLE CHAT')]), (0, _motorcycleDom.h)('br'), (0, _motorcycleDom.h)('br'), (0, _motorcycleDom.h)('br'), (0, _motorcycleDom.h)('br'), (0, _motorcycleDom.h)('div#gameDiv', [(0, _motorcycleDom.h)('span', 'Group: ' + O.mMgroup.x), (0, _motorcycleDom.h)('br'), (0, _motorcycleDom.h)('span', 'Goals: ' + O.mMgoals.x), (0, _motorcycleDom.h)('br'), (0, _motorcycleDom.h)('span', 'Name: ' + O.mMname.x), (0, _motorcycleDom.h)('br'), (0, _motorcycleDom.h)('span', 'player[score][goals]'), (0, _motorcycleDom.h)('div', O.mMscoreboard.x)]), (0, _motorcycleDom.h)('br'), (0, _motorcycleDom.h)('br'), (0, _motorcycleDom.h)('br'), (0, _motorcycleDom.h)('div#todoDiv', [(0, _motorcycleDom.h)('div#taskList', O.mMtaskList.x), (0, _motorcycleDom.h)('span', 'Author, Responsible Person, Task: '), (0, _motorcycleDom.h)('input.newTask')]), (0, _motorcycleDom.h)('br'), (0, _motorcycleDom.h)('span#alert'), (0, _motorcycleDom.h)('br'), (0, _motorcycleDom.h)('br'), (0, _motorcycleDom.h)('div#chatDiv', [(0, _motorcycleDom.h)('div#messages', [(0, _motorcycleDom.h)('span', 'Message: '), (0, _motorcycleDom.h)('input.inputMessage'), (0, _motorcycleDom.h)('div', O.mMmsg.x)])])]), (0, _motorcycleDom.h)('div.leftPanel', { style: { width: '60%' } }, [(0, _motorcycleDom.h)('br'), (0, _motorcycleDom.h)('h2', 'JS-monads-part6 - Shared Todo List'), (0, _motorcycleDom.h)('span', ' Here are the basic rules:'), (0, _motorcycleDom.h)('p', 'This installment of the Javascript monad series features a shared todo list, along with chat messaging and the game from the previous installment. If any of these are distracting, please note that they can be hidden using the toggle buttons in the upper right corner. '), (0, _motorcycleDom.h)('p', 'People who are in the same group, other than solo, share the same todo list, messages, and simulated dice game. In order to see any of these, you must establish a unique socket by logging in. '), (0, _motorcycleDom.h)('div#gameDiv2', [(0, _motorcycleDom.h)('p', 'RULES: If clicking two numbers and an operator (in any order) results in 20 or 18, the score increases by 1 or 3, respectively. If the score becomes 0 mod 5, 5 points are added. A score of 25 results in one goal. That can only be achieved by arriving at a score of 20, which jumps the score to 25. Directly computing 25 results in a score of 30, and no goal. Each time ROLL is clicked, one point is deducted. Three goals wins the game. '), (0, _motorcycleDom.h)('br'), (0, _motorcycleDom.h)('button#0.num'), (0, _motorcycleDom.h)('button#1.num'), (0, _motorcycleDom.h)('button#2.num'), (0, _motorcycleDom.h)('button#3.num'), (0, _motorcycleDom.h)('br'), (0, _motorcycleDom.h)('button#4.op', 'add'), (0, _motorcycleDom.h)('button#5.op', 'subtract'), (0, _motorcycleDom.h)('button#5.op', 'mult'), (0, _motorcycleDom.h)('button#5.op', 'div'), (0, _motorcycleDom.h)('button#5.op', 'concat'), (0, _motorcycleDom.h)('br'), (0, _motorcycleDom.h)('div#dice', { style: { display: 'none' } }, [(0, _motorcycleDom.h)('button.roll', 'ROLL'), (0, _motorcycleDom.h)('br'), (0, _motorcycleDom.h)('button#back2', 'FORWARD'), (0, _motorcycleDom.h)('button#forward2', 'BACK')])]), (0, _motorcycleDom.h)('br'), (0, _motorcycleDom.h)('div.winner', O.mMgoals2.x + ''), (0, _motorcycleDom.h)('div#log1', [(0, _motorcycleDom.h)('p', 'IN ORDER TO SEE THE DEMONSTRATIONS, YOU MUST ENTER SOMETHING BELOW.'), (0, _motorcycleDom.h)('span', 'Name: '), (0, _motorcycleDom.h)('input#login')]), (0, _motorcycleDom.h)('p', O.mM6.x.toString()), (0, _motorcycleDom.h)('div#log2', { style: { display: 'none' } }, [(0, _motorcycleDom.h)('span', 'Change group: '), (0, _motorcycleDom.h)('input#group')]), (0, _motorcycleDom.h)('p', O.mMsoloAlert.x), (0, _motorcycleDom.h)('br'), (0, _motorcycleDom.h)('hr'), (0, _motorcycleDom.h)('h2', 'Monad Definitions'), (0, _motorcycleDom.h)('p', 'This JS-monads project began as an exploration into the potential usefulness of simple composable objects whose "bnd()" and "ret()" methods are similar to Haskell\'s ">=" (prornounced "bind") and "return" monad functions. The stand-alone function "ret()" resembles the Haskell monad "return" function. I named the little objects "monads" and demonstrated, earlier in this series, that in their simplest use cases they conform to the Haskell monad laws. That\'s where the analogy ends. Nothing prevents the monads from doing anything that Javascript allows, such as causing side effects and mutating objects. '), (0, _motorcycleDom.h)('p', 'In normal use, Monad and Monad$ instances have initial values that never change. All updates are placed in the global object named "O". When an updated monad is added, the superceded monad can be preserved; for example, by assigning it to a variable or placing it in a named array. '), (0, _motorcycleDom.h)('p', 'The values of Monad and Monad$ instances can be changed. For any monad m with value v (in other words, m.x = v) ret(v,"m") creates a new monad named "m" with value v. The earlier version with the same name and value is abandoned to the garbage collector if no reference to it is maintained. And then there is self mutation. If you want some monad m to have value newValue, you can write m.x = newValue if you don\'t mind mutating m. I don\'t do that.  '), (0, _motorcycleDom.h)('span.tao', ' Earlier pages in this series. some of which define Monad differently, are still available at '), (0, _motorcycleDom.h)('a', { props: { href: "http://schalk.net" } }, 'schalk.net'), (0, _motorcycleDom.h)('span', '. They contain examples and detailed explanations which the reader might find enlightening, despite the sometimes slightly differnt definitions of Monad. This is how Monad, Monad$, MonadIter, and ret() are defined in this presentation: '), _codeJs2['default'].monads, (0, _motorcycleDom.h)('p', 'MonadIter instances can hold arguments for the functions they store. These auguments can be provided on the fly, when the functions execute. I plan to demonstrate this om a future installment of this series. '), (0, _motorcycleDom.h)('hr'), (0, _motorcycleDom.h)('h2', 'Concise Code Blocks Control The Flow Of Information'), (0, _motorcycleDom.h)('p', ' Incoming websockets messages trigger updates to the game display, the chat display, and the todo list display. The members of a group see what other members are doing; and in the case of the todo list, they see the current list when they sign in to the group. When any member of a group adds a task, crosses it out as completed, edits its description, or removes it, the server updates the persistent file and all members of the group immediately see the revised list.  '), (0, _motorcycleDom.h)('p', 'The flow of the game and the routing of websockets messages are handled by these little blocks of code: '), _codeJs2['default'].messages, (0, _motorcycleDom.h)('p', ' The "mMZ" prefix designates instances of MonadIter. Their bnd() method holds functions which execute if and when the release() method is called. The next() function releases a specified MonadIter instance when the calling monad\'s value matches the specified value. next2() releases the specified monad when the specified condition returns true. This syntactic sugar for callbacks provides provides the same functionality as Ecmascript 2015 iterators, promises, and generators, only without error handling. This was demonstated in earlier installments of this series, where it was pointed out that code for handling errors would be superfluous in the applications presented so far in this series. They might have been helpful for de-bugging during development, but now that things are running smoothly, no errors are likely to reach MonadIter instances. If the server goes down, no messages reach the websockets driver. I can\'t think of anything, other than  a serious operating system malfunction, could cause the game to function incorrectly. Here are the definitions of next() and next2(): '), _codeJs2['default'].next, (0, _motorcycleDom.h)('p', ' Next, I\'ll explain some features of the todo list application. This will show how the monads function, and also demonstate the use of Cycle.js / Motorcycle.js. Let\'s begin with the creation of a task. If you enter something like Susan, Fred, Pay the water bill, the editable task should appear. If you have loaded this page in another tab and changed to the same group in both, the new task should appear in both tabs. The task has a delete button, an edit button, and a "Completed" checkbox. It shows that Susan authorized the task and Fred is responsible for making sure it gets done. Instead of entering an authority and responsible person, you can just enter two commas before the task description. Without two commas, a message appears requesting more information.  '), (0, _motorcycleDom.h)('p', ' Any commas in the task description are replaced by $*$*$ to facilitate transforming the string in an array of six-attribute objects. This is done only once, when it is time to re-render the DOM.  mM$taskList is the todo application\'s worker function. Every time it executes its ret() method, the argument to ret() is added to its stream, causing the following code to run: '), _codeJs2['default'].mM$task, (0, _motorcycleDom.h)('p', 'mM$taskList caries a string representing the task list. mM$taskList.x.split(",") produces an array whose length is a multiple of six. Commas in the task description are replaced by "$*$*$" so split(",") places the whole description in a single element. Commas are re-inserted when the list arrives from the server as a websockets message. Although a task list is a nested virtual DOM object, it can be conveniently passed back and forth to the server as a string without resorting to JSON.stringify. It is always a string on the server and also in the working part of the application, becomming virtual DOM node only once, when it arrives from the server prefixed by "DD#$42" causing "process(e.data) to run. Here is process(): '), _codeJs2['default'].process, (0, _motorcycleDom.h)('span.tao', 'As you see, the string becomes a list of six-element objects, then those objects are used to create a Snabbdom virtual node which is handed to mM$taskList.ret() leading to the update of O.mMtaskList. O.mMtaskList.x sits permanently in the main virtual DOM description. When its value gets refreshed, the DOM re-renders because taskStream$ is merged into the stream that is mapped into the virtural DOM description inside the object returned by "main". "main" and "sources" are the arguments provided to Cycle.run(). "sources" is the argument provided to "main". The code is at '), (0, _motorcycleDom.h)('a', { props: { href: "https://github.com/dschalk/JS-monads-part6" } }, 'https://github.com/dschalk/JS-monads-part6'), (0, _motorcycleDom.h)('br'), (0, _motorcycleDom.h)('p', ' Here is what happens when the "Completed" button is clicked.         '), _codeJs2['default'].colorClick, (0, _motorcycleDom.h)('p', 'O.mM$taskList is split into an array. Every sixth element is the start of a new task. colorAction$ toggles the second, third, and fourth element in the task pinpointed by "index" * 6. getIndex finds the index of the first element whose task description matches the one that is being marked "Completed". To prevent suprises in cases where two tasks have the same name, I might include a safeguard to prevent duplicate todo list names. I don\'t know why anyone might intentionally give identical descriptions to two or more tasks, but it could happen inadvertently if the list is long. An alternative would be to toggle all lists with the name of the clicked list. After the changes are made, the array of strings is reduced to one string and sent to the server by means of mM$taskList.ret() for distribution to all group members. '), (0, _motorcycleDom.h)('p', ' This is the code involved in editing a task description: '), _codeJs2['default'].edit, (0, _motorcycleDom.h)('p', 'Clicking "Edit" causes a text box to be displayed. Pressing <ENTER> causes it to diappear. edit2Action$ obtains the edited description of the task and the index of the task iten and provides them as arguments to process. Process exchanges $*$*$ for any commas in the edited version and assigns the amended task description to the variable "task". O.mM$taskList.x is copied and split into an array. "index * 6" is replaced with "task" and the list of strings is reduced back to a single string and sent to the server for distribution. This pattern, - (1) split the string representation of the todo list into an array of strings, (2) do something, (3) reduce the list of strings back to a single string - is repeated when the "Delete" button is clicked. If the last item gets deleted, the server is instructed to delete the persistent file bearing the name of the group whose member deleted the last task. '), (0, _motorcycleDom.h)('p', 'Cycle.js has been criticized for not keeping state in a single location, the way React.js does. Motorcycle.js didn\'t do it for me, or try to force me to do it, but it so happens that the current state of all active monads is in the object "O". I have written applications in Node.js and React.js, and to me, Cycle.js / Motorcycle.js is far superior to either of them.  '), (0, _motorcycleDom.h)('hr'), (0, _motorcycleDom.h)('h2', 'Common Patterns'), (0, _motorcycleDom.h)('p', 'Anyone not yet familiar with functional programming can learn by studying the definition of the Monad bnd() method and considering the common patterns presented below. Often, we want to give a named monad the value of an anonymous monad returned by a monadic computation. Here are some ways to accomplish that: '), (0, _motorcycleDom.h)('p', 'For any monads m1 and m2 with values a and b respectively (in other words, m1.x == a and m2.x == b return true), m1.bnd(m2.ret) provides m1\'s value to m2. So, after m1.bnd(m2.ret), m1.x == a, m2.x == b, O.m2.x == a all return true. The definition of Monad\s bnd() method shows that the function m2.ret() operates on m1.x. m1.bnd(m2.ret) is equivalent to m2.ret(m1.x). The stand-alone ret() function can be used to alter the current value of m2, rather than altering the value of O.m2. Here is one way of accomplishing this: m1.bnd(x => ret(x,"m2"). These relationships are verified in the following tests: '), (0, _motorcycleDom.h)('pre', '             ret(\'m1Val\',\'m1\')\n             m1.x === \'m1Val\'  // true\n             ret(\'m2Val\', \'m2\')\n             m2.x === \'m2Val\'  // true\n\n             m1.bnd(m2.ret)\n             O.m2.x === \'m1Val\' // true\n\n             m1.ret(\'newVal\')\n             O.m1.bnd(v => ret(v, \'m2\'))\n             m2.x === \'newVal\'  // true\n             O.m2.x === \'m1Val\' // true   still the same  '), (0, _motorcycleDom.h)('p', 'The bnd() method does not have to return anonymous monads. Consider, for example, the trivial function f = function(x, mon) {return mon.ret(x)}. The monad that calls its bnd() method with the argument f gives the monad designated as "mon" its value. So m1.bnd(f, m2) results in m1.x == a, m2.x == b, O.m2.x == a all returning true. '), (0, _motorcycleDom.h)('p'), (0, _motorcycleDom.h)('p', 'Frequently, some monad "m" will use its "bnd" method on some function which takes two arguments, say "f(x,v)". The first argument is the value of m (which is m.x). m.bnd(f,v) is equivalent to f(m.x, v). The following example demonstates the use of a two-argument function: '), _codeJs2['default'].fib, (0, _motorcycleDom.h)('span.tao', 'In both functions, the "x" argument is ignored. It must be included, however, in order to make the bnd() method return the desired result. If you enter some number "n" in the box below, '), (0, _motorcycleDom.h)('pre', '  mM19.bnd(fibCalc, e.target.value*1).bnd(mM19.ret)'), (0, _motorcycleDom.h)('span', ' will execute and O.mM19.x will be displayed under the input box. '), (0, _motorcycleDom.h)('input#code'), (0, _motorcycleDom.h)('br'), (0, _motorcycleDom.h)('p#code2', O.mM19.x), (0, _motorcycleDom.h)('hr'), (0, _motorcycleDom.h)('h3', 'Immutable Data And The State Object "O" '), (0, _motorcycleDom.h)('p', 'The server updates scores in response to messages prefixed by "CG#$42". Each such message carries an integer specifying the amount of the change. The ServerState list of Client tupples is pulled from the game state TMVar and replaced by a new tupple whose Score field differs from the previous one.'), (0, _motorcycleDom.h)('p', 'In front end code, mutating variables which are defined inside of functions often seems inocuous in applications written in an object oriented programming style. This is not the case in a Motorcycle.js application where the primary structure is two functions cyclically interacting with one another. These functions are called only once, when the program initializes. One is Cycle.run and in this application, I named the other one "main". main()\'s only argument is an array holding the application\'s drivers. That array is named "resources". Cycle.run\'s arguments are the same "resources" array of drivers along with main(). In this environment, it seems best to maintain a general policy of avoiding mutations. I do this by keeping the ever-changing state of the application in an object named "O". In score(), where score and goals changes are calculated, all changes are made using mMscoreChange.ret(). For example, if a calculation results in the number 18 but not a number evenly divisable by 5, mM13.ret(mM13.x + 3) runs and O.mM13 is replaced by an updated attribute which is also named "O.mM13". Nothing is mutated, so historical versions of O.mM13 can be preserved. Only the state object "O" gets mutated. This is very similar to swapping out ServerState in the Haskell server\'s state TMVar. Historical versions of ServerState can be preserved there just as prior versions of O.mM13 can be preserved, by direct references to them or by putting them in some named entity, such as a list or array. This is how the flow of outgoing game information is handled in the main(): '), _codeJs2['default'].updateCalc, (0, _motorcycleDom.h)('p', 'The socket messages prompt the server to update its application state and to broadcast messages to all members of the group whose member sent the message to the server. Let\'s take another look at the way incoming messages are handled.'), _codeJs2['default'].messages, (0, _motorcycleDom.h)('p', ' Messages prefixed by CB#$42 are broadcast in response to CG#$42-prefixed messages from a browser. CB#$42 prefixes release mMZ11, causing the scoreboard to update. CA#$42-prefixed messages to the server result in CA#$42-prefixed messages carrying the next dice roll to be broadcast.  CE#$42 prefixed messages cause the release of mMZ14 which causes O.mMgoals2.x to change from an empty string to an anouncement of the name of the winner. '), (0, _motorcycleDom.h)('p'), (0, _motorcycleDom.h)('p'), (0, _motorcycleDom.h)('p'), (0, _motorcycleDom.h)('p'), (0, _motorcycleDom.h)('p'), (0, _motorcycleDom.h)('br'), (0, _motorcycleDom.h)('p'), (0, _motorcycleDom.h)('p'), (0, _motorcycleDom.h)('p'), (0, _motorcycleDom.h)('p'), (0, _motorcycleDom.h)('hr'), (0, _motorcycleDom.h)('p'), (0, _motorcycleDom.h)('p'), (0, _motorcycleDom.h)('p'), (0, _motorcycleDom.h)('p'), (0, _motorcycleDom.h)('p'), (0, _motorcycleDom.h)('p')])]);
+      return (0, _motorcycleDom.h)('div.content', [(0, _motorcycleDom.h)('div#rightPanel', { style: { display: 'none' } }, [(0, _motorcycleDom.h)('span#tog', [(0, _motorcycleDom.h)('button#game', { style: { fontSize: '16px' } }, 'TOGGLE GAME'), (0, _motorcycleDom.h)('span.tao', ' '), (0, _motorcycleDom.h)('button#todoButton', { style: { fontSize: '16px' } }, 'TOGGLE TODO LIST'), (0, _motorcycleDom.h)('br'), (0, _motorcycleDom.h)('br'), (0, _motorcycleDom.h)('button#chat2', { style: { fontSize: '16px' } }, 'TOGGLE CHAT')]), (0, _motorcycleDom.h)('br'), (0, _motorcycleDom.h)('br'), (0, _motorcycleDom.h)('br'), (0, _motorcycleDom.h)('br'), (0, _motorcycleDom.h)('div#gameDiv', [(0, _motorcycleDom.h)('span', 'Group: ' + O.mMgroup.x), (0, _motorcycleDom.h)('br'), (0, _motorcycleDom.h)('span', 'Goals: ' + O.mMgoals.x), (0, _motorcycleDom.h)('br'), (0, _motorcycleDom.h)('span', 'Name: ' + O.mMname.x), (0, _motorcycleDom.h)('br'), (0, _motorcycleDom.h)('span', 'player[score][goals]'), (0, _motorcycleDom.h)('div', O.mMscoreboard.x)]), (0, _motorcycleDom.h)('br'), (0, _motorcycleDom.h)('br'), (0, _motorcycleDom.h)('br'), (0, _motorcycleDom.h)('div#todoDiv', [(0, _motorcycleDom.h)('div#taskList', O.mMtaskList.x), (0, _motorcycleDom.h)('span', 'Author, Responsible Person, Task: '), (0, _motorcycleDom.h)('input.newTask')]), (0, _motorcycleDom.h)('br'), (0, _motorcycleDom.h)('span#alert'), (0, _motorcycleDom.h)('br'), (0, _motorcycleDom.h)('br'), (0, _motorcycleDom.h)('div#chatDiv', [(0, _motorcycleDom.h)('div#messages', [(0, _motorcycleDom.h)('span', 'Message: '), (0, _motorcycleDom.h)('input.inputMessage'), (0, _motorcycleDom.h)('div', O.mMmsg.x)])])]), (0, _motorcycleDom.h)('div.leftPanel', { style: { width: '60%' } }, [(0, _motorcycleDom.h)('br'), (0, _motorcycleDom.h)('h2', 'JS-monads-part6 - Shared Todo List'), (0, _motorcycleDom.h)('span', ' Here are the basic rules:'), (0, _motorcycleDom.h)('p', 'This installment of the Javascript monad series features a shared todo list, along with chat messaging and the game from the previous installment. If any of these are distracting, please note that they can be hidden using the toggle buttons in the upper right corner. '), (0, _motorcycleDom.h)('p', 'People who are in the same group, other than solo, share the same todo list, messages, and simulated dice game. In order to see any of these, you must establish a unique socket by logging in. '), (0, _motorcycleDom.h)('div#gameDiv2', [(0, _motorcycleDom.h)('p', 'RULES: If clicking two numbers and an operator (in any order) results in 20 or 18, the score increases by 1 or 3, respectively. If the score becomes 0 mod 5, 5 points are added. A score of 25 results in one goal. That can only be achieved by arriving at a score of 20, which jumps the score to 25. Directly computing 25 results in a score of 30, and no goal. Each time ROLL is clicked, one point is deducted. Three goals wins the game. '), (0, _motorcycleDom.h)('br'), (0, _motorcycleDom.h)('button#0.num'), (0, _motorcycleDom.h)('button#1.num'), (0, _motorcycleDom.h)('button#2.num'), (0, _motorcycleDom.h)('button#3.num'), (0, _motorcycleDom.h)('br'), (0, _motorcycleDom.h)('button#4.op', 'add'), (0, _motorcycleDom.h)('button#5.op', 'subtract'), (0, _motorcycleDom.h)('button#5.op', 'mult'), (0, _motorcycleDom.h)('button#5.op', 'div'), (0, _motorcycleDom.h)('button#5.op', 'concat'), (0, _motorcycleDom.h)('br'), (0, _motorcycleDom.h)('div#dice', { style: { display: 'none' } }, [(0, _motorcycleDom.h)('button.roll', 'ROLL'), (0, _motorcycleDom.h)('br'), (0, _motorcycleDom.h)('button#back2', 'FORWARD'), (0, _motorcycleDom.h)('button#forward2', 'BACK')])]), (0, _motorcycleDom.h)('br'), (0, _motorcycleDom.h)('div.winner', O.mMgoals2.x + ''), (0, _motorcycleDom.h)('div#log1', [(0, _motorcycleDom.h)('p', 'IN ORDER TO SEE THE DEMONSTRATIONS, YOU MUST ENTER SOMETHING BELOW.'), (0, _motorcycleDom.h)('span', 'Name: '), (0, _motorcycleDom.h)('input#login')]), (0, _motorcycleDom.h)('p', O.mM6.x.toString()), (0, _motorcycleDom.h)('div#log2', { style: { display: 'none' } }, [(0, _motorcycleDom.h)('span', 'Change group: '), (0, _motorcycleDom.h)('input#group')]), (0, _motorcycleDom.h)('p', O.mMsoloAlert.x), (0, _motorcycleDom.h)('br'), (0, _motorcycleDom.h)('hr'), (0, _motorcycleDom.h)('h2', 'Monad Definitions'), (0, _motorcycleDom.h)('p', 'This JS-monads project began as an exploration into the potential usefulness of simple composable objects whose "bnd()" and "ret()" methods are similar to Haskell\'s ">=" (prornounced "bind") and "return" monad functions. The stand-alone function "ret()" resembles the Haskell monad "return" function. I named the little objects "monads" and demonstrated, earlier in this series, that in their simplest use cases they conform to the Haskell monad laws. That\'s where the analogy ends. Nothing prevents the monads from doing anything that Javascript allows, such as causing side effects and mutating objects. '), (0, _motorcycleDom.h)('p', 'In normal use, Monad and Monad$ instances have initial values that never change. All updates are placed in the global object named "O". When an updated monad is added, the superceded monad can be preserved; for example, by assigning it to a variable or placing it in a named array. '), (0, _motorcycleDom.h)('p', 'The values of Monad and Monad$ instances can be changed. For any monad m with value v (in other words, m.x = v) ret(v,"m") creates a new monad named "m" with value v. The earlier version with the same name and value is abandoned to the garbage collector if no reference to it is maintained. And then there is self mutation. If you want some monad m to have value newValue, you can write m.x = newValue if you don\'t mind mutating m. I don\'t do that.  '), (0, _motorcycleDom.h)('span.tao', ' Earlier pages in this series. some of which define Monad differently, are still available at '), (0, _motorcycleDom.h)('a', { props: { href: "http://schalk.net" } }, 'schalk.net'), (0, _motorcycleDom.h)('span', '. They contain examples and detailed explanations which the reader might find enlightening, despite the sometimes slightly differnt definitions of Monad. This is how Monad, Monad$, MonadIter, and ret() are defined in this presentation: '), _codeJs2['default'].monads, (0, _motorcycleDom.h)('p', 'MonadIter instances can hold arguments for the functions they store. These auguments can be provided on the fly, when the functions execute. I plan to demonstrate this om a future installment of this series. '), (0, _motorcycleDom.h)('hr'), (0, _motorcycleDom.h)('h2', 'Concise Code Blocks Control The Flow Of Information'), (0, _motorcycleDom.h)('p', ' Incoming websockets messages trigger updates to the game display, the chat display, and the todo list display. The members of a group see what other members are doing; and in the case of the todo list, they see the current list when they sign in to the group. When any member of a group adds a task, crosses it out as completed, edits its description, or removes it, the server updates the persistent file and all members of the group immediately see the revised list.  '), (0, _motorcycleDom.h)('p', 'The flow of the game and the routing of websockets messages are handled by these little blocks of code: '), _codeJs2['default'].messages, (0, _motorcycleDom.h)('p', ' The "mMZ" prefix designates instances of MonadIter. Their bnd() method holds functions which execute if and when the release() method is called. The next() function releases a specified MonadIter instance when the calling monad\'s value matches the specified value. next2() releases the specified monad when the specified condition returns true. This syntactic sugar for callbacks provides provides the same functionality as Ecmascript 2015 iterators, promises, and generators, only without error handling. This was demonstated in earlier installments of this series, where it was pointed out that code for handling errors would be superfluous in the applications presented so far in this series. They might have been helpful for de-bugging during development, but now that things are running smoothly, no errors are likely to reach MonadIter instances. If the server goes down, no messages reach the websockets driver. I can\'t think of anything, other than  a serious operating system malfunction, could cause the game to function incorrectly. Here are the definitions of next() and next2(): '), _codeJs2['default'].next, (0, _motorcycleDom.h)('p', ' Next, I\'ll explain some features of the todo list application. This will show how the monads function, and also demonstate the use of Cycle.js / Motorcycle.js. Let\'s begin with the creation of a task. If you enter something like Susan, Fred, Pay the water bill, the editable task should appear. If you have loaded this page in another tab and changed to the same group in both, the new task should appear in both tabs. The task has a delete button, an edit button, and a "Completed" checkbox. It shows that Susan authorized the task and Fred is responsible for making sure it gets done. Instead of entering an authority and responsible person, you can just enter two commas before the task description. Without two commas, a message appears requesting more information.  '), (0, _motorcycleDom.h)('p', ' Any commas in the task description are replaced by $*$*$ to facilitate transforming the string in an array of six-attribute objects. This is done only once, when it is time to re-render the DOM.  mM$taskList is the todo application\'s worker function. Every time it executes its ret() method, the argument to ret() is added to its stream, causing the following code to run: '), _codeJs2['default'].mM$task, (0, _motorcycleDom.h)('p', 'mM$taskList caries a string representing the task list. mM$taskList.x.split(",") produces an array whose length is a multiple of six. Commas in the task description are replaced by "$*$*$" so split(",") places the whole description in a single element. Commas are re-inserted when the list arrives from the server as a websockets message. Although a task list is a nested virtual DOM object, it can be conveniently passed back and forth to the server as a string without resorting to JSON.stringify. It is always a string on the server and also in the working part of the application, becomming virtual DOM node only once, when it arrives from the server prefixed by "DD#$42" causing "process(e.data) to run. Here is process(): '), _codeJs2['default'].process, (0, _motorcycleDom.h)('span.tao', 'As you see, the string becomes a list of six-element objects, then those objects are used to create a Snabbdom virtual node which is handed to mM$taskList.ret() leading to the update of O.mMtaskList. O.mMtaskList.x sits permanently in the main virtual DOM description. When its value gets refreshed, the DOM re-renders because taskStream$ is merged into the stream that is mapped into the virtural DOM description inside the object returned by "main". "main" and "sources" are the arguments provided to Cycle.run(). "sources" is the argument provided to "main". The code is at '), (0, _motorcycleDom.h)('a', { props: { href: "https://github.com/dschalk/JS-monads-part6" } }, 'https://github.com/dschalk/JS-monads-part6'), (0, _motorcycleDom.h)('br'), (0, _motorcycleDom.h)('p', ' Here is what happens when the "Completed" button is clicked.         '), _codeJs2['default'].colorClick, (0, _motorcycleDom.h)('p', 'O.mM$taskList is split into an array. Every sixth element is the start of a new task. colorAction$ toggles the second, third, and fourth element in the task pinpointed by "index" * 6. getIndex finds the index of the first element whose task description matches the one that is being marked "Completed". To prevent suprises in cases where two tasks have the same name, I might include a safeguard to prevent duplicate todo list names. I don\'t know why anyone might intentionally give identical descriptions to two or more tasks, but it could happen inadvertently if the list is long. An alternative would be to toggle all lists with the name of the clicked list. After the changes are made, the array of strings is reduced to one string and sent to the server by means of mM$taskList.ret() for distribution to all group members. '), (0, _motorcycleDom.h)('p', ' This is the code involved in editing a task description: '), _codeJs2['default'].edit, (0, _motorcycleDom.h)('p', 'Clicking "Edit" causes a text box to be displayed. Pressing <ENTER> causes it to diappear. edit2Action$ obtains the edited description of the task and the index of the task iten and provides them as arguments to process. Process exchanges $*$*$ for any commas in the edited version and assigns the amended task description to the variable "task". O.mM$taskList.x is copied and split into an array. "index * 6" is replaced with "task" and the list of strings is reduced back to a single string and sent to the server for distribution. This pattern, - (1) split the string representation of the todo list into an array of strings, (2) do something, (3) reduce the list of strings back to a single string - is repeated when the "Delete" button is clicked. If the last item gets deleted, the server is instructed to delete the persistent file bearing the name of the group whose member deleted the last task. '), (0, _motorcycleDom.h)('p', 'Cycle.js has been criticized for not keeping state in a single location, the way React.js does. Motorcycle.js didn\'t do it for me, or try to force me to do it, but it so happens that the current state of all active monads is in the object "O". I have written applications in Node.js and React.js, and to me, Cycle.js / Motorcycle.js is far superior to either of them.  '), (0, _motorcycleDom.h)('hr'), (0, _motorcycleDom.h)('h2', 'Common Patterns'), (0, _motorcycleDom.h)('p', 'Anyone not yet familiar with functional programming can learn by studying the definition of the Monad bnd() method and considering the common patterns presented below. Often, we want to give a named monad the value of an anonymous monad returned by a monadic computation. Here are some ways to accomplish that: '), (0, _motorcycleDom.h)('p', 'For any monads m1 and m2 with values a and b respectively (in other words, m1.x == a and m2.x == b return true), m1.bnd(m2.ret) provides m1\'s value to m2. So, after m1.bnd(m2.ret), m1.x == a, m2.x == b, O.m2.x == a all return true. The definition of Monad\s bnd() method shows that the function m2.ret() operates on m1.x. m1.bnd(m2.ret) is equivalent to m2.ret(m1.x). The stand-alone ret() function can be used to alter the current value of m2, rather than altering the value of O.m2. Here is one way of accomplishing this: m1.bnd(x => ret(x,"m2"). These relationships are verified in the following tests: '), (0, _motorcycleDom.h)('pre', '             ret(\'m1Val\',\'m1\')\n             m1.x === \'m1Val\'  // true\n             ret(\'m2Val\', \'m2\')\n             m2.x === \'m2Val\'  // true\n\n             m1.bnd(m2.ret)\n             O.m2.x === \'m1Val\' // true\n\n             m1.ret(\'newVal\')\n             O.m1.bnd(v => ret(v, \'m2\'))\n             m2.x === \'newVal\'  // true\n             O.m2.x === \'m1Val\' // true   still the same  '), (0, _motorcycleDom.h)('p', 'The bnd() method does not have to return anonymous monads. Consider, for example, the trivial function f = function(x, mon) {return mon.ret(x)}. The monad that calls its bnd() method with the argument f gives the monad designated as "mon" its value. So m1.bnd(f, m2) results in m1.x == a, m2.x == b, O.m2.x == a all returning true. '), (0, _motorcycleDom.h)('p'), (0, _motorcycleDom.h)('p', 'Frequently, some monad "m" will use its "bnd" method on some function which takes two arguments, say "f(x,v)". The first argument is the value of m (which is m.x). m.bnd(f,v) is equivalent to f(m.x, v). The following example demonstates the use of a two-argument function: '), _codeJs2['default'].fib, (0, _motorcycleDom.h)('span.tao', 'In both functions, the "x" argument is ignored. It must be included, however, in order to make the bnd() method return the desired result. If you enter some number "n" in the box below, '), (0, _motorcycleDom.h)('pre', '  mM19.bnd(fibCalc, e.target.value*1).bnd(mM19.ret)'), (0, _motorcycleDom.h)('span', ' will execute and O.mM19.x will be displayed under the input box. '), (0, _motorcycleDom.h)('input#code'), (0, _motorcycleDom.h)('br'), (0, _motorcycleDom.h)('p#code2', O.mM19.x), (0, _motorcycleDom.h)('p', 'The initial values of mMt1, mMt2, and mMt3 are 0, 0, and "" respectively. When this page loads, the following code runs: '), _codeJs2['default'].testZ, (0, _motorcycleDom.h)('p', 'Each time mMZ1.release(n) is clicked, the code in mMZ1.bnd runs with v == n.  Click "mMZ1.release(1)" to run the code with n == 1. O.mMt3.x is shown below the button. Each time "mMZ1.release(1)" is clicked, the code runs again producing a new result. '), (0, _motorcycleDom.h)('button#testZ', 'mMZ1.release(1)'), (0, _motorcycleDom.h)('p#code2', O.mMt3.x), (0, _motorcycleDom.h)('span', 'Refresh button: '), (0, _motorcycleDom.h)('button#testQ', 'mMt1.ret(0).bnd(mMt2.ret)'), (0, _motorcycleDom.h)('p', '  '), (0, _motorcycleDom.h)('hr'), (0, _motorcycleDom.h)('h3', 'Immutable Data And The State Object "O" '), (0, _motorcycleDom.h)('p', 'The server updates scores in response to messages prefixed by "CG#$42". Each such message carries an integer specifying the amount of the change. The ServerState list of Client tupples is pulled from the game state TMVar and replaced by a new tupple whose Score field differs from the previous one.'), (0, _motorcycleDom.h)('p', 'In front end code, mutating variables which are defined inside of functions often seems inocuous in applications written in an object oriented programming style. This is not the case in a Motorcycle.js application where the primary structure is two functions cyclically interacting with one another. These functions are called only once, when the program initializes. One is Cycle.run and in this application, I named the other one "main". main()\'s only argument is an array holding the application\'s drivers. That array is named "resources". Cycle.run\'s arguments are the same "resources" array of drivers along with main(). In this environment, it seems best to maintain a general policy of avoiding mutations. I do this by keeping the ever-changing state of the application in an object named "O". In score(), where score and goals changes are calculated, all changes are made using mMscoreChange.ret(). For example, if a calculation results in the number 18 but not a number evenly divisable by 5, mM13.ret(mM13.x + 3) runs and O.mM13 is replaced by an updated attribute which is also named "O.mM13". Nothing is mutated, so historical versions of O.mM13 can be preserved. Only the state object "O" gets mutated. This is very similar to swapping out ServerState in the Haskell server\'s state TMVar. Historical versions of ServerState can be preserved there just as prior versions of O.mM13 can be preserved, by direct references to them or by putting them in some named entity, such as a list or array. This is how the flow of outgoing game information is handled in the main(): '), _codeJs2['default'].updateCalc, (0, _motorcycleDom.h)('p', 'The socket messages prompt the server to update its application state and to broadcast messages to all members of the group whose member sent the message to the server. Let\'s take another look at the way incoming messages are handled.'), _codeJs2['default'].messages, (0, _motorcycleDom.h)('p', ' Messages prefixed by CB#$42 are broadcast in response to CG#$42-prefixed messages from a browser. CB#$42 prefixes release mMZ11, causing the scoreboard to update. CA#$42-prefixed messages to the server result in CA#$42-prefixed messages carrying the next dice roll to be broadcast.  CE#$42 prefixed messages cause the release of mMZ14 which causes O.mMgoals2.x to change from an empty string to an anouncement of the name of the winner. '), (0, _motorcycleDom.h)('p'), (0, _motorcycleDom.h)('p'), (0, _motorcycleDom.h)('p'), (0, _motorcycleDom.h)('p'), (0, _motorcycleDom.h)('p'), (0, _motorcycleDom.h)('br'), (0, _motorcycleDom.h)('p'), (0, _motorcycleDom.h)('p'), (0, _motorcycleDom.h)('p'), (0, _motorcycleDom.h)('p'), (0, _motorcycleDom.h)('hr'), (0, _motorcycleDom.h)('p'), (0, _motorcycleDom.h)('p'), (0, _motorcycleDom.h)('p'), (0, _motorcycleDom.h)('p'), (0, _motorcycleDom.h)('p'), (0, _motorcycleDom.h)('p')])]);
     }) };
 }
 
@@ -9857,4 +11047,4 @@ var sources = {
 
 _motorcycleCore2['default'].run(main, sources);
 
-},{"./code.js":184,"@motorcycle/core":3,"@motorcycle/dom":75,"most":183,"most-subject":117}]},{},[185]);
+},{"./code.js":250,"@motorcycle/core":3,"@motorcycle/dom":75,"most":249,"most-subject":183}]},{},[251]);

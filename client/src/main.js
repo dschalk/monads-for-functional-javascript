@@ -34,6 +34,11 @@ function main(sources) {
 
   mMfib.ret([0,1]);
   mMpause.ret(0);
+
+  mMZ1.bnd(v => O.mMt1.bnd(add,v,mMt1)
+  .bnd(cube,mMt2)
+  .bnd(() => mMt3.ret(O.mMt1.x + ' cubed is ' + O.mMt2.x)))
+  
   
   const messages$ = (sources.WS).map(e => {
     console.log('******____&&&&&&&&&&&&&&&&&&&____**************_In messages$  e.data is: ', e.data)
@@ -425,8 +430,19 @@ for (var i = 0, j = arr.length; i < j; i++) {
 */
 
 
+  const testZ = sources.DOM
+    .select('#testZ').events('click')
+  const testZAction$ = testZ.map(() =>
+    mMZ1.release(1));                                
 
-  const calcStream$ = merge( edit1Action$, edit2Action$, taskAction$, colorAction$, deleteAction$, newTaskAction$, chatClickAction$, gameClickAction$, todoClickAction$, mM$3Action$, mM$2Action$, mM$1Action$, backClickAction$, forwardClickAction$, fibPressAction$, groupPressAction$, rollClickAction$, messagePressAction$, loginPressAction$, messages$, numClickAction$, opClickAction$ );
+  const testQ = sources.DOM
+    .select('#testQ').events('click')
+  const testQAction$ = testQ.map(() =>
+    mMt1.ret(0).bnd(mM2.ret));                                
+
+
+
+  const calcStream$ = merge( testZAction$, testQAction$, edit1Action$, edit2Action$, taskAction$, colorAction$, deleteAction$, newTaskAction$, chatClickAction$, gameClickAction$, todoClickAction$, mM$3Action$, mM$2Action$, mM$1Action$, backClickAction$, forwardClickAction$, fibPressAction$, groupPressAction$, rollClickAction$, messagePressAction$, loginPressAction$, messages$, numClickAction$, opClickAction$ );
 
     return {
       DOM: 
@@ -570,6 +586,14 @@ for (var i = 0, j = arr.length; i < j; i++) {
         h('input#code', ),  
         h('br'),
         h('p#code2', O.mM19.x ),  
+        h('p', 'The initial values of mMt1, mMt2, and mMt3 are 0, 0, and "" respectively. When this page loads, the following code runs: ' ),
+        code.testZ,
+        h('p', 'Each time mMZ1.release(n) is clicked, the code in mMZ1.bnd runs with v == n.  Click "mMZ1.release(1)" to run the code with n == 1. O.mMt3.x is shown below the button. Each time "mMZ1.release(1)" is clicked, the code runs again producing a new result. ' ),
+        h('button#testZ', 'mMZ1.release(1)'  ),
+        h('p#code2', O.mMt3.x ),
+        h('span', 'Refresh button: '  ),
+        h('button#testQ', 'mMt1.ret(0).bnd(mMt2.ret)'  ),
+        h('p', '  ' ), 
         h('hr'),
         h('h3', 'Immutable Data And The State Object "O" ' ),
         h('p',  'The server updates scores in response to messages prefixed by "CG#$42". Each such message carries an integer specifying the amount of the change. The ServerState list of Client tupples is pulled from the game state TMVar and replaced by a new tupple whose Score field differs from the previous one.' ),

@@ -318,7 +318,15 @@ mMtaskList2.ret(mMtaskList2.x);
 var mMgoals = M(0,'mMgoals');
 mMgoals.ret(mMgoals.x);
 
-mMgoals.ret(mMgoals.x)
+var mMt1 = new Monad(0,'mMt1')
+mMt1.ret(mMt1.x)
+
+var mMt2 = new Monad(0,'mMt2')
+mMt2.ret(mMt2.x)
+
+var mMt3 = new Monad('','mMt3')
+mMt3.ret(mMt3.x)
+
 mMgoals2.ret(mMgoals2.x)
 mM3.ret(mM3.x)
 mM6.ret(mM6.x)
