@@ -55,6 +55,22 @@ Here are some definitions:
     };
   };               
 ```
+##MonadIter
+```javascript
+var MonadIter = function MonadIter() {
+  var this = this;
+  this.p = function (a, ... args) {};
+
+  this.release = function (x, ...args) {
+    return this.p(x, ...args);
+  };
+
+  this.bnd = function (func) {
+    _this.p = func;
+    return _this;
+  };
+};
+```
 ## MonadStream
 ```javascript
   var MonadStream = function MonadStream(z, g) {
