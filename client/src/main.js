@@ -501,8 +501,8 @@ for (var i = 0, j = arr.length; i < j; i++) {
         ]),
         h('div.leftPanel', {  style: {width: '60%'   }},   [  
         h('br'),
-        h('h2', 'Monads For Iteration, Time Travel, And Much More' ),
-        h('p', 'People who are in the same group, other than solo, share the same todo list, messages, and simulated dice game. In order to see any of these, you must establish a unique socket by logging in. '  ),
+        h('h2', 'Monads For Iteration, Time Travel, And More' ),
+        h('p', 'People who are in the same group, other than solo, share the same todo list, messages, and simulated dice game. In order to see any of these, you must establish an identity on the server by logging in. The websockets connection would terminate if the first message the server receives does not succefully participate in the login handshake. '  ),
         h('div#gameDiv2',  {style: {display: 'none'}}, [
         h('span', ' Here are the basic rules:' ), 
         h('p', 'RULES: If clicking two numbers and an operator (in any order) results in 20 or 18, the score increases by 1 or 3, respectively. If the score becomes 0 mod 5, 5 points are added. A score of 25 results in one goal. That can only be achieved by arriving at a score of 20, which jumps the score to 25. Directly computing 25 results in a score of 30, and no goal. Each time ROLL is clicked, one point is deducted. Three goals wins the game. '    ),

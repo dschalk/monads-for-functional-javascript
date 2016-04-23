@@ -8,7 +8,7 @@ Variation on the Monad theme are easy to implement. I experimented with MonadHis
 
 ##Immutability And The Global "O" Object
 
-This discussion isn't about the websockets server, but I want to point out the similarity between the way the server holds the application's state in a TMVar and the way the front holds state in an object. The application's state is always changing, so it\'s a pretty safe bet that something is mutating. The Haskell server for the online demonstration at [JS-monads-part6](http://schalk.net:3055) keeps the ever-changing state of the application in the ServerState list of tupples. It is defined as follows: 
+This discussion isn't about the websockets server, but I want to point out the similarity between the way the server holds the application's state in a TMVar and the way the front end holds state in an object. The application's state is always changing, so it\'s a pretty safe bet that something is mutating. The Haskell server for the online demonstration at [JS-monads-part6](http://schalk.net:3055) keeps the ever-changing state of the application in the ServerState list of tupples. It is defined as follows: 
 ```haskell
 type Name = Text
 type Score = Int
