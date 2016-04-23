@@ -39,6 +39,7 @@ function main(sources) {
   .bnd(cube,mMt2)
   .bnd(() => mMt3.ret(O.mMt1.x + ' cubed is ' + O.mMt2.x)))
   
+  mMZ2.bnd(v => cube(v).bnd(w => mMt3.ret(v + ' cubed is ' + w)))
   
   const messages$ = (sources.WS).map(e => {
     console.log('******____&&&&&&&&&&&&&&&&&&&____**************_In messages$  e.data is: ', e.data)
@@ -91,6 +92,7 @@ function main(sources) {
       document.getElementById('rightPanel').style.display = 'block';
       document.getElementById('log1').style.display = 'none';
       document.getElementById('log2').style.display = 'block';
+      document.getElementById('gameDiv2').style.display = 'block';
     }
   });
 
@@ -438,11 +440,19 @@ for (var i = 0, j = arr.length; i < j; i++) {
   const testQ = sources.DOM
     .select('#testQ').events('click')
   const testQAction$ = testQ.map(() =>
-    mMt1.ret(0).bnd(mM2.ret));                                
+    mMt1.ret(-1).bnd(mM2.ret)
+    .bnd(() => mMZ1.release(1)));                                
+
+  const testW = sources.DOM
+    .select('#testW').events('keypress')
+  const testWAction$ = testW.map((e) => {
+    if( e.keyCode == 13 ) {
+      mMZ2.release(e.target.value)
+    }
+  });
 
 
-
-  const calcStream$ = merge( testZAction$, testQAction$, edit1Action$, edit2Action$, taskAction$, colorAction$, deleteAction$, newTaskAction$, chatClickAction$, gameClickAction$, todoClickAction$, mM$3Action$, mM$2Action$, mM$1Action$, backClickAction$, forwardClickAction$, fibPressAction$, groupPressAction$, rollClickAction$, messagePressAction$, loginPressAction$, messages$, numClickAction$, opClickAction$ );
+  const calcStream$ = merge( testWAction$, testZAction$, testQAction$, edit1Action$, edit2Action$, taskAction$, colorAction$, deleteAction$, newTaskAction$, chatClickAction$, gameClickAction$, todoClickAction$, mM$3Action$, mM$2Action$, mM$1Action$, backClickAction$, forwardClickAction$, fibPressAction$, groupPressAction$, rollClickAction$, messagePressAction$, loginPressAction$, messages$, numClickAction$, opClickAction$ );
 
     return {
       DOM: 
@@ -491,12 +501,10 @@ for (var i = 0, j = arr.length; i < j; i++) {
         ]),
         h('div.leftPanel', {  style: {width: '60%'   }},   [  
         h('br'),
-        h('h2', 'JS-monads-part6 - Shared Todo List' ),
-        h('span', ' Here are the basic rules:' ), 
-        h('p', 'This installment of the Javascript monad series features a shared todo list, along with chat messaging and the game from the previous installment. If any of these are distracting, please note that they can be hidden using the toggle buttons in the upper right corner. '  ),
+        h('h2', 'Monads For Iteration, Time Travel, And Much More' ),
         h('p', 'People who are in the same group, other than solo, share the same todo list, messages, and simulated dice game. In order to see any of these, you must establish a unique socket by logging in. '  ),
-         
-        h('div#gameDiv2', [
+        h('div#gameDiv2',  {style: {display: 'none'}}, [
+        h('span', ' Here are the basic rules:' ), 
         h('p', 'RULES: If clicking two numbers and an operator (in any order) results in 20 or 18, the score increases by 1 or 3, respectively. If the score becomes 0 mod 5, 5 points are added. A score of 25 results in one goal. That can only be achieved by arriving at a score of 20, which jumps the score to 25. Directly computing 25 results in a score of 30, and no goal. Each time ROLL is clicked, one point is deducted. Three goals wins the game. '    ),
         h('br'),
         h('button#0.num'),
@@ -515,7 +523,6 @@ for (var i = 0, j = arr.length; i < j; i++) {
         h('br'),
         h('button#back2', 'FORWARD'  ),
         h('button#forward2', 'BACK'  ) ]) ]),
-        h('br'),
         h('div.winner', O.mMgoals2.x+''  ),
         h('div#log1', [
         h('p', 'IN ORDER TO SEE THE DEMONSTRATIONS, YOU MUST ENTER SOMETHING BELOW.'  ),
@@ -530,13 +537,13 @@ for (var i = 0, j = arr.length; i < j; i++) {
         h('hr', ),
         h('h2', 'Monad Definitions'  ),
         h('p', 'This JS-monads project began as an exploration into the potential usefulness of simple composable objects whose "bnd()" and "ret()" methods are similar to Haskell\'s ">=" (prornounced "bind") and "return" monad functions. The stand-alone function "ret()" resembles the Haskell monad "return" function. I named the little objects "monads" and demonstrated, earlier in this series, that in their simplest use cases they conform to the Haskell monad laws. That\'s where the analogy ends. Nothing prevents the monads from doing anything that Javascript allows, such as causing side effects and mutating objects. '),
-        h('p', 'In normal use, Monad and Monad$ instances have initial values that never change. All updates are placed in the global object named "O". When an updated monad is added, the superceded monad can be preserved; for example, by assigning it to a variable or placing it in a named array. ' ),
-        h('p', 'The values of Monad and Monad$ instances can be changed. For any monad m with value v (in other words, m.x = v) ret(v,"m") creates a new monad named "m" with value v. The earlier version with the same name and value is abandoned to the garbage collector if no reference to it is maintained. And then there is self mutation. If you want some monad m to have value newValue, you can write m.x = newValue if you don\'t mind mutating m. I don\'t do that.  '  ),
-        h('span.tao', ' Earlier pages in this series. some of which define Monad differently, are still available at ' ),
+        h('p', 'In normal use, Monad and MonadStream instances have initial values that never change. All updates are placed in the global object named "O". When an updated monad is added, the superceded monad can be preserved; for example, by assigning it to a variable or placing it in a named array. ' ),
+        h('p', 'The values of Monad and MonadStream instances can be changed, although I can\'t think of a good reason for doing it. For any monad m with value v (in other words, m.x = v) ret(v,"m") creates a new monad named "m" with value v. The earlier version with the same name and value is abandoned to the garbage collector if no reference to it is maintained. O.m remains unchanged. And then there is self mutation. If you want some monad m to have value newValue, you can write m.x = newValue if you don\'t mind mutating m. I don\'t do that.  '  ),
+        h('span.tao', ' Earlier pages in this series have different monad definition and are superseded by this, the final page. The old code is still available at ' ),
         h('a', {props: {href: "http://schalk.net"}}, 'schalk.net' ),
-        h('span', '. They contain examples and detailed explanations which the reader might find enlightening, despite the sometimes slightly differnt definitions of Monad. This is how Monad, Monad$, MonadIter, and ret() are defined in this presentation: '),
+        h('span', '. '),
         code.monads,  
-        h('p', 'MonadIter instances can hold arguments for the functions they store. These auguments can be provided on the fly, when the functions execute. I plan to demonstrate this om a future installment of this series. ' ),
+        h('p', 'MonadIter instances\' release() methods can take arguments and provide them to the code they capture with their bnd() methods. An example of this can be found below. ' ),
         h('hr', ),  
         h('h2', 'Concise Code Blocks Control The Flow Of Information' ),
         h('p', ' Incoming websockets messages trigger updates to the game display, the chat display, and the todo list display. The members of a group see what other members are doing; and in the case of the todo list, they see the current list when they sign in to the group. When any member of a group adds a task, crosses it out as completed, edits its description, or removes it, the server updates the persistent file and all members of the group immediately see the revised list.  '  ),
@@ -562,7 +569,7 @@ for (var i = 0, j = arr.length; i < j; i++) {
         h('hr'),
         h('h2', 'Common Patterns' ),
         h('p', 'Anyone not yet familiar with functional programming can learn by studying the definition of the Monad bnd() method and considering the common patterns presented below. Often, we want to give a named monad the value of an anonymous monad returned by a monadic computation. Here are some ways to accomplish that: '  ),
-        h('p', 'For any monads m1 and m2 with values a and b respectively (in other words, m1.x == a and m2.x == b return true), m1.bnd(m2.ret) provides m1\'s value to m2. So, after m1.bnd(m2.ret), m1.x == a, m2.x == b, O.m2.x == a all return true. The definition of Monad\s bnd() method shows that the function m2.ret() operates on m1.x. m1.bnd(m2.ret) is equivalent to m2.ret(m1.x). The stand-alone ret() function can be used to alter the current value of m2, rather than altering the value of O.m2. Here is one way of accomplishing this: m1.bnd(x => ret(x,"m2"). These relationships are verified in the following tests: ' ),
+        h('p', 'For any monads m1 and m2 with values a and b respectively (in other words, m1.x == a and m2.x == b return true), m1.bnd(m2.ret) provides m1\'s value to m2.ret() causing O.m2 to have m1\'s value. So, after m1.bnd(m2.ret), m1.x == a, m2.x == b, O.m2.x == a all return true. The definition of Monad\s bnd() method shows that the function m2.ret() operates on m1.x. m1.bnd(m2.ret) is equivalent to m2.ret(m1.x). The stand-alone ret() function can be used to alter the current value of m2, rather than altering the value of O.m2. Here is one way of accomplishing this: m1.bnd(x => ret(x,"m2"). These relationships are verified in the following tests: ' ),
         h('pre', 
 `             ret('m1Val','m1')
              m1.x === 'm1Val'  // true
@@ -593,7 +600,8 @@ for (var i = 0, j = arr.length; i < j; i++) {
         h('p#code2', O.mMt3.x ),
         h('span', 'Refresh button: '  ),
         h('button#testQ', 'mMt1.ret(0).bnd(mMt2.ret)'  ),
-        h('p', '  ' ), 
+        h('p', 'If you enter a number "num" below, mMZ2.release(num) will run.  ' ), 
+        h('input#testW', ), 
         h('hr'),
         h('h3', 'Immutable Data And The State Object "O" ' ),
         h('p',  'The server updates scores in response to messages prefixed by "CG#$42". Each such message carries an integer specifying the amount of the change. The ServerState list of Client tupples is pulled from the game state TMVar and replaced by a new tupple whose Score field differs from the previous one.' ),
@@ -658,7 +666,6 @@ for (var i = 0, j = arr.length; i < j; i++) {
         socket.send('CE#$42,' + O.mMgroup.x + ',' + O.mMname.x + ',nothing ');
       }
       socket.send('CA#$42,' + O.mMgroup.x.trim() + ',' + O.mMname.x.trim() + ',6,6,12,20');
-      console.log('$$$$$$$********************$$$$$$$$$$$$$$$$$$*********************s == 20  ');
       return;
     }
     if ((x + j) % 5 == 0) {
@@ -666,13 +673,11 @@ for (var i = 0, j = arr.length; i < j; i++) {
       socket.send('CG#$42,' + O.mMgroup.x + ',' + O.mMname.x + ','+(j+5)+',' + O.mMgoals.x); 
       mM13.ret(x + j + 5);
       socket.send('CA#$42,' + O.mMgroup.x.trim() + ',' + O.mMname.x.trim() + ',6,6,12,20');
-      console.log('$$$$$$$********************$$$$$$$$$$$$$$$$$$****___cow___************s % 5 == 0  ');
       return;
     } 
     socket.send('CG#$42,' + O.mMgroup.x + ',' + O.mMname.x + ','+j+',' + O.mMgoals.x); 
     mM13.ret(x + j);
     socket.send('CA#$42,' + O.mMgroup.x.trim() + ',' + O.mMname.x.trim() + ',6,6,12,20');
-    console.log('$$$$$$$*******$$$$$$$$$$$$$$$$$$****___horse___************O.mM13.x, O.mMscoreChange.x ', O.mM13.x, O.mMscoreChange.x  );
  };
 
   var reset = function reset () {

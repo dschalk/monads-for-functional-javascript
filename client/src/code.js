@@ -540,12 +540,12 @@ var cleanup = h('pre',  `  function cleanup (x) {
   };
 
   var score = function score(x,j) {
-    if ((x + j) == 20) { // The score of 20 jumps to 25. Round over.
+    if ((x + j) == 20) {
       mMgoals.ret(O.mMgoals.x == 2 ? 0 : (O.mMgoals.x + 1)); 
       mM13.ret(0);
       socket.send('CG#$42,' + O.mMgroup.x + ',' + O.mMname.x + ',' + -x + ',' + O.mMgoals.x); 
-      if (O.mMgoals.x == 0) {  The third goal has been earned. The game is over.
-        socket.send('CE#$42,' + O.mMgroup.x + ',' + O.mMname.x + ',nothing '); 
+      if (O.mMgoals.x == 0) {
+        socket.send('CE#$42,' + O.mMgroup.x + ',' + O.mMname.x + ',nothing ');
       }
       socket.send('CA#$42,' + O.mMgroup.x.trim() + ',' + O.mMname.x.trim() + ',6,6,12,20');
       return;
@@ -565,7 +565,10 @@ var cleanup = h('pre',  `  function cleanup (x) {
 
   var testZ = h('pre',  `  mMZ1.bnd(v => O.mMt1.bnd(add,v,mMt1)
   .bnd(cube,mMt2)
-  .bnd(() => mMt3.ret(O.mMt1.x + ' cubed is ' + O.mMt2.x)))  `  )
+  .bnd(() => mMt3.ret(O.mMt1.x + ' cubed is ' + O.mMt2.x)))  
+  
+  mMZ2.bnd(v => cube(v).bnd(w => mMt3.ret(v + ' cubed is ' + w)))  `  )
+
   var p1 = h('pre',  `  
   `  )
 

@@ -13,7 +13,7 @@ function _classCallCheck(instance, Constructor) {
 
 var subject = mostSubject.subject;
 
-var Monad$ = function Monad$(z, g) {
+var MonadStream = function MonadStream(z, g) {
   var _this = this;
   this.subject = subject();
   this.observer = this.subject.observer;
@@ -27,7 +27,7 @@ var Monad$ = function Monad$(z, g) {
     return func.apply(undefined, [_this.x].concat(args));
   };
   this.ret = function (a) {
-    O[_this.id] = new Monad$(a,_this.id);
+    O[_this.id] = new MonadStream(a,_this.id);
     _this.observer.next(a);
     console.log('Streaming from ', _this.id);
     return O[_this.id];
@@ -61,25 +61,25 @@ var MonadSave = function MonadSave(z, g, h) {
   };
 };
 
-var mM$1 = new Monad$([], 'mM$1');
+var mM$1 = new MonadStream([], 'mM$1');
 mM$1.ret(mM$1.x);
 
-var mM$2 = new Monad$([], 'mM$2');
+var mM$2 = new MonadStream([], 'mM$2');
 mM$2.ret(mM$2.x);
 
-var mM$3 = new Monad$([], 'mM$3');
+var mM$3 = new MonadStream([], 'mM$3');
 mM$3.ret(mM$3.x);
 
-var mM$todo = new Monad$(['alpha', 'beta', 'gamma'], 'mM$todo');
+var mM$todo = new MonadStream(['alpha', 'beta', 'gamma'], 'mM$todo');
 mM$todo.ret(mM$todo.x);
 
-var mM$task = new Monad$([], 'mM$task');
+var mM$task = new MonadStream([], 'mM$task');
 mM$task.ret(mM$task.x);
 
-var mM$todo2 = new Monad$([], 'mM$todo2');
+var mM$todo2 = new MonadStream([], 'mM$todo2');
 mM$todo2.ret(mM$todo2.x);
 
-var mM$todo3 = new Monad$([], 'mM$todo3');
+var mM$todo3 = new MonadStream([], 'mM$todo3');
 mM$todo3.ret(mM$todo3.x);
 
 var mMsaved = new MonadSave({}, 'mMsaved');
@@ -297,7 +297,7 @@ mMtodoList.ret(mMtodoList.x);
 var mMtaskList = new Monad([], 'mMtaskList');
 mMtaskList.ret(mMtaskList.x);
 
-var mM$taskList = new Monad$('', 'mM$taskList');
+var mM$taskList = new MonadStream('', 'mM$taskList');
 mM$taskList.ret(mM$taskList.x);
 
 var mMsenderList = new Monad([], 'mMsenderList');
@@ -312,7 +312,7 @@ mMsoloAlert.ret(mMsoloAlert.x);
 var mMe = new Monad('', 'mMe');
 mMe.ret(mMe.x);
 
-var mMtaskList2 = new Monad$([], 'mMtaskList2');
+var mMtaskList2 = new MonadStream([], 'mMtaskList2');
 mMtaskList2.ret(mMtaskList2.x);
 
 var mMgoals = M(0,'mMgoals');
