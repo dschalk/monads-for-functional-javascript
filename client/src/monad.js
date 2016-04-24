@@ -116,7 +116,6 @@ var Monad = function Monad(z, g) {
     return O[_this.id];
   };
 };
-/*
 
 var MonadIter = function MonadIter() {
   var _this = this;
@@ -131,9 +130,29 @@ var MonadIter = function MonadIter() {
     return _this;
   };
 };
+/*
+  var Monad = function Monad(v, s, g) {
+    var _this = this;
 
+    this.x = (v, s);
+    if (arguments.length === 1) {
+      this.id = 'anonymous';
+    } else {
+      this.id = g;
+    };
 
+    this.bnd = function (func, ...args) {
+       return func(_this.x, ...args);
+    };
+
+    this.ret = function (a) {
+      O.[_this.id] = new Monad(a, _this.id);
+      return O.[_this.id]
+    };
+  };               
 */
+
+
 
 
 var MonadIter = function MonadIter() {
