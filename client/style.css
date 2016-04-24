@@ -5,7 +5,7 @@ body {
 }
 
 .tao {
-  margin-left: 22px;
+  margin-left: 3%;
 }
 
 .content {
@@ -77,7 +77,7 @@ pre {
 }
 
 p {
-  text-indent: 20px;
+  text-indent: 5%;
   }
 
 .indent {
@@ -90,13 +90,13 @@ h2 {
   }
 
 h1 {
-  color: #efe59b;
+  color: #f49c7c;
   text-align: center;
   }
 
 h3 {
   text-align: left;
-  color: #97ecc9;
+  color: #b5f4ce;
 }
 
 #tog {

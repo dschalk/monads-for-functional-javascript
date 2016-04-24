@@ -288,6 +288,16 @@ function main(sources) {
     el.style.display = 'none' 
   });
      
+  const captionClick$ = sources.DOM
+    .select('#caption').events('click');
+
+  const captionClickAction$ = captionClick$.map(() => {
+    var el = document.getElementById('captionDiv');
+    (el.style.display == 'none') ?
+    el.style.display = 'inline' :
+    el.style.display = 'none' 
+  });
+     
   const gameClick$ = sources.DOM
     .select('#game').events('click');
 
@@ -452,7 +462,7 @@ for (var i = 0, j = arr.length; i < j; i++) {
   });
 
 
-  const calcStream$ = merge( testWAction$, testZAction$, testQAction$, edit1Action$, edit2Action$, taskAction$, colorAction$, deleteAction$, newTaskAction$, chatClickAction$, gameClickAction$, todoClickAction$, mM$3Action$, mM$2Action$, mM$1Action$, backClickAction$, forwardClickAction$, fibPressAction$, groupPressAction$, rollClickAction$, messagePressAction$, loginPressAction$, messages$, numClickAction$, opClickAction$ );
+  const calcStream$ = merge( testWAction$, testZAction$, testQAction$, edit1Action$, edit2Action$, taskAction$, colorAction$, deleteAction$, newTaskAction$, chatClickAction$, gameClickAction$, todoClickAction$, captionClickAction$, mM$3Action$, mM$2Action$, mM$1Action$, backClickAction$, forwardClickAction$, fibPressAction$, groupPressAction$, rollClickAction$, messagePressAction$, loginPressAction$, messages$, numClickAction$, opClickAction$ );
 
     return {
       DOM: 
@@ -465,7 +475,9 @@ for (var i = 0, j = arr.length; i < j; i++) {
           h('button#todoButton',  {style: {fontSize: '16px'}}, 'TOGGLE TODO LIST'  ),  
           h('br'),
           h('br'),
-          h('button#chat2',  {style: {fontSize: '16px'}}, 'TOGGLE CHAT'  )  ]),
+          h('button#chat2',  {style: {fontSize: '16px'}}, 'TOGGLE CHAT'  ),
+          h('span.tao',' ' ),
+          h('button#caption',  {style: {fontSize: '16px'}}, 'TOGGLE CAPTION'  )  ]),
           h('br'),
           h('br'),
           h('br'),
@@ -501,12 +513,14 @@ for (var i = 0, j = arr.length; i < j; i++) {
         ]),
         h('div.leftPanel', {  style: {width: '60%'   }},   [  
         h('br'),
-        h('h2', 'Monads For Iteration, Time Travel, And More' ),
-        h('p', 'People who are in the same group, other than solo, share the same todo list, messages, and simulated dice game. In order to see any of these, you must establish an identity on the server by logging in. The websockets connection would terminate if the first message the server receives does not succefully participate in the login handshake. '  ),
+        h('div#captionDiv', [
+        h('h1', 'Motorcycle.js With JS-monads' ),
+        h('h3.tao', ' A shared, persistent todo list' ),
+        h('h3.tao', ' A websockets game with a traversable history of dice rolls ' ),
+        h('h3.tao', ' Group chat rooms and more ' ) ] ),
         h('div#gameDiv2',  {style: {display: 'none'}}, [
         h('span', ' Here are the basic rules:' ), 
         h('p', 'RULES: If clicking two numbers and an operator (in any order) results in 20 or 18, the score increases by 1 or 3, respectively. If the score becomes 0 mod 5, 5 points are added. A score of 25 results in one goal. That can only be achieved by arriving at a score of 20, which jumps the score to 25. Directly computing 25 results in a score of 30, and no goal. Each time ROLL is clicked, one point is deducted. Three goals wins the game. '    ),
-        h('br'),
         h('button#0.num'),
         h('button#1.num'),
         h('button#2.num'),
@@ -533,7 +547,7 @@ for (var i = 0, j = arr.length; i < j; i++) {
         h('span', 'Change group: '  ),
         h('input#group', ) ]),
         h('p',  O.mMsoloAlert.x  ),
-        h('br'),
+        h('p', 'People who are in the same group, other than solo, share the same todo list, messages, and simulated dice game. In order to see any of these, you must establish an identity on the server by logging in. The websockets connection would terminate if the first message the server receives does not succefully participate in the login handshake. '  ),
         h('hr', ),
         h('h2', 'Monad Definitions'  ),
         h('p', 'This JS-monads project began as an exploration into the potential usefulness of simple composable objects whose "bnd()" and "ret()" methods are similar to Haskell\'s ">=" (prornounced "bind") and "return" monad functions. The stand-alone function "ret()" resembles the Haskell monad "return" function. I named the little objects "monads" and demonstrated, earlier in this series, that in their simplest use cases they conform to the Haskell monad laws. That\'s where the analogy ends. Nothing prevents the monads from doing anything that Javascript allows, such as causing side effects and mutating objects. '),
