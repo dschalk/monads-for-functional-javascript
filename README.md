@@ -1,6 +1,6 @@
 #JS-monads-part6
 
-This is the culmination of the experimental JS-monads series. It is running online at [JS-monads-part6](http://schalk.net:3055). 
+This is the culmination of the experimental JS-monads series. It is running online at [JS-monads-part6](http://schalk.net:3055) in a [Motorcycle.js](https://github.com/motorcyclejs) application. Motorcycle.js is [Cycle.js](https://github.com/cyclejs/core) using [Most](https://github.com/cujojs/most) and [Snabbdom](https://github.com/paldepind/snabbdom) instead of RxJS and "virtual-dom").
 
 When I started, I didn't know if anything useful would come out of simple composable objects I was creating. The objects contained a single value attribute and two methods. The value could be a number, a nested list of lists, primitive values, objects, and functions, or anything you like. The method bnd() takes a function and other optional arguments. For any monad m with value v, m.bnd(f, ...args) returns f(v, ...args). The definition of the method ret() changed during the experimental phase. I always endeavored to make the behavior of bnd() and ret() consistent with the behavior of >= and return in Haskell. I thought that would keep the monads grounded in the lambda calculus, which is pregnant with possibilities. I call the little objects "monads", even though they exist without type constraints, or constraints on what they could do. As time went on, they turned out to be more useful than I could have hoped.
 
