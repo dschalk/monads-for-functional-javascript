@@ -346,6 +346,24 @@ mMt2.ret(mMt2.x)
 var mMt3 = new Monad('','mMt3')
 mMt3.ret(mMt3.x)
 
+var mMa = new Monad(0,'mMa')
+mMa.ret(mMa.x)
+
+var mMb = new Monad(0,'mMb')
+mMb.ret(mMb.x)
+
+var mMc = new Monad(0,'mMc')
+mMc.ret(mMc.x)
+
+var mMquad1 = new Monad('','mMquad1')
+mMquad1.ret(mMquad1.x)
+
+var mMquad2 = new Monad('','mMquad2')
+mMquad2.ret(mMquad2.x)
+
+var mMquad3 = new Monad('','mMquad3')
+mMquad3.ret(mMquad3.x)
+
 mMgoals2.ret(mMgoals2.x)
 mM3.ret(mM3.x)
 mM6.ret(mM6.x)
@@ -405,6 +423,26 @@ var mMZ26 = MI();
 var mMZ27 = MI();
 var mMZ28 = MI();
 var mMZ29 = MI();
+
+var sol1 = function sol1 (x,a,b,c,mon) {
+  let n = (b*(-1)) + (Math.sqrt(b*b - 4*a*c));
+  if (n != n) {
+    return mon.ret("No solution");
+  }
+  console.log('In sol1. n is: ', n);
+  let solution = n/(2*a);
+  return mon.ret(solution);
+}
+
+var sol2 = function sol2 (x,a,b,c,mon) {
+  let n = (b*(-1)) - (Math.sqrt(b*b - 4*a*c))
+  if (n != n) {
+    return mon.ret("No solution");
+  }
+  console.log('In sol2. n is: ', n);
+  let solution = n/(2*a);
+  return mon.ret(solution);
+}
 
 var trim = function trim(str) {
   return ret(str.trim());

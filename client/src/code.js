@@ -569,8 +569,47 @@ var cleanup = h('pre',  `  function cleanup (x) {
   
   mMZ2.bnd(v => cube(v).bnd(w => mMt3.ret(v + ' cubed is ' + w)))  `  )
 
-  var p1 = h('pre',  `  
-  `  )
+  var quad = h('pre',  `  var solve = (function solve () {
+    mMZ3
+    .bnd(a => mMquad1.ret(a + 'x*x')
+    .bnd(() => mMquad2.ret('').bnd(mMquad3.ret) // Clear the display.
+    .bnd(() => 
+    mMZ3
+    .bnd(b => mMquad1.ret(a + 'x*x ' + ' + ' + b + 'x')
+    .bnd(() =>  
+    mMZ3
+    .bnd(c => mMquad1
+    .ret('Solutions for ' + a + 'x*x ' + ' + ' + b + 'x' + ' + ' + c + ' = 0:')
+    .bnd(() => mMquad2.bnd(sol1,a,b,c,mMquad2)
+    .bnd(() => mMquad3.bnd(sol2,a,b,c,mMquad3) 
+    .bnd(() => solve()    
+        )))))))))
+  })();
+
+  const quad$ = sources.DOM
+    .select('#quad').events('keypress')
+  const quadAction$ = quad$.map((e) => {
+    if( e.keyCode == 13 ) {
+      mMZ3.release(e.target.value)
+      document.getElementById('quad').value = '';
+    }
+  });
+
+  var sol1 = function sol1 (x,a,b,c,mon) {
+    let n = b*(-1) + Math.sqrt(b*b - 4*a*c);
+    if (n != n) {   // Test for NaN
+      return mon.ret("No solution");
+    }
+    return mon.ret(n/2*a);
+  }
+  
+  var sol2 = function sol2 (x,a,b,c,mon) {
+    let n = b*(-1) - Math.sqrt(b*b - 4*a*c)
+    if (n != n) {
+      return mon.ret("No solution");
+    }
+    return mon.ret(n/2*a);
+  }  `  )
 
   var p2 = h('pre',  `  
   `  )
@@ -588,4 +627,4 @@ var cleanup = h('pre',  `  function cleanup (x) {
 
 
 
-export default {monads, fib, driver, messages, next, Monad$, updateCalc, stream, arrayFuncs, travel, nums, cleanup, ret, C42, taskStream, newTask, process, mM$task, addString, colorClick, edit, testZ }
+export default {monads, fib, driver, messages, next, Monad$, updateCalc, stream, arrayFuncs, travel, nums, cleanup, ret, C42, taskStream, newTask, process, mM$task, addString, colorClick, edit, testZ, quad }

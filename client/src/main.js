@@ -461,8 +461,33 @@ for (var i = 0, j = arr.length; i < j; i++) {
     }
   });
 
+  var solve = (function solve () {
+    mMZ3
+    .bnd(a => mMquad1.ret(a + 'x*x')
+    .bnd(() => mMquad2.ret('').bnd(mMquad3.ret) // Clear the display.
+    .bnd(() => 
+    mMZ3
+    .bnd(b => mMquad1.ret(a + 'x*x ' + ' + ' + b + 'x')
+    .bnd(() =>  
+    mMZ3
+    .bnd(c => mMquad1
+    .ret('Solutions for ' + a + 'x*x ' + ' + ' + b + 'x' + ' + ' + c + ' = 0:')
+    .bnd(() => mMquad2.bnd(sol1,a,b,c,mMquad2)
+    .bnd(() => mMquad3.bnd(sol2,a,b,c,mMquad3) 
+    .bnd(() => solve()    
+        )))))))))
+  })();
 
-  const calcStream$ = merge( testWAction$, testZAction$, testQAction$, edit1Action$, edit2Action$, taskAction$, colorAction$, deleteAction$, newTaskAction$, chatClickAction$, gameClickAction$, todoClickAction$, captionClickAction$, mM$3Action$, mM$2Action$, mM$1Action$, backClickAction$, forwardClickAction$, fibPressAction$, groupPressAction$, rollClickAction$, messagePressAction$, loginPressAction$, messages$, numClickAction$, opClickAction$ );
+  const quad$ = sources.DOM
+    .select('#quad').events('keypress')
+  const quadAction$ = quad$.map((e) => {
+    if( e.keyCode == 13 ) {
+      mMZ3.release(e.target.value)
+      document.getElementById('quad').value = '';
+    }
+  });
+
+  const calcStream$ = merge( quadAction$, testWAction$, testZAction$, testQAction$, edit1Action$, edit2Action$, taskAction$, colorAction$, deleteAction$, newTaskAction$, chatClickAction$, gameClickAction$, todoClickAction$, captionClickAction$, mM$3Action$, mM$2Action$, mM$1Action$, backClickAction$, forwardClickAction$, fibPressAction$, groupPressAction$, rollClickAction$, messagePressAction$, loginPressAction$, messages$, numClickAction$, opClickAction$ );
 
     return {
       DOM: 
@@ -552,12 +577,12 @@ for (var i = 0, j = arr.length; i < j; i++) {
         h('h2', 'Monad Definitions'  ),
         h('p', 'This JS-monads project began as an exploration into the potential usefulness of simple composable objects whose "bnd()" and "ret()" methods are similar to Haskell\'s ">=" (prornounced "bind") and "return" monad functions. The stand-alone function "ret()" resembles the Haskell monad "return" function. I named the little objects "monads" and demonstrated, earlier in this series, that in their simplest use cases they conform to the Haskell monad laws. That\'s where the analogy ends. Nothing prevents the monads from doing anything that Javascript allows, such as causing side effects and mutating objects. '),
         h('p', 'In normal use, Monad and MonadStream instances have initial values that never change. All updates are placed in the global object named "O". When an updated monad is added, the superceded monad can be preserved; for example, by assigning it to a variable or placing it in a named array. ' ),
-        h('p', 'The values of Monad and MonadStream instances can be changed, although I can\'t think of a good reason for doing it. For any monad m with value v (in other words, m.x = v) ret(v,"m") creates a new monad named "m" with value v. The earlier version with the same name and value is abandoned to the garbage collector if no reference to it is maintained. O.m remains unchanged. And then there is self mutation. If you want some monad m to have value newValue, you can write m.x = newValue if you don\'t mind mutating m. I don\'t do that.  '  ),
+        h('p', 'The values of Monad and MonadStream instances can be changed, although I can\'t think of a good reason for doing it. For any monad m with value v (in other words, m.x = v) ret(v,"m") creates a new monad named "m" with value v. The earlier version with the same name and value is abandoned to the garbage collector if no reference to it is maintained. O.m remains unchanged. And you can mutate m, for example with the expression m.x = newValue. I don\'t do that.  '  ),
         h('span.tao', ' Earlier pages in this series have different monad definition and are superseded by this, the final page. The old code is still available at ' ),
         h('a', {props: {href: "http://schalk.net"}}, 'schalk.net' ),
         h('span', '. '),
         code.monads,  
-        h('p', 'MonadIter instances\' release() methods can take arguments and provide them to the code they capture with their bnd() methods. An example of this can be found below. ' ),
+        h('p', 'MonadIter instances\' release() methods can take arguments and provide them to the code they capture with their bnd() methods. Examples of this can be found below. ' ),
         h('hr', ),  
         h('h2', 'Concise Code Blocks Control The Flow Of Information' ),
         h('p', ' Incoming websockets messages trigger updates to the game display, the chat display, and the todo list display. The members of a group see what other members are doing; and in the case of the todo list, they see the current list when they sign in to the group. When any member of a group adds a task, crosses it out as completed, edits its description, or removes it, the server updates the persistent file and all members of the group immediately see the revised list.  '  ),
@@ -606,24 +631,37 @@ for (var i = 0, j = arr.length; i < j; i++) {
         h('span', ' will execute and O.mM19.x will be displayed under the input box. ' ),
         h('input#code', ),  
         h('br'),
-        h('p#code2', O.mM19.x ),  
+        h('p.code2', O.mM19.x ),  
         h('p', 'The initial values of mMt1, mMt2, and mMt3 are 0, 0, and "" respectively. When this page loads, the following code runs: ' ),
         code.testZ,
         h('p', 'Each time mMZ1.release(n) is clicked, the code in mMZ1.bnd runs with v == n.  Click "mMZ1.release(1)" to run the code with n == 1. O.mMt3.x is shown below the button. Each time "mMZ1.release(1)" is clicked, the code runs again producing a new result. ' ),
         h('button#testZ', 'mMZ1.release(1)'  ),
-        h('p#code2', O.mMt3.x ),
+        h('p.code2', O.mMt3.x ),
         h('span', 'Refresh button: '  ),
         h('button#testQ', 'mMt1.ret(0).bnd(mMt2.ret)'  ),
-        h('p', 'If you enter a number "num" below, mMZ2.release(num) will run.  ' ), 
+        h('p', 'If you enter a number, say "n", below, mMZ2.release(n) will run.  ' ), 
         h('input#testW', ), 
+        h('p', 'If you enter three numbers consecutively below, I\'ll call them a, b, and c, then the quadratic equation will be used to find solutions for a*x*x + b*x + c = 0. If a and b are positive numbers, you are more likely to see solutions if c is a negative number.' ),
+        h('p.code2#quad4', O.mMquad1.x ),
+        h('span.tao', O.mMquad2.x ),
+        h('span.tao', O.mMquad3.x ),
+        h('br' ),
+        h('input#quad', ),  
+        h('p', 'When you type a number "n" and press ENTER, mMZ3.release(n) runs. '  ),
+        h('p', 'Here is the code:' ),
+        code.quad,
         h('hr'),
         h('h3', 'Immutable Data And The State Object "O" ' ),
         h('p',  'The server updates scores in response to messages prefixed by "CG#$42". Each such message carries an integer specifying the amount of the change. The ServerState list of Client tupples is pulled from the game state TMVar and replaced by a new tupple whose Score field differs from the previous one.' ),
-        h('p', 'In front end code, mutating variables which are defined inside of functions often seems inocuous in applications written in an object oriented programming style. This is not the case in a Motorcycle.js application where the primary structure is two functions cyclically interacting with one another. These functions are called only once, when the program initializes. One is Cycle.run and in this application, I named the other one "main". main()\'s only argument is an array holding the application\'s drivers. That array is named "resources". Cycle.run\'s arguments are the same "resources" array of drivers along with main(). In this environment, it seems best to maintain a general policy of avoiding mutations. I do this by keeping the ever-changing state of the application in an object named "O". In score(), where score and goals changes are calculated, all changes are made using mMscoreChange.ret(). For example, if a calculation results in the number 18 but not a number evenly divisable by 5, mM13.ret(mM13.x + 3) runs and O.mM13 is replaced by an updated attribute which is also named "O.mM13". Nothing is mutated, so historical versions of O.mM13 can be preserved. Only the state object "O" gets mutated. This is very similar to swapping out ServerState in the Haskell server\'s state TMVar. Historical versions of ServerState can be preserved there just as prior versions of O.mM13 can be preserved, by direct references to them or by putting them in some named entity, such as a list or array. This is how the flow of outgoing game information is handled in the main(): ' ),     
+        h('p', 'In front end code, mutating variables which are defined inside of functions often seems inocuous in applications written in an object oriented programming style. This is not the case in a Motorcycle.js application, where functions culminate in streams that merge into the stream that feeds the object returned by the main function, called "main" in this application. "sources" is an array of drivers. It is main\'s only argument, "sources" and "main" are Cycle.run()\'s arguments.' ), 
+        h('p', '"main" and "Cycle.run" are called only once. In the cyclic steady state that results, a reference should say what it means and mean what it says. If it suddenly refers to something other than what the other half of the cycle thinks it is, there will be a temporary disconnect. This will promptly staighten out, but having temporary disconnects shakes confidence in the consistency and reliability of the program. I don\'t have an example of mutating an object causing an unexpected result or crash. I would appreciate it if someone would give me such an example. ' ),
+       h('p', ' In this environment, avoiding mutations is recommended and I generally follow that recommendation. Mutations in this application are confined to the global state object "O" and MonadIter instances. In the examples above, the release() method moves the process forward to the next occurance of the MonadIter instance where the bnd() method provides a new function to the "p" attribute. The progressive morphing of "p" in MonadIter instances is desirable behavior, and creating a clone each time it occurs seems like a senseless waste. The changes go into a stream that merges with the stream that feeds the virtual DOM. The virtual DOM is oblivious to whether or not the information came from a mutated monad or a clone. The only thing that matters is the information contained in the stream. ' ),           
+
+       h('p', 'All monad updates caused by the monad ret() method are stored in the object "O". When a monad m executes m.ret(v) for some value "v", m remains unchanged and the O attribute O.m is created or, if it already exists, is replaced by the update; i.e., O.m.x == v becomes true. Older versions of m are subject to garbage collection unless there is a reference to them or to an object (arrays are objects) containing m.  This is illustrated in the score-keeping code below.  All score changes are captured by mM13.ret(). Therefore, O.mM13.x is always the current score. Replacing monad attributes in O is vaguely analogous to swapping out ServerState in the Haskell server\'s state TMVar. Older versions of ServerState can be preserved in the server just as prior versions of O.mM13 can be preserved in the front end. ' ),     
         code.updateCalc,
         h('p', 'The socket messages prompt the server to update its application state and to broadcast messages to all members of the group whose member sent the message to the server. Let\'s take another look at the way incoming messages are handled.'  ),  
         code.messages,
-        h('p', ' Messages prefixed by CB#$42 are broadcast in response to CG#$42-prefixed messages from a browser. CB#$42 prefixes release mMZ11, causing the scoreboard to update. CA#$42-prefixed messages to the server result in CA#$42-prefixed messages carrying the next dice roll to be broadcast.  CE#$42 prefixed messages cause the release of mMZ14 which causes O.mMgoals2.x to change from an empty string to an anouncement of the name of the winner. ' ),  
+        h('p', ' Messages prefixed by CB#$42 are broadcast in response to CG#$42-prefixed messages from a browser. CB#$42 prefixes release mMZ11, causing the scoreboard to update. CA#$42-prefixed messages to the server result in CA#$42-prefixed messages carrying the next dice roll to be broadcast to the sender\'s group.  CE#$42 prefixed messages cause the release of mMZ14 which causes O.mMgoals2.x to change from an empty string to an anouncement of the name of the winner. ' ),  
         h('p', ),  
         h('p', ),  
         h('p', ),  
@@ -683,8 +721,7 @@ for (var i = 0, j = arr.length; i < j; i++) {
       return;
     }
     if ((x + j) % 5 == 0) {
-      mMscoreChange.ret(j + 5);  
-      socket.send('CG#$42,' + O.mMgroup.x + ',' + O.mMname.x + ','+(j+5)+',' + O.mMgoals.x); 
+      socket.send('CG#$42,' + O.mMgroup.x + ',' + O.mMname.x + ','+ (j+5)+',' + O.mMgoals.x); 
       mM13.ret(x + j + 5);
       socket.send('CA#$42,' + O.mMgroup.x.trim() + ',' + O.mMname.x.trim() + ',6,6,12,20');
       return;
