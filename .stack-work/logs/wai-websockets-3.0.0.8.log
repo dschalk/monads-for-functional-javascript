@@ -20,7 +20,7 @@ server.lhs:16:3: Warning:
 server.lhs:47:3: Warning: Defined but not used: ‘numClients’
 Linking .stack-work/dist/x86_64-linux/Cabal-1.22.5.0/build/wai-websockets-example/wai-websockets-example ...
 Installing library in
-/home/d/.stack/snapshots/x86_64-linux/lts-4.1/7.10.3/lib/x86_64-linux-ghc-7.10.3/wai-websockets-3.0.0.8-6cc4LdpSAaBBPYYjiq5mkI
+/home/d/.stack/snapshots/x86_64-linux/lts-5.14/7.10.3/lib/x86_64-linux-ghc-7.10.3/wai-websockets-3.0.0.8-7VSocjEyi9HArHWt588lbO
 Installing executable(s) in
-/home/d/.stack/snapshots/x86_64-linux/lts-4.1/7.10.3/bin
+/home/d/.stack/snapshots/x86_64-linux/lts-5.14/7.10.3/bin
 Registering wai-websockets-3.0.0.8...

@@ -21,5 +21,5 @@ read2 f = do
 
 main = do
     save "./yes.js" $ pack "Oh yes."
-    read2 "./yes.ys"
+    read2 "./yes.js"
 

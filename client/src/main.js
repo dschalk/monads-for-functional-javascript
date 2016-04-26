@@ -137,7 +137,12 @@ function main(sources) {
           alert = 'You should enter "author, responsible party, task" separated by commas';
           document.getElementById('alert').innerHTML = alert;
         }
-        if ( ar.length > 2 ) {
+
+        else if ( (O.mMar2.x.filter(v => (v.task == task)).length) > 0 ) {
+          document.getElementById('alert').innerHTML = task + " is already listed.";
+        }
+
+        else if ( ar.length > 2 ) {
           O.mM$taskList.bnd(addString, task + ',yellow, none, false,' +  ar[0] + ',' + ar[1], mM$taskList);
           e.target.value = '';
           document.getElementById('alert').innerHTML = '';
@@ -157,6 +162,7 @@ function main(sources) {
     let ob = {};
     let ar = a.slice(3)
     let s = ar.reduce((a,b) => a + ',' + b);
+    console.log('In process. ar and s are: ', ar, s);
     if (mM$taskList.x.length < 5) {
       O.mM$taskList.ret(s);
     }
@@ -165,7 +171,10 @@ function main(sources) {
     if (ar.length < 6) {return};
     if ((ar.length % 6) !== 0) {
       document.getElementById('alert').innerHTML = 'Error: array length is: ' + length;
-    } else {
+    } 
+    
+    
+    else {
       let keys = Array(ar.length/6).fill(1);
       keys.map(_ => {
         ar2.push(
@@ -619,7 +628,7 @@ for (var i = 0, j = arr.length; i < j; i++) {
         h('br'),
         h('p', ' Clicking "Completed": When the "Completed" button is clicked, the following code runs:         '  ),
         code.colorClick,
-        h('p', 'O.mM$taskList is split into an array. Every sixth element is the start of a new task. colorAction$ toggles the second, third, and fourth element in the task pinpointed by "index" * 6. getIndex finds the index of the first (and presumably the only) element whose task description matches the one that is being marked "Completed". After the changes are made, the array of strings is reduced to one string and sent to the server when mM$taskList.ret() updates mM$taskList.stream triggering . '  ),  
+        h('p', 'O.mM$taskList is split into an array. Every sixth element is the start of a new task. colorAction$ toggles the second, third, and fourth element in the task pinpointed by "index" * 6. getIndex finds the index of the first and only the element whose task description matches the one that is being marked "Completed". I say "only" because users are prevented from adding duplicate tasks. After the changes are made, the array of strings is reduced to one string and sent to the server when mM$taskList.ret() updates mM$taskList.stream triggering . '  ),  
         h('p', ' This is the code involved in editing a task description: '  ),
         code.edit,
         h('p', 'Clicking "Edit" causes a text box to be displayed. Pressing <ENTER> causes it to diappear. edit2Action$ obtains the edited description of the task and the index of the task iten and provides them as arguments to process. Process exchanges $*$*$ for any commas in the edited version and assigns the amended task description to the variable "task". O.mM$taskList.x is copied and split into an array. "index * 6" is replaced with "task" and the list of strings is reduced back to a single string and sent to the server for distribution. This pattern, - (1) split the string representation of the todo list into an array of strings, (2) do something, (3) reduce the list of strings back to a single string - is repeated when the "Delete" button is clicked. If the last item gets deleted, the server is instructed to delete the persistent file bearing the name of the group whose member deleted the last task. ' ), 

@@ -14,12 +14,12 @@
   (major1) == 1 && (major2) <  2 || \
   (major1) == 1 && (major2) == 2 && (minor) <= 2)
 
-/* package file-embed-0.0.9 */
-#define VERSION_file_embed "0.0.9"
+/* package file-embed-0.0.10 */
+#define VERSION_file_embed "0.0.10"
 #define MIN_VERSION_file_embed(major1,major2,minor) (\
   (major1) <  0 || \
   (major1) == 0 && (major2) <  0 || \
-  (major1) == 0 && (major2) == 0 && (minor) <= 9)
+  (major1) == 0 && (major2) == 0 && (minor) <= 10)
 
 /* package random-1.1 */
 #define VERSION_random "1.1"
@@ -28,12 +28,12 @@
   (major1) == 1 && (major2) <  1 || \
   (major1) == 1 && (major2) == 1 && (minor) <= 0)
 
-/* package split-0.2.2 */
-#define VERSION_split "0.2.2"
+/* package split-0.2.3 */
+#define VERSION_split "0.2.3"
 #define MIN_VERSION_split(major1,major2,minor) (\
   (major1) <  0 || \
   (major1) == 0 && (major2) <  2 || \
-  (major1) == 0 && (major2) == 2 && (minor) <= 2)
+  (major1) == 0 && (major2) == 2 && (minor) <= 3)
 
 /* package stm-2.4.4.1 */
 #define VERSION_stm "2.4.4.1"
@@ -42,8 +42,8 @@
   (major1) == 2 && (major2) <  4 || \
   (major1) == 2 && (major2) == 4 && (minor) <= 4)
 
-/* package text-1.2.2.0 */
-#define VERSION_text "1.2.2.0"
+/* package text-1.2.2.1 */
+#define VERSION_text "1.2.2.1"
 #define MIN_VERSION_text(major1,major2,minor) (\
   (major1) <  1 || \
   (major1) == 1 && (major2) <  2 || \
@@ -56,19 +56,19 @@
   (major1) == 0 && (major2) <  4 || \
   (major1) == 0 && (major2) == 4 && (minor) <= 2)
 
-/* package wai-3.0.5.0 */
-#define VERSION_wai "3.0.5.0"
+/* package wai-3.2.1 */
+#define VERSION_wai "3.2.1"
 #define MIN_VERSION_wai(major1,major2,minor) (\
   (major1) <  3 || \
-  (major1) == 3 && (major2) <  0 || \
-  (major1) == 3 && (major2) == 0 && (minor) <= 5)
+  (major1) == 3 && (major2) <  2 || \
+  (major1) == 3 && (major2) == 2 && (minor) <= 1)
 
-/* package wai-app-static-3.1.4.1 */
-#define VERSION_wai_app_static "3.1.4.1"
+/* package wai-app-static-3.1.5 */
+#define VERSION_wai_app_static "3.1.5"
 #define MIN_VERSION_wai_app_static(major1,major2,minor) (\
   (major1) <  3 || \
   (major1) == 3 && (major2) <  1 || \
-  (major1) == 3 && (major2) == 1 && (minor) <= 4)
+  (major1) == 3 && (major2) == 1 && (minor) <= 5)
 
 /* package wai-websockets-3.0.0.8 */
 #define VERSION_wai_websockets "3.0.0.8"
@@ -77,12 +77,12 @@
   (major1) == 3 && (major2) <  0 || \
   (major1) == 3 && (major2) == 0 && (minor) <= 0)
 
-/* package warp-3.1.12 */
-#define VERSION_warp "3.1.12"
+/* package warp-3.2.2 */
+#define VERSION_warp "3.2.2"
 #define MIN_VERSION_warp(major1,major2,minor) (\
   (major1) <  3 || \
-  (major1) == 3 && (major2) <  1 || \
-  (major1) == 3 && (major2) == 1 && (minor) <= 12)
+  (major1) == 3 && (major2) <  2 || \
+  (major1) == 3 && (major2) == 2 && (minor) <= 2)
 
 /* package websockets-0.9.6.1 */
 #define VERSION_websockets "0.9.6.1"
@@ -175,5 +175,5 @@
   (major1) == 2 && (major2) <  24 || \
   (major1) == 2 && (major2) == 24 && (minor) <= 0)
 
-#define CURRENT_PACKAGE_KEY "JSmon_6f0NLZrhf6679T9xYKpXNv"
+#define CURRENT_PACKAGE_KEY "JSmon_BQ800DhakbCLtBFdLK5Ps7"
 

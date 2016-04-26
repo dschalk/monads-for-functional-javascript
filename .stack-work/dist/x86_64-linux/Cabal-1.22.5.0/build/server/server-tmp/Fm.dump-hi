@@ -1,11 +1,11 @@
 
 ==================== FINAL INTERFACE ====================
-2016-04-25 03:48:55.374976 UTC
+2016-04-26 15:47:50.954798 UTC
 
 interface main@main:Fm 7103
-  interface hash: abba80c9c6bdec3d626a867722722732
-  ABI hash: 4c3102596ab602a6904b650093edf9df
-  export-list hash: 2bd7032af0fc7548005e1c6dad38070c
+  interface hash: d1eb83cd2d0941ad09b7f069899dea32
+  ABI hash: b85eef470154a5eeb66bc4e63dc73dd1
+  export-list hash: eb318082bdf3ad21691902240fd4e31e
   orphan hash: 693e9af84d3dfcc71e640e005bdc5e2e
   flag hash: 27993c98942bb6835ce33b9285999fca
   sig of: Nothing
@@ -59,13 +59,13 @@ package dependencies: array-0.5.1.0@array_67iodizgJQIIxYVTp4emlA
                       containers-0.5.6.2@conta_2C3ZI8RgPO2LBMidXKTvIU
                       deepseq-1.4.1.1@deeps_6vMKxt5sPFR0XsbRWvvq59 ghc-prim-0.4.0.0
                       integer-gmp-1.0.0.0 random-1.1@rando_9Kgekc9yEaLHLNUuw6paWL*
-                      text-1.2.2.0@text_5c7VCmRXJenGcMPs3kwpkI*
+                      text-1.2.2.1@text_HmqVQnZSpjaC156ABqPhne*
                       time-1.5.0.1@time_FTheb6LSxyX1UABIbBXRfn
 orphans: base-4.8.2.0:GHC.Base base-4.8.2.0:GHC.Float
          binary-0.7.5.0@binar_3uXFWMoAGBg0xKP9MHKRwi:Data.Binary.Generic
          bytestring-0.10.6.0@bytes_6VWy06pWzJq9evDvK2d4w6:Data.ByteString.Builder
-         text-1.2.2.0@text_5c7VCmRXJenGcMPs3kwpkI:Data.Text
-         text-1.2.2.0@text_5c7VCmRXJenGcMPs3kwpkI:Data.Text.Show
+         text-1.2.2.1@text_HmqVQnZSpjaC156ABqPhne:Data.Text
+         text-1.2.2.1@text_HmqVQnZSpjaC156ABqPhne:Data.Text.Show
          time-1.5.0.1@time_FTheb6LSxyX1UABIbBXRfn:Data.Time.Calendar.Gregorian
          time-1.5.0.1@time_FTheb6LSxyX1UABIbBXRfn:Data.Time.Format.Parse
          time-1.5.0.1@time_FTheb6LSxyX1UABIbBXRfn:Data.Time.LocalTime.LocalTime
@@ -79,7 +79,7 @@ family instance modules: base-4.8.2.0:Control.Applicative
                          containers-0.5.6.2@conta_2C3ZI8RgPO2LBMidXKTvIU:Data.Map.Base
                          containers-0.5.6.2@conta_2C3ZI8RgPO2LBMidXKTvIU:Data.Sequence
                          containers-0.5.6.2@conta_2C3ZI8RgPO2LBMidXKTvIU:Data.Set.Base
-                         text-1.2.2.0@text_5c7VCmRXJenGcMPs3kwpkI:Data.Text
+                         text-1.2.2.1@text_HmqVQnZSpjaC156ABqPhne:Data.Text
 import  -/  base-4.8.2.0:Data.Foldable 2ce969969ad5231eb40bd713f94f05ad
 import  -/  base-4.8.2.0:Data.List 3f0782c8d4bf50eecefcd5ea1798aac8
 import  -/  base-4.8.2.0:Data.OldList d8fd80b0e14aa085ce6219cd89dad356
@@ -94,9 +94,9 @@ import  -/  base-4.8.2.0:Text.Read ef0ef92fb7358ae94bab089940adfd2a
 import  -/  ghc-prim-0.4.0.0:GHC.Classes e1f4ff80f7b5262008a595d29986fb18
 import  -/  ghc-prim-0.4.0.0:GHC.Types 6b27fb3fdbd0e3f0925a4496c66513bb
 import  -/  random-1.1@rando_9Kgekc9yEaLHLNUuw6paWL:System.Random 7342d23dcce4eee52b45be21357c602b
-import  -/  text-1.2.2.0@text_5c7VCmRXJenGcMPs3kwpkI:Data.Text 86fbb7ba59f4e0e286e698c3b32fab21
-import  -/  text-1.2.2.0@text_5c7VCmRXJenGcMPs3kwpkI:Data.Text.Internal 77121723701b5baab16c0e5e3254bc11
-import  -/  text-1.2.2.0@text_5c7VCmRXJenGcMPs3kwpkI:Data.Text.Show 1e4fbd1e7bf5770e724fd9b39474dff2
+import  -/  text-1.2.2.1@text_HmqVQnZSpjaC156ABqPhne:Data.Text 677c532e2dd56476a11a0a8a53880ce7
+import  -/  text-1.2.2.1@text_HmqVQnZSpjaC156ABqPhne:Data.Text.Internal d9b6b9a9dd535595b612aea5738b7466
+import  -/  text-1.2.2.1@text_HmqVQnZSpjaC156ABqPhne:Data.Text.Show 081cc243e944015e37c793c3b0ebfefd
 71ca468f09f051fe05acb6036386e6eb
   $wca ::
     [GHC.Types.Double] -> (# GHC.Base.String, [GHC.Base.String] #)
@@ -533,12 +533,12 @@ ee775913127b8bb55f8ffabe4c81b93a
                                            (GHC.CString.unpackAppendCString#
                                               ")) = "#
                                               (GHC.Base.++ @ GHC.Types.Char ww7 Fm.h1))))))))))) -}
-905e0ecede9f79845befaede0ab0cdba
+1aaf189ece2ccbb1f1bec4fc5ab5e1b6
   $wloop ::
     GHC.Prim.ByteArray#
     -> GHC.Prim.Int# -> GHC.Prim.Int# -> [Data.Text.Internal.Text]
   {- Arity: 3, Strictness: <L,U><L,U><L,U>, Inline: [0] -}
-53e035ace2b097e5f127eb5f355a24e2
+6785c4efd0bfdc0f46afa788b6655221
   $wtru ::
     GHC.Prim.ByteArray#
     -> GHC.Prim.Int# -> GHC.Prim.Int# -> [GHC.Types.Double]
@@ -4031,7 +4031,7 @@ f11450c3c048817e2a6d7845429ac227
 96879faf7e13e079b306525bd70e973d
   rM_a3 :: GHC.Integer.Type.Integer
   {- HasNoCafRefs, Unfolding: (__integer 1) -}
-f3095bc4a66dc8323ce0e4fb6d418624
+6b932ac63f68bfc12b8f94658a82b0d2
   rText :: [GHC.Types.Int] -> GHC.Types.IO Data.Text.Internal.Text
   {- Arity: 2, Strictness: <S,1*U><L,U>,
      Unfolding: InlineRule (0, True, True)
@@ -4039,7 +4039,7 @@ f3095bc4a66dc8323ce0e4fb6d418624
                   `cast`
                 (<[GHC.Types.Int]>_R
                  ->_R Sym (GHC.Types.NTCo:IO[0] <Data.Text.Internal.Text>_R)) -}
-0475ae9711466aeb0d0cf875e3c450d7
+d224919d710a31c6a5033695475715a6
   rText1 ::
     [GHC.Types.Int]
     -> GHC.Prim.State# GHC.Prim.RealWorld
@@ -4117,7 +4117,7 @@ f3095bc4a66dc8323ce0e4fb6d418624
                                 (GHC.Prim.uncheckedIShiftRA# n (GHC.Prim.negateInt# ipv1)))
                              (GHC.Types.[] @ GHC.Types.Char) of ww2 { (#,#) ww3 ww4 ->
                       GHC.Types.: @ GHC.Types.Char ww3 ww4 } } } } } }) -}
-9fe642e07d44854af8c0135e9a619c0f
+0f31f021f391f880a2bd3c29ab51f7da
   rText3 :: Data.Text.Internal.Text
   {- Unfolding: (Data.Text.Show.unpackCString# "String"#) -}
 e756b21f832fcc32afb783833d32dee1
@@ -4174,7 +4174,7 @@ e756b21f832fcc32afb783833d32dee1
                                   @ GHC.Types.Int
                                   ipv7
                                   (GHC.Types.[] @ GHC.Types.Int))))) #) } } } }) -}
-26a6880167ed36b84bfa3e1634a30df4
+70bb4e1aac6c49a8ae718762a48765c4
   rollFunc :: [GHC.Base.String] -> Data.Text.Internal.Text
   {- Arity: 1, Strictness: <S,1*U>,
      Unfolding: (\ ds :: [GHC.Base.String] ->
@@ -4226,7 +4226,7 @@ e756b21f832fcc32afb783833d32dee1
 cadced90c70f581181218e28cf346d04
   rollFunc1 :: GHC.Types.Int
   {- HasNoCafRefs, Unfolding: (GHC.Types.I# 4) -}
-ec43d3f1f85808b9d8fcb710c304e8cb
+71d7371218cddd7895ebbef43cbe802f
   rollFunc2 ::
     Data.Text.Array.MArray s1
     -> GHC.Types.Int
@@ -4236,11 +4236,11 @@ ec43d3f1f85808b9d8fcb710c304e8cb
     -> (# GHC.Prim.State# s1, Data.Text.Internal.Text #)
   {- Arity: 5, Strictness: <L,U(U)><L,U(U)><S,1*U><L,U><L,U>,
      Inline: [0] -}
-f8b59929ba375648116e2ae80567668b
+3475ab59e875c2d363d0b46617c9fad7
   rollFunc3 :: Data.Text.Internal.Text
   {- Unfolding: (Data.Text.Show.unpackCString#
                    "Problem in rollFunc"#) -}
-bfdf7e9ba0f85d0c533d5e5590b004e9
+fd564e107fc5042e3cbab155ae682344
   rollT ::
     GHC.Types.Int
     -> GHC.Types.Int
@@ -4257,7 +4257,7 @@ bfdf7e9ba0f85d0c533d5e5590b004e9
                  ->_R <GHC.Types.Int>_R
                  ->_R <GHC.Types.Int>_R
                  ->_R Sym (GHC.Types.NTCo:IO[0] <Data.Text.Internal.Text>_R)) -}
-533084fc48fbed6e21a8f9ad8795b356
+07a71118234e97565b3a14b618c8fc3e
   rollT1 ::
     GHC.Types.Int
     -> GHC.Types.Int
@@ -4364,14 +4364,14 @@ a5b632f18efeb6ee6225b0285f02ccfc
                    [] -> Fm.cat2
                    : x1 ds
                    -> case ds of wild1 { [] -> x1 : ipv ipv1 -> Fm.cat1 } }) -}
-d2372621dfe1705865f1dacc7082782d
+ada0066254c56cb6ac051ee1c866483f
   tru :: Data.Text.Internal.Text -> [GHC.Types.Double]
   {- Arity: 1, Strictness: <S(LLS),1*U(U,U,U)>, Inline: INLINE[0],
      Unfolding: InlineRule (1, True, False)
                 (\ w :: Data.Text.Internal.Text ->
                  case w of ww { Data.Text.Internal.Text ww1 ww2 ww3 ->
                  Fm.$wtru ww1 ww2 ww3 }) -}
-545b47e6c268c24c584e3c9b7e562109
+131f6a2bd10b3b54c2b221a448fcb094
   tru1 :: Data.Text.Internal.Text -> GHC.Types.Double
   {- Arity: 1, Strictness: <L,1*U(U,U,U)>,
      Unfolding: (\ x :: Data.Text.Internal.Text ->
