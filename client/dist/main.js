@@ -10705,6 +10705,7 @@ function main(sources) {
         });
       });
       console.log('In process  ar2 is: ', ar2);
+      mMar2.ret(ar2);
       var keys2 = Object.keys(ar2);
       for (var k in keys) {
         tempArray.push((0, _motorcycleDom.h)('div.todo', [(0, _motorcycleDom.h)('span.task3', { style: { color: ar2[k].color, textDecoration: ar2[k].textDecoration } }, 'Task: ' + ar2[k].task), (0, _motorcycleDom.h)('br'), (0, _motorcycleDom.h)('button#edit1', 'Edit'), (0, _motorcycleDom.h)('input#edit2', { props: { type: 'textarea', value: ar2[k].task }, style: { display: 'none' } }), (0, _motorcycleDom.h)('span#author.tao', 'Author: ' + ar2[k].author + ' / ' + 'Responsibility: ' + ar2[k].responsible), (0, _motorcycleDom.h)('br'), (0, _motorcycleDom.h)('input#cb', { props: { type: 'checkbox', checked: ar2[k].checked }, style: { color: ar2[k].color,

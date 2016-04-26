@@ -180,6 +180,7 @@ function main(sources) {
         )
       })
       console.log('In process  ar2 is: ', ar2)
+      mMar2.ret(ar2);
       let keys2 = Object.keys(ar2);
       for (let k in keys) {
         tempArray.push(
