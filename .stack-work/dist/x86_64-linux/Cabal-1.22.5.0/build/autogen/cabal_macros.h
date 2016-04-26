@@ -175,5 +175,5 @@
   (major1) == 2 && (major2) <  24 || \
   (major1) == 2 && (major2) == 24 && (minor) <= 0)
 
-#define CURRENT_PACKAGE_KEY "JSmon_ALl9uar2MG7I34g43Fy5pg"
+#define CURRENT_PACKAGE_KEY "JSmon_6f0NLZrhf6679T9xYKpXNv"
 
