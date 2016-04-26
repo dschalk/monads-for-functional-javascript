@@ -273,9 +273,9 @@ function main(sources) {
     } 
   });
 
-  const taskAction$ = mM$taskList.stream.map(ar => {
+  const taskAction$ = mM$taskList.stream.map(str => {
     socket.send('TD#$42' + ',' + O.mMgroup.x.trim() + 
-        ',' + O.mMname.x.trim() + ',' + '@' + ar);
+        ',' + O.mMname.x.trim() + ',' + '@' + str);
   });
 
   const chatClick$ = sources.DOM
@@ -463,15 +463,15 @@ for (var i = 0, j = arr.length; i < j; i++) {
 
   var solve = (function solve () {
     mMZ3
-    .bnd(a => mMquad1.ret(a + 'x*x')
+    .bnd(a => mMquad1.ret(a + 'x**2')
     .bnd(() => mMquad2.ret('').bnd(mMquad3.ret) // Clear the display.
     .bnd(() => 
     mMZ3
-    .bnd(b => mMquad1.ret(a + 'x*x ' + ' + ' + b + 'x')
+    .bnd(b => mMquad1.ret(a + 'x**2 ' + ' + ' + b + 'x')
     .bnd(() =>  
     mMZ3
     .bnd(c => mMquad1
-    .ret('Solutions for ' + a + 'x*x ' + ' + ' + b + 'x' + ' + ' + c + ' = 0:')
+    .ret('Solutions for ' + a + 'x**2 ' + ' + ' + b + 'x' + ' + ' + c + ' = 0:')
     .bnd(() => mMquad2.bnd(sol1,a,b,c,mMquad2)
     .bnd(() => mMquad3.bnd(sol2,a,b,c,mMquad3) 
     .bnd(() => solve()    
@@ -577,34 +577,52 @@ for (var i = 0, j = arr.length; i < j; i++) {
         h('h2', 'Monad Definitions'  ),
         h('p', 'This JS-monads project began as an exploration into the potential usefulness of simple composable objects whose "bnd()" and "ret()" methods are similar to Haskell\'s ">=" (prornounced "bind") and "return" monad functions. The stand-alone function "ret()" resembles the Haskell monad "return" function. I named the little objects "monads" and demonstrated, earlier in this series, that in their simplest use cases they conform to the Haskell monad laws. That\'s where the analogy ends. Nothing prevents the monads from doing anything that Javascript allows, such as causing side effects and mutating objects. '),
         h('p', 'In normal use, Monad and MonadStream instances have initial values that never change. All updates are placed in the global object named "O". When an updated monad is added, the superceded monad can be preserved; for example, by assigning it to a variable or placing it in a named array. ' ),
-        h('p', 'The values of Monad and MonadStream instances can be changed, although I can\'t think of a good reason for doing it. For any monad m with value v (in other words, m.x = v) ret(v,"m") creates a new monad named "m" with value v. The earlier version with the same name and value is abandoned to the garbage collector if no reference to it is maintained. O.m remains unchanged. And you can mutate m, for example with the expression m.x = newValue. I don\'t do that.  '  ),
+        h('p', 'The values of Monad instances can be changed, although I can\'t think of a good reason for doing it. For any monad m with value v (in other words, m.x = v) ret(v,"m") creates a new monad named "m" with value v. The earlier version with the same name and value is abandoned to the garbage collector if no reference to it is maintained. O.m remains unchanged. And you can mutate m, for example with the expression m.x = newValue. I don\'t do that.  '  ),
         h('span.tao', ' Earlier pages in this series have different monad definition and are superseded by this, the final page. The old code is still available at ' ),
         h('a', {props: {href: "http://schalk.net"}}, 'schalk.net' ),
         h('span', '. '),
         code.monads,  
         h('p', 'MonadIter instances\' release() methods can take arguments and provide them to the code they capture with their bnd() methods. Examples of this can be found below. ' ),
         h('hr', ),  
-        h('h2', 'Concise Code Blocks Control The Flow Of Information' ),
+        h('h2', 'Concise Code Blocks For Information Control' ),
         h('p', ' Incoming websockets messages trigger updates to the game display, the chat display, and the todo list display. The members of a group see what other members are doing; and in the case of the todo list, they see the current list when they sign in to the group. When any member of a group adds a task, crosses it out as completed, edits its description, or removes it, the server updates the persistent file and all members of the group immediately see the revised list.  '  ),
         h('p', 'The flow of the game and the routing of websockets messages are handled by these little blocks of code: ' ),
         code.messages,
-        h('p', ' The "mMZ" prefix designates instances of MonadIter. Their bnd() method holds functions which execute if and when the release() method is called. The next() function releases a specified MonadIter instance when the calling monad\'s value matches the specified value. next2() releases the specified monad when the specified condition returns true. This syntactic sugar for callbacks provides provides the same functionality as Ecmascript 2015 iterators, promises, and generators, only without error handling. This was demonstated in earlier installments of this series, where it was pointed out that code for handling errors would be superfluous in the applications presented so far in this series. They might have been helpful for de-bugging during development, but now that things are running smoothly, no errors are likely to reach MonadIter instances. If the server goes down, no messages reach the websockets driver. I can\'t think of anything, other than  a serious operating system malfunction, could cause the game to function incorrectly. Here are the definitions of next() and next2(): ' ),
-        code.next,
-        h('p', ' Next, I\'ll explain some features of the todo list application. This will show how the monads function, and also demonstate the use of Cycle.js / Motorcycle.js. Let\'s begin with the creation of a task. If you enter something like Susan, Fred, Pay the water bill, the editable task should appear. If you have loaded this page in another tab and changed to the same group in both, the new task should appear in both tabs. The task has a delete button, an edit button, and a "Completed" checkbox. It shows that Susan authorized the task and Fred is responsible for making sure it gets done. Instead of entering an authority and responsible person, you can just enter two commas before the task description. Without two commas, a message appears requesting more information.  ' ),
-        h('p', ' Any commas in the task description are replaced by $*$*$ to facilitate transforming the string in an array of six-attribute objects. This is done only once, when it is time to re-render the DOM.  mM$taskList is the todo application\'s worker function. Every time it executes its ret() method, the argument to ret() is added to its stream, causing the following code to run: ' ),
+        h('p', ' The "mMZ" prefix designates instances of MonadIter. The bnd() method assigns its argument to the "p" attribute. "p" runs if and when the release() method is called. The next() function releases a specified MonadIter instance when the calling monad\'s value matches the specified value. next2() releases the specified monad when the specified condition returns true. The release method in next() has no argument, but next does take arguments, as illustrated below. MonadIter instances can provide fine-grained control over the lazy evaluation of blocks of code. Calling release() after a function completes some task provides Promise-like behavior. Error handling is optional. The MonadInter release(...args) method facilitates sequential evaluation of code blocks, remeniscent of video and blog explanations of ES6 iterators and generators.' ),
+        h('p', 'The next example illustrates the use of release() with an argument. The initial values of mMt1, mMt2, and mMt3 are 0, 0, and "" respectively. When this page loads, the following code runs: ' ),
+        code.testZ,
+        h('p', ' Click "mMZ1.release(1)" several times to run the code with n == 1. O.mMt3.x is shown below the button. mMZ1.p doesn\'t change until its bnd() method is used again, so repeated calls to release(1) continue to run the function provided to bnd() in the code shown above. ' ),
+        h('button#testZ', 'mMZ1.release(1)'  ),
+        h('p.code2', O.mMt3.x ),
+        h('span', 'Refresh button: '  ),
+        h('button#testQ', 'mMt1.ret(0).bnd(mMt2.ret)'  ),
+        h('p', '  You can release() arguments other than 1 by entering them below. ' ), 
+        h('input#testW', ), 
+        h('p', ' Calling release() results in a new call to bnd() in the next demonstration. If you enter three numbers consecutively below, I\'ll call them a, b, and c, then the quadratic equation will be used to find solutions for a*x**2 + b*x + c = 0. The a, b, and c you select might not have a solution. If a and b are positive numbers, you are more likely to see solutions if c is a negative number.' ),
+        h('p.code2#quad4', O.mMquad1.x ),
+        h('span.tao', O.mMquad2.x ),
+        h('span.tao', O.mMquad3.x ),
+        h('br' ),
+        h('span.tao' , 'Run mMZ3.release(v) for some number v: ' ),
+        h('input#quad', ),  
+        h('p', 'Here is the code:' ),
+        code.quad,
+        h('p', ' Next, I\'ll go over some features of the todo list application. This will show how Motorcycle.js and the monads work together.' ),
+        h('p', 'Creation Of A Task: If you enter something like Susan, Fred, Pay the water bill, the editable task will appear in your browser and in the browsers of any members a group you might have created or joined. If you have loaded this page in another tab and changed to the same group in both, you will see the task in both tabs, barring some malfunction. The task has a delete button, an edit button, and a "Completed" checkbox. It shows that Susan authorized the task and Fred is responsible for making sure it gets done. Instead of entering an authority and responsible person, you can just enter two commas before the task description. Without two commas, a message appears requesting more information.  ' ),
+        h('p', ' mM$taskList is the todo application\'s worker function. Every time it executes its ret() method, the argument to ret() is added to its stream, causing the following code to run: ' ),
         code.mM$task,
-        h('p', 'mM$taskList caries a string representing the task list. mM$taskList.x.split(",") produces an array whose length is a multiple of six. Commas in the task description are replaced by "$*$*$" so split(",") places the whole description in a single element. Commas are re-inserted when the list arrives from the server as a websockets message. Although a task list is a nested virtual DOM object, it can be conveniently passed back and forth to the server as a string without resorting to JSON.stringify. It is always a string on the server and also in the working part of the application, becomming virtual DOM node only once, when it arrives from the server prefixed by "DD#$42" causing "process(e.data) to run. Here is process(): ' ),
+        h('p', 'mM$taskList caries a string representing the task list. mM$taskList.x.split(",") produces an array whose length is a multiple of six. Commas in the task description are replaced by "$*$*$" so split(",") will put the entire task description in a single element. Commas are re-inserted when the list arrives from the server for rendering. Although a task list is a nested virtual DOM object (Snabbdom vnode), it can be conveniently passed back and forth to the server as a string without resorting to JSON.stringify. Its type is Text on the server and String in the front end, becomming a virtual DOM node only once, when it arrives from the server prefixed by "DD#$42" causing "process(e.data) to execute. Here is process(): ' ),
         code.process,
-        h('span.tao', 'As you see, the string becomes a list of six-element objects, then those objects are used to create a Snabbdom virtual node which is handed to mM$taskList.ret() leading to the update of O.mMtaskList. O.mMtaskList.x sits permanently in the main virtual DOM description. When its value gets refreshed, the DOM re-renders because taskStream$ is merged into the stream that is mapped into the virtural DOM description inside the object returned by "main". "main" and "sources" are the arguments provided to Cycle.run(). "sources" is the argument provided to "main". The code is at '  ),
-        h('a', {props: {href: "https://github.com/dschalk/JS-monads-part6"}}, 'https://github.com/dschalk/JS-monads-part6' ),
+        h('span.tao', 'As you see, the string becomes a list of six-element objects, then those objects are used to create a Snabbdom vnode which is handed to mM$taskList.ret() leading to the update of O.mMtaskList. O.mMtaskList.x sits permanently in the main virtual DOM description. When its value gets refreshed, the DOM re-renders because taskStream$ is merged into the stream that is mapped into the virtural DOM description inside the object returned by "main". "main" and "sources" are the arguments provided to Cycle.run(). "sources" is the argument provided to "main". It is an array of drivers. The code is at '  ),
+        h('a', {props: {href: "https://github.com/dschalk/JS-monads-stable"}}, 'https://github.com/dschalk/JS-monads-stable' ),
         h('br'),
-        h('p', ' Here is what happens when the "Completed" button is clicked.         '  ),
+        h('p', ' Clicking "Completed": When the "Completed" button is clicked, the following code runs:         '  ),
         code.colorClick,
-        h('p', 'O.mM$taskList is split into an array. Every sixth element is the start of a new task. colorAction$ toggles the second, third, and fourth element in the task pinpointed by "index" * 6. getIndex finds the index of the first element whose task description matches the one that is being marked "Completed". To prevent suprises in cases where two tasks have the same name, I might include a safeguard to prevent duplicate todo list names. I don\'t know why anyone might intentionally give identical descriptions to two or more tasks, but it could happen inadvertently if the list is long. An alternative would be to toggle all lists with the name of the clicked list. After the changes are made, the array of strings is reduced to one string and sent to the server by means of mM$taskList.ret() for distribution to all group members. '  ),  
+        h('p', 'O.mM$taskList is split into an array. Every sixth element is the start of a new task. colorAction$ toggles the second, third, and fourth element in the task pinpointed by "index" * 6. getIndex finds the index of the first (and presumably the only) element whose task description matches the one that is being marked "Completed". After the changes are made, the array of strings is reduced to one string and sent to the server when mM$taskList.ret() updates mM$taskList.stream triggering . '  ),  
         h('p', ' This is the code involved in editing a task description: '  ),
         code.edit,
         h('p', 'Clicking "Edit" causes a text box to be displayed. Pressing <ENTER> causes it to diappear. edit2Action$ obtains the edited description of the task and the index of the task iten and provides them as arguments to process. Process exchanges $*$*$ for any commas in the edited version and assigns the amended task description to the variable "task". O.mM$taskList.x is copied and split into an array. "index * 6" is replaced with "task" and the list of strings is reduced back to a single string and sent to the server for distribution. This pattern, - (1) split the string representation of the todo list into an array of strings, (2) do something, (3) reduce the list of strings back to a single string - is repeated when the "Delete" button is clicked. If the last item gets deleted, the server is instructed to delete the persistent file bearing the name of the group whose member deleted the last task. ' ), 
-        h('p', 'Cycle.js has been criticized for not keeping state in a single location, the way React.js does. Motorcycle.js didn\'t do it for me, or try to force me to do it, but it so happens that the current state of all active monads is in the object "O". I have written applications in Node.js and React.js, and to me, Cycle.js / Motorcycle.js is far superior to either of them.  ' ),
+        h('p', 'Cycle.js has been criticized for not keeping state in a single location, the way React.js does. Motorcycle.js didn\'t do it for me, or try to force me to do it, but it so happens that the current state of all active monads is in the object "O". I have written applications in Node.js and React.js, and I can say without a doubt that Motorcycle.js provides the best reactive interface for my purposes.  ' ),
         h('hr'),
         h('h2', 'Common Patterns' ),
         h('p', 'Anyone not yet familiar with functional programming can learn by studying the definition of the Monad bnd() method and considering the common patterns presented below. Often, we want to give a named monad the value of an anonymous monad returned by a monadic computation. Here are some ways to accomplish that: '  ),
@@ -632,31 +650,12 @@ for (var i = 0, j = arr.length; i < j; i++) {
         h('input#code', ),  
         h('br'),
         h('p.code2', O.mM19.x ),  
-        h('p', 'The initial values of mMt1, mMt2, and mMt3 are 0, 0, and "" respectively. When this page loads, the following code runs: ' ),
-        code.testZ,
-        h('p', 'Each time mMZ1.release(n) is clicked, the code in mMZ1.bnd runs with v == n.  Click "mMZ1.release(1)" to run the code with n == 1. O.mMt3.x is shown below the button. Each time "mMZ1.release(1)" is clicked, the code runs again producing a new result. ' ),
-        h('button#testZ', 'mMZ1.release(1)'  ),
-        h('p.code2', O.mMt3.x ),
-        h('span', 'Refresh button: '  ),
-        h('button#testQ', 'mMt1.ret(0).bnd(mMt2.ret)'  ),
-        h('p', 'If you enter a number, say "n", below, mMZ2.release(n) will run.  ' ), 
-        h('input#testW', ), 
-        h('p', 'If you enter three numbers consecutively below, I\'ll call them a, b, and c, then the quadratic equation will be used to find solutions for a*x*x + b*x + c = 0. If a and b are positive numbers, you are more likely to see solutions if c is a negative number.' ),
-        h('p.code2#quad4', O.mMquad1.x ),
-        h('span.tao', O.mMquad2.x ),
-        h('span.tao', O.mMquad3.x ),
-        h('br' ),
-        h('input#quad', ),  
-        h('p', 'When you type a number "n" and press ENTER, mMZ3.release(n) runs. '  ),
-        h('p', 'Here is the code:' ),
-        code.quad,
         h('hr'),
         h('h3', 'Immutable Data And The State Object "O" ' ),
         h('p',  'The server updates scores in response to messages prefixed by "CG#$42". Each such message carries an integer specifying the amount of the change. The ServerState list of Client tupples is pulled from the game state TMVar and replaced by a new tupple whose Score field differs from the previous one.' ),
         h('p', 'In front end code, mutating variables which are defined inside of functions often seems inocuous in applications written in an object oriented programming style. This is not the case in a Motorcycle.js application, where functions culminate in streams that merge into the stream that feeds the object returned by the main function, called "main" in this application. "sources" is an array of drivers. It is main\'s only argument, "sources" and "main" are Cycle.run()\'s arguments.' ), 
         h('p', '"main" and "Cycle.run" are called only once. In the cyclic steady state that results, a reference should say what it means and mean what it says. If it suddenly refers to something other than what the other half of the cycle thinks it is, there will be a temporary disconnect. This will promptly staighten out, but having temporary disconnects shakes confidence in the consistency and reliability of the program. I don\'t have an example of mutating an object causing an unexpected result or crash. I would appreciate it if someone would give me such an example. ' ),
-       h('p', ' In this environment, avoiding mutations is recommended and I generally follow that recommendation. Mutations in this application are confined to the global state object "O" and MonadIter instances. In the examples above, the release() method moves the process forward to the next occurance of the MonadIter instance where the bnd() method provides a new function to the "p" attribute. The progressive morphing of "p" in MonadIter instances is desirable behavior, and creating a clone each time it occurs seems like a senseless waste. The changes go into a stream that merges with the stream that feeds the virtual DOM. The virtual DOM is oblivious to whether or not the information came from a mutated monad or a clone. The only thing that matters is the information contained in the stream. ' ),           
-
+       h('p', ' In this environment, avoiding mutations is recommended and I generally follow that recommendation. Mutations in this application are confined to the global state object "O" and MonadIter instances. In the examples above, the release() method moves the process forward to the next occurance of the MonadIter instance where the bnd() method provides a new function to the "p" attribute. The progressive morphing of "p" in MonadIter instances is desirable behavior, and I think that creating a clone each time it occurs would be a senseless waste of resources. Unless and until release() is called, the program is not affected by "p". If release() is called, the return value of p(...args) is returned, but "p" itself remains tucked away, never mixing with the flow of information through the program. The bnd() method is pure. Given the same argument, it will always do the same thing. It doesn\'t even return anything. It just updates the internal "p" attribute. This insulation of internal operations from the outer program is remeniscent of an important purpose of the Haskell IO monad. These are just hand-waving arguments for the harmlessness of letting the bnd() method mutate MonadIter instances, but I wanted to explain why I feel comfortable with letting the definition of MonadIter stand as it is.  ' ),           
        h('p', 'All monad updates caused by the monad ret() method are stored in the object "O". When a monad m executes m.ret(v) for some value "v", m remains unchanged and the O attribute O.m is created or, if it already exists, is replaced by the update; i.e., O.m.x == v becomes true. Older versions of m are subject to garbage collection unless there is a reference to them or to an object (arrays are objects) containing m.  This is illustrated in the score-keeping code below.  All score changes are captured by mM13.ret(). Therefore, O.mM13.x is always the current score. Replacing monad attributes in O is vaguely analogous to swapping out ServerState in the Haskell server\'s state TMVar. Older versions of ServerState can be preserved in the server just as prior versions of O.mM13 can be preserved in the front end. ' ),     
         code.updateCalc,
         h('p', 'The socket messages prompt the server to update its application state and to broadcast messages to all members of the group whose member sent the message to the server. Let\'s take another look at the way incoming messages are handled.'  ),  

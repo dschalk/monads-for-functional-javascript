@@ -51,7 +51,7 @@ const monads = h('pre', {style: {color: '#AFEEEE' }}, `  var Monad = function Mo
     };
   };               
 
-  var Monad$ = function Monad$(z, g) {
+  var MonadStream = function Monad$(z, g) {
     var _this = this;
     this.subject = subject();
     this.observer = this.subject.observer;
@@ -133,21 +133,17 @@ var messages = h('pre', `  const messages$ = (sources.WS).map(e =>
       .bnd(next, 'EE#$42', mMZ15)
       .bnd(next, 'DD#$42', mMZ16)
     }) 
-  );  `  )
-
-var next = h('pre',  `  var next = function next(x, y, mon2) {
+  );
+             
+  var next = function next(x, y, mon2) {
     if (x === y) {
       mon2.release();
     }
     return ret(x);
-  }
-  
-  var next2 = function next(x, condition, mon2) {
-    if (condition) {
-      mon2.release();
-    }
-    return ret(x);
-  } `  )
+  }`  )
+
+var next = h('pre',  `  
+  `  )
 
 
 var Monad$ = h('pre',  `  var Monad$ = function Monad$(z, g) {
@@ -168,36 +164,6 @@ var Monad$ = h('pre',  `  var Monad$ = function Monad$(z, g) {
         return O[_this.id];
       };
     };
-  `  )
-
-var updateCalc = h('pre',  `  function updateCalc() { 
-     mMZ2.bnd(() => O.mM13
-                  .bnd(score, 1)
-                  .bnd(next2, (O.mM13.x % 5 === 0), mMZ5) 
-                  .bnd(newRoll));
-     mMZ4.bnd(() => O.mM13
-                  .bnd(score, 3)
-                  .bnd(next2, (O.mM13.x % 5 === 0), mMZ5) 
-                  .bnd(newRoll));
-         mMZ5.bnd(() => O.mM13
-                      .bnd(score,5)
-                      .bnd(v => mM13.ret(v)
-                      .bnd(next, 25, mMZ6)));
-             mMZ6.bnd(() => mM9.bnd(score2) 
-                          .bnd(next,3,mMZ7));
-                mMZ7.bnd(() => mM13.bnd(winner));               
-     O.mM3.bnd(x => mM7
-                  .ret(calc(x[0], O.mM8.x, x[1]))
-                  .bnd(next, 18, mMZ4)  
-                  .bnd(next, 20, mMZ2) // Releases mMZ2 (above)
-                  .bnd(() => O.mM$1.bnd(push, O.mM7.x, mM$1)
-                  .bnd(() => mM3
-                  .ret([])
-                  .bnd(() => mM4
-                  .ret(0).bnd(mM8.ret)
-                  .bnd(cleanup)
-                  ))))
-  }
   `  )
 
 var nums = h('pre',  `  
@@ -525,9 +491,9 @@ var cleanup = h('pre',  `  function cleanup (x) {
     }
   }  `  )
 
-  var mM$task = h('pre',  `  const taskAction$ = mM$taskList.stream.map(ar => {
+  var mM$task = h('pre',  `  const taskAction$ = mM$taskList.stream.map(str => {
     socket.send('TD#$42' + ',' + O.mMgroup.x.trim() + 
-        ',' + O.mMname.x.trim() + ',' + '@' + ar);
+        ',' + O.mMname.x.trim() + ',' + '@' + str);
   });  `  )
 
   var updateCalc = h('pre',  `  function updateCalc() { 
@@ -571,15 +537,15 @@ var cleanup = h('pre',  `  function cleanup (x) {
 
   var quad = h('pre',  `  var solve = (function solve () {
     mMZ3
-    .bnd(a => mMquad1.ret(a + 'x*x')
+    .bnd(a => mMquad1.ret(a + 'x**2')
     .bnd(() => mMquad2.ret('').bnd(mMquad3.ret) // Clear the display.
     .bnd(() => 
     mMZ3
-    .bnd(b => mMquad1.ret(a + 'x*x ' + ' + ' + b + 'x')
+    .bnd(b => mMquad1.ret(a + 'x**x ' + ' + ' + b + 'x')
     .bnd(() =>  
     mMZ3
     .bnd(c => mMquad1
-    .ret('Solutions for ' + a + 'x*x ' + ' + ' + b + 'x' + ' + ' + c + ' = 0:')
+    .ret('Solutions for ' + a + 'x**x ' + ' + ' + b + 'x' + ' + ' + c + ' = 0:')
     .bnd(() => mMquad2.bnd(sol1,a,b,c,mMquad2)
     .bnd(() => mMquad3.bnd(sol2,a,b,c,mMquad3) 
     .bnd(() => solve()    

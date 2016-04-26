@@ -1,9 +1,9 @@
 
 ==================== FINAL INTERFACE ====================
-2016-04-25 03:48:59.799405 UTC
+2016-04-26 00:13:29.719697 UTC
 
 interface main@main:Main 7103
-  interface hash: 44656ca87f771e1cb38b5cebaba7e8c5
+  interface hash: 0459823d3f061e590dbe03be3152dc0b
   ABI hash: 8df3e08c60e801ff9a86d7ee3eaf89e1
   export-list hash: 2f9efd25b7647d5b73ab6774835f97b2
   orphan hash: 276323d23bdb3224e26fb4d203ffca48
@@ -171,6 +171,7 @@ addDependentFile "client/dist/main.js"
 addDependentFile "client/src/code.js"
 addDependentFile "client/src/store.js"
 addDependentFile "client/src/most-subject.js"
+addDependentFile "client/src/main"
 addDependentFile "client/src/code.js~"
 addDependentFile "client/src/monad.js~"
 addDependentFile "client/src/save.js"
