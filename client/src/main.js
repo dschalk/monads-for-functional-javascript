@@ -173,7 +173,6 @@ function main(sources) {
       document.getElementById('alert').innerHTML = 'Error: array length is: ' + length;
     } 
     
-    
     else {
       let keys = Array(ar.length/6).fill(1);
       keys.map(_ => {
@@ -432,26 +431,6 @@ function main(sources) {
     console.log('From mM$2.stream: ', v);
   });
 
-  /*
-var chance = function chance () {
-  mM$chance.stream.map(v => 
-  socket.send('GA#$42,' + O.mMgroup.x.trim() + ',' + O.mMname.x.trim() + ',6,6,12,20')
-mMZ20.bnd(() => mMprocess.bnd(proc));
-mMZ20.bnd(() => mMprocess.bnd(proc));
-mMZ20.bnd(() => mMprocess.bnd(proc));
-mMZ20.bnd(() => mMprocess.bnd(proc));
-mMZ20.bnd(() => mMprocess.bnd(proc));
-var proc = function proc (x, mon) {
-  
-  socket.send('CA#$42,' + O.mMgroup.x.trim() + ',' + O.mMname.x.trim() + ',6,6,12,20')
-
-var obj = { };
-for (var i = 0, j = arr.length; i < j; i++) {
-   obj[arr[i]] = (obj[arr[i]] || 0) + 1;
-}
-*/
-
-
   const testZ = sources.DOM
     .select('#testZ').events('click')
   const testZAction$ = testZ.map(() =>
@@ -550,9 +529,13 @@ for (var i = 0, j = arr.length; i < j; i++) {
         h('br'),
         h('div#captionDiv', [
         h('h1', 'Motorcycle.js With JS-monads' ),
-        h('h3.tao', ' A shared, persistent todo list' ),
-        h('h3.tao', ' A websockets game with a traversable history of dice rolls ' ),
-        h('h3.tao', ' Group chat rooms and more ' ) ] ),
+        h('span.tao1', ' A shared, persistent todo list, ' ),
+        h('br'),
+        h('span.tao1', ' A websockets game with a traversable history of dice rolls, ' ),
+        h('br'),
+        h('span.tao1', ' Group chat rooms and more demonstrations of efficient, ' ),
+        h('br'),
+        h('span.tao2', ' maintainable code using Motorcycle.js and JS-monads.  ' ) ] ),
         h('div#gameDiv2',  {style: {display: 'none'}}, [
         h('span', ' Here are the basic rules:' ), 
         h('p', 'RULES: If clicking two numbers and an operator (in any order) results in 20 or 18, the score increases by 1 or 3, respectively. If the score becomes 0 mod 5, 5 points are added. A score of 25 results in one goal. That can only be achieved by arriving at a score of 20, which jumps the score to 25. Directly computing 25 results in a score of 30, and no goal. Each time ROLL is clicked, one point is deducted. Three goals wins the game. '    ),
@@ -610,8 +593,8 @@ for (var i = 0, j = arr.length; i < j; i++) {
         h('input#testW', ), 
         h('p', ' Calling release() results in a new call to bnd() in the next demonstration. If you enter three numbers consecutively below, I\'ll call them a, b, and c, then the quadratic equation will be used to find solutions for a*x**2 + b*x + c = 0. The a, b, and c you select might not have a solution. If a and b are positive numbers, you are more likely to see solutions if c is a negative number.' ),
         h('p.code2#quad4', O.mMquad1.x ),
-        h('span.tao', O.mMquad2.x ),
-        h('span.tao', O.mMquad3.x ),
+        h('span.red2', O.mMquad2.x ),
+        h('span.red2', O.mMquad3.x ),
         h('br' ),
         h('span.tao' , 'Run mMZ3.release(v) for some number v: ' ),
         h('input#quad', ),  
@@ -671,13 +654,27 @@ for (var i = 0, j = arr.length; i < j; i++) {
         h('p', 'The socket messages prompt the server to update its application state and to broadcast messages to all members of the group whose member sent the message to the server. Let\'s take another look at the way incoming messages are handled.'  ),  
         code.messages,
         h('p', ' Messages prefixed by CB#$42 are broadcast in response to CG#$42-prefixed messages from a browser. CB#$42 prefixes release mMZ11, causing the scoreboard to update. CA#$42-prefixed messages to the server result in CA#$42-prefixed messages carrying the next dice roll to be broadcast to the sender\'s group.  CE#$42 prefixed messages cause the release of mMZ14 which causes O.mMgoals2.x to change from an empty string to an anouncement of the name of the winner. ' ),  
-        h('p', ),  
-        h('p', ),  
-        h('p', ),  
-        h('p', ),  
-        h('p', ),  
+        h('hr', ),  
+        h('h3', 'Why Call Them Monads?' ),  
+        h('p', 'For any monad m and function f mapping values to monads, inside the O object the bnd() method behaves like the Haskell >>= operator(pronounce "bind"). For example, if we set O.m.x to 0 and call O.m.bnd(add, 3, m), O.m.x == 3 becomes true. And, like Haskell monads that obey the optional Haskell monad laws, sequences of calls to bnd() are associative; i,e, how computations are grouped does not matter. Here are three functions we will use to illustrate this:' ),
+        code.mdem1,
+        h('p', ' The "===" operator won\'t be useful because it returns false for clones. A meaningful variation of associative property can be verified with the equals() function. We will use equals() to test the associative property along with the left and right identity properties of the ret() mdethod. The following sequences has already run, giving O.mMa, O.mMb, and O.mMc the results. O.mMa.x, O.mMb.x, and O.mMc.x, colored red, are displayed below.  ' ),  
+        code.mdem2,  
         h('br' ),
-        h('p', ), 
+        h('span.tao', 'O.mMa.x: ' ),  
+        h('span.red', O.mMa.x ), 
+        h('br' ),  
+        h('span.tao', 'O.mMb.x: ' ),  
+        h('span.red', O.mMb.x ), 
+        h('br' ),  
+        h('span.tao', 'O.mMc.x: ' ),  
+        h('span.red', O.mMc.x ), 
+        h('p', ),  
+        h('p', ' That\'s about it. That\'s why I call them "monads". But JS-monads can do much more than vaguely mirror Haskell monad functionality. There is no attempt to constrain JS-monads with type classes, or with restrictions on the types of functions the bnd() method can accept. m.bnd(x => x**3) returns a number, not a JS-monad. It would be the end of the line for a chained sequence of computations; but that might be exactly what you want: a monadic chain of computations that spits out a number when it is done. '  ),  
+        h('p', ' JS-monads can be used as a library, but there isn\'t much to import. Just the definitions of Monad, MonadIter, and MonadStream. I didn\'t define a bunch of functions, and I didn\'t import ramda or lodash-fp. ES6 functions such as map, reduce, and filter did everythin I needed in this and other demonstrations. I encourage people to come up with new variations on Monad to fit the needs of their projects, just as I came up with MonadIter and MonadStream when I saw a need for them. ' ),
+        h('h2', 'Conclusion' ),
+        h('p', '  You might not need a ready-made framework or a bloated set of libraries for your project. It could be that improvisation, possibly with the help of JS-monads or your own variation on the JS-monads theme, is the key to creating a well-organized, understandable, and easily maintainable masterpiece. '    ),  
+        h('p', ),  
         h('p', ),  
         h('p', ),  
         h('p', ),  

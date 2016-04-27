@@ -364,6 +364,9 @@ mMquad2.ret(mMquad2.x)
 var mMquad3 = new Monad('','mMquad3')
 mMquad3.ret(mMquad3.x)
 
+var m = new Monad(0,'m')
+m.ret(m.x)
+
 mMgoals2.ret(mMgoals2.x)
 mM3.ret(mM3.x)
 mM6.ret(mM6.x)
@@ -520,6 +523,29 @@ var calc = function calc(a,op,b) {
   }
   return result;
 };
+
+var equals = function equals (x, mon1, mon2, mon3) {
+  if (mon1.id === mon2.id && mon1.x === mon2.x) {
+    mon3.ret('true');
+  } else mon3.ret('false');
+  return ret(x);
+}
+
+var monTest = function monTest () {
+  mM5.bnd( equals, m.ret(0)
+  .bnd(v => add(v, 3, m)
+  .bnd(cube, m)), 
+  m.ret(0)
+  .bnd(add, 3, m)
+  .bnd(cube, m), 
+  mMa )
+
+  mM5.bnd(equals, m, m.bnd(m.ret), mMb)
+
+  mM5.bnd(equals, m, m.ret(m.x), mMc)
+}
+
+monTest();
 
 var pause = function(x,t,mon2) {
   let time = t*1000;

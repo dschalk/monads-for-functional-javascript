@@ -577,20 +577,44 @@ var cleanup = h('pre',  `  function cleanup (x) {
     return mon.ret(n/2*a);
   }  `  )
 
-  var p2 = h('pre',  `  
-  `  )
+  var mdem1 = h('pre',  `  var equals = function equals (x, mon1, mon2, mon3) {
+    if (mon1.id === mon2.id && mon1.x === mon2.x) {
+      mon3.ret('true');
+    } else mon3.ret('false');
+    return ret(x);
+  }
+  
+  var add = function(x,b,mon) {
+    if (arguments.length === 3) {
+      return mon.ret(x + b);
+    }
+    return ret(x+b);
+  }
+
+  var cube = function(v,mon) {
+    if (arguments.length === 2) {
+      return mon.ret(v*v*v);
+    }
+    return ret(v*v*v);
+  }  `  )
+
+  var mdem2 = h('pre',  `  mM5.bnd( equals, m.ret(0)
+  .bnd(v => add(v, 3, m)
+  .bnd(cube, m)), 
+  m.ret(0)
+  .bnd(add, 3, m)
+  .bnd(cube, m), 
+  mMc )  
+
+  mM5.bnd(equals, m, m.bnd(m.ret), mMb)
+
+  mM5.bnd(equals, m, m.ret(m.x), mMc)  `  )
 
   var p1 = h('pre',  `  
   `  )
 
-  var p2 = h('pre',  `  
-  `  )
-
-  var p1 = h('pre',  `  
-  `  )
 
 
 
 
-
-export default {monads, fib, driver, messages, next, Monad$, updateCalc, stream, arrayFuncs, travel, nums, cleanup, ret, C42, taskStream, newTask, process, mM$task, addString, colorClick, edit, testZ, quad }
+export default {monads, fib, driver, messages, next, Monad$, updateCalc, stream, arrayFuncs, travel, nums, cleanup, ret, C42, taskStream, newTask, process, mM$task, addString, colorClick, edit, testZ, quad, mdem1, mdem2 }

@@ -8,6 +8,29 @@ body {
   margin-left: 3%;
 }
 
+.tao1 {
+  margin-left: 3%;
+  color: #b5f4ce;
+  font-size: 28px;
+}
+
+.tao2 {
+  margin-left: 6%;
+  color: #b5f4ce;
+  font-size: 28px;
+}
+
+.red {
+  color: #FF0000;
+  font-size: 28px;
+}
+
+.red2 {
+  margin: 1.5%;
+  color: #FF0000;
+  font-size: 28px;
+}
+
 .content {
   font-size: 22px;
 } 
