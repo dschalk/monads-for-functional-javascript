@@ -340,20 +340,17 @@ var cleanup = h('pre',  `  function cleanup (x) {
           alert = 'You should enter "author, responsible party, task" separated by commas';
           document.getElementById('alert').innerHTML = alert;
         }
-        if ( ar.length > 2 ) {
+
+        else if ( (O.mMar2.x.filter(v => (v.task == task)).length) > 0 ) {
+          document.getElementById('alert').innerHTML = task + " is already listed.";
+        }
+
+        else if ( ar.length > 2 ) {
           O.mM$taskList.bnd(addString, task + ',yellow, none, false,' +  ar[0] + ',' + ar[1], mM$taskList);
           e.target.value = '';
           document.getElementById('alert').innerHTML = '';
         } 
       } 
-  });  
-                  
-  var addString = function addString (x, str, mon) {
-    var s = str;
-    if (x.length > 4) {
-    s = x + ',' + str;
-    }
-    return mon.ret(s);
   };  ` )
 
   var process = h('pre',  `  const process = function(str) {
