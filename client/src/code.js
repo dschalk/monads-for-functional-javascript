@@ -595,17 +595,15 @@ var cleanup = h('pre',  `  function cleanup (x) {
     return ret(v*v*v);
   }  `  )
 
-  var mdem2 = h('pre',  `  mM5.bnd( equals, m.ret(0)
-  .bnd(v => add(v, 3, m)
-  .bnd(cube, m)), 
-  m.ret(0)
-  .bnd(add, 3, m)
-  .bnd(cube, m), 
-  mMc )  
+  var runTest = h('pre',  `  var runTest = function monTest () {
+  mM5.bnd( equals, m.ret(0).bnd(v => add(v, 3, m).bnd(cube, m)), 
+  m.ret(0).bnd(add, 3, m).bnd(cube, m), 
+  mMa )
 
   mM5.bnd(equals, m, m.bnd(m.ret), mMb)
 
-  mM5.bnd(equals, m, m.ret(m.x), mMc)  `  )
+  mM5.bnd(equals, m, m.ret(m.x), mMc)
+}  `  )
 
   var p1 = h('pre',  `  
   `  )
@@ -614,4 +612,4 @@ var cleanup = h('pre',  `  function cleanup (x) {
 
 
 
-export default {monads, fib, driver, messages, next, Monad$, updateCalc, stream, arrayFuncs, travel, nums, cleanup, ret, C42, taskStream, newTask, process, mM$task, addString, colorClick, edit, testZ, quad, mdem1, mdem2 }
+export default {monads, fib, driver, messages, next, Monad$, updateCalc, stream, arrayFuncs, travel, nums, cleanup, ret, C42, taskStream, newTask, process, mM$task, addString, colorClick, edit, testZ, quad, mdem1, runTest }

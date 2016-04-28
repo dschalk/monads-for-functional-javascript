@@ -346,13 +346,13 @@ mMt2.ret(mMt2.x)
 var mMt3 = new Monad('','mMt3')
 mMt3.ret(mMt3.x)
 
-var mMa = new Monad(0,'mMa')
+var mMa = new Monad('waiting','mMa')
 mMa.ret(mMa.x)
 
-var mMb = new Monad(0,'mMb')
+var mMb = new Monad('waiting','mMb')
 mMb.ret(mMb.x)
 
-var mMc = new Monad(0,'mMc')
+var mMc = new Monad('waiting','mMc')
 mMc.ret(mMc.x)
 
 var mMquad1 = new Monad('','mMquad1')
@@ -531,21 +531,17 @@ var equals = function equals (x, mon1, mon2, mon3) {
   return ret(x);
 }
 
-var monTest = function monTest () {
-  mM5.bnd( equals, m.ret(0)
-  .bnd(v => add(v, 3, m)
-  .bnd(cube, m)), 
-  m.ret(0)
-  .bnd(add, 3, m)
-  .bnd(cube, m), 
-  mMa )
+var runTest = function runTest () {
+  mM5.bnd( equals, 
+  m.ret(0).bnd(v => add(v, 3, m).bnd(cube, m)), 
+  m.ret(0).bnd(add, 3, m).bnd(cube, m), 
+  mMa 
+  )
 
   mM5.bnd(equals, m, m.bnd(m.ret), mMb)
 
   mM5.bnd(equals, m, m.ret(m.x), mMc)
 }
-
-monTest();
 
 var pause = function(x,t,mon2) {
   let time = t*1000;

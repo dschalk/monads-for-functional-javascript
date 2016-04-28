@@ -322,6 +322,13 @@ function main(sources) {
     el2.style.display = 'none' 
   });
      
+  const runTest$ = sources.DOM
+    .select('#runTest').events('click')
+    
+  const runTestAction$ = runTest$.map(e => {
+    runTest();
+});
+
   const todoClick$ = sources.DOM
     .select('#todoButton').events('click')
     
@@ -476,7 +483,7 @@ function main(sources) {
     }
   });
 
-  const calcStream$ = merge( quadAction$, testWAction$, testZAction$, testQAction$, edit1Action$, edit2Action$, taskAction$, colorAction$, deleteAction$, newTaskAction$, chatClickAction$, gameClickAction$, todoClickAction$, captionClickAction$, mM$3Action$, mM$2Action$, mM$1Action$, backClickAction$, forwardClickAction$, fibPressAction$, groupPressAction$, rollClickAction$, messagePressAction$, loginPressAction$, messages$, numClickAction$, opClickAction$ );
+  const calcStream$ = merge( runTestAction$, quadAction$, testWAction$, testZAction$, testQAction$, edit1Action$, edit2Action$, taskAction$, colorAction$, deleteAction$, newTaskAction$, chatClickAction$, gameClickAction$, todoClickAction$, captionClickAction$, mM$3Action$, mM$2Action$, mM$1Action$, backClickAction$, forwardClickAction$, fibPressAction$, groupPressAction$, rollClickAction$, messagePressAction$, loginPressAction$, messages$, numClickAction$, opClickAction$ );
 
     return {
       DOM: 
@@ -670,8 +677,8 @@ function main(sources) {
         h('p', 'For any monad m and function f mapping values to monads, inside the O object the bnd() method behaves like the Haskell >>= operator(pronounce "bind"). For example, if we set O.m.x to 0 and call O.m.bnd(add, 3, m), O.m.x == 3 becomes true. And, like Haskell monads that obey the optional Haskell monad laws, sequences of calls to bnd() are associative; i,e, how computations are grouped does not matter. Here are three functions we will use to illustrate this:' ),
         code.mdem1,
         h('p', ' The relationships being demonstrated here are readily derivable from the definition of Monad. This is just an example to illustrate the general properties. The "===" operator isn\'t useful for illustrating monadic behavior because it returns false for clones. A meaningful variation of associative property can be demonstrated with the equals() function. We will use equals() to test the associative property along with the left and right identity properties of the ret() mdethod. These relationships are similar to the relationships in the Haskell laws.'),
-        h('p', ' The following sequences have already run, giving O.mMa, O.mMb, and O.mMc the results. O.mMa.x, O.mMb.x, and O.mMc.x, colored red, are displayed below.  ' ),  
-        code.mdem2,  
+        h('p', ' Click runTest() to see updated O.mMa.x, O.mMb.x, and O.mMc.x, colored red, displayed below.  ' ),  
+        code.runTest,  
         h('br' ),
         h('span.tao', 'O.mMa.x: ' ),  
         h('span.red', O.mMa.x ), 
@@ -682,6 +689,7 @@ function main(sources) {
         h('span.tao', 'O.mMc.x: ' ),  
         h('span.red', O.mMc.x ), 
         h('p', ),  
+        h('button#runTest', 'runTest' ),
         h('p', ' That\'s about it. That\'s why I call them "monads". But JS-monads can do much more than vaguely mirror Haskell monad functionality. There is no attempt to constrain JS-monads with type classes, or with restrictions on the types of functions the bnd() method can accept. m.bnd(x => x**3) returns a number, not a JS-monad. It would be the end of the line for a chained sequence of computations; but that might be exactly what you want: a monadic chain of computations that spits out a number when it is done. '  ),  
         h('p', ' JS-monads can be used as a library, but there isn\'t much to import. Just the definitions of Monad, MonadIter, and MonadStream. I didn\'t define a bunch of functions, and I didn\'t import ramda or lodash-fp. ES6 functions such as map, reduce, and filter did everythin I needed in this and other demonstrations. I encourage people to come up with new variations on Monad to fit the needs of their projects, just as I came up with MonadIter and MonadStream when I saw a need for them. ' ),
         h('h2', 'Conclusion' ),
