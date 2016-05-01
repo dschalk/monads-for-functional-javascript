@@ -13,84 +13,33 @@ function _classCallCheck(instance, Constructor) {
 
 var subject = mostSubject.subject;
 
-var MonadStream = function MonadStream(z, g) {
+var MonadStream = function MonadStream(g) {
   var _this = this;
   this.subject = subject();
   this.observer = this.subject.observer;
   this.stream = this.subject.stream;
-  this.x = z;
   this.id = g;
-  this.bnd = function (func) {
-    for (var _len = arguments.length, args = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
-      args[_key - 1] = arguments[_key];
-    }
-    return func.apply(undefined, [_this.x].concat(args));
-  };
   this.ret = function (a) {
-    O[_this.id] = new MonadStream(a,_this.id);
     _this.observer.next(a);
     console.log('Streaming from ', _this.id);
-    return O[_this.id];
+    return _this;
   };
 };
 
-var MonadSave = function MonadSave(z, g, h) {
-  var _this = this;
+var mM$1 = new MonadStream('mM$1');
 
-  this.history = h;
+var mM$2 = new MonadStream('mM$2');
 
-  this.x = z;
-  if (arguments.length === 1) {
-    this.id = 'anonymous';
-  } else {
-    this.id = g;
-  }
+var mM$3 = new MonadStream('mM$3');
 
-  this.bnd = function (func) {
-    for (var _len = arguments.length, args = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
-      args[_key - 1] = arguments[_key];
-    }
+var mM$todo = new MonadStream('mM$todo');
 
-    return func.apply(undefined, [_this.x].concat(args));
-  };
+var mM$task = new MonadStream('mM$task');
 
-  this.ret = function (a) {
-    _this.history.push(a);
-    window[_this.id] = new MonadSave(a,_this.id, _this.history);
-    return window[_this.id];
-  };
-};
+var mM$todo2 = new MonadStream('mM$todo2');
 
-var mM$1 = new MonadStream([], 'mM$1');
-mM$1.ret(mM$1.x);
+var mM$todo3 = new MonadStream('mM$todo3');
 
-var mM$2 = new MonadStream([], 'mM$2');
-mM$2.ret(mM$2.x);
-
-var mM$3 = new MonadStream([], 'mM$3');
-mM$3.ret(mM$3.x);
-
-var mM$todo = new MonadStream(['alpha', 'beta', 'gamma'], 'mM$todo');
-mM$todo.ret(mM$todo.x);
-
-var mM$task = new MonadStream([], 'mM$task');
-mM$task.ret(mM$task.x);
-
-var mM$todo2 = new MonadStream([], 'mM$todo2');
-mM$todo2.ret(mM$todo2.x);
-
-var mM$todo3 = new MonadStream([], 'mM$todo3');
-mM$todo3.ret(mM$todo3.x);
-
-var mMsaved = new MonadSave({}, 'mMsaved');
-var mMid = new MonadSave('waiting', 'mMid');
-var mMnewval = new MonadSave('waiting', 'mMnewval');
-var mMdata = new MonadSave(['start'], 'mMdata');
-var mMdata2 = new MonadSave(['start'], 'mMdata2');
-var mMlatest = new MonadSave({}, 'mMlatest');
-
-var retSaveVal = ['start'];
-var retSaveId = ['start'];
 var emitEvent;
 var data$;
 
@@ -119,52 +68,10 @@ var Monad = function Monad(z, g) {
 
 var MonadIter = function MonadIter() {
   var _this = this;
-  this.p = function (a, ... args) {};
+  this.p = function () {};
 
-  this.release = function (x, ...args) {
-    return this.p(x, ...args);
-  };
-
-  this.bnd = function (func) {
-    _this.p = func;
-    return _this;
-  };
-};
-/*
-  var Monad = function Monad(v, s, g) {
-    var _this = this;
-
-    this.x = (v, s);
-    if (arguments.length === 1) {
-      this.id = 'anonymous';
-    } else {
-      this.id = g;
-    };
-
-    this.bnd = function (func, ...args) {
-       return func(_this.x, ...args);
-    };
-
-    this.ret = function (a) {
-      O.[_this.id] = new Monad(a, _this.id);
-      return O.[_this.id]
-    };
-  };               
-*/
-
-
-
-
-var MonadIter = function MonadIter() {
-  var _this = this;
-  this.p = function (a) {};
-
-  this.release = function (x) {
-    for (var _len = arguments.length, args = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
-      args[_key - 1] = arguments[_key];
-    }
-
-    this.p.apply(this, [x].concat(args));
+  this.release = function () {
+    return this.p.apply(this, arguments);
   };
 
   this.bnd = function (func) {
@@ -240,9 +147,9 @@ var mM15 = M(0,'mM15');
 var mM16 = M(0,'mM16');
 var mM17 = M(0,'mM17');
 var mM18 = M(0,'mM18');
-var mM19 = M(0,'mM19');
+var mM19 = M('waiting','mM19');
 var mM20 = M(0,'mM20');
-var mM21 = M(0,'mM21');
+var mM21 = M('waiting','mM21');
 var mM22 = M(0,'mM22');
 var mM23 = M(0,'mM23');
 var mM24 = M(0,'mM24');
@@ -260,7 +167,8 @@ var mMnbrs = M([],'mMnbrs');
 var mMnumbers = M([],'mMnumbers');
 var mMname = M('', 'mMname');
 var mMar = M([1,2,3,4,5], 'mMar');
-var mMar2 = M([1,2,3,4,5], 'mMar2');
+var mMar2 = M([], 'mMar2');
+mMar2.ret(mMar2.x);
 var mMscores = M('', 'mMscores');
 var mMprefix = M('', 'mMprefix');
 var mMfib = M([0,1], 'mMfib');
@@ -290,7 +198,7 @@ var mMextra2 = new Monad('nothing', 'mMextra2');
 var mMsave = new Monad({x: 'start'}, 'mMsave');
 var mMsaveAr = new Monad([ret([0,0,0,0])], 'mMsaveAr');
 var mMindex = new Monad(0, 'mMindex');
-var mMindex2 = new Monad(0, 'mMindex2');
+var mMindex2 = new Monad(-1, 'mMindex2');
 var mMindex3 = new Monad(0, 'mMindex3');
 var mMcount = new Monad(0, 'mMcount');
 var mMcount2 = new Monad(0, 'mMcount2');
@@ -299,6 +207,7 @@ var mMhistorymM1 = new Monad([[0,0,0,0]], 'mMhistorymM1');
 var mMhistorymM3 = new Monad([], 'mMhistorymM3');
 var mMhistorymMtask = new Monad([], 'mMhistorymMtask');
 var mMtemp = new Monad('temp', 'mMtemp');
+var mMtemp2 = new Monad('temp', 'mMtemp2');
 var mMte = new Monad(0, 'mMte');
 var mMid = new Monad('cow', 'mMid');
 var mMhelper = new Monad('helper', 'mMhelper');
@@ -313,11 +222,19 @@ mMtasksPersist.ret(mMtasksPersist.x)
 var mMtodoList = new Monad([], 'mMtodoList');
 mMtodoList.ret(mMtodoList.x);
 
+var mMcurrentRoll = new Monad([], 'mMcurrentRoll');
+mMcurrentRoll.ret(mMcurrentRoll.x);
+
+var mMallRolls = new Monad([], 'mMallRolls');
+mMallRolls.ret(mMallRolls.x);
+
+var mMcurrentList = new Monad([], 'mMcurrentList');
+mMcurrentList.ret(mMcurrentList.x);
+
 var mMtaskList = new Monad([], 'mMtaskList');
 mMtaskList.ret(mMtaskList.x);
 
-var mM$taskList = new MonadStream('', 'mM$taskList');
-mM$taskList.ret(mM$taskList.x);
+var mM$taskList = new MonadStream('mM$taskList');
 
 var mMsenderList = new Monad([], 'mMsenderList');
 mMsenderList.ret(mMsenderList.x);
@@ -331,8 +248,7 @@ mMsoloAlert.ret(mMsoloAlert.x);
 var mMe = new Monad('', 'mMe');
 mMe.ret(mMe.x);
 
-var mMtaskList2 = new MonadStream([], 'mMtaskList2');
-mMtaskList2.ret(mMtaskList2.x);
+var mMtaskList2 = new MonadStream('mMtaskList2');
 
 var mMgoals = M(0,'mMgoals');
 mMgoals.ret(mMgoals.x);
@@ -393,6 +309,7 @@ fibMon.ret(fibMon.x);
 mM5.ret(mM5.x);
 mM6.ret(mM6.x);
 mM27.ret(mM27.x);
+mM21.ret(mM21.x);
 
 
 var mMZ1 = MI();
@@ -585,26 +502,29 @@ var clean = function clean(x, mon) {
 
 var push = function push(y,v,mon) {
   console.log('In push. y, v, mon are: ', y, v, mon);
-  if (Array.isArray(y)) {
     let ar = [];
-    let keys = Object.keys(y);
-    for (let k in keys) {ar[k] = y[k]};
-    ar.push(v);
-    return mon.ret(ar);  
-  }
-  console.log('The value provided to push is not an array');
-  return ret(y);
+    if (y.length == 0) {
+      ar = [v];
+    }
+    else {
+      let keys = Object.keys(y);
+      for (let k in keys) {ar[k] = y[k]};
+      ar.push(v);
+    }
+    return mon.ret(ar);
 };
 
-var spliceRemove = function spliceRemove(x, j, mon) {
+var spliceRemove = function spliceRemove(x, index, location, mon) {
   if (Array.isArray(x)) {
     let ar = [];
-    let keys = Object.keys(x);
-    for (let k in keys) {ar[k] = x[k]};
-    ar.splice(j,1);
+    let keys = Object.keys(x[index]);
+    for (let k in keys) {
+      ar[k] = x[index][k];
+    }
+    ar.splice(location,1);
     return mon.ret(ar);  
   }
-  return ret(x);
+  console.log('Major malfunction in spliceRemove. x, index, location, mon: ', x, index, location, mon);
 };
 
 var spliceAdd = function spliceAdd(x, index, value, mon) {
@@ -648,7 +568,7 @@ var inc = function inc(x, mon) {
   return mon.ret(x + 1);
 }
 
-var dec = function inc(x, mon) {
+var dec = function dec(x, mon) {
   return mon.ret(x - 1);
 }
 

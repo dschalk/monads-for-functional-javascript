@@ -31,7 +31,7 @@ var Monad = function Monad(z, g) {
 
 var mMname = new Monad('Fred', 'mMname');
 
-const monads = h('pre', {style: {color: '#AFEEEE' }}, `  var Monad = function Monad(z, g) {
+const monad = h('pre', {style: {color: '#AFEEEE' }}, `  var Monad = function Monad(z, g) {
     var _this = this;
 
     this.x = z;
@@ -49,42 +49,35 @@ const monads = h('pre', {style: {color: '#AFEEEE' }}, `  var Monad = function Mo
       O.[_this.id] = new Monad(a, _this.id);
       return O.[_this.id]
     };
-  };               
+  }; ` )
 
-  var MonadStream = function Monad$(z, g) {
+const monadStr = h('pre', {style: {color: '#AFEEEE' }}, `  var MonadStream = function MonadStream(g) {
     var _this = this;
     this.subject = subject();
     this.observer = this.subject.observer;
     this.stream = this.subject.stream;
-    this.x = z;
     this.id = g;
-
-    this.bnd = function (func, ...args) {
-       return func(_this.x, ...args);
-    };
-
     this.ret = function (a) {
-      O[_this.id] = new Monad$(a,_this.id);
       _this.observer.next(a);
       console.log('Streaming from ', _this.id);
-      return O[_this.id];
+      return _this;
     };
-  };
+  }; ` )
 
-  var MonadIter = function MonadIter() {
+const monadIt = h('pre', {style: {color: '#AFEEEE' }}, `  var MonadIter = function MonadIter() {
     var _this = this;
-    this.p = function (a, ... args) {};
+    this.p = function () {};
   
-    this.release = function (x, ...args) {
-      return this.p(x, ...args);
+    this.release = function (...args) {
+      return this.p(...args);
     };
   
     this.bnd = function (func) {
       _this.p = func;
     };
-  };
+  }; ` )
 
-  var ret = function ret(v, id) {
+const ret = h('pre', {style: {color: '#AFEEEE' }}, `  var ret = function ret(v, id) {
     if (arguments.length === 1) {
       return (new Monad(v, 'anonymous'));
     }
@@ -300,11 +293,6 @@ var cleanup = h('pre',  `  function cleanup (x) {
       document.getElementById('3').innerHTML = (O.mMhistorymM1.x[O.mMindex2.x])[3]; 
       cleanup();
     })  `  )
-
-  var ret = h('pre',  `  var ret = function ret(v) {
-    var mon = new Monad(v, 'anonymous');
-    return mon;
-  }  `  )
 
   var C42 = h('pre',  `  mMZ10.bnd(() => mM$1
      .ret([O.mMar.x[3], O.mMar.x[4], O.mMar.x[5], O.mMar.x[6]])
@@ -602,14 +590,14 @@ var cleanup = h('pre',  `  function cleanup (x) {
 
   mM5.bnd(equals, m, m.bnd(m.ret), mMb)
 
-  mM5.bnd(equals, m, m.ret(m.x), mMc)
-}  `  )
+    mM5.bnd(equals, m, m.ret(m.x), mMc)
+  }  `  )
 
-  var p1 = h('pre',  `  
-  `  )
-
-
+    var p1 = h('pre',  `  
+    `  )
 
 
 
-export default {monads, fib, driver, messages, next, Monad$, updateCalc, stream, arrayFuncs, travel, nums, cleanup, ret, C42, taskStream, newTask, process, mM$task, addString, colorClick, edit, testZ, quad, mdem1, runTest }
+
+
+  export default {monad, monadStr, monadIt, fib, driver, messages, next, Monad$, updateCalc, stream, arrayFuncs, travel, nums, cleanup, ret, C42, taskStream, newTask, process, mM$task, addString, colorClick, edit, testZ, quad, mdem1, runTest }

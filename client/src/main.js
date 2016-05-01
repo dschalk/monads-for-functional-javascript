@@ -44,9 +44,9 @@ function main(sources) {
   const messages$ = (sources.WS).map(e => {
     console.log('******____&&&&&&&&&&&&&&&&&&&____**************_In messages$  e.data is: ', e.data)
     mMtem.ret(e.data.split(',')).bnd(v => {
-    mMZ10.bnd(() => mM$1
-      .ret([v[3], v[4], v[5], v[6]])
-      .bnd(() => mM$2.ret([])))
+    mMZ10.bnd(() => {
+      mM$2.ret([])
+      mM$1.ret([v[3], v[4], v[5], v[6]])})
     mMZ11.bnd(() => updateScoreboard(v[3]));
     mMZ12.bnd(() => mM6
       .ret(v[2] + ' successfully logged in.'))
@@ -55,7 +55,14 @@ function main(sources) {
     mMZ15.bnd(() => mMgoals2.ret('A player named ' + 
       O.mMname.x + 'is currently logged in. Page will refresh in 4 seconds.')
       .bnd(refresh))
-    mMZ16.bnd(() => process(e.data))
+    mMZ16.bnd(() => {
+      if (v[3] == 'no file') {
+        mMtaskList.ret([])
+      } 
+      else {
+        process(e.data)
+      }
+    })
     mMtemp.ret(e.data.split(',')[0])
       .bnd(next, 'CA#$42', mMZ10)
       .bnd(next, 'CB#$42', mMZ11)
@@ -123,27 +130,26 @@ function main(sources) {
   const newTaskAction$ = newTask$.map(e => {
       let ob = {};
       var alert = '';
-      var ar = e.target.value.split(',');
-      var ar2 = ar.slice(2);
       var task = '';
-      if (ar.length < 4) {
-        task = ar[2];
-      }
-      if (ar.length > 3) {
-        task = ar2.reduce((a,b) => a + '$*$*$' + b);
-      }
       if( e.keyCode == 13 ) {
+        var ar = e.target.value.split(',');
         if ( ar.length < 3 ) {
           alert = 'You should enter "author, responsible party, task" separated by commas';
           document.getElementById('alert').innerHTML = alert;
         }
-
-        else if ( (O.mMar2.x.filter(v => (v.task == task)).length) > 0 ) {
+        var ar2 = ar.slice(2);
+        console.log('*************************************$$$$$$$$$$$_ar ', ar);
+        if (ar2.length == 1) {
+          task = ar[2];
+        }
+        if (ar2.length > 1) {
+          task = ar2.reduce((a,b) => a + '$*$*$' + b);
+        }
+        if ( (O.mMar2.x.filter(v => (v.task == task)).length) > 0 ) {
           document.getElementById('alert').innerHTML = task + " is already listed.";
         }
-
         else if ( ar.length > 2 ) {
-          O.mM$taskList.bnd(addString, task + ',yellow, none, false,' +  ar[0] + ',' + ar[1], mM$taskList);
+          O.mMcurrentList.bnd(addString, task + ',yellow, none, false,' +  ar[0] + ',' + ar[1], mM$taskList)
           e.target.value = '';
           document.getElementById('alert').innerHTML = '';
         } 
@@ -151,73 +157,78 @@ function main(sources) {
   });
 
   const process = function(str) {
-    let a = str.split(",");
-    console.log('In process. str and a are: ', str, a);
+    var a = str.split(",");
     if (a == undefined) {
       return;
     };
     if (a.length < 9) {
       return
     };
-    let ob = {};
-    let ar = a.slice(3)
-    let s = ar.reduce((a,b) => a + ',' + b);
+    var ob = {};
+    var ar = a.slice(3)
+    var s = ar.reduce((a,b) => a + ',' + b);
     console.log('In process. ar and s are: ', ar, s);
-    if (mM$taskList.x.length < 5) {
-      O.mM$taskList.ret(s);
-    }
-    let ar2 = [];
-    let tempArray = [];
+    var tempArray = [];
     if (ar.length < 6) {return};
     if ((ar.length % 6) !== 0) {
       document.getElementById('alert').innerHTML = 'Error: array length is: ' + length;
     } 
+    mMcurrentList.ret(s);
+    console.log('In process. str, a, and O.mMcurrentList.x are: ', str, a, O.mMcurrentList.x);
+    process3(ar);
+  }
     
-    else {
-      let keys = Array(ar.length/6).fill(1);
-      keys.map(_ => {
-        ar2.push(
-          {
-            task: convertBack(ar.shift()),
-            color: ar.shift(),
-            textDecoration: ar.shift(),
-            checked: ar.shift() === 'true',
-            author: ar.shift(),
-            responsible: ar.shift()
-          }
-        )
-      })
-      console.log('In process  ar2 is: ', ar2)
-      mMar2.ret(ar2);
-      let keys2 = Object.keys(ar2);
-      for (let k in keys) {
-        tempArray.push(
-          h('div.todo',  [
-            h('span.task3', {style: {color: ar2[k].color, textDecoration: ar2[k].textDecoration}},
-                'Task: ' + ar2[k].task  ),  
-            h('br'),
-            h('button#edit1', 'Edit'  ),
-            h('input#edit2', {props: {type: 'textarea', value: ar2[k].task}, style: {display: 'none'}}  ), 
-            h('span#author.tao', 'Author: ' + ar2[k].author  + ' / ' + 'Responsibility: ' + ar2[k].responsible),
-            h('br'),
-            h('input#cb', {props: {type: 'checkbox', checked: ar2[k].checked}, style: {color: ar2[k].color,
-                 textDecoration: ar2[k].textDecoration} } ), 
-            h('label.cbox', { props: {for: '#cb'}}, 'Completed' ),
-            h('button.delete', 'Delete'  ),  
-            h('br'),
-            h('hr')])
-        )
-      }
-      mMtaskList.ret(tempArray)
-    }
+  const process3 = function(a) {
+    var ar5 = [];
+    var keys = Array(a.length/6).fill(1);
+    keys.map(_ => {
+      ar5.push(
+        {
+          task: convertBack(a.shift()),
+          color: a.shift(),
+          textDecoration: a.shift(),
+          checked: a.shift() === 'true',
+          author: a.shift(),
+          responsible: a.shift()
+        }
+      )
+    })
+    console.log('In process3  a, ar5, and O.mMcurrentList.x are: ', a, ar5, O.mMcurrentList.x);
+    mMar2.ret(ar5);
+    process4(ar5);
   };
+
+  const process4 = function(a) {
+    var tempArray = [];
+    let keys = Object.keys(a);
+    for (let k in keys) {
+      tempArray.push(
+        h('div.todo',  [
+          h('span.task3', {style: {color: a[k].color, textDecoration: a[k].textDecoration}},
+              'Task: ' + a[k].task  ),  
+          h('br'),
+          h('button#edit1', 'Edit'  ),
+          h('input#edit2', {props: {type: 'textarea', value: a[k].task}, style: {display: 'none'}}  ), 
+          h('span#author.tao', 'Author: ' + a[k].author  + ' / ' + 'Responsibility: ' + a[k].responsible),
+          h('br'),
+          h('input#cb', {props: {type: 'checkbox', checked: a[k].checked}, style: {color: a[k].color,
+               textDecoration: a[k].textDecoration} } ), 
+          h('label.cbox', { props: {for: '#cb'}}, 'Completed' ),
+          h('button.delete', 'Delete'  ),  
+          h('br'),
+          h('hr')])
+      )
+    }
+    console.log('In process3  a, tempArran, and O.mMcurrentList.x are: ', a, tempArray, O.mMcurrentList.x);
+    mMtaskList.ret(tempArray)
+  }
 
   const colorClick$ = sources.DOM
     .select('#cb').events('click')
     
   const colorAction$ = colorClick$.map(e => {
     let index = getIndex(e);
-    let s = O.mM$taskList.x;
+    let s = O.mMcurrentList.x;
     let ar = s.split(',');
     let n = 6 * index + 3;
     let j = 6 * index + 2;
@@ -257,7 +268,7 @@ function main(sources) {
   });
 
   const process2 = function(str, index) {
-    let a = O.mM$taskList.x;
+    let a = O.mMcurrentList.x;
     let ar = a.split(',');
     let task = str.split(',').reduce((a,b) => ar + '$*$*$' + b)
     ar[index * 6] = task;
@@ -270,7 +281,7 @@ function main(sources) {
     
   const deleteAction$ = deleteClick$.map(e => {
     let index = getIndex(e);
-    let s = O.mM$taskList.x;
+    let s = O.mMcurrentList.x;
     let ar = s.split(',');
     let str = '';
     ar.splice(index*6, 6);
@@ -285,6 +296,7 @@ function main(sources) {
   const taskAction$ = mM$taskList.stream.map(str => {
     socket.send('TD#$42' + ',' + O.mMgroup.x.trim() + 
         ',' + O.mMname.x.trim() + ',' + '@' + str);
+    console.log('$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$********_ In taskAction$  str is: ', str);
   });
 
   const chatClick$ = sources.DOM
@@ -343,12 +355,11 @@ function main(sources) {
     .select('.num').events('click');
      
   const numClickAction$ = numClick$.map(e => {
-    console.log(e);
+    console.log('In numClickAction$ O.mM3.x and e are: ', O.mM3.x, e);
     if (O.mM3.x.length < 2) {
       O.mM3.bnd(push, e.target.innerHTML, O.mM3)
-      mMtemp.ret(O.mMhistorymM1.x[O.mMindex2.x])
-      .bnd(spliceRemove, e.target.id, O.mM$1)
-      .bnd(mM$1.ret);
+      // mMtemp.ret(O.mMhistorymM1.x[O.mMindex2.x])
+      O.mMallRolls.bnd(spliceRemove, O.mMindex2.x, e.target.id, mM$1)
       if (O.mM3.x.length === 2 && O.mM8.x !== 0) {
         updateCalc();
       }
@@ -382,6 +393,7 @@ function main(sources) {
     if (e.target.value == '') {return};
     if( e.keyCode == 13 && Number.isInteger(e.target.value*1) ) {
       mM19.bnd(fibCalc,e.target.value*1).bnd(mM19.ret);
+      mM21.ret(e.target.value);
     }
     if( e.keyCode == 13 && !Number.isInteger(e.target.value*1 )) {
       mM19.ret("You didn't provide an integer");
@@ -395,7 +407,7 @@ function main(sources) {
     .select('#back2').events('click');
 
   const forwardClickAction$ = forwardClick$.map(() => {
-    if (O.mMindex2.x < (O.mMhistorymM1.x.length - 1)) {
+    if (O.mMindex2.x < (O.mMallRolls.x.length - 1)) {
       inc(O.mMindex2.x, mMindex2)
       .bnd(() => mM$3.ret('Hello'))
     }
@@ -403,40 +415,38 @@ function main(sources) {
 
   const backClickAction$ = backClick$.map(() => {
     if (O.mMindex2.x > 0) {
+      console.log('In backClickAction$ O.mMindex2.x is: ', O.mMindex2.x);
       dec(O.mMindex2.x, mMindex2)
       .bnd(() => mM$3.ret('You bet!'))
+      console.log('In backClickAction$ again ***** O.mMindex2.x is: ', O.mMindex2.x);
     }
   });
 
   const mM$1Action$ = mM$1.stream.map(v => {
-    console.log('In mM1$Action$ v is ', v);
+      console.log('In mM1$Action$ v, O.mMindex2.x, O.mMcurrentRoll.x, O.mMallRolls.x is ', v, O.mMindex2.x, O.mMcurrentRoll.x, O.mMallRolls.x);
     if (Array.isArray(v)) {
-      console.log('*****************************************In mM$1Action, above history splice');
-      O.mMhistorymM1.bnd(spliceAdd, O.mMindex2.x, v, O.mMhistorymM1);
-      console.log('*****************************************In mM$1Action, under history splice');
-      document.getElementById('0').innerHTML = (O.mMhistorymM1.x[O.mMindex2.x])[0]; 
-      document.getElementById('1').innerHTML = (O.mMhistorymM1.x[O.mMindex2.x])[1]; 
-      document.getElementById('2').innerHTML = (O.mMhistorymM1.x[O.mMindex2.x])[2]; 
-      document.getElementById('3').innerHTML = (O.mMhistorymM1.x[O.mMindex2.x])[3]; 
+      O.mMindex2.bnd(inc, mMindex2);
+      mMcurrentRoll.ret(v);
+      O.mMallRolls.bnd(spliceAdd, O.mMindex2.x, v, mMallRolls);
+      console.log('In mM1$Action$ O.mMindex2.x, O.mMcurrentRoll.x, O.mMallRolls.x is ', O.mMindex2.x, O.mMcurrentRoll.x, O.mMallRolls.x);
+      document.getElementById('0').innerHTML = (O.mMallRolls.x[O.mMindex2.x])[0]; 
+      document.getElementById('1').innerHTML = (O.mMallRolls.x[O.mMindex2.x])[1]; 
+      document.getElementById('2').innerHTML = (O.mMallRolls.x[O.mMindex2.x])[2]; 
+      document.getElementById('3').innerHTML = (O.mMallRolls.x[O.mMindex2.x])[3]; 
       cleanup(7)
     }
     else {
-      console.log('O.mM$1.stream is providing defective data to O.mM$1Action');
+      console.log('mM$1.stream is providing defective data to mM$1Action');
     }
   });
 
   const mM$3Action$ = mM$3.stream.map(v => {
-    document.getElementById('0').innerHTML = (O.mMhistorymM1.x[O.mMindex2.x])[0]; 
-    document.getElementById('1').innerHTML = (O.mMhistorymM1.x[O.mMindex2.x])[1]; 
-    document.getElementById('2').innerHTML = (O.mMhistorymM1.x[O.mMindex2.x])[2]; 
-    document.getElementById('3').innerHTML = (O.mMhistorymM1.x[O.mMindex2.x])[3]; 
-    cleanup(11);
+      document.getElementById('0').innerHTML = (O.mMallRolls.x[O.mMindex2.x])[0]; 
+      document.getElementById('1').innerHTML = (O.mMallRolls.x[O.mMindex2.x])[1]; 
+      document.getElementById('2').innerHTML = (O.mMallRolls.x[O.mMindex2.x])[2]; 
+      document.getElementById('3').innerHTML = (O.mMallRolls.x[O.mMindex2.x])[3]; 
+      cleanup(11);
   })
-
-  const mM$2Action$ = mM$2.stream.map(v => {
-    O.mMhistorymM3.bnd(push, v, O.mMhistorymM3);
-    console.log('From mM$2.stream: ', v);
-  });
 
   const testZ = sources.DOM
     .select('#testZ').events('click')
@@ -483,7 +493,7 @@ function main(sources) {
     }
   });
 
-  const calcStream$ = merge( runTestAction$, quadAction$, testWAction$, testZAction$, testQAction$, edit1Action$, edit2Action$, taskAction$, colorAction$, deleteAction$, newTaskAction$, chatClickAction$, gameClickAction$, todoClickAction$, captionClickAction$, mM$3Action$, mM$2Action$, mM$1Action$, backClickAction$, forwardClickAction$, fibPressAction$, groupPressAction$, rollClickAction$, messagePressAction$, loginPressAction$, messages$, numClickAction$, opClickAction$ );
+  const calcStream$ = merge( runTestAction$, quadAction$, testWAction$, testZAction$, testQAction$, edit1Action$, edit2Action$, taskAction$, colorAction$, deleteAction$, newTaskAction$, chatClickAction$, gameClickAction$, todoClickAction$, captionClickAction$, mM$3Action$, mM$1Action$, backClickAction$, forwardClickAction$, fibPressAction$, groupPressAction$, rollClickAction$, messagePressAction$, loginPressAction$, messages$, numClickAction$, opClickAction$ );
 
     return {
       DOM: 
@@ -546,6 +556,19 @@ function main(sources) {
         h('span.tao1', ' Group chat rooms and more demonstrations of efficient, ' ),
         h('br'),
         h('span.tao2', ' maintainable code using Motorcycle.js and JS-monads.  ' ) ] ),
+        h('br'),
+        h('span.tao', 'This is a ' ),
+        h('a', {props: {href: "https://github.com/motorcyclejs"}}, 'Motorcycle.js' ),
+        h('span', ' application. Motorcycle.js is ' ), 
+        h('a', {props: {href: "https://github.com/cyclejs/core"}}, 'Cycle.js' ),
+        h('span', ' using ' ),
+        h('a', {props: {href: "https://github.com/cujojs/most"}}, 'Most' ),
+        h('span', ' , ' ),
+        h('a', {props: {href: "https://github.com/TylorS/most-subject"}}, 'Most-subject' ),
+        h('span', ' and '  ), 
+        h('a', {props: {href: "https://github.com/paldepind/snabbdom"}}, 'Snabbdom' ),
+        h('span', ' instead of RxJS and "virtual-dom".'  ),
+
         h('div#gameDiv2',  {style: {display: 'none'}}, [
         h('br'),
         h('span', ' Here are the basic rules:' ), 
@@ -564,8 +587,8 @@ function main(sources) {
         h('div#dice', {style: {display: 'none'}}, [ 
         h('button.roll', 'ROLL' ),
         h('br'),
-        h('button#back2', 'FORWARD'  ),
-        h('button#forward2', 'BACK'  ) ]) ]),
+        h('button#back2', 'BACK'  ),
+        h('button#forward2', 'FORWARD'  ) ]) ]),
         h('div.winner', O.mMgoals2.x+''  ),
         h('div#log1', [
         h('p', 'IN ORDER TO SEE THE DEMONSTRATIONS, YOU MUST ENTER SOMETHING BELOW.'  ),
@@ -578,15 +601,43 @@ function main(sources) {
         h('p',  O.mMsoloAlert.x  ),
         h('p', 'People who are in the same group, other than solo, share the same todo list, messages, and simulated dice game. In order to see any of these, you must establish an identity on the server by logging in. The websockets connection would terminate if the first message the server receives does not succefully participate in the login handshake. '  ),
         h('hr', ),
-        h('h2', 'Monad Definitions'  ),
-        h('p', 'This JS-monads project began as an exploration into the potential usefulness of simple composable objects whose "bnd()" and "ret()" methods are similar to Haskell\'s ">=" (prornounced "bind") and "return" monad functions. The stand-alone function "ret()" resembles the Haskell monad "return" function. I named the little objects "monads" and demonstrated, earlier in this series, that in their simplest use cases they conform to the Haskell monad laws. That\'s where the analogy ends. Nothing prevents the monads from doing anything that Javascript allows, such as causing side effects and mutating objects. '),
-        h('p', 'In normal use, Monad and MonadStream instances have initial values that never change. All updates are placed in the global object named "O". When an updated monad is added, the superceded monad can be preserved; for example, by assigning it to a variable or placing it in a named array. ' ),
-        h('p', 'The values of Monad instances can be changed, although I can\'t think of a good reason for doing it. For any monad m with value v (in other words, m.x = v) ret(v,"m") creates a new monad named "m" with value v. The earlier version with the same name and value is abandoned to the garbage collector if no reference to it is maintained. O.m remains unchanged. And you can mutate m, for example with the expression m.x = newValue. I don\'t do that.  '  ),
-        h('span.tao', ' Earlier pages in this series have different monad definition and are superseded by this, the final page. The old code is still available at ' ),
-        h('a', {props: {href: "http://schalk.net"}}, 'schalk.net' ),
-        h('span', '. '),
-        code.monads,  
-        h('p', 'MonadIter instances\' release() methods can take arguments and provide them to the code they capture with their bnd() methods. Examples of this can be found below. ' ),
+        h('h1', 'The Monads'  ),
+        h('p', 'There are three basic types of monads: Monad, MonadIter, and MonadStream. Here is the definition of "Monad": ' ),
+        h('h2', 'Monad' ),
+        code.monad,
+        h('p', 'The following statements create instances of Monad named "m" with an initial value of "some value": var m = new Monad("some value", "m") and ret("some value", "m"). Monad instances maintain state in the unique, mutable, global object named "O". Where there is changing state, it is not practical to avoid mutating something. My choices narrowed down to the window object or an attribute of window like O. O seemed like the better choice. It is a place to keep the most recent versions of named monads. Earlier versions of named monads can persist elsewhere, or be left for the gargage collector.   ' ),
+        h('p', ' In the examples shown on this page, the initial values of instances of Monad remain unchaged. The ret() method places updated instances on O. The instances on O are never mutated. For any instance of Monad named m with id "m" and value v (i.e., m.x == v is true), m.ret(v2) creates a new attribute of O with key "m" or, if O.m already exists, m.ret(v2) mutates O by replacing its m attribute\'s value. The monad O.m is not mutated, so any O.m that is replaced will persist if there is a reference to it, or will be subject to garbage collection if there is not. ' ),
+        h('p', ' As the examples below will demonstrate, the attributes of O are useful because for any instance of Monad, say "m", O.m.x is the current state of m.x. After m.ret(v2), The current value of O.m still has id "m", but now O.m.x == v2 is true. O.m.x can be placed in the DOM, and the DOM can be made to always display its current value in this Motorcycle.js application. In other cases, variations of "element.innerHTML = O.m.x" are used to keep browser windows current. O attributes are useful in many other ways. O.mMcurrentList is used throughout the todo list code for creating, removing, and altering tasks in the shared, persistent todo lists. O.mMcurrentRoll is used in the code controlling traversal over the history of all number displays in the simulated dice game.' ),
+        h('h2', 'MonadIter' ),
+        h('p', 'For any instance of MonadIter, say "m", the statement "m.bnd(func)" causes m.p == func to be true. The statement "m.release(...args) causes p(...args) to execute. Here is the definition: ' ), 
+        code.monadIt,
+        h('p', 'As shown later on this page, MonadIter instances control the routing of incoming websockets messages and the flow of action in the simulated dice game. '  ), 
+        h('p', 'The following example illustrates the use of release() with an argument. It also shows lambda expressions being provided as arguments for bnd(). The initial values of mMt1, mMt2, and mMt3 are 0, 0, and "" respectively. When this page loads, the following code runs: ' ),
+        code.testZ,
+        h('p', ' Click "mMZ1.release(1)" several times to run the code with n == 1. O.mMt3.x is shown below the button. mMZ1.p doesn\'t change until its bnd() method is used again, so repeated calls to release(1) continue to run the function provided to bnd() in the code shown above. ' ),
+        h('button#testZ', 'mMZ1.release(1)'  ),
+        h('p.code2', O.mMt3.x ),
+        h('span', 'Refresh button: '  ),
+        h('button#testQ', 'mMt1.ret(0).bnd(mMt2.ret)'  ),
+        h('p', '  You can call release() with arguments other than 1 by entering numbers below. ' ), 
+        h('input#testW', ), 
+        h('p', ' Here is another example. It demonstrates lambda expressions passing values to a remote location for use in a computation. If you enter three numbers consecutively below, I\'ll call them a, b, and c, then the quadratic equation will be used to find solutions for a*x**2 + b*x + c = 0. The a, b, and c you select might not have a solution. If a and b are positive numbers, you are likely to see solutions if c is a negative number. For example, 12, 12, and -144 yields the solutions 3 and -4. ' ),
+        h('p.code2#quad4', O.mMquad1.x ),
+        h('span.red2', O.mMquad2.x ),
+        h('span.red2', O.mMquad3.x ),
+        h('br' ),
+        h('span.tao' , 'Run mMZ3.release(v) three times for three numbers. The numbers are a, b, and c in ax*x + b*x + c = 0: ' ),
+        h('input#quad', ),  
+        h('p', 'Here is the code:' ),
+        code.quad,
+        h('span#tdList' ),
+        h('h2', 'MonadStream'  ),
+        h('span.tao', ' MonadStream uses ' ),
+        h('a', {props: {href: "https://github.com/TylorS/most-subject"}}, 'most-subject' ),
+        h('span', '. In a Cycle application that is already using RxJS, RxJs could be substituted for most-subject. Bacon could be used. most-subject is light-weight and does the job, so you might want to use it in any application context.   '  ),
+        h('p', ' When users do anything to the todo list, MonadStream instance mM$taskList runs its ret() method on the modified String representation of the list, causing mM$taskList.stream to trigger transmission of the list string to the server. Whenever there is a new dice roll and whenever a player computes a result in the dice game, MonadStream instance mM$1 runs its ret() method on the result, causing mM$1.stream to update and cause mM$1Action$ to update the DOM.' ),
+        h('p', ' mM$1 is in the incoming websockets messages stream named "messages", capturing incoming websockets messages containing dice rolls. mM$taskList, on the other hand, sends websockets messages to the server for distribution to all group members. MonadStream instances are versitile and very useful. The dice game and the todo list are much more manageable and understable thanks to MonadStream instances\' tying together their various algorithms at the unique locations where the side effects are finally released; in one case to the DOM and in the other, to the server. Here is the definition: ' ),
+        code.monadStr,
         h('hr', ),  
         h('h2', 'Concise Code Blocks For Information Control' ),
         h('p', ' Incoming websockets messages trigger updates to the game display, the chat display, and the todo list display. The members of a group see what other members are doing; and in the case of the todo list, they see the current list when they sign in to the group. When any member of a group adds a task, crosses it out as completed, edits its description, or removes it, the server updates the persistent file and all members of the group immediately see the revised list.  '  ),
@@ -594,25 +645,6 @@ function main(sources) {
         code.messages,
         h('p', ' The "mMZ" prefix designates instances of MonadIter. The bnd() method assigns its argument to the "p" attribute. "p" runs if and when the release() method is called. The next() function releases a specified MonadIter instance when the calling monad\'s value matches the specified value. next2() releases the specified monad when the specified condition returns true. The release method in next() has no argument, but next does take arguments, as illustrated below.' ),
         h('p', ' The incoming messages block is just a syntactic variation of a switch block, but that isn\'t all that MonadIter instances can do. They can provide fine-grained control over the lazy evaluation of blocks of code. Calling release() after a function completes some task provides Promise-like behavior. Error handling is optional. The MonadInter release(...args) method facilitates sequential evaluation of code blocks, remeniscent of video and blog explanations of ES6 iterators and generators. I prefer doing it with MonadIter over "yield" and "next". For one thing, ES6 generator "yield" blocks must be evaluated in a predetermined order. ' ),
-        h('p', 'The next example illustrates the use of release() with an argument. The initial values of mMt1, mMt2, and mMt3 are 0, 0, and "" respectively. When this page loads, the following code runs: ' ),
-        code.testZ,
-        h('p', ' Click "mMZ1.release(1)" several times to run the code with n == 1. O.mMt3.x is shown below the button. mMZ1.p doesn\'t change until its bnd() method is used again, so repeated calls to release(1) continue to run the function provided to bnd() in the code shown above. ' ),
-        h('button#testZ', 'mMZ1.release(1)'  ),
-        h('p.code2', O.mMt3.x ),
-        h('span', 'Refresh button: '  ),
-        h('button#testQ', 'mMt1.ret(0).bnd(mMt2.ret)'  ),
-        h('p', '  You can release() arguments other than 1 by entering them below. ' ), 
-        h('input#testW', ), 
-        h('p', ' Calling release() results in a new call to bnd() in the next demonstration. If you enter three numbers consecutively below, I\'ll call them a, b, and c, then the quadratic equation will be used to find solutions for a*x**2 + b*x + c = 0. The a, b, and c you select might not have a solution. If a and b are positive numbers, you are more likely to see solutions if c is a negative number.' ),
-        h('p.code2#quad4', O.mMquad1.x ),
-        h('span.red2', O.mMquad2.x ),
-        h('span.red2', O.mMquad3.x ),
-        h('br' ),
-        h('span.tao' , 'Run mMZ3.release(v) for some number v: ' ),
-        h('input#quad', ),  
-        h('p', 'Here is the code:' ),
-        code.quad,
-        h('span#tdList' ),
         h('a', {props: {href: '#top'}}, 'Back To The Top'   ),  
         h('br' ),
         h('p', ' Next, I\'ll go over some features of the todo list application. This will show how Motorcycle.js and the monads work together.' ),
@@ -620,17 +652,17 @@ function main(sources) {
         code.newTask,
         h('p', ' mM$taskList is the todo application\'s worker function. Every time it executes its ret() method, the argument to ret() is added to its stream, causing the following code to run: ' ),
         code.mM$task,
-        h('p', 'mM$taskList caries a string representing the task list. mM$taskList.x.split(",") produces an array whose length is a multiple of six. Commas in the task description are replaced by "$*$*$" so split(",") will put the entire task description in a single element. Commas are re-inserted when the list arrives from the server for rendering. Although a task list is a nested virtual DOM object (Snabbdom vnode), it can be conveniently passed back and forth to the server as a string without resorting to JSON.stringify. Its type is Text on the server and String in the front end, becomming a virtual DOM node only once, when it arrives from the server prefixed by "DD#$42" causing "process(e.data) to execute. Here is process(): ' ),
+        h('p', 'mM$taskList caries a string representing the task list. mMtaskList.x.split(",") produces an array whose length is a multiple of six. Commas in the task description are replaced by "$*$*$" so split(",") will put the entire task description in a single element. Commas are re-inserted when the list arrives from the server for rendering. Although a task list is a nested virtual DOM object (Snabbdom vnode), it can be conveniently passed back and forth to the server as a string without resorting to JSON.stringify. Its type is Text on the server and String in the front end, becomming a virtual DOM node only once, when it arrives from the server prefixed by "DD#$42" causing "process(e.data) to execute. Here is process(): ' ),
         code.process,
         h('span.tao', 'As you see, the string becomes a list of six-element objects, then those objects are used to create a Snabbdom vnode which is handed to mM$taskList.ret() leading to the update of O.mMtaskList. O.mMtaskList.x sits permanently in the main virtual DOM description. When its value gets refreshed, the DOM re-renders because taskStream$ is merged into the stream that is mapped into the virtural DOM description inside the object returned by "main". "main" and "sources" are the arguments provided to Cycle.run(). "sources" is the argument provided to "main". It is an array of drivers. The code is at '  ),
         h('a', {props: {href: "https://github.com/dschalk/JS-monads-stable"}}, 'https://github.com/dschalk/JS-monads-stable' ),
         h('br'),
         h('p', ' Clicking "Completed": When the "Completed" button is clicked, the following code runs:         '  ),
         code.colorClick,
-        h('p', 'O.mM$taskList is split into an array. Every sixth element is the start of a new task. colorAction$ toggles the second, third, and fourth element in the task pinpointed by "index" * 6. getIndex finds the index of the first and only the element whose task description matches the one that is being marked "Completed". I say "only" because users are prevented from adding duplicate tasks. After the changes are made, the array of strings is reduced to one string and sent to the server when mM$taskList.ret() updates mM$taskList.stream triggering . '  ),  
+        h('p', 'O.mMtaskList is split into an array. Every sixth element is the start of a new task. colorAction$ toggles the second, third, and fourth element in the task pinpointed by "index" * 6. getIndex finds the index of the first and only the element whose task description matches the one that is being marked "Completed". I say "only" because users are prevented from adding duplicate tasks. After the changes are made, the array of strings is reduced to one string and sent to the server when mM$taskList.ret() updates mM$taskList.stream triggering . '  ),  
         h('p', ' This is the code involved in editing a task description: '  ),
         code.edit,
-        h('p', 'Clicking "Edit" causes a text box to be displayed. Pressing <ENTER> causes it to diappear. edit2Action$ obtains the edited description of the task and the index of the task iten and provides them as arguments to process. Process exchanges $*$*$ for any commas in the edited version and assigns the amended task description to the variable "task". O.mM$taskList.x is copied and split into an array. "index * 6" is replaced with "task" and the list of strings is reduced back to a single string and sent to the server for distribution. This pattern, - (1) split the string representation of the todo list into an array of strings, (2) do something, (3) reduce the list of strings back to a single string - is repeated when the "Delete" button is clicked. If the last item gets deleted, the server is instructed to delete the persistent file bearing the name of the group whose member deleted the last task. ' ), 
+        h('p', 'Clicking "Edit" causes a text box to be displayed. Pressing <ENTER> causes it to diappear. edit2Action$ obtains the edited description of the task and the index of the task iten and provides them as arguments to process. Process exchanges $*$*$ for any commas in the edited version and assigns the amended task description to the variable "task". O.mMtaskList.x is copied and split into an array. "index * 6" is replaced with "task" and the list of strings is reduced back to a single string and sent to the server for distribution. This pattern, - (1) split the string representation of the todo list into an array of strings, (2) do something, (3) reduce the list of strings back to a single string - is repeated when the "Delete" button is clicked. If the last item gets deleted, the server is instructed to delete the persistent file bearing the name of the group whose member deleted the last task. ' ), 
         h('p#common', 'Cycle.js has been criticized for not keeping state in a single location, the way React.js does. Motorcycle.js didn\'t do it for me, or try to force me to do it, but it so happens that the current state of all active monads is in the object "O". I have written applications in Node.js and React.js, and I can say without a doubt that Motorcycle.js provides the best reactive interface for my purposes.  ' ),
         h('hr'),
         h('a', {props: {href: '#top'}}, 'Back To The Top'   ),  
@@ -659,7 +691,9 @@ function main(sources) {
         h('span', ' will execute and O.mM19.x will be displayed under the input box. ' ),
         h('input#code', ),  
         h('br'),
-        h('p.code2', O.mM19.x ),  
+        h('span', 'Fibonacci ' + O.mM21.x + ' is ' ), 
+        h('span.code2', ' ' + O.mM19.x ),  
+        h('br' ),
         h('hr'),
         h('h3', 'Immutable Data And The State Object "O" ' ),
         h('p',  'The server updates scores in response to messages prefixed by "CG#$42". Each such message carries an integer specifying the amount of the change. The ServerState list of Client tupples is pulled from the game state TMVar and replaced by a new tupple whose Score field differs from the previous one.' ),
@@ -731,9 +765,9 @@ function main(sources) {
     O.mM3.bnd(x => mM7
     .ret(calc(x[0], O.mM8.x, x[1]))
     .bnd(result => {if (result == 20) {score(O.mM13.x, 1)}; return O.mM7}) 
-    .bnd(result => {if (result == 18) {score(O.mM13.x, 3)}; return O.mM$1}) 
-    .bnd(push, O.mM7.x, mM$1)
-    .bnd(reset))
+    .bnd(result => {if (result == 18) {score(O.mM13.x, 3)}; return O.mMcurrentRoll}) 
+    .bnd(push, O.mM7.x, mM$1))
+    reset();
   };
 
   var score = function score(x,j) {

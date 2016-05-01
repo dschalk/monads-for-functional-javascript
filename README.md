@@ -26,53 +26,41 @@ Here are some definitions:
     };
 
     this.ret = function (a) {
-      O[_this.id] = new Monad(a, _this.id);
-      return O[_this.id]
+      O.[_this.id] = new Monad(a, _this.id);
+      return O.[_this.id]
     };
-  };               
+  }; ` 
 ```
 ##MonadIter
 ```javascript
-var MonadIter = function MonadIter() {
-  var this = this;
-  this.p = function (a, ... args) {};
-
-  this.release = function (x, ...args) {
-    return this.p(x, ...args);
-  };
-
-  this.bnd = function (func) {
-    _this.p = func;
-    return _this;
-  };
-};
+  var MonadIter = function MonadIter() {
+    var _this = this;
+    this.p = function () {};
+  
+    this.release = function (...args) {
+      return this.p(...args);
+    };
+  
+    this.bnd = function (func) {
+      _this.p = func;
+    };
+  }; ` 
 ```
 ## MonadStream
 ```javascript
-  var MonadStream = function MonadStream(z, g) {
+  var MonadStream = function MonadStream(g) {
     var _this = this;
-    
-    this.subject = sub();
+    this.subject = subject();
     this.observer = this.subject.observer;
     this.stream = this.subject.stream;
-    this.x = z;
-  
-    if (arguments.length === 1) {
-      this.id = 'anonymous';
-    } else {
-      this.id = g;
-    }
-  
-    this.bnd = function (func, ...args) {
-       return func(_this.x, ...args);
-    };
-  
+    this.id = g;
     this.ret = function (a) {
       O[_this.id] = new MonadStream(a,_this.id);
       _this.observer.next(a);
+      console.log('Streaming from ', _this.id);
       return O[_this.id];
     };
-  };
+  }; ` 
 ```
 ## Stand alone ret()
 ```javascript
