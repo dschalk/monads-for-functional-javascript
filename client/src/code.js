@@ -517,7 +517,21 @@ var cleanup = h('pre',  `  function cleanup (x) {
   .bnd(cube,mMt2)
   .bnd(() => mMt3.ret(O.mMt1.x + ' cubed is ' + O.mMt2.x)))  
   
-  mMZ2.bnd(v => cube(v).bnd(w => mMt3.ret(v + ' cubed is ' + w)))  `  )
+  mMZ2.bnd(v => cube(v).bnd(w => mMt3.ret(v + ' cubed is ' + w)))  
+
+  var add = function(x,b,mon) {
+    if (arguments.length === 3) {
+      return mon.ret(x + b);
+    }
+    return ret(x+b);
+  }
+  
+  var cube = function(v,mon) {
+    if (arguments.length === 2) {
+      return mon.ret(v*v*v);
+    }
+    return ret(v*v*v);  // Returns an anonymous monad.
+  }  `  )
 
   var quad = h('pre',  `  var solve = (function solve () {
     mMZ3
