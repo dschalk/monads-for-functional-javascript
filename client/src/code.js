@@ -60,7 +60,6 @@ const monadStr = h('pre', {style: {color: '#AFEEEE' }}, `  var MonadStream = fun
     this.ret = function (a) {
       _this.observer.next(a);
       console.log('Streaming from ', _this.id);
-      return _this;
     };
   }; ` )
 

@@ -10444,7 +10444,7 @@ var mMname = new Monad('Fred', 'mMname');
 
 var monad = (0, _motorcycleDom.h)('pre', { style: { color: '#AFEEEE' } }, '  var Monad = function Monad(z, g) {\n    var _this = this;\n\n    this.x = z;\n    if (arguments.length === 1) {\n      this.id = \'anonymous\';\n    } else {\n      this.id = g;\n    };\n\n    this.bnd = function (func, ...args) {\n       return func(_this.x, ...args);\n    };\n\n    this.ret = function (a) {\n      O.[_this.id] = new Monad(a, _this.id);\n      return O.[_this.id]\n    };\n  }; ');
 
-var monadStr = (0, _motorcycleDom.h)('pre', { style: { color: '#AFEEEE' } }, '  var MonadStream = function MonadStream(g) {\n    var _this = this;\n    this.subject = subject();\n    this.observer = this.subject.observer;\n    this.stream = this.subject.stream;\n    this.id = g;\n    this.ret = function (a) {\n      _this.observer.next(a);\n      console.log(\'Streaming from \', _this.id);\n      return _this;\n    };\n  }; ');
+var monadStr = (0, _motorcycleDom.h)('pre', { style: { color: '#AFEEEE' } }, '  var MonadStream = function MonadStream(g) {\n    var _this = this;\n    this.subject = subject();\n    this.observer = this.subject.observer;\n    this.stream = this.subject.stream;\n    this.id = g;\n    this.ret = function (a) {\n      _this.observer.next(a);\n      console.log(\'Streaming from \', _this.id);\n    };\n  }; ');
 
 var monadIt = (0, _motorcycleDom.h)('pre', { style: { color: '#AFEEEE' } }, '  var MonadIter = function MonadIter() {\n    var _this = this;\n    this.p = function () {};\n  \n    this.release = function (...args) {\n      return this.p(...args);\n    };\n  \n    this.bnd = function (func) {\n      _this.p = func;\n    };\n  }; ');
 

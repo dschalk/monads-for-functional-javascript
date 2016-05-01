@@ -22,7 +22,6 @@ var MonadStream = function MonadStream(g) {
   this.ret = function (a) {
     _this.observer.next(a);
     console.log('Streaming from ', _this.id);
-    return _this;
   };
 };
 

@@ -58,7 +58,6 @@ Here are some definitions:
       O[_this.id] = new MonadStream(a,_this.id);
       _this.observer.next(a);
       console.log('Streaming from ', _this.id);
-      return O[_this.id];
     };
   }; ` 
 ```
