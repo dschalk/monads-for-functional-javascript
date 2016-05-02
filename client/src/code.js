@@ -606,11 +606,49 @@ var cleanup = h('pre',  `  function cleanup (x) {
     mM5.bnd(equals, m, m.ret(m.x), mMc)
   }  `  )
 
-    var p1 = h('pre',  `  
+  
+  var gameStream = h('pre',  `  const mM$1Action$ = mM$1.stream.map(v => {
+      O.mMindex2.bnd(inc, mMindex2);
+      O.mMallRolls.bnd(spliceAdd, O.mMindex2.x, v, mMallRolls);
+      document.getElementById('0').innerHTML = (O.mMallRolls.x[O.mMindex2.x])[0]; 
+      document.getElementById('1').innerHTML = (O.mMallRolls.x[O.mMindex2.x])[1]; 
+      document.getElementById('2').innerHTML = (O.mMallRolls.x[O.mMindex2.x])[2]; 
+      document.getElementById('3').innerHTML = (O.mMallRolls.x[O.mMindex2.x])[3]; 
+      cleanup(7)
+  });  `  )
+
+  var inc = h('pre',  `  var inc = function inc(x, mon) {
+      return mon.ret(x + 1);
+  };
+
+  var spliceAdd = function spliceAdd(x, index, value, mon) {
+    if (Array.isArray(x)) {
+      let ar = [];
+      let keys = Object.keys(x);
+      for (let k in keys) {ar[k] = x[k]};
+      ar.splice(index, 0, value);
+      return mon.ret(ar);  
+    }
+    console.log('The value provided to spliceAdd is not an array');
+    return ret(x);
+  }  `  )
+
+    var todoStream = h('pre',  `  const taskAction$ = mM$taskList.stream.map(str => {
+    socket.send('TD#$42' + ',' + O.mMgroup.x.trim() + 
+        ',' + O.mMname.x.trim() + ',' + '@' + str);
+  });  `  )
+
+    var p3 = h('pre',  `  
+    `  )
+
+    var p4 = h('pre',  `  
+    `  )
+
+    var p5 = h('pre',  `  
     `  )
 
 
 
 
 
-  export default {monad, monadStr, monadIt, fib, driver, messages, next, Monad$, updateCalc, stream, arrayFuncs, travel, nums, cleanup, ret, C42, taskStream, newTask, process, mM$task, addString, colorClick, edit, testZ, quad, mdem1, runTest }
+  export default {monad, monadStr, monadIt, fib, driver, messages, next, Monad$, updateCalc, stream, arrayFuncs, travel, nums, cleanup, ret, C42, taskStream, newTask, process, mM$task, addString, colorClick, edit, testZ, quad, mdem1, runTest, todoStream, gameStream, inc }

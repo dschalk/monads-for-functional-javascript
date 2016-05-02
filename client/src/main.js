@@ -296,7 +296,6 @@ function main(sources) {
   const taskAction$ = mM$taskList.stream.map(str => {
     socket.send('TD#$42' + ',' + O.mMgroup.x.trim() + 
         ',' + O.mMname.x.trim() + ',' + '@' + str);
-    console.log('$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$********_ In taskAction$  str is: ', str);
   });
 
   const chatClick$ = sources.DOM
@@ -423,21 +422,14 @@ function main(sources) {
   });
 
   const mM$1Action$ = mM$1.stream.map(v => {
-      console.log('In mM1$Action$ v, O.mMindex2.x, O.mMcurrentRoll.x, O.mMallRolls.x is ', v, O.mMindex2.x, O.mMcurrentRoll.x, O.mMallRolls.x);
-    if (Array.isArray(v)) {
       O.mMindex2.bnd(inc, mMindex2);
-      mMcurrentRoll.ret(v);
       O.mMallRolls.bnd(spliceAdd, O.mMindex2.x, v, mMallRolls);
-      console.log('In mM1$Action$ O.mMindex2.x, O.mMcurrentRoll.x, O.mMallRolls.x is ', O.mMindex2.x, O.mMcurrentRoll.x, O.mMallRolls.x);
+      mMcurrentRoll.ret(v);
       document.getElementById('0').innerHTML = (O.mMallRolls.x[O.mMindex2.x])[0]; 
       document.getElementById('1').innerHTML = (O.mMallRolls.x[O.mMindex2.x])[1]; 
       document.getElementById('2').innerHTML = (O.mMallRolls.x[O.mMindex2.x])[2]; 
       document.getElementById('3').innerHTML = (O.mMallRolls.x[O.mMindex2.x])[3]; 
       cleanup(7)
-    }
-    else {
-      console.log('mM$1.stream is providing defective data to mM$1Action');
-    }
   });
 
   const mM$3Action$ = mM$3.stream.map(v => {
@@ -567,7 +559,8 @@ function main(sources) {
         h('a', {props: {href: "https://github.com/TylorS/most-subject"}}, 'Most-subject' ),
         h('span', ' and '  ), 
         h('a', {props: {href: "https://github.com/paldepind/snabbdom"}}, 'Snabbdom' ),
-        h('span', ' instead of RxJS and "virtual-dom".'  ),
+        h('span', ' instead of RxJS and virtual-dom. The repository is at '  ),
+        h('a', {props: {href: "https://github.com/dschalk/JS-monads-stable"}}, 'JS-monads-stable' ),
 
         h('div#gameDiv2',  {style: {display: 'none'}}, [
         h('br'),
@@ -607,7 +600,7 @@ function main(sources) {
         code.monad,
         h('p', 'The following statements create instances of Monad named "m" with an initial value of "some value": var m = new Monad("some value", "m") and ret("some value", "m"). Monad instances maintain state in the unique, mutable, global object named "O". Where there is changing state, it is not practical to avoid mutating something. My choices narrowed down to the window object or an attribute of window like O. O seemed like the better choice. It is a place to keep the most recent versions of named monads. Earlier versions of named monads can persist elsewhere, or be left for the gargage collector.   ' ),
         h('p', ' In the examples shown on this page, the initial values of instances of Monad remain unchaged. The ret() method places updated instances on O. The instances on O are never mutated. For any instance of Monad named m with id "m" and value v (i.e., m.x == v is true), m.ret(v2) creates a new attribute of O with key "m" or, if O.m already exists, m.ret(v2) mutates O by replacing its m attribute\'s value. The monad O.m is not mutated, so any O.m that is replaced will persist if there is a reference to it, or will be subject to garbage collection if there is not. ' ),
-        h('p', ' As the examples below will demonstrate, the attributes of O are useful because for any instance of Monad, say "m", O.m.x is the current state of m.x. After m.ret(v2), The current value of O.m still has id "m", but now O.m.x == v2 is true. O.m.x can be placed in the DOM, and the DOM can be made to always display its current value in this Motorcycle.js application. In other cases, variations of "element.innerHTML = O.m.x" are used to keep browser windows current. O attributes are useful in many other ways. O.mMcurrentList is used throughout the todo list code for creating, removing, and altering tasks in the shared, persistent todo lists. O.mMcurrentRoll is used in the code controlling traversal over the history of all number displays in the simulated dice game.' ),
+        h('p', ' As the examples below will demonstrate, the attributes of O are useful because for any instance of Monad, say "m", O.m.x is the current state of m.x. After m.ret(v2), The current value of O.m still has id "m", but now O.m.x == v2 is true. O.m.x can be placed in the DOM, and the DOM can be made to always display its current value in this Motorcycle.js application. In other cases, variations of "element.innerHTML = O.m.x" are used to keep browser windows current. O attributes are useful in many other ways. O.mMcurrentList is used throughout the todo list code for creating, removing, and altering tasks in the shared, persistent todo lists. ' ),
         h('h2', 'MonadIter' ),
         h('p', 'For any instance of MonadIter, say "m", the statement "m.bnd(func)" causes m.p == func to be true. The statement "m.release(...args) causes p(...args) to execute. Here is the definition: ' ), 
         code.monadIt,
@@ -634,10 +627,19 @@ function main(sources) {
         h('h2', 'MonadStream'  ),
         h('span.tao', ' MonadStream uses ' ),
         h('a', {props: {href: "https://github.com/TylorS/most-subject"}}, 'most-subject' ),
-        h('span', '. In a Cycle application that is already using RxJS, RxJs could be substituted for most-subject. Bacon could be used. most-subject is light-weight and does the job, so you might want to use it in any application context.   '  ),
-        h('p', ' When users do anything to the todo list, MonadStream instance mM$taskList runs its ret() method on the modified String representation of the list, causing mM$taskList.stream to trigger transmission of the list string to the server. Whenever there is a new dice roll and whenever a player computes a result in the dice game, MonadStream instance mM$1 runs its ret() method on the result, causing mM$1.stream to update and cause mM$1Action$ to update the DOM.' ),
-        h('p', ' mM$1 is in the incoming websockets messages stream named "messages", capturing incoming websockets messages containing dice rolls. mM$taskList, on the other hand, sends websockets messages to the server for distribution to all group members. MonadStream instances are versitile and very useful. The dice game and the todo list are much more manageable and understable thanks to MonadStream instances\' tying together their various algorithms at the unique locations where the side effects are finally released; in one case to the DOM and in the other, to the server. Here is the definition: ' ),
+        h('span', '. In a Cycle application that is already using RxJS, RxJs could be substituted for most-subject. Bacon could be used. most-subject is light-weight and does the job, so you might want to use it in any application context. Here is the definition:  '  ),
         code.monadStr,
+        h('h3', 'Todo List Side Effects' ),
+        h('p', ' When users do anything to the todo list, MonadStream instance mM$taskList runs its ret() method on the modified String representation of the list, causing the string to be added to mM$taskList.stream. mM$taskList.stream has only one subscriber, taskAction$, whose only purpose it to send the string representation of the todo list to the server. The server updates its persistent file and distributes a text representation of the updated todo list to all group members. Each group member receives the todo list as a string and parses it into a DOM node tree that is merged into the stream that updates the virtual DOM. All Todo List side effects can be traced to:' ),
+        code.todoStream,
+        h('span', ' Just search for "mM$taskList.ret" to find where all todo list changes were initiated. ' ),
+        h('br' ),
+        h('h3', 'Dice Game Side Effects' ),
+        h('p', ' mM$1.ret() is called only when (1) a new dice roll comes in from the server, (2) when a player clicks a number, and (3) when clicking a number or operator results in a computation being performed. These are the three things that require a DOM update. When a player clicks a number, it disappears from number display. When a computation is performed, the result is added to the number display, unless the result is 18 or 20. A result of 18 or 20 results in a new roll coming in from the server and mM$1.ret() being called on an array of four numbers; something like mM$1.ret[4,2,11,17]). When a number is removed or a result added, mM$1.ret() is called on an array containing fewer than four numbers. ' ),
+        h('p', ' mM$1.stream is a stream of arrays of integers, as explained in the paragraph above. All game side effects can be traced to: ' ),
+        code.gameStream,
+        h('p', ' Because a player can traverse the history of number displays by clicking the BACK and FORWARD buttons, the current value of O.mMindex2.x must be incremented to determine where the new array of numbers will be placed in the O.mMallRolls.x array. Here are the definitions of inc and spliceAdd: ' ), 
+        code.inc,
         h('hr', ),  
         h('h2', 'Concise Code Blocks For Information Control' ),
         h('p', ' Incoming websockets messages trigger updates to the game display, the chat display, and the todo list display. The members of a group see what other members are doing; and in the case of the todo list, they see the current list when they sign in to the group. When any member of a group adds a task, crosses it out as completed, edits its description, or removes it, the server updates the persistent file and all members of the group immediately see the revised list.  '  ),
@@ -797,14 +799,6 @@ function main(sources) {
       .bnd(() => mM4.ret(0)
       .bnd(mM8.ret)
       .bnd(cleanup))
-  }
-
-  var score2 = function score2() {
-    mMgoals.ret(mMgoals.x + 1);
-    let j = -25;
-    socket.send('CG#$42,' + O.mMgroup.x + ',' + O.mMname.x + ',' + j + ',' + O.mMgoals.x);
-    mM13.ret(0);
-    return mMgoals;
   }
 
   var updateScoreboard = function updateScoreboard(v) {
