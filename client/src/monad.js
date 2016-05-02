@@ -449,11 +449,9 @@ var equals = function equals (x, mon1, mon2, mon3) {
 }
 
 var runTest = function runTest () {
-  mM5.bnd( equals, 
-  m.ret(0).bnd(v => add(v, 3, m).bnd(cube, m)), 
-  m.ret(0).bnd(add, 3, m).bnd(cube, m), 
-  mMa 
-  )
+  mM5.bnd( equals,  
+    m.ret(0).bnd(v => add(v, 3, m).bnd(cube)), 
+    m.ret(0).bnd(add, 3, m).bnd(cube), mMa)
 
   mM5.bnd(equals, m, m.bnd(m.ret), mMb)
 

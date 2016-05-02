@@ -597,13 +597,13 @@ var cleanup = h('pre',  `  function cleanup (x) {
   }  `  )
 
   var runTest = h('pre',  `  var runTest = function monTest () {
-  mM5.bnd( equals, m.ret(0).bnd(v => add(v, 3, m).bnd(cube, m)), 
-  m.ret(0).bnd(add, 3, m).bnd(cube, m), 
-  mMa )
+  mM5.bnd( equals,  
+    m.ret(0).bnd(v => add(v, 3, m).bnd(cube)), 
+    m.ret(0).bnd(add, 3, m).bnd(cube), mMa)
 
   mM5.bnd(equals, m, m.bnd(m.ret), mMb)
 
-    mM5.bnd(equals, m, m.ret(m.x), mMc)
+  mM5.bnd(equals, m, m.ret(m.x), mMc)
   }  `  )
 
   

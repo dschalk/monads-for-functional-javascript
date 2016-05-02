@@ -336,7 +336,7 @@ function main(sources) {
   const runTest$ = sources.DOM
     .select('#runTest').events('click')
     
-  const runTestAction$ = runTest$.map(e => {
+  const runTestAction$ = runTest$.map(() => {
     runTest();
 });
 
@@ -586,7 +586,7 @@ function main(sources) {
         h('div#log1', [
         h('p', 'IN ORDER TO SEE THE DEMONSTRATIONS, YOU MUST ENTER SOMETHING BELOW.'  ),
         h('span', 'Name: ' ),
-        h('input#login', ) ]),
+        h('input#login', {props: {focus: true}}, ) ]),
         h('p', O.mM6.x.toString() ),
         h('div#log2', {style: {display: 'none'}}, [
         h('span', 'Change group: '  ),
@@ -600,7 +600,7 @@ function main(sources) {
         code.monad,
         h('p', 'The following statements create instances of Monad named "m" with an initial value of "some value": var m = new Monad("some value", "m") and ret("some value", "m"). Monad instances maintain state in the unique, mutable, global object named "O". Where there is changing state, it is not practical to avoid mutating something. My choices narrowed down to the window object or an attribute of window like O. O seemed like the better choice. It is a place to keep the most recent versions of named monads. Earlier versions of named monads can persist elsewhere, or be left for the gargage collector.   ' ),
         h('p', ' In the examples shown on this page, the initial values of instances of Monad remain unchaged. The ret() method places updated instances on O. The instances on O are never mutated. For any instance of Monad named m with id "m" and value v (i.e., m.x == v is true), m.ret(v2) creates a new attribute of O with key "m" or, if O.m already exists, m.ret(v2) mutates O by replacing its m attribute\'s value. The monad O.m is not mutated, so any O.m that is replaced will persist if there is a reference to it, or will be subject to garbage collection if there is not. ' ),
-        h('p', ' As the examples below will demonstrate, the attributes of O are useful because for any instance of Monad, say "m", O.m.x is the current state of m.x. After m.ret(v2), The current value of O.m still has id "m", but now O.m.x == v2 is true. O.m.x can be placed in the DOM, and the DOM can be made to always display its current value in this Motorcycle.js application. In other cases, variations of "element.innerHTML = O.m.x" are used to keep browser windows current. O attributes are useful in many other ways. O.mMcurrentList is used throughout the todo list code for creating, removing, and altering tasks in the shared, persistent todo lists. ' ),
+        h('p#iterLink', ' As the examples below will demonstrate, the attributes of O are useful because for any instance of Monad, say "m", O.m.x is the current state of m.x. After m.ret(v2), The current value of O.m still has id "m", but now O.m.x == v2 is true. O.m.x can be placed in the DOM, and the DOM can be made to always display its current value in this Motorcycle.js application. In other cases, variations of "element.innerHTML = O.m.x" are used to keep browser windows current. O attributes are useful in many other ways. O.mMcurrentList is used throughout the todo list code for creating, removing, and altering tasks in the shared, persistent todo lists. ' ),
         h('h2', 'MonadIter' ),
         h('p', 'For any instance of MonadIter, say "m", the statement "m.bnd(func)" causes m.p == func to be true. The statement "m.release(...args) causes p(...args) to execute. Here is the definition: ' ), 
         code.monadIt,
@@ -632,7 +632,8 @@ function main(sources) {
         h('h3', 'Todo List Side Effects' ),
         h('p', ' When users do anything to the todo list, MonadStream instance mM$taskList runs its ret() method on the modified String representation of the list, causing the string to be added to mM$taskList.stream. mM$taskList.stream has only one subscriber, taskAction$, whose only purpose it to send the string representation of the todo list to the server. The server updates its persistent file and distributes a text representation of the updated todo list to all group members. Each group member receives the todo list as a string and parses it into a DOM node tree that is merged into the stream that updates the virtual DOM. All Todo List side effects can be traced to:' ),
         code.todoStream,
-        h('span', ' Just search for "mM$taskList.ret" to find where all todo list changes were initiated. ' ),
+        h('span', ' Just search for "mM$taskList.ret" to find where all todo list changes were initiated. The following link takes you to a more detailed explanation of the todo list. ' ),
+        h('a', {props: {href: '#tdList2'}}, 'Detailed Todo List Explanation'   ),  
         h('br' ),
         h('h3', 'Dice Game Side Effects' ),
         h('p', ' mM$1.ret() is called only when (1) a new dice roll comes in from the server, (2) when a player clicks a number, and (3) when clicking a number or operator results in a computation being performed. These are the three things that require a DOM update. When a player clicks a number, it disappears from number display. When a computation is performed, the result is added to the number display, unless the result is 18 or 20. A result of 18 or 20 results in a new roll coming in from the server and mM$1.ret() being called on an array of four numbers; something like mM$1.ret[4,2,11,17]). When a number is removed or a result added, mM$1.ret() is called on an array containing fewer than four numbers. ' ),
@@ -646,9 +647,13 @@ function main(sources) {
         h('p', 'The code below shows how incoming websockets messages are routed. For example, mMZ10.release() is called when a new dice roll (prefixed by CA#$42) comes in.   ' ),
         code.messages,
         h('p', ' The "mMZ" prefix designates instances of MonadIter. The bnd() method assigns its argument to the "p" attribute. "p" runs if and when the release() method is called. The next() function releases a specified MonadIter instance when the calling monad\'s value matches the specified value. next2() releases the specified monad when the specified condition returns true. The release method in next() has no argument, but next does take arguments, as illustrated below.' ),
-        h('p', ' The incoming messages block is just a syntactic variation of a switch block, but that isn\'t all that MonadIter instances can do. They can provide fine-grained control over the lazy evaluation of blocks of code. Calling release() after a function completes some task provides Promise-like behavior. Error handling is optional. The MonadInter release(...args) method facilitates sequential evaluation of code blocks, remeniscent of video and blog explanations of ES6 iterators and generators. I prefer doing it with MonadIter over "yield" and "next". For one thing, ES6 generator "yield" blocks must be evaluated in a predetermined order. ' ),
+        h('span.tao', ' The incoming messages block is just a syntactic variation of a switch block, but that isn\'t all that MonadIter instances can do. They can provide fine-grained control over the lazy evaluation of blocks of code. Calling release() after a function completes some task provides Promise-like behavior. Error handling is optional. The MonadInter release(...args) method facilitates sequential evaluation of code blocks, remeniscent of video and blog explanations of ES6 iterators and generators. I prefer doing it with MonadIter over "yield" and "next". For one thing, ES6 generator "yield" blocks must be evaluated in a predetermined order. This link takes you back to the MonadIter section with interactive examples of the use of release() with arguments.  ' ),
+        h('a#tdList2', {props: {href: '#iterLink'}}, 'release() with arguments'   ),  
+        h('br' ),
+        h('br' ),
         h('a', {props: {href: '#top'}}, 'Back To The Top'   ),  
         h('br' ),
+        h('h3', 'The Todo List' ),
         h('p', ' Next, I\'ll go over some features of the todo list application. This will show how Motorcycle.js and the monads work together.' ),
         h('p', 'Creation Of A Task: If you enter something like Susan, Fred, Pay the water bill, the editable task will appear in your browser and in the browsers of any members a group you might have created or joined. If you have loaded this page in another tab and changed to the same group in both, you will see the task in both tabs, barring some malfunction. The task has a delete button, an edit button, and a "Completed" checkbox. It shows that Susan authorized the task and Fred is responsible for making sure it gets done. Instead of entering an authority and responsible person, you can just enter two commas before the task description. Without two commas, a message appears requesting more information. This is how Motorcycle.js handles the creation of a new task: ' ),
         code.newTask,
@@ -715,6 +720,7 @@ function main(sources) {
         h('p', ' The relationships being demonstrated here are readily derivable from the definition of Monad. This is just an example to illustrate the general properties. The "===" operator isn\'t useful for illustrating monadic behavior because it returns false for clones. A meaningful variation of associative property can be demonstrated with the equals() function. We will use equals() to test the associative property along with the left and right identity properties of the ret() mdethod. These relationships are similar to the relationships in the Haskell laws.'),
         h('p', ' Click runTest() to see updated O.mMa.x, O.mMb.x, and O.mMc.x, colored red, displayed below.  ' ),  
         code.runTest,  
+        h('button#runTest', 'runTest()' ),
         h('br' ),
         h('span.tao', 'O.mMa.x: ' ),  
         h('span.red', O.mMa.x ), 
@@ -725,7 +731,6 @@ function main(sources) {
         h('span.tao', 'O.mMc.x: ' ),  
         h('span.red', O.mMc.x ), 
         h('p', ),  
-        h('button#runTest', 'runTest' ),
         h('p', ' That\'s about it. That\'s why I call them "monads". But JS-monads can do much more than vaguely mirror Haskell monad functionality. There is no attempt to constrain JS-monads with type classes, or with restrictions on the types of functions the bnd() method can accept. m.bnd(x => x**3) returns a number, not a JS-monad. It would be the end of the line for a chained sequence of computations; but that might be exactly what you want: a monadic chain of computations that spits out a number when it is done. '  ),  
         h('p', ' JS-monads can be used as a library, but there isn\'t much to import. Just the definitions of Monad, MonadIter, and MonadStream. I didn\'t define a bunch of functions, and I didn\'t import ramda or lodash-fp. ES6 functions such as map, reduce, and filter did everythin I needed in this and other demonstrations. I encourage people to come up with new variations on Monad to fit the needs of their projects, just as I came up with MonadIter and MonadStream when I saw a need for them. ' ),
         h('h2', 'Conclusion' ),
