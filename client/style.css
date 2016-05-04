@@ -7,6 +7,16 @@ body {
 .tao {
   margin-left: 3%;
 }
+ #FF5733;
+
+.td1 {
+  color: #F2650E;
+}
+
+.td2 {
+  color: #EFD5AA;
+}
+
 
 .tao1 {
   margin-left: 3%;
@@ -29,6 +39,12 @@ body {
   margin: 1.5%;
   color: #FF0000;
   font-size: 28px;
+}
+
+.red3 {
+  margin: 1%;
+  color: #ffa100;
+  font-size: 23px;
 }
 
 .content {

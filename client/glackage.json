@@ -1,0 +1,26 @@
+{
+  "name": "JS-monads-stable",
+  "version": "0.2.0",
+  "author": "David Schalk",
+  "license": "MIT",
+  "dependencies": {
+    "@cycle/core": "^6.0.0",
+    "@cycle/dom": "^8.0.0",
+    "rx": "^4.0.7",
+    "babel": "latest",
+    "babel-loader": "latest", 
+    "babel-preset-es2015": "latest", 
+    "watchify": "latest",
+    "browserify": "latest",
+    "babelify": "latest",
+    "mkdirp": "latest"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "prebrowserify": "mkdirp dist",
+    "browserify": "browserify src/main.js -t babelify --outfile dist/main.js",
+    "build": "browserify src/main.js -t [ babelify ] --outfile dist/main.js",
+    "watch": "watchify src/main.js -t babelify --outfile dist/main.js",
+    "start": "npm install && npm run browserify && echo 'OPEN index.html IN YOUR BROWSER'"
+  }
+}

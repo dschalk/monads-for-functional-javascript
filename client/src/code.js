@@ -647,8 +647,34 @@ var cleanup = h('pre',  `  function cleanup (x) {
     var p5 = h('pre',  `  
     `  )
 
+var add = h('pre',  `  var add = function(x,b,mon) {
+  if (arguments.length === 3) {
+    return mon.ret(x + b);
+  }
+  return ret(x+b);
+
+  var ret = function ret(v, id) {
+    if (arguments.length === 1) {
+      return (new Monad(v, 'anonymous'));
+    }
+    window[id] = new Monad(v, id);
+    return window[id];
+  }  `  )
+
+var cube = h('pre',  `  var cube = function(v,mon) {
+  if (arguments.length === 2) {
+    return mon.ret(v*v*v);
+  }
+  return ret(v*v*v);
+}  `  )
+
+    var p5 = h('pre',  `  
+    `  )
 
 
 
 
-  export default {monad, monadStr, monadIt, fib, driver, messages, next, Monad$, updateCalc, stream, arrayFuncs, travel, nums, cleanup, ret, C42, taskStream, newTask, process, mM$task, addString, colorClick, edit, testZ, quad, mdem1, runTest, todoStream, gameStream, inc }
+
+  export default {monad, monadStr, monadIt, fib, driver, messages, next, Monad$, updateCalc, stream, arrayFuncs, travel, nums, cleanup, ret, C42, taskStream, newTask, process, mM$task, addString, colorClick, edit, testZ, quad, mdem1, runTest, todoStream, gameStream, inc, add, cube }
+
+
