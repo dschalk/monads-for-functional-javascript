@@ -1,9 +1,9 @@
 
 ==================== FINAL INTERFACE ====================
-2016-05-04 22:18:39.363 UTC
+2016-05-05 04:07:05.963693 UTC
 
 interface main@main:Main 7103
-  interface hash: 3d97df40b323d66f103331a778ea3b39
+  interface hash: 71741048936d7c8900398526bb252691
   ABI hash: e29b1d994cb03c3bdc6d5a2c12e51cdb
   export-list hash: ac084b9a81b1c3bd918c352b0df77b45
   orphan hash: 276323d23bdb3224e26fb4d203ffca48
@@ -167,6 +167,7 @@ addDependentFile "client/src/store.js"
 addDependentFile "client/src/most-subject.js"
 addDependentFile "client/src/main"
 addDependentFile "client/src/code.js~"
+addDependentFile "client/src/monad.js~"
 addDependentFile "client/src/save.js"
 addDependentFile "client/src/main.js~"
 addDependentFile "client/src/monad.js"
@@ -239,13 +240,14 @@ addDependentFile "client/bower_components/most-subject/README.md"
 addDependentFile "client/bower_components/most-subject/CONTRIBUTING.md"
 addDependentFile "client/bower_components/most-subject/package.json"
 addDependentFile "client/bower_components/most-subject/LICENSE.md"
-addDependentFile "client/bower_components/motorcycle.js"
+addDependentFile "client/bower_components/glotorcycle.js"
 addDependentFile "client/mostSub.js"
 addDependentFile "client/index.html"
 addDependentFile "client/bundle.js"
 addDependentFile "client/package.json~"
 addDependentFile "client/main.js.map"
 addDependentFile "client/style.css~"
+addDependentFile "client/index.html~"
 addDependentFile "client/style.css"
 addDependentFile "client/package.json"
 addDependentFile "client/fetch.js"

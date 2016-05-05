@@ -4,6 +4,12 @@ body {
   font-size: 24px;
 }
 
+input {
+  background-color: #EFECB1;
+  color: #0000FF;
+  font-size: 19px;
+}
+
 .tao {
   margin-left: 3%;
 }

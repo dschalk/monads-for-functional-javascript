@@ -283,6 +283,15 @@ mMquad3.ret(mMquad3.x)
 var m = new Monad(0,'m')
 m.ret(m.x)
 
+var m1 = new Monad(0,'m1')
+m1.ret(m1.x)
+
+var m2 = new Monad(0,'m2')
+m2.ret(m2.x)
+
+var m3 = new Monad(0,'m3')
+m3.ret(m3.x)
+
 mMgoals2.ret(mMgoals2.x)
 mM3.ret(mM3.x)
 mM6.ret(mM6.x)

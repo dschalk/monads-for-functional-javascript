@@ -1,14 +1,10 @@
 #JS-monads-stable
 
-This is the culmination of the experimental JS-monads series. It is running online at [JS-monads-stable](http://schalk.net:3055) in a [Motorcycle.js](https://github.com/motorcyclejs) application. Motorcycle.js is [Cycle.js](https://github.com/cyclejs/core) using [Most](https://github.com/cujojs/most) and [Snabbdom](https://github.com/paldepind/snabbdom) instead of RxJS and "virtual-dom").
+This is the culmination of the experimental JS-monads series. It is running online at [JS-monads-stable](http://schalk.net:3055) in a [Motorcycle.js](https://github.com/motorcyclejs) application. Motorcycle.js is [Cycle.js](https://github.com/cyclejs/core) using [Most](https://github.com/cujojs/most) and [Snabbdom](https://github.com/paldepind/snabbdom) instead of RxJS and "virtual-dom". [most-subject](https://github.com/TylorS/most-subject) makes MonadStream work as intended. 
 
-When I started, I didn't know if anything useful would come out of simple composable objects I was creating. The objects contained a single value attribute and two methods. The value could be a number, a nested list of lists, primitive values, objects, and functions, or anything you like. The method bnd() takes a function and other optional arguments. For any monad m with value v, m.bnd(f, ...args) returns f(v, ...args). The definition of the method ret() changed during the experimental phase. I always endeavored to make the behavior of bnd() and ret() consistent with the behavior of >= and return in Haskell. I thought that would keep the monads grounded in the lambda calculus, which is pregnant with possibilities. I call the little objects "monads", even though they exist without type constraints, or constraints on what they could do. As time went on, they turned out to be more useful than I could have hoped.
+The use of the monads is explained at [the online presentation](http://schalk.net:3055). 
 
-Instances of Monad and MonadIter working together provide freedom from callback hell and the pyramid of doom. They also provide the same kinds of functionality that are being demonstated in blogs and video presentations about ES6 iterators and generators. You can step through a series of procedures and, while you do, provide input to the procedures on the fly. They can also provide Promise-like behavior.  
-
-MonadStream turned out to be very useful, as is demonstated in [the online presentation](http://schalk.net:3055). For any MonadStream instance m, m.ret(v) causes v to be added to m.stream. m.ret(v) causes subscribers to m.stream to update the DOM using the information in v. I imported [most-subject](https://github.com/TylorS/most-subject) for the MonadStream streaming feature. 
-
-Here are some definitions:
+Here are some definitions, which can also be seen at [the online presentation](http://schalk.net:3055) :
 ## Basic Monad    
 ```javascript                 
   var Monad = function Monad(z, g) {

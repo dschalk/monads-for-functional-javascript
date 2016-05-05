@@ -178,7 +178,6 @@ function main(sources) {
       document.getElementById('alert').innerHTML = 'Error: array length is: ' + length;
     } 
     mMcurrentList.ret(s);
-    console.log('In process. str, a, and O.mMcurrentList.x are: ', str, a, O.mMcurrentList.x);
     process3(ar);
   }
     
@@ -197,7 +196,6 @@ function main(sources) {
         }
       )
     })
-    console.log('In process3  a, ar5, and O.mMcurrentList.x are: ', a, ar5, O.mMcurrentList.x);
     mMar2.ret(ar5);
     process4(ar5);
   };
@@ -223,7 +221,6 @@ function main(sources) {
           h('hr')])
       )
     }
-    console.log('In process3  a, tempArran, and O.mMcurrentList.x are: ', a, tempArray, O.mMcurrentList.x);
     mMtaskList.ret(tempArray)
   }
 
@@ -606,19 +603,28 @@ function main(sources) {
         h('p', 'The following statements create instances of Monad named "m" with an initial value of "some value": var m = new Monad("some value", "m") and ret("some value", "m"). Monad instances maintain state in the unique, mutable, global object named "O". Where there is changing state, it is not practical to avoid mutating something. My choices narrowed down to the window object or an attribute of window like O. O seemed like the better choice. It is a place to keep the most recent versions of named monads. Earlier versions of named monads can persist elsewhere, or be left for the gargage collector.   ' ),
         h('p', ' In the examples shown on this page, the initial values of instances of Monad remain unchaged. The ret() method places updated instances on O. The instances on O are never mutated. For any instance of Monad named m with id "m" and value v (i.e., m.x == v is true), m.ret(v2) creates a new attribute of O with key "m" or, if O.m already exists, m.ret(v2) mutates O by replacing its m attribute\'s value. The monad O.m is not mutated, so any O.m that is replaced will persist if there is a reference to it, or will be subject to garbage collection if there is not. ' ),
         h('h3', 'Examples' ),
-        code.cube,
-        h('p', ' As you see, cube() and ret() are overloaded functions. Here are the results of calling cube four different ways: ' ),
-        h('br' ),
+        h('p', ' Here are the definitions of ret() and add(): '  ),
+        code.ret_cube,
+        h('p', ' calling ret() with only one argument creates an anonymous global monad. There is no reference to it, so when a computation sequence using it terminates, it becomes eligeble for garbage collection. Although the monad\'s scope is global, it can\'t be clobbered because it has no name (no variable referring to it). ' ),
+        h('p', ' As you see, cube() and ret() are overloaded functions. Here are some examples of various ways of using them: ' ),
         h('span.red3', 'cube(3)' ),
-        h('span.td2', ' creates an anonymous monad with x == 27 and id == "anonymous". ' ),
+        h('span.td2', ' creates a useless anonymous monad with x == 27 and id == "anonymous". ' ),
         h('br' ),  
         h('br' ),  
-        h('span.red3', 'cube(4, m)' ), 
-        h('span.td2', ' where m is a monad leaves m unchanged, O.m.x == 64, and O.m.id == "m". ' ), 
+        h('span.red3', 'cube(5, m)' ), 
+        h('span.td2', ' where m is a monad leaves m unchanged, O.m.x == 125, and O.m.id == "m". ' ), 
         h('br' ),  
         h('br' ),  
-        h('span.red3', 'm.ret(2).bnd(cube)' ), 
-        h('span.td2', 'leaves m unchanged, causes O.m.x == 2, and creates and anonymous monad with x == 8 and id == "anonymous". ' ),
+        h('span.red3', 'cube(5).bnd(m.ret)', ), 
+        h('span.td2', ' is equivalent to the previous example. m is unchanged and O.m.x == 125. ' ), 
+        h('br' ),  
+        h('br' ),  
+        h('span.red3', 'ret(5).bnd(cube).bnd(m.ret)', ), 
+        h('span.td2', ' is equivalent to the previous two examples. O.m.x == 125. ' ), 
+        h('br' ),  
+        h('br' ),  
+        h('span.red3', 'm.ret(4).bnd(cube)' ), 
+        h('span.td2', 'causes O.m.x == 2, and creates an anonymous monad with x == 64. ' ),
         h('br' ),  
         h('br' ),  
         h('span.red3', 'm.ret(4).bnd(cube, m)' ), 
@@ -627,35 +633,32 @@ function main(sources) {
         h('br' ),  
         h('span.tao', ' The convention "a == b" in this presentation signifies that a == b is true. By the way, if you want to change the value of m, all you have to do is call ' ),
         h('span.red3', 'ret(v, "m")' ),
-        h('span', ' to cause m.x == v and m.id = "m". ' ),
-        h('br' ),
-        h('br' ),  
-        h('p', ' Here are the definitions of ret() (used above and below) and "add": ' ),
+        h('span', ' to cause m.x == v and m.id = "m". This is the definition of add(): ' ),
         code.add,   
         h('span.red3', 'add(3, 4)' ),
-        h('span.td2', ' creates an anonymous monad with x == 7 and id == "anonymous". ' ),
+        h('span.td2', ' creates a useless anonymous monad with x == 7 and id == "anonymous". ' ),
+        h('br' ),  
+        h('br' ),  
+        h('span.red3', 'add(3, 4).bnd(m.ret)' ),
+        h('span.td2', ' causes O.m.x == 7 and O.m.id == "m". ' ),
         h('br' ),  
         h('br' ),  
         h('span.red3', 'add(3, 4, m)' ), 
-        h('span.td2', ' where m is a monad leaves m unchanged, O.m.x == 7, and O.m.id == "m". ' ), 
+        h('span.td2', ' is equivalent to the prior example. The result is O.m.x == 7, and O.m.id == "m". ' ), 
         h('br' ),  
         h('br' ),  
         h('span.red3', 'm.ret(0).bnd(add, 3).bnd(cube)' ), 
         h('span.td2', 'leaves m unchanged, O.m.x == 0, and creates an anonymous monad with x == 27. ' ),
         h('br' ),  
         h('br' ),  
-        h('span.red3', 'm.ret(0).bnd(add, 3).bnd(cube).bnd(m.ret)' ), 
-        h('span.td2', 'leaves m unchanged, O.m.x == 27, and O.m.id = "m". ' ),
+        h('span.red3', 'ret(0).bnd(add, 3).bnd(cube).bnd(m.ret)' ), 
+        h('span.td2', 'causes O.m.x == 27, and O.m.id = "m". ' ),
         h('br' ),  
         h('br' ),  
-        h('span.red3', 'm.ret(0, m).bnd(add, 2, m2).bnd(cube, m3)' ), 
-        h('span.td2', ' where m, m2, and m3 are monads causes O.m.x == 0, O.m2.x == 2, and O.m3.x == 8. ' ),
+        h('span.red3', 'ret(0).bnd(add, 2, m).bnd(cube, m2)' ), 
+        h('span.td2', ' where m, and m2 are monads causes O.m.x == 2, and O.m2.x == 8. ' ),
         h('br' ),  
-        h('br' ),  
-        h('span.tao', ' The convention "a == b" in this presentation signifies that a == b is true. By the way, if you want to change the value of m, all you have to do is call ' ),
-        h('span.red3', 'ret(v, "m")' ),
-        h('span', ' to cause m.x == v and m.id == "m". ' ),
-        h('p#iterLink', ' As the examples below will demonstrate, the attributes of O are useful because for any instance of Monad, say "m", O.m.x is the current state of m.x. After m.ret(v2), The current value of O.m still has id "m", but now O.m.x == v2 is true. O.m.x can be placed in the DOM, and the DOM can be made to always display its current value in this Motorcycle.js application. In other cases, variations of "element.innerHTML = O.m.x" are used to keep browser windows current. O attributes are useful in many other ways. O.mMcurrentList is used throughout the todo list code for creating, removing, and altering tasks in the shared, persistent todo lists. ' ),
+        h('p#iterLink', ' O holds the current state of the monads. This is convenient. For example, mMcurrentList.ret() is seen in the application code whereever a todo list is created, removed, or altered. O.mMcurrentList.x sits in the virtual DOM, making sure that the todo list display is is always current. ' ),
         h('h2', 'MonadIter' ),
         h('p', 'For any instance of MonadIter, say "m", the statement "m.bnd(func)" causes m.p == func to be true. The statement "m.release(...args) causes p(...args) to execute. Here is the definition: ' ), 
         code.monadIt,
@@ -806,7 +809,6 @@ function main(sources) {
         ])
       ])
     )}} 
-
 
   function cleanup (x) {
       let target0 = document.getElementById('0');
