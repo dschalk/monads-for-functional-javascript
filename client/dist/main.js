@@ -1,4 +1,123 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.run = undefined;
+
+var _mostSubject = require('most-subject');
+
+function makeSinkProxies(drivers) {
+  var sinkProxies = {};
+  var keys = Object.keys(drivers);
+  for (var i = 0; i < keys.length; i++) {
+    sinkProxies[keys[i]] = (0, _mostSubject.holdSubject)(1);
+  }
+  return sinkProxies;
+}
+
+function callDrivers(drivers, sinkProxies) {
+  var sources = {};
+  var keys = Object.keys(drivers);
+  for (var i = 0; i < keys.length; i++) {
+    var name = keys[i];
+    sources[name] = drivers[name](sinkProxies[name].stream, name);
+  }
+  return sources;
+}
+
+function makeHandleError(observer, onError) {
+  return function handleError(err) {
+    observer.error(err);
+    onError(err);
+  };
+}
+
+function replicateMany(_ref) {
+  var sinks = _ref.sinks;
+  var sinkProxies = _ref.sinkProxies;
+  var disposableStream = _ref.disposableStream;
+  var onError = _ref.onError;
+
+  var sinkKeys = Object.keys(sinks);
+  for (var i = 0; i < sinkKeys.length; i++) {
+    var name = sinkKeys[i];
+    if (sinkProxies.hasOwnProperty(name)) {
+      var observer = sinkProxies[name].observer;
+
+      sinks[name].until(disposableStream).observe(observer.next).then(observer.complete).catch(makeHandleError(observer, onError));
+    }
+  }
+}
+
+function assertSinks(sinks) {
+  var keys = Object.keys(sinks);
+  for (var i = 0; i < keys.length; i++) {
+    if (!sinks[keys[i]] || typeof sinks[keys[i]].observe !== 'function') {
+      throw new Error('Sink \'' + keys[i] + '\' must be a most.Stream');
+    }
+  }
+  return sinks;
+}
+
+var logErrorToConsole = typeof console !== 'undefined' && console.error ? function (error) {
+  console.error(error.stack || error);
+} : Function.prototype;
+
+var defaults = {
+  onError: logErrorToConsole
+};
+
+function runInputGuard(_ref2) {
+  var main = _ref2.main;
+  var drivers = _ref2.drivers;
+  var onError = _ref2.onError;
+
+  if (typeof main !== 'function') {
+    throw new Error('First argument given to run() must be the ' + '\'main\' function.');
+  }
+  if (typeof drivers !== 'object' || drivers === null) {
+    throw new Error('Second argument given to run() must be an ' + 'object with driver functions as properties.');
+  }
+  if (!Object.keys(drivers).length) {
+    throw new Error('Second argument given to run() must be an ' + 'object with at least one driver function declared as a property.');
+  }
+
+  if (typeof onError !== 'function') {
+    throw new Error('onError must be a function');
+  }
+}
+
+function run(main, drivers) {
+  var _ref3 = arguments.length <= 2 || arguments[2] === undefined ? defaults : arguments[2];
+
+  var _ref3$onError = _ref3.onError;
+  var onError = _ref3$onError === undefined ? logErrorToConsole : _ref3$onError;
+
+  runInputGuard({ main: main, drivers: drivers, onError: onError });
+
+  var _subject = (0, _mostSubject.subject)();
+
+  var disposableObserver = _subject.observer;
+  var disposableStream = _subject.stream;
+
+  var sinkProxies = makeSinkProxies(drivers);
+  var sources = callDrivers(drivers, sinkProxies);
+  var sinks = assertSinks(main(sources));
+  replicateMany({ sinks: sinks, sinkProxies: sinkProxies, disposableStream: disposableStream, onError: onError });
+
+  function dispose() {
+    disposableObserver.next(1);
+    disposableObserver.complete();
+  }
+
+  return { sinks: sinks, sources: sources, dispose: dispose };
+}
+
+exports.default = { run: run };
+exports.run = run;
+},{"most-subject":6}],2:[function(require,module,exports){
 (function (global, factory) {
   if (typeof define === "function" && define.amd) {
     define('@most/multicast', ['exports', '@most/prelude'], factory);
@@ -174,7 +293,7 @@
   exports.default = multicast;
 });
 
-},{"@most/prelude":2}],2:[function(require,module,exports){
+},{"@most/prelude":3}],3:[function(require,module,exports){
 (function (global, factory) {
   if (typeof define === "function" && define.amd) {
     define('@most/prelude', ['exports'], factory);
@@ -455,376 +574,54 @@
   exports.curry3 = curry3;
 });
 
-},{}],3:[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.run = undefined;
-
-var _mostSubject = require('most-subject');
-
-var makeSinkProxies = function makeSinkProxies(drivers) {
-  return Object.keys(drivers).reduce(function (sinkProxies, driverName) {
-    sinkProxies[driverName] = (0, _mostSubject.holdSubject)();
-    return sinkProxies;
-  }, {});
-};
-
-var callDrivers = function callDrivers(drivers, sinkProxies) {
-  return Object.keys(drivers).reduce(function (sources, driverName) {
-    sources[driverName] = drivers[driverName](sinkProxies[driverName].stream, driverName);
-    return sources;
-  }, {});
-};
-
-var runMain = function runMain(main, sources, disposableStream) {
-  var sinks = main(sources);
-  return Object.keys(sinks).reduce(function (accumulator, driverName) {
-    accumulator[driverName] = sinks[driverName].until(disposableStream);
-    return accumulator;
-  }, {});
-};
-
-var logErrorToConsole = function logErrorToConsole(err) {
-  if (console && console.error) {
-    console.error(err.message);
-  }
-};
-
-var replicateMany = function replicateMany(sinks, sinkProxies) {
-  return setTimeout(function () {
-    Object.keys(sinks).filter(function (driverName) {
-      return sinkProxies[driverName];
-    }).forEach(function (driverName) {
-      sinks[driverName].forEach(sinkProxies[driverName].sink.add).then(sinkProxies[driverName].sink.end).catch(logErrorToConsole);
-    });
-  }, 1);
-};
-
-var isObjectEmpty = function isObjectEmpty(object) {
-  return Object.keys(object).length <= 0;
-};
-
-var run = function run(main, drivers) {
-  if (typeof main !== 'function') {
-    throw new Error('First argument given to run() must be the ' + '\'main\' function.');
-  }
-  if (typeof drivers !== 'object' || drivers === null) {
-    throw new Error('Second argument given to run() must be an ' + 'object with driver functions as properties.');
-  }
-  if (isObjectEmpty(drivers)) {
-    throw new Error('Second argument given to run() must be an ' + 'object with at least one driver function declared as a property.');
-  }
-
-  var _subject = (0, _mostSubject.subject)();
-
-  var disposableSink = _subject.sink;
-  var disposableStream = _subject.stream;
-
-  var sinkProxies = makeSinkProxies(drivers, disposableStream);
-  var sources = callDrivers(drivers, sinkProxies);
-  var sinks = runMain(main, sources, disposableStream);
-  replicateMany(sinks, sinkProxies);
-
-  var dispose = function dispose() {
-    disposableSink.add(1);
-    Object.keys(sinkProxies).forEach(function (key) {
-      return sinkProxies[key].sink.end();
-    });
-    disposableSink.end();
-  };
-
-  return { sinks: sinks, sources: sources, dispose: dispose };
-};
-
-exports.default = { run: run };
-exports.run = run;
-},{"most-subject":7}],4:[function(require,module,exports){
-(function (global, factory) {
-    if (typeof define === "function" && define.amd) {
-        define('@most/hold', ['exports', 'most/lib/source/MulticastSource'], factory);
-    } else if (typeof exports !== "undefined") {
-        factory(exports, require('most/lib/source/MulticastSource'));
-    } else {
-        var mod = {
-            exports: {}
-        };
-        factory(mod.exports, global.MulticastSource);
-        global.mostHold = mod.exports;
-    }
-})(this, function (exports, _MulticastSource) {
-    'use strict';
-
-    Object.defineProperty(exports, "__esModule", {
-        value: true
-    });
-
-    var _MulticastSource2 = _interopRequireDefault(_MulticastSource);
-
-    function _interopRequireDefault(obj) {
-        return obj && obj.__esModule ? obj : {
-            default: obj
-        };
-    }
-
-    function _classCallCheck(instance, Constructor) {
-        if (!(instance instanceof Constructor)) {
-            throw new TypeError("Cannot call a class as a function");
-        }
-    }
-
-    var _createClass = (function () {
-        function defineProperties(target, props) {
-            for (var i = 0; i < props.length; i++) {
-                var descriptor = props[i];
-                descriptor.enumerable = descriptor.enumerable || false;
-                descriptor.configurable = true;
-                if ("value" in descriptor) descriptor.writable = true;
-                Object.defineProperty(target, descriptor.key, descriptor);
-            }
-        }
-
-        return function (Constructor, protoProps, staticProps) {
-            if (protoProps) defineProperties(Constructor.prototype, protoProps);
-            if (staticProps) defineProperties(Constructor, staticProps);
-            return Constructor;
-        };
-    })();
-
-    var hold = function hold(stream) {
-        return new stream.constructor(new _MulticastSource2.default(new Hold(stream.source)));
-    };
-
-    var Hold = (function () {
-        function Hold(source) {
-            _classCallCheck(this, Hold);
-
-            this.source = source;
-            this.time = -Infinity;
-            this.value = void 0;
-        }
-
-        _createClass(Hold, [{
-            key: 'run',
-            value: function run(sink, scheduler) {
-                if (sink._hold !== this) {
-                    sink._hold = this;
-                    sink._holdAdd = sink.add;
-                    sink.add = holdAdd;
-                    sink._holdEvent = sink.event;
-                    sink.event = holdEvent;
-                }
-
-                return this.source.run(sink, scheduler);
-            }
-        }]);
-
-        return Hold;
-    })();
-
-    function holdAdd(sink) {
-        var len = this._holdAdd(sink);
-
-        if (this._hold.time >= 0) {
-            sink.event(this._hold.time, this._hold.value);
-        }
-
-        return len;
-    }
-
-    function holdEvent(t, x) {
-        if (t >= this._hold.time) {
-            this._hold.time = t;
-            this._hold.value = x;
-        }
-
-        return this._holdEvent(t, x);
-    }
-
-    exports.default = hold;
-});
-
-},{"most/lib/source/MulticastSource":60}],5:[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.replay = replay;
-exports.ReplaySource = ReplaySource;
-var most = require('most');
-var MulticastSource = require('most/lib/source/MulticastSource');
-var PropagateTask = require('most/lib/scheduler/PropagateTask');
-var CompoundDisposable = require('most/lib/disposable/dispose').all;
-var Stream = most.Stream;
-
-function replay(stream, maxBufferSize) {
-  if (stream.source instanceof ReplaySource && source.maxBufferSize !== maxBufferSize) {
-    return stream;
-  }
-  return new Stream(new ReplaySource(stream.source, maxBufferSize));
-}
-
-function ReplaySource(source, maxBufferSize) {
-  this._buffer = [];
-  this._ended = false;
-  this.maxBufferSize = maxBufferSize || Infinity;
-  MulticastSource.call(this, source);
-}
-ReplaySource.prototype = Object.create(MulticastSource.prototype);
-
-ReplaySource.prototype._run = MulticastSource.prototype.run;
-ReplaySource.prototype.run = function (sink, scheduler) {
-  var buffer = this._buffer;
-  var self = this;
-  this.sink = sink;
-
-  if (this._ended) {
-    return replay();
-  }
-  if (buffer.length === 0) {
-    return run();
-  }
-  return new CompoundDisposable([replay(), run()]);
-
-  function replay() {
-    return new BufferProducer(buffer.slice(0), sink, scheduler);
-  }
-
-  function run() {
-    return self._run(sink, scheduler);
-  }
-};
-
-ReplaySource.prototype._event = MulticastSource.prototype.event;
-ReplaySource.prototype.event = function ReplaySource_event(t, x) {
-  this._addToBuffer({ type: 0, t: t, x: x });
-  this._event(t, x);
-};
-
-MulticastSource.prototype._addToBuffer = function ReplaySource_addToBuffer(event) {
-  if (this._buffer.length >= this.maxBufferSize) {
-    this._buffer.shift();
-  }
-  this._buffer.push(event);
-};
-
-MulticastSource.prototype.end = function (t, x, r) {
-  MulticastSource;
-  var s = this.sinks;
-  if (s.length === 1) {
-    s[0].end(t, x);
-    return;
-  }
-  for (var i = 0; i < s.length; ++i) {
-    if (i === s.length - 1) {
-      if (r) {
-        break; // don't end underlying stream
-      }
-    }
-    s[i].end(t, x);
-  };
-};
-
-ReplaySource.prototype._end = MulticastSource.prototype.end;
-ReplaySource.prototype.end = function ReplaySource_end(t, x) {
-  var self = this;
-  this._ended = true;
-  this._addToBuffer({ type: 1, t: t, x: x });
-  this._end(t, x, this);
-  this.add(this.sink); // add an extra sink so the last values can go through
-  setTimeout(function () {
-    self._end(t, x);
-  }, 0); // dispose after values are propagated
-};
-
-MulticastSource.prototype.error = function (t, e, r) {
-  var s = this.sinks;
-  if (s.length === 1) {
-    s[0].error(t, e);
-    return;
-  }
-  for (var i = 0; i < s.length; ++i) {
-    if (i === s.length - 1) {
-      if (r) {
-        break; // don't end underlying stream
-      }
-    }
-    s[i].error(t, e);
-  };
-};
-
-ReplaySource.prototype._error = MulticastSource.prototype.error;
-ReplaySource.prototype.error = function ReplaySink_error(t, e) {
-  var self = this;
-  this._ended = true;
-  this._buffer.push({ type: 2, t: t, x: e });
-  this._error(t, e, this);
-  this.add(this.sink);
-  setTimeout(function () {
-    self._error(t, e);
-  }, 0);
-};
-
-function BufferProducer(buffer, sink, scheduler) {
-  this.task = new PropagateTask(runProducer, buffer, sink);
-  scheduler.asap(this.task);
-}
-
-BufferProducer.prototype.dispose = function () {
-  return this.task.dispose();
-};
-
-function runProducer(t, buffer, sink) {
-  var emit = function emit(item) {
-    sink.event(item.t, item.x);
-  };
-  for (var i = 0, j = buffer.length; i < j && this.active; i++) {
-    var item = buffer[i];
-    switch (item.type) {
-      case 0:
-        emit(item);break;
-      case 1:
-        return this.active && sink.end(item.t, item.x);
-      case 2:
-        return this.active && sink.error(item.t, item.x);
-    }
-  }
-}
-},{"most":73,"most/lib/disposable/dispose":41,"most/lib/scheduler/PropagateTask":49,"most/lib/source/MulticastSource":60}],6:[function(require,module,exports){
+},{}],4:[function(require,module,exports){
 "use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-var Subscription = function () {
-  function Subscription() {
+function tryEvent(sink, scheduler, event) {
+  try {
+    sink.event(scheduler.now(), event);
+  } catch (err) {
+    sink.error(scheduler.now(), err);
+  }
+}
+
+function tryEnd(sink, scheduler, event) {
+  try {
+    sink.end(scheduler.now(), event);
+  } catch (err) {
+    sink.error(scheduler.now(), err);
+  }
+}
+
+var Observer = function () {
+  function Observer() {
     var _this = this;
 
-    _classCallCheck(this, Subscription);
+    _classCallCheck(this, Observer);
 
     this.run = function (sink, scheduler) {
       return _this._run(sink, scheduler);
     };
-    this.add = this.next = function (x) {
-      return _this._add(x);
+    this.next = function (x) {
+      return _this._next(x);
     };
     this.error = function (err) {
       return _this._error(err);
     };
-    this.end = this.complete = function (x) {
-      return _this._end(x);
+    this.complete = function (x) {
+      return _this._complete(x);
     };
   }
 
-  _createClass(Subscription, [{
+  _createClass(Observer, [{
     key: "_run",
     value: function _run(sink, scheduler) {
       this.sink = sink;
@@ -838,51 +635,114 @@ var Subscription = function () {
       this.active = false;
     }
   }, {
-    key: "_add",
-    value: function _add(x) {
+    key: "_next",
+    value: function _next(value) {
       if (!this.active) {
         return;
       }
-      tryEvent(this.sink, this.scheduler, x);
+      tryEvent(this.sink, this.scheduler, value);
     }
   }, {
     key: "_error",
-    value: function _error(e) {
+    value: function _error(err) {
       this.active = false;
-      this.sink.error(this.scheduler.now(), e);
+      this.sink.error(this.scheduler.now(), err);
     }
   }, {
-    key: "_end",
-    value: function _end(x) {
+    key: "_complete",
+    value: function _complete(value) {
       if (!this.active) {
         return;
       }
       this.active = false;
-      tryEnd(this.sink, this.scheduler, x);
+      tryEnd(this.sink, this.scheduler, value);
     }
   }]);
 
-  return Subscription;
+  return Observer;
 }();
 
-function tryEvent(sink, scheduler, event) {
-  try {
-    sink.event(scheduler.now(), event);
-  } catch (e) {
-    sink.error(scheduler.now(), e);
+exports.Observer = Observer;
+},{}],5:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.replay = undefined;
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _most = require('most');
+
+var _multicast = require('@most/multicast');
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function pushEvents(sink, buffer) {
+  var i = 0;
+  for (; i < buffer.length; ++i) {
+    var item = buffer[i];
+    sink.event(item.time, item.value);
   }
 }
 
-function tryEnd(sink, scheduler, event) {
-  try {
-    sink.end(scheduler.now(), event);
-  } catch (e) {
-    sink.error(scheduler.now(), e);
+function replayAdd(sink) {
+  var length = this._replayAdd(sink);
+  if (this._replay.buffer.length > 0) {
+    pushEvents(sink, this._replay.buffer);
   }
+  return length;
 }
 
-exports.Subscription = Subscription;
-},{}],7:[function(require,module,exports){
+function addToBuffer(event, replay) {
+  if (replay.buffer.length >= replay.bufferSize) {
+    replay.buffer.shift();
+  }
+  replay.buffer.push(event);
+}
+
+function replayEvent(time, value) {
+  if (this._replay.bufferSize > 0) {
+    addToBuffer({ time: time, value: value }, this._replay);
+  }
+  this._replayEvent(time, value);
+}
+
+var Replay = function () {
+  function Replay(bufferSize, source) {
+    _classCallCheck(this, Replay);
+
+    this.source = source;
+    this.bufferSize = bufferSize;
+    this.buffer = [];
+  }
+
+  _createClass(Replay, [{
+    key: 'run',
+    value: function run(sink, scheduler) {
+      if (sink._replay !== this) {
+        sink._replay = this;
+        sink._replayAdd = sink.add;
+        sink.add = replayAdd;
+
+        sink._replayEvent = sink.event;
+        sink.event = replayEvent;
+      }
+
+      return this.source.run(sink, scheduler);
+    }
+  }]);
+
+  return Replay;
+}();
+
+var replay = function replay(bufferSize, stream) {
+  return new _most.Stream(new _multicast.MulticastSource(new Replay(bufferSize, stream.source)));
+};
+
+exports.replay = replay;
+},{"@most/multicast":2,"most":70}],6:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -892,58 +752,42 @@ exports.holdSubject = exports.subject = undefined;
 
 var _most = require('most');
 
-var _MulticastSource = require('most/lib/source/MulticastSource');
+var _multicast = require('@most/multicast');
 
-var _MulticastSource2 = _interopRequireDefault(_MulticastSource);
+var _Observer = require('./Observer');
 
-var _Subscription = require('./Subscription');
+var _Replay = require('./Replay');
 
-var _ReplaySource = require('./ReplaySource');
-
-var _hold = require('@most/hold');
-
-var _hold2 = _interopRequireDefault(_hold);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-var defaults = {
-  replay: false,
-  bufferSize: 1
-};
-
-function create(replay, bufferSize, initialValue) {
-  var sink = new _Subscription.Subscription();
-  var stream = undefined;
-
-  if (!replay) {
-    stream = new _most.Stream(new _MulticastSource2.default(sink));
-  } else {
-    stream = bufferSize === 1 ? (0, _hold2.default)(new _most.Stream(sink)) : (0, _ReplaySource.replay)(new _most.Stream(sink), bufferSize);
-  }
+function create(hold, bufferSize, initialValue) {
+  var observer = new _Observer.Observer();
+  var stream = hold ? (0, _Replay.replay)(bufferSize, new _most.Stream(observer)) : new _most.Stream(new _multicast.MulticastSource(observer));
 
   stream.drain();
 
   if (typeof initialValue !== 'undefined') {
-    sink.next(initialValue);
+    observer.next(initialValue);
   }
 
-  return { sink: sink, stream: stream, observer: sink };
+  return { stream: stream, observer: observer };
 }
 
-function subject(initialValue) {
-  return create(false, 1, initialValue);
+function subject() {
+  return create(false, 0);
 }
 
 function holdSubject() {
   var bufferSize = arguments.length <= 0 || arguments[0] === undefined ? 1 : arguments[0];
   var initialValue = arguments[1];
 
+  if (bufferSize < 1) {
+    throw new Error('First argument to holdSubject is expected to be an ' + 'integer greater than or equal to 1');
+  }
   return create(true, bufferSize, initialValue);
 }
 
 exports.subject = subject;
 exports.holdSubject = holdSubject;
-},{"./ReplaySource":5,"./Subscription":6,"@most/hold":4,"most":73,"most/lib/source/MulticastSource":60}],8:[function(require,module,exports){
+},{"./Observer":4,"./Replay":5,"@most/multicast":2,"most":70}],7:[function(require,module,exports){
 /** @license MIT License (c) copyright 2010-2016 original author or authors */
 /** @author Brian Cavalier */
 /** @author John Hann */
@@ -1021,7 +865,7 @@ LinkedList.prototype.dispose = function() {
 	return Promise.all(promises);
 };
 
-},{}],9:[function(require,module,exports){
+},{}],8:[function(require,module,exports){
 /** @license MIT License (c) copyright 2010-2016 original author or authors */
 /** @author Brian Cavalier */
 /** @author John Hann */
@@ -1032,7 +876,7 @@ function isPromise(p) {
 	return p !== null && typeof p === 'object' && typeof p.then === 'function';
 }
 
-},{}],10:[function(require,module,exports){
+},{}],9:[function(require,module,exports){
 /** @license MIT License (c) copyright 2010-2016 original author or authors */
 /** @author Brian Cavalier */
 /** @author John Hann */
@@ -1099,7 +943,7 @@ function copy(src, srcIndex, dst, dstIndex, len) {
 }
 
 
-},{}],11:[function(require,module,exports){
+},{}],10:[function(require,module,exports){
 /** @license MIT License (c) copyright 2010-2016 original author or authors */
 /** @author Brian Cavalier */
 /** @author John Hann */
@@ -1110,7 +954,7 @@ function Stream(source) {
 	this.source = source;
 }
 
-},{}],12:[function(require,module,exports){
+},{}],11:[function(require,module,exports){
 /** @license MIT License (c) copyright 2010-2016 original author or authors */
 /** @author Brian Cavalier */
 /** @author John Hann */
@@ -1277,7 +1121,7 @@ function isArrayLike(x){
    return x != null && typeof x.length === 'number' && typeof x !== 'function';
 }
 
-},{}],13:[function(require,module,exports){
+},{}],12:[function(require,module,exports){
 /** @license MIT License (c) copyright 2010-2016 original author or authors */
 /** @author Brian Cavalier */
 /** @author John Hann */
@@ -1360,7 +1204,7 @@ AccumulateSink.prototype.end = function(t) {
 	this.sink.end(t, this.value);
 };
 
-},{"../Stream":11,"../base":12,"../runSource":48,"../sink/Pipe":57,"./build":15}],14:[function(require,module,exports){
+},{"../Stream":10,"../base":11,"../runSource":46,"../sink/Pipe":55,"./build":14}],13:[function(require,module,exports){
 /** @license MIT License (c) copyright 2010-2016 original author or authors */
 /** @author Brian Cavalier */
 /** @author John Hann */
@@ -1384,7 +1228,7 @@ function ap(fs, xs) {
 	return combine(apply, fs, xs);
 }
 
-},{"../base":12,"./combine":16}],15:[function(require,module,exports){
+},{"../base":11,"./combine":15}],14:[function(require,module,exports){
 /** @license MIT License (c) copyright 2010-2016 original author or authors */
 /** @author Brian Cavalier */
 /** @author John Hann */
@@ -1418,6 +1262,7 @@ function concat(left, right) {
 }
 
 /**
+ * @deprecated
  * Tie stream into a circle, creating an infinite stream
  * @param {Stream} stream
  * @returns {Stream} new infinite stream
@@ -1428,7 +1273,7 @@ function cycle(stream) {
 	}, stream);
 }
 
-},{"../source/core":62,"./continueWith":18}],16:[function(require,module,exports){
+},{"../source/core":59,"./continueWith":17}],15:[function(require,module,exports){
 /** @license MIT License (c) copyright 2010-2016 original author or authors */
 /** @author Brian Cavalier */
 /** @author John Hann */
@@ -1438,14 +1283,13 @@ var transform = require('./transform');
 var core = require('../source/core');
 var Pipe = require('../sink/Pipe');
 var IndexSink = require('../sink/IndexSink');
-var mergeSources = require('./merge').mergeSources;
 var dispose = require('../disposable/dispose');
 var base = require('../base');
 var invoke = require('../invoke');
 
 var hasValue = IndexSink.hasValue;
 
-//var map = base.map;
+var map = base.map;
 var tail = base.tail;
 
 exports.combineArray = combineArray;
@@ -1472,8 +1316,36 @@ function combineArray(f, streams) {
 	var l = streams.length;
 	return l === 0 ? core.empty()
 		 : l === 1 ? transform.map(f, streams[0])
-		 : new Stream(mergeSources(CombineSink, f, streams));
+		 : new Stream(combineSources(f, streams));
 }
+
+function combineSources(f, streams) {
+	return new Combine(f, map(getSource, streams))
+}
+
+function getSource(stream) {
+	return stream.source;
+}
+
+function Combine(f, sources) {
+	this.f = f;
+	this.sources = sources;
+}
+
+Combine.prototype.run = function(sink, scheduler) {
+	var l = this.sources.length;
+	var disposables = new Array(l);
+	var sinks = new Array(l);
+
+	var mergeSink = new CombineSink(disposables, sinks, sink, this.f);
+
+	for(var indexSink, i=0; i<l; ++i) {
+		indexSink = sinks[i] = new IndexSink(i, mergeSink);
+		disposables[i] = this.sources[i].run(indexSink, scheduler);
+	}
+
+	return dispose.all(disposables);
+};
 
 function CombineSink(disposables, sinks, sink, f) {
 	this.sink = sink;
@@ -1505,7 +1377,7 @@ CombineSink.prototype.end = function(t, indexedValue) {
 	}
 };
 
-},{"../Stream":11,"../base":12,"../disposable/dispose":41,"../invoke":46,"../sink/IndexSink":55,"../sink/Pipe":57,"../source/core":62,"./merge":25,"./transform":36}],17:[function(require,module,exports){
+},{"../Stream":10,"../base":11,"../disposable/dispose":39,"../invoke":44,"../sink/IndexSink":53,"../sink/Pipe":55,"../source/core":59,"./transform":34}],16:[function(require,module,exports){
 /** @license MIT License (c) copyright 2010-2016 original author or authors */
 /** @author Brian Cavalier */
 /** @author John Hann */
@@ -1530,7 +1402,7 @@ function concatMap(f, stream) {
 	return mergeConcurrently(1, map(f, stream));
 }
 
-},{"./mergeConcurrently":26,"./transform":36}],18:[function(require,module,exports){
+},{"./mergeConcurrently":25,"./transform":34}],17:[function(require,module,exports){
 /** @license MIT License (c) copyright 2010-2016 original author or authors */
 /** @author Brian Cavalier */
 /** @author John Hann */
@@ -1599,7 +1471,7 @@ ContinueWithSink.prototype.dispose = function() {
 	return this.disposable.dispose();
 };
 
-},{"../Promise":9,"../Stream":11,"../disposable/dispose":41,"../sink/Pipe":57}],19:[function(require,module,exports){
+},{"../Promise":8,"../Stream":10,"../disposable/dispose":39,"../sink/Pipe":55}],18:[function(require,module,exports){
 /** @license MIT License (c) copyright 2010-2016 original author or authors */
 /** @author Brian Cavalier */
 /** @author John Hann */
@@ -1654,7 +1526,7 @@ DelaySink.prototype.end = function(t, x) {
 
 DelaySink.prototype.error = Sink.prototype.error;
 
-},{"../Stream":11,"../disposable/dispose":41,"../scheduler/PropagateTask":49,"../sink/Pipe":57}],20:[function(require,module,exports){
+},{"../Stream":10,"../disposable/dispose":39,"../scheduler/PropagateTask":47,"../sink/Pipe":55}],19:[function(require,module,exports){
 /** @license MIT License (c) copyright 2010-2016 original author or authors */
 /** @author Brian Cavalier */
 /** @author John Hann */
@@ -1741,7 +1613,7 @@ RecoverWithSink.prototype.dispose = function() {
 	return this.disposable.dispose();
 };
 
-},{"../Stream":11,"../base":12,"../disposable/dispose":41,"../source/ValueSource":61,"../source/tryEvent":71}],21:[function(require,module,exports){
+},{"../Stream":10,"../base":11,"../disposable/dispose":39,"../source/ValueSource":58,"../source/tryEvent":68}],20:[function(require,module,exports){
 /** @license MIT License (c) copyright 2010-2016 original author or authors */
 /** @author Brian Cavalier */
 /** @author John Hann */
@@ -1817,7 +1689,7 @@ function same(a, b) {
 	return a === b;
 }
 
-},{"../Stream":11,"../fusion/Filter":43,"../sink/Pipe":57}],22:[function(require,module,exports){
+},{"../Stream":10,"../fusion/Filter":41,"../sink/Pipe":55}],21:[function(require,module,exports){
 /** @license MIT License (c) copyright 2010-2016 original author or authors */
 /** @author Brian Cavalier */
 /** @author John Hann */
@@ -1849,7 +1721,7 @@ function join(stream) {
 	return mergeConcurrently(Infinity, stream);
 }
 
-},{"./mergeConcurrently":26,"./transform":36}],23:[function(require,module,exports){
+},{"./mergeConcurrently":25,"./transform":34}],22:[function(require,module,exports){
 /** @license MIT License (c) copyright 2010-2016 original author or authors */
 /** @author Brian Cavalier */
 /** @author John Hann */
@@ -1961,7 +1833,7 @@ DebounceSink.prototype._clearTimer = function() {
 	return true;
 };
 
-},{"../Stream":11,"../disposable/dispose":41,"../scheduler/PropagateTask":49,"../sink/Pipe":57}],24:[function(require,module,exports){
+},{"../Stream":10,"../disposable/dispose":39,"../scheduler/PropagateTask":47,"../sink/Pipe":55}],23:[function(require,module,exports){
 /** @license MIT License (c) copyright 2010-2016 original author or authors */
 /** @author Brian Cavalier */
 /** @author John Hann */
@@ -2014,7 +1886,7 @@ LoopSink.prototype.end = function(t) {
 	this.sink.end(t, this.seed);
 };
 
-},{"../Stream":11,"../sink/Pipe":57}],25:[function(require,module,exports){
+},{"../Stream":10,"../sink/Pipe":55}],24:[function(require,module,exports){
 /** @license MIT License (c) copyright 2010-2016 original author or authors */
 /** @author Brian Cavalier */
 /** @author John Hann */
@@ -2027,11 +1899,10 @@ var dispose = require('../disposable/dispose');
 var base = require('../base');
 
 var copy = base.copy;
-var map = base.map;
+var reduce = base.reduce;
 
 exports.merge = merge;
 exports.mergeArray = mergeArray;
-exports.mergeSources = mergeSources;
 
 /**
  * @returns {Stream} stream containing events from all streams in the argument
@@ -2052,20 +1923,30 @@ function mergeArray(streams) {
     var l = streams.length;
     return l === 0 ? empty()
 		 : l === 1 ? streams[0]
-		 : new Stream(mergeSources(MergeSink, void 0, streams));
+		 : new Stream(mergeSources(streams));
 }
 
-function mergeSources(Sink, arg, streams) {
-	return new Merge(Sink, arg, map(getSource, streams))
+/**
+ * This implements fusion/flattening for merge.  It will
+ * fuse adjacent merge operations.  For example:
+ * - a.merge(b).merge(c) effectively becomes merge(a, b, c)
+ * - merge(a, merge(b, c)) effectively becomes merge(a, b, c)
+ * It does this by concatenating the sources arrays of
+ * any nested Merge sources, in effect "flattening" nested
+ * merge operations into a single merge.
+ */
+function mergeSources(streams) {
+	return new Merge(reduce(appendSources, [], streams))
 }
 
-function getSource(stream) {
-	return stream.source;
+function appendSources(sources, stream) {
+	var source = stream.source;
+	return source instanceof Merge
+		? sources.concat(source.sources)
+		: sources.concat(source)
 }
 
-function Merge(Sink, arg, sources) {
-	this.Sink = Sink;
-	this.arg = arg;
+function Merge(sources) {
 	this.sources = sources;
 }
 
@@ -2074,7 +1955,7 @@ Merge.prototype.run = function(sink, scheduler) {
 	var disposables = new Array(l);
 	var sinks = new Array(l);
 
-	var mergeSink = new this.Sink(disposables, sinks, sink, this.arg);
+	var mergeSink = new MergeSink(disposables, sinks, sink);
 
 	for(var indexSink, i=0; i<l; ++i) {
 		indexSink = sinks[i] = new IndexSink(i, mergeSink);
@@ -2103,7 +1984,7 @@ MergeSink.prototype.end = function(t, indexedValue) {
 	}
 };
 
-},{"../Stream":11,"../base":12,"../disposable/dispose":41,"../sink/IndexSink":55,"../sink/Pipe":57,"../source/core":62}],26:[function(require,module,exports){
+},{"../Stream":10,"../base":11,"../disposable/dispose":39,"../sink/IndexSink":53,"../sink/Pipe":55,"../source/core":59}],25:[function(require,module,exports){
 /** @license MIT License (c) copyright 2010-2016 original author or authors */
 /** @author Brian Cavalier */
 /** @author John Hann */
@@ -2157,7 +2038,7 @@ Outer.prototype._startInner = function(t, stream) {
 
 Outer.prototype.end = function(t, x) {
 	this.active = false;
-	this.disposable.dispose();
+	dispose.tryDispose(t, this.disposable, this.sink);
 	this._checkEnd(t, x);
 };
 
@@ -2213,32 +2094,7 @@ Inner.prototype.dispose = function() {
 	return this.disposable.dispose();
 };
 
-},{"../LinkedList":8,"../Stream":11,"../disposable/dispose":41}],27:[function(require,module,exports){
-/** @license MIT License (c) copyright 2010-2016 original author or authors */
-/** @author Brian Cavalier */
-/** @author John Hann */
-/** @contributor Maciej Ligenza */
-
-var Stream = require('../Stream');
-var MulticastSource = require('../source/MulticastSource');
-
-exports.multicast = multicast;
-
-/**
- * Transform the stream into a multicast stream, allowing it to be shared
- * more efficiently by many observers, without causing multiple invocation
- * of internal machinery.  Multicast is idempotent:
- * stream.multicast() === stream.multicast().multicast()
- * @param {Stream} stream to ensure is multicast.
- * @returns {Stream} new stream which will multicast events to all observers.
- */
-function multicast(stream) {
-	var source = stream.source;
-	return source instanceof MulticastSource ? stream
-		: new Stream(new MulticastSource(source));
-}
-
-},{"../Stream":11,"../source/MulticastSource":60}],28:[function(require,module,exports){
+},{"../LinkedList":7,"../Stream":10,"../disposable/dispose":39}],26:[function(require,module,exports){
 /** @license MIT License (c) copyright 2010-2016 original author or authors */
 /** @author Brian Cavalier */
 /** @author John Hann */
@@ -2270,13 +2126,14 @@ function drain(stream) {
 	return runSource.withDefaultScheduler(noop, stream.source);
 }
 
-},{"../base":12,"../runSource":48}],29:[function(require,module,exports){
+},{"../base":11,"../runSource":46}],27:[function(require,module,exports){
 /** @license MIT License (c) copyright 2010-2016 original author or authors */
 /** @author Brian Cavalier */
 /** @author John Hann */
 
 var Stream = require('../Stream');
 var fatal = require('../fatalError');
+var just = require('../source/core').of;
 
 exports.fromPromise = fromPromise;
 exports.awaitPromises = awaitPromises;
@@ -2289,50 +2146,8 @@ exports.awaitPromises = awaitPromises;
  *  If the promise rejects, the stream will error
  */
 function fromPromise(p) {
-	return new Stream(new PromiseSource(p));
+	return awaitPromises(just(p));
 }
-
-function PromiseSource(p) {
-	this.promise = p;
-}
-
-PromiseSource.prototype.run = function(sink, scheduler) {
-	return new PromiseProducer(this.promise, sink, scheduler);
-};
-
-function PromiseProducer(p, sink, scheduler) {
-	this.sink = sink;
-	this.scheduler = scheduler;
-	this.active = true;
-
-	var self = this;
-	Promise.resolve(p).then(function(x) {
-		self._emit(self.scheduler.now(), x);
-	}).catch(function(e) {
-		self._error(self.scheduler.now(), e);
-	});
-}
-
-PromiseProducer.prototype._emit = function(t, x) {
-	if(!this.active) {
-		return;
-	}
-
-	this.sink.event(t, x);
-	this.sink.end(t, void 0);
-};
-
-PromiseProducer.prototype._error = function(t, e) {
-	if(!this.active) {
-		return;
-	}
-
-	this.sink.error(t, e);
-};
-
-PromiseProducer.prototype.dispose = function() {
-	this.active = false;
-};
 
 /**
  * Turn a Stream<Promise<T>> into Stream<T> by awaiting each promise.
@@ -2403,7 +2218,7 @@ AwaitSink.prototype._end = function(x) {
 	return Promise.resolve(x).then(this._endBound);
 };
 
-},{"../Stream":11,"../fatalError":42}],30:[function(require,module,exports){
+},{"../Stream":10,"../fatalError":40,"../source/core":59}],28:[function(require,module,exports){
 /** @license MIT License (c) copyright 2010-2016 original author or authors */
 /** @author Brian Cavalier */
 /** @author John Hann */
@@ -2516,7 +2331,7 @@ function getValue(hold) {
 	return hold.value;
 }
 
-},{"../Stream":11,"../base":12,"../disposable/dispose":41,"../invoke":46,"../sink/Pipe":57}],31:[function(require,module,exports){
+},{"../Stream":10,"../base":11,"../disposable/dispose":39,"../invoke":44,"../sink/Pipe":55}],29:[function(require,module,exports){
 /** @license MIT License (c) copyright 2010-2016 original author or authors */
 /** @author Brian Cavalier */
 /** @author John Hann */
@@ -2680,13 +2495,13 @@ SkipWhileSink.prototype.event = function(t, x) {
 	this.sink.event(t, x);
 };
 
-},{"../Stream":11,"../disposable/dispose":41,"../sink/Pipe":57,"../source/core":62}],32:[function(require,module,exports){
+},{"../Stream":10,"../disposable/dispose":39,"../sink/Pipe":55,"../source/core":59}],30:[function(require,module,exports){
 /** @license MIT License (c) copyright 2010-2016 original author or authors */
 /** @author Brian Cavalier */
 /** @author John Hann */
 
 var Stream = require('../Stream');
-var MulticastSource = require('../source/MulticastSource');
+var MulticastSource = require('@most/multicast').MulticastSource;
 var until = require('./timeslice').takeUntil;
 var mergeConcurrently = require('./mergeConcurrently').mergeConcurrently;
 var map = require('./transform').map;
@@ -2709,7 +2524,7 @@ function switchLatest(stream) {
 	}
 }
 
-},{"../Stream":11,"../source/MulticastSource":60,"./mergeConcurrently":26,"./timeslice":33,"./transform":36}],33:[function(require,module,exports){
+},{"../Stream":10,"./mergeConcurrently":25,"./timeslice":31,"./transform":34,"@most/multicast":71}],31:[function(require,module,exports){
 /** @license MIT License (c) copyright 2010-2016 original author or authors */
 /** @author Brian Cavalier */
 /** @author John Hann */
@@ -2826,7 +2641,7 @@ UpperBound.prototype.dispose = function() {
 	return this.disposable.dispose();
 };
 
-},{"../Stream":11,"../base":12,"../combinator/flatMap":22,"../disposable/dispose":41,"../sink/Pipe":57}],34:[function(require,module,exports){
+},{"../Stream":10,"../base":11,"../combinator/flatMap":21,"../disposable/dispose":39,"../sink/Pipe":55}],32:[function(require,module,exports){
 /** @license MIT License (c) copyright 2010-2016 original author or authors */
 /** @author Brian Cavalier */
 /** @author John Hann */
@@ -2859,7 +2674,7 @@ TimestampSink.prototype.event = function(t, x) {
 	this.sink.event(t, { time: t, value: x });
 };
 
-},{"../Stream":11,"../sink/Pipe":57}],35:[function(require,module,exports){
+},{"../Stream":10,"../sink/Pipe":55}],33:[function(require,module,exports){
 /** @license MIT License (c) copyright 2010-2016 original author or authors */
 /** @author Brian Cavalier */
 /** @author John Hann */
@@ -2984,7 +2799,7 @@ LegacyTxAdapter.prototype.getResult = function(x) {
 	return x.value;
 };
 
-},{"../Stream":11}],36:[function(require,module,exports){
+},{"../Stream":10}],34:[function(require,module,exports){
 /** @license MIT License (c) copyright 2010-2016 original author or authors */
 /** @author Brian Cavalier */
 /** @author John Hann */
@@ -3032,7 +2847,7 @@ function tap(f, stream) {
 	}, stream);
 }
 
-},{"../Stream":11,"../fusion/Map":45}],37:[function(require,module,exports){
+},{"../Stream":10,"../fusion/Map":43}],35:[function(require,module,exports){
 /** @license MIT License (c) copyright 2010-2016 original author or authors */
 /** @author Brian Cavalier */
 /** @author John Hann */
@@ -3167,7 +2982,7 @@ function ready(buffers) {
 	return true;
 }
 
-},{"../Queue":10,"../Stream":11,"../base":12,"../disposable/dispose":41,"../invoke":46,"../sink/IndexSink":55,"../sink/Pipe":57,"../source/core":62,"./transform":36}],38:[function(require,module,exports){
+},{"../Queue":9,"../Stream":10,"../base":11,"../disposable/dispose":39,"../invoke":44,"../sink/IndexSink":53,"../sink/Pipe":55,"../source/core":59,"./transform":34}],36:[function(require,module,exports){
 /** @license MIT License (c) copyright 2010-2016 original author or authors */
 /** @author Brian Cavalier */
 /** @author John Hann */
@@ -3186,7 +3001,7 @@ function runTask(task) {
 	}
 }
 
-},{}],39:[function(require,module,exports){
+},{}],37:[function(require,module,exports){
 /** @license MIT License (c) copyright 2010-2016 original author or authors */
 /** @author Brian Cavalier */
 /** @author John Hann */
@@ -3208,7 +3023,7 @@ Disposable.prototype.dispose = function() {
 	return this._dispose(this._data);
 };
 
-},{}],40:[function(require,module,exports){
+},{}],38:[function(require,module,exports){
 /** @license MIT License (c) copyright 2010-2016 original author or authors */
 /** @author Brian Cavalier */
 /** @author John Hann */
@@ -3252,7 +3067,7 @@ SettableDisposable.prototype.dispose = function() {
 	return this.result;
 };
 
-},{}],41:[function(require,module,exports){
+},{}],39:[function(require,module,exports){
 /** @license MIT License (c) copyright 2010-2016 original author or authors */
 /** @author Brian Cavalier */
 /** @author John Hann */
@@ -3381,7 +3196,7 @@ function memoized(disposable) {
 	return { disposed: false, disposable: disposable, value: void 0 };
 }
 
-},{"../Promise":9,"../base":12,"./Disposable":39,"./SettableDisposable":40}],42:[function(require,module,exports){
+},{"../Promise":8,"../base":11,"./Disposable":37,"./SettableDisposable":38}],40:[function(require,module,exports){
 /** @license MIT License (c) copyright 2010-2016 original author or authors */
 /** @author Brian Cavalier */
 /** @author John Hann */
@@ -3394,7 +3209,7 @@ function fatalError (e) {
 	}, 0);
 }
 
-},{}],43:[function(require,module,exports){
+},{}],41:[function(require,module,exports){
 /** @license MIT License (c) copyright 2010-2016 original author or authors */
 /** @author Brian Cavalier */
 /** @author John Hann */
@@ -3445,7 +3260,7 @@ function and(p, q) {
 	};
 }
 
-},{"../sink/Pipe":57}],44:[function(require,module,exports){
+},{"../sink/Pipe":55}],42:[function(require,module,exports){
 /** @license MIT License (c) copyright 2010-2016 original author or authors */
 /** @author Brian Cavalier */
 /** @author John Hann */
@@ -3479,7 +3294,7 @@ FilterMapSink.prototype.event = function(t, x) {
 FilterMapSink.prototype.end = Pipe.prototype.end;
 FilterMapSink.prototype.error = Pipe.prototype.error;
 
-},{"../sink/Pipe":57}],45:[function(require,module,exports){
+},{"../sink/Pipe":55}],43:[function(require,module,exports){
 /** @license MIT License (c) copyright 2010-2016 original author or authors */
 /** @author Brian Cavalier */
 /** @author John Hann */
@@ -3536,7 +3351,7 @@ MapSink.prototype.event = function(t, x) {
 	this.sink.event(t, f(x));
 };
 
-},{"../base":12,"../sink/Pipe":57,"./Filter":43,"./FilterMap":44}],46:[function(require,module,exports){
+},{"../base":11,"../sink/Pipe":55,"./Filter":41,"./FilterMap":42}],44:[function(require,module,exports){
 /** @license MIT License (c) copyright 2010-2016 original author or authors */
 /** @author Brian Cavalier */
 /** @author John Hann */
@@ -3557,7 +3372,7 @@ function invoke(f, args) {
 	}
 }
 
-},{}],47:[function(require,module,exports){
+},{}],45:[function(require,module,exports){
 /** @license MIT License (c) copyright 2010-2016 original author or authors */
 /** @author Brian Cavalier */
 /** @author John Hann */
@@ -3590,7 +3405,7 @@ function makeIterable(f, o) {
 	return o;
 }
 
-},{}],48:[function(require,module,exports){
+},{}],46:[function(require,module,exports){
 /** @license MIT License (c) copyright 2010-2016 original author or authors */
 /** @author Brian Cavalier */
 /** @author John Hann */
@@ -3619,7 +3434,7 @@ function runSource(f, source, scheduler, resolve, reject) {
 	disposable.setDisposable(source.run(observer, scheduler));
 }
 
-},{"./disposable/dispose":41,"./scheduler/defaultScheduler":51,"./sink/Observer":56}],49:[function(require,module,exports){
+},{"./disposable/dispose":39,"./scheduler/defaultScheduler":49,"./sink/Observer":54}],47:[function(require,module,exports){
 /** @license MIT License (c) copyright 2010-2016 original author or authors */
 /** @author Brian Cavalier */
 /** @author John Hann */
@@ -3677,7 +3492,7 @@ function end(t, x, sink) {
 	sink.end(t, x);
 }
 
-},{"../fatalError":42}],50:[function(require,module,exports){
+},{"../fatalError":40}],48:[function(require,module,exports){
 /** @license MIT License (c) copyright 2010-2016 original author or authors */
 /** @author Brian Cavalier */
 /** @author John Hann */
@@ -3746,7 +3561,7 @@ Scheduler.prototype.periodic = function(period, task) {
 
 Scheduler.prototype.schedule = function(delay, period, task) {
 	var now = this.now();
-    var st = new ScheduledTask(now + Math.max(0, delay), period, task, this);
+	var st = new ScheduledTask(now + Math.max(0, delay), period, task, this);
 
 	insertByTime(st, this._tasks);
 	this._scheduleNextRun(now);
@@ -3759,15 +3574,23 @@ Scheduler.prototype.cancel = function(task) {
 
 	if(i >= 0 && i < this._tasks.length) {
 		var at = base.findIndex(task, this._tasks[i].events);
-        this._tasks[i].events.splice(at, 1);
-		this._reschedule();
+		if(at >= 0) {
+			this._tasks[i].events.splice(at, 1);
+			this._reschedule();
+		}
 	}
 };
 
 Scheduler.prototype.cancelAll = function(f) {
-	this._tasks = base.removeAll(f, this._tasks);
+	for(var i=0; i<this._tasks.length; ++i) {
+		removeAllFrom(f, this._tasks[i]);
+	}
 	this._reschedule();
 };
+
+function removeAllFrom(f, timeslot) {
+	timeslot.events = base.removeAll(f, timeslot.events);
+}
 
 Scheduler.prototype._reschedule = function() {
 	if(this._tasks.length === 0) {
@@ -3893,7 +3716,7 @@ function newTimeslot(t, events) {
 	return { time: t, events: events };
 }
 
-},{"./../base":12}],51:[function(require,module,exports){
+},{"./../base":11}],49:[function(require,module,exports){
 (function (process){
 /** @license MIT License (c) copyright 2010-2016 original author or authors */
 /** @author Brian Cavalier */
@@ -3909,7 +3732,7 @@ var isNode = typeof process === 'object'
 module.exports = new Scheduler(isNode ? nodeTimer : setTimeoutTimer);
 
 }).call(this,require('_process'))
-},{"./Scheduler":50,"./nodeTimer":52,"./timeoutTimer":53,"_process":114}],52:[function(require,module,exports){
+},{"./Scheduler":48,"./nodeTimer":50,"./timeoutTimer":51,"_process":171}],50:[function(require,module,exports){
 /** @license MIT License (c) copyright 2010-2016 original author or authors */
 /** @author Brian Cavalier */
 /** @author John Hann */
@@ -3955,7 +3778,7 @@ module.exports = {
 	}
 };
 
-},{"../defer":38}],53:[function(require,module,exports){
+},{"../defer":36}],51:[function(require,module,exports){
 /** @license MIT License (c) copyright 2010-2016 original author or authors */
 /** @author Brian Cavalier */
 /** @author John Hann */
@@ -3972,7 +3795,7 @@ module.exports = {
 	}
 };
 
-},{}],54:[function(require,module,exports){
+},{}],52:[function(require,module,exports){
 /** @license MIT License (c) copyright 2010-2016 original author or authors */
 /** @author Brian Cavalier */
 /** @author John Hann */
@@ -4061,7 +3884,7 @@ ErrorTask.prototype.error = function(e) {
 	throw e;
 };
 
-},{"../defer":38}],55:[function(require,module,exports){
+},{"../defer":36}],53:[function(require,module,exports){
 /** @license MIT License (c) copyright 2010-2016 original author or authors */
 /** @author Brian Cavalier */
 /** @author John Hann */
@@ -4103,7 +3926,7 @@ IndexSink.prototype.end = function(t, x) {
 
 IndexSink.prototype.error = Sink.prototype.error;
 
-},{"./Pipe":57}],56:[function(require,module,exports){
+},{"./Pipe":55}],54:[function(require,module,exports){
 /** @license MIT License (c) copyright 2010-2016 original author or authors */
 /** @author Brian Cavalier */
 /** @author John Hann */
@@ -4149,7 +3972,7 @@ function disposeThen(end, error, disposable, x) {
 	}, error);
 }
 
-},{}],57:[function(require,module,exports){
+},{}],55:[function(require,module,exports){
 /** @license MIT License (c) copyright 2010-2016 original author or authors */
 /** @author Brian Cavalier */
 /** @author John Hann */
@@ -4178,7 +4001,7 @@ Pipe.prototype.error = function(t, e) {
 	return this.sink.error(t, e);
 };
 
-},{}],58:[function(require,module,exports){
+},{}],56:[function(require,module,exports){
 /** @license MIT License (c) copyright 2010-2016 original author or authors */
 /** @author Brian Cavalier */
 /** @author John Hann */
@@ -4225,7 +4048,7 @@ function disposeEventEmitter(info) {
 	target.source.removeListener(target.event, info.addEvent);
 }
 
-},{"../disposable/dispose":41,"../sink/DeferredSink":54,"./tryEvent":71}],59:[function(require,module,exports){
+},{"../disposable/dispose":39,"../sink/DeferredSink":52,"./tryEvent":68}],57:[function(require,module,exports){
 /** @license MIT License (c) copyright 2010-2016 original author or authors */
 /** @author Brian Cavalier */
 /** @author John Hann */
@@ -4257,98 +4080,7 @@ function disposeEventTarget(info) {
 	target.source.removeEventListener(target.event, info.addEvent, target.capture);
 }
 
-},{"../disposable/dispose":41,"./tryEvent":71}],60:[function(require,module,exports){
-/** @license MIT License (c) copyright 2010-2016 original author or authors */
-/** @author Brian Cavalier */
-/** @author John Hann */
-
-var base = require('../base');
-
-module.exports = MulticastSource;
-
-function MulticastSource(source) {
-	this.source = source;
-	this.sinks = [];
-	this._disposable = void 0;
-}
-
-MulticastSource.prototype.run = function(sink, scheduler) {
-	var n = this.add(sink);
-	if(n === 1) {
-		this._disposable = this.source.run(this, scheduler);
-	}
-
-	return new MulticastDisposable(this, sink);
-};
-
-MulticastSource.prototype._dispose = function() {
-	var disposable = this._disposable;
-	this._disposable = void 0;
-	return Promise.resolve(disposable).then(dispose);
-};
-
-function dispose(disposable) {
-	if(disposable === void 0) {
-		return;
-	}
-	return disposable.dispose();
-}
-
-function MulticastDisposable(source, sink) {
-	this.source = source;
-	this.sink = sink;
-}
-
-MulticastDisposable.prototype.dispose = function() {
-	var s = this.source;
-	var remaining = s.remove(this.sink);
-	return remaining === 0 && s._dispose();
-};
-
-MulticastSource.prototype.add = function(sink) {
-	this.sinks = base.append(sink, this.sinks);
-	return this.sinks.length;
-};
-
-MulticastSource.prototype.remove = function(sink) {
-	this.sinks = base.remove(base.findIndex(sink, this.sinks), this.sinks);
-	return this.sinks.length;
-};
-
-MulticastSource.prototype.event = function(t, x) {
-	var s = this.sinks;
-	if(s.length === 1) {
-		s[0].event(t, x);
-		return;
-	}
-	for(var i=0; i<s.length; ++i) {
-		s[i].event(t, x);
-	}
-};
-
-MulticastSource.prototype.end = function(t, x) {
-	var s = this.sinks;
-	if(s.length === 1) {
-		s[0].end(t, x);
-		return;
-	}
-	for(var i=0; i<s.length; ++i) {
-		s[i].end(t, x);
-	}
-};
-
-MulticastSource.prototype.error = function(t, e) {
-	var s = this.sinks;
-	if(s.length === 1) {
-		s[0].error(t, e);
-		return;
-	}
-	for (var i=0; i<s.length; ++i) {
-		s[i].error(t, e);
-	}
-};
-
-},{"../base":12}],61:[function(require,module,exports){
+},{"../disposable/dispose":39,"./tryEvent":68}],58:[function(require,module,exports){
 /** @license MIT License (c) copyright 2010-2016 original author or authors */
 /** @author Brian Cavalier */
 /** @author John Hann */
@@ -4367,15 +4099,14 @@ ValueSource.prototype.run = function(sink, scheduler) {
 };
 
 function ValueProducer(emit, x, sink, scheduler) {
-	this.task = new PropagateTask(emit, x, sink);
-	scheduler.asap(this.task);
+	this.task = scheduler.asap(new PropagateTask(emit, x, sink));
 }
 
 ValueProducer.prototype.dispose = function() {
-	return this.task.dispose();
+	return this.task.cancel();
 };
 
-},{"../scheduler/PropagateTask":49}],62:[function(require,module,exports){
+},{"../scheduler/PropagateTask":47}],59:[function(require,module,exports){
 /** @license MIT License (c) copyright 2010-2016 original author or authors */
 /** @author Brian Cavalier */
 /** @author John Hann */
@@ -4442,13 +4173,13 @@ NeverSource.prototype.run = function() {
 
 var NEVER = new Stream(new NeverSource());
 
-},{"../Stream":11,"../disposable/dispose":41,"../scheduler/PropagateTask":49,"../source/ValueSource":61}],63:[function(require,module,exports){
+},{"../Stream":10,"../disposable/dispose":39,"../scheduler/PropagateTask":47,"../source/ValueSource":58}],60:[function(require,module,exports){
 /** @license MIT License (c) copyright 2010-2016 original author or authors */
 /** @author Brian Cavalier */
 /** @author John Hann */
 
 var Stream = require('../Stream');
-var MulticastSource = require('./MulticastSource');
+var MulticastSource = require('@most/multicast').MulticastSource;
 var DeferredSink = require('../sink/DeferredSink');
 var tryEvent = require('./tryEvent');
 
@@ -4520,7 +4251,7 @@ Subscription.prototype.dispose = function() {
 	}
 };
 
-},{"../Stream":11,"../sink/DeferredSink":54,"./MulticastSource":60,"./tryEvent":71}],64:[function(require,module,exports){
+},{"../Stream":10,"../sink/DeferredSink":52,"./tryEvent":68,"@most/multicast":71}],61:[function(require,module,exports){
 /** @license MIT License (c) copyright 2010-2016 original author or authors */
 /** @author Brian Cavalier */
 /** @author John Hann */
@@ -4544,7 +4275,7 @@ function from(a) {
 	throw new TypeError('not iterable: ' + a);
 }
 
-},{"../base":12,"../iterable":47,"./fromArray":65,"./fromIterable":67}],65:[function(require,module,exports){
+},{"../base":11,"../iterable":45,"./fromArray":62,"./fromIterable":64}],62:[function(require,module,exports){
 /** @license MIT License (c) copyright 2010-2016 original author or authors */
 /** @author Brian Cavalier */
 /** @author John Hann */
@@ -4592,13 +4323,13 @@ function produce(task, array, sink) {
 	}
 }
 
-},{"../Stream":11,"../scheduler/PropagateTask":49}],66:[function(require,module,exports){
+},{"../Stream":10,"../scheduler/PropagateTask":47}],63:[function(require,module,exports){
 /** @license MIT License (c) copyright 2010-2016 original author or authors */
 /** @author Brian Cavalier */
 /** @author John Hann */
 
 var Stream = require('../Stream');
-var MulticastSource = require('./MulticastSource');
+var MulticastSource = require('@most/multicast').MulticastSource;
 var EventTargetSource = require('./EventTargetSource');
 var EventEmitterSource = require('./EventEmitterSource');
 
@@ -4628,7 +4359,7 @@ function fromEvent(event, source /*, useCapture = false */) {
 	return new Stream(s);
 }
 
-},{"../Stream":11,"./EventEmitterSource":58,"./EventTargetSource":59,"./MulticastSource":60}],67:[function(require,module,exports){
+},{"../Stream":10,"./EventEmitterSource":56,"./EventTargetSource":57,"@most/multicast":71}],64:[function(require,module,exports){
 /** @license MIT License (c) copyright 2010-2016 original author or authors */
 /** @author Brian Cavalier */
 /** @author John Hann */
@@ -4673,7 +4404,7 @@ function runProducer(t, producer, sink) {
 	producer.scheduler.asap(producer.task);
 }
 
-},{"../Stream":11,"../iterable":47,"../scheduler/PropagateTask":49}],68:[function(require,module,exports){
+},{"../Stream":10,"../iterable":45,"../scheduler/PropagateTask":47}],65:[function(require,module,exports){
 /** @license MIT License (c) copyright 2010-2014 original author or authors */
 /** @author Brian Cavalier */
 /** @author John Hann */
@@ -4745,7 +4476,7 @@ Generate.prototype.dispose = function() {
 	this.active = false;
 };
 
-},{"../Stream":11,"../base":12}],69:[function(require,module,exports){
+},{"../Stream":10,"../base":11}],66:[function(require,module,exports){
 /** @license MIT License (c) copyright 2010-2016 original author or authors */
 /** @author Brian Cavalier */
 /** @author John Hann */
@@ -4815,14 +4546,14 @@ function continueIterate(iterate, x) {
 	return !iterate.active ? iterate.value : stepIterate(iterate, x);
 }
 
-},{"../Stream":11}],70:[function(require,module,exports){
+},{"../Stream":10}],67:[function(require,module,exports){
 /** @license MIT License (c) copyright 2010-2016 original author or authors */
 /** @author Brian Cavalier */
 /** @author John Hann */
 
 var Stream = require('../Stream');
 var dispose = require('../disposable/dispose');
-var MulticastSource = require('./MulticastSource');
+var MulticastSource = require('@most/multicast').MulticastSource;
 var PropagateTask = require('../scheduler/PropagateTask');
 
 exports.periodic = periodic;
@@ -4855,7 +4586,7 @@ function emit(t, x, sink) {
 	sink.event(t, x);
 }
 
-},{"../Stream":11,"../disposable/dispose":41,"../scheduler/PropagateTask":49,"./MulticastSource":60}],71:[function(require,module,exports){
+},{"../Stream":10,"../disposable/dispose":39,"../scheduler/PropagateTask":47,"@most/multicast":71}],68:[function(require,module,exports){
 /** @license MIT License (c) copyright 2010-2016 original author or authors */
 /** @author Brian Cavalier */
 /** @author John Hann */
@@ -4879,7 +4610,7 @@ function tryEnd(t, x, sink) {
 	}
 }
 
-},{}],72:[function(require,module,exports){
+},{}],69:[function(require,module,exports){
 /** @license MIT License (c) copyright 2010-2016 original author or authors */
 /** @author Brian Cavalier */
 /** @author John Hann */
@@ -4954,7 +4685,7 @@ function continueUnfold(unfold, tuple) {
 	return stepUnfold(unfold, tuple.seed);
 }
 
-},{"../Stream":11}],73:[function(require,module,exports){
+},{"../Stream":10}],70:[function(require,module,exports){
 /** @license MIT License (c) copyright 2010-2016 original author or authors */
 /** @author Brian Cavalier */
 /** @author John Hann */
@@ -5106,6 +4837,7 @@ exports.concat    = build.concat;
 exports.startWith = build.cons;
 
 /**
+ * @deprecated
  * Tie this stream into a circle, thus creating an infinite stream
  * @returns {Stream} new infinite stream
  */
@@ -5622,7 +5354,7 @@ Stream.prototype.recoverWith = Stream.prototype.flatMapError = function(f) {
 //-----------------------------------------------------------------------
 // Multicasting
 
-var multicast = require('./lib/combinator/multicast').multicast;
+var multicast = require('@most/multicast').default;
 
 exports.multicast = multicast;
 
@@ -5635,25 +5367,30 @@ Stream.prototype.multicast = function() {
 	return multicast(this);
 };
 
-},{"./lib/Stream":11,"./lib/base":12,"./lib/combinator/accumulate":13,"./lib/combinator/applicative":14,"./lib/combinator/build":15,"./lib/combinator/combine":16,"./lib/combinator/concatMap":17,"./lib/combinator/continueWith":18,"./lib/combinator/delay":19,"./lib/combinator/errors":20,"./lib/combinator/filter":21,"./lib/combinator/flatMap":22,"./lib/combinator/limit":23,"./lib/combinator/loop":24,"./lib/combinator/merge":25,"./lib/combinator/mergeConcurrently":26,"./lib/combinator/multicast":27,"./lib/combinator/observe":28,"./lib/combinator/promises":29,"./lib/combinator/sample":30,"./lib/combinator/slice":31,"./lib/combinator/switch":32,"./lib/combinator/timeslice":33,"./lib/combinator/timestamp":34,"./lib/combinator/transduce":35,"./lib/combinator/transform":36,"./lib/combinator/zip":37,"./lib/source/core":62,"./lib/source/create":63,"./lib/source/from":64,"./lib/source/fromEvent":66,"./lib/source/generate":68,"./lib/source/iterate":69,"./lib/source/periodic":70,"./lib/source/unfold":72}],74:[function(require,module,exports){
+},{"./lib/Stream":10,"./lib/base":11,"./lib/combinator/accumulate":12,"./lib/combinator/applicative":13,"./lib/combinator/build":14,"./lib/combinator/combine":15,"./lib/combinator/concatMap":16,"./lib/combinator/continueWith":17,"./lib/combinator/delay":18,"./lib/combinator/errors":19,"./lib/combinator/filter":20,"./lib/combinator/flatMap":21,"./lib/combinator/limit":22,"./lib/combinator/loop":23,"./lib/combinator/merge":24,"./lib/combinator/mergeConcurrently":25,"./lib/combinator/observe":26,"./lib/combinator/promises":27,"./lib/combinator/sample":28,"./lib/combinator/slice":29,"./lib/combinator/switch":30,"./lib/combinator/timeslice":31,"./lib/combinator/timestamp":32,"./lib/combinator/transduce":33,"./lib/combinator/transform":34,"./lib/combinator/zip":35,"./lib/source/core":59,"./lib/source/create":60,"./lib/source/from":61,"./lib/source/fromEvent":63,"./lib/source/generate":65,"./lib/source/iterate":66,"./lib/source/periodic":67,"./lib/source/unfold":69,"@most/multicast":71}],71:[function(require,module,exports){
+arguments[4][2][0].apply(exports,arguments)
+},{"@most/prelude":72,"dup":2}],72:[function(require,module,exports){
+arguments[4][3][0].apply(exports,arguments)
+},{"dup":3}],73:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
+exports.makeEventsSelector = undefined;
 
 var _domEvent = require('@most/dom-event');
 
-var _select = require('./select');
+var _makeIsStrictlyInRootScope = require('./makeIsStrictlyInRootScope');
 
-var matchesSelector = undefined;
+var matchesSelector = void 0;
 try {
   matchesSelector = require('matches-selector');
-} catch (err) {
+} catch (e) {
   matchesSelector = function matchesSelector() {};
 }
 
-var eventTypesThatDontBubble = ['load', 'unload', 'focus', 'blur', 'mouseenter', 'mouseleave', 'submit', 'change', 'reset'];
+var eventTypesThatDontBubble = ['load', 'unload', 'focus', 'blur', 'mouseenter', 'mouseleave', 'submit', 'change', 'reset', 'timeupdate', 'playing', 'waiting', 'seeking', 'seeked', 'ended', 'loadedmetadata', 'loadeddata', 'canplay', 'canplaythrough', 'durationchange', 'play', 'pause', 'ratechange', 'volumechange', 'suspend', 'emptied', 'stalled'];
 
 function maybeMutateEventPropagationAttributes(event) {
   if (!event.hasOwnProperty('propagationHasBeenStopped')) {
@@ -5681,7 +5418,7 @@ function mutateEventCurrentTarget(event, currentTargetElement) {
 }
 
 function makeSimulateBubbling(namespace, rootEl) {
-  var isStrictlyInRootScope = (0, _select.makeIsStrictlyInRootScope)(namespace);
+  var isStrictlyInRootScope = (0, _makeIsStrictlyInRootScope.makeIsStrictlyInRootScope)(namespace);
   var descendantSel = namespace.join(' ');
   var topSel = namespace.join('');
   var roof = rootEl.parentElement;
@@ -5708,63 +5445,364 @@ var defaults = {
   useCapture: false
 };
 
-function makeEventsSelector(rootElement$, selector) {
+function makeEventsSelector(rootElement$, namespace) {
   return function eventsSelector(type) {
     var options = arguments.length <= 1 || arguments[1] === undefined ? defaults : arguments[1];
 
     if (typeof type !== 'string') {
-      throw new Error('DOM drivers events() expects argument to be a ' + 'string representing the event type to listen for.');
+      throw new Error('DOM driver\'s events() expects argument to be a ' + 'string representing the event type to listen for.');
     }
     var useCapture = false;
-    if (eventTypesThatDontBubble.indexOf(type) !== -1) {
-      useCapture = true;
-    }
     if (typeof options.useCapture === 'boolean') {
       useCapture = options.useCapture;
     }
+    if (eventTypesThatDontBubble.indexOf(type) !== -1) {
+      useCapture = true;
+    }
+
     return rootElement$.map(function (rootElement) {
-      return { rootElement: rootElement, selector: selector };
+      return { rootElement: rootElement, namespace: namespace };
     }).skipRepeatsWith(function (prev, curr) {
-      return prev.selector.join('') === curr.selector.join('');
+      return prev.namespace.join('') === curr.namespace.join('');
     }).map(function (_ref) {
       var rootElement = _ref.rootElement;
 
-      if (!selector || selector.lenght === 0) {
+      if (!namespace || namespace.length === 0) {
         return (0, _domEvent.domEvent)(type, rootElement, useCapture);
       }
-
-      var simulateBubbling = makeSimulateBubbling(selector, rootElement);
+      var simulateBubbling = makeSimulateBubbling(namespace, rootElement);
       return (0, _domEvent.domEvent)(type, rootElement, useCapture).filter(simulateBubbling);
     }).switch().multicast();
   };
 }
 
-exports.default = makeEventsSelector;
-},{"./select":78,"@most/dom-event":81,"matches-selector":101}],75:[function(require,module,exports){
+exports.makeEventsSelector = makeEventsSelector;
+},{"./makeIsStrictlyInRootScope":78,"@most/dom-event":84,"matches-selector":89}],74:[function(require,module,exports){
 'use strict';
 
-var _h = require('snabbdom/h');
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
 
-var _h2 = _interopRequireDefault(_h);
+var _vnode = require('snabbdom/vnode');
+
+var _vnode2 = _interopRequireDefault(_vnode);
+
+var _is = require('snabbdom/is');
+
+var _is2 = _interopRequireDefault(_is);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var isObservable = function isObservable(x) {
+  return typeof x.observe === 'function';
+};
+
+var addNSToObservable = function addNSToObservable(vNode) {
+  addNS(vNode.data, vNode.children); // eslint-disable-line
+};
+
+function addNS(data, children) {
+  data.ns = 'http://www.w3.org/2000/svg';
+  if (typeof children !== 'undefined' && _is2.default.array(children)) {
+    for (var i = 0; i < children.length; ++i) {
+      if (isObservable(children[i])) {
+        children[i] = children[i].tap(addNSToObservable);
+      } else {
+        addNS(children[i].data, children[i].children);
+      }
+    }
+  }
+}
+
+/* eslint-disable */
+function h(sel, b, c) {
+  var data = {};
+  var children = void 0;
+  var text = void 0;
+  var i = void 0;
+  if (arguments.length === 3) {
+    data = b;
+    if (_is2.default.array(c)) {
+      children = c;
+    } else if (_is2.default.primitive(c)) {
+      text = c;
+    }
+  } else if (arguments.length === 2) {
+    if (_is2.default.array(b)) {
+      children = b;
+    } else if (_is2.default.primitive(b)) {
+      text = b;
+    } else {
+      data = b;
+    }
+  }
+  if (_is2.default.array(children)) {
+    for (i = 0; i < children.length; ++i) {
+      if (_is2.default.primitive(children[i])) {
+        children[i] = (0, _vnode2.default)(undefined, undefined, undefined, children[i]);
+      }
+    }
+  }
+  if (sel[0] === 's' && sel[1] === 'v' && sel[2] === 'g') {
+    addNS(data, children);
+  }
+  return (0, _vnode2.default)(sel, data || {}, children, text, undefined);
+}
+/* eslint-enable */
+
+exports.default = h;
+},{"snabbdom/is":161,"snabbdom/vnode":170}],75:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.mockDOMSource = exports.makeDOMDriver = exports.video = exports.ul = exports.u = exports.tr = exports.title = exports.thead = exports.th = exports.tfoot = exports.textarea = exports.td = exports.tbody = exports.table = exports.sup = exports.sub = exports.style = exports.strong = exports.span = exports.source = exports.small = exports.select = exports.section = exports.script = exports.samp = exports.s = exports.ruby = exports.rt = exports.rp = exports.q = exports.pre = exports.param = exports.p = exports.option = exports.optgroup = exports.ol = exports.object = exports.noscript = exports.nav = exports.meta = exports.menu = exports.mark = exports.map = exports.main = exports.link = exports.li = exports.legend = exports.label = exports.keygen = exports.kbd = exports.ins = exports.input = exports.img = exports.iframe = exports.i = exports.html = exports.hr = exports.hgroup = exports.header = exports.head = exports.h6 = exports.h5 = exports.h4 = exports.h3 = exports.h2 = exports.h1 = exports.form = exports.footer = exports.figure = exports.figcaption = exports.fieldset = exports.embed = exports.em = exports.dt = exports.dl = exports.div = exports.dir = exports.dfn = exports.del = exports.dd = exports.colgroup = exports.col = exports.code = exports.cite = exports.caption = exports.canvas = exports.button = exports.br = exports.body = exports.blockquote = exports.bdo = exports.bdi = exports.base = exports.b = exports.audio = exports.aside = exports.article = exports.area = exports.address = exports.abbr = exports.a = exports.h = exports.thunk = exports.modules = undefined;
+
+var _makeDOMDriver = require('./makeDOMDriver');
+
+Object.defineProperty(exports, 'makeDOMDriver', {
+  enumerable: true,
+  get: function get() {
+    return _makeDOMDriver.makeDOMDriver;
+  }
+});
+
+var _mockDOMSource = require('./mockDOMSource');
+
+Object.defineProperty(exports, 'mockDOMSource', {
+  enumerable: true,
+  get: function get() {
+    return _mockDOMSource.mockDOMSource;
+  }
+});
+
+var _modules = require('./modules');
+
+var modules = _interopRequireWildcard(_modules);
 
 var _thunk = require('snabbdom/thunk');
 
 var _thunk2 = _interopRequireDefault(_thunk);
 
-var _makeDOMDriver = require('./makeDOMDriver');
+var _hyperscript = require('./hyperscript');
 
-var _makeDOMDriver2 = _interopRequireDefault(_makeDOMDriver);
+var _hyperscript2 = _interopRequireDefault(_hyperscript);
 
-var _assign = require('fast.js/object/assign');
+var _hyperscriptHelpers = require('hyperscript-helpers');
 
-var _assign2 = _interopRequireDefault(_assign);
+var _hyperscriptHelpers2 = _interopRequireDefault(_hyperscriptHelpers);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var hh = require('hyperscript-helpers')(_h2.default);
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
-module.exports = (0, _assign2.default)({ makeDOMDriver: _makeDOMDriver2.default, h: _h2.default, thunk: _thunk2.default }, hh);
-},{"./makeDOMDriver":77,"fast.js/object/assign":99,"hyperscript-helpers":100,"snabbdom/h":105,"snabbdom/thunk":112}],76:[function(require,module,exports){
+exports.modules = modules;
+exports.thunk = _thunk2.default;
+exports.h = _hyperscript2.default;
+
+var _hh = (0, _hyperscriptHelpers2.default)(_hyperscript2.default);
+
+var a = _hh.a;
+var abbr = _hh.abbr;
+var address = _hh.address;
+var area = _hh.area;
+var article = _hh.article;
+var aside = _hh.aside;
+var audio = _hh.audio;
+var b = _hh.b;
+var base = _hh.base;
+var bdi = _hh.bdi;
+var bdo = _hh.bdo;
+var blockquote = _hh.blockquote;
+var body = _hh.body;
+var br = _hh.br;
+var button = _hh.button;
+var canvas = _hh.canvas;
+var caption = _hh.caption;
+var cite = _hh.cite;
+var code = _hh.code;
+var col = _hh.col;
+var colgroup = _hh.colgroup;
+var dd = _hh.dd;
+var del = _hh.del;
+var dfn = _hh.dfn;
+var dir = _hh.dir;
+var div = _hh.div;
+var dl = _hh.dl;
+var dt = _hh.dt;
+var em = _hh.em;
+var embed = _hh.embed;
+var fieldset = _hh.fieldset;
+var figcaption = _hh.figcaption;
+var figure = _hh.figure;
+var footer = _hh.footer;
+var form = _hh.form;
+var h1 = _hh.h1;
+var h2 = _hh.h2;
+var h3 = _hh.h3;
+var h4 = _hh.h4;
+var h5 = _hh.h5;
+var h6 = _hh.h6;
+var head = _hh.head;
+var header = _hh.header;
+var hgroup = _hh.hgroup;
+var hr = _hh.hr;
+var html = _hh.html;
+var i = _hh.i;
+var iframe = _hh.iframe;
+var img = _hh.img;
+var input = _hh.input;
+var ins = _hh.ins;
+var kbd = _hh.kbd;
+var keygen = _hh.keygen;
+var label = _hh.label;
+var legend = _hh.legend;
+var li = _hh.li;
+var link = _hh.link;
+var main = _hh.main;
+var map = _hh.map;
+var mark = _hh.mark;
+var menu = _hh.menu;
+var meta = _hh.meta;
+var nav = _hh.nav;
+var noscript = _hh.noscript;
+var object = _hh.object;
+var ol = _hh.ol;
+var optgroup = _hh.optgroup;
+var option = _hh.option;
+var p = _hh.p;
+var param = _hh.param;
+var pre = _hh.pre;
+var q = _hh.q;
+var rp = _hh.rp;
+var rt = _hh.rt;
+var ruby = _hh.ruby;
+var s = _hh.s;
+var samp = _hh.samp;
+var script = _hh.script;
+var section = _hh.section;
+var select = _hh.select;
+var small = _hh.small;
+var source = _hh.source;
+var span = _hh.span;
+var strong = _hh.strong;
+var style = _hh.style;
+var sub = _hh.sub;
+var sup = _hh.sup;
+var table = _hh.table;
+var tbody = _hh.tbody;
+var td = _hh.td;
+var textarea = _hh.textarea;
+var tfoot = _hh.tfoot;
+var th = _hh.th;
+var thead = _hh.thead;
+var title = _hh.title;
+var tr = _hh.tr;
+var u = _hh.u;
+var ul = _hh.ul;
+var video = _hh.video;
+exports.a = a;
+exports.abbr = abbr;
+exports.address = address;
+exports.area = area;
+exports.article = article;
+exports.aside = aside;
+exports.audio = audio;
+exports.b = b;
+exports.base = base;
+exports.bdi = bdi;
+exports.bdo = bdo;
+exports.blockquote = blockquote;
+exports.body = body;
+exports.br = br;
+exports.button = button;
+exports.canvas = canvas;
+exports.caption = caption;
+exports.cite = cite;
+exports.code = code;
+exports.col = col;
+exports.colgroup = colgroup;
+exports.dd = dd;
+exports.del = del;
+exports.dfn = dfn;
+exports.dir = dir;
+exports.div = div;
+exports.dl = dl;
+exports.dt = dt;
+exports.em = em;
+exports.embed = embed;
+exports.fieldset = fieldset;
+exports.figcaption = figcaption;
+exports.figure = figure;
+exports.footer = footer;
+exports.form = form;
+exports.h1 = h1;
+exports.h2 = h2;
+exports.h3 = h3;
+exports.h4 = h4;
+exports.h5 = h5;
+exports.h6 = h6;
+exports.head = head;
+exports.header = header;
+exports.hgroup = hgroup;
+exports.hr = hr;
+exports.html = html;
+exports.i = i;
+exports.iframe = iframe;
+exports.img = img;
+exports.input = input;
+exports.ins = ins;
+exports.kbd = kbd;
+exports.keygen = keygen;
+exports.label = label;
+exports.legend = legend;
+exports.li = li;
+exports.link = link;
+exports.main = main;
+exports.map = map;
+exports.mark = mark;
+exports.menu = menu;
+exports.meta = meta;
+exports.nav = nav;
+exports.noscript = noscript;
+exports.object = object;
+exports.ol = ol;
+exports.optgroup = optgroup;
+exports.option = option;
+exports.p = p;
+exports.param = param;
+exports.pre = pre;
+exports.q = q;
+exports.rp = rp;
+exports.rt = rt;
+exports.ruby = ruby;
+exports.s = s;
+exports.samp = samp;
+exports.script = script;
+exports.section = section;
+exports.select = select;
+exports.small = small;
+exports.source = source;
+exports.span = span;
+exports.strong = strong;
+exports.style = style;
+exports.sub = sub;
+exports.sup = sup;
+exports.table = table;
+exports.tbody = tbody;
+exports.td = td;
+exports.textarea = textarea;
+exports.tfoot = tfoot;
+exports.th = th;
+exports.thead = thead;
+exports.title = title;
+exports.tr = tr;
+exports.u = u;
+exports.ul = ul;
+exports.video = video;
+},{"./hyperscript":74,"./makeDOMDriver":77,"./mockDOMSource":79,"./modules":80,"hyperscript-helpers":88,"snabbdom/thunk":169}],76:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -5781,29 +5819,37 @@ var isolateSource = function isolateSource(source_, scope) {
 var isolateSink = function isolateSink(sink, scope) {
   return sink.map(function (vTree) {
     if (vTree.sel.indexOf('' + _utils.SCOPE_PREFIX + scope) === -1) {
-      vTree.sel = vTree.sel + '.' + _utils.SCOPE_PREFIX + scope;
+      if (vTree.data.ns) {
+        // svg elements
+        var _vTree$data$attrs = vTree.data.attrs;
+        var attrs = _vTree$data$attrs === undefined ? {} : _vTree$data$attrs;
+
+        attrs.class = (attrs.class || '') + ' ' + _utils.SCOPE_PREFIX + scope;
+      } else {
+        vTree.sel = vTree.sel + '.' + _utils.SCOPE_PREFIX + scope;
+      }
     }
     return vTree;
-  }).multicast();
+  });
 };
 
 exports.isolateSink = isolateSink;
 exports.isolateSource = isolateSource;
-},{"./utils":79}],77:[function(require,module,exports){
-(function (global){
+},{"./utils":83}],77:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
+exports.makeDOMDriver = undefined;
+
+var _most = require('most');
 
 var _hold = require('@most/hold');
 
 var _hold2 = _interopRequireDefault(_hold);
 
 var _snabbdom = require('snabbdom');
-
-var _snabbdom2 = _interopRequireDefault(_snabbdom);
 
 var _h = require('snabbdom/h');
 
@@ -5819,15 +5865,17 @@ var _selectorParser3 = _interopRequireDefault(_selectorParser2);
 
 var _utils = require('./utils');
 
-var _vTreeParser = require('./vTreeParser');
+var _modules = require('./modules');
 
-var _vTreeParser2 = _interopRequireDefault(_vTreeParser);
+var _modules2 = _interopRequireDefault(_modules);
+
+var _transposition = require('./transposition');
 
 var _isolate = require('./isolate');
 
 var _select = require('./select');
 
-var _select2 = _interopRequireDefault(_select);
+var _events = require('./events');
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -5846,7 +5894,8 @@ function makeVNodeWrapper(rootElement) {
     var _vNodeDataProps$id = vNodeDataProps.id;
     var vNodeId = _vNodeDataProps$id === undefined ? selectorId : _vNodeDataProps$id;
 
-    var isVNodeAndRootElementIdentical = vNodeId === rootElement.id && selectorTagName === rootElement.tagName && vNodeClassName === rootElement.className;
+
+    var isVNodeAndRootElementIdentical = vNodeId.toUpperCase() === rootElement.id.toUpperCase() && selectorTagName.toUpperCase() === rootElement.tagName.toUpperCase() && vNodeClassName.toUpperCase() === rootElement.className.toUpperCase();
 
     if (isVNodeAndRootElementIdentical) {
       return vNode;
@@ -5862,38 +5911,51 @@ function makeVNodeWrapper(rootElement) {
   };
 }
 
-var domDriverInputGuard = function domDriverInputGuard(view$) {
+function DOMDriverInputGuard(view$) {
   if (!view$ || typeof view$.observe !== 'function') {
     throw new Error('The DOM driver function expects as input an ' + 'Observable of virtual DOM elements');
   }
-};
-
-// snabbdoms style module blows up server-side
-// because rAf is not defined
-if (typeof window === 'undefined') {
-  global.requestAnimationFrame = setTimeout;
 }
 
-var defaultOptions = {
-  modules: [require('snabbdom/modules/class'), require('snabbdom/modules/props'), require('snabbdom/modules/attributes'), require('snabbdom/modules/style')]
+function defaultOnErrorFn(msg) {
+  if (console && console.error) {
+    console.error(msg);
+  } else {
+    console.log(msg);
+  }
+}
+
+var defaults = {
+  modules: _modules2.default,
+  onError: defaultOnErrorFn
 };
 
-var makeDOMDriver = function makeDOMDriver(containerElementSelectors) {
-  var _ref = arguments.length <= 1 || arguments[1] === undefined ? defaultOptions : arguments[1];
+function makeDOMDriver(container) {
+  var _ref = arguments.length <= 1 || arguments[1] === undefined ? defaults : arguments[1];
 
   var _ref$modules = _ref.modules;
-  var modules = _ref$modules === undefined ? defaultOptions.modules : _ref$modules;
+  var modules = _ref$modules === undefined ? _modules2.default : _ref$modules;
+  var _ref$onError = _ref.onError;
+  var onError = _ref$onError === undefined ? defaultOnErrorFn : _ref$onError;
 
-  var patch = _snabbdom2.default.init(modules);
-  var rootElement = (0, _utils.domSelectorParser)(containerElementSelectors);
+  var patch = (0, _snabbdom.init)(modules);
+  var rootElement = (0, _utils.domSelectorParser)(container);
 
-  var DomDriver = function DomDriver(view$) {
-    domDriverInputGuard(view$);
-    if (!Array.isArray(modules)) {
-      throw new Error('Optional modules option must be ' + 'an array for snabbdom modules');
-    }
+  if (!Array.isArray(modules)) {
+    throw new Error('Optional modules option must be ' + 'an array for snabbdom modules');
+  }
 
-    var rootElement$ = (0, _hold2.default)(view$.map(_vTreeParser2.default).switch().map(makeVNodeWrapper(rootElement)).scan(patch, rootElement).skip(1).map(function (_ref2) {
+  if (typeof onError !== 'function') {
+    throw new Error('Optional onError opition must be ' + 'a function to approriately handle your errors');
+  }
+
+  function DOMDriver(view$) {
+    DOMDriverInputGuard(view$);
+
+    var rootElement$ = (0, _hold2.default)(view$.map(_transposition.transposeVTree).switch().map(makeVNodeWrapper(rootElement)).scan(patch, rootElement).skip(1).recoverWith(function (err) {
+      onError(err);
+      return (0, _most.throwError)(err);
+    }).map(function (_ref2) {
       var elm = _ref2.elm;
       return elm;
     }));
@@ -5901,53 +5963,43 @@ var makeDOMDriver = function makeDOMDriver(containerElementSelectors) {
     rootElement$.drain();
 
     return {
+      observable: rootElement$,
       namespace: [],
-      select: (0, _select2.default)(rootElement$),
+      select: (0, _select.makeElementSelector)(rootElement$),
+      events: (0, _events.makeEventsSelector)(rootElement$),
       isolateSink: _isolate.isolateSink,
       isolateSource: _isolate.isolateSource
     };
-  };
+  }
 
-  return DomDriver;
-};
+  return DOMDriver;
+}
 
-exports.default = makeDOMDriver;
-}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./isolate":76,"./select":78,"./utils":79,"./vTreeParser":80,"@most/hold":82,"snabbdom":111,"snabbdom-selector/lib/classNameFromVNode":102,"snabbdom-selector/lib/selectorParser":103,"snabbdom/h":105,"snabbdom/modules/attributes":107,"snabbdom/modules/class":108,"snabbdom/modules/props":109,"snabbdom/modules/style":110}],78:[function(require,module,exports){
-'use strict';
+exports.makeDOMDriver = makeDOMDriver;
+},{"./events":73,"./isolate":76,"./modules":80,"./select":81,"./transposition":82,"./utils":83,"@most/hold":85,"most":153,"snabbdom":168,"snabbdom-selector/lib/classNameFromVNode":156,"snabbdom-selector/lib/selectorParser":157,"snabbdom/h":159}],78:[function(require,module,exports){
+"use strict";
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.makeIsStrictlyInRootScope = undefined;
-
-var _events = require('./events');
-
-var _events2 = _interopRequireDefault(_events);
-
-var _isolate = require('./isolate');
-
-var _array = require('fast.js/array');
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
 function makeIsStrictlyInRootScope(namespace) {
   var classIsForeign = function classIsForeign(c) {
     var matched = c.match(/cycle-scope-(\S+)/);
-    return matched && namespace.indexOf('.' + c) === -1;
+    return matched && namespace.indexOf("." + c) === -1;
   };
   var classIsDomestic = function classIsDomestic(c) {
     var matched = c.match(/cycle-scope-(\S+)/);
-    return matched && namespace.indexOf('.' + c) !== -1;
+    return matched && namespace.indexOf("." + c) !== -1;
   };
   return function isStrictlyInRootScope(leaf) {
-    for (var el = leaf; el !== null; el = el.parentElement) {
-      var split = String.prototype.split;
-      var classList = el.classList || split.call(el.className, ' ');
-      if (Array.prototype.some.call(classList, classIsDomestic)) {
+    var some = Array.prototype.some;
+    var split = String.prototype.split;
+    for (var el = leaf; el; el = el.parentElement) {
+      var classList = el.classList || split.call(el.className, " ");
+      if (some.call(classList, classIsDomestic)) {
         return true;
       }
-      if (Array.prototype.some.call(classList, classIsForeign)) {
+      if (some.call(classList, classIsForeign)) {
         return false;
       }
     }
@@ -5955,44 +6007,261 @@ function makeIsStrictlyInRootScope(namespace) {
   };
 }
 
-function makeElementGetter(selector) {
-  return function elemenGetter(rootElement) {
-    if (selector.join('') === '') {
+exports.makeIsStrictlyInRootScope = makeIsStrictlyInRootScope;
+},{}],79:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.mockDOMSource = undefined;
+
+var _most = require('most');
+
+var _most2 = _interopRequireDefault(_most);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var emptyStream = _most2.default.empty();
+
+function getEventsStreamForSelector(mockedEventTypes) {
+  return function getEventsStream(eventType) {
+    for (var key in mockedEventTypes) {
+      if (mockedEventTypes.hasOwnProperty(key) && key === eventType) {
+        return mockedEventTypes[key];
+      }
+    }
+    return emptyStream;
+  };
+}
+
+function makeMockSelector(mockedSelectors) {
+  return function select(selector) {
+    for (var key in mockedSelectors) {
+      if (mockedSelectors.hasOwnProperty(key) && key === selector) {
+        var observable = emptyStream;
+        if (mockedSelectors[key].hasOwnProperty('observable')) {
+          observable = mockedSelectors[key].observable;
+        }
+        return {
+          observable: observable,
+          select: makeMockSelector(mockedSelectors[key]),
+          events: getEventsStreamForSelector(mockedSelectors[key])
+        };
+      }
+    }
+    return {
+      observable: emptyStream,
+      select: makeMockSelector(mockedSelectors),
+      events: function events() {
+        return emptyStream;
+      }
+    };
+  };
+}
+
+function mockDOMSource() {
+  var mockedSelectors = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
+
+  return {
+    observable: emptyStream,
+    select: makeMockSelector(mockedSelectors),
+    events: function events() {
+      return emptyStream;
+    }
+  };
+}
+
+exports.mockDOMSource = mockDOMSource;
+},{"most":153}],80:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.EventsModule = exports.HeroModule = exports.AttrsModule = exports.PropsModule = exports.ClassModule = exports.StyleModule = undefined;
+
+var _class = require('snabbdom/modules/class');
+
+var _class2 = _interopRequireDefault(_class);
+
+var _props = require('snabbdom/modules/props');
+
+var _props2 = _interopRequireDefault(_props);
+
+var _attributes = require('snabbdom/modules/attributes');
+
+var _attributes2 = _interopRequireDefault(_attributes);
+
+var _eventlisteners = require('snabbdom/modules/eventlisteners');
+
+var _eventlisteners2 = _interopRequireDefault(_eventlisteners);
+
+var _style = require('snabbdom/modules/style');
+
+var _style2 = _interopRequireDefault(_style);
+
+var _hero = require('snabbdom/modules/hero');
+
+var _hero2 = _interopRequireDefault(_hero);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+exports.default = [_style2.default, _class2.default, _props2.default, _attributes2.default];
+exports.StyleModule = _style2.default;
+exports.ClassModule = _class2.default;
+exports.PropsModule = _props2.default;
+exports.AttrsModule = _attributes2.default;
+exports.HeroModule = _hero2.default;
+exports.EventsModule = _eventlisteners2.default;
+},{"snabbdom/modules/attributes":162,"snabbdom/modules/class":163,"snabbdom/modules/eventlisteners":164,"snabbdom/modules/hero":165,"snabbdom/modules/props":166,"snabbdom/modules/style":167}],81:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.makeIsStrictlyInRootScope = exports.makeElementSelector = undefined;
+
+var _makeIsStrictlyInRootScope = require('./makeIsStrictlyInRootScope');
+
+var _events = require('./events');
+
+var _isolate = require('./isolate');
+
+var isValidString = function isValidString(param) {
+  return typeof param === 'string' && param.length > 0;
+};
+
+var contains = function contains(str, match) {
+  return str.indexOf(match) > -1;
+};
+
+var isNotTagName = function isNotTagName(param) {
+  return isValidString(param) && contains(param, '.') || contains(param, '#') || contains(param, ':');
+};
+
+function sortNamespace(a, b) {
+  if (isNotTagName(a) && isNotTagName(b)) {
+    return 0;
+  }
+  return isNotTagName(a) ? 1 : -1;
+}
+
+function removeDuplicates(arr) {
+  var newArray = [];
+  arr.forEach(function (element) {
+    if (newArray.indexOf(element) === -1) {
+      newArray.push(element);
+    }
+  });
+  return newArray;
+}
+
+var getScope = function getScope(namespace) {
+  return namespace.filter(function (c) {
+    return c.indexOf('.cycle-scope') > -1;
+  });
+};
+
+function makeFindElements(namespace) {
+  return function findElements(rootElement) {
+    if (namespace.join('') === '') {
       return rootElement;
     }
-    var nodeList = rootElement.querySelectorAll(selector.join(' '));
-    if (nodeList.length === 0) {
-      nodeList = rootElement.querySelectorAll(selector.join(''));
+    var slice = Array.prototype.slice;
+
+    var scope = getScope(namespace);
+    // Uses global selector && is isolated
+    if (namespace.indexOf('*') > -1 && scope.length > 0) {
+      // grab top-level boundary of scope
+      var topNode = rootElement.querySelector(scope.join(' '));
+      // grab all children
+      var childNodes = topNode.getElementsByTagName('*');
+      return removeDuplicates([topNode].concat(slice.call(childNodes))).filter((0, _makeIsStrictlyInRootScope.makeIsStrictlyInRootScope)(namespace));
     }
-    var array = Array.prototype.slice.call(nodeList);
-    return (0, _array.filter)(array, makeIsStrictlyInRootScope(selector));
+
+    return removeDuplicates(slice.call(rootElement.querySelectorAll(namespace.join(' '))).concat(slice.call(rootElement.querySelectorAll(namespace.join(''))))).filter((0, _makeIsStrictlyInRootScope.makeIsStrictlyInRootScope)(namespace));
   };
 }
 
 function makeElementSelector(rootElement$) {
-  return function DOMSelect(selector) {
+  return function elementSelector(selector) {
     if (typeof selector !== 'string') {
-      throw new Error('DOM drivers select() expects first argument to be a ' + 'string as a CSS selector');
+      throw new Error('DOM driver\'s select() expects the argument to be a ' + 'string as a CSS selector');
     }
 
     var namespace = this.namespace;
-
-    var scopedSelector = (0, _array.concat)(namespace, selector.trim() === ':root' ? '' : selector.trim());
+    var trimmedSelector = selector.trim();
+    var childNamespace = trimmedSelector === ':root' ? namespace : namespace.concat(trimmedSelector).sort(sortNamespace);
 
     return {
-      observable: rootElement$.map(makeElementGetter(scopedSelector)),
-      namespace: scopedSelector,
+      observable: rootElement$.map(makeFindElements(childNamespace)),
+      namespace: childNamespace,
       select: makeElementSelector(rootElement$),
-      events: (0, _events2.default)(rootElement$, scopedSelector),
+      events: (0, _events.makeEventsSelector)(rootElement$, childNamespace),
       isolateSource: _isolate.isolateSource,
       isolateSink: _isolate.isolateSink
     };
   };
 }
 
-exports.default = makeElementSelector;
-exports.makeIsStrictlyInRootScope = makeIsStrictlyInRootScope;
-},{"./events":74,"./isolate":76,"fast.js/array":89}],79:[function(require,module,exports){
+exports.makeElementSelector = makeElementSelector;
+exports.makeIsStrictlyInRootScope = _makeIsStrictlyInRootScope.makeIsStrictlyInRootScope;
+},{"./events":73,"./isolate":76,"./makeIsStrictlyInRootScope":78}],82:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.transposeVTree = undefined;
+
+var _most = require('most');
+
+var _most2 = _interopRequireDefault(_most);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function createVTree(vTree, children) {
+  return {
+    sel: vTree.sel,
+    data: vTree.data,
+    text: vTree.text,
+    elm: vTree.elm,
+    key: vTree.key,
+    children: children
+  };
+}
+
+function transposeVTree(vTree) {
+  if (!vTree) {
+    return null;
+  } else if (vTree && typeof vTree.data === 'object' && vTree.data.static) {
+    return _most2.default.just(vTree);
+  } else if (typeof vTree.observe === 'function') {
+    return vTree.map(transposeVTree).switch();
+  } else if (typeof vTree === 'object') {
+    if (!vTree.children || vTree.children.length === 0) {
+      return _most2.default.just(vTree);
+    }
+
+    var vTreeChildren = vTree.children.map(transposeVTree).filter(function (x) {
+      return x !== null;
+    });
+
+    return vTreeChildren.length === 0 ? _most2.default.just(createVTree(vTree, vTreeChildren)) : _most2.default.combineArray(function () {
+      for (var _len = arguments.length, children = Array(_len), _key = 0; _key < _len; _key++) {
+        children[_key] = arguments[_key];
+      }
+
+      return createVTree(vTree, children);
+    }, vTreeChildren);
+  } else {
+    throw new Error('Unhandled vTree Value');
+  }
+}
+
+exports.transposeVTree = transposeVTree;
+},{"most":153}],83:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -6017,68 +6286,7 @@ var domSelectorParser = function domSelectorParser(selectors) {
 
 exports.domSelectorParser = domSelectorParser;
 exports.SCOPE_PREFIX = SCOPE_PREFIX;
-},{}],80:[function(require,module,exports){
-'use strict';
-
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _most = require('most');
-
-var _most2 = _interopRequireDefault(_most);
-
-var _map = require('fast.js/array/map');
-
-var _map2 = _interopRequireDefault(_map);
-
-var _filter = require('fast.js/array/filter');
-
-var _filter2 = _interopRequireDefault(_filter);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
-
-var combineVTreeStreams = function combineVTreeStreams(vTree) {
-  for (var _len = arguments.length, children = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
-    children[_key - 1] = arguments[_key];
-  }
-
-  return {
-    sel: vTree.sel,
-    data: vTree.data,
-    text: vTree.text,
-    elm: vTree.elm,
-    key: vTree.key,
-    children: children
-  };
-};
-
-var vTreeParser = function vTreeParser(vTree) {
-  if (vTree.data && vTree.data.static) {
-    return _most2.default.just(vTree);
-  } else if (!vTree) {
-    return null;
-  } else if (vTree.observe) {
-    return vTree.map(vTreeParser).switch();
-  } else if ('object' === (typeof vTree === 'undefined' ? 'undefined' : _typeof(vTree))) {
-    var vTree$ = _most2.default.just(vTree);
-    if (vTree.children && vTree.children.length > 0) {
-      return _most2.default.combine.apply(_most2.default, [combineVTreeStreams, vTree$].concat(_toConsumableArray((0, _filter2.default)((0, _map2.default)(vTree.children, vTreeParser), function (x) {
-        return x !== null;
-      }))));
-    }
-    return vTree$;
-  } else {
-    throw new Error('Unhandled tree value');
-  }
-};
-
-exports.default = vTreeParser;
-},{"fast.js/array/filter":87,"fast.js/array/map":92,"most":183}],81:[function(require,module,exports){
+},{}],84:[function(require,module,exports){
 (function (global, factory) {
     if (typeof define === "function" && define.amd) {
         define('@most/dom-event', ['exports', 'most'], factory);
@@ -6405,470 +6613,110 @@ exports.default = vTreeParser;
     exports.touchcancel = touchcancel;
 });
 
-},{"most":183}],82:[function(require,module,exports){
-arguments[4][4][0].apply(exports,arguments)
-},{"dup":4,"most/lib/source/MulticastSource":170}],83:[function(require,module,exports){
-'use strict';
-
-/**
- * # Clone Array
- *
- * Clone an array or array like object (e.g. `arguments`).
- * This is the equivalent of calling `Array.prototype.slice.call(arguments)`, but
- * significantly faster.
- *
- * @param  {Array} input The array or array-like object to clone.
- * @return {Array}       The cloned array.
- */
-module.exports = function fastCloneArray (input) {
-  var length = input.length,
-      sliced = new Array(length),
-      i;
-  for (i = 0; i < length; i++) {
-    sliced[i] = input[i];
+},{"most":153}],85:[function(require,module,exports){
+(function (global, factory) {
+  if (typeof define === "function" && define.amd) {
+    define('@most/hold', ['exports', '@most/multicast'], factory);
+  } else if (typeof exports !== "undefined") {
+    factory(exports, require('@most/multicast'));
+  } else {
+    var mod = {
+      exports: {}
+    };
+    factory(mod.exports, global.multicast);
+    global.mostHold = mod.exports;
   }
-  return sliced;
-};
+})(this, function (exports, _multicast) {
+  'use strict';
 
-},{}],84:[function(require,module,exports){
-'use strict';
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
 
-/**
- * # Concat
- *
- * Concatenate multiple arrays.
- *
- * > Note: This function is effectively identical to `Array.prototype.concat()`.
- *
- *
- * @param  {Array|mixed} item, ... The item(s) to concatenate.
- * @return {Array}                 The array containing the concatenated items.
- */
-module.exports = function fastConcat () {
-  var length = arguments.length,
-      arr = [],
-      i, item, childLength, j;
+  function _classCallCheck(instance, Constructor) {
+    if (!(instance instanceof Constructor)) {
+      throw new TypeError("Cannot call a class as a function");
+    }
+  }
 
-  for (i = 0; i < length; i++) {
-    item = arguments[i];
-    if (Array.isArray(item)) {
-      childLength = item.length;
-      for (j = 0; j < childLength; j++) {
-        arr.push(item[j]);
+  var _createClass = function () {
+    function defineProperties(target, props) {
+      for (var i = 0; i < props.length; i++) {
+        var descriptor = props[i];
+        descriptor.enumerable = descriptor.enumerable || false;
+        descriptor.configurable = true;
+        if ("value" in descriptor) descriptor.writable = true;
+        Object.defineProperty(target, descriptor.key, descriptor);
       }
     }
-    else {
-      arr.push(item);
+
+    return function (Constructor, protoProps, staticProps) {
+      if (protoProps) defineProperties(Constructor.prototype, protoProps);
+      if (staticProps) defineProperties(Constructor, staticProps);
+      return Constructor;
+    };
+  }();
+
+  // hold :: Stream a -> Stream a
+  var index = function index(stream) {
+    return new stream.constructor(new _multicast.MulticastSource(new Hold(stream.source)));
+  };
+
+  var Hold = function () {
+    function Hold(source) {
+      _classCallCheck(this, Hold);
+
+      this.source = source;
+      this.time = -Infinity;
+      this.value = void 0;
     }
-  }
-  return arr;
-};
 
-},{}],85:[function(require,module,exports){
-'use strict';
+    _createClass(Hold, [{
+      key: 'run',
+      value: function run(sink, scheduler) {
+        /* istanbul ignore else */
+        if (sink._hold !== this) {
+          sink._hold = this;
+          sink._holdAdd = sink.add;
+          sink.add = holdAdd;
 
-var bindInternal3 = require('../function/bindInternal3');
+          sink._holdEvent = sink.event;
+          sink.event = holdEvent;
+        }
 
-/**
- * # Every
- *
- * A fast `.every()` implementation.
- *
- * @param  {Array}    subject     The array (or array-like) to iterate over.
- * @param  {Function} fn          The visitor function.
- * @param  {Object}   thisContext The context for the visitor.
- * @return {Boolean}              true if all items in the array passes the truth test.
- */
-module.exports = function fastEvery (subject, fn, thisContext) {
-  var length = subject.length,
-      iterator = thisContext !== undefined ? bindInternal3(fn, thisContext) : fn,
-      i;
-  for (i = 0; i < length; i++) {
-    if (!iterator(subject[i], i, subject)) {
-      return false;
-    }
-  }
-  return true;
-};
-
-},{"../function/bindInternal3":97}],86:[function(require,module,exports){
-'use strict';
-
-/**
- * # Fill
- * Fill an array with values, optionally starting and stopping at a given index.
- *
- * > Note: unlike the specced Array.prototype.fill(), this version does not support
- * > negative start / end arguments.
- *
- * @param  {Array}   subject The array to fill.
- * @param  {mixed}   value   The value to insert.
- * @param  {Integer} start   The start position, defaults to 0.
- * @param  {Integer} end     The end position, defaults to subject.length
- * @return {Array}           The now filled subject.
- */
-module.exports = function fastFill (subject, value, start, end) {
-  var length = subject.length,
-      i;
-  if (start === undefined) {
-    start = 0;
-  }
-  if (end === undefined) {
-    end = length;
-  }
-  for (i = start; i < end; i++) {
-    subject[i] = value;
-  }
-  return subject;
-};
-},{}],87:[function(require,module,exports){
-'use strict';
-
-var bindInternal3 = require('../function/bindInternal3');
-
-/**
- * # Filter
- *
- * A fast `.filter()` implementation.
- *
- * @param  {Array}    subject     The array (or array-like) to filter.
- * @param  {Function} fn          The filter function.
- * @param  {Object}   thisContext The context for the filter.
- * @return {Array}                The array containing the results.
- */
-module.exports = function fastFilter (subject, fn, thisContext) {
-  var length = subject.length,
-      result = [],
-      iterator = thisContext !== undefined ? bindInternal3(fn, thisContext) : fn,
-      i;
-  for (i = 0; i < length; i++) {
-    if (iterator(subject[i], i, subject)) {
-      result.push(subject[i]);
-    }
-  }
-  return result;
-};
-
-},{"../function/bindInternal3":97}],88:[function(require,module,exports){
-'use strict';
-
-var bindInternal3 = require('../function/bindInternal3');
-
-/**
- * # For Each
- *
- * A fast `.forEach()` implementation.
- *
- * @param  {Array}    subject     The array (or array-like) to iterate over.
- * @param  {Function} fn          The visitor function.
- * @param  {Object}   thisContext The context for the visitor.
- */
-module.exports = function fastForEach (subject, fn, thisContext) {
-  var length = subject.length,
-      iterator = thisContext !== undefined ? bindInternal3(fn, thisContext) : fn,
-      i;
-  for (i = 0; i < length; i++) {
-    iterator(subject[i], i, subject);
-  }
-};
-
-},{"../function/bindInternal3":97}],89:[function(require,module,exports){
-'use strict';
-
-exports.clone = require('./clone');
-exports.concat = require('./concat');
-exports.every = require('./every');
-exports.filter = require('./filter');
-exports.forEach = require('./forEach');
-exports.indexOf = require('./indexOf');
-exports.lastIndexOf = require('./lastIndexOf');
-exports.map = require('./map');
-exports.pluck = require('./pluck');
-exports.reduce = require('./reduce');
-exports.reduceRight = require('./reduceRight');
-exports.some = require('./some');
-exports.fill = require('./fill');
-},{"./clone":83,"./concat":84,"./every":85,"./fill":86,"./filter":87,"./forEach":88,"./indexOf":90,"./lastIndexOf":91,"./map":92,"./pluck":93,"./reduce":94,"./reduceRight":95,"./some":96}],90:[function(require,module,exports){
-'use strict';
-
-/**
- * # Index Of
- *
- * A faster `Array.prototype.indexOf()` implementation.
- *
- * @param  {Array}  subject   The array (or array-like) to search within.
- * @param  {mixed}  target    The target item to search for.
- * @param  {Number} fromIndex The position to start searching from, if known.
- * @return {Number}           The position of the target in the subject, or -1 if it does not exist.
- */
-module.exports = function fastIndexOf (subject, target, fromIndex) {
-  var length = subject.length,
-      i = 0;
-
-  if (typeof fromIndex === 'number') {
-    i = fromIndex;
-    if (i < 0) {
-      i += length;
-      if (i < 0) {
-        i = 0;
+        return this.source.run(sink, scheduler);
       }
+    }]);
+
+    return Hold;
+  }();
+
+  function holdAdd(sink) {
+    var len = this._holdAdd(sink);
+    /* istanbul ignore else */
+    if (this._hold.time >= 0) {
+      sink.event(this._hold.time, this._hold.value);
     }
+    return len;
   }
 
-  for (; i < length; i++) {
-    if (subject[i] === target) {
-      return i;
+  function holdEvent(t, x) {
+    /* istanbul ignore else */
+    if (t >= this._hold.time) {
+      this._hold.time = t;
+      this._hold.value = x;
     }
-  }
-  return -1;
-};
-
-},{}],91:[function(require,module,exports){
-'use strict';
-
-/**
- * # Last Index Of
- *
- * A faster `Array.prototype.lastIndexOf()` implementation.
- *
- * @param  {Array}  subject The array (or array-like) to search within.
- * @param  {mixed}  target  The target item to search for.
- * @param  {Number} fromIndex The position to start searching backwards from, if known.
- * @return {Number}         The last position of the target in the subject, or -1 if it does not exist.
- */
-module.exports = function fastLastIndexOf (subject, target, fromIndex) {
-  var length = subject.length,
-      i = length - 1;
-
-  if (typeof fromIndex === 'number') {
-    i = fromIndex;
-    if (i < 0) {
-      i += length;
-    }
-  }
-  for (; i >= 0; i--) {
-    if (subject[i] === target) {
-      return i;
-    }
-  }
-  return -1;
-};
-
-},{}],92:[function(require,module,exports){
-'use strict';
-
-var bindInternal3 = require('../function/bindInternal3');
-
-/**
- * # Map
- *
- * A fast `.map()` implementation.
- *
- * @param  {Array}    subject     The array (or array-like) to map over.
- * @param  {Function} fn          The mapper function.
- * @param  {Object}   thisContext The context for the mapper.
- * @return {Array}                The array containing the results.
- */
-module.exports = function fastMap (subject, fn, thisContext) {
-  var length = subject.length,
-      result = new Array(length),
-      iterator = thisContext !== undefined ? bindInternal3(fn, thisContext) : fn,
-      i;
-  for (i = 0; i < length; i++) {
-    result[i] = iterator(subject[i], i, subject);
-  }
-  return result;
-};
-
-},{"../function/bindInternal3":97}],93:[function(require,module,exports){
-'use strict';
-
-/**
- * # Pluck
- * Pluck the property with the given name from an array of objects.
- *
- * @param  {Array}  input The values to pluck from.
- * @param  {String} field The name of the field to pluck.
- * @return {Array}        The plucked array of values.
- */
-module.exports = function fastPluck (input, field) {
-  var length = input.length,
-      plucked = [],
-      count = 0,
-      value, i;
-
-  for (i = 0; i < length; i++) {
-    value = input[i];
-    if (value != null && value[field] !== undefined) {
-      plucked[count++] = value[field];
-    }
-  }
-  return plucked;
-};
-},{}],94:[function(require,module,exports){
-'use strict';
-
-var bindInternal4 = require('../function/bindInternal4');
-
-/**
- * # Reduce
- *
- * A fast `.reduce()` implementation.
- *
- * @param  {Array}    subject      The array (or array-like) to reduce.
- * @param  {Function} fn           The reducer function.
- * @param  {mixed}    initialValue The initial value for the reducer, defaults to subject[0].
- * @param  {Object}   thisContext  The context for the reducer.
- * @return {mixed}                 The final result.
- */
-module.exports = function fastReduce (subject, fn, initialValue, thisContext) {
-  var length = subject.length,
-      iterator = thisContext !== undefined ? bindInternal4(fn, thisContext) : fn,
-      i, result;
-
-  if (initialValue === undefined) {
-    i = 1;
-    result = subject[0];
-  }
-  else {
-    i = 0;
-    result = initialValue;
+    return this._holdEvent(t, x);
   }
 
-  for (; i < length; i++) {
-    result = iterator(result, subject[i], i, subject);
-  }
+  exports.default = index;
+});
 
-  return result;
-};
-
-},{"../function/bindInternal4":98}],95:[function(require,module,exports){
-'use strict';
-
-var bindInternal4 = require('../function/bindInternal4');
-
-/**
- * # Reduce Right
- *
- * A fast `.reduceRight()` implementation.
- *
- * @param  {Array}    subject      The array (or array-like) to reduce.
- * @param  {Function} fn           The reducer function.
- * @param  {mixed}    initialValue The initial value for the reducer, defaults to subject[0].
- * @param  {Object}   thisContext  The context for the reducer.
- * @return {mixed}                 The final result.
- */
-module.exports = function fastReduce (subject, fn, initialValue, thisContext) {
-  var length = subject.length,
-      iterator = thisContext !== undefined ? bindInternal4(fn, thisContext) : fn,
-      i, result;
-
-  if (initialValue === undefined) {
-    i = length - 2;
-    result = subject[length - 1];
-  }
-  else {
-    i = length - 1;
-    result = initialValue;
-  }
-
-  for (; i >= 0; i--) {
-    result = iterator(result, subject[i], i, subject);
-  }
-
-  return result;
-};
-
-},{"../function/bindInternal4":98}],96:[function(require,module,exports){
-'use strict';
-
-var bindInternal3 = require('../function/bindInternal3');
-
-/**
- * # Some
- *
- * A fast `.some()` implementation.
- *
- * @param  {Array}    subject     The array (or array-like) to iterate over.
- * @param  {Function} fn          The visitor function.
- * @param  {Object}   thisContext The context for the visitor.
- * @return {Boolean}              true if at least one item in the array passes the truth test.
- */
-module.exports = function fastSome (subject, fn, thisContext) {
-  var length = subject.length,
-      iterator = thisContext !== undefined ? bindInternal3(fn, thisContext) : fn,
-      i;
-  for (i = 0; i < length; i++) {
-    if (iterator(subject[i], i, subject)) {
-      return true;
-    }
-  }
-  return false;
-};
-
-},{"../function/bindInternal3":97}],97:[function(require,module,exports){
-'use strict';
-
-/**
- * Internal helper to bind a function known to have 3 arguments
- * to a given context.
- */
-module.exports = function bindInternal3 (func, thisContext) {
-  return function (a, b, c) {
-    return func.call(thisContext, a, b, c);
-  };
-};
-
-},{}],98:[function(require,module,exports){
-'use strict';
-
-/**
- * Internal helper to bind a function known to have 4 arguments
- * to a given context.
- */
-module.exports = function bindInternal4 (func, thisContext) {
-  return function (a, b, c, d) {
-    return func.call(thisContext, a, b, c, d);
-  };
-};
-
-},{}],99:[function(require,module,exports){
-'use strict';
-
-/**
- * Analogue of Object.assign().
- * Copies properties from one or more source objects to
- * a target object. Existing keys on the target object will be overwritten.
- *
- * > Note: This differs from spec in some important ways:
- * > 1. Will throw if passed non-objects, including `undefined` or `null` values.
- * > 2. Does not support the curious Exception handling behavior, exceptions are thrown immediately.
- * > For more details, see:
- * > https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/assign
- *
- *
- *
- * @param  {Object} target      The target object to copy properties to.
- * @param  {Object} source, ... The source(s) to copy properties from.
- * @return {Object}             The updated target object.
- */
-module.exports = function fastAssign (target) {
-  var totalArgs = arguments.length,
-      source, i, totalKeys, keys, key, j;
-
-  for (i = 1; i < totalArgs; i++) {
-    source = arguments[i];
-    keys = Object.keys(source);
-    totalKeys = keys.length;
-    for (j = 0; j < totalKeys; j++) {
-      key = keys[j];
-      target[key] = source[key];
-    }
-  }
-  return target;
-};
-
-},{}],100:[function(require,module,exports){
+},{"@most/multicast":86}],86:[function(require,module,exports){
+arguments[4][2][0].apply(exports,arguments)
+},{"@most/prelude":87,"dup":2}],87:[function(require,module,exports){
+arguments[4][3][0].apply(exports,arguments)
+},{"dup":3}],88:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -6902,7 +6750,7 @@ var node = function node(h) {
   };
 };
 
-var TAG_NAMES = ['a', 'abbr', 'address', 'area', 'article', 'aside', 'audio', 'b', 'base', 'bdi', 'bdo', 'blockquote', 'body', 'br', 'button', 'canvas', 'caption', 'cite', 'code', 'col', 'colgroup', 'dd', 'del', 'dfn', 'dir', 'div', 'dl', 'dt', 'em', 'embed', 'fieldset', 'figcaption', 'figure', 'footer', 'form', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'head', 'header', 'hgroup', 'hr', 'html', 'i', 'iframe', 'img', 'input', 'ins', 'kbd', 'keygen', 'label', 'legend', 'li', 'link', 'main', 'map', 'mark', 'menu', 'meta', 'nav', 'noscript', 'object', 'ol', 'optgroup', 'option', 'p', 'param', 'pre', 'q', 'rp', 'rt', 'ruby', 's', 'samp', 'script', 'section', 'select', 'small', 'source', 'span', 'strong', 'style', 'sub', 'sup', 'table', 'tbody', 'td', 'textarea', 'tfoot', 'th', 'thead', 'title', 'tr', 'u', 'ul', 'video'];
+var TAG_NAMES = ['a', 'abbr', 'address', 'area', 'article', 'aside', 'audio', 'b', 'base', 'bdi', 'bdo', 'blockquote', 'body', 'br', 'button', 'canvas', 'caption', 'cite', 'code', 'col', 'colgroup', 'dd', 'del', 'dfn', 'dir', 'div', 'dl', 'dt', 'em', 'embed', 'fieldset', 'figcaption', 'figure', 'footer', 'form', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'head', 'header', 'hgroup', 'hr', 'html', 'i', 'iframe', 'img', 'input', 'ins', 'kbd', 'keygen', 'label', 'legend', 'li', 'link', 'main', 'map', 'mark', 'menu', 'meta', 'nav', 'noscript', 'object', 'ol', 'optgroup', 'option', 'p', 'param', 'pre', 'q', 'rp', 'rt', 'ruby', 's', 'samp', 'script', 'section', 'select', 'small', 'source', 'span', 'strong', 'style', 'sub', 'sup', 'table', 'tbody', 'td', 'textarea', 'tfoot', 'th', 'thead', 'title', 'tr', 'u', 'ul', 'video', 'progress'];
 
 exports['default'] = function (h) {
   var createTag = node(h);
@@ -6915,7 +6763,7 @@ exports['default'] = function (h) {
 
 module.exports = exports['default'];
 
-},{}],101:[function(require,module,exports){
+},{}],89:[function(require,module,exports){
 'use strict';
 
 var proto = Element.prototype;
@@ -6945,7 +6793,139 @@ function match(el, selector) {
   }
   return false;
 }
-},{}],102:[function(require,module,exports){
+},{}],90:[function(require,module,exports){
+arguments[4][7][0].apply(exports,arguments)
+},{"dup":7}],91:[function(require,module,exports){
+arguments[4][8][0].apply(exports,arguments)
+},{"dup":8}],92:[function(require,module,exports){
+arguments[4][9][0].apply(exports,arguments)
+},{"dup":9}],93:[function(require,module,exports){
+arguments[4][10][0].apply(exports,arguments)
+},{"dup":10}],94:[function(require,module,exports){
+arguments[4][11][0].apply(exports,arguments)
+},{"dup":11}],95:[function(require,module,exports){
+arguments[4][12][0].apply(exports,arguments)
+},{"../Stream":93,"../base":94,"../runSource":129,"../sink/Pipe":138,"./build":97,"dup":12}],96:[function(require,module,exports){
+arguments[4][13][0].apply(exports,arguments)
+},{"../base":94,"./combine":98,"dup":13}],97:[function(require,module,exports){
+arguments[4][14][0].apply(exports,arguments)
+},{"../source/core":142,"./continueWith":100,"dup":14}],98:[function(require,module,exports){
+arguments[4][15][0].apply(exports,arguments)
+},{"../Stream":93,"../base":94,"../disposable/dispose":122,"../invoke":127,"../sink/IndexSink":136,"../sink/Pipe":138,"../source/core":142,"./transform":117,"dup":15}],99:[function(require,module,exports){
+arguments[4][16][0].apply(exports,arguments)
+},{"./mergeConcurrently":108,"./transform":117,"dup":16}],100:[function(require,module,exports){
+arguments[4][17][0].apply(exports,arguments)
+},{"../Promise":91,"../Stream":93,"../disposable/dispose":122,"../sink/Pipe":138,"dup":17}],101:[function(require,module,exports){
+arguments[4][18][0].apply(exports,arguments)
+},{"../Stream":93,"../disposable/dispose":122,"../scheduler/PropagateTask":130,"../sink/Pipe":138,"dup":18}],102:[function(require,module,exports){
+arguments[4][19][0].apply(exports,arguments)
+},{"../Stream":93,"../base":94,"../disposable/dispose":122,"../source/ValueSource":141,"../source/tryEvent":151,"dup":19}],103:[function(require,module,exports){
+arguments[4][20][0].apply(exports,arguments)
+},{"../Stream":93,"../fusion/Filter":124,"../sink/Pipe":138,"dup":20}],104:[function(require,module,exports){
+arguments[4][21][0].apply(exports,arguments)
+},{"./mergeConcurrently":108,"./transform":117,"dup":21}],105:[function(require,module,exports){
+arguments[4][22][0].apply(exports,arguments)
+},{"../Stream":93,"../disposable/dispose":122,"../scheduler/PropagateTask":130,"../sink/Pipe":138,"dup":22}],106:[function(require,module,exports){
+arguments[4][23][0].apply(exports,arguments)
+},{"../Stream":93,"../sink/Pipe":138,"dup":23}],107:[function(require,module,exports){
+arguments[4][24][0].apply(exports,arguments)
+},{"../Stream":93,"../base":94,"../disposable/dispose":122,"../sink/IndexSink":136,"../sink/Pipe":138,"../source/core":142,"dup":24}],108:[function(require,module,exports){
+arguments[4][25][0].apply(exports,arguments)
+},{"../LinkedList":90,"../Stream":93,"../disposable/dispose":122,"dup":25}],109:[function(require,module,exports){
+arguments[4][26][0].apply(exports,arguments)
+},{"../base":94,"../runSource":129,"dup":26}],110:[function(require,module,exports){
+arguments[4][27][0].apply(exports,arguments)
+},{"../Stream":93,"../fatalError":123,"../source/core":142,"dup":27}],111:[function(require,module,exports){
+arguments[4][28][0].apply(exports,arguments)
+},{"../Stream":93,"../base":94,"../disposable/dispose":122,"../invoke":127,"../sink/Pipe":138,"dup":28}],112:[function(require,module,exports){
+arguments[4][29][0].apply(exports,arguments)
+},{"../Stream":93,"../disposable/dispose":122,"../sink/Pipe":138,"../source/core":142,"dup":29}],113:[function(require,module,exports){
+arguments[4][30][0].apply(exports,arguments)
+},{"../Stream":93,"./mergeConcurrently":108,"./timeslice":114,"./transform":117,"@most/multicast":154,"dup":30}],114:[function(require,module,exports){
+arguments[4][31][0].apply(exports,arguments)
+},{"../Stream":93,"../base":94,"../combinator/flatMap":104,"../disposable/dispose":122,"../sink/Pipe":138,"dup":31}],115:[function(require,module,exports){
+arguments[4][32][0].apply(exports,arguments)
+},{"../Stream":93,"../sink/Pipe":138,"dup":32}],116:[function(require,module,exports){
+arguments[4][33][0].apply(exports,arguments)
+},{"../Stream":93,"dup":33}],117:[function(require,module,exports){
+arguments[4][34][0].apply(exports,arguments)
+},{"../Stream":93,"../fusion/Map":126,"dup":34}],118:[function(require,module,exports){
+arguments[4][35][0].apply(exports,arguments)
+},{"../Queue":92,"../Stream":93,"../base":94,"../disposable/dispose":122,"../invoke":127,"../sink/IndexSink":136,"../sink/Pipe":138,"../source/core":142,"./transform":117,"dup":35}],119:[function(require,module,exports){
+arguments[4][36][0].apply(exports,arguments)
+},{"dup":36}],120:[function(require,module,exports){
+arguments[4][37][0].apply(exports,arguments)
+},{"dup":37}],121:[function(require,module,exports){
+arguments[4][38][0].apply(exports,arguments)
+},{"dup":38}],122:[function(require,module,exports){
+arguments[4][39][0].apply(exports,arguments)
+},{"../Promise":91,"../base":94,"./Disposable":120,"./SettableDisposable":121,"dup":39}],123:[function(require,module,exports){
+arguments[4][40][0].apply(exports,arguments)
+},{"dup":40}],124:[function(require,module,exports){
+arguments[4][41][0].apply(exports,arguments)
+},{"../sink/Pipe":138,"dup":41}],125:[function(require,module,exports){
+arguments[4][42][0].apply(exports,arguments)
+},{"../sink/Pipe":138,"dup":42}],126:[function(require,module,exports){
+arguments[4][43][0].apply(exports,arguments)
+},{"../base":94,"../sink/Pipe":138,"./Filter":124,"./FilterMap":125,"dup":43}],127:[function(require,module,exports){
+arguments[4][44][0].apply(exports,arguments)
+},{"dup":44}],128:[function(require,module,exports){
+arguments[4][45][0].apply(exports,arguments)
+},{"dup":45}],129:[function(require,module,exports){
+arguments[4][46][0].apply(exports,arguments)
+},{"./disposable/dispose":122,"./scheduler/defaultScheduler":132,"./sink/Observer":137,"dup":46}],130:[function(require,module,exports){
+arguments[4][47][0].apply(exports,arguments)
+},{"../fatalError":123,"dup":47}],131:[function(require,module,exports){
+arguments[4][48][0].apply(exports,arguments)
+},{"./../base":94,"dup":48}],132:[function(require,module,exports){
+arguments[4][49][0].apply(exports,arguments)
+},{"./Scheduler":131,"./nodeTimer":133,"./timeoutTimer":134,"_process":171,"dup":49}],133:[function(require,module,exports){
+arguments[4][50][0].apply(exports,arguments)
+},{"../defer":119,"dup":50}],134:[function(require,module,exports){
+arguments[4][51][0].apply(exports,arguments)
+},{"dup":51}],135:[function(require,module,exports){
+arguments[4][52][0].apply(exports,arguments)
+},{"../defer":119,"dup":52}],136:[function(require,module,exports){
+arguments[4][53][0].apply(exports,arguments)
+},{"./Pipe":138,"dup":53}],137:[function(require,module,exports){
+arguments[4][54][0].apply(exports,arguments)
+},{"dup":54}],138:[function(require,module,exports){
+arguments[4][55][0].apply(exports,arguments)
+},{"dup":55}],139:[function(require,module,exports){
+arguments[4][56][0].apply(exports,arguments)
+},{"../disposable/dispose":122,"../sink/DeferredSink":135,"./tryEvent":151,"dup":56}],140:[function(require,module,exports){
+arguments[4][57][0].apply(exports,arguments)
+},{"../disposable/dispose":122,"./tryEvent":151,"dup":57}],141:[function(require,module,exports){
+arguments[4][58][0].apply(exports,arguments)
+},{"../scheduler/PropagateTask":130,"dup":58}],142:[function(require,module,exports){
+arguments[4][59][0].apply(exports,arguments)
+},{"../Stream":93,"../disposable/dispose":122,"../scheduler/PropagateTask":130,"../source/ValueSource":141,"dup":59}],143:[function(require,module,exports){
+arguments[4][60][0].apply(exports,arguments)
+},{"../Stream":93,"../sink/DeferredSink":135,"./tryEvent":151,"@most/multicast":154,"dup":60}],144:[function(require,module,exports){
+arguments[4][61][0].apply(exports,arguments)
+},{"../base":94,"../iterable":128,"./fromArray":145,"./fromIterable":147,"dup":61}],145:[function(require,module,exports){
+arguments[4][62][0].apply(exports,arguments)
+},{"../Stream":93,"../scheduler/PropagateTask":130,"dup":62}],146:[function(require,module,exports){
+arguments[4][63][0].apply(exports,arguments)
+},{"../Stream":93,"./EventEmitterSource":139,"./EventTargetSource":140,"@most/multicast":154,"dup":63}],147:[function(require,module,exports){
+arguments[4][64][0].apply(exports,arguments)
+},{"../Stream":93,"../iterable":128,"../scheduler/PropagateTask":130,"dup":64}],148:[function(require,module,exports){
+arguments[4][65][0].apply(exports,arguments)
+},{"../Stream":93,"../base":94,"dup":65}],149:[function(require,module,exports){
+arguments[4][66][0].apply(exports,arguments)
+},{"../Stream":93,"dup":66}],150:[function(require,module,exports){
+arguments[4][67][0].apply(exports,arguments)
+},{"../Stream":93,"../disposable/dispose":122,"../scheduler/PropagateTask":130,"@most/multicast":154,"dup":67}],151:[function(require,module,exports){
+arguments[4][68][0].apply(exports,arguments)
+},{"dup":68}],152:[function(require,module,exports){
+arguments[4][69][0].apply(exports,arguments)
+},{"../Stream":93,"dup":69}],153:[function(require,module,exports){
+arguments[4][70][0].apply(exports,arguments)
+},{"./lib/Stream":93,"./lib/base":94,"./lib/combinator/accumulate":95,"./lib/combinator/applicative":96,"./lib/combinator/build":97,"./lib/combinator/combine":98,"./lib/combinator/concatMap":99,"./lib/combinator/continueWith":100,"./lib/combinator/delay":101,"./lib/combinator/errors":102,"./lib/combinator/filter":103,"./lib/combinator/flatMap":104,"./lib/combinator/limit":105,"./lib/combinator/loop":106,"./lib/combinator/merge":107,"./lib/combinator/mergeConcurrently":108,"./lib/combinator/observe":109,"./lib/combinator/promises":110,"./lib/combinator/sample":111,"./lib/combinator/slice":112,"./lib/combinator/switch":113,"./lib/combinator/timeslice":114,"./lib/combinator/timestamp":115,"./lib/combinator/transduce":116,"./lib/combinator/transform":117,"./lib/combinator/zip":118,"./lib/source/core":142,"./lib/source/create":143,"./lib/source/from":144,"./lib/source/fromEvent":146,"./lib/source/generate":148,"./lib/source/iterate":149,"./lib/source/periodic":150,"./lib/source/unfold":152,"@most/multicast":154,"dup":70}],154:[function(require,module,exports){
+arguments[4][2][0].apply(exports,arguments)
+},{"@most/prelude":155,"dup":2}],155:[function(require,module,exports){
+arguments[4][3][0].apply(exports,arguments)
+},{"dup":3}],156:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -6985,7 +6965,7 @@ function classNameFromVNode(vNode) {
 
   return cn.trim();
 }
-},{"./selectorParser":103}],103:[function(require,module,exports){
+},{"./selectorParser":157}],157:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -7043,7 +7023,7 @@ function selectorParser() {
     className: classes.join(' ')
   };
 }
-},{"browser-split":104}],104:[function(require,module,exports){
+},{"browser-split":158}],158:[function(require,module,exports){
 /*!
  * Cross-Browser Split 1.1.1
  * Copyright 2007-2012 Steven Levithan <stevenlevithan.com>
@@ -7151,7 +7131,7 @@ module.exports = (function split(undef) {
   return self;
 })();
 
-},{}],105:[function(require,module,exports){
+},{}],159:[function(require,module,exports){
 var VNode = require('./vnode');
 var is = require('./is');
 
@@ -7186,13 +7166,69 @@ module.exports = function h(sel, b, c) {
   return VNode(sel, data, children, text, undefined);
 };
 
-},{"./is":106,"./vnode":113}],106:[function(require,module,exports){
+},{"./is":161,"./vnode":170}],160:[function(require,module,exports){
+function createElement(tagName){
+  return document.createElement(tagName);
+}
+
+function createElementNS(namespaceURI, qualifiedName){
+  return document.createElementNS(namespaceURI, qualifiedName);
+}
+
+function createTextNode(text){
+  return document.createTextNode(text);
+}
+
+
+function insertBefore(parentNode, newNode, referenceNode){
+  parentNode.insertBefore(newNode, referenceNode);
+}
+
+
+function removeChild(node, child){
+  node.removeChild(child);
+}
+
+function appendChild(node, child){
+  node.appendChild(child);
+}
+
+function parentNode(node){
+  return node.parentElement;
+}
+
+function nextSibling(node){
+  return node.nextSibling;
+}
+
+function tagName(node){
+  return node.tagName;
+}
+
+function setTextContent(node, text){
+  node.textContent = text;
+}
+
+module.exports = {
+  createElement: createElement,
+  createElementNS: createElementNS,
+  createTextNode: createTextNode,
+  appendChild: appendChild,
+  removeChild: removeChild,
+  insertBefore: insertBefore,
+  parentNode: parentNode,
+  nextSibling: nextSibling,
+  tagName: tagName,
+  setTextContent: setTextContent
+};
+
+},{}],161:[function(require,module,exports){
 module.exports = {
   array: Array.isArray,
   primitive: function(s) { return typeof s === 'string' || typeof s === 'number'; },
 };
 
-},{}],107:[function(require,module,exports){
+},{}],162:[function(require,module,exports){
 var booleanAttrs = ["allowfullscreen", "async", "autofocus", "autoplay", "checked", "compact", "controls", "declare", 
                 "default", "defaultchecked", "defaultmuted", "defaultselected", "defer", "disabled", "draggable", 
                 "enabled", "formnovalidate", "hidden", "indeterminate", "inert", "ismap", "itemscope", "loop", "multiple", 
@@ -7233,7 +7269,7 @@ function updateAttrs(oldVnode, vnode) {
 
 module.exports = {create: updateAttrs, update: updateAttrs};
 
-},{}],108:[function(require,module,exports){
+},{}],163:[function(require,module,exports){
 function updateClass(oldVnode, vnode) {
   var cur, name, elm = vnode.elm,
       oldClass = oldVnode.data.class || {},
@@ -7253,7 +7289,204 @@ function updateClass(oldVnode, vnode) {
 
 module.exports = {create: updateClass, update: updateClass};
 
-},{}],109:[function(require,module,exports){
+},{}],164:[function(require,module,exports){
+var is = require('../is');
+
+function arrInvoker(arr) {
+  return function() {
+    // Special case when length is two, for performance
+    arr.length === 2 ? arr[0](arr[1]) : arr[0].apply(undefined, arr.slice(1));
+  };
+}
+
+function fnInvoker(o) {
+  return function(ev) { o.fn(ev); };
+}
+
+function updateEventListeners(oldVnode, vnode) {
+  var name, cur, old, elm = vnode.elm,
+      oldOn = oldVnode.data.on || {}, on = vnode.data.on;
+  if (!on) return;
+  for (name in on) {
+    cur = on[name];
+    old = oldOn[name];
+    if (old === undefined) {
+      if (is.array(cur)) {
+        elm.addEventListener(name, arrInvoker(cur));
+      } else {
+        cur = {fn: cur};
+        on[name] = cur;
+        elm.addEventListener(name, fnInvoker(cur));
+      }
+    } else if (is.array(old)) {
+      // Deliberately modify old array since it's captured in closure created with `arrInvoker`
+      old.length = cur.length;
+      for (var i = 0; i < old.length; ++i) old[i] = cur[i];
+      on[name]  = old;
+    } else {
+      old.fn = cur;
+      on[name] = old;
+    }
+  }
+}
+
+module.exports = {create: updateEventListeners, update: updateEventListeners};
+
+},{"../is":161}],165:[function(require,module,exports){
+var raf = (typeof window !== 'undefined' && window.requestAnimationFrame) || setTimeout;
+var nextFrame = function(fn) { raf(function() { raf(fn); }); };
+
+function setNextFrame(obj, prop, val) {
+  nextFrame(function() { obj[prop] = val; });
+}
+
+function getTextNodeRect(textNode) {
+  var rect;
+  if (document.createRange) {
+    var range = document.createRange();
+    range.selectNodeContents(textNode);
+    if (range.getBoundingClientRect) {
+        rect = range.getBoundingClientRect();
+    }
+  }
+  return rect;
+}
+
+function calcTransformOrigin(isTextNode, textRect, boundingRect) {
+  if (isTextNode) {
+    if (textRect) {
+      //calculate pixels to center of text from left edge of bounding box
+      var relativeCenterX = textRect.left + textRect.width/2 - boundingRect.left;
+      var relativeCenterY = textRect.top + textRect.height/2 - boundingRect.top;
+      return relativeCenterX + 'px ' + relativeCenterY + 'px';
+    }
+  }
+  return '0 0'; //top left
+}
+
+function getTextDx(oldTextRect, newTextRect) {
+  if (oldTextRect && newTextRect) {
+    return ((oldTextRect.left + oldTextRect.width/2) - (newTextRect.left + newTextRect.width/2));
+  }
+  return 0;
+}
+function getTextDy(oldTextRect, newTextRect) {
+  if (oldTextRect && newTextRect) {
+    return ((oldTextRect.top + oldTextRect.height/2) - (newTextRect.top + newTextRect.height/2));
+  }
+  return 0;
+}
+
+function isTextElement(elm) {
+  return elm.childNodes.length === 1 && elm.childNodes[0].nodeType === 3;
+}
+
+var removed, created;
+
+function pre(oldVnode, vnode) {
+  removed = {};
+  created = [];
+}
+
+function create(oldVnode, vnode) {
+  var hero = vnode.data.hero;
+  if (hero && hero.id) {
+    created.push(hero.id);
+    created.push(vnode);
+  }
+}
+
+function destroy(vnode) {
+  var hero = vnode.data.hero;
+  if (hero && hero.id) {
+    var elm = vnode.elm;
+    vnode.isTextNode = isTextElement(elm); //is this a text node?
+    vnode.boundingRect = elm.getBoundingClientRect(); //save the bounding rectangle to a new property on the vnode
+    vnode.textRect = vnode.isTextNode ? getTextNodeRect(elm.childNodes[0]) : null; //save bounding rect of inner text node
+    var computedStyle = window.getComputedStyle(elm, null); //get current styles (includes inherited properties)
+    vnode.savedStyle = JSON.parse(JSON.stringify(computedStyle)); //save a copy of computed style values
+    removed[hero.id] = vnode;
+  }
+}
+
+function post() {
+  var i, id, newElm, oldVnode, oldElm, hRatio, wRatio,
+      oldRect, newRect, dx, dy, origTransform, origTransition,
+      newStyle, oldStyle, newComputedStyle, isTextNode,
+      newTextRect, oldTextRect;
+  for (i = 0; i < created.length; i += 2) {
+    id = created[i];
+    newElm = created[i+1].elm;
+    oldVnode = removed[id];
+    if (oldVnode) {
+      isTextNode = oldVnode.isTextNode && isTextElement(newElm); //Are old & new both text?
+      newStyle = newElm.style;
+      newComputedStyle = window.getComputedStyle(newElm, null); //get full computed style for new element
+      oldElm = oldVnode.elm;
+      oldStyle = oldElm.style;
+      //Overall element bounding boxes
+      newRect = newElm.getBoundingClientRect();
+      oldRect = oldVnode.boundingRect; //previously saved bounding rect
+      //Text node bounding boxes & distances
+      if (isTextNode) {
+        newTextRect = getTextNodeRect(newElm.childNodes[0]);
+        oldTextRect = oldVnode.textRect;
+        dx = getTextDx(oldTextRect, newTextRect);
+        dy = getTextDy(oldTextRect, newTextRect);
+      } else {
+        //Calculate distances between old & new positions
+        dx = oldRect.left - newRect.left;
+        dy = oldRect.top - newRect.top;
+      }
+      hRatio = newRect.height / (Math.max(oldRect.height, 1));
+      wRatio = isTextNode ? hRatio : newRect.width / (Math.max(oldRect.width, 1)); //text scales based on hRatio
+      // Animate new element
+      origTransform = newStyle.transform;
+      origTransition = newStyle.transition;
+      if (newComputedStyle.display === 'inline') //inline elements cannot be transformed
+        newStyle.display = 'inline-block';        //this does not appear to have any negative side effects
+      newStyle.transition = origTransition + 'transform 0s';
+      newStyle.transformOrigin = calcTransformOrigin(isTextNode, newTextRect, newRect);
+      newStyle.opacity = '0';
+      newStyle.transform = origTransform + 'translate('+dx+'px, '+dy+'px) ' +
+                               'scale('+1/wRatio+', '+1/hRatio+')';
+      setNextFrame(newStyle, 'transition', origTransition);
+      setNextFrame(newStyle, 'transform', origTransform);
+      setNextFrame(newStyle, 'opacity', '1');
+      // Animate old element
+      for (var key in oldVnode.savedStyle) { //re-apply saved inherited properties
+        if (parseInt(key) != key) {
+          var ms = key.substring(0,2) === 'ms';
+          var moz = key.substring(0,3) === 'moz';
+          var webkit = key.substring(0,6) === 'webkit';
+      	  if (!ms && !moz && !webkit) //ignore prefixed style properties
+        	  oldStyle[key] = oldVnode.savedStyle[key];
+        }
+      }
+      oldStyle.position = 'absolute';
+      oldStyle.top = oldRect.top + 'px'; //start at existing position
+      oldStyle.left = oldRect.left + 'px';
+      oldStyle.width = oldRect.width + 'px'; //Needed for elements who were sized relative to their parents
+      oldStyle.height = oldRect.height + 'px'; //Needed for elements who were sized relative to their parents
+      oldStyle.margin = 0; //Margin on hero element leads to incorrect positioning
+      oldStyle.transformOrigin = calcTransformOrigin(isTextNode, oldTextRect, oldRect);
+      oldStyle.transform = '';
+      oldStyle.opacity = '1';
+      document.body.appendChild(oldElm);
+      setNextFrame(oldStyle, 'transform', 'translate('+ -dx +'px, '+ -dy +'px) scale('+wRatio+', '+hRatio+')'); //scale must be on far right for translate to be correct
+      setNextFrame(oldStyle, 'opacity', '0');
+      oldElm.addEventListener('transitionend', function(ev) {
+        if (ev.propertyName === 'transform')
+          document.body.removeChild(ev.target);
+      });
+    }
+  }
+  removed = created = undefined;
+}
+
+module.exports = {pre: pre, create: create, destroy: destroy, post: post};
+
+},{}],166:[function(require,module,exports){
 function updateProps(oldVnode, vnode) {
   var key, cur, old, elm = vnode.elm,
       oldProps = oldVnode.data.props || {}, props = vnode.data.props || {};
@@ -7265,7 +7498,7 @@ function updateProps(oldVnode, vnode) {
   for (key in props) {
     cur = props[key];
     old = oldProps[key];
-    if (old !== cur) {
+    if (old !== cur && (key !== 'value' || elm[key] !== cur)) {
       elm[key] = cur;
     }
   }
@@ -7273,8 +7506,8 @@ function updateProps(oldVnode, vnode) {
 
 module.exports = {create: updateProps, update: updateProps};
 
-},{}],110:[function(require,module,exports){
-var raf = (window && window.requestAnimationFrame) || setTimeout;
+},{}],167:[function(require,module,exports){
+var raf = (typeof window !== 'undefined' && window.requestAnimationFrame) || setTimeout;
 var nextFrame = function(fn) { raf(function() { raf(fn); }); };
 
 function setNextFrame(obj, prop, val) {
@@ -7339,20 +7572,17 @@ function applyRemoveStyle(vnode, rm) {
 
 module.exports = {create: updateStyle, update: updateStyle, destroy: applyDestroyStyle, remove: applyRemoveStyle};
 
-},{}],111:[function(require,module,exports){
+},{}],168:[function(require,module,exports){
 // jshint newcap: false
-/* global require, module, document, Element */
+/* global require, module, document, Node */
 'use strict';
 
 var VNode = require('./vnode');
 var is = require('./is');
+var domApi = require('./htmldomapi.js');
 
 function isUndef(s) { return s === undefined; }
 function isDef(s) { return s !== undefined; }
-
-function emptyNodeAt(elm) {
-  return VNode(elm.tagName, {}, [], undefined, elm);
-}
 
 var emptyNode = VNode('', {}, [], undefined, undefined);
 
@@ -7369,16 +7599,13 @@ function createKeyToOldIdx(children, beginIdx, endIdx) {
   return map;
 }
 
-function createRmCb(childElm, listeners) {
-  return function() {
-    if (--listeners === 0) childElm.parentElement.removeChild(childElm);
-  };
-}
-
 var hooks = ['create', 'update', 'remove', 'destroy', 'pre', 'post'];
 
-function init(modules) {
+function init(modules, api) {
   var i, j, cbs = {};
+
+  if (isUndef(api)) api = domApi;
+
   for (i = 0; i < hooks.length; ++i) {
     cbs[hooks[i]] = [];
     for (j = 0; j < modules.length; ++j) {
@@ -7386,11 +7613,27 @@ function init(modules) {
     }
   }
 
+  function emptyNodeAt(elm) {
+    return VNode(api.tagName(elm).toLowerCase(), {}, [], undefined, elm);
+  }
+
+  function createRmCb(childElm, listeners) {
+    return function() {
+      if (--listeners === 0) {
+        var parent = api.parentNode(childElm);
+        api.removeChild(parent, childElm);
+      }
+    };
+  }
+
   function createElm(vnode, insertedVnodeQueue) {
-    var i, data = vnode.data;
+    var i, thunk, data = vnode.data;
     if (isDef(data)) {
       if (isDef(i = data.hook) && isDef(i = i.init)) i(vnode);
-      if (isDef(i = data.vnode)) vnode = i;
+      if (isDef(i = data.vnode)) {
+          thunk = vnode;
+          vnode = i;
+      }
     }
     var elm, children = vnode.children, sel = vnode.sel;
     if (isDef(sel)) {
@@ -7400,16 +7643,16 @@ function init(modules) {
       var hash = hashIdx > 0 ? hashIdx : sel.length;
       var dot = dotIdx > 0 ? dotIdx : sel.length;
       var tag = hashIdx !== -1 || dotIdx !== -1 ? sel.slice(0, Math.min(hash, dot)) : sel;
-      elm = vnode.elm = isDef(data) && isDef(i = data.ns) ? document.createElementNS(i, tag)
-                                                          : document.createElement(tag);
+      elm = vnode.elm = isDef(data) && isDef(i = data.ns) ? api.createElementNS(i, tag)
+                                                          : api.createElement(tag);
       if (hash < dot) elm.id = sel.slice(hash + 1, dot);
       if (dotIdx > 0) elm.className = sel.slice(dot+1).replace(/\./g, ' ');
       if (is.array(children)) {
         for (i = 0; i < children.length; ++i) {
-          elm.appendChild(createElm(children[i], insertedVnodeQueue));
+          api.appendChild(elm, createElm(children[i], insertedVnodeQueue));
         }
       } else if (is.primitive(vnode.text)) {
-        elm.appendChild(document.createTextNode(vnode.text));
+        api.appendChild(elm, api.createTextNode(vnode.text));
       }
       for (i = 0; i < cbs.create.length; ++i) cbs.create[i](emptyNode, vnode);
       i = vnode.data.hook; // Reuse variable
@@ -7418,27 +7661,29 @@ function init(modules) {
         if (i.insert) insertedVnodeQueue.push(vnode);
       }
     } else {
-      elm = vnode.elm = document.createTextNode(vnode.text);
+      elm = vnode.elm = api.createTextNode(vnode.text);
     }
+    if (isDef(thunk)) thunk.elm = vnode.elm;
     return vnode.elm;
   }
 
   function addVnodes(parentElm, before, vnodes, startIdx, endIdx, insertedVnodeQueue) {
     for (; startIdx <= endIdx; ++startIdx) {
-      parentElm.insertBefore(createElm(vnodes[startIdx], insertedVnodeQueue), before);
+      api.insertBefore(parentElm, createElm(vnodes[startIdx], insertedVnodeQueue), before);
     }
   }
 
   function invokeDestroyHook(vnode) {
-    var i = vnode.data, j;
-    if (isDef(i)) {
-      if (isDef(i = i.hook) && isDef(i = i.destroy)) i(vnode);
+    var i, j, data = vnode.data;
+    if (isDef(data)) {
+      if (isDef(i = data.hook) && isDef(i = i.destroy)) i(vnode);
       for (i = 0; i < cbs.destroy.length; ++i) cbs.destroy[i](vnode);
       if (isDef(i = vnode.children)) {
         for (j = 0; j < vnode.children.length; ++j) {
           invokeDestroyHook(vnode.children[j]);
         }
       }
+      if (isDef(i = data.vnode)) invokeDestroyHook(i);
     }
   }
 
@@ -7457,7 +7702,7 @@ function init(modules) {
             rm();
           }
         } else { // Text node
-          parentElm.removeChild(ch.elm);
+          api.removeChild(parentElm, ch.elm);
         }
       }
     }
@@ -7488,25 +7733,25 @@ function init(modules) {
         newEndVnode = newCh[--newEndIdx];
       } else if (sameVnode(oldStartVnode, newEndVnode)) { // Vnode moved right
         patchVnode(oldStartVnode, newEndVnode, insertedVnodeQueue);
-        parentElm.insertBefore(oldStartVnode.elm, oldEndVnode.elm.nextSibling);
+        api.insertBefore(parentElm, oldStartVnode.elm, api.nextSibling(oldEndVnode.elm));
         oldStartVnode = oldCh[++oldStartIdx];
         newEndVnode = newCh[--newEndIdx];
       } else if (sameVnode(oldEndVnode, newStartVnode)) { // Vnode moved left
         patchVnode(oldEndVnode, newStartVnode, insertedVnodeQueue);
-        parentElm.insertBefore(oldEndVnode.elm, oldStartVnode.elm);
+        api.insertBefore(parentElm, oldEndVnode.elm, oldStartVnode.elm);
         oldEndVnode = oldCh[--oldEndIdx];
         newStartVnode = newCh[++newStartIdx];
       } else {
         if (isUndef(oldKeyToIdx)) oldKeyToIdx = createKeyToOldIdx(oldCh, oldStartIdx, oldEndIdx);
         idxInOld = oldKeyToIdx[newStartVnode.key];
         if (isUndef(idxInOld)) { // New element
-          parentElm.insertBefore(createElm(newStartVnode, insertedVnodeQueue), oldStartVnode.elm);
+          api.insertBefore(parentElm, createElm(newStartVnode, insertedVnodeQueue), oldStartVnode.elm);
           newStartVnode = newCh[++newStartIdx];
         } else {
           elmToMove = oldCh[idxInOld];
           patchVnode(elmToMove, newStartVnode, insertedVnodeQueue);
           oldCh[idxInOld] = undefined;
-          parentElm.insertBefore(elmToMove.elm, oldStartVnode.elm);
+          api.insertBefore(parentElm, elmToMove.elm, oldStartVnode.elm);
           newStartVnode = newCh[++newStartIdx];
         }
       }
@@ -7525,9 +7770,20 @@ function init(modules) {
       i(oldVnode, vnode);
     }
     if (isDef(i = oldVnode.data) && isDef(i = i.vnode)) oldVnode = i;
-    if (isDef(i = vnode.data) && isDef(i = i.vnode)) vnode = i;
+    if (isDef(i = vnode.data) && isDef(i = i.vnode)) {
+      patchVnode(oldVnode, i, insertedVnodeQueue);
+      vnode.elm = i.elm;
+      return;
+    }
     var elm = vnode.elm = oldVnode.elm, oldCh = oldVnode.children, ch = vnode.children;
     if (oldVnode === vnode) return;
+    if (!sameVnode(oldVnode, vnode)) {
+      var parentElm = api.parentNode(oldVnode.elm);
+      elm = createElm(vnode, insertedVnodeQueue);
+      api.insertBefore(parentElm, elm, oldVnode.elm);
+      removeVnodes(parentElm, [oldVnode], 0, 0);
+      return;
+    }
     if (isDef(vnode.data)) {
       for (i = 0; i < cbs.update.length; ++i) cbs.update[i](oldVnode, vnode);
       i = vnode.data.hook;
@@ -7537,12 +7793,15 @@ function init(modules) {
       if (isDef(oldCh) && isDef(ch)) {
         if (oldCh !== ch) updateChildren(elm, oldCh, ch, insertedVnodeQueue);
       } else if (isDef(ch)) {
+        if (isDef(oldVnode.text)) api.setTextContent(elm, '');
         addVnodes(elm, null, ch, 0, ch.length - 1, insertedVnodeQueue);
       } else if (isDef(oldCh)) {
         removeVnodes(elm, oldCh, 0, oldCh.length - 1);
+      } else if (isDef(oldVnode.text)) {
+        api.setTextContent(elm, '');
       }
     } else if (oldVnode.text !== vnode.text) {
-      elm.textContent = vnode.text;
+      api.setTextContent(elm, vnode.text);
     }
     if (isDef(hook) && isDef(i = hook.postpatch)) {
       i(oldVnode, vnode);
@@ -7550,20 +7809,28 @@ function init(modules) {
   }
 
   return function(oldVnode, vnode) {
-    var i;
+    var i, elm, parent;
     var insertedVnodeQueue = [];
     for (i = 0; i < cbs.pre.length; ++i) cbs.pre[i]();
-    if (oldVnode instanceof Element) {
-      if (oldVnode.parentElement !== null) {
-        createElm(vnode, insertedVnodeQueue);
-        oldVnode.parentElement.replaceChild(vnode.elm, oldVnode);
-      } else {
-        oldVnode = emptyNodeAt(oldVnode);
-        patchVnode(oldVnode, vnode, insertedVnodeQueue);
-      }
-    } else {
-      patchVnode(oldVnode, vnode, insertedVnodeQueue);
+
+    if (isUndef(oldVnode.sel)) {
+      oldVnode = emptyNodeAt(oldVnode);
     }
+
+    if (sameVnode(oldVnode, vnode)) {
+      patchVnode(oldVnode, vnode, insertedVnodeQueue);
+    } else {
+      elm = oldVnode.elm;
+      parent = api.parentNode(elm);
+
+      createElm(vnode, insertedVnodeQueue);
+
+      if (parent !== null) {
+        api.insertBefore(parent, vnode.elm, api.nextSibling(elm));
+        removeVnodes(parent, [oldVnode], 0, 0);
+      }
+    }
+
     for (i = 0; i < insertedVnodeQueue.length; ++i) {
       insertedVnodeQueue[i].data.hook.insert(insertedVnodeQueue[i]);
     }
@@ -7574,7 +7841,7 @@ function init(modules) {
 
 module.exports = {init: init};
 
-},{"./is":106,"./vnode":113}],112:[function(require,module,exports){
+},{"./htmldomapi.js":160,"./is":161,"./vnode":170}],169:[function(require,module,exports){
 var h = require('./h');
 
 function init(thunk) {
@@ -7586,7 +7853,7 @@ function prepatch(oldThunk, thunk) {
   var i, old = oldThunk.data, cur = thunk.data;
   var oldArgs = old.args, args = cur.args;
   cur.vnode = old.vnode;
-  if (oldArgs.length !== args.length) {
+  if (old.fn !== cur.fn || oldArgs.length !== args.length) {
     cur.vnode = cur.fn.apply(undefined, args);
     return;
   }
@@ -7609,14 +7876,14 @@ module.exports = function(name, fn /* args */) {
   });
 };
 
-},{"./h":105}],113:[function(require,module,exports){
+},{"./h":159}],170:[function(require,module,exports){
 module.exports = function(sel, data, children, text, elm) {
   var key = data === undefined ? undefined : data.key;
   return {sel: sel, data: data, children: children,
           text: text, elm: elm, key: key};
 };
 
-},{}],114:[function(require,module,exports){
+},{}],171:[function(require,module,exports){
 // shim for using process in browser
 
 var process = module.exports = {};
@@ -7709,299 +7976,633 @@ process.chdir = function (dir) {
 };
 process.umask = function() { return 0; };
 
-},{}],115:[function(require,module,exports){
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function tryEvent(sink, scheduler, event) {
-  try {
-    sink.event(scheduler.now(), event);
-  } catch (err) {
-    sink.error(scheduler.now(), err);
-  }
-}
-
-function tryEnd(sink, scheduler, event) {
-  try {
-    sink.end(scheduler.now(), event);
-  } catch (err) {
-    sink.error(scheduler.now(), err);
-  }
-}
-
-var Observer = function () {
-  function Observer() {
-    var _this = this;
-
-    _classCallCheck(this, Observer);
-
-    this.run = function (sink, scheduler) {
-      return _this._run(sink, scheduler);
-    };
-    this.next = function (x) {
-      return _this._next(x);
-    };
-    this.error = function (err) {
-      return _this._error(err);
-    };
-    this.complete = function (x) {
-      return _this._complete(x);
-    };
-  }
-
-  _createClass(Observer, [{
-    key: "_run",
-    value: function _run(sink, scheduler) {
-      this.sink = sink;
-      this.scheduler = scheduler;
-      this.active = true;
-      return this;
-    }
-  }, {
-    key: "dispose",
-    value: function dispose() {
-      this.active = false;
-    }
-  }, {
-    key: "_next",
-    value: function _next(value) {
-      if (!this.active) {
-        return;
-      }
-      tryEvent(this.sink, this.scheduler, value);
-    }
-  }, {
-    key: "_error",
-    value: function _error(err) {
-      this.active = false;
-      this.sink.error(this.scheduler.now(), err);
-    }
-  }, {
-    key: "_complete",
-    value: function _complete(value) {
-      if (!this.active) {
-        return;
-      }
-      this.active = false;
-      tryEnd(this.sink, this.scheduler, value);
-    }
-  }]);
-
-  return Observer;
-}();
-
-exports.Observer = Observer;
-},{}],116:[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.replay = undefined;
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _most = require('most');
-
-var _multicast = require('@most/multicast');
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function pushEvents(sink, buffer) {
-  var i = 0;
-  for (; i < buffer.length; ++i) {
-    var item = buffer[i];
-    sink.event(item.time, item.value);
-  }
-}
-
-function replayAdd(sink) {
-  var length = this._replayAdd(sink);
-  if (this._replay.buffer.length > 0) {
-    pushEvents(sink, this._replay.buffer);
-  }
-  return length;
-}
-
-function addToBuffer(event, replay) {
-  if (replay.buffer.length >= replay.bufferSize) {
-    replay.buffer.shift();
-  }
-  replay.buffer.push(event);
-}
-
-function replayEvent(time, value) {
-  if (this._replay.bufferSize > 0) {
-    addToBuffer({ time: time, value: value }, this._replay);
-  }
-  this._replayEvent(time, value);
-}
-
-var Replay = function () {
-  function Replay(bufferSize, source) {
-    _classCallCheck(this, Replay);
-
-    this.source = source;
-    this.bufferSize = bufferSize;
-    this.buffer = [];
-  }
-
-  _createClass(Replay, [{
-    key: 'run',
-    value: function run(sink, scheduler) {
-      if (sink._replay !== this) {
-        sink._replay = this;
-        sink._replayAdd = sink.add;
-        sink.add = replayAdd;
-
-        sink._replayEvent = sink.event;
-        sink.event = replayEvent;
-      }
-
-      return this.source.run(sink, scheduler);
-    }
-  }]);
-
-  return Replay;
-}();
-
-var replay = function replay(bufferSize, stream) {
-  return new _most.Stream(new _multicast.MulticastSource(new Replay(bufferSize, stream.source)));
-};
-
-exports.replay = replay;
-},{"@most/multicast":1,"most":183}],117:[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.holdSubject = exports.subject = undefined;
-
-var _most = require('most');
-
-var _multicast = require('@most/multicast');
-
-var _Observer = require('./Observer');
-
-var _Replay = require('./Replay');
-
-function create(hold, bufferSize, initialValue) {
-  var observer = new _Observer.Observer();
-  var stream = hold ? (0, _Replay.replay)(bufferSize, new _most.Stream(observer)) : new _most.Stream(new _multicast.MulticastSource(observer));
-
-  stream.drain();
-
-  if (typeof initialValue !== 'undefined') {
-    observer.next(initialValue);
-  }
-
-  return { stream: stream, observer: observer };
-}
-
-function subject() {
-  return create(false, 0);
-}
-
-function holdSubject() {
-  var bufferSize = arguments.length <= 0 || arguments[0] === undefined ? 1 : arguments[0];
-  var initialValue = arguments[1];
-
-  if (bufferSize < 1) {
-    throw new Error('First argument to holdSubject is expected to be an ' + 'integer greater than or equal to 1');
-  }
-  return create(true, bufferSize, initialValue);
-}
-
-exports.subject = subject;
-exports.holdSubject = holdSubject;
-},{"./Observer":115,"./Replay":116,"@most/multicast":1,"most":183}],118:[function(require,module,exports){
+},{}],172:[function(require,module,exports){
+arguments[4][7][0].apply(exports,arguments)
+},{"dup":7}],173:[function(require,module,exports){
 arguments[4][8][0].apply(exports,arguments)
-},{"dup":8}],119:[function(require,module,exports){
+},{"dup":8}],174:[function(require,module,exports){
 arguments[4][9][0].apply(exports,arguments)
-},{"dup":9}],120:[function(require,module,exports){
+},{"dup":9}],175:[function(require,module,exports){
 arguments[4][10][0].apply(exports,arguments)
-},{"dup":10}],121:[function(require,module,exports){
-arguments[4][11][0].apply(exports,arguments)
-},{"dup":11}],122:[function(require,module,exports){
-arguments[4][12][0].apply(exports,arguments)
-},{"dup":12}],123:[function(require,module,exports){
-arguments[4][13][0].apply(exports,arguments)
-},{"../Stream":121,"../base":122,"../runSource":158,"../sink/Pipe":167,"./build":125,"dup":13}],124:[function(require,module,exports){
-arguments[4][14][0].apply(exports,arguments)
-},{"../base":122,"./combine":126,"dup":14}],125:[function(require,module,exports){
+},{"dup":10}],176:[function(require,module,exports){
 /** @license MIT License (c) copyright 2010-2016 original author or authors */
 /** @author Brian Cavalier */
 /** @author John Hann */
 
-var streamOf = require('../source/core').of;
-var continueWith = require('./continueWith').continueWith;
+var Stream = require('../Stream');
+var Pipe = require('../sink/Pipe');
+var runSource = require('../runSource');
+var dispose = require('../disposable/dispose');
+var PropagateTask = require('../scheduler/PropagateTask');
 
-exports.concat = concat;
-exports.cycle = cycle;
-exports.cons = cons;
+exports.scan = scan;
+exports.reduce = reduce;
 
 /**
- * @param {*} x value to prepend
+ * Create a stream containing successive reduce results of applying f to
+ * the previous reduce result and the current stream item.
+ * @param {function(result:*, x:*):*} f reducer function
+ * @param {*} initial initial value
+ * @param {Stream} stream stream to scan
+ * @returns {Stream} new stream containing successive reduce results
+ */
+function scan(f, initial, stream) {
+	return new Stream(new Scan(f, initial, stream.source));
+}
+
+function Scan(f, z, source) {
+	this.source = source;
+	this.f = f;
+	this.value = z;
+}
+
+Scan.prototype.run = function(sink, scheduler) {
+	var d1 = scheduler.asap(PropagateTask.event(this.value, sink));
+	var d2 = this.source.run(new ScanSink(this.f, this.value, sink), scheduler);
+	return dispose.all([d1, d2]);
+};
+
+function ScanSink(f, z, sink) {
+	this.f = f;
+	this.value = z;
+	this.sink = sink;
+}
+
+ScanSink.prototype.event = function(t, x) {
+	var f = this.f;
+	this.value = f(this.value, x);
+	this.sink.event(t, this.value);
+};
+
+ScanSink.prototype.error = Pipe.prototype.error;
+ScanSink.prototype.end = Pipe.prototype.end;
+
+/**
+ * Reduce a stream to produce a single result.  Note that reducing an infinite
+ * stream will return a Promise that never fulfills, but that may reject if an error
+ * occurs.
+ * @param {function(result:*, x:*):*} f reducer function
+ * @param {*} initial initial value
+ * @param {Stream} stream to reduce
+ * @returns {Promise} promise for the file result of the reduce
+ */
+function reduce(f, initial, stream) {
+	return runSource.withDefaultScheduler(noop, new Reduce(f, initial, stream.source));
+}
+
+function Reduce(f, z, source) {
+	this.source = source;
+	this.f = f;
+	this.value = z;
+}
+
+Reduce.prototype.run = function(sink, scheduler) {
+	return this.source.run(new ReduceSink(this.f, this.value, sink), scheduler);
+};
+
+function ReduceSink(f, z, sink) {
+	this.f = f;
+	this.value = z;
+	this.sink = sink;
+}
+
+ReduceSink.prototype.event = function(t, x) {
+	var f = this.f;
+	this.value = f(this.value, x);
+	this.sink.event(t, this.value);
+};
+
+ReduceSink.prototype.error = Pipe.prototype.error;
+
+ReduceSink.prototype.end = function(t) {
+	this.sink.end(t, this.value);
+};
+
+function noop() {}
+
+},{"../Stream":175,"../disposable/dispose":204,"../runSource":211,"../scheduler/PropagateTask":212,"../sink/Pipe":220}],177:[function(require,module,exports){
+/** @license MIT License (c) copyright 2010-2016 original author or authors */
+/** @author Brian Cavalier */
+/** @author John Hann */
+
+var combine = require('./combine').combine;
+var apply = require('@most/prelude').apply;
+
+exports.ap  = ap;
+
+/**
+ * Assume fs is a stream containing functions, and apply the latest function
+ * in fs to the latest value in xs.
+ * fs:         --f---------g--------h------>
+ * xs:         -a-------b-------c-------d-->
+ * ap(fs, xs): --fa-----fb-gb---gc--hc--hd->
+ * @param {Stream} fs stream of functions to apply to the latest x
+ * @param {Stream} xs stream of values to which to apply all the latest f
+ * @returns {Stream} stream containing all the applications of fs to xs
+ */
+function ap(fs, xs) {
+	return combine(apply, fs, xs);
+}
+
+},{"./combine":179,"@most/prelude":238}],178:[function(require,module,exports){
+arguments[4][14][0].apply(exports,arguments)
+},{"../source/core":225,"./continueWith":181,"dup":14}],179:[function(require,module,exports){
+/** @license MIT License (c) copyright 2010-2016 original author or authors */
+/** @author Brian Cavalier */
+/** @author John Hann */
+
+var Stream = require('../Stream');
+var transform = require('./transform');
+var core = require('../source/core');
+var Pipe = require('../sink/Pipe');
+var IndexSink = require('../sink/IndexSink');
+var dispose = require('../disposable/dispose');
+var base = require('@most/prelude');
+var invoke = require('../invoke');
+
+var map = base.map;
+var tail = base.tail;
+
+exports.combineArray = combineArray;
+exports.combine = combine;
+
+/**
+ * Combine latest events from all input streams
+ * @param {function(...events):*} f function to combine most recent events
+ * @returns {Stream} stream containing the result of applying f to the most recent
+ *  event of each input stream, whenever a new event arrives on any stream.
+ */
+function combine(f /*, ...streams */) {
+	return combineArray(f, tail(arguments));
+}
+
+/**
+ * Combine latest events from all input streams
+ * @param {function(...events):*} f function to combine most recent events
+ * @param {[Stream]} streams most recent events
+ * @returns {Stream} stream containing the result of applying f to the most recent
+ *  event of each input stream, whenever a new event arrives on any stream.
+ */
+function combineArray(f, streams) {
+	var l = streams.length;
+	return l === 0 ? core.empty()
+		 : l === 1 ? transform.map(f, streams[0])
+		 : new Stream(combineSources(f, streams));
+}
+
+function combineSources(f, streams) {
+	return new Combine(f, map(getSource, streams))
+}
+
+function getSource(stream) {
+	return stream.source;
+}
+
+function Combine(f, sources) {
+	this.f = f;
+	this.sources = sources;
+}
+
+Combine.prototype.run = function(sink, scheduler) {
+	var l = this.sources.length;
+	var disposables = new Array(l);
+	var sinks = new Array(l);
+
+	var mergeSink = new CombineSink(disposables, sinks, sink, this.f);
+
+	for(var indexSink, i=0; i<l; ++i) {
+		indexSink = sinks[i] = new IndexSink(i, mergeSink);
+		disposables[i] = this.sources[i].run(indexSink, scheduler);
+	}
+
+	return dispose.all(disposables);
+};
+
+function CombineSink(disposables, sinks, sink, f) {
+	this.sink = sink;
+	this.disposables = disposables;
+	this.sinks = sinks;
+	this.f = f;
+
+	var l = sinks.length;
+	this.awaiting = l;
+	this.values = new Array(l);
+	this.hasValue = new Array(l);
+	for(var i = 0; i < l; ++i) {
+		this.hasValue[i] = false;
+	}
+
+	this.activeCount = sinks.length;
+}
+
+CombineSink.prototype.error = Pipe.prototype.error;
+
+CombineSink.prototype.event = function(t, indexedValue) {
+	var i = indexedValue.index;
+	var awaiting = this._updateReady(i);
+
+	this.values[i] = indexedValue.value;
+	if(awaiting === 0) {
+		this.sink.event(t, invoke(this.f, this.values));
+	}
+};
+
+CombineSink.prototype._updateReady = function(index) {
+	if(this.awaiting > 0) {
+		if(!this.hasValue[index]) {
+			this.hasValue[index] = true
+			this.awaiting -= 1
+		}
+	}
+	return this.awaiting;
+}
+
+CombineSink.prototype.end = function(t, indexedValue) {
+	dispose.tryDispose(t, this.disposables[indexedValue.index], this.sink);
+	if(--this.activeCount === 0) {
+		this.sink.end(t, indexedValue.value);
+	}
+};
+
+},{"../Stream":175,"../disposable/dispose":204,"../invoke":209,"../sink/IndexSink":218,"../sink/Pipe":220,"../source/core":225,"./transform":199,"@most/prelude":238}],180:[function(require,module,exports){
+/** @license MIT License (c) copyright 2010-2016 original author or authors */
+/** @author Brian Cavalier */
+/** @author John Hann */
+
+var mergeMapConcurrently = require('./mergeConcurrently').mergeMapConcurrently;
+
+exports.concatMap = concatMap;
+
+/**
+ * Map each value in stream to a new stream, and concatenate them all
+ * stream:              -a---b---cX
+ * f(a):                 1-1-1-1X
+ * f(b):                        -2-2-2-2X
+ * f(c):                                -3-3-3-3X
+ * stream.concatMap(f): -1-1-1-1-2-2-2-2-3-3-3-3X
+ * @param {function(x:*):Stream} f function to map each value to a stream
  * @param {Stream} stream
- * @returns {Stream} new stream with x prepended
+ * @returns {Stream} new stream containing all events from each stream returned by f
  */
-function cons(x, stream) {
-	return concat(streamOf(x), stream);
+function concatMap(f, stream) {
+	return mergeMapConcurrently(f, 1, stream);
 }
 
-/**
- * @param {Stream} left
- * @param {Stream} right
- * @returns {Stream} new stream containing all events in left followed by all
- *  events in right.  This *timeshifts* right to the end of left.
- */
-function concat(left, right) {
-	return continueWith(function() {
-		return right;
-	}, left);
-}
-
-/**
- * @deprecated
- * Tie stream into a circle, creating an infinite stream
- * @param {Stream} stream
- * @returns {Stream} new infinite stream
- */
-function cycle(stream) {
-	return continueWith(function cycleNext() {
-		return cycle(stream);
-	}, stream);
-}
-
-},{"../source/core":172,"./continueWith":128}],126:[function(require,module,exports){
-arguments[4][16][0].apply(exports,arguments)
-},{"../Stream":121,"../base":122,"../disposable/dispose":151,"../invoke":156,"../sink/IndexSink":165,"../sink/Pipe":167,"../source/core":172,"./merge":135,"./transform":146,"dup":16}],127:[function(require,module,exports){
+},{"./mergeConcurrently":189}],181:[function(require,module,exports){
 arguments[4][17][0].apply(exports,arguments)
-},{"./mergeConcurrently":136,"./transform":146,"dup":17}],128:[function(require,module,exports){
+},{"../Promise":173,"../Stream":175,"../disposable/dispose":204,"../sink/Pipe":220,"dup":17}],182:[function(require,module,exports){
 arguments[4][18][0].apply(exports,arguments)
-},{"../Promise":119,"../Stream":121,"../disposable/dispose":151,"../sink/Pipe":167,"dup":18}],129:[function(require,module,exports){
-arguments[4][19][0].apply(exports,arguments)
-},{"../Stream":121,"../disposable/dispose":151,"../scheduler/PropagateTask":159,"../sink/Pipe":167,"dup":19}],130:[function(require,module,exports){
+},{"../Stream":175,"../disposable/dispose":204,"../scheduler/PropagateTask":212,"../sink/Pipe":220,"dup":18}],183:[function(require,module,exports){
+/** @license MIT License (c) copyright 2010-2016 original author or authors */
+/** @author Brian Cavalier */
+/** @author John Hann */
+
+var Stream = require('../Stream');
+var ValueSource = require('../source/ValueSource');
+var SafeSink = require('../sink/SafeSink');
+var Pipe = require('../sink/Pipe');
+var dispose = require('../disposable/dispose');
+var tryEvent = require('../source/tryEvent');
+var isPromise = require('../Promise').isPromise;
+
+exports.flatMapError = recoverWith;
+exports.recoverWith  = recoverWith;
+exports.throwError   = throwError;
+
+/**
+ * If stream encounters an error, recover and continue with items from stream
+ * returned by f.
+ * @param {function(error:*):Stream} f function which returns a new stream
+ * @param {Stream} stream
+ * @returns {Stream} new stream which will recover from an error by calling f
+ */
+function recoverWith(f, stream) {
+	return new Stream(new RecoverWith(f, stream.source));
+}
+
+/**
+ * Create a stream containing only an error
+ * @param {*} e error value, preferably an Error or Error subtype
+ * @returns {Stream} new stream containing only an error
+ */
+function throwError(e) {
+	return new Stream(new ValueSource(error, e));
+}
+
+function error(t, e, sink) {
+	sink.error(t, e);
+}
+
+function RecoverWith(f, source) {
+	this.f = f;
+	this.source = source;
+}
+
+RecoverWith.prototype.run = function(sink, scheduler) {
+	return new RecoverWithSink(this.f, this.source, sink, scheduler);
+};
+
+function RecoverWithSink(f, source, sink, scheduler) {
+	this.f = f;
+	this.sink = new SafeSink(sink);
+	this.scheduler = scheduler;
+	this.disposable = source.run(this, scheduler);
+}
+
+RecoverWithSink.prototype.event = function(t, x) {
+		tryEvent.tryEvent(t, x, this.sink);
+}
+
+RecoverWithSink.prototype.end = function(t, x) {
+		tryEvent.tryEnd(t, x, this.sink);
+}
+
+RecoverWithSink.prototype.error = function(t, e) {
+	var nextSink = this.sink.disable();
+
+	var result = dispose.tryDispose(t, this.disposable, nextSink);
+	this.disposable = isPromise(result)
+		? dispose.promised(this._thenContinue(result, e, nextSink))
+		: this._continue(this.f, e, nextSink);
+};
+
+RecoverWithSink.prototype._thenContinue = function(p, x, sink) {
+	var self = this;
+	return p.then(function () {
+		return self._continue(self.f, x, sink);
+	});
+};
+
+RecoverWithSink.prototype._continue = function(f, x, sink) {
+	return f(x).source.run(sink, this.scheduler);
+};
+
+RecoverWithSink.prototype.dispose = function() {
+	return this.disposable.dispose();
+};
+
+},{"../Promise":173,"../Stream":175,"../disposable/dispose":204,"../sink/Pipe":220,"../sink/SafeSink":221,"../source/ValueSource":224,"../source/tryEvent":234}],184:[function(require,module,exports){
 arguments[4][20][0].apply(exports,arguments)
-},{"../Stream":121,"../base":122,"../disposable/dispose":151,"../source/ValueSource":171,"../source/tryEvent":181,"dup":20}],131:[function(require,module,exports){
-arguments[4][21][0].apply(exports,arguments)
-},{"../Stream":121,"../fusion/Filter":153,"../sink/Pipe":167,"dup":21}],132:[function(require,module,exports){
-arguments[4][22][0].apply(exports,arguments)
-},{"./mergeConcurrently":136,"./transform":146,"dup":22}],133:[function(require,module,exports){
+},{"../Stream":175,"../fusion/Filter":206,"../sink/Pipe":220,"dup":20}],185:[function(require,module,exports){
+/** @license MIT License (c) copyright 2010-2016 original author or authors */
+/** @author Brian Cavalier */
+/** @author John Hann */
+
+var mergeConcurrently = require('./mergeConcurrently').mergeConcurrently;
+var mergeMapConcurrently = require('./mergeConcurrently').mergeMapConcurrently;
+
+exports.flatMap = flatMap;
+exports.join = join;
+
+/**
+ * Map each value in the stream to a new stream, and merge it into the
+ * returned outer stream. Event arrival times are preserved.
+ * @param {function(x:*):Stream} f chaining function, must return a Stream
+ * @param {Stream} stream
+ * @returns {Stream} new stream containing all events from each stream returned by f
+ */
+function flatMap(f, stream) {
+	return mergeMapConcurrently(f, Infinity, stream);
+}
+
+/**
+ * Monadic join. Flatten a Stream<Stream<X>> to Stream<X> by merging inner
+ * streams to the outer. Event arrival times are preserved.
+ * @param {Stream<Stream<X>>} stream stream of streams
+ * @returns {Stream<X>} new stream containing all events of all inner streams
+ */
+function join(stream) {
+	return mergeConcurrently(Infinity, stream);
+}
+
+},{"./mergeConcurrently":189}],186:[function(require,module,exports){
+/** @license MIT License (c) copyright 2010-2016 original author or authors */
+/** @author Brian Cavalier */
+/** @author John Hann */
+
+var Stream = require('../Stream');
+var Sink = require('../sink/Pipe');
+var dispose = require('../disposable/dispose');
+var PropagateTask = require('../scheduler/PropagateTask');
+var Map = require('../fusion/Map');
+
+exports.throttle = throttle;
+exports.debounce = debounce;
+
+/**
+ * Limit the rate of events by suppressing events that occur too often
+ * @param {Number} period time to suppress events
+ * @param {Stream} stream
+ * @returns {Stream}
+ */
+function throttle(period, stream) {
+	return new Stream(throttleSource(period, stream.source));
+}
+
+function throttleSource(period, source) {
+	return source instanceof Map ? commuteMapThrottle(period, source)
+		: source instanceof Throttle ? fuseThrottle(period, source)
+		: new Throttle(period, source)
+}
+
+function commuteMapThrottle(period, source) {
+	return Map.create(source.f, throttleSource(period, source.source))
+}
+
+function fuseThrottle(period, source) {
+	return new Throttle(Math.max(period, source.period), source.source)
+}
+
+function Throttle(period, source) {
+	this.period = period;
+	this.source = source;
+}
+
+Throttle.prototype.run = function(sink, scheduler) {
+	return this.source.run(new ThrottleSink(this.period, sink), scheduler);
+};
+
+function ThrottleSink(period, sink) {
+	this.time = 0;
+	this.period = period;
+	this.sink = sink;
+}
+
+ThrottleSink.prototype.event = function(t, x) {
+	if(t >= this.time) {
+		this.time = t + this.period;
+		this.sink.event(t, x);
+	}
+};
+
+ThrottleSink.prototype.end   = Sink.prototype.end;
+
+ThrottleSink.prototype.error = Sink.prototype.error;
+
+/**
+ * Wait for a burst of events to subside and emit only the last event in the burst
+ * @param {Number} period events occuring more frequently than this
+ *  will be suppressed
+ * @param {Stream} stream stream to debounce
+ * @returns {Stream} new debounced stream
+ */
+function debounce(period, stream) {
+	return new Stream(new Debounce(period, stream.source));
+}
+
+function Debounce(dt, source) {
+	this.dt = dt;
+	this.source = source;
+}
+
+Debounce.prototype.run = function(sink, scheduler) {
+	return new DebounceSink(this.dt, this.source, sink, scheduler);
+};
+
+function DebounceSink(dt, source, sink, scheduler) {
+	this.dt = dt;
+	this.sink = sink;
+	this.scheduler = scheduler;
+	this.value = void 0;
+	this.timer = null;
+
+	var sourceDisposable = source.run(this, scheduler);
+	this.disposable = dispose.all([this, sourceDisposable]);
+}
+
+DebounceSink.prototype.event = function(t, x) {
+	this._clearTimer();
+	this.value = x;
+	this.timer = this.scheduler.delay(this.dt, PropagateTask.event(x, this.sink));
+};
+
+DebounceSink.prototype.end = function(t, x) {
+	if(this._clearTimer()) {
+		this.sink.event(t, this.value);
+		this.value = void 0;
+	}
+	this.sink.end(t, x);
+};
+
+DebounceSink.prototype.error = function(t, x) {
+	this._clearTimer();
+	this.sink.error(t, x);
+};
+
+DebounceSink.prototype.dispose = function() {
+	this._clearTimer();
+};
+
+DebounceSink.prototype._clearTimer = function() {
+	if(this.timer === null) {
+		return false;
+	}
+	this.timer.cancel();
+	this.timer = null;
+	return true;
+};
+
+},{"../Stream":175,"../disposable/dispose":204,"../fusion/Map":208,"../scheduler/PropagateTask":212,"../sink/Pipe":220}],187:[function(require,module,exports){
 arguments[4][23][0].apply(exports,arguments)
-},{"../Stream":121,"../disposable/dispose":151,"../scheduler/PropagateTask":159,"../sink/Pipe":167,"dup":23}],134:[function(require,module,exports){
-arguments[4][24][0].apply(exports,arguments)
-},{"../Stream":121,"../sink/Pipe":167,"dup":24}],135:[function(require,module,exports){
-arguments[4][25][0].apply(exports,arguments)
-},{"../Stream":121,"../base":122,"../disposable/dispose":151,"../sink/IndexSink":165,"../sink/Pipe":167,"../source/core":172,"dup":25}],136:[function(require,module,exports){
+},{"../Stream":175,"../sink/Pipe":220,"dup":23}],188:[function(require,module,exports){
+/** @license MIT License (c) copyright 2010-2016 original author or authors */
+/** @author Brian Cavalier */
+/** @author John Hann */
+
+var Stream = require('../Stream');
+var Pipe = require('../sink/Pipe');
+var IndexSink = require('../sink/IndexSink');
+var empty = require('../source/core').empty;
+var dispose = require('../disposable/dispose');
+var base = require('@most/prelude');
+
+var copy = base.copy;
+var reduce = base.reduce;
+
+exports.merge = merge;
+exports.mergeArray = mergeArray;
+
+/**
+ * @returns {Stream} stream containing events from all streams in the argument
+ * list in time order.  If two events are simultaneous they will be merged in
+ * arbitrary order.
+ */
+function merge(/*...streams*/) {
+	return mergeArray(copy(arguments));
+}
+
+/**
+ * @param {Array} streams array of stream to merge
+ * @returns {Stream} stream containing events from all input observables
+ * in time order.  If two events are simultaneous they will be merged in
+ * arbitrary order.
+ */
+function mergeArray(streams) {
+    var l = streams.length;
+    return l === 0 ? empty()
+		 : l === 1 ? streams[0]
+		 : new Stream(mergeSources(streams));
+}
+
+/**
+ * This implements fusion/flattening for merge.  It will
+ * fuse adjacent merge operations.  For example:
+ * - a.merge(b).merge(c) effectively becomes merge(a, b, c)
+ * - merge(a, merge(b, c)) effectively becomes merge(a, b, c)
+ * It does this by concatenating the sources arrays of
+ * any nested Merge sources, in effect "flattening" nested
+ * merge operations into a single merge.
+ */
+function mergeSources(streams) {
+	return new Merge(reduce(appendSources, [], streams))
+}
+
+function appendSources(sources, stream) {
+	var source = stream.source;
+	return source instanceof Merge
+		? sources.concat(source.sources)
+		: sources.concat(source)
+}
+
+function Merge(sources) {
+	this.sources = sources;
+}
+
+Merge.prototype.run = function(sink, scheduler) {
+	var l = this.sources.length;
+	var disposables = new Array(l);
+	var sinks = new Array(l);
+
+	var mergeSink = new MergeSink(disposables, sinks, sink);
+
+	for(var indexSink, i=0; i<l; ++i) {
+		indexSink = sinks[i] = new IndexSink(i, mergeSink);
+		disposables[i] = this.sources[i].run(indexSink, scheduler);
+	}
+
+	return dispose.all(disposables);
+};
+
+function MergeSink(disposables, sinks, sink) {
+	this.sink = sink;
+	this.disposables = disposables;
+	this.activeCount = sinks.length;
+}
+
+MergeSink.prototype.error = Pipe.prototype.error;
+
+MergeSink.prototype.event = function(t, indexValue) {
+	this.sink.event(t, indexValue.value);
+};
+
+MergeSink.prototype.end = function(t, indexedValue) {
+	dispose.tryDispose(t, this.disposables[indexedValue.index], this.sink);
+	if(--this.activeCount === 0) {
+		this.sink.end(t, indexedValue.value);
+	}
+};
+
+},{"../Stream":175,"../disposable/dispose":204,"../sink/IndexSink":218,"../sink/Pipe":220,"../source/core":225,"@most/prelude":238}],189:[function(require,module,exports){
 /** @license MIT License (c) copyright 2010-2016 original author or authors */
 /** @author Brian Cavalier */
 /** @author John Hann */
@@ -8009,23 +8610,31 @@ arguments[4][25][0].apply(exports,arguments)
 var Stream = require('../Stream');
 var dispose = require('../disposable/dispose');
 var LinkedList = require('../LinkedList');
+var identity = require('@most/prelude').id;
 
 exports.mergeConcurrently = mergeConcurrently;
+exports.mergeMapConcurrently = mergeMapConcurrently;
 
 function mergeConcurrently(concurrency, stream) {
-	return new Stream(new MergeConcurrently(concurrency, stream.source));
+	return mergeMapConcurrently(identity, concurrency, stream);
 }
 
-function MergeConcurrently(concurrency, source) {
+function mergeMapConcurrently(f, concurrency, stream) {
+	return new Stream(new MergeConcurrently(f, concurrency, stream.source));
+}
+
+function MergeConcurrently(f, concurrency, source) {
+	this.f = f;
 	this.concurrency = concurrency;
 	this.source = source;
 }
 
 MergeConcurrently.prototype.run = function(sink, scheduler) {
-	return new Outer(this.concurrency, this.source, sink, scheduler);
+	return new Outer(this.f, this.concurrency, this.source, sink, scheduler);
 };
 
-function Outer(concurrency, source, sink, scheduler) {
+function Outer(f, concurrency, source, sink, scheduler) {
+	this.f = f;
 	this.concurrency = concurrency;
 	this.sink = sink;
 	this.scheduler = scheduler;
@@ -8050,8 +8659,12 @@ Outer.prototype._addInner = function(t, stream) {
 Outer.prototype._startInner = function(t, stream) {
 	var innerSink = new Inner(t, this, this.sink);
 	this.current.add(innerSink);
-	innerSink.disposable = stream.source.run(innerSink, this.scheduler);
+	innerSink.disposable = mapAndRun(this.f, innerSink, this.scheduler, stream);
 };
+
+function mapAndRun(f, innerSink, scheduler, stream) {
+	return f(stream).source.run(innerSink, scheduler);
+}
 
 Outer.prototype.end = function(t, x) {
 	this.active = false;
@@ -8111,148 +8724,923 @@ Inner.prototype.dispose = function() {
 	return this.disposable.dispose();
 };
 
-},{"../LinkedList":118,"../Stream":121,"../disposable/dispose":151}],137:[function(require,module,exports){
+},{"../LinkedList":172,"../Stream":175,"../disposable/dispose":204,"@most/prelude":238}],190:[function(require,module,exports){
+/** @license MIT License (c) copyright 2010-2016 original author or authors */
+/** @author Brian Cavalier */
+/** @author John Hann */
+
+var runSource = require('../runSource');
+
+exports.observe = observe;
+exports.drain = drain;
+
+/**
+ * Observe all the event values in the stream in time order. The
+ * provided function `f` will be called for each event value
+ * @param {function(x:T):*} f function to call with each event value
+ * @param {Stream<T>} stream stream to observe
+ * @return {Promise} promise that fulfills after the stream ends without
+ *  an error, or rejects if the stream ends with an error.
+ */
+function observe(f, stream) {
+	return runSource.withDefaultScheduler(f, stream.source);
+}
+
+/**
+ * "Run" a stream by
+ * @param stream
+ * @return {*}
+ */
+function drain(stream) {
+	return runSource.withDefaultScheduler(noop, stream.source);
+}
+
+function noop() {}
+
+},{"../runSource":211}],191:[function(require,module,exports){
 arguments[4][27][0].apply(exports,arguments)
-},{"../Stream":121,"../source/MulticastSource":170,"dup":27}],138:[function(require,module,exports){
-arguments[4][28][0].apply(exports,arguments)
-},{"../base":122,"../runSource":158,"dup":28}],139:[function(require,module,exports){
+},{"../Stream":175,"../fatalError":205,"../source/core":225,"dup":27}],192:[function(require,module,exports){
 /** @license MIT License (c) copyright 2010-2016 original author or authors */
 /** @author Brian Cavalier */
 /** @author John Hann */
 
 var Stream = require('../Stream');
-var fatal = require('../fatalError');
-var just = require('../source/core').of;
+var Pipe = require('../sink/Pipe');
+var dispose = require('../disposable/dispose');
+var base = require('@most/prelude');
+var invoke = require('../invoke');
 
-exports.fromPromise = fromPromise;
-exports.awaitPromises = awaitPromises;
-
-/**
- * Create a stream containing only the promise's fulfillment
- * value at the time it fulfills.
- * @param {Promise<T>} p promise
- * @return {Stream<T>} stream containing promise's fulfillment value.
- *  If the promise rejects, the stream will error
- */
-function fromPromise(p) {
-	return awaitPromises(just(p));
-}
+exports.sample = sample;
+exports.sampleWith = sampleWith;
+exports.sampleArray = sampleArray;
 
 /**
- * Turn a Stream<Promise<T>> into Stream<T> by awaiting each promise.
- * Event order is preserved.
- * @param {Stream<Promise<T>>} stream
- * @return {Stream<T>} stream of fulfillment values.  The stream will
- * error if any promise rejects.
+ * When an event arrives on sampler, emit the result of calling f with the latest
+ * values of all streams being sampled
+ * @param {function(...values):*} f function to apply to each set of sampled values
+ * @param {Stream} sampler streams will be sampled whenever an event arrives
+ *  on sampler
+ * @returns {Stream} stream of sampled and transformed values
  */
-function awaitPromises(stream) {
-	return new Stream(new Await(stream.source));
+function sample(f, sampler /*, ...streams */) {
+	return sampleArray(f, sampler, base.drop(2, arguments));
 }
 
-function Await(source) {
-	this.source = source;
+/**
+ * When an event arrives on sampler, emit the latest event value from stream.
+ * @param {Stream} sampler stream of events at whose arrival time
+ *  stream's latest value will be propagated
+ * @param {Stream} stream stream of values
+ * @returns {Stream} sampled stream of values
+ */
+function sampleWith(sampler, stream) {
+	return new Stream(new Sampler(base.id, sampler.source, [stream.source]));
 }
 
-Await.prototype.run = function(sink, scheduler) {
-	return this.source.run(new AwaitSink(sink, scheduler), scheduler);
+function sampleArray(f, sampler, streams) {
+	return new Stream(new Sampler(f, sampler.source, base.map(getSource, streams)));
+}
+
+function getSource(stream) {
+	return stream.source;
+}
+
+function Sampler(f, sampler, sources) {
+	this.f = f;
+	this.sampler = sampler;
+	this.sources = sources;
+}
+
+Sampler.prototype.run = function(sink, scheduler) {
+	var l = this.sources.length;
+	var disposables = new Array(l+1);
+	var sinks = new Array(l);
+
+	var sampleSink = new SampleSink(this.f, sinks, sink);
+
+	for(var hold, i=0; i<l; ++i) {
+		hold = sinks[i] = new Hold(sampleSink);
+		disposables[i] = this.sources[i].run(hold, scheduler);
+	}
+
+	disposables[i] = this.sampler.run(sampleSink, scheduler);
+
+	return dispose.all(disposables);
 };
 
-function AwaitSink(sink, scheduler) {
+function Hold(sink) {
 	this.sink = sink;
-	this.scheduler = scheduler;
-	this.queue = Promise.resolve();
-	var self = this;
-
-	// Pre-create closures, to avoid creating them per event
-	this._eventBound = function(x) {
-		self.sink.event(self.scheduler.now(), x);
-	};
-
-	this._endBound = function(x) {
-		self.sink.end(self.scheduler.now(), x);
-	};
-
-	this._errorBound = function(e) {
-		self.sink.error(self.scheduler.now(), e);
-	};
+	this.hasValue = false;
 }
 
-AwaitSink.prototype.event = function(t, promise) {
-	var self = this;
-	this.queue = this.queue.then(function() {
-		return self._event(promise);
-	}).catch(this._errorBound);
+Hold.prototype.event = function(t, x) {
+	this.value = x;
+	this.hasValue = true;
+	this.sink._notify(this);
 };
 
-AwaitSink.prototype.end = function(t, x) {
-	var self = this;
-	this.queue = this.queue.then(function() {
-		return self._end(x);
-	}).catch(this._errorBound);
+Hold.prototype.end = function () {};
+Hold.prototype.error = Pipe.prototype.error;
+
+function SampleSink(f, sinks, sink) {
+	this.f = f;
+	this.sinks = sinks;
+	this.sink = sink;
+	this.active = false;
+}
+
+SampleSink.prototype._notify = function() {
+	if(!this.active) {
+		this.active = this.sinks.every(hasValue);
+	}
 };
 
-AwaitSink.prototype.error = function(t, e) {
-	var self = this;
-	// Don't resolve error values, propagate directly
-	this.queue = this.queue.then(function() {
-		return self._errorBound(e);
-	}).catch(fatal);
+SampleSink.prototype.event = function(t) {
+	if(this.active) {
+		this.sink.event(t, invoke(this.f, base.map(getValue, this.sinks)));
+	}
 };
 
-AwaitSink.prototype._event = function(promise) {
-	return promise.then(this._eventBound);
-};
+SampleSink.prototype.end = Pipe.prototype.end;
+SampleSink.prototype.error = Pipe.prototype.error;
 
-AwaitSink.prototype._end = function(x) {
-	return Promise.resolve(x).then(this._endBound);
-};
+function hasValue(hold) {
+	return hold.hasValue;
+}
 
-},{"../Stream":121,"../fatalError":152,"../source/core":172}],140:[function(require,module,exports){
-arguments[4][30][0].apply(exports,arguments)
-},{"../Stream":121,"../base":122,"../disposable/dispose":151,"../invoke":156,"../sink/Pipe":167,"dup":30}],141:[function(require,module,exports){
-arguments[4][31][0].apply(exports,arguments)
-},{"../Stream":121,"../disposable/dispose":151,"../sink/Pipe":167,"../source/core":172,"dup":31}],142:[function(require,module,exports){
-arguments[4][32][0].apply(exports,arguments)
-},{"../Stream":121,"../source/MulticastSource":170,"./mergeConcurrently":136,"./timeslice":143,"./transform":146,"dup":32}],143:[function(require,module,exports){
-arguments[4][33][0].apply(exports,arguments)
-},{"../Stream":121,"../base":122,"../combinator/flatMap":132,"../disposable/dispose":151,"../sink/Pipe":167,"dup":33}],144:[function(require,module,exports){
-arguments[4][34][0].apply(exports,arguments)
-},{"../Stream":121,"../sink/Pipe":167,"dup":34}],145:[function(require,module,exports){
-arguments[4][35][0].apply(exports,arguments)
-},{"../Stream":121,"dup":35}],146:[function(require,module,exports){
-arguments[4][36][0].apply(exports,arguments)
-},{"../Stream":121,"../fusion/Map":155,"dup":36}],147:[function(require,module,exports){
-arguments[4][37][0].apply(exports,arguments)
-},{"../Queue":120,"../Stream":121,"../base":122,"../disposable/dispose":151,"../invoke":156,"../sink/IndexSink":165,"../sink/Pipe":167,"../source/core":172,"./transform":146,"dup":37}],148:[function(require,module,exports){
-arguments[4][38][0].apply(exports,arguments)
-},{"dup":38}],149:[function(require,module,exports){
-arguments[4][39][0].apply(exports,arguments)
-},{"dup":39}],150:[function(require,module,exports){
-arguments[4][40][0].apply(exports,arguments)
-},{"dup":40}],151:[function(require,module,exports){
-arguments[4][41][0].apply(exports,arguments)
-},{"../Promise":119,"../base":122,"./Disposable":149,"./SettableDisposable":150,"dup":41}],152:[function(require,module,exports){
-arguments[4][42][0].apply(exports,arguments)
-},{"dup":42}],153:[function(require,module,exports){
-arguments[4][43][0].apply(exports,arguments)
-},{"../sink/Pipe":167,"dup":43}],154:[function(require,module,exports){
-arguments[4][44][0].apply(exports,arguments)
-},{"../sink/Pipe":167,"dup":44}],155:[function(require,module,exports){
-arguments[4][45][0].apply(exports,arguments)
-},{"../base":122,"../sink/Pipe":167,"./Filter":153,"./FilterMap":154,"dup":45}],156:[function(require,module,exports){
-arguments[4][46][0].apply(exports,arguments)
-},{"dup":46}],157:[function(require,module,exports){
-arguments[4][47][0].apply(exports,arguments)
-},{"dup":47}],158:[function(require,module,exports){
-arguments[4][48][0].apply(exports,arguments)
-},{"./disposable/dispose":151,"./scheduler/defaultScheduler":161,"./sink/Observer":166,"dup":48}],159:[function(require,module,exports){
-arguments[4][49][0].apply(exports,arguments)
-},{"../fatalError":152,"dup":49}],160:[function(require,module,exports){
+function getValue(hold) {
+	return hold.value;
+}
+
+},{"../Stream":175,"../disposable/dispose":204,"../invoke":209,"../sink/Pipe":220,"@most/prelude":238}],193:[function(require,module,exports){
 /** @license MIT License (c) copyright 2010-2016 original author or authors */
 /** @author Brian Cavalier */
 /** @author John Hann */
 
-var base = require('./../base');
+var Stream = require('../Stream');
+var Sink = require('../sink/Pipe');
+var core = require('../source/core');
+var dispose = require('../disposable/dispose');
+var Map = require('../fusion/Map');
+
+exports.take = take;
+exports.skip = skip;
+exports.slice = slice;
+exports.takeWhile = takeWhile;
+exports.skipWhile = skipWhile;
+
+/**
+ * @param {number} n
+ * @param {Stream} stream
+ * @returns {Stream} new stream containing only up to the first n items from stream
+ */
+function take(n, stream) {
+	return slice(0, n, stream);
+}
+
+/**
+ * @param {number} n
+ * @param {Stream} stream
+ * @returns {Stream} new stream with the first n items removed
+ */
+function skip(n, stream) {
+	return slice(n, Infinity, stream);
+}
+
+/**
+ * Slice a stream by index. Negative start/end indexes are not supported
+ * @param {number} start
+ * @param {number} end
+ * @param {Stream} stream
+ * @returns {Stream} stream containing items where start <= index < end
+ */
+function slice(start, end, stream) {
+	return end <= start ? core.empty()
+		: new Stream(sliceSource(start, end, stream.source));
+}
+
+function sliceSource(start, end, source) {
+	return source instanceof Map ? commuteMapSlice(start, end, source)
+		: source instanceof Slice ? fuseSlice(start, end, source)
+		: new Slice(start, end, source);
+}
+
+function commuteMapSlice(start, end, source) {
+	return Map.create(source.f, sliceSource(start, end, source.source))
+}
+
+function fuseSlice(start, end, source) {
+	start += source.min;
+	end = Math.min(end + source.min, source.max);
+	return new Slice(start, end, source.source);
+}
+
+function Slice(min, max, source) {
+	this.source = source;
+	this.min = min;
+	this.max = max;
+}
+
+Slice.prototype.run = function(sink, scheduler) {
+	return new SliceSink(this.min, this.max - this.min, this.source, sink, scheduler);
+};
+
+function SliceSink(skip, take, source, sink, scheduler) {
+	this.sink = sink;
+	this.skip = skip;
+	this.take = take;
+	this.disposable = dispose.once(source.run(this, scheduler));
+}
+
+SliceSink.prototype.end   = Sink.prototype.end;
+SliceSink.prototype.error = Sink.prototype.error;
+
+SliceSink.prototype.event = function(t, x) {
+	if(this.skip > 0) {
+		this.skip -= 1;
+		return;
+	}
+
+	if(this.take === 0) {
+		return;
+	}
+
+	this.take -= 1;
+	this.sink.event(t, x);
+	if(this.take === 0) {
+		this.dispose();
+		this.sink.end(t, x);
+	}
+};
+
+SliceSink.prototype.dispose = function() {
+	return this.disposable.dispose();
+};
+
+function takeWhile(p, stream) {
+	return new Stream(new TakeWhile(p, stream.source));
+}
+
+function TakeWhile(p, source) {
+	this.p = p;
+	this.source = source;
+}
+
+TakeWhile.prototype.run = function(sink, scheduler) {
+	return new TakeWhileSink(this.p, this.source, sink, scheduler);
+};
+
+function TakeWhileSink(p, source, sink, scheduler) {
+	this.p = p;
+	this.sink = sink;
+	this.active = true;
+	this.disposable = dispose.once(source.run(this, scheduler));
+}
+
+TakeWhileSink.prototype.end   = Sink.prototype.end;
+TakeWhileSink.prototype.error = Sink.prototype.error;
+
+TakeWhileSink.prototype.event = function(t, x) {
+	if(!this.active) {
+		return;
+	}
+
+	var p = this.p;
+	this.active = p(x);
+	if(this.active) {
+		this.sink.event(t, x);
+	} else {
+		this.dispose();
+		this.sink.end(t, x);
+	}
+};
+
+TakeWhileSink.prototype.dispose = function() {
+	return this.disposable.dispose();
+};
+
+function skipWhile(p, stream) {
+	return new Stream(new SkipWhile(p, stream.source));
+}
+
+function SkipWhile(p, source) {
+	this.p = p;
+	this.source = source;
+}
+
+SkipWhile.prototype.run = function(sink, scheduler) {
+	return this.source.run(new SkipWhileSink(this.p, sink), scheduler);
+};
+
+function SkipWhileSink(p, sink) {
+	this.p = p;
+	this.sink = sink;
+	this.skipping = true;
+}
+
+SkipWhileSink.prototype.end   = Sink.prototype.end;
+SkipWhileSink.prototype.error = Sink.prototype.error;
+
+SkipWhileSink.prototype.event = function(t, x) {
+	if(this.skipping) {
+		var p = this.p;
+		this.skipping = p(x);
+		if(this.skipping) {
+			return;
+		}
+	}
+
+	this.sink.event(t, x);
+};
+
+},{"../Stream":175,"../disposable/dispose":204,"../fusion/Map":208,"../sink/Pipe":220,"../source/core":225}],194:[function(require,module,exports){
+/** @license MIT License (c) copyright 2010-2016 original author or authors */
+/** @author Brian Cavalier */
+/** @author John Hann */
+
+var Stream = require('../Stream');
+var dispose = require('../disposable/dispose')
+
+exports.switch = switchLatest;
+
+/**
+ * Given a stream of streams, return a new stream that adopts the behavior
+ * of the most recent inner stream.
+ * @param {Stream} stream of streams on which to switch
+ * @returns {Stream} switching stream
+ */
+function switchLatest(stream) {
+	return new Stream(new Switch(stream.source));
+}
+
+function Switch(source) {
+	this.source = source;
+}
+
+Switch.prototype.run = function(sink, scheduler) {
+	var switchSink = new SwitchSink(sink, scheduler);
+	return dispose.all(switchSink, this.source.run(switchSink, scheduler));
+};
+
+function SwitchSink(sink, scheduler) {
+	this.sink = sink;
+	this.scheduler = scheduler;
+	this.current = null;
+	this.ended = false;
+}
+
+SwitchSink.prototype.event = function(t, stream) {
+	this._disposeCurrent(t); // TODO: capture the result of this dispose
+	this.current = new Segment(t, Infinity, this, this.sink);
+	this.current.disposable = stream.source.run(this.current, this.scheduler);
+};
+
+SwitchSink.prototype.end = function(t, x) {
+	this.ended = true;
+	this._checkEnd(t, x);
+};
+
+SwitchSink.prototype.error = function(t, e) {
+	this.ended = true;
+	this.sink.error(t, e);
+};
+
+SwitchSink.prototype.dispose = function() {
+	return this._disposeCurrent(0);
+};
+
+SwitchSink.prototype._disposeCurrent = function(t) {
+	if(this.current !== null) {
+		return this.current._dispose(t);
+	}
+};
+
+SwitchSink.prototype._disposeInner = function(t, inner) {
+	inner._dispose(t); // TODO: capture the result of this dispose
+	if(inner === this.current) {
+		this.current = null;
+	}
+};
+
+SwitchSink.prototype._checkEnd = function(t, x) {
+	if(this.ended && this.current === null) {
+		this.sink.end(t, x);
+	}
+};
+
+SwitchSink.prototype._endInner = function(t, x, inner) {
+	this._disposeInner(t, inner);
+	this._checkEnd(t, x);
+};
+
+SwitchSink.prototype._errorInner = function(t, e, inner) {
+	this._disposeInner(t, inner);
+	this.sink.error(t, e);
+};
+
+function Segment(min, max, outer, sink) {
+	this.min = min;
+	this.max = max;
+	this.outer = outer;
+	this.sink = sink;
+	this.disposable = dispose.empty();
+}
+
+Segment.prototype.event = function(t, x) {
+	if(t < this.max) {
+		this.sink.event(Math.max(t, this.min), x);
+	}
+};
+
+Segment.prototype.end = function(t, x) {
+	this.outer._endInner(Math.max(t, this.min), x, this);
+};
+
+Segment.prototype.error = function(t, e) {
+	this.outer._errorInner(Math.max(t, this.min), e, this);
+};
+
+Segment.prototype._dispose = function(t) {
+	this.max = t;
+	dispose.tryDispose(t, this.disposable, this.sink)
+};
+
+},{"../Stream":175,"../disposable/dispose":204}],195:[function(require,module,exports){
+/** @license MIT License (c) copyright 2010-2016 original author or authors */
+/** @author Brian Cavalier */
+/** @author John Hann */
+
+exports.thru = function thru(f, stream) {
+	return f(stream);
+}
+
+},{}],196:[function(require,module,exports){
+/** @license MIT License (c) copyright 2010-2016 original author or authors */
+/** @author Brian Cavalier */
+/** @author John Hann */
+
+var Stream = require('../Stream');
+var Pipe = require('../sink/Pipe');
+var dispose = require('../disposable/dispose');
+var join = require('../combinator/flatMap').join;
+
+exports.during    = during;
+exports.takeUntil = takeUntil;
+exports.skipUntil = skipUntil;
+
+function takeUntil(signal, stream) {
+	return new Stream(new Until(signal.source, stream.source));
+}
+
+function skipUntil(signal, stream) {
+	return new Stream(new Since(signal.source, stream.source));
+}
+
+function during(timeWindow, stream) {
+	return takeUntil(join(timeWindow), skipUntil(timeWindow, stream));
+}
+
+function Until(maxSignal, source) {
+	this.maxSignal = maxSignal;
+	this.source = source;
+}
+
+Until.prototype.run = function(sink, scheduler) {
+	var min = new Bound(-Infinity, sink);
+	var max = new UpperBound(this.maxSignal, sink, scheduler);
+	var disposable = this.source.run(new TimeWindowSink(min, max, sink), scheduler);
+
+	return dispose.all([min, max, disposable]);
+};
+
+function Since(minSignal, source) {
+	this.minSignal = minSignal;
+	this.source = source;
+}
+
+Since.prototype.run = function(sink, scheduler) {
+	var min = new LowerBound(this.minSignal, sink, scheduler);
+	var max = new Bound(Infinity, sink);
+	var disposable = this.source.run(new TimeWindowSink(min, max, sink), scheduler);
+
+	return dispose.all([min, max, disposable]);
+};
+
+function Bound(value, sink) {
+	this.value = value;
+	this.sink = sink;
+}
+
+Bound.prototype.error = Pipe.prototype.error;
+Bound.prototype.event = noop;
+Bound.prototype.end = noop;
+Bound.prototype.dispose = noop;
+
+function TimeWindowSink(min, max, sink) {
+	this.min = min;
+	this.max = max;
+	this.sink = sink;
+}
+
+TimeWindowSink.prototype.event = function(t, x) {
+	if(t >= this.min.value && t < this.max.value) {
+		this.sink.event(t, x);
+	}
+};
+
+TimeWindowSink.prototype.error = Pipe.prototype.error;
+TimeWindowSink.prototype.end = Pipe.prototype.end;
+
+function LowerBound(signal, sink, scheduler) {
+	this.value = Infinity;
+	this.sink = sink;
+	this.disposable = signal.run(this, scheduler);
+}
+
+LowerBound.prototype.event = function(t /*, x */) {
+	if(t < this.value) {
+		this.value = t;
+	}
+};
+
+LowerBound.prototype.end = noop;
+LowerBound.prototype.error = Pipe.prototype.error;
+
+LowerBound.prototype.dispose = function() {
+	return this.disposable.dispose();
+};
+
+function UpperBound(signal, sink, scheduler) {
+	this.value = Infinity;
+	this.sink = sink;
+	this.disposable = signal.run(this, scheduler);
+}
+
+UpperBound.prototype.event = function(t, x) {
+	if(t < this.value) {
+		this.value = t;
+		this.sink.end(t, x);
+	}
+};
+
+UpperBound.prototype.end = noop;
+UpperBound.prototype.error = Pipe.prototype.error;
+
+UpperBound.prototype.dispose = function() {
+	return this.disposable.dispose();
+};
+
+function noop() {}
+
+},{"../Stream":175,"../combinator/flatMap":185,"../disposable/dispose":204,"../sink/Pipe":220}],197:[function(require,module,exports){
+arguments[4][32][0].apply(exports,arguments)
+},{"../Stream":175,"../sink/Pipe":220,"dup":32}],198:[function(require,module,exports){
+arguments[4][33][0].apply(exports,arguments)
+},{"../Stream":175,"dup":33}],199:[function(require,module,exports){
+arguments[4][34][0].apply(exports,arguments)
+},{"../Stream":175,"../fusion/Map":208,"dup":34}],200:[function(require,module,exports){
+/** @license MIT License (c) copyright 2010-2016 original author or authors */
+/** @author Brian Cavalier */
+/** @author John Hann */
+
+var Stream = require('../Stream');
+var transform = require('./transform');
+var core = require('../source/core');
+var Sink = require('../sink/Pipe');
+var IndexSink = require('../sink/IndexSink');
+var dispose = require('../disposable/dispose');
+var base = require('@most/prelude');
+var invoke = require('../invoke');
+var Queue = require('../Queue');
+
+var map = base.map;
+var tail = base.tail;
+
+exports.zip = zip;
+exports.zipArray = zipArray;
+
+/**
+ * Combine streams pairwise (or tuple-wise) by index by applying f to values
+ * at corresponding indices.  The returned stream ends when any of the input
+ * streams ends.
+ * @param {function} f function to combine values
+ * @returns {Stream} new stream with items at corresponding indices combined
+ *  using f
+ */
+function zip(f /*,...streams */) {
+	return zipArray(f, tail(arguments));
+}
+
+/**
+ * Combine streams pairwise (or tuple-wise) by index by applying f to values
+ * at corresponding indices.  The returned stream ends when any of the input
+ * streams ends.
+ * @param {function} f function to combine values
+ * @param {[Stream]} streams streams to zip using f
+ * @returns {Stream} new stream with items at corresponding indices combined
+ *  using f
+ */
+function zipArray(f, streams) {
+	return streams.length === 0 ? core.empty()
+		 : streams.length === 1 ? transform.map(f, streams[0])
+		 : new Stream(new Zip(f, map(getSource, streams)));
+}
+
+function getSource(stream) {
+	return stream.source;
+}
+
+function Zip(f, sources) {
+	this.f = f;
+	this.sources = sources;
+}
+
+Zip.prototype.run = function(sink, scheduler) {
+	var l = this.sources.length;
+	var disposables = new Array(l);
+	var sinks = new Array(l);
+	var buffers = new Array(l);
+
+	var zipSink = new ZipSink(this.f, buffers, sinks, sink);
+
+	for(var indexSink, i=0; i<l; ++i) {
+		buffers[i] = new Queue();
+		indexSink = sinks[i] = new IndexSink(i, zipSink);
+		disposables[i] = this.sources[i].run(indexSink, scheduler);
+	}
+
+	return dispose.all(disposables);
+};
+
+function ZipSink(f, buffers, sinks, sink) {
+	this.f = f;
+	this.sinks = sinks;
+	this.sink = sink;
+	this.buffers = buffers;
+}
+
+ZipSink.prototype.event = function(t, indexedValue) {
+	var buffers = this.buffers;
+	var buffer = buffers[indexedValue.index];
+
+	buffer.push(indexedValue.value);
+
+	if(buffer.length() === 1) {
+		if(!ready(this.buffers)) {
+			return;
+		}
+
+		emitZipped(this.f, t, buffers, this.sink);
+
+		if (ended(this.buffers, this.sinks)) {
+			this.sink.end(t, void 0);
+		}
+	}
+};
+
+ZipSink.prototype.end = function(t, indexedValue) {
+	var buffer = this.buffers[indexedValue.index];
+	if(buffer.isEmpty()) {
+		this.sink.end(t, indexedValue.value);
+	}
+};
+
+ZipSink.prototype.error = Sink.prototype.error;
+
+function emitZipped (f, t, buffers, sink) {
+	sink.event(t, invoke(f, map(head, buffers)));
+}
+
+function head(buffer) {
+	return buffer.shift();
+}
+
+function ended(buffers, sinks) {
+	for(var i=0, l=buffers.length; i<l; ++i) {
+		if(buffers[i].isEmpty() && !sinks[i].active) {
+			return true;
+		}
+	}
+	return false;
+}
+
+function ready(buffers) {
+	for(var i=0, l=buffers.length; i<l; ++i) {
+		if(buffers[i].isEmpty()) {
+			return false;
+		}
+	}
+	return true;
+}
+
+},{"../Queue":174,"../Stream":175,"../disposable/dispose":204,"../invoke":209,"../sink/IndexSink":218,"../sink/Pipe":220,"../source/core":225,"./transform":199,"@most/prelude":238}],201:[function(require,module,exports){
+arguments[4][36][0].apply(exports,arguments)
+},{"dup":36}],202:[function(require,module,exports){
+arguments[4][37][0].apply(exports,arguments)
+},{"dup":37}],203:[function(require,module,exports){
+arguments[4][38][0].apply(exports,arguments)
+},{"dup":38}],204:[function(require,module,exports){
+/** @license MIT License (c) copyright 2010-2016 original author or authors */
+/** @author Brian Cavalier */
+/** @author John Hann */
+
+var Disposable = require('./Disposable');
+var SettableDisposable = require('./SettableDisposable');
+var isPromise = require('../Promise').isPromise;
+var base = require('@most/prelude');
+
+var map = base.map;
+var identity = base.id;
+
+exports.tryDispose = tryDispose;
+exports.create = create;
+exports.once = once;
+exports.empty = empty;
+exports.all = all;
+exports.settable = settable;
+exports.promised = promised;
+
+/**
+ * Call disposable.dispose.  If it returns a promise, catch promise
+ * error and forward it through the provided sink.
+ * @param {number} t time
+ * @param {{dispose: function}} disposable
+ * @param {{error: function}} sink
+ * @return {*} result of disposable.dispose
+ */
+function tryDispose(t, disposable, sink) {
+	var result = disposeSafely(disposable);
+	return isPromise(result)
+		? result.catch(function (e) {
+			sink.error(t, e);
+		})
+		: result;
+}
+
+/**
+ * Create a new Disposable which will dispose its underlying resource
+ * at most once.
+ * @param {function} dispose function
+ * @param {*?} data any data to be passed to disposer function
+ * @return {Disposable}
+ */
+function create(dispose, data) {
+	return once(new Disposable(dispose, data));
+}
+
+/**
+ * Create a noop disposable. Can be used to satisfy a Disposable
+ * requirement when no actual resource needs to be disposed.
+ * @return {Disposable|exports|module.exports}
+ */
+function empty() {
+	return new Disposable(identity, void 0);
+}
+
+/**
+ * Create a disposable that will dispose all input disposables in parallel.
+ * @param {Array<Disposable>} disposables
+ * @return {Disposable}
+ */
+function all(disposables) {
+	return create(disposeAll, disposables);
+}
+
+function disposeAll(disposables) {
+	return Promise.all(map(disposeSafely, disposables));
+}
+
+function disposeSafely(disposable) {
+	try {
+		return disposable.dispose();
+	} catch(e) {
+		return Promise.reject(e);
+	}
+}
+
+/**
+ * Create a disposable from a promise for another disposable
+ * @param {Promise<Disposable>} disposablePromise
+ * @return {Disposable}
+ */
+function promised(disposablePromise) {
+	return create(disposePromise, disposablePromise);
+}
+
+function disposePromise(disposablePromise) {
+	return disposablePromise.then(disposeOne);
+}
+
+function disposeOne(disposable) {
+	return disposable.dispose();
+}
+
+/**
+ * Create a disposable proxy that allows its underlying disposable to
+ * be set later.
+ * @return {SettableDisposable}
+ */
+function settable() {
+	return new SettableDisposable();
+}
+
+/**
+ * Wrap an existing disposable (which may not already have been once()d)
+ * so that it will only dispose its underlying resource at most once.
+ * @param {{ dispose: function() }} disposable
+ * @return {Disposable} wrapped disposable
+ */
+function once(disposable) {
+	return new Disposable(disposeMemoized, memoized(disposable));
+}
+
+function disposeMemoized(memoized) {
+	if(!memoized.disposed) {
+		memoized.disposed = true;
+		memoized.value = disposeSafely(memoized.disposable);
+		memoized.disposable = void 0;
+	}
+
+	return memoized.value;
+}
+
+function memoized(disposable) {
+	return { disposed: false, disposable: disposable, value: void 0 };
+}
+
+},{"../Promise":173,"./Disposable":202,"./SettableDisposable":203,"@most/prelude":238}],205:[function(require,module,exports){
+arguments[4][40][0].apply(exports,arguments)
+},{"dup":40}],206:[function(require,module,exports){
+arguments[4][41][0].apply(exports,arguments)
+},{"../sink/Pipe":220,"dup":41}],207:[function(require,module,exports){
+arguments[4][42][0].apply(exports,arguments)
+},{"../sink/Pipe":220,"dup":42}],208:[function(require,module,exports){
+/** @license MIT License (c) copyright 2010-2016 original author or authors */
+/** @author Brian Cavalier */
+/** @author John Hann */
+
+var Pipe = require('../sink/Pipe');
+var Filter = require('./Filter');
+var FilterMap = require('./FilterMap');
+var base = require('@most/prelude');
+
+module.exports = Map;
+
+function Map(f, source) {
+	this.f = f;
+	this.source = source;
+}
+
+/**
+ * Create a mapped source, fusing adjacent map.map, filter.map,
+ * and filter.map.map if possible
+ * @param {function(*):*} f mapping function
+ * @param {{run:function}} source source to map
+ * @returns {Map|FilterMap} mapped source, possibly fused
+ */
+Map.create = function createMap(f, source) {
+	if(source instanceof Map) {
+		return new Map(base.compose(f, source.f), source.source);
+	}
+
+	if(source instanceof Filter) {
+		return new FilterMap(source.p, f, source.source);
+	}
+
+	return new Map(f, source);
+};
+
+Map.prototype.run = function(sink, scheduler) {
+	return this.source.run(new MapSink(this.f, sink), scheduler);
+};
+
+function MapSink(f, sink) {
+	this.f = f;
+	this.sink = sink;
+}
+
+MapSink.prototype.end   = Pipe.prototype.end;
+MapSink.prototype.error = Pipe.prototype.error;
+
+MapSink.prototype.event = function(t, x) {
+	var f = this.f;
+	this.sink.event(t, f(x));
+};
+
+},{"../sink/Pipe":220,"./Filter":206,"./FilterMap":207,"@most/prelude":238}],209:[function(require,module,exports){
+arguments[4][44][0].apply(exports,arguments)
+},{"dup":44}],210:[function(require,module,exports){
+arguments[4][45][0].apply(exports,arguments)
+},{"dup":45}],211:[function(require,module,exports){
+arguments[4][46][0].apply(exports,arguments)
+},{"./disposable/dispose":204,"./scheduler/defaultScheduler":214,"./sink/Observer":219,"dup":46}],212:[function(require,module,exports){
+arguments[4][47][0].apply(exports,arguments)
+},{"../fatalError":205,"dup":47}],213:[function(require,module,exports){
+/** @license MIT License (c) copyright 2010-2016 original author or authors */
+/** @author Brian Cavalier */
+/** @author John Hann */
+
+var base = require('@most/prelude');
 
 module.exports = Scheduler;
 
@@ -8276,6 +9664,8 @@ ScheduledTask.prototype.cancel = function() {
 	this.scheduler.cancel(this);
 	return this.task.dispose();
 };
+
+ScheduledTask.prototype.dispose = ScheduledTask.prototype.cancel;
 
 function runTask(task) {
 	try {
@@ -8471,81 +9861,216 @@ function newTimeslot(t, events) {
 	return { time: t, events: events };
 }
 
-},{"./../base":122}],161:[function(require,module,exports){
+},{"@most/prelude":238}],214:[function(require,module,exports){
+arguments[4][49][0].apply(exports,arguments)
+},{"./Scheduler":213,"./nodeTimer":215,"./timeoutTimer":216,"_process":171,"dup":49}],215:[function(require,module,exports){
+arguments[4][50][0].apply(exports,arguments)
+},{"../defer":201,"dup":50}],216:[function(require,module,exports){
 arguments[4][51][0].apply(exports,arguments)
-},{"./Scheduler":160,"./nodeTimer":162,"./timeoutTimer":163,"_process":114,"dup":51}],162:[function(require,module,exports){
+},{"dup":51}],217:[function(require,module,exports){
 arguments[4][52][0].apply(exports,arguments)
-},{"../defer":148,"dup":52}],163:[function(require,module,exports){
-arguments[4][53][0].apply(exports,arguments)
-},{"dup":53}],164:[function(require,module,exports){
-arguments[4][54][0].apply(exports,arguments)
-},{"../defer":148,"dup":54}],165:[function(require,module,exports){
-arguments[4][55][0].apply(exports,arguments)
-},{"./Pipe":167,"dup":55}],166:[function(require,module,exports){
-arguments[4][56][0].apply(exports,arguments)
-},{"dup":56}],167:[function(require,module,exports){
-arguments[4][57][0].apply(exports,arguments)
-},{"dup":57}],168:[function(require,module,exports){
-arguments[4][58][0].apply(exports,arguments)
-},{"../disposable/dispose":151,"../sink/DeferredSink":164,"./tryEvent":181,"dup":58}],169:[function(require,module,exports){
-arguments[4][59][0].apply(exports,arguments)
-},{"../disposable/dispose":151,"./tryEvent":181,"dup":59}],170:[function(require,module,exports){
-arguments[4][60][0].apply(exports,arguments)
-},{"../base":122,"dup":60}],171:[function(require,module,exports){
+},{"../defer":201,"dup":52}],218:[function(require,module,exports){
 /** @license MIT License (c) copyright 2010-2016 original author or authors */
 /** @author Brian Cavalier */
 /** @author John Hann */
 
-var PropagateTask = require('../scheduler/PropagateTask');
+var Sink = require('./Pipe');
 
-module.exports = ValueSource;
+module.exports = IndexSink;
 
-function ValueSource(emit, x) {
-	this.emit = emit;
+function IndexSink(i, sink) {
+	this.sink = sink;
+	this.index = i;
+	this.active = true;
+	this.value = void 0;
+}
+
+IndexSink.prototype.event = function(t, x) {
+	if(!this.active) {
+		return;
+	}
 	this.value = x;
-}
-
-ValueSource.prototype.run = function(sink, scheduler) {
-	return new ValueProducer(this.emit, this.value, sink, scheduler);
+	this.sink.event(t, this);
 };
 
-function ValueProducer(emit, x, sink, scheduler) {
-	this.task = scheduler.asap(new PropagateTask(emit, x, sink));
-}
-
-ValueProducer.prototype.dispose = function() {
-	return this.task.cancel();
+IndexSink.prototype.end = function(t, x) {
+	if(!this.active) {
+		return;
+	}
+	this.active = false;
+	this.sink.end(t, { index: this.index, value: x });
 };
 
-},{"../scheduler/PropagateTask":159}],172:[function(require,module,exports){
+IndexSink.prototype.error = Sink.prototype.error;
+
+},{"./Pipe":220}],219:[function(require,module,exports){
+arguments[4][54][0].apply(exports,arguments)
+},{"dup":54}],220:[function(require,module,exports){
+arguments[4][55][0].apply(exports,arguments)
+},{"dup":55}],221:[function(require,module,exports){
+/** @license MIT License (c) copyright 2010-2016 original author or authors */
+/** @author Brian Cavalier */
+/** @author John Hann */
+
+module.exports = SafeSink;
+
+function SafeSink(sink) {
+	this.sink = sink;
+	this.active = true;
+}
+
+SafeSink.prototype.event = function(t, x) {
+	if(!this.active) {
+		return;
+	}
+	this.sink.event(t, x);
+};
+
+SafeSink.prototype.end = function(t, x) {
+	if(!this.active) {
+		return;
+	}
+	this.disable();
+	this.sink.end(t, x);
+};
+
+SafeSink.prototype.error = function(t, e) {
+	this.disable();
+	this.sink.error(t, e);
+};
+
+SafeSink.prototype.disable = function() {
+	this.active = false;
+	return this.sink;
+}
+
+},{}],222:[function(require,module,exports){
+arguments[4][56][0].apply(exports,arguments)
+},{"../disposable/dispose":204,"../sink/DeferredSink":217,"./tryEvent":234,"dup":56}],223:[function(require,module,exports){
+arguments[4][57][0].apply(exports,arguments)
+},{"../disposable/dispose":204,"./tryEvent":234,"dup":57}],224:[function(require,module,exports){
+arguments[4][58][0].apply(exports,arguments)
+},{"../scheduler/PropagateTask":212,"dup":58}],225:[function(require,module,exports){
+arguments[4][59][0].apply(exports,arguments)
+},{"../Stream":175,"../disposable/dispose":204,"../scheduler/PropagateTask":212,"../source/ValueSource":224,"dup":59}],226:[function(require,module,exports){
+arguments[4][60][0].apply(exports,arguments)
+},{"../Stream":175,"../sink/DeferredSink":217,"./tryEvent":234,"@most/multicast":237,"dup":60}],227:[function(require,module,exports){
+/** @license MIT License (c) copyright 2010-2016 original author or authors */
+/** @author Brian Cavalier */
+/** @author John Hann */
+
+var fromArray = require('./fromArray').fromArray;
+var isIterable = require('../iterable').isIterable;
+var fromIterable = require('./fromIterable').fromIterable;
+var isArrayLike = require('@most/prelude').isArrayLike;
+
+exports.from = from;
+
+function from(a) {
+	if(Array.isArray(a) || isArrayLike(a)) {
+		return fromArray(a);
+	}
+
+	if(isIterable(a)) {
+		return fromIterable(a);
+	}
+
+	throw new TypeError('not iterable: ' + a);
+}
+
+},{"../iterable":210,"./fromArray":228,"./fromIterable":230,"@most/prelude":238}],228:[function(require,module,exports){
 arguments[4][62][0].apply(exports,arguments)
-},{"../Stream":121,"../disposable/dispose":151,"../scheduler/PropagateTask":159,"../source/ValueSource":171,"dup":62}],173:[function(require,module,exports){
+},{"../Stream":175,"../scheduler/PropagateTask":212,"dup":62}],229:[function(require,module,exports){
 arguments[4][63][0].apply(exports,arguments)
-},{"../Stream":121,"../sink/DeferredSink":164,"./MulticastSource":170,"./tryEvent":181,"dup":63}],174:[function(require,module,exports){
+},{"../Stream":175,"./EventEmitterSource":222,"./EventTargetSource":223,"@most/multicast":237,"dup":63}],230:[function(require,module,exports){
 arguments[4][64][0].apply(exports,arguments)
-},{"../base":122,"../iterable":157,"./fromArray":175,"./fromIterable":177,"dup":64}],175:[function(require,module,exports){
-arguments[4][65][0].apply(exports,arguments)
-},{"../Stream":121,"../scheduler/PropagateTask":159,"dup":65}],176:[function(require,module,exports){
+},{"../Stream":175,"../iterable":210,"../scheduler/PropagateTask":212,"dup":64}],231:[function(require,module,exports){
+/** @license MIT License (c) copyright 2010-2014 original author or authors */
+/** @author Brian Cavalier */
+/** @author John Hann */
+
+var Stream = require('../Stream');
+var base = require('@most/prelude');
+
+exports.generate = generate;
+
+/**
+ * Compute a stream using an *async* generator, which yields promises
+ * to control event times.
+ * @param f
+ * @returns {Stream}
+ */
+function generate(f /*, ...args */) {
+	return new Stream(new GenerateSource(f, base.tail(arguments)));
+}
+
+function GenerateSource(f, args) {
+	this.f = f;
+	this.args = args;
+}
+
+GenerateSource.prototype.run = function(sink, scheduler) {
+	return new Generate(this.f.apply(void 0, this.args), sink, scheduler);
+};
+
+function Generate(iterator, sink, scheduler) {
+	this.iterator = iterator;
+	this.sink = sink;
+	this.scheduler = scheduler;
+	this.active = true;
+
+	var self = this;
+	function err(e) {
+		self.sink.error(self.scheduler.now(), e);
+	}
+
+	Promise.resolve(this).then(next).catch(err);
+}
+
+function next(generate, x) {
+	return generate.active ? handle(generate, generate.iterator.next(x)) : x;
+}
+
+function handle(generate, result) {
+	if (result.done) {
+		return generate.sink.end(generate.scheduler.now(), result.value);
+	}
+
+	return Promise.resolve(result.value).then(function (x) {
+		return emit(generate, x);
+	}, function(e) {
+		return error(generate, e);
+	});
+}
+
+function emit(generate, x) {
+	generate.sink.event(generate.scheduler.now(), x);
+	return next(generate, x);
+}
+
+function error(generate, e) {
+	return handle(generate, generate.iterator.throw(e));
+}
+
+Generate.prototype.dispose = function() {
+	this.active = false;
+};
+
+},{"../Stream":175,"@most/prelude":238}],232:[function(require,module,exports){
 arguments[4][66][0].apply(exports,arguments)
-},{"../Stream":121,"./EventEmitterSource":168,"./EventTargetSource":169,"./MulticastSource":170,"dup":66}],177:[function(require,module,exports){
+},{"../Stream":175,"dup":66}],233:[function(require,module,exports){
 arguments[4][67][0].apply(exports,arguments)
-},{"../Stream":121,"../iterable":157,"../scheduler/PropagateTask":159,"dup":67}],178:[function(require,module,exports){
+},{"../Stream":175,"../disposable/dispose":204,"../scheduler/PropagateTask":212,"@most/multicast":237,"dup":67}],234:[function(require,module,exports){
 arguments[4][68][0].apply(exports,arguments)
-},{"../Stream":121,"../base":122,"dup":68}],179:[function(require,module,exports){
+},{"dup":68}],235:[function(require,module,exports){
 arguments[4][69][0].apply(exports,arguments)
-},{"../Stream":121,"dup":69}],180:[function(require,module,exports){
-arguments[4][70][0].apply(exports,arguments)
-},{"../Stream":121,"../disposable/dispose":151,"../scheduler/PropagateTask":159,"./MulticastSource":170,"dup":70}],181:[function(require,module,exports){
-arguments[4][71][0].apply(exports,arguments)
-},{"dup":71}],182:[function(require,module,exports){
-arguments[4][72][0].apply(exports,arguments)
-},{"../Stream":121,"dup":72}],183:[function(require,module,exports){
+},{"../Stream":175,"dup":69}],236:[function(require,module,exports){
 /** @license MIT License (c) copyright 2010-2016 original author or authors */
 /** @author Brian Cavalier */
 /** @author John Hann */
 
 var Stream = require('./lib/Stream');
-var base = require('./lib/base');
+var base = require('@most/prelude');
 var core = require('./lib/source/core');
 var from = require('./lib/source/from').from;
 var periodic = require('./lib/source/periodic').periodic;
@@ -8563,6 +10088,22 @@ exports.empty    = Stream.empty = core.empty;
 exports.never    = core.never;
 exports.from     = from;
 exports.periodic = periodic;
+
+//-----------------------------------------------------------------------
+// Fluent adapter
+
+var thru = require('./lib/combinator/thru').thru;
+
+/**
+ * Adapt a functional stream transform to fluent style.
+ * It applies f to the this stream object
+ * @param  {function(s: Stream): Stream} f function that
+ * receives the stream itself and must return a new stream
+ * @return {Stream}
+ */
+Stream.prototype.thru = function(f) {
+	return thru(f, this);
+}
 
 //-----------------------------------------------------------------------
 // Creating
@@ -9208,7 +10749,7 @@ Stream.prototype.recoverWith = Stream.prototype.flatMapError = function(f) {
 //-----------------------------------------------------------------------
 // Multicasting
 
-var multicast = require('./lib/combinator/multicast').multicast;
+var multicast = require('@most/multicast').default;
 
 exports.multicast = multicast;
 
@@ -9221,7 +10762,11 @@ Stream.prototype.multicast = function() {
 	return multicast(this);
 };
 
-},{"./lib/Stream":121,"./lib/base":122,"./lib/combinator/accumulate":123,"./lib/combinator/applicative":124,"./lib/combinator/build":125,"./lib/combinator/combine":126,"./lib/combinator/concatMap":127,"./lib/combinator/continueWith":128,"./lib/combinator/delay":129,"./lib/combinator/errors":130,"./lib/combinator/filter":131,"./lib/combinator/flatMap":132,"./lib/combinator/limit":133,"./lib/combinator/loop":134,"./lib/combinator/merge":135,"./lib/combinator/mergeConcurrently":136,"./lib/combinator/multicast":137,"./lib/combinator/observe":138,"./lib/combinator/promises":139,"./lib/combinator/sample":140,"./lib/combinator/slice":141,"./lib/combinator/switch":142,"./lib/combinator/timeslice":143,"./lib/combinator/timestamp":144,"./lib/combinator/transduce":145,"./lib/combinator/transform":146,"./lib/combinator/zip":147,"./lib/source/core":172,"./lib/source/create":173,"./lib/source/from":174,"./lib/source/fromEvent":176,"./lib/source/generate":178,"./lib/source/iterate":179,"./lib/source/periodic":180,"./lib/source/unfold":182}],184:[function(require,module,exports){
+},{"./lib/Stream":175,"./lib/combinator/accumulate":176,"./lib/combinator/applicative":177,"./lib/combinator/build":178,"./lib/combinator/combine":179,"./lib/combinator/concatMap":180,"./lib/combinator/continueWith":181,"./lib/combinator/delay":182,"./lib/combinator/errors":183,"./lib/combinator/filter":184,"./lib/combinator/flatMap":185,"./lib/combinator/limit":186,"./lib/combinator/loop":187,"./lib/combinator/merge":188,"./lib/combinator/mergeConcurrently":189,"./lib/combinator/observe":190,"./lib/combinator/promises":191,"./lib/combinator/sample":192,"./lib/combinator/slice":193,"./lib/combinator/switch":194,"./lib/combinator/thru":195,"./lib/combinator/timeslice":196,"./lib/combinator/timestamp":197,"./lib/combinator/transduce":198,"./lib/combinator/transform":199,"./lib/combinator/zip":200,"./lib/source/core":225,"./lib/source/create":226,"./lib/source/from":227,"./lib/source/fromEvent":229,"./lib/source/generate":231,"./lib/source/iterate":232,"./lib/source/periodic":233,"./lib/source/unfold":235,"@most/multicast":237,"@most/prelude":238}],237:[function(require,module,exports){
+arguments[4][2][0].apply(exports,arguments)
+},{"@most/prelude":238,"dup":2}],238:[function(require,module,exports){
+arguments[4][3][0].apply(exports,arguments)
+},{"dup":3}],239:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -9230,12 +10775,12 @@ Object.defineProperty(exports, '__esModule', {
 
 var _motorcycleDom = require('@motorcycle/dom');
 
-var _mostSubject = require('most-subject');
-
-var sub = _mostSubject.subject;
+/*
+import {subject} from 'most-subject'
+var sub = subject
 var observer = sub.observer;
 var stream = sub.stream;
-
+*/
 var Monad = function Monad(z, g) {
   var _this = this;
 
@@ -9331,10 +10876,10 @@ var ret_cube = (0, _motorcycleDom.h)('pre', '  var ret = function ret(v, id) {\n
 
 var p5 = (0, _motorcycleDom.h)('pre', '  \n    ');
 
-exports['default'] = { monad: monad, monadStr: monadStr, monadIt: monadIt, fib: fib, driver: driver, messages: messages, next: next, Monad$: Monad$, updateCalc: updateCalc, stream: stream, arrayFuncs: arrayFuncs, travel: travel, nums: nums, cleanup: cleanup, ret: ret, C42: C42, taskStream: taskStream, newTask: newTask, process: process, mM$task: mM$task, addString: addString, colorClick: colorClick, edit: edit, testZ: testZ, quad: quad, mdem1: mdem1, runTest: runTest, todoStream: todoStream, gameStream: gameStream, inc: inc, add: add, ret_cube: ret_cube };
+exports['default'] = { monad: monad, monadStr: monadStr, monadIt: monadIt, fib: fib, driver: driver, messages: messages, next: next, Monad$: Monad$, updateCalc: updateCalc, arrayFuncs: arrayFuncs, travel: travel, nums: nums, cleanup: cleanup, ret: ret, C42: C42, taskStream: taskStream, newTask: newTask, process: process, mM$task: mM$task, addString: addString, colorClick: colorClick, edit: edit, testZ: testZ, quad: quad, mdem1: mdem1, runTest: runTest, todoStream: todoStream, gameStream: gameStream, inc: inc, add: add, ret_cube: ret_cube };
 module.exports = exports['default'];
 
-},{"@motorcycle/dom":75,"most-subject":117}],185:[function(require,module,exports){
+},{"@motorcycle/dom":75}],240:[function(require,module,exports){
 'use strict';
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
@@ -9350,8 +10895,6 @@ var _most = require('most');
 var _codeJs = require('./code.js');
 
 var _codeJs2 = _interopRequireDefault(_codeJs);
-
-var _mostSubject = require('most-subject');
 
 function createWebSocket(path) {
   var host = window.location.hostname;
@@ -9374,8 +10917,6 @@ var websocketsDriver = function websocketsDriver() {
 var unitDriver = function unitDriver() {
   return (0, _most.periodic)(1000, 1);
 };
-
-mM3.ret([]);
 
 window.onload = function (event) {
   console.log('onopen event: ', event);
@@ -9642,10 +11183,6 @@ function main(sources) {
     }
   });
 
-  var taskAction$ = mM$taskList.stream.map(function (str) {
-    socket.send('TD#$42' + ',' + O.mMgroup.x.trim() + ',' + O.mMname.x.trim() + ',' + '@' + str);
-  });
-
   var chatClick$ = sources.DOM.select('#chat2').events('click');
 
   var chatClickAction$ = chatClick$.map(function () {
@@ -9710,6 +11247,8 @@ function main(sources) {
 
   var rollClickAction$ = rollClick$.map(function (e) {
     mM13.ret(O.mM13.x - 1);
+    mM8.ret(0);
+    mM3.ret([]);
     socket.send('CG#$42,' + O.mMgroup.x.trim() + ',' + O.mMname.x.trim() + ',' + -1 + ',' + O.mMgoals.x);
     socket.send('CA#$42,' + O.mMgroup.x.trim() + ',' + O.mMname.x.trim() + ',6,6,12,20');
   });
@@ -9751,7 +11290,13 @@ function main(sources) {
     }
   });
 
+  var taskAction$ = mM$taskList.stream.map(function (str) {
+    console.log('In taskAction$. str is: ', str);
+    socket.send('TD#$42' + ',' + O.mMgroup.x.trim() + ',' + O.mMname.x.trim() + ',' + '@' + str);
+  });
+
   var mM$1Action$ = mM$1.stream.map(function (v) {
+    console.log('In mM$1Action$. v is: ', v);
     O.mMindex2.bnd(inc, mMindex2);
     O.mMallRolls.bnd(spliceAdd, O.mMindex2.x, v, mMallRolls);
     mMcurrentRoll.ret(v);
@@ -9763,6 +11308,7 @@ function main(sources) {
   });
 
   var mM$3Action$ = mM$3.stream.map(function (v) {
+    console.log('In mM$3Action$. v is: ', v);
     document.getElementById('0').innerHTML = O.mMallRolls.x[O.mMindex2.x][0];
     document.getElementById('1').innerHTML = O.mMallRolls.x[O.mMindex2.x][1];
     document.getElementById('2').innerHTML = O.mMallRolls.x[O.mMindex2.x][2];
@@ -9926,4 +11472,4 @@ var sources = {
 
 _motorcycleCore2['default'].run(main, sources);
 
-},{"./code.js":184,"@motorcycle/core":3,"@motorcycle/dom":75,"most":183,"most-subject":117}]},{},[185]);
+},{"./code.js":239,"@motorcycle/core":1,"@motorcycle/dom":75,"most":236}]},{},[240]);

@@ -1,11 +1,11 @@
 import {h, pre} from '@motorcycle/dom'; 
 
+/*
 import {subject} from 'most-subject'
-
 var sub = subject
 var observer = sub.observer;
 var stream = sub.stream;
-
+*/
 var Monad = function Monad(z, g) {
   var _this = this;
 
@@ -675,6 +675,6 @@ var ret_cube = h('pre',  `  var ret = function ret(v, id) {
 
 
 
-  export default {monad, monadStr, monadIt, fib, driver, messages, next, Monad$, updateCalc, stream, arrayFuncs, travel, nums, cleanup, ret, C42, taskStream, newTask, process, mM$task, addString, colorClick, edit, testZ, quad, mdem1, runTest, todoStream, gameStream, inc, add, ret_cube }
+  export default {monad, monadStr, monadIt, fib, driver, messages, next, Monad$, updateCalc, arrayFuncs, travel, nums, cleanup, ret, C42, taskStream, newTask, process, mM$task, addString, colorClick, edit, testZ, quad, mdem1, runTest, todoStream, gameStream, inc, add, ret_cube }
 
 

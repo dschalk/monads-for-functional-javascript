@@ -10,14 +10,10 @@
     "babel": "5.6.23",
     "browserify": "11.0.1",
     "babel-core": "6.8.0",
-    "js-monads": "1.0.3",
     "mkdirp": "0.5.1",
-    "most-subject": "3.0.2",
     "watchify": "3.7.0",
     "rx": "4.0.6",
-    "immutable": "3.7.6",
-    "most": "0.18.4",
-    "webpack": "1.13.0"
+    "immutable": "3.7.6"
   },
   "devDependencies": {},
   "scripts": {

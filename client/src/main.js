@@ -2,7 +2,6 @@ import Cycle from '@motorcycle/core';
 import {h, p, span, h1, h2, h3, br, div, label, input, hr, makeDOMDriver} from '@motorcycle/dom';
 import {just, create, merge, combine, fromEvent, periodic, observe, delay, filter, of} from 'most';
 import code from './code.js';
-import {subject} from 'most-subject'
 
 function createWebSocket(path) {
     let host = window.location.hostname;
@@ -24,8 +23,6 @@ const unitDriver = function () {
   return periodic(1000, 1);
 }
 
-mM3.ret([]);
-
 window.onload = function (event) {
   console.log('onopen event: ', event);
 };
@@ -35,7 +32,7 @@ function main(sources) {
   setTimeout( function() {
     document.querySelector('input#login').focus();
   },500 );
-
+  
   mMfib.ret([0,1]);
   mMpause.ret(0);
 
@@ -294,11 +291,6 @@ function main(sources) {
     } 
   });
 
-  const taskAction$ = mM$taskList.stream.map(str => {
-    socket.send('TD#$42' + ',' + O.mMgroup.x.trim() + 
-        ',' + O.mMname.x.trim() + ',' + '@' + str);
-  });
-
   const chatClick$ = sources.DOM
     .select('#chat2').events('click');
 
@@ -381,6 +373,8 @@ function main(sources) {
 
   const rollClickAction$ = rollClick$.map(e => {  
     mM13.ret(O.mM13.x - 1);
+    mM8.ret(0);
+    mM3.ret([]);
     socket.send('CG#$42,' + O.mMgroup.x.trim() + ',' + 
         O.mMname.x.trim() + ',' + -1 + ',' + O.mMgoals.x);
     socket.send('CA#$42,' + O.mMgroup.x.trim() + ',' + O.mMname.x.trim() + ',6,6,12,20')
@@ -422,7 +416,15 @@ function main(sources) {
     }
   });
 
+  const taskAction$ = mM$taskList.stream.map(str => {
+    console.log('In taskAction$. str is: ', str)
+    socket.send('TD#$42' + ',' + O.mMgroup.x.trim() + 
+        ',' + O.mMname.x.trim() + ',' + '@' + str);
+  });
+  
+
   const mM$1Action$ = mM$1.stream.map(v => {
+      console.log('In mM$1Action$. v is: ', v)
       O.mMindex2.bnd(inc, mMindex2);
       O.mMallRolls.bnd(spliceAdd, O.mMindex2.x, v, mMallRolls);
       mMcurrentRoll.ret(v);
@@ -431,9 +433,11 @@ function main(sources) {
       document.getElementById('2').innerHTML = (O.mMallRolls.x[O.mMindex2.x])[2]; 
       document.getElementById('3').innerHTML = (O.mMallRolls.x[O.mMindex2.x])[3]; 
       cleanup(7)
-  });
+    })
+ 
 
   const mM$3Action$ = mM$3.stream.map(v => {
+      console.log('In mM$3Action$. v is: ', v)
       document.getElementById('0').innerHTML = (O.mMallRolls.x[O.mMindex2.x])[0]; 
       document.getElementById('1').innerHTML = (O.mMallRolls.x[O.mMindex2.x])[1]; 
       document.getElementById('2').innerHTML = (O.mMallRolls.x[O.mMindex2.x])[2]; 

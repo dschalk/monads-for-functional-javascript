@@ -28,9 +28,11 @@ var MonadStream = function MonadStream(g) {
 
 var mM$1 = new MonadStream('mM$1');
 
-var mM$2 = new MonadStream('mM$2');
+var mM$taskList = new MonadStream('mM$taskList');
 
 var mM$3 = new MonadStream('mM$3');
+
+var mM$2 = new MonadStream('mM$2');
 
 var mM$todo = new MonadStream('mM$todo');
 
@@ -190,7 +192,7 @@ var mMindex = new Monad(0, 'mMindex');
 var mMcursor = new Monad(0, 'mMcursor');
 var mMgroup = new Monad('solo', 'mMgroup');
 var mMgoals = new Monad(0, 'mMgoals');
-var mMname = new Monad(0, 'mMname');
+var mMname = new Monad('', 'mMname');
 var mMob = new Monad({}, 'mMob');
 var mMsender = new Monad('nobody', 'mMsender');
 var mMextra = new Monad('nothing', 'mMextra');
@@ -234,7 +236,6 @@ mMcurrentList.ret(mMcurrentList.x);
 var mMtaskList = new Monad([], 'mMtaskList');
 mMtaskList.ret(mMtaskList.x);
 
-var mM$taskList = new MonadStream('mM$taskList');
 
 var mMsenderList = new Monad([], 'mMsenderList');
 mMsenderList.ret(mMsenderList.x);
