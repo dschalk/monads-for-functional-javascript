@@ -2,6 +2,11 @@ import Cycle from '@motorcycle/core';
 import {h, p, span, h1, h2, h3, br, div, label, input, hr, makeDOMDriver} from '@motorcycle/dom';
 import {just, create, merge, combine, fromEvent, periodic, observe, delay, filter, of} from 'most';
 import code from './code.js';
+import cow from 'js-monads';
+
+setTimeout(function() {
+  console.log(cow);
+},3000 );
 
 function createWebSocket(path) {
     let host = window.location.hostname;
@@ -619,11 +624,11 @@ function main(sources) {
         h('span.td2', ' where m is a monad leaves m unchanged, O.m.x == 125, and O.m.id == "m". ' ), 
         h('br' ),  
         h('br' ),  
-        h('span.red3', 'cube(5).bnd(m.ret)', ), 
+        h('span.red3', 'cube(5).bnd(m.ret)' ), 
         h('span.td2', ' is equivalent to the previous example. m is unchanged and O.m.x == 125. ' ), 
         h('br' ),  
         h('br' ),  
-        h('span.red3', 'ret(5).bnd(cube).bnd(m.ret)', ), 
+        h('span.red3', 'ret(5).bnd(cube).bnd(m.ret)' ), 
         h('span.td2', ' is equivalent to the previous two examples. O.m.x == 125. ' ), 
         h('br' ),  
         h('br' ),  
