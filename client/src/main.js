@@ -2,10 +2,10 @@ import Cycle from '@motorcycle/core';
 import {h, p, span, h1, h2, h3, br, div, label, input, hr, makeDOMDriver} from '@motorcycle/dom';
 import {just, create, merge, combine, fromEvent, periodic, observe, delay, filter, of} from 'most';
 import code from './code.js';
-import cow from 'js-monads';
+import mM from 'js-monads';
 
 setTimeout(function() {
-  console.log(cow);
+  console.log(mM.cube);
 },3000 );
 
 function createWebSocket(path) {

@@ -1,9 +1,9 @@
 
 ==================== FINAL INTERFACE ====================
-2016-05-06 12:24:43.324388 UTC
+2016-05-09 06:08:47.77678 UTC
 
 interface main@main:Main 7103
-  interface hash: 3191f21d32b96e87cc1aaf19b7e1fc43
+  interface hash: bc546d4dffbcfd70931144449ec9dc47
   ABI hash: e29b1d994cb03c3bdc6d5a2c12e51cdb
   export-list hash: ac084b9a81b1c3bd918c352b0df77b45
   orphan hash: 276323d23bdb3224e26fb4d203ffca48
@@ -166,8 +166,6 @@ addDependentFile "client/src/code.js"
 addDependentFile "client/src/store.js"
 addDependentFile "client/src/most-subject.js"
 addDependentFile "client/src/main"
-addDependentFile "client/src/code.js~"
-addDependentFile "client/src/monad.js~"
 addDependentFile "client/src/save.js"
 addDependentFile "client/src/main.js~"
 addDependentFile "client/src/monad.js"
@@ -244,6 +242,7 @@ addDependentFile "client/bower_components/glotorcycle.js"
 addDependentFile "client/mostSub.js"
 addDependentFile "client/index.html"
 addDependentFile "client/bundle.js"
+addDependentFile "client/webpack.config.js"
 addDependentFile "client/package.json~"
 addDependentFile "client/main.js.map"
 addDependentFile "client/style.css"
@@ -251,6 +250,7 @@ addDependentFile "client/package.json"
 addDependentFile "client/fetch.js"
 addDependentFile "client/index.js"
 addDependentFile "client/glackage.json"
+addDependentFile "client/webpack.config.js~"
 8fbc6c93b882a452d72df59744d3773d
   $sread :: GHC.Base.String -> GHC.Types.Int
   {- Arity: 1, Strictness: <L,U>,

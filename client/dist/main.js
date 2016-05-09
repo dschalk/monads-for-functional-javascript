@@ -11,16 +11,16 @@
 
 /******/ 		// Create a new module (and put it into the cache)
 /******/ 		var module = installedModules[moduleId] = {
-/******/ 			i: moduleId,
-/******/ 			l: false,
-/******/ 			exports: {}
+/******/ 			exports: {},
+/******/ 			id: moduleId,
+/******/ 			loaded: false
 /******/ 		};
 
 /******/ 		// Execute the module function
 /******/ 		modules[moduleId].call(module.exports, module, module.exports, __webpack_require__);
 
 /******/ 		// Flag the module as loaded
-/******/ 		module.l = true;
+/******/ 		module.loaded = true;
 
 /******/ 		// Return the exports of the module
 /******/ 		return module.exports;
@@ -33,9 +33,11 @@
 /******/ 	// expose the module cache
 /******/ 	__webpack_require__.c = installedModules;
 
+/******/ 	// on error function for async loading
+/******/ 	__webpack_require__.oe = function(err) { throw err; };
+
 /******/ 	// __webpack_public_path__
 /******/ 	__webpack_require__.p = "";
-
 /******/ 	// Load entry module and return exports
 /******/ 	return __webpack_require__(__webpack_require__.s = 103);
 /******/ })
@@ -98,11 +100,11 @@
 
 	var Disposable = __webpack_require__(73);
 	var SettableDisposable = __webpack_require__(74);
-	var isPromise = __webpack_require__(22).isPromise;
+	var isPromise = __webpack_require__(11).isPromise;
 	var base = __webpack_require__(3);
 
 	var map = base.map;
-	var identity = base.identity;
+	var identity = base.id;
 
 	exports.tryDispose = tryDispose;
 	exports.create = create;
@@ -223,182 +225,982 @@
 
 /***/ },
 /* 3 */
-/***/ function(module, exports) {
+/***/ function(module, exports, __webpack_require__) {
 
-	/** @license MIT License (c) copyright 2010-2016 original author or authors */
-	/** @author Brian Cavalier */
-	/** @author John Hann */
+	var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;(function (global, factory) {
+	  if (true) {
+	    !(__WEBPACK_AMD_DEFINE_ARRAY__ = [exports], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+	  } else if (typeof exports !== "undefined") {
+	    factory(exports);
+	  } else {
+	    var mod = {
+	      exports: {}
+	    };
+	    factory(mod.exports);
+	    global.mostPrelude = mod.exports;
+	  }
+	})(this, function (exports) {
+	  'use strict';
 
-	exports.noop = noop;
-	exports.identity = identity;
-	exports.compose = compose;
-	exports.apply = apply;
+	  Object.defineProperty(exports, "__esModule", {
+	    value: true
+	  });
+	  /** @license MIT License (c) copyright 2010-2016 original author or authors */
 
-	exports.cons = cons;
-	exports.append = append;
-	exports.drop = drop;
-	exports.tail = tail;
-	exports.copy = copy;
-	exports.map = map;
-	exports.reduce = reduce;
-	exports.replace = replace;
-	exports.remove = remove;
-	exports.removeAll = removeAll;
-	exports.findIndex = findIndex;
-	exports.isArrayLike = isArrayLike;
+	  // Non-mutating array operations
 
-	function noop() {}
+	  // cons :: a -> [a] -> [a]
+	  // a with x prepended
+	  function cons(x, a) {
+	    var l = a.length;
+	    var b = new Array(l + 1);
+	    b[0] = x;
+	    for (var i = 0; i < l; ++i) {
+	      b[i + 1] = a[i];
+	    }
+	    return b;
+	  }
 
-	function identity(x) {
-		return x;
-	}
+	  // append :: a -> [a] -> [a]
+	  // a with x appended
+	  function append(x, a) {
+	    var l = a.length;
+	    var b = new Array(l + 1);
+	    for (var i = 0; i < l; ++i) {
+	      b[i] = a[i];
+	    }
 
-	function compose(f, g) {
-		return function(x) {
-			return f(g(x));
-		};
-	}
+	    b[l] = x;
+	    return b;
+	  }
 
-	function apply(f, x) {
-		return f(x);
-	}
+	  // drop :: Int -> [a] -> [a]
+	  // drop first n elements
+	  function drop(n, a) {
+	    // eslint-disable-line complexity
+	    if (n < 0) {
+	      throw new TypeError('n must be >= 0');
+	    }
 
-	function cons(x, array) {
-		var l = array.length;
-		var a = new Array(l + 1);
-		a[0] = x;
-		for(var i=0; i<l; ++i) {
-			a[i + 1] = array[i];
-		}
-		return a;
-	}
+	    var l = a.length;
+	    if (n === 0 || l === 0) {
+	      return a;
+	    }
 
-	function append(x, a) {
-		var l = a.length;
-		var b = new Array(l+1);
-		for(var i=0; i<l; ++i) {
-			b[i] = a[i];
-		}
+	    if (n >= l) {
+	      return [];
+	    }
 
-		b[l] = x;
-		return b;
-	}
+	    return unsafeDrop(n, a, l - n);
+	  }
 
-	function drop(n, array) {
-		var l = array.length;
-		if(n >= l) {
-			return [];
-		}
+	  // unsafeDrop :: Int -> [a] -> Int -> [a]
+	  // Internal helper for drop
+	  function unsafeDrop(n, a, l) {
+	    var b = new Array(l);
+	    for (var i = 0; i < l; ++i) {
+	      b[i] = a[n + i];
+	    }
+	    return b;
+	  }
 
-		l -= n;
-		var a = new Array(l);
-		for(var i=0; i<l; ++i) {
-			a[i] = array[n+i];
-		}
-		return a;
-	}
+	  // tail :: [a] -> [a]
+	  // drop head element
+	  function tail(a) {
+	    return drop(1, a);
+	  }
 
-	function tail(array) {
-		return drop(1, array);
-	}
+	  // copy :: [a] -> [a]
+	  // duplicate a (shallow duplication)
+	  function copy(a) {
+	    var l = a.length;
+	    var b = new Array(l);
+	    for (var i = 0; i < l; ++i) {
+	      b[i] = a[i];
+	    }
+	    return b;
+	  }
 
-	function copy(array) {
-		var l = array.length;
-		var a = new Array(l);
-		for(var i=0; i<l; ++i) {
-			a[i] = array[i];
-		}
-		return a;
-	}
+	  // map :: (a -> b) -> [a] -> [b]
+	  // transform each element with f
+	  function map(f, a) {
+	    var l = a.length;
+	    var b = new Array(l);
+	    for (var i = 0; i < l; ++i) {
+	      b[i] = f(a[i]);
+	    }
+	    return b;
+	  }
 
-	function map(f, array) {
-		var l = array.length;
-		var a = new Array(l);
-		for(var i=0; i<l; ++i) {
-			a[i] = f(array[i]);
-		}
-		return a;
-	}
+	  // reduce :: (a -> b -> a) -> a -> [b] -> a
+	  // accumulate via left-fold
+	  function reduce(f, z, a) {
+	    var r = z;
+	    for (var i = 0, l = a.length; i < l; ++i) {
+	      r = f(r, a[i], i);
+	    }
+	    return r;
+	  }
 
-	function reduce(f, z, array) {
-		var r = z;
-		for(var i=0, l=array.length; i<l; ++i) {
-			r = f(r, array[i], i);
-		}
-		return r;
-	}
+	  // replace :: a -> Int -> [a]
+	  // replace element at index
+	  function replace(x, i, a) {
+	    // eslint-disable-line complexity
+	    if (i < 0) {
+	      throw new TypeError('i must be >= 0');
+	    }
 
-	function replace(x, i, array) {
-		var l = array.length;
-		var a = new Array(l);
-		for(var j=0; j<l; ++j) {
-			a[j] = i === j ? x : array[j];
-		}
-		return a;
-	}
+	    var l = a.length;
+	    var b = new Array(l);
+	    for (var j = 0; j < l; ++j) {
+	      b[j] = i === j ? x : a[j];
+	    }
+	    return b;
+	  }
 
-	function remove(index, array) {
-		var l = array.length;
-		if(l === 0 || index >= array) { // exit early if index beyond end of array
-			return array;
-		}
+	  // remove :: Int -> [a] -> [a]
+	  // remove element at index
+	  function remove(i, a) {
+	    // eslint-disable-line complexity
+	    if (i < 0) {
+	      throw new TypeError('i must be >= 0');
+	    }
 
-		if(l === 1) { // exit early if index in bounds and length === 1
-			return [];
-		}
+	    var l = a.length;
+	    if (l === 0 || i >= l) {
+	      // exit early if index beyond end of array
+	      return a;
+	    }
 
-		return unsafeRemove(index, array, l-1);
-	}
+	    if (l === 1) {
+	      // exit early if index in bounds and length === 1
+	      return [];
+	    }
 
-	function unsafeRemove(index, a, l) {
-		var b = new Array(l);
-		var i;
-		for(i=0; i<index; ++i) {
-			b[i] = a[i];
-		}
-		for(i=index; i<l; ++i) {
-			b[i] = a[i+1];
-		}
+	    return unsafeRemove(i, a, l - 1);
+	  }
 
-		return b;
-	}
+	  // unsafeRemove :: Int -> [a] -> Int -> [a]
+	  // Internal helper to remove element at index
+	  function unsafeRemove(i, a, l) {
+	    var b = new Array(l);
+	    var j = undefined;
+	    for (j = 0; j < i; ++j) {
+	      b[j] = a[j];
+	    }
+	    for (j = i; j < l; ++j) {
+	      b[j] = a[j + 1];
+	    }
 
-	function removeAll(f, a) {
-		var l = a.length;
-		var b = new Array(l);
-		for(var x, i=0, j=0; i<l; ++i) {
-			x = a[i];
-			if(!f(x)) {
-				b[j] = x;
-				++j;
-			}
-		}
+	    return b;
+	  }
 
-		b.length = j;
-		return b;
-	}
+	  // removeAll :: (a -> boolean) -> [a] -> [a]
+	  // remove all elements matching a predicate
+	  function removeAll(f, a) {
+	    var l = a.length;
+	    var b = new Array(l);
+	    var j = 0;
+	    for (var x, i = 0; i < l; ++i) {
+	      x = a[i];
+	      if (!f(x)) {
+	        b[j] = x;
+	        ++j;
+	      }
+	    }
 
-	function findIndex(x, a) {
-		for (var i = 0, l = a.length; i < l; ++i) {
-			if (x === a[i]) {
-				return i;
-			}
-		}
-		return -1;
-	}
+	    b.length = j;
+	    return b;
+	  }
 
-	function isArrayLike(x){
-	   return x != null && typeof x.length === 'number' && typeof x !== 'function';
-	}
+	  // findIndex :: a -> [a] -> Int
+	  // find index of x in a, from the left
+	  function findIndex(x, a) {
+	    for (var i = 0, l = a.length; i < l; ++i) {
+	      if (x === a[i]) {
+	        return i;
+	      }
+	    }
+	    return -1;
+	  }
+
+	  // isArrayLike :: * -> boolean
+	  // Return true iff x is array-like
+	  function isArrayLike(x) {
+	    return x != null && typeof x.length === 'number' && typeof x !== 'function';
+	  }
+
+	  /** @license MIT License (c) copyright 2010-2016 original author or authors */
+
+	  // id :: a -> a
+	  var id = function id(x) {
+	    return x;
+	  };
+
+	  // compose :: (b -> c) -> (a -> b) -> (a -> c)
+	  var compose = function compose(f, g) {
+	    return function (x) {
+	      return f(g(x));
+	    };
+	  };
+
+	  // apply :: (a -> b) -> a -> b
+	  var apply = function apply(f, x) {
+	    return f(x);
+	  };
+
+	  // curry2 :: ((a, b) -> c) -> (a -> b -> c)
+	  function curry2(f) {
+	    function curried(a, b) {
+	      switch (arguments.length) {
+	        case 0:
+	          return curried;
+	        case 1:
+	          return function (b) {
+	            return f(a, b);
+	          };
+	        default:
+	          return f(a, b);
+	      }
+	    }
+	    return curried;
+	  }
+
+	  // curry3 :: ((a, b, c) -> d) -> (a -> b -> c -> d)
+	  function curry3(f) {
+	    function curried(a, b, c) {
+	      // eslint-disable-line complexity
+	      switch (arguments.length) {
+	        case 0:
+	          return curried;
+	        case 1:
+	          return curry2(function (b, c) {
+	            return f(a, b, c);
+	          });
+	        case 2:
+	          return function (c) {
+	            return f(a, b, c);
+	          };
+	        default:
+	          return f(a, b, c);
+	      }
+	    }
+	    return curried;
+	  }
+
+	  exports.cons = cons;
+	  exports.append = append;
+	  exports.drop = drop;
+	  exports.tail = tail;
+	  exports.copy = copy;
+	  exports.map = map;
+	  exports.reduce = reduce;
+	  exports.replace = replace;
+	  exports.remove = remove;
+	  exports.removeAll = removeAll;
+	  exports.findIndex = findIndex;
+	  exports.isArrayLike = isArrayLike;
+	  exports.id = id;
+	  exports.compose = compose;
+	  exports.apply = apply;
+	  exports.curry2 = curry2;
+	  exports.curry3 = curry3;
+	});
 
 
 /***/ },
 /* 4 */
 /***/ function(module, exports, __webpack_require__) {
 
+	/** @license MIT License (c) copyright 2010-2016 original author or authors */
+	/** @author Brian Cavalier */
+	/** @author John Hann */
+
+	var Stream = __webpack_require__(0);
+	var base = __webpack_require__(3);
+	var core = __webpack_require__(7);
+	var from = __webpack_require__(85).from;
+	var periodic = __webpack_require__(91).periodic;
+
+	/**
+	 * Core stream type
+	 * @type {Stream}
+	 */
+	exports.Stream = Stream;
+
+	// Add of and empty to constructor for fantasy-land compat
+	exports.of       = Stream.of    = core.of;
+	exports.just     = core.of; // easier ES6 import alias
+	exports.empty    = Stream.empty = core.empty;
+	exports.never    = core.never;
+	exports.from     = from;
+	exports.periodic = periodic;
+
+	//-----------------------------------------------------------------------
+	// Creating
+
+	var create = __webpack_require__(84);
+
+	/**
+	 * Create a stream by imperatively pushing events.
+	 * @param {function(add:function(x), end:function(e)):function} run function
+	 *  that will receive 2 functions as arguments, the first to add new values to the
+	 *  stream and the second to end the stream. It may *return* a function that
+	 *  will be called once all consumers have stopped observing the stream.
+	 * @returns {Stream} stream containing all events added by run before end
+	 */
+	exports.create = create.create;
+
+	//-----------------------------------------------------------------------
+	// Adapting other sources
+
+	var events = __webpack_require__(87);
+
+	/**
+	 * Create a stream of events from the supplied EventTarget or EventEmitter
+	 * @param {String} event event name
+	 * @param {EventTarget|EventEmitter} source EventTarget or EventEmitter. The source
+	 *  must support either addEventListener/removeEventListener (w3c EventTarget:
+	 *  http://www.w3.org/TR/DOM-Level-2-Events/events.html#Events-EventTarget),
+	 *  or addListener/removeListener (node EventEmitter: http://nodejs.org/api/events.html)
+	 * @returns {Stream} stream of events of the specified type from the source
+	 */
+	exports.fromEvent = events.fromEvent;
+
+	//-----------------------------------------------------------------------
+	// Observing
+
+	var observe = __webpack_require__(64);
+
+	exports.observe = observe.observe;
+	exports.forEach = observe.observe;
+	exports.drain   = observe.drain;
+
+	/**
+	 * Process all the events in the stream
+	 * @returns {Promise} promise that fulfills when the stream ends, or rejects
+	 *  if the stream fails with an unhandled error.
+	 */
+	Stream.prototype.observe = Stream.prototype.forEach = function(f) {
+		return observe.observe(f, this);
+	};
+
+	/**
+	 * Consume all events in the stream, without providing a function to process each.
+	 * This causes a stream to become active and begin emitting events, and is useful
+	 * in cases where all processing has been setup upstream via other combinators, and
+	 * there is no need to process the terminal events.
+	 * @returns {Promise} promise that fulfills when the stream ends, or rejects
+	 *  if the stream fails with an unhandled error.
+	 */
+	Stream.prototype.drain = function() {
+		return observe.drain(this);
+	};
+
+	//-------------------------------------------------------
+
+	var loop = __webpack_require__(62).loop;
+
+	exports.loop = loop;
+
+	/**
+	 * Generalized feedback loop. Call a stepper function for each event. The stepper
+	 * will be called with 2 params: the current seed and the an event value.  It must
+	 * return a new { seed, value } pair. The `seed` will be fed back into the next
+	 * invocation of stepper, and the `value` will be propagated as the event value.
+	 * @param {function(seed:*, value:*):{seed:*, value:*}} stepper loop step function
+	 * @param {*} seed initial seed value passed to first stepper call
+	 * @returns {Stream} new stream whose values are the `value` field of the objects
+	 * returned by the stepper
+	 */
+	Stream.prototype.loop = function(stepper, seed) {
+		return loop(stepper, seed, this);
+	};
+
+	//-------------------------------------------------------
+
+	var accumulate = __webpack_require__(55);
+
+	exports.scan   = accumulate.scan;
+	exports.reduce = accumulate.reduce;
+
+	/**
+	 * Create a stream containing successive reduce results of applying f to
+	 * the previous reduce result and the current stream item.
+	 * @param {function(result:*, x:*):*} f reducer function
+	 * @param {*} initial initial value
+	 * @returns {Stream} new stream containing successive reduce results
+	 */
+	Stream.prototype.scan = function(f, initial) {
+		return accumulate.scan(f, initial, this);
+	};
+
+	/**
+	 * Reduce the stream to produce a single result.  Note that reducing an infinite
+	 * stream will return a Promise that never fulfills, but that may reject if an error
+	 * occurs.
+	 * @param {function(result:*, x:*):*} f reducer function
+	 * @param {*} initial optional initial value
+	 * @returns {Promise} promise for the file result of the reduce
+	 */
+	Stream.prototype.reduce = function(f, initial) {
+		return accumulate.reduce(f, initial, this);
+	};
+
+	//-----------------------------------------------------------------------
+	// Building and extending
+
+	var unfold = __webpack_require__(92);
+	var iterate = __webpack_require__(90);
+	var generate = __webpack_require__(89);
+	var build = __webpack_require__(24);
+
+	exports.unfold    = unfold.unfold;
+	exports.iterate   = iterate.iterate;
+	exports.generate  = generate.generate;
+	exports.cycle     = build.cycle;
+	exports.concat    = build.concat;
+	exports.startWith = build.cons;
+
+	/**
+	 * @deprecated
+	 * Tie this stream into a circle, thus creating an infinite stream
+	 * @returns {Stream} new infinite stream
+	 */
+	Stream.prototype.cycle = function() {
+		return build.cycle(this);
+	};
+
+	/**
+	 * @param {Stream} tail
+	 * @returns {Stream} new stream containing all items in this followed by
+	 *  all items in tail
+	 */
+	Stream.prototype.concat = function(tail) {
+		return build.concat(this, tail);
+	};
+
+	/**
+	 * @param {*} x value to prepend
+	 * @returns {Stream} a new stream with x prepended
+	 */
+	Stream.prototype.startWith = function(x) {
+		return build.cons(x, this);
+	};
+
+	//-----------------------------------------------------------------------
+	// Transforming
+
+	var transform = __webpack_require__(12);
+	var applicative = __webpack_require__(56);
+
+	exports.map      = transform.map;
+	exports.constant = transform.constant;
+	exports.tap      = transform.tap;
+	exports.ap       = applicative.ap;
+
+	/**
+	 * Transform each value in the stream by applying f to each
+	 * @param {function(*):*} f mapping function
+	 * @returns {Stream} stream containing items transformed by f
+	 */
+	Stream.prototype.map = function(f) {
+		return transform.map(f, this);
+	};
+
+	/**
+	 * Assume this stream contains functions, and apply each function to each item
+	 * in the provided stream.  This generates, in effect, a cross product.
+	 * @param {Stream} xs stream of items to which
+	 * @returns {Stream} stream containing the cross product of items
+	 */
+	Stream.prototype.ap = function(xs) {
+		return applicative.ap(this, xs);
+	};
+
+	/**
+	 * Replace each value in the stream with x
+	 * @param {*} x
+	 * @returns {Stream} stream containing items replaced with x
+	 */
+	Stream.prototype.constant = function(x) {
+		return transform.constant(x, this);
+	};
+
+	/**
+	 * Perform a side effect for each item in the stream
+	 * @param {function(x:*):*} f side effect to execute for each item. The
+	 *  return value will be discarded.
+	 * @returns {Stream} new stream containing the same items as this stream
+	 */
+	Stream.prototype.tap = function(f) {
+		return transform.tap(f, this);
+	};
+
+	//-----------------------------------------------------------------------
+	// Transducer support
+
+	var transduce = __webpack_require__(71);
+
+	exports.transduce = transduce.transduce;
+
+	/**
+	 * Transform this stream by passing its events through a transducer.
+	 * @param  {function} transducer transducer function
+	 * @return {Stream} stream of events transformed by the transducer
+	 */
+	Stream.prototype.transduce = function(transducer) {
+		return transduce.transduce(transducer, this);
+	};
+
+	//-----------------------------------------------------------------------
+	// FlatMapping
+
+	var flatMap = __webpack_require__(27);
+
+	exports.flatMap = exports.chain = flatMap.flatMap;
+	exports.join    = flatMap.join;
+
+	/**
+	 * Map each value in the stream to a new stream, and merge it into the
+	 * returned outer stream. Event arrival times are preserved.
+	 * @param {function(x:*):Stream} f chaining function, must return a Stream
+	 * @returns {Stream} new stream containing all events from each stream returned by f
+	 */
+	Stream.prototype.flatMap = Stream.prototype.chain = function(f) {
+		return flatMap.flatMap(f, this);
+	};
+
+	/**
+	 * Monadic join. Flatten a Stream<Stream<X>> to Stream<X> by merging inner
+	 * streams to the outer. Event arrival times are preserved.
+	 * @returns {Stream<X>} new stream containing all events of all inner streams
+	 */
+	Stream.prototype.join = function() {
+		return flatMap.join(this);
+	};
+
+	var continueWith = __webpack_require__(26).continueWith;
+
+	exports.continueWith = continueWith;
+	exports.flatMapEnd = continueWith;
+
+	/**
+	 * Map the end event to a new stream, and begin emitting its values.
+	 * @param {function(x:*):Stream} f function that receives the end event value,
+	 * and *must* return a new Stream to continue with.
+	 * @returns {Stream} new stream that emits all events from the original stream,
+	 * followed by all events from the stream returned by f.
+	 */
+	Stream.prototype.continueWith = Stream.prototype.flatMapEnd = function(f) {
+		return continueWith(f, this);
+	};
+
+	var concatMap = __webpack_require__(57).concatMap;
+
+	exports.concatMap = concatMap;
+
+	Stream.prototype.concatMap = function(f) {
+		return concatMap(f, this);
+	};
+
+	//-----------------------------------------------------------------------
+	// Concurrent merging
+
+	var mergeConcurrently = __webpack_require__(8);
+
+	exports.mergeConcurrently = mergeConcurrently.mergeConcurrently;
+
+	/**
+	 * Flatten a Stream<Stream<X>> to Stream<X> by merging inner
+	 * streams to the outer, limiting the number of inner streams that may
+	 * be active concurrently.
+	 * @param {number} concurrency at most this many inner streams will be
+	 *  allowed to be active concurrently.
+	 * @return {Stream<X>} new stream containing all events of all inner
+	 *  streams, with limited concurrency.
+	 */
+	Stream.prototype.mergeConcurrently = function(concurrency) {
+		return mergeConcurrently.mergeConcurrently(concurrency, this);
+	};
+
+	//-----------------------------------------------------------------------
+	// Merging
+
+	var merge = __webpack_require__(63);
+
+	exports.merge = merge.merge;
+	exports.mergeArray = merge.mergeArray;
+
+	/**
+	 * Merge this stream and all the provided streams
+	 * @returns {Stream} stream containing items from this stream and s in time
+	 * order.  If two events are simultaneous they will be merged in
+	 * arbitrary order.
+	 */
+	Stream.prototype.merge = function(/*...streams*/) {
+		return merge.mergeArray(base.cons(this, arguments));
+	};
+
+	//-----------------------------------------------------------------------
+	// Combining
+
+	var combine = __webpack_require__(25);
+
+	exports.combine = combine.combine;
+	exports.combineArray = combine.combineArray;
+
+	/**
+	 * Combine latest events from all input streams
+	 * @param {function(...events):*} f function to combine most recent events
+	 * @returns {Stream} stream containing the result of applying f to the most recent
+	 *  event of each input stream, whenever a new event arrives on any stream.
+	 */
+	Stream.prototype.combine = function(f /*, ...streams*/) {
+		return combine.combineArray(f, base.replace(this, 0, arguments));
+	};
+
+	//-----------------------------------------------------------------------
+	// Sampling
+
+	var sample = __webpack_require__(66);
+
+	exports.sample = sample.sample;
+	exports.sampleWith = sample.sampleWith;
+
+	/**
+	 * When an event arrives on sampler, emit the latest event value from stream.
+	 * @param {Stream} sampler stream of events at whose arrival time
+	 *  signal's latest value will be propagated
+	 * @returns {Stream} sampled stream of values
+	 */
+	Stream.prototype.sampleWith = function(sampler) {
+		return sample.sampleWith(sampler, this);
+	};
+
+	/**
+	 * When an event arrives on this stream, emit the result of calling f with the latest
+	 * values of all streams being sampled
+	 * @param {function(...values):*} f function to apply to each set of sampled values
+	 * @returns {Stream} stream of sampled and transformed values
+	 */
+	Stream.prototype.sample = function(f /* ...streams */) {
+		return sample.sampleArray(f, this, base.tail(arguments));
+	};
+
+	//-----------------------------------------------------------------------
+	// Zipping
+
+	var zip = __webpack_require__(72);
+
+	exports.zip = zip.zip;
+
+	/**
+	 * Pair-wise combine items with those in s. Given 2 streams:
+	 * [1,2,3] zipWith f [4,5,6] -> [f(1,4),f(2,5),f(3,6)]
+	 * Note: zip causes fast streams to buffer and wait for slow streams.
+	 * @param {function(a:Stream, b:Stream, ...):*} f function to combine items
+	 * @returns {Stream} new stream containing pairs
+	 */
+	Stream.prototype.zip = function(f /*, ...streams*/) {
+		return zip.zipArray(f, base.replace(this, 0, arguments));
+	};
+
+	//-----------------------------------------------------------------------
+	// Switching
+
+	var switchLatest = __webpack_require__(68).switch;
+
+	exports.switch       = switchLatest;
+	exports.switchLatest = switchLatest;
+
+	/**
+	 * Given a stream of streams, return a new stream that adopts the behavior
+	 * of the most recent inner stream.
+	 * @returns {Stream} switching stream
+	 */
+	Stream.prototype.switch = Stream.prototype.switchLatest = function() {
+		return switchLatest(this);
+	};
+
+	//-----------------------------------------------------------------------
+	// Filtering
+
+	var filter = __webpack_require__(60);
+
+	exports.filter          = filter.filter;
+	exports.skipRepeats     = exports.distinct   = filter.skipRepeats;
+	exports.skipRepeatsWith = exports.distinctBy = filter.skipRepeatsWith;
+
+	/**
+	 * Retain only items matching a predicate
+	 * stream:                           -12345678-
+	 * filter(x => x % 2 === 0, stream): --2-4-6-8-
+	 * @param {function(x:*):boolean} p filtering predicate called for each item
+	 * @returns {Stream} stream containing only items for which predicate returns truthy
+	 */
+	Stream.prototype.filter = function(p) {
+		return filter.filter(p, this);
+	};
+
+	/**
+	 * Skip repeated events, using === to compare items
+	 * stream:           -abbcd-
+	 * distinct(stream): -ab-cd-
+	 * @returns {Stream} stream with no repeated events
+	 */
+	Stream.prototype.skipRepeats = function() {
+		return filter.skipRepeats(this);
+	};
+
+	/**
+	 * Skip repeated events, using supplied equals function to compare items
+	 * @param {function(a:*, b:*):boolean} equals function to compare items
+	 * @returns {Stream} stream with no repeated events
+	 */
+	Stream.prototype.skipRepeatsWith = function(equals) {
+		return filter.skipRepeatsWith(equals, this);
+	};
+
+	//-----------------------------------------------------------------------
+	// Slicing
+
+	var slice = __webpack_require__(67);
+
+	exports.take      = slice.take;
+	exports.skip      = slice.skip;
+	exports.slice     = slice.slice;
+	exports.takeWhile = slice.takeWhile;
+	exports.skipWhile = slice.skipWhile;
+
+	/**
+	 * stream:          -abcd-
+	 * take(2, stream): -ab|
+	 * @param {Number} n take up to this many events
+	 * @returns {Stream} stream containing at most the first n items from this stream
+	 */
+	Stream.prototype.take = function(n) {
+		return slice.take(n, this);
+	};
+
+	/**
+	 * stream:          -abcd->
+	 * skip(2, stream): ---cd->
+	 * @param {Number} n skip this many events
+	 * @returns {Stream} stream not containing the first n events
+	 */
+	Stream.prototype.skip = function(n) {
+		return slice.skip(n, this);
+	};
+
+	/**
+	 * Slice a stream by event index. Equivalent to, but more efficient than
+	 * stream.take(end).skip(start);
+	 * NOTE: Negative start and end are not supported
+	 * @param {Number} start skip all events before the start index
+	 * @param {Number} end allow all events from the start index to the end index
+	 * @returns {Stream} stream containing items where start <= index < end
+	 */
+	Stream.prototype.slice = function(start, end) {
+		return slice.slice(start, end, this);
+	};
+
+	/**
+	 * stream:                        -123451234->
+	 * takeWhile(x => x < 5, stream): -1234|
+	 * @param {function(x:*):boolean} p predicate
+	 * @returns {Stream} stream containing items up to, but not including, the
+	 * first item for which p returns falsy.
+	 */
+	Stream.prototype.takeWhile = function(p) {
+		return slice.takeWhile(p, this);
+	};
+
+	/**
+	 * stream:                        -123451234->
+	 * skipWhile(x => x < 5, stream): -----51234->
+	 * @param {function(x:*):boolean} p predicate
+	 * @returns {Stream} stream containing items following *and including* the
+	 * first item for which p returns falsy.
+	 */
+	Stream.prototype.skipWhile = function(p) {
+		return slice.skipWhile(p, this);
+	};
+
+	//-----------------------------------------------------------------------
+	// Time slicing
+
+	var timeslice = __webpack_require__(69);
+
+	exports.until  = exports.takeUntil = timeslice.takeUntil;
+	exports.since  = exports.skipUntil = timeslice.skipUntil;
+	exports.during = timeslice.during;
+
+	/**
+	 * stream:                    -a-b-c-d-e-f-g->
+	 * signal:                    -------x
+	 * takeUntil(signal, stream): -a-b-c-|
+	 * @param {Stream} signal retain only events in stream before the first
+	 * event in signal
+	 * @returns {Stream} new stream containing only events that occur before
+	 * the first event in signal.
+	 */
+	Stream.prototype.until = Stream.prototype.takeUntil = function(signal) {
+		return timeslice.takeUntil(signal, this);
+	};
+
+	/**
+	 * stream:                    -a-b-c-d-e-f-g->
+	 * signal:                    -------x
+	 * takeUntil(signal, stream): -------d-e-f-g->
+	 * @param {Stream} signal retain only events in stream at or after the first
+	 * event in signal
+	 * @returns {Stream} new stream containing only events that occur after
+	 * the first event in signal.
+	 */
+	Stream.prototype.since = Stream.prototype.skipUntil = function(signal) {
+		return timeslice.skipUntil(signal, this);
+	};
+
+	/**
+	 * stream:                    -a-b-c-d-e-f-g->
+	 * timeWindow:                -----s
+	 * s:                               -----t
+	 * stream.during(timeWindow): -----c-d-e-|
+	 * @param {Stream<Stream>} timeWindow a stream whose first event (s) represents
+	 *  the window start time.  That event (s) is itself a stream whose first event (t)
+	 *  represents the window end time
+	 * @returns {Stream} new stream containing only events within the provided timespan
+	 */
+	Stream.prototype.during = function(timeWindow) {
+		return timeslice.during(timeWindow, this);
+	};
+
+	//-----------------------------------------------------------------------
+	// Delaying
+
+	var delay = __webpack_require__(58).delay;
+
+	exports.delay = delay;
+
+	/**
+	 * @param {Number} delayTime milliseconds to delay each item
+	 * @returns {Stream} new stream containing the same items, but delayed by ms
+	 */
+	Stream.prototype.delay = function(delayTime) {
+		return delay(delayTime, this);
+	};
+
+	//-----------------------------------------------------------------------
+	// Getting event timestamp
+
+	var timestamp = __webpack_require__(70).timestamp;
+
+	exports.timestamp = timestamp;
+
+	/**
+	 * Expose event timestamps into the stream. Turns a Stream<X> into
+	 * Stream<{time:t, value:X}>
+	 * @returns {Stream<{time:number, value:*}>}
+	 */
+	Stream.prototype.timestamp = function() {
+		return timestamp(this);
+	};
+
+	//-----------------------------------------------------------------------
+	// Rate limiting
+
+	var limit = __webpack_require__(61);
+
+	exports.throttle = limit.throttle;
+	exports.debounce = limit.debounce;
+
+	/**
+	 * Limit the rate of events
+	 * stream:              abcd----abcd----
+	 * throttle(2, stream): a-c-----a-c-----
+	 * @param {Number} period time to suppress events
+	 * @returns {Stream} new stream that skips events for throttle period
+	 */
+	Stream.prototype.throttle = function(period) {
+		return limit.throttle(period, this);
+	};
+
+	/**
+	 * Wait for a burst of events to subside and emit only the last event in the burst
+	 * stream:              abcd----abcd----
+	 * debounce(2, stream): -----d-------d--
+	 * @param {Number} period events occuring more frequently than this
+	 *  on the provided scheduler will be suppressed
+	 * @returns {Stream} new debounced stream
+	 */
+	Stream.prototype.debounce = function(period) {
+		return limit.debounce(period, this);
+	};
+
+	//-----------------------------------------------------------------------
+	// Awaiting Promises
+
+	var promises = __webpack_require__(65);
+
+	exports.fromPromise = promises.fromPromise;
+	exports.await       = promises.awaitPromises;
+
+	/**
+	 * Await promises, turning a Stream<Promise<X>> into Stream<X>.  Preserves
+	 * event order, but timeshifts events based on promise resolution time.
+	 * @returns {Stream<X>} stream containing non-promise values
+	 */
+	Stream.prototype.await = function() {
+		return promises.awaitPromises(this);
+	};
+
+	//-----------------------------------------------------------------------
+	// Error handling
+
+	var errors = __webpack_require__(59);
+
+	exports.recoverWith  = errors.flatMapError;
+	exports.flatMapError = errors.flatMapError;
+	exports.throwError   = errors.throwError;
+
+	/**
+	 * If this stream encounters an error, recover and continue with items from stream
+	 * returned by f.
+	 * stream:                  -a-b-c-X-
+	 * f(X):                           d-e-f-g-
+	 * flatMapError(f, stream): -a-b-c-d-e-f-g-
+	 * @param {function(error:*):Stream} f function which returns a new stream
+	 * @returns {Stream} new stream which will recover from an error by calling f
+	 */
+	Stream.prototype.recoverWith = Stream.prototype.flatMapError = function(f) {
+		return errors.flatMapError(f, this);
+	};
+
+	//-----------------------------------------------------------------------
+	// Multicasting
+
+	var multicast = __webpack_require__(5).default;
+
+	exports.multicast = multicast;
+
+	/**
+	 * Transform the stream into multicast stream.  That means that many subscribers
+	 * to the stream will not cause multiple invocations of the internal machinery.
+	 * @returns {Stream} new stream which will multicast events to all observers.
+	 */
+	Stream.prototype.multicast = function() {
+		return multicast(this);
+	};
+
+
+/***/ },
+/* 5 */
+/***/ function(module, exports, __webpack_require__) {
+
 	var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;(function (global, factory) {
 	  if (true) {
-	    !(__WEBPACK_AMD_DEFINE_ARRAY__ = [exports, __webpack_require__(42)], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+	    !(__WEBPACK_AMD_DEFINE_ARRAY__ = [exports, __webpack_require__(3)], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 	  } else if (typeof exports !== "undefined") {
 	    factory(exports, require('@most/prelude'));
 	  } else {
@@ -587,692 +1389,6 @@
 
 
 /***/ },
-/* 5 */
-/***/ function(module, exports, __webpack_require__) {
-
-	/** @license MIT License (c) copyright 2010-2016 original author or authors */
-	/** @author Brian Cavalier */
-	/** @author John Hann */
-
-	var Stream = __webpack_require__(0);
-	var base = __webpack_require__(3);
-	var core = __webpack_require__(7);
-	var from = __webpack_require__(85).from;
-	var periodic = __webpack_require__(91).periodic;
-
-	/**
-	 * Core stream type
-	 * @type {Stream}
-	 */
-	exports.Stream = Stream;
-
-	// Add of and empty to constructor for fantasy-land compat
-	exports.of       = Stream.of    = core.of;
-	exports.just     = core.of; // easier ES6 import alias
-	exports.empty    = Stream.empty = core.empty;
-	exports.never    = core.never;
-	exports.from     = from;
-	exports.periodic = periodic;
-
-	//-----------------------------------------------------------------------
-	// Creating
-
-	var create = __webpack_require__(84);
-
-	/**
-	 * Create a stream by imperatively pushing events.
-	 * @param {function(add:function(x), end:function(e)):function} run function
-	 *  that will receive 2 functions as arguments, the first to add new values to the
-	 *  stream and the second to end the stream. It may *return* a function that
-	 *  will be called once all consumers have stopped observing the stream.
-	 * @returns {Stream} stream containing all events added by run before end
-	 */
-	exports.create = create.create;
-
-	//-----------------------------------------------------------------------
-	// Adapting other sources
-
-	var events = __webpack_require__(87);
-
-	/**
-	 * Create a stream of events from the supplied EventTarget or EventEmitter
-	 * @param {String} event event name
-	 * @param {EventTarget|EventEmitter} source EventTarget or EventEmitter. The source
-	 *  must support either addEventListener/removeEventListener (w3c EventTarget:
-	 *  http://www.w3.org/TR/DOM-Level-2-Events/events.html#Events-EventTarget),
-	 *  or addListener/removeListener (node EventEmitter: http://nodejs.org/api/events.html)
-	 * @returns {Stream} stream of events of the specified type from the source
-	 */
-	exports.fromEvent = events.fromEvent;
-
-	//-----------------------------------------------------------------------
-	// Observing
-
-	var observe = __webpack_require__(65);
-
-	exports.observe = observe.observe;
-	exports.forEach = observe.observe;
-	exports.drain   = observe.drain;
-
-	/**
-	 * Process all the events in the stream
-	 * @returns {Promise} promise that fulfills when the stream ends, or rejects
-	 *  if the stream fails with an unhandled error.
-	 */
-	Stream.prototype.observe = Stream.prototype.forEach = function(f) {
-		return observe.observe(f, this);
-	};
-
-	/**
-	 * Consume all events in the stream, without providing a function to process each.
-	 * This causes a stream to become active and begin emitting events, and is useful
-	 * in cases where all processing has been setup upstream via other combinators, and
-	 * there is no need to process the terminal events.
-	 * @returns {Promise} promise that fulfills when the stream ends, or rejects
-	 *  if the stream fails with an unhandled error.
-	 */
-	Stream.prototype.drain = function() {
-		return observe.drain(this);
-	};
-
-	//-------------------------------------------------------
-
-	var loop = __webpack_require__(63).loop;
-
-	exports.loop = loop;
-
-	/**
-	 * Generalized feedback loop. Call a stepper function for each event. The stepper
-	 * will be called with 2 params: the current seed and the an event value.  It must
-	 * return a new { seed, value } pair. The `seed` will be fed back into the next
-	 * invocation of stepper, and the `value` will be propagated as the event value.
-	 * @param {function(seed:*, value:*):{seed:*, value:*}} stepper loop step function
-	 * @param {*} seed initial seed value passed to first stepper call
-	 * @returns {Stream} new stream whose values are the `value` field of the objects
-	 * returned by the stepper
-	 */
-	Stream.prototype.loop = function(stepper, seed) {
-		return loop(stepper, seed, this);
-	};
-
-	//-------------------------------------------------------
-
-	var accumulate = __webpack_require__(56);
-
-	exports.scan   = accumulate.scan;
-	exports.reduce = accumulate.reduce;
-
-	/**
-	 * Create a stream containing successive reduce results of applying f to
-	 * the previous reduce result and the current stream item.
-	 * @param {function(result:*, x:*):*} f reducer function
-	 * @param {*} initial initial value
-	 * @returns {Stream} new stream containing successive reduce results
-	 */
-	Stream.prototype.scan = function(f, initial) {
-		return accumulate.scan(f, initial, this);
-	};
-
-	/**
-	 * Reduce the stream to produce a single result.  Note that reducing an infinite
-	 * stream will return a Promise that never fulfills, but that may reject if an error
-	 * occurs.
-	 * @param {function(result:*, x:*):*} f reducer function
-	 * @param {*} initial optional initial value
-	 * @returns {Promise} promise for the file result of the reduce
-	 */
-	Stream.prototype.reduce = function(f, initial) {
-		return accumulate.reduce(f, initial, this);
-	};
-
-	//-----------------------------------------------------------------------
-	// Building and extending
-
-	var unfold = __webpack_require__(92);
-	var iterate = __webpack_require__(90);
-	var generate = __webpack_require__(89);
-	var build = __webpack_require__(23);
-
-	exports.unfold    = unfold.unfold;
-	exports.iterate   = iterate.iterate;
-	exports.generate  = generate.generate;
-	exports.cycle     = build.cycle;
-	exports.concat    = build.concat;
-	exports.startWith = build.cons;
-
-	/**
-	 * @deprecated
-	 * Tie this stream into a circle, thus creating an infinite stream
-	 * @returns {Stream} new infinite stream
-	 */
-	Stream.prototype.cycle = function() {
-		return build.cycle(this);
-	};
-
-	/**
-	 * @param {Stream} tail
-	 * @returns {Stream} new stream containing all items in this followed by
-	 *  all items in tail
-	 */
-	Stream.prototype.concat = function(tail) {
-		return build.concat(this, tail);
-	};
-
-	/**
-	 * @param {*} x value to prepend
-	 * @returns {Stream} a new stream with x prepended
-	 */
-	Stream.prototype.startWith = function(x) {
-		return build.cons(x, this);
-	};
-
-	//-----------------------------------------------------------------------
-	// Transforming
-
-	var transform = __webpack_require__(8);
-	var applicative = __webpack_require__(57);
-
-	exports.map      = transform.map;
-	exports.constant = transform.constant;
-	exports.tap      = transform.tap;
-	exports.ap       = applicative.ap;
-
-	/**
-	 * Transform each value in the stream by applying f to each
-	 * @param {function(*):*} f mapping function
-	 * @returns {Stream} stream containing items transformed by f
-	 */
-	Stream.prototype.map = function(f) {
-		return transform.map(f, this);
-	};
-
-	/**
-	 * Assume this stream contains functions, and apply each function to each item
-	 * in the provided stream.  This generates, in effect, a cross product.
-	 * @param {Stream} xs stream of items to which
-	 * @returns {Stream} stream containing the cross product of items
-	 */
-	Stream.prototype.ap = function(xs) {
-		return applicative.ap(this, xs);
-	};
-
-	/**
-	 * Replace each value in the stream with x
-	 * @param {*} x
-	 * @returns {Stream} stream containing items replaced with x
-	 */
-	Stream.prototype.constant = function(x) {
-		return transform.constant(x, this);
-	};
-
-	/**
-	 * Perform a side effect for each item in the stream
-	 * @param {function(x:*):*} f side effect to execute for each item. The
-	 *  return value will be discarded.
-	 * @returns {Stream} new stream containing the same items as this stream
-	 */
-	Stream.prototype.tap = function(f) {
-		return transform.tap(f, this);
-	};
-
-	//-----------------------------------------------------------------------
-	// Transducer support
-
-	var transduce = __webpack_require__(71);
-
-	exports.transduce = transduce.transduce;
-
-	/**
-	 * Transform this stream by passing its events through a transducer.
-	 * @param  {function} transducer transducer function
-	 * @return {Stream} stream of events transformed by the transducer
-	 */
-	Stream.prototype.transduce = function(transducer) {
-		return transduce.transduce(transducer, this);
-	};
-
-	//-----------------------------------------------------------------------
-	// FlatMapping
-
-	var flatMap = __webpack_require__(26);
-
-	exports.flatMap = exports.chain = flatMap.flatMap;
-	exports.join    = flatMap.join;
-
-	/**
-	 * Map each value in the stream to a new stream, and merge it into the
-	 * returned outer stream. Event arrival times are preserved.
-	 * @param {function(x:*):Stream} f chaining function, must return a Stream
-	 * @returns {Stream} new stream containing all events from each stream returned by f
-	 */
-	Stream.prototype.flatMap = Stream.prototype.chain = function(f) {
-		return flatMap.flatMap(f, this);
-	};
-
-	/**
-	 * Monadic join. Flatten a Stream<Stream<X>> to Stream<X> by merging inner
-	 * streams to the outer. Event arrival times are preserved.
-	 * @returns {Stream<X>} new stream containing all events of all inner streams
-	 */
-	Stream.prototype.join = function() {
-		return flatMap.join(this);
-	};
-
-	var continueWith = __webpack_require__(25).continueWith;
-
-	exports.continueWith = continueWith;
-	exports.flatMapEnd = continueWith;
-
-	/**
-	 * Map the end event to a new stream, and begin emitting its values.
-	 * @param {function(x:*):Stream} f function that receives the end event value,
-	 * and *must* return a new Stream to continue with.
-	 * @returns {Stream} new stream that emits all events from the original stream,
-	 * followed by all events from the stream returned by f.
-	 */
-	Stream.prototype.continueWith = Stream.prototype.flatMapEnd = function(f) {
-		return continueWith(f, this);
-	};
-
-	var concatMap = __webpack_require__(58).concatMap;
-
-	exports.concatMap = concatMap;
-
-	Stream.prototype.concatMap = function(f) {
-		return concatMap(f, this);
-	};
-
-	//-----------------------------------------------------------------------
-	// Concurrent merging
-
-	var mergeConcurrently = __webpack_require__(9);
-
-	exports.mergeConcurrently = mergeConcurrently.mergeConcurrently;
-
-	/**
-	 * Flatten a Stream<Stream<X>> to Stream<X> by merging inner
-	 * streams to the outer, limiting the number of inner streams that may
-	 * be active concurrently.
-	 * @param {number} concurrency at most this many inner streams will be
-	 *  allowed to be active concurrently.
-	 * @return {Stream<X>} new stream containing all events of all inner
-	 *  streams, with limited concurrency.
-	 */
-	Stream.prototype.mergeConcurrently = function(concurrency) {
-		return mergeConcurrently.mergeConcurrently(concurrency, this);
-	};
-
-	//-----------------------------------------------------------------------
-	// Merging
-
-	var merge = __webpack_require__(64);
-
-	exports.merge = merge.merge;
-	exports.mergeArray = merge.mergeArray;
-
-	/**
-	 * Merge this stream and all the provided streams
-	 * @returns {Stream} stream containing items from this stream and s in time
-	 * order.  If two events are simultaneous they will be merged in
-	 * arbitrary order.
-	 */
-	Stream.prototype.merge = function(/*...streams*/) {
-		return merge.mergeArray(base.cons(this, arguments));
-	};
-
-	//-----------------------------------------------------------------------
-	// Combining
-
-	var combine = __webpack_require__(24);
-
-	exports.combine = combine.combine;
-	exports.combineArray = combine.combineArray;
-
-	/**
-	 * Combine latest events from all input streams
-	 * @param {function(...events):*} f function to combine most recent events
-	 * @returns {Stream} stream containing the result of applying f to the most recent
-	 *  event of each input stream, whenever a new event arrives on any stream.
-	 */
-	Stream.prototype.combine = function(f /*, ...streams*/) {
-		return combine.combineArray(f, base.replace(this, 0, arguments));
-	};
-
-	//-----------------------------------------------------------------------
-	// Sampling
-
-	var sample = __webpack_require__(67);
-
-	exports.sample = sample.sample;
-	exports.sampleWith = sample.sampleWith;
-
-	/**
-	 * When an event arrives on sampler, emit the latest event value from stream.
-	 * @param {Stream} sampler stream of events at whose arrival time
-	 *  signal's latest value will be propagated
-	 * @returns {Stream} sampled stream of values
-	 */
-	Stream.prototype.sampleWith = function(sampler) {
-		return sample.sampleWith(sampler, this);
-	};
-
-	/**
-	 * When an event arrives on this stream, emit the result of calling f with the latest
-	 * values of all streams being sampled
-	 * @param {function(...values):*} f function to apply to each set of sampled values
-	 * @returns {Stream} stream of sampled and transformed values
-	 */
-	Stream.prototype.sample = function(f /* ...streams */) {
-		return sample.sampleArray(f, this, base.tail(arguments));
-	};
-
-	//-----------------------------------------------------------------------
-	// Zipping
-
-	var zip = __webpack_require__(72);
-
-	exports.zip = zip.zip;
-
-	/**
-	 * Pair-wise combine items with those in s. Given 2 streams:
-	 * [1,2,3] zipWith f [4,5,6] -> [f(1,4),f(2,5),f(3,6)]
-	 * Note: zip causes fast streams to buffer and wait for slow streams.
-	 * @param {function(a:Stream, b:Stream, ...):*} f function to combine items
-	 * @returns {Stream} new stream containing pairs
-	 */
-	Stream.prototype.zip = function(f /*, ...streams*/) {
-		return zip.zipArray(f, base.replace(this, 0, arguments));
-	};
-
-	//-----------------------------------------------------------------------
-	// Switching
-
-	var switchLatest = __webpack_require__(69).switch;
-
-	exports.switch       = switchLatest;
-	exports.switchLatest = switchLatest;
-
-	/**
-	 * Given a stream of streams, return a new stream that adopts the behavior
-	 * of the most recent inner stream.
-	 * @returns {Stream} switching stream
-	 */
-	Stream.prototype.switch = Stream.prototype.switchLatest = function() {
-		return switchLatest(this);
-	};
-
-	//-----------------------------------------------------------------------
-	// Filtering
-
-	var filter = __webpack_require__(61);
-
-	exports.filter          = filter.filter;
-	exports.skipRepeats     = exports.distinct   = filter.skipRepeats;
-	exports.skipRepeatsWith = exports.distinctBy = filter.skipRepeatsWith;
-
-	/**
-	 * Retain only items matching a predicate
-	 * stream:                           -12345678-
-	 * filter(x => x % 2 === 0, stream): --2-4-6-8-
-	 * @param {function(x:*):boolean} p filtering predicate called for each item
-	 * @returns {Stream} stream containing only items for which predicate returns truthy
-	 */
-	Stream.prototype.filter = function(p) {
-		return filter.filter(p, this);
-	};
-
-	/**
-	 * Skip repeated events, using === to compare items
-	 * stream:           -abbcd-
-	 * distinct(stream): -ab-cd-
-	 * @returns {Stream} stream with no repeated events
-	 */
-	Stream.prototype.skipRepeats = function() {
-		return filter.skipRepeats(this);
-	};
-
-	/**
-	 * Skip repeated events, using supplied equals function to compare items
-	 * @param {function(a:*, b:*):boolean} equals function to compare items
-	 * @returns {Stream} stream with no repeated events
-	 */
-	Stream.prototype.skipRepeatsWith = function(equals) {
-		return filter.skipRepeatsWith(equals, this);
-	};
-
-	//-----------------------------------------------------------------------
-	// Slicing
-
-	var slice = __webpack_require__(68);
-
-	exports.take      = slice.take;
-	exports.skip      = slice.skip;
-	exports.slice     = slice.slice;
-	exports.takeWhile = slice.takeWhile;
-	exports.skipWhile = slice.skipWhile;
-
-	/**
-	 * stream:          -abcd-
-	 * take(2, stream): -ab|
-	 * @param {Number} n take up to this many events
-	 * @returns {Stream} stream containing at most the first n items from this stream
-	 */
-	Stream.prototype.take = function(n) {
-		return slice.take(n, this);
-	};
-
-	/**
-	 * stream:          -abcd->
-	 * skip(2, stream): ---cd->
-	 * @param {Number} n skip this many events
-	 * @returns {Stream} stream not containing the first n events
-	 */
-	Stream.prototype.skip = function(n) {
-		return slice.skip(n, this);
-	};
-
-	/**
-	 * Slice a stream by event index. Equivalent to, but more efficient than
-	 * stream.take(end).skip(start);
-	 * NOTE: Negative start and end are not supported
-	 * @param {Number} start skip all events before the start index
-	 * @param {Number} end allow all events from the start index to the end index
-	 * @returns {Stream} stream containing items where start <= index < end
-	 */
-	Stream.prototype.slice = function(start, end) {
-		return slice.slice(start, end, this);
-	};
-
-	/**
-	 * stream:                        -123451234->
-	 * takeWhile(x => x < 5, stream): -1234|
-	 * @param {function(x:*):boolean} p predicate
-	 * @returns {Stream} stream containing items up to, but not including, the
-	 * first item for which p returns falsy.
-	 */
-	Stream.prototype.takeWhile = function(p) {
-		return slice.takeWhile(p, this);
-	};
-
-	/**
-	 * stream:                        -123451234->
-	 * skipWhile(x => x < 5, stream): -----51234->
-	 * @param {function(x:*):boolean} p predicate
-	 * @returns {Stream} stream containing items following *and including* the
-	 * first item for which p returns falsy.
-	 */
-	Stream.prototype.skipWhile = function(p) {
-		return slice.skipWhile(p, this);
-	};
-
-	//-----------------------------------------------------------------------
-	// Time slicing
-
-	var timeslice = __webpack_require__(27);
-
-	exports.until  = exports.takeUntil = timeslice.takeUntil;
-	exports.since  = exports.skipUntil = timeslice.skipUntil;
-	exports.during = timeslice.during;
-
-	/**
-	 * stream:                    -a-b-c-d-e-f-g->
-	 * signal:                    -------x
-	 * takeUntil(signal, stream): -a-b-c-|
-	 * @param {Stream} signal retain only events in stream before the first
-	 * event in signal
-	 * @returns {Stream} new stream containing only events that occur before
-	 * the first event in signal.
-	 */
-	Stream.prototype.until = Stream.prototype.takeUntil = function(signal) {
-		return timeslice.takeUntil(signal, this);
-	};
-
-	/**
-	 * stream:                    -a-b-c-d-e-f-g->
-	 * signal:                    -------x
-	 * takeUntil(signal, stream): -------d-e-f-g->
-	 * @param {Stream} signal retain only events in stream at or after the first
-	 * event in signal
-	 * @returns {Stream} new stream containing only events that occur after
-	 * the first event in signal.
-	 */
-	Stream.prototype.since = Stream.prototype.skipUntil = function(signal) {
-		return timeslice.skipUntil(signal, this);
-	};
-
-	/**
-	 * stream:                    -a-b-c-d-e-f-g->
-	 * timeWindow:                -----s
-	 * s:                               -----t
-	 * stream.during(timeWindow): -----c-d-e-|
-	 * @param {Stream<Stream>} timeWindow a stream whose first event (s) represents
-	 *  the window start time.  That event (s) is itself a stream whose first event (t)
-	 *  represents the window end time
-	 * @returns {Stream} new stream containing only events within the provided timespan
-	 */
-	Stream.prototype.during = function(timeWindow) {
-		return timeslice.during(timeWindow, this);
-	};
-
-	//-----------------------------------------------------------------------
-	// Delaying
-
-	var delay = __webpack_require__(59).delay;
-
-	exports.delay = delay;
-
-	/**
-	 * @param {Number} delayTime milliseconds to delay each item
-	 * @returns {Stream} new stream containing the same items, but delayed by ms
-	 */
-	Stream.prototype.delay = function(delayTime) {
-		return delay(delayTime, this);
-	};
-
-	//-----------------------------------------------------------------------
-	// Getting event timestamp
-
-	var timestamp = __webpack_require__(70).timestamp;
-
-	exports.timestamp = timestamp;
-
-	/**
-	 * Expose event timestamps into the stream. Turns a Stream<X> into
-	 * Stream<{time:t, value:X}>
-	 * @returns {Stream<{time:number, value:*}>}
-	 */
-	Stream.prototype.timestamp = function() {
-		return timestamp(this);
-	};
-
-	//-----------------------------------------------------------------------
-	// Rate limiting
-
-	var limit = __webpack_require__(62);
-
-	exports.throttle = limit.throttle;
-	exports.debounce = limit.debounce;
-
-	/**
-	 * Limit the rate of events
-	 * stream:              abcd----abcd----
-	 * throttle(2, stream): a-c-----a-c-----
-	 * @param {Number} period time to suppress events
-	 * @returns {Stream} new stream that skips events for throttle period
-	 */
-	Stream.prototype.throttle = function(period) {
-		return limit.throttle(period, this);
-	};
-
-	/**
-	 * Wait for a burst of events to subside and emit only the last event in the burst
-	 * stream:              abcd----abcd----
-	 * debounce(2, stream): -----d-------d--
-	 * @param {Number} period events occuring more frequently than this
-	 *  on the provided scheduler will be suppressed
-	 * @returns {Stream} new debounced stream
-	 */
-	Stream.prototype.debounce = function(period) {
-		return limit.debounce(period, this);
-	};
-
-	//-----------------------------------------------------------------------
-	// Awaiting Promises
-
-	var promises = __webpack_require__(66);
-
-	exports.fromPromise = promises.fromPromise;
-	exports.await       = promises.awaitPromises;
-
-	/**
-	 * Await promises, turning a Stream<Promise<X>> into Stream<X>.  Preserves
-	 * event order, but timeshifts events based on promise resolution time.
-	 * @returns {Stream<X>} stream containing non-promise values
-	 */
-	Stream.prototype.await = function() {
-		return promises.awaitPromises(this);
-	};
-
-	//-----------------------------------------------------------------------
-	// Error handling
-
-	var errors = __webpack_require__(60);
-
-	exports.recoverWith  = errors.flatMapError;
-	exports.flatMapError = errors.flatMapError;
-	exports.throwError   = errors.throwError;
-
-	/**
-	 * If this stream encounters an error, recover and continue with items from stream
-	 * returned by f.
-	 * stream:                  -a-b-c-X-
-	 * f(X):                           d-e-f-g-
-	 * flatMapError(f, stream): -a-b-c-d-e-f-g-
-	 * @param {function(error:*):Stream} f function which returns a new stream
-	 * @returns {Stream} new stream which will recover from an error by calling f
-	 */
-	Stream.prototype.recoverWith = Stream.prototype.flatMapError = function(f) {
-		return errors.flatMapError(f, this);
-	};
-
-	//-----------------------------------------------------------------------
-	// Multicasting
-
-	var multicast = __webpack_require__(4).default;
-
-	exports.multicast = multicast;
-
-	/**
-	 * Transform the stream into multicast stream.  That means that many subscribers
-	 * to the stream will not cause multiple invocations of the internal machinery.
-	 * @returns {Stream} new stream which will multicast events to all observers.
-	 */
-	Stream.prototype.multicast = function() {
-		return multicast(this);
-	};
-
-
-/***/ },
 /* 6 */
 /***/ function(module, exports, __webpack_require__) {
 
@@ -1343,7 +1459,7 @@
 	/** @author John Hann */
 
 	var Stream = __webpack_require__(0);
-	var ValueSource = __webpack_require__(34);
+	var ValueSource = __webpack_require__(35);
 	var dispose = __webpack_require__(2);
 	var PropagateTask = __webpack_require__(6);
 
@@ -1414,77 +1530,33 @@
 	/** @author John Hann */
 
 	var Stream = __webpack_require__(0);
-	var Map = __webpack_require__(76);
-
-	exports.map = map;
-	exports.constant = constant;
-	exports.tap = tap;
-
-	/**
-	 * Transform each value in the stream by applying f to each
-	 * @param {function(*):*} f mapping function
-	 * @param {Stream} stream stream to map
-	 * @returns {Stream} stream containing items transformed by f
-	 */
-	function map(f, stream) {
-		return new Stream(Map.create(f, stream.source));
-	}
-
-	/**
-	 * Replace each value in the stream with x
-	 * @param {*} x
-	 * @param {Stream} stream
-	 * @returns {Stream} stream containing items replaced with x
-	 */
-	function constant(x, stream) {
-		return map(function() {
-			return x;
-		}, stream);
-	}
-
-	/**
-	 * Perform a side effect for each item in the stream
-	 * @param {function(x:*):*} f side effect to execute for each item. The
-	 *  return value will be discarded.
-	 * @param {Stream} stream stream to tap
-	 * @returns {Stream} new stream containing the same items as this stream
-	 */
-	function tap(f, stream) {
-		return map(function(x) {
-			f(x);
-			return x;
-		}, stream);
-	}
-
-
-/***/ },
-/* 9 */
-/***/ function(module, exports, __webpack_require__) {
-
-	/** @license MIT License (c) copyright 2010-2016 original author or authors */
-	/** @author Brian Cavalier */
-	/** @author John Hann */
-
-	var Stream = __webpack_require__(0);
 	var dispose = __webpack_require__(2);
-	var LinkedList = __webpack_require__(54);
+	var LinkedList = __webpack_require__(53);
+	var identity = __webpack_require__(3).id;
 
 	exports.mergeConcurrently = mergeConcurrently;
+	exports.mergeMapConcurrently = mergeMapConcurrently;
 
 	function mergeConcurrently(concurrency, stream) {
-		return new Stream(new MergeConcurrently(concurrency, stream.source));
+		return mergeMapConcurrently(identity, concurrency, stream);
 	}
 
-	function MergeConcurrently(concurrency, source) {
+	function mergeMapConcurrently(f, concurrency, stream) {
+		return new Stream(new MergeConcurrently(f, concurrency, stream.source));
+	}
+
+	function MergeConcurrently(f, concurrency, source) {
+		this.f = f;
 		this.concurrency = concurrency;
 		this.source = source;
 	}
 
 	MergeConcurrently.prototype.run = function(sink, scheduler) {
-		return new Outer(this.concurrency, this.source, sink, scheduler);
+		return new Outer(this.f, this.concurrency, this.source, sink, scheduler);
 	};
 
-	function Outer(concurrency, source, sink, scheduler) {
+	function Outer(f, concurrency, source, sink, scheduler) {
+		this.f = f;
 		this.concurrency = concurrency;
 		this.sink = sink;
 		this.scheduler = scheduler;
@@ -1509,8 +1581,12 @@
 	Outer.prototype._startInner = function(t, stream) {
 		var innerSink = new Inner(t, this, this.sink);
 		this.current.add(innerSink);
-		innerSink.disposable = stream.source.run(innerSink, this.scheduler);
+		innerSink.disposable = mapAndRun(this.f, innerSink, this.scheduler, stream);
 	};
+
+	function mapAndRun(f, innerSink, scheduler, stream) {
+		return f(stream).source.run(innerSink, scheduler);
+	}
 
 	Outer.prototype.end = function(t, x) {
 		this.active = false;
@@ -1572,7 +1648,7 @@
 
 
 /***/ },
-/* 10 */
+/* 9 */
 /***/ function(module, exports) {
 
 	/** @license MIT License (c) copyright 2010-2016 original author or authors */
@@ -1600,7 +1676,7 @@
 
 
 /***/ },
-/* 11 */
+/* 10 */
 /***/ function(module, exports) {
 
 	module.exports = {
@@ -1610,7 +1686,74 @@
 
 
 /***/ },
+/* 11 */
+/***/ function(module, exports) {
+
+	/** @license MIT License (c) copyright 2010-2016 original author or authors */
+	/** @author Brian Cavalier */
+	/** @author John Hann */
+
+	exports.isPromise = isPromise;
+
+	function isPromise(p) {
+		return p !== null && typeof p === 'object' && typeof p.then === 'function';
+	}
+
+
+/***/ },
 /* 12 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/** @license MIT License (c) copyright 2010-2016 original author or authors */
+	/** @author Brian Cavalier */
+	/** @author John Hann */
+
+	var Stream = __webpack_require__(0);
+	var Map = __webpack_require__(31);
+
+	exports.map = map;
+	exports.constant = constant;
+	exports.tap = tap;
+
+	/**
+	 * Transform each value in the stream by applying f to each
+	 * @param {function(*):*} f mapping function
+	 * @param {Stream} stream stream to map
+	 * @returns {Stream} stream containing items transformed by f
+	 */
+	function map(f, stream) {
+		return new Stream(Map.create(f, stream.source));
+	}
+
+	/**
+	 * Replace each value in the stream with x
+	 * @param {*} x
+	 * @param {Stream} stream
+	 * @returns {Stream} stream containing items replaced with x
+	 */
+	function constant(x, stream) {
+		return map(function() {
+			return x;
+		}, stream);
+	}
+
+	/**
+	 * Perform a side effect for each item in the stream
+	 * @param {function(x:*):*} f side effect to execute for each item. The
+	 *  return value will be discarded.
+	 * @param {Stream} stream stream to tap
+	 * @returns {Stream} new stream containing the same items as this stream
+	 */
+	function tap(f, stream) {
+		return map(function(x) {
+			f(x);
+			return x;
+		}, stream);
+	}
+
+
+/***/ },
+/* 13 */
 /***/ function(module, exports) {
 
 	/** @license MIT License (c) copyright 2010-2016 original author or authors */
@@ -1635,7 +1778,7 @@
 
 
 /***/ },
-/* 13 */
+/* 14 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/** @license MIT License (c) copyright 2010-2016 original author or authors */
@@ -1681,7 +1824,7 @@
 
 
 /***/ },
-/* 14 */
+/* 15 */
 /***/ function(module, exports) {
 
 	module.exports = function(sel, data, children, text, elm) {
@@ -1692,10 +1835,9 @@
 
 
 /***/ },
-/* 15 */
+/* 16 */
 /***/ function(module, exports, __webpack_require__) {
 
-	"use strict";
 	'use strict';
 
 	Object.defineProperty(exports, "__esModule", {
@@ -1721,7 +1863,7 @@
 	  }
 	});
 
-	var _modules = __webpack_require__(20);
+	var _modules = __webpack_require__(21);
 
 	var modules = _interopRequireWildcard(_modules);
 
@@ -1947,7 +2089,7 @@
 	exports.video = video;
 
 /***/ },
-/* 16 */
+/* 17 */
 /***/ function(module, exports) {
 
 	// shim for using process in browser
@@ -2047,10 +2189,9 @@
 
 
 /***/ },
-/* 17 */
+/* 18 */
 /***/ function(module, exports, __webpack_require__) {
 
-	"use strict";
 	'use strict';
 
 	Object.defineProperty(exports, "__esModule", {
@@ -2058,9 +2199,9 @@
 	});
 	exports.makeEventsSelector = undefined;
 
-	var _domEvent = __webpack_require__(40);
+	var _domEvent = __webpack_require__(41);
 
-	var _makeIsStrictlyInRootScope = __webpack_require__(19);
+	var _makeIsStrictlyInRootScope = __webpack_require__(20);
 
 	var matchesSelector = void 0;
 	try {
@@ -2158,10 +2299,9 @@
 	exports.makeEventsSelector = makeEventsSelector;
 
 /***/ },
-/* 18 */
+/* 19 */
 /***/ function(module, exports, __webpack_require__) {
 
-	"use strict";
 	'use strict';
 
 	Object.defineProperty(exports, "__esModule", {
@@ -2169,7 +2309,7 @@
 	});
 	exports.isolateSource = exports.isolateSink = undefined;
 
-	var _utils = __webpack_require__(21);
+	var _utils = __webpack_require__(22);
 
 	var isolateSource = function isolateSource(source_, scope) {
 	  return source_.select('.' + _utils.SCOPE_PREFIX + scope);
@@ -2196,10 +2336,9 @@
 	exports.isolateSource = isolateSource;
 
 /***/ },
-/* 19 */
+/* 20 */
 /***/ function(module, exports) {
 
-	"use strict";
 	"use strict";
 
 	Object.defineProperty(exports, "__esModule", {
@@ -2233,10 +2372,9 @@
 	exports.makeIsStrictlyInRootScope = makeIsStrictlyInRootScope;
 
 /***/ },
-/* 20 */
+/* 21 */
 /***/ function(module, exports, __webpack_require__) {
 
-	"use strict";
 	'use strict';
 
 	Object.defineProperty(exports, "__esModule", {
@@ -2279,10 +2417,9 @@
 	exports.EventsModule = _eventlisteners2.default;
 
 /***/ },
-/* 21 */
+/* 22 */
 /***/ function(module, exports) {
 
-	"use strict";
 	"use strict";
 
 	Object.defineProperty(exports, "__esModule", {
@@ -2309,22 +2446,56 @@
 	exports.SCOPE_PREFIX = SCOPE_PREFIX;
 
 /***/ },
-/* 22 */
-/***/ function(module, exports) {
+/* 23 */
+/***/ function(module, exports, __webpack_require__) {
 
-	/** @license MIT License (c) copyright 2010-2016 original author or authors */
-	/** @author Brian Cavalier */
-	/** @author John Hann */
+	'use strict';
 
-	exports.isPromise = isPromise;
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	exports.holdSubject = exports.subject = undefined;
 
-	function isPromise(p) {
-		return p !== null && typeof p === 'object' && typeof p.then === 'function';
+	var _most = __webpack_require__(4);
+
+	var _multicast = __webpack_require__(5);
+
+	var _Observer = __webpack_require__(51);
+
+	var _Replay = __webpack_require__(52);
+
+	function create(hold, bufferSize, initialValue) {
+	  var observer = new _Observer.Observer();
+	  var stream = hold ? (0, _Replay.replay)(bufferSize, new _most.Stream(observer)) : new _most.Stream(new _multicast.MulticastSource(observer));
+
+	  stream.drain();
+
+	  if (typeof initialValue !== 'undefined') {
+	    observer.next(initialValue);
+	  }
+
+	  return { stream: stream, observer: observer };
 	}
 
+	function subject() {
+	  return create(false, 0);
+	}
+
+	function holdSubject() {
+	  var bufferSize = arguments.length <= 0 || arguments[0] === undefined ? 1 : arguments[0];
+	  var initialValue = arguments[1];
+
+	  if (bufferSize < 1) {
+	    throw new Error('First argument to holdSubject is expected to be an ' + 'integer greater than or equal to 1');
+	  }
+	  return create(true, bufferSize, initialValue);
+	}
+
+	exports.subject = subject;
+	exports.holdSubject = holdSubject;
 
 /***/ },
-/* 23 */
+/* 24 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/** @license MIT License (c) copyright 2010-2016 original author or authors */
@@ -2332,7 +2503,7 @@
 	/** @author John Hann */
 
 	var streamOf = __webpack_require__(7).of;
-	var continueWith = __webpack_require__(25).continueWith;
+	var continueWith = __webpack_require__(26).continueWith;
 
 	exports.concat = concat;
 	exports.cycle = cycle;
@@ -2373,7 +2544,7 @@
 
 
 /***/ },
-/* 24 */
+/* 25 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/** @license MIT License (c) copyright 2010-2016 original author or authors */
@@ -2381,13 +2552,13 @@
 	/** @author John Hann */
 
 	var Stream = __webpack_require__(0);
-	var transform = __webpack_require__(8);
+	var transform = __webpack_require__(12);
 	var core = __webpack_require__(7);
 	var Pipe = __webpack_require__(1);
-	var IndexSink = __webpack_require__(13);
+	var IndexSink = __webpack_require__(14);
 	var dispose = __webpack_require__(2);
 	var base = __webpack_require__(3);
-	var invoke = __webpack_require__(12);
+	var invoke = __webpack_require__(13);
 
 	var hasValue = IndexSink.hasValue;
 
@@ -2481,7 +2652,7 @@
 
 
 /***/ },
-/* 25 */
+/* 26 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/** @license MIT License (c) copyright 2010-2016 original author or authors */
@@ -2491,7 +2662,7 @@
 	var Stream = __webpack_require__(0);
 	var Sink = __webpack_require__(1);
 	var dispose = __webpack_require__(2);
-	var isPromise = __webpack_require__(22).isPromise;
+	var isPromise = __webpack_require__(11).isPromise;
 
 	exports.continueWith = continueWith;
 
@@ -2554,15 +2725,15 @@
 
 
 /***/ },
-/* 26 */
+/* 27 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/** @license MIT License (c) copyright 2010-2016 original author or authors */
 	/** @author Brian Cavalier */
 	/** @author John Hann */
 
-	var mergeConcurrently = __webpack_require__(9).mergeConcurrently;
-	var map = __webpack_require__(8).map;
+	var mergeConcurrently = __webpack_require__(8).mergeConcurrently;
+	var mergeMapConcurrently = __webpack_require__(8).mergeMapConcurrently;
 
 	exports.flatMap = flatMap;
 	exports.join = join;
@@ -2575,7 +2746,7 @@
 	 * @returns {Stream} new stream containing all events from each stream returned by f
 	 */
 	function flatMap(f, stream) {
-		return join(map(f, stream));
+		return mergeMapConcurrently(f, Infinity, stream);
 	}
 
 	/**
@@ -2587,127 +2758,6 @@
 	function join(stream) {
 		return mergeConcurrently(Infinity, stream);
 	}
-
-
-/***/ },
-/* 27 */
-/***/ function(module, exports, __webpack_require__) {
-
-	/** @license MIT License (c) copyright 2010-2016 original author or authors */
-	/** @author Brian Cavalier */
-	/** @author John Hann */
-
-	var Stream = __webpack_require__(0);
-	var Pipe = __webpack_require__(1);
-	var dispose = __webpack_require__(2);
-	var join = __webpack_require__(26).join;
-	var noop = __webpack_require__(3).noop;
-
-	exports.during    = during;
-	exports.takeUntil = takeUntil;
-	exports.skipUntil = skipUntil;
-
-	function takeUntil(signal, stream) {
-		return new Stream(new Until(signal.source, stream.source));
-	}
-
-	function skipUntil(signal, stream) {
-		return new Stream(new Since(signal.source, stream.source));
-	}
-
-	function during(timeWindow, stream) {
-		return takeUntil(join(timeWindow), skipUntil(timeWindow, stream));
-	}
-
-	function Until(maxSignal, source) {
-		this.maxSignal = maxSignal;
-		this.source = source;
-	}
-
-	Until.prototype.run = function(sink, scheduler) {
-		var min = new Bound(-Infinity, sink);
-		var max = new UpperBound(this.maxSignal, sink, scheduler);
-		var disposable = this.source.run(new TimeWindowSink(min, max, sink), scheduler);
-
-		return dispose.all([min, max, disposable]);
-	};
-
-	function Since(minSignal, source) {
-		this.minSignal = minSignal;
-		this.source = source;
-	}
-
-	Since.prototype.run = function(sink, scheduler) {
-		var min = new LowerBound(this.minSignal, sink, scheduler);
-		var max = new Bound(Infinity, sink);
-		var disposable = this.source.run(new TimeWindowSink(min, max, sink), scheduler);
-
-		return dispose.all([min, max, disposable]);
-	};
-
-	function Bound(value, sink) {
-		this.value = value;
-		this.sink = sink;
-	}
-
-	Bound.prototype.error = Pipe.prototype.error;
-	Bound.prototype.event = noop;
-	Bound.prototype.end = noop;
-	Bound.prototype.dispose = noop;
-
-	function TimeWindowSink(min, max, sink) {
-		this.min = min;
-		this.max = max;
-		this.sink = sink;
-	}
-
-	TimeWindowSink.prototype.event = function(t, x) {
-		if(t >= this.min.value && t < this.max.value) {
-			this.sink.event(t, x);
-		}
-	};
-
-	TimeWindowSink.prototype.error = Pipe.prototype.error;
-	TimeWindowSink.prototype.end = Pipe.prototype.end;
-
-	function LowerBound(signal, sink, scheduler) {
-		this.value = Infinity;
-		this.sink = sink;
-		this.disposable = signal.run(this, scheduler);
-	}
-
-	LowerBound.prototype.event = function(t /*, x */) {
-		if(t < this.value) {
-			this.value = t;
-		}
-	};
-
-	LowerBound.prototype.end = noop;
-	LowerBound.prototype.error = Pipe.prototype.error;
-
-	LowerBound.prototype.dispose = function() {
-		return this.disposable.dispose();
-	};
-
-	function UpperBound(signal, sink, scheduler) {
-		this.value = Infinity;
-		this.sink = sink;
-		this.disposable = signal.run(this, scheduler);
-	}
-
-	UpperBound.prototype.event = function(t, x) {
-		if(t < this.value) {
-			this.value = t;
-			this.sink.end(t, x);
-		}
-	};
-
-	UpperBound.prototype.end = noop;
-	UpperBound.prototype.error = Pipe.prototype.error;
-
-	UpperBound.prototype.dispose = function() {
-		return this.disposable.dispose();
-	};
 
 
 /***/ },
@@ -2807,6 +2857,67 @@
 
 /***/ },
 /* 31 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/** @license MIT License (c) copyright 2010-2016 original author or authors */
+	/** @author Brian Cavalier */
+	/** @author John Hann */
+
+	var Pipe = __webpack_require__(1);
+	var Filter = __webpack_require__(30);
+	var FilterMap = __webpack_require__(75);
+	var base = __webpack_require__(3);
+
+	module.exports = Map;
+
+	function Map(f, source) {
+		this.f = f;
+		this.source = source;
+	}
+
+	/**
+	 * Create a mapped source, fusing adjacent map.map, filter.map,
+	 * and filter.map.map if possible
+	 * @param {function(*):*} f mapping function
+	 * @param {{run:function}} source source to map
+	 * @returns {Map|FilterMap} mapped source, possibly fused
+	 */
+	Map.create = function createMap(f, source) {
+		if(source instanceof Map) {
+			return new Map(base.compose(f, source.f), source.source);
+		}
+
+		if(source instanceof Filter) {
+			return new FilterMap(source.p, f, source.source);
+		}
+
+		if(source instanceof FilterMap) {
+			return new FilterMap(source.p, base.compose(f, source.f), source.source);
+		}
+
+		return new Map(f, source);
+	};
+
+	Map.prototype.run = function(sink, scheduler) {
+		return this.source.run(new MapSink(this.f, sink), scheduler);
+	};
+
+	function MapSink(f, sink) {
+		this.f = f;
+		this.sink = sink;
+	}
+
+	MapSink.prototype.end   = Pipe.prototype.end;
+	MapSink.prototype.error = Pipe.prototype.error;
+
+	MapSink.prototype.event = function(t, x) {
+		var f = this.f;
+		this.sink.event(t, f(x));
+	};
+
+
+/***/ },
+/* 32 */
 /***/ function(module, exports) {
 
 	/** @license MIT License (c) copyright 2010-2016 original author or authors */
@@ -2843,16 +2954,16 @@
 
 
 /***/ },
-/* 32 */
+/* 33 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/** @license MIT License (c) copyright 2010-2016 original author or authors */
 	/** @author Brian Cavalier */
 	/** @author John Hann */
 
-	var Observer = __webpack_require__(81);
+	var Observer = __webpack_require__(80);
 	var dispose = __webpack_require__(2);
-	var defaultScheduler = __webpack_require__(78);
+	var defaultScheduler = __webpack_require__(77);
 
 	exports.withDefaultScheduler = withDefaultScheduler;
 	exports.withScheduler = withScheduler;
@@ -2876,7 +2987,7 @@
 
 
 /***/ },
-/* 33 */
+/* 34 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/** @license MIT License (c) copyright 2010-2016 original author or authors */
@@ -2969,7 +3080,7 @@
 
 
 /***/ },
-/* 34 */
+/* 35 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/** @license MIT License (c) copyright 2010-2016 original author or authors */
@@ -2999,10 +3110,9 @@
 
 
 /***/ },
-/* 35 */
+/* 36 */
 /***/ function(module, exports, __webpack_require__) {
 
-	"use strict";
 	'use strict';
 
 	Object.defineProperty(exports, "__esModule", {
@@ -3062,11 +3172,11 @@
 	}
 
 /***/ },
-/* 36 */
+/* 37 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var VNode = __webpack_require__(14);
-	var is = __webpack_require__(11);
+	var VNode = __webpack_require__(15);
+	var is = __webpack_require__(10);
 
 	function addNS(data, children) {
 	  data.ns = 'http://www.w3.org/2000/svg';
@@ -3101,10 +3211,9 @@
 
 
 /***/ },
-/* 37 */
+/* 38 */
 /***/ function(module, exports, __webpack_require__) {
 
-	"use strict";
 	'use strict';
 
 	Object.defineProperty(exports, "__esModule", {
@@ -3112,7 +3221,7 @@
 	});
 	exports.run = undefined;
 
-	var _mostSubject = __webpack_require__(53);
+	var _mostSubject = __webpack_require__(23);
 
 	function makeSinkProxies(drivers) {
 	  var sinkProxies = {};
@@ -3225,6157 +3334,308 @@
 	exports.run = run;
 
 /***/ },
-/* 38 */
-/***/ function(module, exports) {
-
-	/******/ (function(modules) { // webpackBootstrap
-	/******/ 	// The module cache
-	/******/ 	var installedModules = {};
-
-	/******/ 	// The require function
-	/******/ 	function __webpack_require__(moduleId) {
-
-	/******/ 		// Check if module is in cache
-	/******/ 		if(installedModules[moduleId])
-	/******/ 			return installedModules[moduleId].exports;
-
-	/******/ 		// Create a new module (and put it into the cache)
-	/******/ 		var module = installedModules[moduleId] = {
-	/******/ 			exports: {},
-	/******/ 			id: moduleId,
-	/******/ 			loaded: false
-	/******/ 		};
-
-	/******/ 		// Execute the module function
-	/******/ 		modules[moduleId].call(module.exports, module, module.exports, __webpack_require__);
-
-	/******/ 		// Flag the module as loaded
-	/******/ 		module.loaded = true;
-
-	/******/ 		// Return the exports of the module
-	/******/ 		return module.exports;
-	/******/ 	}
-
-
-	/******/ 	// expose the modules object (__webpack_modules__)
-	/******/ 	__webpack_require__.m = modules;
-
-	/******/ 	// expose the module cache
-	/******/ 	__webpack_require__.c = installedModules;
-
-	/******/ 	// __webpack_public_path__
-	/******/ 	__webpack_require__.p = "";
-
-	/******/ 	// Load entry module and return exports
-	/******/ 	return __webpack_require__(0);
-	/******/ })
-	/************************************************************************/
-	/******/ ([
-	/* 0 */
-	/***/ function(module, exports, __webpack_require__) {
-
-		'use strict';
-
-		var _monad = __webpack_require__(1);
-
-		var _monad2 = _interopRequireDefault(_monad);
-
-		function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-		var m = new _monad2.default.Monad(12, 'm'); // import {ret, Monad, MonadIter, MonadStream, add, cube, push, equals, shift, splice, map, filter, reduce, unshift, calc} from './monad.js'
-
-		console.log(m);
-
-	/***/ },
-	/* 1 */
-	/***/ function(module, exports, __webpack_require__) {
-
-		
-		'use strict';
-
-		Object.defineProperty(exports, "__esModule", {
-		  value: true
-		});
-
-		var _mostSubject = __webpack_require__(2);
-
-		var O = {};
-
-		var tempStyle = { display: 'inline' };
-		var tempStyle2 = { display: 'none' };
-
-		function _classCallCheck(instance, Constructor) {
-		  if (!(instance instanceof Constructor)) {
-		    throw new TypeError("Cannot call a class as a function");
-		  }
-		}
-
-		// var subject = require('most-subject');
-
-		var MonadStream = function MonadStream(g) {
-		  var _this = this;
-		  this.subject = (0, _mostSubject.subject)();
-		  this.observer = this.subject.observer;
-		  this.stream = this.subject.stream;
-		  this.id = g;
-		  this.ret = function (a) {
-		    _this.observer.next(a);
-		    console.log('Streaming from ', _this.id);
-		    return _this;
-		  };
-		};
-
-		var mM$1 = new MonadStream('mM$1');
-
-		var Monad = function Monad(z, g) {
-		  var _this = this;
-
-		  this.x = z;
-		  if (arguments.length === 1) {
-		    this.id = 'anonymous';
-		  } else {
-		    this.id = g;
-		  }
-
-		  this.bnd = function (func) {
-		    for (var _len = arguments.length, args = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
-		      args[_key - 1] = arguments[_key];
-		    }
-
-		    return func.apply(undefined, [_this.x].concat(args));
-		  };
-
-		  this.ret = function (a) {
-		    O[_this.id] = new Monad(a, _this.id);
-		    return O[_this.id];
-		  };
-		};
-
-		var MonadIter = function MonadIter() {
-		  var _this = this;
-		  this.p = function () {};
-
-		  this.release = function () {
-		    return this.p.apply(this, arguments);
-		  };
-
-		  this.bnd = function (func) {
-		    _this.p = func;
-		  };
-		};
-
-		var ret = function ret(v, id) {
-		  if (arguments.length === 1) {
-		    return new Monad(v, 'anonymous');
-		  }
-		  window[id] = new Monad(v, id);
-		  return window[id];
-		};
-
-		var cube = function cube(v, mon) {
-		  if (arguments.length === 2) {
-		    return mon.ret(v * v * v);
-		  }
-		  return ret(v * v * v);
-		};
-
-		var add = function add(x, b, mon) {
-		  if (arguments.length === 3) {
-		    return mon.ret(x + b);
-		  }
-		  return ret(x + b);
-		};
-
-		var calc = function calc(a, op, b) {
-		  var result;
-		  switch (op) {
-		    case "add":
-		      result = parseFloat(a) + parseFloat(b);
-		      break;
-		    case "subtract":
-		      result = a - b;
-		      break;
-		    case "mult":
-		      result = a * b;
-		      break;
-		    case "div":
-		      result = a / b;
-		      break;
-		    case "concat":
-		      result = (a + "" + b) * 1.0;
-		      break;
-		    default:
-		      'Major Malfunction in calc.';
-		  }
-		  return result;
-		};
-
-		var equals = function equals(x, mon1, mon2, mon3) {
-		  if (mon1.id === mon2.id && mon1.x === mon2.x) {
-		    mon3.ret('true');
-		  } else mon3.ret('false');
-		  return ret(x);
-		};
-		var wait = function wait(x, y, mon) {
-		  if (x === y) {
-		    mon2.release();
-		  }
-		  return mon;
-		};
-
-		var unshift = function unshift(y, v, mon) {
-		  if (Array.isArray(y)) {
-		    var ar = [];
-		    var keys = Object.keys(y);
-		    for (var k in keys) {
-		      ar[k] = y[k];
-		    };
-		    ar.unshift(v);
-		    return mon.ret(ar);
-		  }
-		  console.log('The value provided to unshift is not an array');
-		  return ret(y);
-		};
-
-		var unshift2 = function unshift(y, v, mon) {
-		  return mon.ret(ret(y).x.unshift(v));
-		};
-
-		var toFloat = function toFloat(x) {
-		  return ret(parseFloat(x));
-		};
-
-		var push = function push(y, v, mon) {
-		  console.log('In push. y, v, mon are: ', y, v, mon);
-		  var ar = [];
-		  if (y.length == 0) {
-		    ar = [v];
-		  } else {
-		    var keys = Object.keys(y);
-		    for (var k in keys) {
-		      ar[k] = y[k];
-		    };
-		    ar.push(v);
-		  }
-		  return mon.ret(ar);
-		};
-
-		var spliceRemove = function spliceRemove(x, index, location, mon) {
-		  if (Array.isArray(x)) {
-		    var ar = [];
-		    var keys = Object.keys(x[index]);
-		    for (var k in keys) {
-		      ar[k] = x[index][k];
-		    }
-		    ar.splice(location, 1);
-		    return mon.ret(ar);
-		  }
-		  console.log('Major malfunction in spliceRemove. x, index, location, mon: ', x, index, location, mon);
-		};
-
-		var spliceAdd = function spliceAdd(x, index, value, mon) {
-		  if (Array.isArray(x)) {
-		    var ar = [];
-		    var keys = Object.keys(x);
-		    for (var k in keys) {
-		      ar[k] = x[k];
-		    };
-		    ar.splice(index, 0, value);
-		    return mon.ret(ar);
-		  }
-		  console.log('The value provided to spliceAdd is not an array');
-		  return ret(x);
-		};
-
-		var splice = function splice(x, start, n, mon) {
-		  if (Array.isArray(x)) {
-		    var ar = [];
-		    var keys = Object.keys(x);
-		    for (var k in keys) {
-		      ar[k] = x[k];
-		    };
-		    ar.splice(start, n);
-		    return mon.ret(ar);
-		  }
-		  console.log('The value provided to splice is not an array');
-		  return ret(x);
-		};
-
-		var concat = function concat(x, str, mon) {
-		  mon.ret(x + str);
-		};
-
-		var sliceFront = function sliceFront(x, n, mon) {
-		  if (Array.isArray(x)) {
-		    var ar = x.slice(n);
-		    return mon.ret(ar);
-		  }
-		  console.log('The value provided to sliceFront is not an array');
-		  return ret(x);
-		};
-
-		var filter = function filter(x, condition) {
-		  if (Array.isArray(x)) {
-		    var ar = ret(x);
-		    return ret(ar.x.filter(function (v) {
-		      return condition;
-		    }));
-		  }
-		  return ret(x);
-		};
-
-		var map = function map(x, f, mon) {
-		  if (Array.isArray(x)) {
-		    var ar = [];
-		    var keys = Object.keys(x);
-		    for (var k in keys) {
-		      ar[k] = f(x[k]);
-		      return mon.ret(ar);
-		    }
-		  }
-		  console.log('The value provided to map is not an array');
-		  return ret(x);
-		};
-
-		var reduce = function reduce(x, f, mon) {
-		  console.log('In reduce.  Array.isArray(x), x.length: ', Array.isArray(x), x.length);
-		  if (Array.isArray(x) && x.length > 0) {
-		    var ar = [];
-		    var keys = Object.keys(x);
-		    for (var k in keys) {
-		      ar[k] = x[k];
-		    };
-		    console.log('ar in reduce is ', ar);
-		    return mon.ret(ar.reduce(f));
-		  }
-		  console.log('The value provided to reduce is not an array or is empty . Value: ', x);
-		  return ret(x);
-		};
-
-		var next = function next(x, y, mon2, a1, a2) {
-		  if (x === y) {
-		    mon2.release(a1, a2);
-		  }
-		  return ret(x);
-		};
-
-		var next2 = function next(x, condition, mon2) {
-		  if (condition) {
-		    mon2.release();
-		  }
-		  return ret(x);
-		};
-
-		var next3 = function next(x, y, z, mon2) {
-		  if (x === y) {
-		    mon2.ret(z);
-		    mon2.release();
-		  }
-		  return ret(x);
-		};
-
-		var log = function log(x, message) {
-		  console.log('In log.  message is: ', message);
-		  return ret(x);
-		};
-
-		var getIndex = function getIndex(event_object) {
-		  var task = event_object.currentTarget.parentNode.innerText;
-		  var possibilities = event_object.currentTarget.parentNode.parentNode.childNodes;
-		  var keys = Object.keys(possibilities);
-		  for (var k in keys) {
-		    if (task == possibilities[k].innerText) {
-		      return k;
-		    }
-		  }
-		  console.log('In getIndex. No match');
-		};
-
-		var getIndex2 = function getIndex2(e) {
-		  var elem = e.currentTarget.parentNode.children[0].innerHTML;
-		  var elem2 = e.currentTarget.parentNode.parentNode.childNodes;
-		  var keys = Object.keys(elem2);
-		  for (var k in keys) {
-		    if (elem == elem2[k].childNodes[0].innerHTML) {
-		      return k;
-		    }
-		    console.log('In getIndex2. No match');
-		  }
-		};
-
-		exports.default = { ret: ret, Monad: Monad, MonadIter: MonadIter, MonadStream: MonadStream, add: add, cube: cube, push: push, equals: equals, splice: splice, map: map, filter: filter, reduce: reduce, unshift: unshift, calc: calc };
-
-	/***/ },
-	/* 2 */
-	/***/ function(module, exports, __webpack_require__) {
-
-		'use strict';
-
-		Object.defineProperty(exports, "__esModule", {
-		  value: true
-		});
-		exports.holdSubject = exports.subject = undefined;
-
-		var _most = __webpack_require__(3);
-
-		var _multicast = __webpack_require__(19);
-
-		var _Observer = __webpack_require__(71);
-
-		var _Replay = __webpack_require__(72);
-
-		function create(hold, bufferSize, initialValue) {
-		  var observer = new _Observer.Observer();
-		  var stream = hold ? (0, _Replay.replay)(bufferSize, new _most.Stream(observer)) : new _most.Stream(new _multicast.MulticastSource(observer));
-
-		  stream.drain();
-
-		  if (typeof initialValue !== 'undefined') {
-		    observer.next(initialValue);
-		  }
-
-		  return { stream: stream, observer: observer };
-		}
-
-		function subject() {
-		  return create(false, 0);
-		}
-
-		function holdSubject() {
-		  var bufferSize = arguments.length <= 0 || arguments[0] === undefined ? 1 : arguments[0];
-		  var initialValue = arguments[1];
-
-		  if (bufferSize < 1) {
-		    throw new Error('First argument to holdSubject is expected to be an ' + 'integer greater than or equal to 1');
-		  }
-		  return create(true, bufferSize, initialValue);
-		}
-
-		exports.subject = subject;
-		exports.holdSubject = holdSubject;
-
-	/***/ },
-	/* 3 */
-	/***/ function(module, exports, __webpack_require__) {
-
-		'use strict';
-
-		/** @license MIT License (c) copyright 2010-2016 original author or authors */
-		/** @author Brian Cavalier */
-		/** @author John Hann */
-
-		var Stream = __webpack_require__(4);
-		var base = __webpack_require__(5);
-		var core = __webpack_require__(6);
-		var from = __webpack_require__(14).from;
-		var periodic = __webpack_require__(18).periodic;
-
-		/**
-		 * Core stream type
-		 * @type {Stream}
-		 */
-		exports.Stream = Stream;
-
-		// Add of and empty to constructor for fantasy-land compat
-		exports.of = Stream.of = core.of;
-		exports.just = core.of; // easier ES6 import alias
-		exports.empty = Stream.empty = core.empty;
-		exports.never = core.never;
-		exports.from = from;
-		exports.periodic = periodic;
-
-		//-----------------------------------------------------------------------
-		// Fluent adapter
-
-		var thru = __webpack_require__(20).thru;
-
-		/**
-		 * Adapt a functional stream transform to fluent style.
-		 * It applies f to the this stream object
-		 * @param  {function(s: Stream): Stream} f function that
-		 * receives the stream itself and must return a new stream
-		 * @return {Stream}
-		 */
-		Stream.prototype.thru = function (f) {
-		  return thru(f, this);
-		};
-
-		//-----------------------------------------------------------------------
-		// Creating
-
-		var create = __webpack_require__(21);
-
-		/**
-		 * Create a stream by imperatively pushing events.
-		 * @param {function(add:function(x), end:function(e)):function} run function
-		 *  that will receive 2 functions as arguments, the first to add new values to the
-		 *  stream and the second to end the stream. It may *return* a function that
-		 *  will be called once all consumers have stopped observing the stream.
-		 * @returns {Stream} stream containing all events added by run before end
-		 */
-		exports.create = create.create;
-
-		//-----------------------------------------------------------------------
-		// Adapting other sources
-
-		var events = __webpack_require__(25);
-
-		/**
-		 * Create a stream of events from the supplied EventTarget or EventEmitter
-		 * @param {String} event event name
-		 * @param {EventTarget|EventEmitter} source EventTarget or EventEmitter. The source
-		 *  must support either addEventListener/removeEventListener (w3c EventTarget:
-		 *  http://www.w3.org/TR/DOM-Level-2-Events/events.html#Events-EventTarget),
-		 *  or addListener/removeListener (node EventEmitter: http://nodejs.org/api/events.html)
-		 * @returns {Stream} stream of events of the specified type from the source
-		 */
-		exports.fromEvent = events.fromEvent;
-
-		//-----------------------------------------------------------------------
-		// Observing
-
-		var observe = __webpack_require__(28);
-
-		exports.observe = observe.observe;
-		exports.forEach = observe.observe;
-		exports.drain = observe.drain;
-
-		/**
-		 * Process all the events in the stream
-		 * @returns {Promise} promise that fulfills when the stream ends, or rejects
-		 *  if the stream fails with an unhandled error.
-		 */
-		Stream.prototype.observe = Stream.prototype.forEach = function (f) {
-		  return observe.observe(f, this);
-		};
-
-		/**
-		 * Consume all events in the stream, without providing a function to process each.
-		 * This causes a stream to become active and begin emitting events, and is useful
-		 * in cases where all processing has been setup upstream via other combinators, and
-		 * there is no need to process the terminal events.
-		 * @returns {Promise} promise that fulfills when the stream ends, or rejects
-		 *  if the stream fails with an unhandled error.
-		 */
-		Stream.prototype.drain = function () {
-		  return observe.drain(this);
-		};
-
-		//-------------------------------------------------------
-
-		var loop = __webpack_require__(36).loop;
-
-		exports.loop = loop;
-
-		/**
-		 * Generalized feedback loop. Call a stepper function for each event. The stepper
-		 * will be called with 2 params: the current seed and the an event value.  It must
-		 * return a new { seed, value } pair. The `seed` will be fed back into the next
-		 * invocation of stepper, and the `value` will be propagated as the event value.
-		 * @param {function(seed:*, value:*):{seed:*, value:*}} stepper loop step function
-		 * @param {*} seed initial seed value passed to first stepper call
-		 * @returns {Stream} new stream whose values are the `value` field of the objects
-		 * returned by the stepper
-		 */
-		Stream.prototype.loop = function (stepper, seed) {
-		  return loop(stepper, seed, this);
-		};
-
-		//-------------------------------------------------------
-
-		var accumulate = __webpack_require__(38);
-
-		exports.scan = accumulate.scan;
-		exports.reduce = accumulate.reduce;
-
-		/**
-		 * Create a stream containing successive reduce results of applying f to
-		 * the previous reduce result and the current stream item.
-		 * @param {function(result:*, x:*):*} f reducer function
-		 * @param {*} initial initial value
-		 * @returns {Stream} new stream containing successive reduce results
-		 */
-		Stream.prototype.scan = function (f, initial) {
-		  return accumulate.scan(f, initial, this);
-		};
-
-		/**
-		 * Reduce the stream to produce a single result.  Note that reducing an infinite
-		 * stream will return a Promise that never fulfills, but that may reject if an error
-		 * occurs.
-		 * @param {function(result:*, x:*):*} f reducer function
-		 * @param {*} initial optional initial value
-		 * @returns {Promise} promise for the file result of the reduce
-		 */
-		Stream.prototype.reduce = function (f, initial) {
-		  return accumulate.reduce(f, initial, this);
-		};
-
-		//-----------------------------------------------------------------------
-		// Building and extending
-
-		var unfold = __webpack_require__(39);
-		var iterate = __webpack_require__(40);
-		var generate = __webpack_require__(41);
-		var build = __webpack_require__(42);
-
-		exports.unfold = unfold.unfold;
-		exports.iterate = iterate.iterate;
-		exports.generate = generate.generate;
-		exports.cycle = build.cycle;
-		exports.concat = build.concat;
-		exports.startWith = build.cons;
-
-		/**
-		 * @deprecated
-		 * Tie this stream into a circle, thus creating an infinite stream
-		 * @returns {Stream} new infinite stream
-		 */
-		Stream.prototype.cycle = function () {
-		  return build.cycle(this);
-		};
-
-		/**
-		 * @param {Stream} tail
-		 * @returns {Stream} new stream containing all items in this followed by
-		 *  all items in tail
-		 */
-		Stream.prototype.concat = function (tail) {
-		  return build.concat(this, tail);
-		};
-
-		/**
-		 * @param {*} x value to prepend
-		 * @returns {Stream} a new stream with x prepended
-		 */
-		Stream.prototype.startWith = function (x) {
-		  return build.cons(x, this);
-		};
-
-		//-----------------------------------------------------------------------
-		// Transforming
-
-		var transform = __webpack_require__(44);
-		var applicative = __webpack_require__(48);
-
-		exports.map = transform.map;
-		exports.constant = transform.constant;
-		exports.tap = transform.tap;
-		exports.ap = applicative.ap;
-
-		/**
-		 * Transform each value in the stream by applying f to each
-		 * @param {function(*):*} f mapping function
-		 * @returns {Stream} stream containing items transformed by f
-		 */
-		Stream.prototype.map = function (f) {
-		  return transform.map(f, this);
-		};
-
-		/**
-		 * Assume this stream contains functions, and apply each function to each item
-		 * in the provided stream.  This generates, in effect, a cross product.
-		 * @param {Stream} xs stream of items to which
-		 * @returns {Stream} stream containing the cross product of items
-		 */
-		Stream.prototype.ap = function (xs) {
-		  return applicative.ap(this, xs);
-		};
-
-		/**
-		 * Replace each value in the stream with x
-		 * @param {*} x
-		 * @returns {Stream} stream containing items replaced with x
-		 */
-		Stream.prototype.constant = function (x) {
-		  return transform.constant(x, this);
-		};
-
-		/**
-		 * Perform a side effect for each item in the stream
-		 * @param {function(x:*):*} f side effect to execute for each item. The
-		 *  return value will be discarded.
-		 * @returns {Stream} new stream containing the same items as this stream
-		 */
-		Stream.prototype.tap = function (f) {
-		  return transform.tap(f, this);
-		};
-
-		//-----------------------------------------------------------------------
-		// Transducer support
-
-		var transduce = __webpack_require__(52);
-
-		exports.transduce = transduce.transduce;
-
-		/**
-		 * Transform this stream by passing its events through a transducer.
-		 * @param  {function} transducer transducer function
-		 * @return {Stream} stream of events transformed by the transducer
-		 */
-		Stream.prototype.transduce = function (transducer) {
-		  return transduce.transduce(transducer, this);
-		};
-
-		//-----------------------------------------------------------------------
-		// FlatMapping
-
-		var flatMap = __webpack_require__(53);
-
-		exports.flatMap = exports.chain = flatMap.flatMap;
-		exports.join = flatMap.join;
-
-		/**
-		 * Map each value in the stream to a new stream, and merge it into the
-		 * returned outer stream. Event arrival times are preserved.
-		 * @param {function(x:*):Stream} f chaining function, must return a Stream
-		 * @returns {Stream} new stream containing all events from each stream returned by f
-		 */
-		Stream.prototype.flatMap = Stream.prototype.chain = function (f) {
-		  return flatMap.flatMap(f, this);
-		};
-
-		/**
-		 * Monadic join. Flatten a Stream<Stream<X>> to Stream<X> by merging inner
-		 * streams to the outer. Event arrival times are preserved.
-		 * @returns {Stream<X>} new stream containing all events of all inner streams
-		 */
-		Stream.prototype.join = function () {
-		  return flatMap.join(this);
-		};
-
-		var continueWith = __webpack_require__(43).continueWith;
-
-		exports.continueWith = continueWith;
-		exports.flatMapEnd = continueWith;
-
-		/**
-		 * Map the end event to a new stream, and begin emitting its values.
-		 * @param {function(x:*):Stream} f function that receives the end event value,
-		 * and *must* return a new Stream to continue with.
-		 * @returns {Stream} new stream that emits all events from the original stream,
-		 * followed by all events from the stream returned by f.
-		 */
-		Stream.prototype.continueWith = Stream.prototype.flatMapEnd = function (f) {
-		  return continueWith(f, this);
-		};
-
-		var concatMap = __webpack_require__(56).concatMap;
-
-		exports.concatMap = concatMap;
-
-		Stream.prototype.concatMap = function (f) {
-		  return concatMap(f, this);
-		};
-
-		//-----------------------------------------------------------------------
-		// Concurrent merging
-
-		var mergeConcurrently = __webpack_require__(54);
-
-		exports.mergeConcurrently = mergeConcurrently.mergeConcurrently;
-
-		/**
-		 * Flatten a Stream<Stream<X>> to Stream<X> by merging inner
-		 * streams to the outer, limiting the number of inner streams that may
-		 * be active concurrently.
-		 * @param {number} concurrency at most this many inner streams will be
-		 *  allowed to be active concurrently.
-		 * @return {Stream<X>} new stream containing all events of all inner
-		 *  streams, with limited concurrency.
-		 */
-		Stream.prototype.mergeConcurrently = function (concurrency) {
-		  return mergeConcurrently.mergeConcurrently(concurrency, this);
-		};
-
-		//-----------------------------------------------------------------------
-		// Merging
-
-		var merge = __webpack_require__(57);
-
-		exports.merge = merge.merge;
-		exports.mergeArray = merge.mergeArray;
-
-		/**
-		 * Merge this stream and all the provided streams
-		 * @returns {Stream} stream containing items from this stream and s in time
-		 * order.  If two events are simultaneous they will be merged in
-		 * arbitrary order.
-		 */
-		Stream.prototype.merge = function () /*...streams*/{
-		  return merge.mergeArray(base.cons(this, arguments));
-		};
-
-		//-----------------------------------------------------------------------
-		// Combining
-
-		var combine = __webpack_require__(49);
-
-		exports.combine = combine.combine;
-		exports.combineArray = combine.combineArray;
-
-		/**
-		 * Combine latest events from all input streams
-		 * @param {function(...events):*} f function to combine most recent events
-		 * @returns {Stream} stream containing the result of applying f to the most recent
-		 *  event of each input stream, whenever a new event arrives on any stream.
-		 */
-		Stream.prototype.combine = function (f /*, ...streams*/) {
-		  return combine.combineArray(f, base.replace(this, 0, arguments));
-		};
-
-		//-----------------------------------------------------------------------
-		// Sampling
-
-		var sample = __webpack_require__(58);
-
-		exports.sample = sample.sample;
-		exports.sampleWith = sample.sampleWith;
-
-		/**
-		 * When an event arrives on sampler, emit the latest event value from stream.
-		 * @param {Stream} sampler stream of events at whose arrival time
-		 *  signal's latest value will be propagated
-		 * @returns {Stream} sampled stream of values
-		 */
-		Stream.prototype.sampleWith = function (sampler) {
-		  return sample.sampleWith(sampler, this);
-		};
-
-		/**
-		 * When an event arrives on this stream, emit the result of calling f with the latest
-		 * values of all streams being sampled
-		 * @param {function(...values):*} f function to apply to each set of sampled values
-		 * @returns {Stream} stream of sampled and transformed values
-		 */
-		Stream.prototype.sample = function (f /* ...streams */) {
-		  return sample.sampleArray(f, this, base.tail(arguments));
-		};
-
-		//-----------------------------------------------------------------------
-		// Zipping
-
-		var zip = __webpack_require__(59);
-
-		exports.zip = zip.zip;
-
-		/**
-		 * Pair-wise combine items with those in s. Given 2 streams:
-		 * [1,2,3] zipWith f [4,5,6] -> [f(1,4),f(2,5),f(3,6)]
-		 * Note: zip causes fast streams to buffer and wait for slow streams.
-		 * @param {function(a:Stream, b:Stream, ...):*} f function to combine items
-		 * @returns {Stream} new stream containing pairs
-		 */
-		Stream.prototype.zip = function (f /*, ...streams*/) {
-		  return zip.zipArray(f, base.replace(this, 0, arguments));
-		};
-
-		//-----------------------------------------------------------------------
-		// Switching
-
-		var switchLatest = __webpack_require__(61).switch;
-
-		exports.switch = switchLatest;
-		exports.switchLatest = switchLatest;
-
-		/**
-		 * Given a stream of streams, return a new stream that adopts the behavior
-		 * of the most recent inner stream.
-		 * @returns {Stream} switching stream
-		 */
-		Stream.prototype.switch = Stream.prototype.switchLatest = function () {
-		  return switchLatest(this);
-		};
-
-		//-----------------------------------------------------------------------
-		// Filtering
-
-		var filter = __webpack_require__(62);
-
-		exports.filter = filter.filter;
-		exports.skipRepeats = exports.distinct = filter.skipRepeats;
-		exports.skipRepeatsWith = exports.distinctBy = filter.skipRepeatsWith;
-
-		/**
-		 * Retain only items matching a predicate
-		 * stream:                           -12345678-
-		 * filter(x => x % 2 === 0, stream): --2-4-6-8-
-		 * @param {function(x:*):boolean} p filtering predicate called for each item
-		 * @returns {Stream} stream containing only items for which predicate returns truthy
-		 */
-		Stream.prototype.filter = function (p) {
-		  return filter.filter(p, this);
-		};
-
-		/**
-		 * Skip repeated events, using === to compare items
-		 * stream:           -abbcd-
-		 * distinct(stream): -ab-cd-
-		 * @returns {Stream} stream with no repeated events
-		 */
-		Stream.prototype.skipRepeats = function () {
-		  return filter.skipRepeats(this);
-		};
-
-		/**
-		 * Skip repeated events, using supplied equals function to compare items
-		 * @param {function(a:*, b:*):boolean} equals function to compare items
-		 * @returns {Stream} stream with no repeated events
-		 */
-		Stream.prototype.skipRepeatsWith = function (equals) {
-		  return filter.skipRepeatsWith(equals, this);
-		};
-
-		//-----------------------------------------------------------------------
-		// Slicing
-
-		var slice = __webpack_require__(63);
-
-		exports.take = slice.take;
-		exports.skip = slice.skip;
-		exports.slice = slice.slice;
-		exports.takeWhile = slice.takeWhile;
-		exports.skipWhile = slice.skipWhile;
-
-		/**
-		 * stream:          -abcd-
-		 * take(2, stream): -ab|
-		 * @param {Number} n take up to this many events
-		 * @returns {Stream} stream containing at most the first n items from this stream
-		 */
-		Stream.prototype.take = function (n) {
-		  return slice.take(n, this);
-		};
-
-		/**
-		 * stream:          -abcd->
-		 * skip(2, stream): ---cd->
-		 * @param {Number} n skip this many events
-		 * @returns {Stream} stream not containing the first n events
-		 */
-		Stream.prototype.skip = function (n) {
-		  return slice.skip(n, this);
-		};
-
-		/**
-		 * Slice a stream by event index. Equivalent to, but more efficient than
-		 * stream.take(end).skip(start);
-		 * NOTE: Negative start and end are not supported
-		 * @param {Number} start skip all events before the start index
-		 * @param {Number} end allow all events from the start index to the end index
-		 * @returns {Stream} stream containing items where start <= index < end
-		 */
-		Stream.prototype.slice = function (start, end) {
-		  return slice.slice(start, end, this);
-		};
-
-		/**
-		 * stream:                        -123451234->
-		 * takeWhile(x => x < 5, stream): -1234|
-		 * @param {function(x:*):boolean} p predicate
-		 * @returns {Stream} stream containing items up to, but not including, the
-		 * first item for which p returns falsy.
-		 */
-		Stream.prototype.takeWhile = function (p) {
-		  return slice.takeWhile(p, this);
-		};
-
-		/**
-		 * stream:                        -123451234->
-		 * skipWhile(x => x < 5, stream): -----51234->
-		 * @param {function(x:*):boolean} p predicate
-		 * @returns {Stream} stream containing items following *and including* the
-		 * first item for which p returns falsy.
-		 */
-		Stream.prototype.skipWhile = function (p) {
-		  return slice.skipWhile(p, this);
-		};
-
-		//-----------------------------------------------------------------------
-		// Time slicing
-
-		var timeslice = __webpack_require__(64);
-
-		exports.until = exports.takeUntil = timeslice.takeUntil;
-		exports.since = exports.skipUntil = timeslice.skipUntil;
-		exports.during = timeslice.during;
-
-		/**
-		 * stream:                    -a-b-c-d-e-f-g->
-		 * signal:                    -------x
-		 * takeUntil(signal, stream): -a-b-c-|
-		 * @param {Stream} signal retain only events in stream before the first
-		 * event in signal
-		 * @returns {Stream} new stream containing only events that occur before
-		 * the first event in signal.
-		 */
-		Stream.prototype.until = Stream.prototype.takeUntil = function (signal) {
-		  return timeslice.takeUntil(signal, this);
-		};
-
-		/**
-		 * stream:                    -a-b-c-d-e-f-g->
-		 * signal:                    -------x
-		 * takeUntil(signal, stream): -------d-e-f-g->
-		 * @param {Stream} signal retain only events in stream at or after the first
-		 * event in signal
-		 * @returns {Stream} new stream containing only events that occur after
-		 * the first event in signal.
-		 */
-		Stream.prototype.since = Stream.prototype.skipUntil = function (signal) {
-		  return timeslice.skipUntil(signal, this);
-		};
-
-		/**
-		 * stream:                    -a-b-c-d-e-f-g->
-		 * timeWindow:                -----s
-		 * s:                               -----t
-		 * stream.during(timeWindow): -----c-d-e-|
-		 * @param {Stream<Stream>} timeWindow a stream whose first event (s) represents
-		 *  the window start time.  That event (s) is itself a stream whose first event (t)
-		 *  represents the window end time
-		 * @returns {Stream} new stream containing only events within the provided timespan
-		 */
-		Stream.prototype.during = function (timeWindow) {
-		  return timeslice.during(timeWindow, this);
-		};
-
-		//-----------------------------------------------------------------------
-		// Delaying
-
-		var delay = __webpack_require__(65).delay;
-
-		exports.delay = delay;
-
-		/**
-		 * @param {Number} delayTime milliseconds to delay each item
-		 * @returns {Stream} new stream containing the same items, but delayed by ms
-		 */
-		Stream.prototype.delay = function (delayTime) {
-		  return delay(delayTime, this);
-		};
-
-		//-----------------------------------------------------------------------
-		// Getting event timestamp
-
-		var timestamp = __webpack_require__(66).timestamp;
-
-		exports.timestamp = timestamp;
-
-		/**
-		 * Expose event timestamps into the stream. Turns a Stream<X> into
-		 * Stream<{time:t, value:X}>
-		 * @returns {Stream<{time:number, value:*}>}
-		 */
-		Stream.prototype.timestamp = function () {
-		  return timestamp(this);
-		};
-
-		//-----------------------------------------------------------------------
-		// Rate limiting
-
-		var limit = __webpack_require__(67);
-
-		exports.throttle = limit.throttle;
-		exports.debounce = limit.debounce;
-
-		/**
-		 * Limit the rate of events
-		 * stream:              abcd----abcd----
-		 * throttle(2, stream): a-c-----a-c-----
-		 * @param {Number} period time to suppress events
-		 * @returns {Stream} new stream that skips events for throttle period
-		 */
-		Stream.prototype.throttle = function (period) {
-		  return limit.throttle(period, this);
-		};
-
-		/**
-		 * Wait for a burst of events to subside and emit only the last event in the burst
-		 * stream:              abcd----abcd----
-		 * debounce(2, stream): -----d-------d--
-		 * @param {Number} period events occuring more frequently than this
-		 *  on the provided scheduler will be suppressed
-		 * @returns {Stream} new debounced stream
-		 */
-		Stream.prototype.debounce = function (period) {
-		  return limit.debounce(period, this);
-		};
-
-		//-----------------------------------------------------------------------
-		// Awaiting Promises
-
-		var promises = __webpack_require__(68);
-
-		exports.fromPromise = promises.fromPromise;
-		exports.await = promises.awaitPromises;
-
-		/**
-		 * Await promises, turning a Stream<Promise<X>> into Stream<X>.  Preserves
-		 * event order, but timeshifts events based on promise resolution time.
-		 * @returns {Stream<X>} stream containing non-promise values
-		 */
-		Stream.prototype.await = function () {
-		  return promises.awaitPromises(this);
-		};
-
-		//-----------------------------------------------------------------------
-		// Error handling
-
-		var errors = __webpack_require__(69);
-
-		exports.recoverWith = errors.flatMapError;
-		exports.flatMapError = errors.flatMapError;
-		exports.throwError = errors.throwError;
-
-		/**
-		 * If this stream encounters an error, recover and continue with items from stream
-		 * returned by f.
-		 * stream:                  -a-b-c-X-
-		 * f(X):                           d-e-f-g-
-		 * flatMapError(f, stream): -a-b-c-d-e-f-g-
-		 * @param {function(error:*):Stream} f function which returns a new stream
-		 * @returns {Stream} new stream which will recover from an error by calling f
-		 */
-		Stream.prototype.recoverWith = Stream.prototype.flatMapError = function (f) {
-		  return errors.flatMapError(f, this);
-		};
-
-		//-----------------------------------------------------------------------
-		// Multicasting
-
-		var multicast = __webpack_require__(19).default;
-
-		exports.multicast = multicast;
-
-		/**
-		 * Transform the stream into multicast stream.  That means that many subscribers
-		 * to the stream will not cause multiple invocations of the internal machinery.
-		 * @returns {Stream} new stream which will multicast events to all observers.
-		 */
-		Stream.prototype.multicast = function () {
-		  return multicast(this);
-		};
-
-	/***/ },
-	/* 4 */
-	/***/ function(module, exports) {
-
-		"use strict";
-
-		/** @license MIT License (c) copyright 2010-2016 original author or authors */
-		/** @author Brian Cavalier */
-		/** @author John Hann */
-
-		module.exports = Stream;
-
-		function Stream(source) {
-			this.source = source;
-		}
-
-	/***/ },
-	/* 5 */
-	/***/ function(module, exports, __webpack_require__) {
-
-		var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
-
-		(function (global, factory) {
-		  if (true) {
-		    !(__WEBPACK_AMD_DEFINE_ARRAY__ = [exports], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-		  } else if (typeof exports !== "undefined") {
-		    factory(exports);
-		  } else {
-		    var mod = {
-		      exports: {}
-		    };
-		    factory(mod.exports);
-		    global.mostPrelude = mod.exports;
-		  }
-		})(undefined, function (exports) {
-		  'use strict';
-
-		  Object.defineProperty(exports, "__esModule", {
-		    value: true
-		  });
-		  /** @license MIT License (c) copyright 2010-2016 original author or authors */
-
-		  // Non-mutating array operations
-
-		  // cons :: a -> [a] -> [a]
-		  // a with x prepended
-		  function cons(x, a) {
-		    var l = a.length;
-		    var b = new Array(l + 1);
-		    b[0] = x;
-		    for (var i = 0; i < l; ++i) {
-		      b[i + 1] = a[i];
-		    }
-		    return b;
-		  }
-
-		  // append :: a -> [a] -> [a]
-		  // a with x appended
-		  function append(x, a) {
-		    var l = a.length;
-		    var b = new Array(l + 1);
-		    for (var i = 0; i < l; ++i) {
-		      b[i] = a[i];
-		    }
-
-		    b[l] = x;
-		    return b;
-		  }
-
-		  // drop :: Int -> [a] -> [a]
-		  // drop first n elements
-		  function drop(n, a) {
-		    // eslint-disable-line complexity
-		    if (n < 0) {
-		      throw new TypeError('n must be >= 0');
-		    }
-
-		    var l = a.length;
-		    if (n === 0 || l === 0) {
-		      return a;
-		    }
-
-		    if (n >= l) {
-		      return [];
-		    }
-
-		    return unsafeDrop(n, a, l - n);
-		  }
-
-		  // unsafeDrop :: Int -> [a] -> Int -> [a]
-		  // Internal helper for drop
-		  function unsafeDrop(n, a, l) {
-		    var b = new Array(l);
-		    for (var i = 0; i < l; ++i) {
-		      b[i] = a[n + i];
-		    }
-		    return b;
-		  }
-
-		  // tail :: [a] -> [a]
-		  // drop head element
-		  function tail(a) {
-		    return drop(1, a);
-		  }
-
-		  // copy :: [a] -> [a]
-		  // duplicate a (shallow duplication)
-		  function copy(a) {
-		    var l = a.length;
-		    var b = new Array(l);
-		    for (var i = 0; i < l; ++i) {
-		      b[i] = a[i];
-		    }
-		    return b;
-		  }
-
-		  // map :: (a -> b) -> [a] -> [b]
-		  // transform each element with f
-		  function map(f, a) {
-		    var l = a.length;
-		    var b = new Array(l);
-		    for (var i = 0; i < l; ++i) {
-		      b[i] = f(a[i]);
-		    }
-		    return b;
-		  }
-
-		  // reduce :: (a -> b -> a) -> a -> [b] -> a
-		  // accumulate via left-fold
-		  function reduce(f, z, a) {
-		    var r = z;
-		    for (var i = 0, l = a.length; i < l; ++i) {
-		      r = f(r, a[i], i);
-		    }
-		    return r;
-		  }
-
-		  // replace :: a -> Int -> [a]
-		  // replace element at index
-		  function replace(x, i, a) {
-		    // eslint-disable-line complexity
-		    if (i < 0) {
-		      throw new TypeError('i must be >= 0');
-		    }
-
-		    var l = a.length;
-		    var b = new Array(l);
-		    for (var j = 0; j < l; ++j) {
-		      b[j] = i === j ? x : a[j];
-		    }
-		    return b;
-		  }
-
-		  // remove :: Int -> [a] -> [a]
-		  // remove element at index
-		  function remove(i, a) {
-		    // eslint-disable-line complexity
-		    if (i < 0) {
-		      throw new TypeError('i must be >= 0');
-		    }
-
-		    var l = a.length;
-		    if (l === 0 || i >= l) {
-		      // exit early if index beyond end of array
-		      return a;
-		    }
-
-		    if (l === 1) {
-		      // exit early if index in bounds and length === 1
-		      return [];
-		    }
-
-		    return unsafeRemove(i, a, l - 1);
-		  }
-
-		  // unsafeRemove :: Int -> [a] -> Int -> [a]
-		  // Internal helper to remove element at index
-		  function unsafeRemove(i, a, l) {
-		    var b = new Array(l);
-		    var j = undefined;
-		    for (j = 0; j < i; ++j) {
-		      b[j] = a[j];
-		    }
-		    for (j = i; j < l; ++j) {
-		      b[j] = a[j + 1];
-		    }
-
-		    return b;
-		  }
-
-		  // removeAll :: (a -> boolean) -> [a] -> [a]
-		  // remove all elements matching a predicate
-		  function removeAll(f, a) {
-		    var l = a.length;
-		    var b = new Array(l);
-		    var j = 0;
-		    for (var x, i = 0; i < l; ++i) {
-		      x = a[i];
-		      if (!f(x)) {
-		        b[j] = x;
-		        ++j;
-		      }
-		    }
-
-		    b.length = j;
-		    return b;
-		  }
-
-		  // findIndex :: a -> [a] -> Int
-		  // find index of x in a, from the left
-		  function findIndex(x, a) {
-		    for (var i = 0, l = a.length; i < l; ++i) {
-		      if (x === a[i]) {
-		        return i;
-		      }
-		    }
-		    return -1;
-		  }
-
-		  // isArrayLike :: * -> boolean
-		  // Return true iff x is array-like
-		  function isArrayLike(x) {
-		    return x != null && typeof x.length === 'number' && typeof x !== 'function';
-		  }
-
-		  /** @license MIT License (c) copyright 2010-2016 original author or authors */
-
-		  // id :: a -> a
-		  var id = function id(x) {
-		    return x;
-		  };
-
-		  // compose :: (b -> c) -> (a -> b) -> (a -> c)
-		  var compose = function compose(f, g) {
-		    return function (x) {
-		      return f(g(x));
-		    };
-		  };
-
-		  // apply :: (a -> b) -> a -> b
-		  var apply = function apply(f, x) {
-		    return f(x);
-		  };
-
-		  // curry2 :: ((a, b) -> c) -> (a -> b -> c)
-		  function curry2(f) {
-		    function curried(a, b) {
-		      switch (arguments.length) {
-		        case 0:
-		          return curried;
-		        case 1:
-		          return function (b) {
-		            return f(a, b);
-		          };
-		        default:
-		          return f(a, b);
-		      }
-		    }
-		    return curried;
-		  }
-
-		  // curry3 :: ((a, b, c) -> d) -> (a -> b -> c -> d)
-		  function curry3(f) {
-		    function curried(a, b, c) {
-		      // eslint-disable-line complexity
-		      switch (arguments.length) {
-		        case 0:
-		          return curried;
-		        case 1:
-		          return curry2(function (b, c) {
-		            return f(a, b, c);
-		          });
-		        case 2:
-		          return function (c) {
-		            return f(a, b, c);
-		          };
-		        default:
-		          return f(a, b, c);
-		      }
-		    }
-		    return curried;
-		  }
-
-		  exports.cons = cons;
-		  exports.append = append;
-		  exports.drop = drop;
-		  exports.tail = tail;
-		  exports.copy = copy;
-		  exports.map = map;
-		  exports.reduce = reduce;
-		  exports.replace = replace;
-		  exports.remove = remove;
-		  exports.removeAll = removeAll;
-		  exports.findIndex = findIndex;
-		  exports.isArrayLike = isArrayLike;
-		  exports.id = id;
-		  exports.compose = compose;
-		  exports.apply = apply;
-		  exports.curry2 = curry2;
-		  exports.curry3 = curry3;
-		});
-
-	/***/ },
-	/* 6 */
-	/***/ function(module, exports, __webpack_require__) {
-
-		'use strict';
-
-		/** @license MIT License (c) copyright 2010-2016 original author or authors */
-		/** @author Brian Cavalier */
-		/** @author John Hann */
-
-		var Stream = __webpack_require__(4);
-		var ValueSource = __webpack_require__(7);
-		var dispose = __webpack_require__(10);
-		var PropagateTask = __webpack_require__(8);
-
-		exports.of = streamOf;
-		exports.empty = empty;
-		exports.never = never;
-
-		/**
-		 * Stream containing only x
-		 * @param {*} x
-		 * @returns {Stream}
-		 */
-		function streamOf(x) {
-		  return new Stream(new ValueSource(emit, x));
-		}
-
-		function emit(t, x, sink) {
-		  sink.event(0, x);
-		  sink.end(0, void 0);
-		}
-
-		/**
-		 * Stream containing no events and ends immediately
-		 * @returns {Stream}
-		 */
-		function empty() {
-		  return EMPTY;
-		}
-
-		function EmptySource() {}
-
-		EmptySource.prototype.run = function (sink, scheduler) {
-		  var task = PropagateTask.end(void 0, sink);
-		  scheduler.asap(task);
-
-		  return dispose.create(disposeEmpty, task);
-		};
-
-		function disposeEmpty(task) {
-		  return task.dispose();
-		}
-
-		var EMPTY = new Stream(new EmptySource());
-
-		/**
-		 * Stream containing no events and never ends
-		 * @returns {Stream}
-		 */
-		function never() {
-		  return NEVER;
-		}
-
-		function NeverSource() {}
-
-		NeverSource.prototype.run = function () {
-		  return dispose.empty();
-		};
-
-		var NEVER = new Stream(new NeverSource());
-
-	/***/ },
-	/* 7 */
-	/***/ function(module, exports, __webpack_require__) {
-
-		'use strict';
-
-		/** @license MIT License (c) copyright 2010-2016 original author or authors */
-		/** @author Brian Cavalier */
-		/** @author John Hann */
-
-		var PropagateTask = __webpack_require__(8);
-
-		module.exports = ValueSource;
-
-		function ValueSource(emit, x) {
-			this.emit = emit;
-			this.value = x;
-		}
-
-		ValueSource.prototype.run = function (sink, scheduler) {
-			return new ValueProducer(this.emit, this.value, sink, scheduler);
-		};
-
-		function ValueProducer(emit, x, sink, scheduler) {
-			this.task = scheduler.asap(new PropagateTask(emit, x, sink));
-		}
-
-		ValueProducer.prototype.dispose = function () {
-			return this.task.cancel();
-		};
-
-	/***/ },
-	/* 8 */
-	/***/ function(module, exports, __webpack_require__) {
-
-		'use strict';
-
-		/** @license MIT License (c) copyright 2010-2016 original author or authors */
-		/** @author Brian Cavalier */
-		/** @author John Hann */
-
-		var fatal = __webpack_require__(9);
-
-		module.exports = PropagateTask;
-
-		function PropagateTask(run, value, sink) {
-			this._run = run;
-			this.value = value;
-			this.sink = sink;
-			this.active = true;
-		}
-
-		PropagateTask.event = function (value, sink) {
-			return new PropagateTask(emit, value, sink);
-		};
-
-		PropagateTask.end = function (value, sink) {
-			return new PropagateTask(end, value, sink);
-		};
-
-		PropagateTask.error = function (value, sink) {
-			return new PropagateTask(error, value, sink);
-		};
-
-		PropagateTask.prototype.dispose = function () {
-			this.active = false;
-		};
-
-		PropagateTask.prototype.run = function (t) {
-			if (!this.active) {
-				return;
-			}
-			this._run(t, this.value, this.sink);
-		};
-
-		PropagateTask.prototype.error = function (t, e) {
-			if (!this.active) {
-				return fatal(e);
-			}
-			this.sink.error(t, e);
-		};
-
-		function error(t, e, sink) {
-			sink.error(t, e);
-		}
-
-		function emit(t, x, sink) {
-			sink.event(t, x);
-		}
-
-		function end(t, x, sink) {
-			sink.end(t, x);
-		}
-
-	/***/ },
-	/* 9 */
-	/***/ function(module, exports) {
-
-		"use strict";
-
-		/** @license MIT License (c) copyright 2010-2016 original author or authors */
-		/** @author Brian Cavalier */
-		/** @author John Hann */
-
-		module.exports = fatalError;
-
-		function fatalError(e) {
-			setTimeout(function () {
-				throw e;
-			}, 0);
-		}
-
-	/***/ },
-	/* 10 */
-	/***/ function(module, exports, __webpack_require__) {
-
-		'use strict';
-
-		/** @license MIT License (c) copyright 2010-2016 original author or authors */
-		/** @author Brian Cavalier */
-		/** @author John Hann */
-
-		var Disposable = __webpack_require__(11);
-		var SettableDisposable = __webpack_require__(12);
-		var isPromise = __webpack_require__(13).isPromise;
-		var base = __webpack_require__(5);
-
-		var map = base.map;
-		var identity = base.id;
-
-		exports.tryDispose = tryDispose;
-		exports.create = create;
-		exports.once = once;
-		exports.empty = empty;
-		exports.all = all;
-		exports.settable = settable;
-		exports.promised = promised;
-
-		/**
-		 * Call disposable.dispose.  If it returns a promise, catch promise
-		 * error and forward it through the provided sink.
-		 * @param {number} t time
-		 * @param {{dispose: function}} disposable
-		 * @param {{error: function}} sink
-		 * @return {*} result of disposable.dispose
-		 */
-		function tryDispose(t, disposable, sink) {
-		  var result = disposeSafely(disposable);
-		  return isPromise(result) ? result.catch(function (e) {
-		    sink.error(t, e);
-		  }) : result;
-		}
-
-		/**
-		 * Create a new Disposable which will dispose its underlying resource
-		 * at most once.
-		 * @param {function} dispose function
-		 * @param {*?} data any data to be passed to disposer function
-		 * @return {Disposable}
-		 */
-		function create(dispose, data) {
-		  return once(new Disposable(dispose, data));
-		}
-
-		/**
-		 * Create a noop disposable. Can be used to satisfy a Disposable
-		 * requirement when no actual resource needs to be disposed.
-		 * @return {Disposable|exports|module.exports}
-		 */
-		function empty() {
-		  return new Disposable(identity, void 0);
-		}
-
-		/**
-		 * Create a disposable that will dispose all input disposables in parallel.
-		 * @param {Array<Disposable>} disposables
-		 * @return {Disposable}
-		 */
-		function all(disposables) {
-		  return create(disposeAll, disposables);
-		}
-
-		function disposeAll(disposables) {
-		  return Promise.all(map(disposeSafely, disposables));
-		}
-
-		function disposeSafely(disposable) {
-		  try {
-		    return disposable.dispose();
-		  } catch (e) {
-		    return Promise.reject(e);
-		  }
-		}
-
-		/**
-		 * Create a disposable from a promise for another disposable
-		 * @param {Promise<Disposable>} disposablePromise
-		 * @return {Disposable}
-		 */
-		function promised(disposablePromise) {
-		  return create(disposePromise, disposablePromise);
-		}
-
-		function disposePromise(disposablePromise) {
-		  return disposablePromise.then(disposeOne);
-		}
-
-		function disposeOne(disposable) {
-		  return disposable.dispose();
-		}
-
-		/**
-		 * Create a disposable proxy that allows its underlying disposable to
-		 * be set later.
-		 * @return {SettableDisposable}
-		 */
-		function settable() {
-		  return new SettableDisposable();
-		}
-
-		/**
-		 * Wrap an existing disposable (which may not already have been once()d)
-		 * so that it will only dispose its underlying resource at most once.
-		 * @param {{ dispose: function() }} disposable
-		 * @return {Disposable} wrapped disposable
-		 */
-		function once(disposable) {
-		  return new Disposable(disposeMemoized, memoized(disposable));
-		}
-
-		function disposeMemoized(memoized) {
-		  if (!memoized.disposed) {
-		    memoized.disposed = true;
-		    memoized.value = disposeSafely(memoized.disposable);
-		    memoized.disposable = void 0;
-		  }
-
-		  return memoized.value;
-		}
-
-		function memoized(disposable) {
-		  return { disposed: false, disposable: disposable, value: void 0 };
-		}
-
-	/***/ },
-	/* 11 */
-	/***/ function(module, exports) {
-
-		"use strict";
-
-		/** @license MIT License (c) copyright 2010-2016 original author or authors */
-		/** @author Brian Cavalier */
-		/** @author John Hann */
-
-		module.exports = Disposable;
-
-		/**
-		 * Create a new Disposable which will dispose its underlying resource.
-		 * @param {function} dispose function
-		 * @param {*?} data any data to be passed to disposer function
-		 * @constructor
-		 */
-		function Disposable(dispose, data) {
-		  this._dispose = dispose;
-		  this._data = data;
-		}
-
-		Disposable.prototype.dispose = function () {
-		  return this._dispose(this._data);
-		};
-
-	/***/ },
-	/* 12 */
-	/***/ function(module, exports) {
-
-		'use strict';
-
-		/** @license MIT License (c) copyright 2010-2016 original author or authors */
-		/** @author Brian Cavalier */
-		/** @author John Hann */
-
-		module.exports = SettableDisposable;
-
-		function SettableDisposable() {
-			this.disposable = void 0;
-			this.disposed = false;
-			this._resolve = void 0;
-
-			var self = this;
-			this.result = new Promise(function (resolve) {
-				self._resolve = resolve;
-			});
-		}
-
-		SettableDisposable.prototype.setDisposable = function (disposable) {
-			if (this.disposable !== void 0) {
-				throw new Error('setDisposable called more than once');
-			}
-
-			this.disposable = disposable;
-
-			if (this.disposed) {
-				this._resolve(disposable.dispose());
-			}
-		};
-
-		SettableDisposable.prototype.dispose = function () {
-			if (this.disposed) {
-				return this.result;
-			}
-
-			this.disposed = true;
-
-			if (this.disposable !== void 0) {
-				this.result = this.disposable.dispose();
-			}
-
-			return this.result;
-		};
-
-	/***/ },
-	/* 13 */
-	/***/ function(module, exports) {
-
-		'use strict';
-
-		var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
-
-		/** @license MIT License (c) copyright 2010-2016 original author or authors */
-		/** @author Brian Cavalier */
-		/** @author John Hann */
-
-		exports.isPromise = isPromise;
-
-		function isPromise(p) {
-			return p !== null && (typeof p === 'undefined' ? 'undefined' : _typeof(p)) === 'object' && typeof p.then === 'function';
-		}
-
-	/***/ },
-	/* 14 */
-	/***/ function(module, exports, __webpack_require__) {
-
-		'use strict';
-
-		/** @license MIT License (c) copyright 2010-2016 original author or authors */
-		/** @author Brian Cavalier */
-		/** @author John Hann */
-
-		var fromArray = __webpack_require__(15).fromArray;
-		var isIterable = __webpack_require__(16).isIterable;
-		var fromIterable = __webpack_require__(17).fromIterable;
-		var isArrayLike = __webpack_require__(5).isArrayLike;
-
-		exports.from = from;
-
-		function from(a) {
-			if (Array.isArray(a) || isArrayLike(a)) {
-				return fromArray(a);
-			}
-
-			if (isIterable(a)) {
-				return fromIterable(a);
-			}
-
-			throw new TypeError('not iterable: ' + a);
-		}
-
-	/***/ },
-	/* 15 */
-	/***/ function(module, exports, __webpack_require__) {
-
-		'use strict';
-
-		/** @license MIT License (c) copyright 2010-2016 original author or authors */
-		/** @author Brian Cavalier */
-		/** @author John Hann */
-
-		var Stream = __webpack_require__(4);
-		var PropagateTask = __webpack_require__(8);
-
-		exports.fromArray = fromArray;
-
-		function fromArray(a) {
-			return new Stream(new ArraySource(a));
-		}
-
-		function ArraySource(a) {
-			this.array = a;
-		}
-
-		ArraySource.prototype.run = function (sink, scheduler) {
-			return new ArrayProducer(this.array, sink, scheduler);
-		};
-
-		function ArrayProducer(array, sink, scheduler) {
-			this.scheduler = scheduler;
-			this.task = new PropagateTask(runProducer, array, sink);
-			scheduler.asap(this.task);
-		}
-
-		ArrayProducer.prototype.dispose = function () {
-			return this.task.dispose();
-		};
-
-		function runProducer(t, array, sink) {
-			produce(this, array, sink);
-		}
-
-		function produce(task, array, sink) {
-			for (var i = 0, l = array.length; i < l && task.active; ++i) {
-				sink.event(0, array[i]);
-			}
-
-			task.active && end();
-
-			function end() {
-				sink.end(0);
-			}
-		}
-
-	/***/ },
-	/* 16 */
-	/***/ function(module, exports) {
-
-		'use strict';
-
-		/** @license MIT License (c) copyright 2010-2016 original author or authors */
-		/** @author Brian Cavalier */
-		/** @author John Hann */
-
-		exports.isIterable = isIterable;
-		exports.getIterator = getIterator;
-		exports.makeIterable = makeIterable;
-
-		/*global Set, Symbol*/
-		var iteratorSymbol;
-		// Firefox ships a partial implementation using the name @@iterator.
-		// https://bugzilla.mozilla.org/show_bug.cgi?id=907077#c14
-		if (typeof Set === 'function' && typeof new Set()['@@iterator'] === 'function') {
-			iteratorSymbol = '@@iterator';
-		} else {
-			iteratorSymbol = typeof Symbol === 'function' && Symbol.iterator || '_es6shim_iterator_';
-		}
-
-		function isIterable(o) {
-			return typeof o[iteratorSymbol] === 'function';
-		}
-
-		function getIterator(o) {
-			return o[iteratorSymbol]();
-		}
-
-		function makeIterable(f, o) {
-			o[iteratorSymbol] = f;
-			return o;
-		}
-
-	/***/ },
-	/* 17 */
-	/***/ function(module, exports, __webpack_require__) {
-
-		'use strict';
-
-		/** @license MIT License (c) copyright 2010-2016 original author or authors */
-		/** @author Brian Cavalier */
-		/** @author John Hann */
-
-		var Stream = __webpack_require__(4);
-		var getIterator = __webpack_require__(16).getIterator;
-		var PropagateTask = __webpack_require__(8);
-
-		exports.fromIterable = fromIterable;
-
-		function fromIterable(iterable) {
-			return new Stream(new IterableSource(iterable));
-		}
-
-		function IterableSource(iterable) {
-			this.iterable = iterable;
-		}
-
-		IterableSource.prototype.run = function (sink, scheduler) {
-			return new IteratorProducer(getIterator(this.iterable), sink, scheduler);
-		};
-
-		function IteratorProducer(iterator, sink, scheduler) {
-			this.scheduler = scheduler;
-			this.iterator = iterator;
-			this.task = new PropagateTask(runProducer, this, sink);
-			scheduler.asap(this.task);
-		}
-
-		IteratorProducer.prototype.dispose = function () {
-			return this.task.dispose();
-		};
-
-		function runProducer(t, producer, sink) {
-			var x = producer.iterator.next();
-			if (x.done) {
-				sink.end(t, x.value);
-			} else {
-				sink.event(t, x.value);
-			}
-
-			producer.scheduler.asap(producer.task);
-		}
-
-	/***/ },
-	/* 18 */
-	/***/ function(module, exports, __webpack_require__) {
-
-		'use strict';
-
-		/** @license MIT License (c) copyright 2010-2016 original author or authors */
-		/** @author Brian Cavalier */
-		/** @author John Hann */
-
-		var Stream = __webpack_require__(4);
-		var dispose = __webpack_require__(10);
-		var MulticastSource = __webpack_require__(19).MulticastSource;
-		var PropagateTask = __webpack_require__(8);
-
-		exports.periodic = periodic;
-
-		/**
-		 * Create a stream that emits the current time periodically
-		 * @param {Number} period periodicity of events in millis
-		 * @param {*) value value to emit each period
-		 * @returns {Stream} new stream that emits the current time every period
-		 */
-		function periodic(period, value) {
-			return new Stream(new MulticastSource(new Periodic(period, value)));
-		}
-
-		function Periodic(period, value) {
-			this.period = period;
-			this.value = value;
-		}
-
-		Periodic.prototype.run = function (sink, scheduler) {
-			var task = scheduler.periodic(this.period, new PropagateTask(emit, this.value, sink));
-			return dispose.create(cancelTask, task);
-		};
-
-		function cancelTask(task) {
-			task.cancel();
-		}
-
-		function emit(t, x, sink) {
-			sink.event(t, x);
-		}
-
-	/***/ },
-	/* 19 */
-	/***/ function(module, exports, __webpack_require__) {
-
-		var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
-
-		(function (global, factory) {
-		  if (true) {
-		    !(__WEBPACK_AMD_DEFINE_ARRAY__ = [exports, __webpack_require__(5)], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-		  } else if (typeof exports !== "undefined") {
-		    factory(exports, require('@most/prelude'));
-		  } else {
-		    var mod = {
-		      exports: {}
-		    };
-		    factory(mod.exports, global.prelude);
-		    global.mostMulticast = mod.exports;
-		  }
-		})(undefined, function (exports, _prelude) {
-		  'use strict';
-
-		  Object.defineProperty(exports, "__esModule", {
-		    value: true
-		  });
-		  exports.MulticastSource = undefined;
-
-		  function _classCallCheck(instance, Constructor) {
-		    if (!(instance instanceof Constructor)) {
-		      throw new TypeError("Cannot call a class as a function");
-		    }
-		  }
-
-		  var _createClass = function () {
-		    function defineProperties(target, props) {
-		      for (var i = 0; i < props.length; i++) {
-		        var descriptor = props[i];
-		        descriptor.enumerable = descriptor.enumerable || false;
-		        descriptor.configurable = true;
-		        if ("value" in descriptor) descriptor.writable = true;
-		        Object.defineProperty(target, descriptor.key, descriptor);
-		      }
-		    }
-
-		    return function (Constructor, protoProps, staticProps) {
-		      if (protoProps) defineProperties(Constructor.prototype, protoProps);
-		      if (staticProps) defineProperties(Constructor, staticProps);
-		      return Constructor;
-		    };
-		  }();
-
-		  var MulticastDisposable = function () {
-		    function MulticastDisposable(source, sink) {
-		      _classCallCheck(this, MulticastDisposable);
-
-		      this.source = source;
-		      this.sink = sink;
-		      this.disposed = false;
-		    }
-
-		    _createClass(MulticastDisposable, [{
-		      key: 'dispose',
-		      value: function dispose() {
-		        if (this.disposed) {
-		          return;
-		        }
-		        this.disposed = true;
-		        var remaining = this.source.remove(this.sink);
-		        return remaining === 0 && this.source._dispose();
-		      }
-		    }]);
-
-		    return MulticastDisposable;
-		  }();
-
-		  function tryEvent(t, x, sink) {
-		    try {
-		      sink.event(t, x);
-		    } catch (e) {
-		      sink.error(t, e);
-		    }
-		  }
-
-		  function tryEnd(t, x, sink) {
-		    try {
-		      sink.end(t, x);
-		    } catch (e) {
-		      sink.error(t, e);
-		    }
-		  }
-
-		  var dispose = function dispose(disposable) {
-		    return disposable.dispose();
-		  };
-
-		  var emptyDisposable = {
-		    dispose: function dispose() {}
-		  };
-
-		  var MulticastSource = function () {
-		    function MulticastSource(source) {
-		      _classCallCheck(this, MulticastSource);
-
-		      this.source = source;
-		      this.sink = undefined;
-		      this.sinks = [];
-		      this._disposable = emptyDisposable;
-		    }
-
-		    _createClass(MulticastSource, [{
-		      key: 'run',
-		      value: function run(sink, scheduler) {
-		        var n = this.add(sink);
-		        if (n === 1) {
-		          this._disposable = this.source.run(this, scheduler);
-		        }
-		        return new MulticastDisposable(this, sink);
-		      }
-		    }, {
-		      key: '_dispose',
-		      value: function _dispose() {
-		        var disposable = this._disposable;
-		        this._disposable = void 0;
-		        return Promise.resolve(disposable).then(dispose);
-		      }
-		    }, {
-		      key: 'add',
-		      value: function add(sink) {
-		        if (this.sink === undefined) {
-		          this.sink = sink;
-		          return 1;
-		        }
-
-		        this.sinks = (0, _prelude.append)(sink, this.sinks);
-		        return this.sinks.length + 1;
-		      }
-		    }, {
-		      key: 'remove',
-		      value: function remove(sink) {
-		        if (sink === this.sink) {
-		          this.sink = this.sinks.shift();
-		          return this.sink === undefined ? 0 : this.sinks.length + 1;
-		        }
-
-		        this.sinks = (0, _prelude.remove)((0, _prelude.findIndex)(sink, this.sinks), this.sinks);
-		        return this.sinks.length + 1;
-		      }
-		    }, {
-		      key: 'event',
-		      value: function event(time, value) {
-		        var s = this.sinks;
-		        if (s.length === 0) {
-		          this.sink.event(time, value);
-		        } else {
-		          tryEvent(time, value, this.sink);
-		          for (var i = 0; i < s.length; ++i) {
-		            tryEvent(time, value, s[i]);
-		          }
-		        }
-		      }
-		    }, {
-		      key: 'end',
-		      value: function end(time, value) {
-		        // Important: slice first since sink.end may change
-		        // the set of sinks
-		        var s = this.sinks.slice();
-		        tryEnd(time, value, this.sink);
-		        for (var i = 0; i < s.length; ++i) {
-		          tryEnd(time, value, s[i]);
-		        }
-		      }
-		    }, {
-		      key: 'error',
-		      value: function error(time, err) {
-		        // Important: slice first since sink.error may change
-		        // the set of sinks
-		        var s = this.sinks.slice();
-		        this.sink.error(time, err);
-		        for (var i = 0; i < s.length; ++i) {
-		          s[i].error(time, err);
-		        }
-		      }
-		    }]);
-
-		    return MulticastSource;
-		  }();
-
-		  function multicast(stream) {
-		    var source = stream.source;
-		    return source instanceof MulticastSource ? stream : new stream.constructor(new MulticastSource(source));
-		  }
-
-		  exports.MulticastSource = MulticastSource;
-		  exports.default = multicast;
-		});
-
-	/***/ },
-	/* 20 */
-	/***/ function(module, exports) {
-
-		"use strict";
-
-		/** @license MIT License (c) copyright 2010-2016 original author or authors */
-		/** @author Brian Cavalier */
-		/** @author John Hann */
-
-		exports.thru = function thru(f, stream) {
-			return f(stream);
-		};
-
-	/***/ },
-	/* 21 */
-	/***/ function(module, exports, __webpack_require__) {
-
-		'use strict';
-
-		/** @license MIT License (c) copyright 2010-2016 original author or authors */
-		/** @author Brian Cavalier */
-		/** @author John Hann */
-
-		var Stream = __webpack_require__(4);
-		var MulticastSource = __webpack_require__(19).MulticastSource;
-		var DeferredSink = __webpack_require__(22);
-		var tryEvent = __webpack_require__(24);
-
-		exports.create = create;
-
-		function create(run) {
-			return new Stream(new MulticastSource(new SubscriberSource(run)));
-		}
-
-		function SubscriberSource(subscribe) {
-			this._subscribe = subscribe;
-		}
-
-		SubscriberSource.prototype.run = function (sink, scheduler) {
-			return new Subscription(new DeferredSink(sink), scheduler, this._subscribe);
-		};
-
-		function Subscription(sink, scheduler, subscribe) {
-			this.sink = sink;
-			this.scheduler = scheduler;
-			this.active = true;
-			this._unsubscribe = this._init(subscribe);
-		}
-
-		Subscription.prototype._init = function (subscribe) {
-			var s = this;
-
-			try {
-				return subscribe(add, end, error);
-			} catch (e) {
-				error(e);
-			}
-
-			function add(x) {
-				s._add(x);
-			}
-			function end(x) {
-				s._end(x);
-			}
-			function error(e) {
-				s._error(e);
-			}
-		};
-
-		Subscription.prototype._add = function (x) {
-			if (!this.active) {
-				return;
-			}
-			tryEvent.tryEvent(this.scheduler.now(), x, this.sink);
-		};
-
-		Subscription.prototype._end = function (x) {
-			if (!this.active) {
-				return;
-			}
-			this.active = false;
-			tryEvent.tryEnd(this.scheduler.now(), x, this.sink);
-		};
-
-		Subscription.prototype._error = function (x) {
-			this.active = false;
-			this.sink.error(this.scheduler.now(), x);
-		};
-
-		Subscription.prototype.dispose = function () {
-			this.active = false;
-			if (typeof this._unsubscribe === 'function') {
-				return this._unsubscribe.call(void 0);
-			}
-		};
-
-	/***/ },
-	/* 22 */
-	/***/ function(module, exports, __webpack_require__) {
-
-		'use strict';
-
-		/** @license MIT License (c) copyright 2010-2016 original author or authors */
-		/** @author Brian Cavalier */
-		/** @author John Hann */
-
-		var defer = __webpack_require__(23);
-
-		module.exports = DeferredSink;
-
-		function DeferredSink(sink) {
-			this.sink = sink;
-			this.events = [];
-			this.length = 0;
-			this.active = true;
-		}
-
-		DeferredSink.prototype.event = function (t, x) {
-			if (!this.active) {
-				return;
-			}
-
-			if (this.length === 0) {
-				defer(new PropagateAllTask(this));
-			}
-
-			this.events[this.length++] = { time: t, value: x };
-		};
-
-		DeferredSink.prototype.error = function (t, e) {
-			this.active = false;
-			defer(new ErrorTask(t, e, this.sink));
-		};
-
-		DeferredSink.prototype.end = function (t, x) {
-			this.active = false;
-			defer(new EndTask(t, x, this.sink));
-		};
-
-		function PropagateAllTask(deferred) {
-			this.deferred = deferred;
-		}
-
-		PropagateAllTask.prototype.run = function () {
-			var p = this.deferred;
-			var events = p.events;
-			var sink = p.sink;
-			var event;
-
-			for (var i = 0, l = p.length; i < l; ++i) {
-				event = events[i];
-				sink.event(event.time, event.value);
-				events[i] = void 0;
-			}
-
-			p.length = 0;
-		};
-
-		PropagateAllTask.prototype.error = function (e) {
-			this.deferred.error(0, e);
-		};
-
-		function EndTask(t, x, sink) {
-			this.time = t;
-			this.value = x;
-			this.sink = sink;
-		}
-
-		EndTask.prototype.run = function () {
-			this.sink.end(this.time, this.value);
-		};
-
-		EndTask.prototype.error = function (e) {
-			this.sink.error(this.time, e);
-		};
-
-		function ErrorTask(t, e, sink) {
-			this.time = t;
-			this.value = e;
-			this.sink = sink;
-		}
-
-		ErrorTask.prototype.run = function () {
-			this.sink.error(this.time, this.value);
-		};
-
-		ErrorTask.prototype.error = function (e) {
-			throw e;
-		};
-
-	/***/ },
-	/* 23 */
-	/***/ function(module, exports) {
-
-		"use strict";
-
-		/** @license MIT License (c) copyright 2010-2016 original author or authors */
-		/** @author Brian Cavalier */
-		/** @author John Hann */
-
-		module.exports = defer;
-
-		function defer(task) {
-			return Promise.resolve(task).then(runTask);
-		}
-
-		function runTask(task) {
-			try {
-				return task.run();
-			} catch (e) {
-				return task.error(e);
-			}
-		}
-
-	/***/ },
-	/* 24 */
-	/***/ function(module, exports) {
-
-		"use strict";
-
-		/** @license MIT License (c) copyright 2010-2016 original author or authors */
-		/** @author Brian Cavalier */
-		/** @author John Hann */
-
-		exports.tryEvent = tryEvent;
-		exports.tryEnd = tryEnd;
-
-		function tryEvent(t, x, sink) {
-			try {
-				sink.event(t, x);
-			} catch (e) {
-				sink.error(t, e);
-			}
-		}
-
-		function tryEnd(t, x, sink) {
-			try {
-				sink.end(t, x);
-			} catch (e) {
-				sink.error(t, e);
-			}
-		}
-
-	/***/ },
-	/* 25 */
-	/***/ function(module, exports, __webpack_require__) {
-
-		'use strict';
-
-		/** @license MIT License (c) copyright 2010-2016 original author or authors */
-		/** @author Brian Cavalier */
-		/** @author John Hann */
-
-		var Stream = __webpack_require__(4);
-		var MulticastSource = __webpack_require__(19).MulticastSource;
-		var EventTargetSource = __webpack_require__(26);
-		var EventEmitterSource = __webpack_require__(27);
-
-		exports.fromEvent = fromEvent;
-
-		/**
-		 * Create a stream from an EventTarget, such as a DOM Node, or EventEmitter.
-		 * @param {String} event event type name, e.g. 'click'
-		 * @param {EventTarget|EventEmitter} source EventTarget or EventEmitter
-		 * @param {boolean?} useCapture for DOM events, whether to use
-		 *  capturing--passed as 3rd parameter to addEventListener.
-		 * @returns {Stream} stream containing all events of the specified type
-		 * from the source.
-		 */
-		function fromEvent(event, source /*, useCapture = false */) {
-			var s;
-
-			if (typeof source.addEventListener === 'function' && typeof source.removeEventListener === 'function') {
-				var capture = arguments.length > 2 && !!arguments[2];
-				s = new MulticastSource(new EventTargetSource(event, source, capture));
-			} else if (typeof source.addListener === 'function' && typeof source.removeListener === 'function') {
-				s = new EventEmitterSource(event, source);
-			} else {
-				throw new Error('source must support addEventListener/removeEventListener or addListener/removeListener');
-			}
-
-			return new Stream(s);
-		}
-
-	/***/ },
-	/* 26 */
-	/***/ function(module, exports, __webpack_require__) {
-
-		'use strict';
-
-		/** @license MIT License (c) copyright 2010-2016 original author or authors */
-		/** @author Brian Cavalier */
-		/** @author John Hann */
-
-		var dispose = __webpack_require__(10);
-		var tryEvent = __webpack_require__(24);
-
-		module.exports = EventTargetSource;
-
-		function EventTargetSource(event, source, capture) {
-			this.event = event;
-			this.source = source;
-			this.capture = capture;
-		}
-
-		EventTargetSource.prototype.run = function (sink, scheduler) {
-			function addEvent(e) {
-				tryEvent.tryEvent(scheduler.now(), e, sink);
-			}
-
-			this.source.addEventListener(this.event, addEvent, this.capture);
-
-			return dispose.create(disposeEventTarget, { target: this, addEvent: addEvent });
-		};
-
-		function disposeEventTarget(info) {
-			var target = info.target;
-			target.source.removeEventListener(target.event, info.addEvent, target.capture);
-		}
-
-	/***/ },
-	/* 27 */
-	/***/ function(module, exports, __webpack_require__) {
-
-		'use strict';
-
-		/** @license MIT License (c) copyright 2010-2016 original author or authors */
-		/** @author Brian Cavalier */
-		/** @author John Hann */
-
-		var DeferredSink = __webpack_require__(22);
-		var dispose = __webpack_require__(10);
-		var tryEvent = __webpack_require__(24);
-
-		module.exports = EventEmitterSource;
-
-		function EventEmitterSource(event, source) {
-			this.event = event;
-			this.source = source;
-		}
-
-		EventEmitterSource.prototype.run = function (sink, scheduler) {
-			// NOTE: Because EventEmitter allows events in the same call stack as
-			// a listener is added, use a DeferredSink to buffer events
-			// until the stack clears, then propagate.  This maintains most.js's
-			// invariant that no event will be delivered in the same call stack
-			// as an observer begins observing.
-			var dsink = new DeferredSink(sink);
-
-			function addEventVariadic(a) {
-				var l = arguments.length;
-				if (l > 1) {
-					var arr = new Array(l);
-					for (var i = 0; i < l; ++i) {
-						arr[i] = arguments[i];
-					}
-					tryEvent.tryEvent(scheduler.now(), arr, dsink);
-				} else {
-					tryEvent.tryEvent(scheduler.now(), a, dsink);
-				}
-			}
-
-			this.source.addListener(this.event, addEventVariadic);
-
-			return dispose.create(disposeEventEmitter, { target: this, addEvent: addEventVariadic });
-		};
-
-		function disposeEventEmitter(info) {
-			var target = info.target;
-			target.source.removeListener(target.event, info.addEvent);
-		}
-
-	/***/ },
-	/* 28 */
-	/***/ function(module, exports, __webpack_require__) {
-
-		'use strict';
-
-		/** @license MIT License (c) copyright 2010-2016 original author or authors */
-		/** @author Brian Cavalier */
-		/** @author John Hann */
-
-		var runSource = __webpack_require__(29);
-
-		exports.observe = observe;
-		exports.drain = drain;
-
-		/**
-		 * Observe all the event values in the stream in time order. The
-		 * provided function `f` will be called for each event value
-		 * @param {function(x:T):*} f function to call with each event value
-		 * @param {Stream<T>} stream stream to observe
-		 * @return {Promise} promise that fulfills after the stream ends without
-		 *  an error, or rejects if the stream ends with an error.
-		 */
-		function observe(f, stream) {
-		  return runSource.withDefaultScheduler(f, stream.source);
-		}
-
-		/**
-		 * "Run" a stream by
-		 * @param stream
-		 * @return {*}
-		 */
-		function drain(stream) {
-		  return runSource.withDefaultScheduler(noop, stream.source);
-		}
-
-		function noop() {}
-
-	/***/ },
-	/* 29 */
-	/***/ function(module, exports, __webpack_require__) {
-
-		'use strict';
-
-		/** @license MIT License (c) copyright 2010-2016 original author or authors */
-		/** @author Brian Cavalier */
-		/** @author John Hann */
-
-		var Observer = __webpack_require__(30);
-		var dispose = __webpack_require__(10);
-		var defaultScheduler = __webpack_require__(31);
-
-		exports.withDefaultScheduler = withDefaultScheduler;
-		exports.withScheduler = withScheduler;
-
-		function withDefaultScheduler(f, source) {
-			return withScheduler(f, source, defaultScheduler);
-		}
-
-		function withScheduler(f, source, scheduler) {
-			return new Promise(function (resolve, reject) {
-				runSource(f, source, scheduler, resolve, reject);
-			});
-		}
-
-		function runSource(f, source, scheduler, resolve, reject) {
-			var disposable = dispose.settable();
-			var observer = new Observer(f, resolve, reject, disposable);
-
-			disposable.setDisposable(source.run(observer, scheduler));
-		}
-
-	/***/ },
-	/* 30 */
-	/***/ function(module, exports) {
-
-		"use strict";
-
-		/** @license MIT License (c) copyright 2010-2016 original author or authors */
-		/** @author Brian Cavalier */
-		/** @author John Hann */
-
-		module.exports = Observer;
-
-		/**
-		 * Sink that accepts functions to apply to each event, and to end, and error
-		 * signals.
-		 * @constructor
-		 */
-		function Observer(event, end, error, disposable) {
-			this._event = event;
-			this._end = end;
-			this._error = error;
-			this._disposable = disposable;
-			this.active = true;
-		}
-
-		Observer.prototype.event = function (t, x) {
-			if (!this.active) {
-				return;
-			}
-			this._event(x);
-		};
-
-		Observer.prototype.end = function (t, x) {
-			if (!this.active) {
-				return;
-			}
-			this.active = false;
-			disposeThen(this._end, this._error, this._disposable, x);
-		};
-
-		Observer.prototype.error = function (t, e) {
-			this.active = false;
-			disposeThen(this._error, this._error, this._disposable, e);
-		};
-
-		function disposeThen(end, error, disposable, x) {
-			Promise.resolve(disposable.dispose()).then(function () {
-				end(x);
-			}, error);
-		}
-
-	/***/ },
-	/* 31 */
-	/***/ function(module, exports, __webpack_require__) {
-
-		/* WEBPACK VAR INJECTION */(function(process) {'use strict';
-
-		var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
-
-		/** @license MIT License (c) copyright 2010-2016 original author or authors */
-		/** @author Brian Cavalier */
-		/** @author John Hann */
-
-		var Scheduler = __webpack_require__(33);
-		var setTimeoutTimer = __webpack_require__(34);
-		var nodeTimer = __webpack_require__(35);
-
-		var isNode = (typeof process === 'undefined' ? 'undefined' : _typeof(process)) === 'object' && typeof process.nextTick === 'function';
-
-		module.exports = new Scheduler(isNode ? nodeTimer : setTimeoutTimer);
-		/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(32)))
-
-	/***/ },
-	/* 32 */
-	/***/ function(module, exports) {
-
-		'use strict';
-
-		// shim for using process in browser
-
-		var process = module.exports = {};
-		var queue = [];
-		var draining = false;
-		var currentQueue;
-		var queueIndex = -1;
-
-		function cleanUpNextTick() {
-		    if (!draining || !currentQueue) {
-		        return;
-		    }
-		    draining = false;
-		    if (currentQueue.length) {
-		        queue = currentQueue.concat(queue);
-		    } else {
-		        queueIndex = -1;
-		    }
-		    if (queue.length) {
-		        drainQueue();
-		    }
-		}
-
-		function drainQueue() {
-		    if (draining) {
-		        return;
-		    }
-		    var timeout = setTimeout(cleanUpNextTick);
-		    draining = true;
-
-		    var len = queue.length;
-		    while (len) {
-		        currentQueue = queue;
-		        queue = [];
-		        while (++queueIndex < len) {
-		            if (currentQueue) {
-		                currentQueue[queueIndex].run();
-		            }
-		        }
-		        queueIndex = -1;
-		        len = queue.length;
-		    }
-		    currentQueue = null;
-		    draining = false;
-		    clearTimeout(timeout);
-		}
-
-		process.nextTick = function (fun) {
-		    var args = new Array(arguments.length - 1);
-		    if (arguments.length > 1) {
-		        for (var i = 1; i < arguments.length; i++) {
-		            args[i - 1] = arguments[i];
-		        }
-		    }
-		    queue.push(new Item(fun, args));
-		    if (queue.length === 1 && !draining) {
-		        setTimeout(drainQueue, 0);
-		    }
-		};
-
-		// v8 likes predictible objects
-		function Item(fun, array) {
-		    this.fun = fun;
-		    this.array = array;
-		}
-		Item.prototype.run = function () {
-		    this.fun.apply(null, this.array);
-		};
-		process.title = 'browser';
-		process.browser = true;
-		process.env = {};
-		process.argv = [];
-		process.version = ''; // empty string to avoid regexp issues
-		process.versions = {};
-
-		function noop() {}
-
-		process.on = noop;
-		process.addListener = noop;
-		process.once = noop;
-		process.off = noop;
-		process.removeListener = noop;
-		process.removeAllListeners = noop;
-		process.emit = noop;
-
-		process.binding = function (name) {
-		    throw new Error('process.binding is not supported');
-		};
-
-		process.cwd = function () {
-		    return '/';
-		};
-		process.chdir = function (dir) {
-		    throw new Error('process.chdir is not supported');
-		};
-		process.umask = function () {
-		    return 0;
-		};
-
-	/***/ },
-	/* 33 */
-	/***/ function(module, exports, __webpack_require__) {
-
-		'use strict';
-
-		/** @license MIT License (c) copyright 2010-2016 original author or authors */
-		/** @author Brian Cavalier */
-		/** @author John Hann */
-
-		var base = __webpack_require__(5);
-
-		module.exports = Scheduler;
-
-		function ScheduledTask(delay, period, task, scheduler) {
-			this.time = delay;
-			this.period = period;
-			this.task = task;
-			this.scheduler = scheduler;
-			this.active = true;
-		}
-
-		ScheduledTask.prototype.run = function () {
-			return this.task.run(this.time);
-		};
-
-		ScheduledTask.prototype.error = function (e) {
-			return this.task.error(this.time, e);
-		};
-
-		ScheduledTask.prototype.cancel = function () {
-			this.scheduler.cancel(this);
-			return this.task.dispose();
-		};
-
-		ScheduledTask.prototype.dispose = ScheduledTask.prototype.cancel;
-
-		function runTask(task) {
-			try {
-				return task.run();
-			} catch (e) {
-				return task.error(e);
-			}
-		}
-
-		function Scheduler(timer) {
-			this.timer = timer;
-
-			this._timer = null;
-			this._nextArrival = 0;
-			this._tasks = [];
-
-			var self = this;
-			this._runReadyTasksBound = function () {
-				self._runReadyTasks(self.now());
-			};
-		}
-
-		Scheduler.prototype.now = function () {
-			return this.timer.now();
-		};
-
-		Scheduler.prototype.asap = function (task) {
-			return this.schedule(0, -1, task);
-		};
-
-		Scheduler.prototype.delay = function (delay, task) {
-			return this.schedule(delay, -1, task);
-		};
-
-		Scheduler.prototype.periodic = function (period, task) {
-			return this.schedule(0, period, task);
-		};
-
-		Scheduler.prototype.schedule = function (delay, period, task) {
-			var now = this.now();
-			var st = new ScheduledTask(now + Math.max(0, delay), period, task, this);
-
-			insertByTime(st, this._tasks);
-			this._scheduleNextRun(now);
-			return st;
-		};
-
-		Scheduler.prototype.cancel = function (task) {
-			task.active = false;
-			var i = binarySearch(task.time, this._tasks);
-
-			if (i >= 0 && i < this._tasks.length) {
-				var at = base.findIndex(task, this._tasks[i].events);
-				if (at >= 0) {
-					this._tasks[i].events.splice(at, 1);
-					this._reschedule();
-				}
-			}
-		};
-
-		Scheduler.prototype.cancelAll = function (f) {
-			for (var i = 0; i < this._tasks.length; ++i) {
-				removeAllFrom(f, this._tasks[i]);
-			}
-			this._reschedule();
-		};
-
-		function removeAllFrom(f, timeslot) {
-			timeslot.events = base.removeAll(f, timeslot.events);
-		}
-
-		Scheduler.prototype._reschedule = function () {
-			if (this._tasks.length === 0) {
-				this._unschedule();
-			} else {
-				this._scheduleNextRun(this.now());
-			}
-		};
-
-		Scheduler.prototype._unschedule = function () {
-			this.timer.clearTimer(this._timer);
-			this._timer = null;
-		};
-
-		Scheduler.prototype._scheduleNextRun = function (now) {
-			if (this._tasks.length === 0) {
-				return;
-			}
-
-			var nextArrival = this._tasks[0].time;
-
-			if (this._timer === null) {
-				this._scheduleNextArrival(nextArrival, now);
-			} else if (nextArrival < this._nextArrival) {
-				this._unschedule();
-				this._scheduleNextArrival(nextArrival, now);
-			}
-		};
-
-		Scheduler.prototype._scheduleNextArrival = function (nextArrival, now) {
-			this._nextArrival = nextArrival;
-			var delay = Math.max(0, nextArrival - now);
-			this._timer = this.timer.setTimer(this._runReadyTasksBound, delay);
-		};
-
-		Scheduler.prototype._runReadyTasks = function (now) {
-			this._timer = null;
-
-			this._tasks = this._findAndRunTasks(now);
-
-			this._scheduleNextRun(this.now());
-		};
-
-		Scheduler.prototype._findAndRunTasks = function (now) {
-			var tasks = this._tasks;
-			var l = tasks.length;
-			var i = 0;
-
-			while (i < l && tasks[i].time <= now) {
-				++i;
-			}
-
-			this._tasks = tasks.slice(i);
-
-			// Run all ready tasks
-			for (var j = 0; j < i; ++j) {
-				this._tasks = runTasks(tasks[j], this._tasks);
-			}
-			return this._tasks;
-		};
-
-		function runTasks(timeslot, tasks) {
-			var events = timeslot.events;
-			for (var i = 0; i < events.length; ++i) {
-				var task = events[i];
-
-				if (task.active) {
-					runTask(task);
-
-					// Reschedule periodic repeating tasks
-					// Check active again, since a task may have canceled itself
-					if (task.period >= 0) {
-						task.time = task.time + task.period;
-						insertByTime(task, tasks);
-					}
-				}
-			}
-
-			return tasks;
-		}
-
-		function insertByTime(task, timeslots) {
-			var l = timeslots.length;
-
-			if (l === 0) {
-				timeslots.push(newTimeslot(task.time, [task]));
-				return;
-			}
-
-			var i = binarySearch(task.time, timeslots);
-
-			if (i >= l) {
-				timeslots.push(newTimeslot(task.time, [task]));
-			} else if (task.time === timeslots[i].time) {
-				timeslots[i].events.push(task);
-			} else {
-				timeslots.splice(i, 0, newTimeslot(task.time, [task]));
-			}
-		}
-
-		function binarySearch(t, sortedArray) {
-			var lo = 0;
-			var hi = sortedArray.length;
-			var mid, y;
-
-			while (lo < hi) {
-				mid = Math.floor((lo + hi) / 2);
-				y = sortedArray[mid];
-
-				if (t === y.time) {
-					return mid;
-				} else if (t < y.time) {
-					hi = mid;
-				} else {
-					lo = mid + 1;
-				}
-			}
-			return hi;
-		}
-
-		function newTimeslot(t, events) {
-			return { time: t, events: events };
-		}
-
-	/***/ },
-	/* 34 */
-	/***/ function(module, exports) {
-
-		"use strict";
-
-		/** @license MIT License (c) copyright 2010-2016 original author or authors */
-		/** @author Brian Cavalier */
-		/** @author John Hann */
-
-		/*global setTimeout, clearTimeout*/
-
-		module.exports = {
-			now: Date.now,
-			setTimer: function setTimer(f, dt) {
-				return setTimeout(f, dt);
-			},
-			clearTimer: function clearTimer(t) {
-				return clearTimeout(t);
-			}
-		};
-
-	/***/ },
-	/* 35 */
-	/***/ function(module, exports, __webpack_require__) {
-
-		'use strict';
-
-		/** @license MIT License (c) copyright 2010-2016 original author or authors */
-		/** @author Brian Cavalier */
-		/** @author John Hann */
-
-		var defer = __webpack_require__(23);
-
-		/*global setTimeout, clearTimeout*/
-
-		function Task(f) {
-			this.f = f;
-			this.active = true;
-		}
-
-		Task.prototype.run = function () {
-			if (!this.active) {
-				return;
-			}
-			var f = this.f;
-			return f();
-		};
-
-		Task.prototype.error = function (e) {
-			throw e;
-		};
-
-		Task.prototype.cancel = function () {
-			this.active = false;
-		};
-
-		function runAsTask(f) {
-			var task = new Task(f);
-			defer(task);
-			return task;
-		}
-
-		module.exports = {
-			now: Date.now,
-			setTimer: function setTimer(f, dt) {
-				return dt <= 0 ? runAsTask(f) : setTimeout(f, dt);
-			},
-			clearTimer: function clearTimer(t) {
-				return t instanceof Task ? t.cancel() : clearTimeout(t);
-			}
-		};
-
-	/***/ },
-	/* 36 */
-	/***/ function(module, exports, __webpack_require__) {
-
-		'use strict';
-
-		/** @license MIT License (c) copyright 2010-2016 original author or authors */
-		/** @author Brian Cavalier */
-		/** @author John Hann */
-
-		var Stream = __webpack_require__(4);
-		var Pipe = __webpack_require__(37);
-
-		exports.loop = loop;
-
-		/**
-		 * Generalized feedback loop. Call a stepper function for each event. The stepper
-		 * will be called with 2 params: the current seed and the an event value.  It must
-		 * return a new { seed, value } pair. The `seed` will be fed back into the next
-		 * invocation of stepper, and the `value` will be propagated as the event value.
-		 * @param {function(seed:*, value:*):{seed:*, value:*}} stepper loop step function
-		 * @param {*} seed initial seed value passed to first stepper call
-		 * @param {Stream} stream event stream
-		 * @returns {Stream} new stream whose values are the `value` field of the objects
-		 * returned by the stepper
-		 */
-		function loop(stepper, seed, stream) {
-			return new Stream(new Loop(stepper, seed, stream.source));
-		}
-
-		function Loop(stepper, seed, source) {
-			this.step = stepper;
-			this.seed = seed;
-			this.source = source;
-		}
-
-		Loop.prototype.run = function (sink, scheduler) {
-			return this.source.run(new LoopSink(this.step, this.seed, sink), scheduler);
-		};
-
-		function LoopSink(stepper, seed, sink) {
-			this.step = stepper;
-			this.seed = seed;
-			this.sink = sink;
-		}
-
-		LoopSink.prototype.error = Pipe.prototype.error;
-
-		LoopSink.prototype.event = function (t, x) {
-			var result = this.step(this.seed, x);
-			this.seed = result.seed;
-			this.sink.event(t, result.value);
-		};
-
-		LoopSink.prototype.end = function (t) {
-			this.sink.end(t, this.seed);
-		};
-
-	/***/ },
-	/* 37 */
-	/***/ function(module, exports) {
-
-		"use strict";
-
-		/** @license MIT License (c) copyright 2010-2016 original author or authors */
-		/** @author Brian Cavalier */
-		/** @author John Hann */
-
-		module.exports = Pipe;
-
-		/**
-		 * A sink mixin that simply forwards event, end, and error to
-		 * another sink.
-		 * @param sink
-		 * @constructor
-		 */
-		function Pipe(sink) {
-		  this.sink = sink;
-		}
-
-		Pipe.prototype.event = function (t, x) {
-		  return this.sink.event(t, x);
-		};
-
-		Pipe.prototype.end = function (t, x) {
-		  return this.sink.end(t, x);
-		};
-
-		Pipe.prototype.error = function (t, e) {
-		  return this.sink.error(t, e);
-		};
-
-	/***/ },
-	/* 38 */
-	/***/ function(module, exports, __webpack_require__) {
-
-		'use strict';
-
-		/** @license MIT License (c) copyright 2010-2016 original author or authors */
-		/** @author Brian Cavalier */
-		/** @author John Hann */
-
-		var Stream = __webpack_require__(4);
-		var Pipe = __webpack_require__(37);
-		var runSource = __webpack_require__(29);
-		var dispose = __webpack_require__(10);
-		var PropagateTask = __webpack_require__(8);
-
-		exports.scan = scan;
-		exports.reduce = reduce;
-
-		/**
-		 * Create a stream containing successive reduce results of applying f to
-		 * the previous reduce result and the current stream item.
-		 * @param {function(result:*, x:*):*} f reducer function
-		 * @param {*} initial initial value
-		 * @param {Stream} stream stream to scan
-		 * @returns {Stream} new stream containing successive reduce results
-		 */
-		function scan(f, initial, stream) {
-			return new Stream(new Scan(f, initial, stream.source));
-		}
-
-		function Scan(f, z, source) {
-			this.source = source;
-			this.f = f;
-			this.value = z;
-		}
-
-		Scan.prototype.run = function (sink, scheduler) {
-			var d1 = scheduler.asap(PropagateTask.event(this.value, sink));
-			var d2 = this.source.run(new ScanSink(this.f, this.value, sink), scheduler);
-			return dispose.all([d1, d2]);
-		};
-
-		function ScanSink(f, z, sink) {
-			this.f = f;
-			this.value = z;
-			this.sink = sink;
-		}
-
-		ScanSink.prototype.event = function (t, x) {
-			var f = this.f;
-			this.value = f(this.value, x);
-			this.sink.event(t, this.value);
-		};
-
-		ScanSink.prototype.error = Pipe.prototype.error;
-		ScanSink.prototype.end = Pipe.prototype.end;
-
-		/**
-		 * Reduce a stream to produce a single result.  Note that reducing an infinite
-		 * stream will return a Promise that never fulfills, but that may reject if an error
-		 * occurs.
-		 * @param {function(result:*, x:*):*} f reducer function
-		 * @param {*} initial initial value
-		 * @param {Stream} stream to reduce
-		 * @returns {Promise} promise for the file result of the reduce
-		 */
-		function reduce(f, initial, stream) {
-			return runSource.withDefaultScheduler(noop, new Reduce(f, initial, stream.source));
-		}
-
-		function Reduce(f, z, source) {
-			this.source = source;
-			this.f = f;
-			this.value = z;
-		}
-
-		Reduce.prototype.run = function (sink, scheduler) {
-			return this.source.run(new ReduceSink(this.f, this.value, sink), scheduler);
-		};
-
-		function ReduceSink(f, z, sink) {
-			this.f = f;
-			this.value = z;
-			this.sink = sink;
-		}
-
-		ReduceSink.prototype.event = function (t, x) {
-			var f = this.f;
-			this.value = f(this.value, x);
-			this.sink.event(t, this.value);
-		};
-
-		ReduceSink.prototype.error = Pipe.prototype.error;
-
-		ReduceSink.prototype.end = function (t) {
-			this.sink.end(t, this.value);
-		};
-
-		function noop() {}
-
-	/***/ },
-	/* 39 */
-	/***/ function(module, exports, __webpack_require__) {
-
-		'use strict';
-
-		/** @license MIT License (c) copyright 2010-2016 original author or authors */
-		/** @author Brian Cavalier */
-		/** @author John Hann */
-
-		var Stream = __webpack_require__(4);
-
-		exports.unfold = unfold;
-
-		/**
-		 * Compute a stream by unfolding tuples of future values from a seed value
-		 * Event times may be controlled by returning a Promise from f
-		 * @param {function(seed:*):{value:*, seed:*, done:boolean}|Promise<{value:*, seed:*, done:boolean}>} f unfolding function accepts
-		 *  a seed and returns a new tuple with a value, new seed, and boolean done flag.
-		 *  If tuple.done is true, the stream will end.
-		 * @param {*} seed seed value
-		 * @returns {Stream} stream containing all value of all tuples produced by the
-		 *  unfolding function.
-		 */
-		function unfold(f, seed) {
-			return new Stream(new UnfoldSource(f, seed));
-		}
-
-		function UnfoldSource(f, seed) {
-			this.f = f;
-			this.value = seed;
-		}
-
-		UnfoldSource.prototype.run = function (sink, scheduler) {
-			return new Unfold(this.f, this.value, sink, scheduler);
-		};
-
-		function Unfold(f, x, sink, scheduler) {
-			this.f = f;
-			this.sink = sink;
-			this.scheduler = scheduler;
-			this.active = true;
-
-			var self = this;
-			function err(e) {
-				self.sink.error(self.scheduler.now(), e);
-			}
-
-			function start(unfold) {
-				return stepUnfold(unfold, x);
-			}
-
-			Promise.resolve(this).then(start).catch(err);
-		}
-
-		Unfold.prototype.dispose = function () {
-			this.active = false;
-		};
-
-		function stepUnfold(unfold, x) {
-			var f = unfold.f;
-			return Promise.resolve(f(x)).then(function (tuple) {
-				return continueUnfold(unfold, tuple);
-			});
-		}
-
-		function continueUnfold(unfold, tuple) {
-			if (tuple.done) {
-				unfold.sink.end(unfold.scheduler.now(), tuple.value);
-				return tuple.value;
-			}
-
-			unfold.sink.event(unfold.scheduler.now(), tuple.value);
-
-			if (!unfold.active) {
-				return tuple.value;
-			}
-			return stepUnfold(unfold, tuple.seed);
-		}
-
-	/***/ },
-	/* 40 */
-	/***/ function(module, exports, __webpack_require__) {
-
-		'use strict';
-
-		/** @license MIT License (c) copyright 2010-2016 original author or authors */
-		/** @author Brian Cavalier */
-		/** @author John Hann */
-
-		var Stream = __webpack_require__(4);
-
-		exports.iterate = iterate;
-
-		/**
-		 * Compute a stream by iteratively calling f to produce values
-		 * Event times may be controlled by returning a Promise from f
-		 * @param {function(x:*):*|Promise<*>} f
-		 * @param {*} x initial value
-		 * @returns {Stream}
-		 */
-		function iterate(f, x) {
-			return new Stream(new IterateSource(f, x));
-		}
-
-		function IterateSource(f, x) {
-			this.f = f;
-			this.value = x;
-		}
-
-		IterateSource.prototype.run = function (sink, scheduler) {
-			return new Iterate(this.f, this.value, sink, scheduler);
-		};
-
-		function Iterate(f, initial, sink, scheduler) {
-			this.f = f;
-			this.sink = sink;
-			this.scheduler = scheduler;
-			this.active = true;
-
-			var x = initial;
-
-			var self = this;
-			function err(e) {
-				self.sink.error(self.scheduler.now(), e);
-			}
-
-			function start(iterate) {
-				return stepIterate(iterate, x);
-			}
-
-			Promise.resolve(this).then(start).catch(err);
-		}
-
-		Iterate.prototype.dispose = function () {
-			this.active = false;
-		};
-
-		function stepIterate(iterate, x) {
-			iterate.sink.event(iterate.scheduler.now(), x);
-
-			if (!iterate.active) {
-				return x;
-			}
-
-			var f = iterate.f;
-			return Promise.resolve(f(x)).then(function (y) {
-				return continueIterate(iterate, y);
-			});
-		}
-
-		function continueIterate(iterate, x) {
-			return !iterate.active ? iterate.value : stepIterate(iterate, x);
-		}
-
-	/***/ },
-	/* 41 */
-	/***/ function(module, exports, __webpack_require__) {
-
-		'use strict';
-
-		/** @license MIT License (c) copyright 2010-2014 original author or authors */
-		/** @author Brian Cavalier */
-		/** @author John Hann */
-
-		var Stream = __webpack_require__(4);
-		var base = __webpack_require__(5);
-
-		exports.generate = generate;
-
-		/**
-		 * Compute a stream using an *async* generator, which yields promises
-		 * to control event times.
-		 * @param f
-		 * @returns {Stream}
-		 */
-		function generate(f /*, ...args */) {
-			return new Stream(new GenerateSource(f, base.tail(arguments)));
-		}
-
-		function GenerateSource(f, args) {
-			this.f = f;
-			this.args = args;
-		}
-
-		GenerateSource.prototype.run = function (sink, scheduler) {
-			return new Generate(this.f.apply(void 0, this.args), sink, scheduler);
-		};
-
-		function Generate(iterator, sink, scheduler) {
-			this.iterator = iterator;
-			this.sink = sink;
-			this.scheduler = scheduler;
-			this.active = true;
-
-			var self = this;
-			function err(e) {
-				self.sink.error(self.scheduler.now(), e);
-			}
-
-			Promise.resolve(this).then(next).catch(err);
-		}
-
-		function next(generate, x) {
-			return generate.active ? handle(generate, generate.iterator.next(x)) : x;
-		}
-
-		function handle(generate, result) {
-			if (result.done) {
-				return generate.sink.end(generate.scheduler.now(), result.value);
-			}
-
-			return Promise.resolve(result.value).then(function (x) {
-				return emit(generate, x);
-			}, function (e) {
-				return error(generate, e);
-			});
-		}
-
-		function emit(generate, x) {
-			generate.sink.event(generate.scheduler.now(), x);
-			return next(generate, x);
-		}
-
-		function error(generate, e) {
-			return handle(generate, generate.iterator.throw(e));
-		}
-
-		Generate.prototype.dispose = function () {
-			this.active = false;
-		};
-
-	/***/ },
-	/* 42 */
-	/***/ function(module, exports, __webpack_require__) {
-
-		'use strict';
-
-		/** @license MIT License (c) copyright 2010-2016 original author or authors */
-		/** @author Brian Cavalier */
-		/** @author John Hann */
-
-		var streamOf = __webpack_require__(6).of;
-		var continueWith = __webpack_require__(43).continueWith;
-
-		exports.concat = concat;
-		exports.cycle = cycle;
-		exports.cons = cons;
-
-		/**
-		 * @param {*} x value to prepend
-		 * @param {Stream} stream
-		 * @returns {Stream} new stream with x prepended
-		 */
-		function cons(x, stream) {
-		  return concat(streamOf(x), stream);
-		}
-
-		/**
-		 * @param {Stream} left
-		 * @param {Stream} right
-		 * @returns {Stream} new stream containing all events in left followed by all
-		 *  events in right.  This *timeshifts* right to the end of left.
-		 */
-		function concat(left, right) {
-		  return continueWith(function () {
-		    return right;
-		  }, left);
-		}
-
-		/**
-		 * @deprecated
-		 * Tie stream into a circle, creating an infinite stream
-		 * @param {Stream} stream
-		 * @returns {Stream} new infinite stream
-		 */
-		function cycle(stream) {
-		  return continueWith(function cycleNext() {
-		    return cycle(stream);
-		  }, stream);
-		}
-
-	/***/ },
-	/* 43 */
-	/***/ function(module, exports, __webpack_require__) {
-
-		'use strict';
-
-		/** @license MIT License (c) copyright 2010-2016 original author or authors */
-		/** @author Brian Cavalier */
-		/** @author John Hann */
-
-		var Stream = __webpack_require__(4);
-		var Sink = __webpack_require__(37);
-		var dispose = __webpack_require__(10);
-		var isPromise = __webpack_require__(13).isPromise;
-
-		exports.continueWith = continueWith;
-
-		function continueWith(f, stream) {
-			return new Stream(new ContinueWith(f, stream.source));
-		}
-
-		function ContinueWith(f, source) {
-			this.f = f;
-			this.source = source;
-		}
-
-		ContinueWith.prototype.run = function (sink, scheduler) {
-			return new ContinueWithSink(this.f, this.source, sink, scheduler);
-		};
-
-		function ContinueWithSink(f, source, sink, scheduler) {
-			this.f = f;
-			this.sink = sink;
-			this.scheduler = scheduler;
-			this.active = true;
-			this.disposable = dispose.once(source.run(this, scheduler));
-		}
-
-		ContinueWithSink.prototype.error = Sink.prototype.error;
-
-		ContinueWithSink.prototype.event = function (t, x) {
-			if (!this.active) {
-				return;
-			}
-			this.sink.event(t, x);
-		};
-
-		ContinueWithSink.prototype.end = function (t, x) {
-			if (!this.active) {
-				return;
-			}
-
-			var result = dispose.tryDispose(t, this.disposable, this.sink);
-			this.disposable = isPromise(result) ? dispose.promised(this._thenContinue(result, x)) : this._continue(this.f, x);
-		};
-
-		ContinueWithSink.prototype._thenContinue = function (p, x) {
-			var self = this;
-			return p.then(function () {
-				return self._continue(self.f, x);
-			});
-		};
-
-		ContinueWithSink.prototype._continue = function (f, x) {
-			return f(x).source.run(this.sink, this.scheduler);
-		};
-
-		ContinueWithSink.prototype.dispose = function () {
-			this.active = false;
-			return this.disposable.dispose();
-		};
-
-	/***/ },
-	/* 44 */
-	/***/ function(module, exports, __webpack_require__) {
-
-		'use strict';
-
-		/** @license MIT License (c) copyright 2010-2016 original author or authors */
-		/** @author Brian Cavalier */
-		/** @author John Hann */
-
-		var Stream = __webpack_require__(4);
-		var Map = __webpack_require__(45);
-
-		exports.map = map;
-		exports.constant = constant;
-		exports.tap = tap;
-
-		/**
-		 * Transform each value in the stream by applying f to each
-		 * @param {function(*):*} f mapping function
-		 * @param {Stream} stream stream to map
-		 * @returns {Stream} stream containing items transformed by f
-		 */
-		function map(f, stream) {
-		  return new Stream(Map.create(f, stream.source));
-		}
-
-		/**
-		 * Replace each value in the stream with x
-		 * @param {*} x
-		 * @param {Stream} stream
-		 * @returns {Stream} stream containing items replaced with x
-		 */
-		function constant(x, stream) {
-		  return map(function () {
-		    return x;
-		  }, stream);
-		}
-
-		/**
-		 * Perform a side effect for each item in the stream
-		 * @param {function(x:*):*} f side effect to execute for each item. The
-		 *  return value will be discarded.
-		 * @param {Stream} stream stream to tap
-		 * @returns {Stream} new stream containing the same items as this stream
-		 */
-		function tap(f, stream) {
-		  return map(function (x) {
-		    f(x);
-		    return x;
-		  }, stream);
-		}
-
-	/***/ },
-	/* 45 */
-	/***/ function(module, exports, __webpack_require__) {
-
-		'use strict';
-
-		/** @license MIT License (c) copyright 2010-2016 original author or authors */
-		/** @author Brian Cavalier */
-		/** @author John Hann */
-
-		var Pipe = __webpack_require__(37);
-		var Filter = __webpack_require__(46);
-		var FilterMap = __webpack_require__(47);
-		var base = __webpack_require__(5);
-
-		module.exports = Map;
-
-		function Map(f, source) {
-			this.f = f;
-			this.source = source;
-		}
-
-		/**
-		 * Create a mapped source, fusing adjacent map.map, filter.map,
-		 * and filter.map.map if possible
-		 * @param {function(*):*} f mapping function
-		 * @param {{run:function}} source source to map
-		 * @returns {Map|FilterMap} mapped source, possibly fused
-		 */
-		Map.create = function createMap(f, source) {
-			if (source instanceof Map) {
-				return new Map(base.compose(f, source.f), source.source);
-			}
-
-			if (source instanceof Filter) {
-				return new FilterMap(source.p, f, source.source);
-			}
-
-			return new Map(f, source);
-		};
-
-		Map.prototype.run = function (sink, scheduler) {
-			return this.source.run(new MapSink(this.f, sink), scheduler);
-		};
-
-		function MapSink(f, sink) {
-			this.f = f;
-			this.sink = sink;
-		}
-
-		MapSink.prototype.end = Pipe.prototype.end;
-		MapSink.prototype.error = Pipe.prototype.error;
-
-		MapSink.prototype.event = function (t, x) {
-			var f = this.f;
-			this.sink.event(t, f(x));
-		};
-
-	/***/ },
-	/* 46 */
-	/***/ function(module, exports, __webpack_require__) {
-
-		'use strict';
-
-		/** @license MIT License (c) copyright 2010-2016 original author or authors */
-		/** @author Brian Cavalier */
-		/** @author John Hann */
-
-		var Pipe = __webpack_require__(37);
-
-		module.exports = Filter;
-
-		function Filter(p, source) {
-			this.p = p;
-			this.source = source;
-		}
-
-		/**
-		 * Create a filtered source, fusing adjacent filter.filter if possible
-		 * @param {function(x:*):boolean} p filtering predicate
-		 * @param {{run:function}} source source to filter
-		 * @returns {Filter} filtered source
-		 */
-		Filter.create = function createFilter(p, source) {
-			if (source instanceof Filter) {
-				return new Filter(and(source.p, p), source.source);
-			}
-
-			return new Filter(p, source);
-		};
-
-		Filter.prototype.run = function (sink, scheduler) {
-			return this.source.run(new FilterSink(this.p, sink), scheduler);
-		};
-
-		function FilterSink(p, sink) {
-			this.p = p;
-			this.sink = sink;
-		}
-
-		FilterSink.prototype.end = Pipe.prototype.end;
-		FilterSink.prototype.error = Pipe.prototype.error;
-
-		FilterSink.prototype.event = function (t, x) {
-			var p = this.p;
-			p(x) && this.sink.event(t, x);
-		};
-
-		function and(p, q) {
-			return function (x) {
-				return p(x) && q(x);
-			};
-		}
-
-	/***/ },
-	/* 47 */
-	/***/ function(module, exports, __webpack_require__) {
-
-		'use strict';
-
-		/** @license MIT License (c) copyright 2010-2016 original author or authors */
-		/** @author Brian Cavalier */
-		/** @author John Hann */
-
-		var Pipe = __webpack_require__(37);
-
-		module.exports = FilterMap;
-
-		function FilterMap(p, f, source) {
-			this.p = p;
-			this.f = f;
-			this.source = source;
-		}
-
-		FilterMap.prototype.run = function (sink, scheduler) {
-			return this.source.run(new FilterMapSink(this.p, this.f, sink), scheduler);
-		};
-
-		function FilterMapSink(p, f, sink) {
-			this.p = p;
-			this.f = f;
-			this.sink = sink;
-		}
-
-		FilterMapSink.prototype.event = function (t, x) {
-			var f = this.f;
-			var p = this.p;
-			p(x) && this.sink.event(t, f(x));
-		};
-
-		FilterMapSink.prototype.end = Pipe.prototype.end;
-		FilterMapSink.prototype.error = Pipe.prototype.error;
-
-	/***/ },
-	/* 48 */
-	/***/ function(module, exports, __webpack_require__) {
-
-		'use strict';
-
-		/** @license MIT License (c) copyright 2010-2016 original author or authors */
-		/** @author Brian Cavalier */
-		/** @author John Hann */
-
-		var combine = __webpack_require__(49).combine;
-		var apply = __webpack_require__(5).apply;
-
-		exports.ap = ap;
-
-		/**
-		 * Assume fs is a stream containing functions, and apply the latest function
-		 * in fs to the latest value in xs.
-		 * fs:         --f---------g--------h------>
-		 * xs:         -a-------b-------c-------d-->
-		 * ap(fs, xs): --fa-----fb-gb---gc--hc--hd->
-		 * @param {Stream} fs stream of functions to apply to the latest x
-		 * @param {Stream} xs stream of values to which to apply all the latest f
-		 * @returns {Stream} stream containing all the applications of fs to xs
-		 */
-		function ap(fs, xs) {
-		  return combine(apply, fs, xs);
-		}
-
-	/***/ },
-	/* 49 */
-	/***/ function(module, exports, __webpack_require__) {
-
-		'use strict';
-
-		/** @license MIT License (c) copyright 2010-2016 original author or authors */
-		/** @author Brian Cavalier */
-		/** @author John Hann */
-
-		var Stream = __webpack_require__(4);
-		var transform = __webpack_require__(44);
-		var core = __webpack_require__(6);
-		var Pipe = __webpack_require__(37);
-		var IndexSink = __webpack_require__(50);
-		var dispose = __webpack_require__(10);
-		var base = __webpack_require__(5);
-		var invoke = __webpack_require__(51);
-
-		var map = base.map;
-		var tail = base.tail;
-
-		exports.combineArray = combineArray;
-		exports.combine = combine;
-
-		/**
-		 * Combine latest events from all input streams
-		 * @param {function(...events):*} f function to combine most recent events
-		 * @returns {Stream} stream containing the result of applying f to the most recent
-		 *  event of each input stream, whenever a new event arrives on any stream.
-		 */
-		function combine(f /*, ...streams */) {
-			return combineArray(f, tail(arguments));
-		}
-
-		/**
-		 * Combine latest events from all input streams
-		 * @param {function(...events):*} f function to combine most recent events
-		 * @param {[Stream]} streams most recent events
-		 * @returns {Stream} stream containing the result of applying f to the most recent
-		 *  event of each input stream, whenever a new event arrives on any stream.
-		 */
-		function combineArray(f, streams) {
-			var l = streams.length;
-			return l === 0 ? core.empty() : l === 1 ? transform.map(f, streams[0]) : new Stream(combineSources(f, streams));
-		}
-
-		function combineSources(f, streams) {
-			return new Combine(f, map(getSource, streams));
-		}
-
-		function getSource(stream) {
-			return stream.source;
-		}
-
-		function Combine(f, sources) {
-			this.f = f;
-			this.sources = sources;
-		}
-
-		Combine.prototype.run = function (sink, scheduler) {
-			var l = this.sources.length;
-			var disposables = new Array(l);
-			var sinks = new Array(l);
-
-			var mergeSink = new CombineSink(disposables, sinks, sink, this.f);
-
-			for (var indexSink, i = 0; i < l; ++i) {
-				indexSink = sinks[i] = new IndexSink(i, mergeSink);
-				disposables[i] = this.sources[i].run(indexSink, scheduler);
-			}
-
-			return dispose.all(disposables);
-		};
-
-		function CombineSink(disposables, sinks, sink, f) {
-			this.sink = sink;
-			this.disposables = disposables;
-			this.sinks = sinks;
-			this.f = f;
-
-			var l = sinks.length;
-			this.awaiting = l;
-			this.values = new Array(l);
-			this.hasValue = new Array(l);
-			for (var i = 0; i < l; ++i) {
-				this.hasValue[i] = false;
-			}
-
-			this.activeCount = sinks.length;
-		}
-
-		CombineSink.prototype.error = Pipe.prototype.error;
-
-		CombineSink.prototype.event = function (t, indexedValue) {
-			var i = indexedValue.index;
-			var awaiting = this._updateReady(i);
-
-			this.values[i] = indexedValue.value;
-			if (awaiting === 0) {
-				this.sink.event(t, invoke(this.f, this.values));
-			}
-		};
-
-		CombineSink.prototype._updateReady = function (index) {
-			if (this.awaiting > 0) {
-				if (!this.hasValue[index]) {
-					this.hasValue[index] = true;
-					this.awaiting -= 1;
-				}
-			}
-			return this.awaiting;
-		};
-
-		CombineSink.prototype.end = function (t, indexedValue) {
-			dispose.tryDispose(t, this.disposables[indexedValue.index], this.sink);
-			if (--this.activeCount === 0) {
-				this.sink.end(t, indexedValue.value);
-			}
-		};
-
-	/***/ },
-	/* 50 */
-	/***/ function(module, exports, __webpack_require__) {
-
-		'use strict';
-
-		/** @license MIT License (c) copyright 2010-2016 original author or authors */
-		/** @author Brian Cavalier */
-		/** @author John Hann */
-
-		var Sink = __webpack_require__(37);
-
-		module.exports = IndexSink;
-
-		function IndexSink(i, sink) {
-			this.sink = sink;
-			this.index = i;
-			this.active = true;
-			this.value = void 0;
-		}
-
-		IndexSink.prototype.event = function (t, x) {
-			if (!this.active) {
-				return;
-			}
-			this.value = x;
-			this.sink.event(t, this);
-		};
-
-		IndexSink.prototype.end = function (t, x) {
-			if (!this.active) {
-				return;
-			}
-			this.active = false;
-			this.sink.end(t, { index: this.index, value: x });
-		};
-
-		IndexSink.prototype.error = Sink.prototype.error;
-
-	/***/ },
-	/* 51 */
-	/***/ function(module, exports) {
-
-		"use strict";
-
-		/** @license MIT License (c) copyright 2010-2016 original author or authors */
-		/** @author Brian Cavalier */
-		/** @author John Hann */
-
-		module.exports = invoke;
-
-		function invoke(f, args) {
-			/*eslint complexity: [2,7]*/
-			switch (args.length) {
-				case 0:
-					return f();
-				case 1:
-					return f(args[0]);
-				case 2:
-					return f(args[0], args[1]);
-				case 3:
-					return f(args[0], args[1], args[2]);
-				case 4:
-					return f(args[0], args[1], args[2], args[3]);
-				case 5:
-					return f(args[0], args[1], args[2], args[3], args[4]);
-				default:
-					return f.apply(void 0, args);
-			}
-		}
-
-	/***/ },
-	/* 52 */
-	/***/ function(module, exports, __webpack_require__) {
-
-		'use strict';
-
-		/** @license MIT License (c) copyright 2010-2016 original author or authors */
-		/** @author Brian Cavalier */
-		/** @author John Hann */
-
-		var Stream = __webpack_require__(4);
-
-		exports.transduce = transduce;
-
-		/**
-		 * Transform a stream by passing its events through a transducer.
-		 * @param  {function} transducer transducer function
-		 * @param  {Stream} stream stream whose events will be passed through the
-		 *  transducer
-		 * @return {Stream} stream of events transformed by the transducer
-		 */
-		function transduce(transducer, stream) {
-			return new Stream(new Transduce(transducer, stream.source));
-		}
-
-		function Transduce(transducer, source) {
-			this.transducer = transducer;
-			this.source = source;
-		}
-
-		Transduce.prototype.run = function (sink, scheduler) {
-			var xf = this.transducer(new Transformer(sink));
-			return this.source.run(new TransduceSink(getTxHandler(xf), sink), scheduler);
-		};
-
-		function TransduceSink(adapter, sink) {
-			this.xf = adapter;
-			this.sink = sink;
-		}
-
-		TransduceSink.prototype.event = function (t, x) {
-			var next = this.xf.step(t, x);
-
-			return this.xf.isReduced(next) ? this.sink.end(t, this.xf.getResult(next)) : next;
-		};
-
-		TransduceSink.prototype.end = function (t, x) {
-			return this.xf.result(x);
-		};
-
-		TransduceSink.prototype.error = function (t, e) {
-			return this.sink.error(t, e);
-		};
-
-		function Transformer(sink) {
-			this.time = -Infinity;
-			this.sink = sink;
-		}
-
-		Transformer.prototype['@@transducer/init'] = Transformer.prototype.init = function () {};
-
-		Transformer.prototype['@@transducer/step'] = Transformer.prototype.step = function (t, x) {
-			if (!isNaN(t)) {
-				this.time = Math.max(t, this.time);
-			}
-			return this.sink.event(this.time, x);
-		};
-
-		Transformer.prototype['@@transducer/result'] = Transformer.prototype.result = function (x) {
-			return this.sink.end(this.time, x);
-		};
-
-		/**
-		 * Given an object supporting the new or legacy transducer protocol,
-		 * create an adapter for it.
-		 * @param {object} tx transform
-		 * @returns {TxAdapter|LegacyTxAdapter}
-		 */
-		function getTxHandler(tx) {
-			return typeof tx['@@transducer/step'] === 'function' ? new TxAdapter(tx) : new LegacyTxAdapter(tx);
-		}
-
-		/**
-		 * Adapter for new official transducer protocol
-		 * @param {object} tx transform
-		 * @constructor
-		 */
-		function TxAdapter(tx) {
-			this.tx = tx;
-		}
-
-		TxAdapter.prototype.step = function (t, x) {
-			return this.tx['@@transducer/step'](t, x);
-		};
-		TxAdapter.prototype.result = function (x) {
-			return this.tx['@@transducer/result'](x);
-		};
-		TxAdapter.prototype.isReduced = function (x) {
-			return x != null && x['@@transducer/reduced'];
-		};
-		TxAdapter.prototype.getResult = function (x) {
-			return x['@@transducer/value'];
-		};
-
-		/**
-		 * Adapter for older transducer protocol
-		 * @param {object} tx transform
-		 * @constructor
-		 */
-		function LegacyTxAdapter(tx) {
-			this.tx = tx;
-		}
-
-		LegacyTxAdapter.prototype.step = function (t, x) {
-			return this.tx.step(t, x);
-		};
-		LegacyTxAdapter.prototype.result = function (x) {
-			return this.tx.result(x);
-		};
-		LegacyTxAdapter.prototype.isReduced = function (x) {
-			return x != null && x.__transducers_reduced__;
-		};
-		LegacyTxAdapter.prototype.getResult = function (x) {
-			return x.value;
-		};
-
-	/***/ },
-	/* 53 */
-	/***/ function(module, exports, __webpack_require__) {
-
-		'use strict';
-
-		/** @license MIT License (c) copyright 2010-2016 original author or authors */
-		/** @author Brian Cavalier */
-		/** @author John Hann */
-
-		var mergeConcurrently = __webpack_require__(54).mergeConcurrently;
-		var mergeMapConcurrently = __webpack_require__(54).mergeMapConcurrently;
-
-		exports.flatMap = flatMap;
-		exports.join = join;
-
-		/**
-		 * Map each value in the stream to a new stream, and merge it into the
-		 * returned outer stream. Event arrival times are preserved.
-		 * @param {function(x:*):Stream} f chaining function, must return a Stream
-		 * @param {Stream} stream
-		 * @returns {Stream} new stream containing all events from each stream returned by f
-		 */
-		function flatMap(f, stream) {
-		  return mergeMapConcurrently(f, Infinity, stream);
-		}
-
-		/**
-		 * Monadic join. Flatten a Stream<Stream<X>> to Stream<X> by merging inner
-		 * streams to the outer. Event arrival times are preserved.
-		 * @param {Stream<Stream<X>>} stream stream of streams
-		 * @returns {Stream<X>} new stream containing all events of all inner streams
-		 */
-		function join(stream) {
-		  return mergeConcurrently(Infinity, stream);
-		}
-
-	/***/ },
-	/* 54 */
-	/***/ function(module, exports, __webpack_require__) {
-
-		'use strict';
-
-		/** @license MIT License (c) copyright 2010-2016 original author or authors */
-		/** @author Brian Cavalier */
-		/** @author John Hann */
-
-		var Stream = __webpack_require__(4);
-		var dispose = __webpack_require__(10);
-		var LinkedList = __webpack_require__(55);
-		var identity = __webpack_require__(5).id;
-
-		exports.mergeConcurrently = mergeConcurrently;
-		exports.mergeMapConcurrently = mergeMapConcurrently;
-
-		function mergeConcurrently(concurrency, stream) {
-			return mergeMapConcurrently(identity, concurrency, stream);
-		}
-
-		function mergeMapConcurrently(f, concurrency, stream) {
-			return new Stream(new MergeConcurrently(f, concurrency, stream.source));
-		}
-
-		function MergeConcurrently(f, concurrency, source) {
-			this.f = f;
-			this.concurrency = concurrency;
-			this.source = source;
-		}
-
-		MergeConcurrently.prototype.run = function (sink, scheduler) {
-			return new Outer(this.f, this.concurrency, this.source, sink, scheduler);
-		};
-
-		function Outer(f, concurrency, source, sink, scheduler) {
-			this.f = f;
-			this.concurrency = concurrency;
-			this.sink = sink;
-			this.scheduler = scheduler;
-			this.pending = [];
-			this.current = new LinkedList();
-			this.disposable = dispose.once(source.run(this, scheduler));
-			this.active = true;
-		}
-
-		Outer.prototype.event = function (t, x) {
-			this._addInner(t, x);
-		};
-
-		Outer.prototype._addInner = function (t, stream) {
-			if (this.current.length < this.concurrency) {
-				this._startInner(t, stream);
-			} else {
-				this.pending.push(stream);
-			}
-		};
-
-		Outer.prototype._startInner = function (t, stream) {
-			var innerSink = new Inner(t, this, this.sink);
-			this.current.add(innerSink);
-			innerSink.disposable = mapAndRun(this.f, innerSink, this.scheduler, stream);
-		};
-
-		function mapAndRun(f, innerSink, scheduler, stream) {
-			return f(stream).source.run(innerSink, scheduler);
-		}
-
-		Outer.prototype.end = function (t, x) {
-			this.active = false;
-			dispose.tryDispose(t, this.disposable, this.sink);
-			this._checkEnd(t, x);
-		};
-
-		Outer.prototype.error = function (t, e) {
-			this.active = false;
-			this.sink.error(t, e);
-		};
-
-		Outer.prototype.dispose = function () {
-			this.active = false;
-			this.pending.length = 0;
-			return Promise.all([this.disposable.dispose(), this.current.dispose()]);
-		};
-
-		Outer.prototype._endInner = function (t, x, inner) {
-			this.current.remove(inner);
-			dispose.tryDispose(t, inner, this);
-
-			if (this.pending.length === 0) {
-				this._checkEnd(t, x);
-			} else {
-				this._startInner(t, this.pending.shift());
-			}
-		};
-
-		Outer.prototype._checkEnd = function (t, x) {
-			if (!this.active && this.current.isEmpty()) {
-				this.sink.end(t, x);
-			}
-		};
-
-		function Inner(time, outer, sink) {
-			this.prev = this.next = null;
-			this.time = time;
-			this.outer = outer;
-			this.sink = sink;
-			this.disposable = void 0;
-		}
-
-		Inner.prototype.event = function (t, x) {
-			this.sink.event(Math.max(t, this.time), x);
-		};
-
-		Inner.prototype.end = function (t, x) {
-			this.outer._endInner(Math.max(t, this.time), x, this);
-		};
-
-		Inner.prototype.error = function (t, e) {
-			this.outer.error(Math.max(t, this.time), e);
-		};
-
-		Inner.prototype.dispose = function () {
-			return this.disposable.dispose();
-		};
-
-	/***/ },
-	/* 55 */
-	/***/ function(module, exports) {
-
-		"use strict";
-
-		/** @license MIT License (c) copyright 2010-2016 original author or authors */
-		/** @author Brian Cavalier */
-		/** @author John Hann */
-
-		module.exports = LinkedList;
-
-		/**
-		 * Doubly linked list
-		 * @constructor
-		 */
-		function LinkedList() {
-			this.head = null;
-			this.length = 0;
-		}
-
-		/**
-		 * Add a node to the end of the list
-		 * @param {{prev:Object|null, next:Object|null, dispose:function}} x node to add
-		 */
-		LinkedList.prototype.add = function (x) {
-			if (this.head !== null) {
-				this.head.prev = x;
-				x.next = this.head;
-			}
-			this.head = x;
-			++this.length;
-		};
-
-		/**
-		 * Remove the provided node from the list
-		 * @param {{prev:Object|null, next:Object|null, dispose:function}} x node to remove
-		 */
-		LinkedList.prototype.remove = function (x) {
-			--this.length;
-			if (x === this.head) {
-				this.head = this.head.next;
-			}
-			if (x.next !== null) {
-				x.next.prev = x.prev;
-				x.next = null;
-			}
-			if (x.prev !== null) {
-				x.prev.next = x.next;
-				x.prev = null;
-			}
-		};
-
-		/**
-		 * @returns {boolean} true iff there are no nodes in the list
-		 */
-		LinkedList.prototype.isEmpty = function () {
-			return this.length === 0;
-		};
-
-		/**
-		 * Dispose all nodes
-		 * @returns {Promise} promise that fulfills when all nodes have been disposed,
-		 *  or rejects if an error occurs while disposing
-		 */
-		LinkedList.prototype.dispose = function () {
-			if (this.isEmpty()) {
-				return Promise.resolve();
-			}
-
-			var promises = [];
-			var x = this.head;
-			this.head = null;
-			this.length = 0;
-
-			while (x !== null) {
-				promises.push(x.dispose());
-				x = x.next;
-			}
-
-			return Promise.all(promises);
-		};
-
-	/***/ },
-	/* 56 */
-	/***/ function(module, exports, __webpack_require__) {
-
-		'use strict';
-
-		/** @license MIT License (c) copyright 2010-2016 original author or authors */
-		/** @author Brian Cavalier */
-		/** @author John Hann */
-
-		var mergeMapConcurrently = __webpack_require__(54).mergeMapConcurrently;
-
-		exports.concatMap = concatMap;
-
-		/**
-		 * Map each value in stream to a new stream, and concatenate them all
-		 * stream:              -a---b---cX
-		 * f(a):                 1-1-1-1X
-		 * f(b):                        -2-2-2-2X
-		 * f(c):                                -3-3-3-3X
-		 * stream.concatMap(f): -1-1-1-1-2-2-2-2-3-3-3-3X
-		 * @param {function(x:*):Stream} f function to map each value to a stream
-		 * @param {Stream} stream
-		 * @returns {Stream} new stream containing all events from each stream returned by f
-		 */
-		function concatMap(f, stream) {
-		  return mergeMapConcurrently(f, 1, stream);
-		}
-
-	/***/ },
-	/* 57 */
-	/***/ function(module, exports, __webpack_require__) {
-
-		'use strict';
-
-		/** @license MIT License (c) copyright 2010-2016 original author or authors */
-		/** @author Brian Cavalier */
-		/** @author John Hann */
-
-		var Stream = __webpack_require__(4);
-		var Pipe = __webpack_require__(37);
-		var IndexSink = __webpack_require__(50);
-		var empty = __webpack_require__(6).empty;
-		var dispose = __webpack_require__(10);
-		var base = __webpack_require__(5);
-
-		var copy = base.copy;
-		var reduce = base.reduce;
-
-		exports.merge = merge;
-		exports.mergeArray = mergeArray;
-
-		/**
-		 * @returns {Stream} stream containing events from all streams in the argument
-		 * list in time order.  If two events are simultaneous they will be merged in
-		 * arbitrary order.
-		 */
-		function merge() /*...streams*/{
-			return mergeArray(copy(arguments));
-		}
-
-		/**
-		 * @param {Array} streams array of stream to merge
-		 * @returns {Stream} stream containing events from all input observables
-		 * in time order.  If two events are simultaneous they will be merged in
-		 * arbitrary order.
-		 */
-		function mergeArray(streams) {
-			var l = streams.length;
-			return l === 0 ? empty() : l === 1 ? streams[0] : new Stream(mergeSources(streams));
-		}
-
-		/**
-		 * This implements fusion/flattening for merge.  It will
-		 * fuse adjacent merge operations.  For example:
-		 * - a.merge(b).merge(c) effectively becomes merge(a, b, c)
-		 * - merge(a, merge(b, c)) effectively becomes merge(a, b, c)
-		 * It does this by concatenating the sources arrays of
-		 * any nested Merge sources, in effect "flattening" nested
-		 * merge operations into a single merge.
-		 */
-		function mergeSources(streams) {
-			return new Merge(reduce(appendSources, [], streams));
-		}
-
-		function appendSources(sources, stream) {
-			var source = stream.source;
-			return source instanceof Merge ? sources.concat(source.sources) : sources.concat(source);
-		}
-
-		function Merge(sources) {
-			this.sources = sources;
-		}
-
-		Merge.prototype.run = function (sink, scheduler) {
-			var l = this.sources.length;
-			var disposables = new Array(l);
-			var sinks = new Array(l);
-
-			var mergeSink = new MergeSink(disposables, sinks, sink);
-
-			for (var indexSink, i = 0; i < l; ++i) {
-				indexSink = sinks[i] = new IndexSink(i, mergeSink);
-				disposables[i] = this.sources[i].run(indexSink, scheduler);
-			}
-
-			return dispose.all(disposables);
-		};
-
-		function MergeSink(disposables, sinks, sink) {
-			this.sink = sink;
-			this.disposables = disposables;
-			this.activeCount = sinks.length;
-		}
-
-		MergeSink.prototype.error = Pipe.prototype.error;
-
-		MergeSink.prototype.event = function (t, indexValue) {
-			this.sink.event(t, indexValue.value);
-		};
-
-		MergeSink.prototype.end = function (t, indexedValue) {
-			dispose.tryDispose(t, this.disposables[indexedValue.index], this.sink);
-			if (--this.activeCount === 0) {
-				this.sink.end(t, indexedValue.value);
-			}
-		};
-
-	/***/ },
-	/* 58 */
-	/***/ function(module, exports, __webpack_require__) {
-
-		'use strict';
-
-		/** @license MIT License (c) copyright 2010-2016 original author or authors */
-		/** @author Brian Cavalier */
-		/** @author John Hann */
-
-		var Stream = __webpack_require__(4);
-		var Pipe = __webpack_require__(37);
-		var dispose = __webpack_require__(10);
-		var base = __webpack_require__(5);
-		var invoke = __webpack_require__(51);
-
-		exports.sample = sample;
-		exports.sampleWith = sampleWith;
-		exports.sampleArray = sampleArray;
-
-		/**
-		 * When an event arrives on sampler, emit the result of calling f with the latest
-		 * values of all streams being sampled
-		 * @param {function(...values):*} f function to apply to each set of sampled values
-		 * @param {Stream} sampler streams will be sampled whenever an event arrives
-		 *  on sampler
-		 * @returns {Stream} stream of sampled and transformed values
-		 */
-		function sample(f, sampler /*, ...streams */) {
-			return sampleArray(f, sampler, base.drop(2, arguments));
-		}
-
-		/**
-		 * When an event arrives on sampler, emit the latest event value from stream.
-		 * @param {Stream} sampler stream of events at whose arrival time
-		 *  stream's latest value will be propagated
-		 * @param {Stream} stream stream of values
-		 * @returns {Stream} sampled stream of values
-		 */
-		function sampleWith(sampler, stream) {
-			return new Stream(new Sampler(base.id, sampler.source, [stream.source]));
-		}
-
-		function sampleArray(f, sampler, streams) {
-			return new Stream(new Sampler(f, sampler.source, base.map(getSource, streams)));
-		}
-
-		function getSource(stream) {
-			return stream.source;
-		}
-
-		function Sampler(f, sampler, sources) {
-			this.f = f;
-			this.sampler = sampler;
-			this.sources = sources;
-		}
-
-		Sampler.prototype.run = function (sink, scheduler) {
-			var l = this.sources.length;
-			var disposables = new Array(l + 1);
-			var sinks = new Array(l);
-
-			var sampleSink = new SampleSink(this.f, sinks, sink);
-
-			for (var hold, i = 0; i < l; ++i) {
-				hold = sinks[i] = new Hold(sampleSink);
-				disposables[i] = this.sources[i].run(hold, scheduler);
-			}
-
-			disposables[i] = this.sampler.run(sampleSink, scheduler);
-
-			return dispose.all(disposables);
-		};
-
-		function Hold(sink) {
-			this.sink = sink;
-			this.hasValue = false;
-		}
-
-		Hold.prototype.event = function (t, x) {
-			this.value = x;
-			this.hasValue = true;
-			this.sink._notify(this);
-		};
-
-		Hold.prototype.end = function () {};
-		Hold.prototype.error = Pipe.prototype.error;
-
-		function SampleSink(f, sinks, sink) {
-			this.f = f;
-			this.sinks = sinks;
-			this.sink = sink;
-			this.active = false;
-		}
-
-		SampleSink.prototype._notify = function () {
-			if (!this.active) {
-				this.active = this.sinks.every(hasValue);
-			}
-		};
-
-		SampleSink.prototype.event = function (t) {
-			if (this.active) {
-				this.sink.event(t, invoke(this.f, base.map(getValue, this.sinks)));
-			}
-		};
-
-		SampleSink.prototype.end = Pipe.prototype.end;
-		SampleSink.prototype.error = Pipe.prototype.error;
-
-		function hasValue(hold) {
-			return hold.hasValue;
-		}
-
-		function getValue(hold) {
-			return hold.value;
-		}
-
-	/***/ },
-	/* 59 */
-	/***/ function(module, exports, __webpack_require__) {
-
-		'use strict';
-
-		/** @license MIT License (c) copyright 2010-2016 original author or authors */
-		/** @author Brian Cavalier */
-		/** @author John Hann */
-
-		var Stream = __webpack_require__(4);
-		var transform = __webpack_require__(44);
-		var core = __webpack_require__(6);
-		var Sink = __webpack_require__(37);
-		var IndexSink = __webpack_require__(50);
-		var dispose = __webpack_require__(10);
-		var base = __webpack_require__(5);
-		var invoke = __webpack_require__(51);
-		var Queue = __webpack_require__(60);
-
-		var map = base.map;
-		var tail = base.tail;
-
-		exports.zip = zip;
-		exports.zipArray = zipArray;
-
-		/**
-		 * Combine streams pairwise (or tuple-wise) by index by applying f to values
-		 * at corresponding indices.  The returned stream ends when any of the input
-		 * streams ends.
-		 * @param {function} f function to combine values
-		 * @returns {Stream} new stream with items at corresponding indices combined
-		 *  using f
-		 */
-		function zip(f /*,...streams */) {
-			return zipArray(f, tail(arguments));
-		}
-
-		/**
-		 * Combine streams pairwise (or tuple-wise) by index by applying f to values
-		 * at corresponding indices.  The returned stream ends when any of the input
-		 * streams ends.
-		 * @param {function} f function to combine values
-		 * @param {[Stream]} streams streams to zip using f
-		 * @returns {Stream} new stream with items at corresponding indices combined
-		 *  using f
-		 */
-		function zipArray(f, streams) {
-			return streams.length === 0 ? core.empty() : streams.length === 1 ? transform.map(f, streams[0]) : new Stream(new Zip(f, map(getSource, streams)));
-		}
-
-		function getSource(stream) {
-			return stream.source;
-		}
-
-		function Zip(f, sources) {
-			this.f = f;
-			this.sources = sources;
-		}
-
-		Zip.prototype.run = function (sink, scheduler) {
-			var l = this.sources.length;
-			var disposables = new Array(l);
-			var sinks = new Array(l);
-			var buffers = new Array(l);
-
-			var zipSink = new ZipSink(this.f, buffers, sinks, sink);
-
-			for (var indexSink, i = 0; i < l; ++i) {
-				buffers[i] = new Queue();
-				indexSink = sinks[i] = new IndexSink(i, zipSink);
-				disposables[i] = this.sources[i].run(indexSink, scheduler);
-			}
-
-			return dispose.all(disposables);
-		};
-
-		function ZipSink(f, buffers, sinks, sink) {
-			this.f = f;
-			this.sinks = sinks;
-			this.sink = sink;
-			this.buffers = buffers;
-		}
-
-		ZipSink.prototype.event = function (t, indexedValue) {
-			var buffers = this.buffers;
-			var buffer = buffers[indexedValue.index];
-
-			buffer.push(indexedValue.value);
-
-			if (buffer.length() === 1) {
-				if (!ready(this.buffers)) {
-					return;
-				}
-
-				emitZipped(this.f, t, buffers, this.sink);
-
-				if (ended(this.buffers, this.sinks)) {
-					this.sink.end(t, void 0);
-				}
-			}
-		};
-
-		ZipSink.prototype.end = function (t, indexedValue) {
-			var buffer = this.buffers[indexedValue.index];
-			if (buffer.isEmpty()) {
-				this.sink.end(t, indexedValue.value);
-			}
-		};
-
-		ZipSink.prototype.error = Sink.prototype.error;
-
-		function emitZipped(f, t, buffers, sink) {
-			sink.event(t, invoke(f, map(head, buffers)));
-		}
-
-		function head(buffer) {
-			return buffer.shift();
-		}
-
-		function ended(buffers, sinks) {
-			for (var i = 0, l = buffers.length; i < l; ++i) {
-				if (buffers[i].isEmpty() && !sinks[i].active) {
-					return true;
-				}
-			}
-			return false;
-		}
-
-		function ready(buffers) {
-			for (var i = 0, l = buffers.length; i < l; ++i) {
-				if (buffers[i].isEmpty()) {
-					return false;
-				}
-			}
-			return true;
-		}
-
-	/***/ },
-	/* 60 */
-	/***/ function(module, exports) {
-
-		"use strict";
-
-		/** @license MIT License (c) copyright 2010-2016 original author or authors */
-		/** @author Brian Cavalier */
-		/** @author John Hann */
-
-		// Based on https://github.com/petkaantonov/deque
-
-		module.exports = Queue;
-
-		function Queue(capPow2) {
-			this._capacity = capPow2 || 32;
-			this._length = 0;
-			this._head = 0;
-		}
-
-		Queue.prototype.push = function (x) {
-			var len = this._length;
-			this._checkCapacity(len + 1);
-
-			var i = this._head + len & this._capacity - 1;
-			this[i] = x;
-			this._length = len + 1;
-		};
-
-		Queue.prototype.shift = function () {
-			var head = this._head;
-			var x = this[head];
-
-			this[head] = void 0;
-			this._head = head + 1 & this._capacity - 1;
-			this._length--;
-			return x;
-		};
-
-		Queue.prototype.isEmpty = function () {
-			return this._length === 0;
-		};
-
-		Queue.prototype.length = function () {
-			return this._length;
-		};
-
-		Queue.prototype._checkCapacity = function (size) {
-			if (this._capacity < size) {
-				this._ensureCapacity(this._capacity << 1);
-			}
-		};
-
-		Queue.prototype._ensureCapacity = function (capacity) {
-			var oldCapacity = this._capacity;
-			this._capacity = capacity;
-
-			var last = this._head + this._length;
-
-			if (last > oldCapacity) {
-				copy(this, 0, this, oldCapacity, last & oldCapacity - 1);
-			}
-		};
-
-		function copy(src, srcIndex, dst, dstIndex, len) {
-			for (var j = 0; j < len; ++j) {
-				dst[j + dstIndex] = src[j + srcIndex];
-				src[j + srcIndex] = void 0;
-			}
-		}
-
-	/***/ },
-	/* 61 */
-	/***/ function(module, exports, __webpack_require__) {
-
-		'use strict';
-
-		/** @license MIT License (c) copyright 2010-2016 original author or authors */
-		/** @author Brian Cavalier */
-		/** @author John Hann */
-
-		var Stream = __webpack_require__(4);
-		var dispose = __webpack_require__(10);
-
-		exports.switch = switchLatest;
-
-		/**
-		 * Given a stream of streams, return a new stream that adopts the behavior
-		 * of the most recent inner stream.
-		 * @param {Stream} stream of streams on which to switch
-		 * @returns {Stream} switching stream
-		 */
-		function switchLatest(stream) {
-			return new Stream(new Switch(stream.source));
-		}
-
-		function Switch(source) {
-			this.source = source;
-		}
-
-		Switch.prototype.run = function (sink, scheduler) {
-			var switchSink = new SwitchSink(sink, scheduler);
-			return dispose.all(switchSink, this.source.run(switchSink, scheduler));
-		};
-
-		function SwitchSink(sink, scheduler) {
-			this.sink = sink;
-			this.scheduler = scheduler;
-			this.current = null;
-			this.ended = false;
-		}
-
-		SwitchSink.prototype.event = function (t, stream) {
-			this._disposeCurrent(t); // TODO: capture the result of this dispose
-			this.current = new Segment(t, Infinity, this, this.sink);
-			this.current.disposable = stream.source.run(this.current, this.scheduler);
-		};
-
-		SwitchSink.prototype.end = function (t, x) {
-			this.ended = true;
-			this._checkEnd(t, x);
-		};
-
-		SwitchSink.prototype.error = function (t, e) {
-			this.ended = true;
-			this.sink.error(t, e);
-		};
-
-		SwitchSink.prototype.dispose = function () {
-			return this._disposeCurrent(0);
-		};
-
-		SwitchSink.prototype._disposeCurrent = function (t) {
-			if (this.current !== null) {
-				return this.current._dispose(t);
-			}
-		};
-
-		SwitchSink.prototype._disposeInner = function (t, inner) {
-			inner._dispose(t); // TODO: capture the result of this dispose
-			if (inner === this.current) {
-				this.current = null;
-			}
-		};
-
-		SwitchSink.prototype._checkEnd = function (t, x) {
-			if (this.ended && this.current === null) {
-				this.sink.end(t, x);
-			}
-		};
-
-		SwitchSink.prototype._endInner = function (t, x, inner) {
-			this._disposeInner(t, inner);
-			this._checkEnd(t, x);
-		};
-
-		SwitchSink.prototype._errorInner = function (t, e, inner) {
-			this._disposeInner(t, inner);
-			this.sink.error(t, e);
-		};
-
-		function Segment(min, max, outer, sink) {
-			this.min = min;
-			this.max = max;
-			this.outer = outer;
-			this.sink = sink;
-			this.disposable = dispose.empty();
-		}
-
-		Segment.prototype.event = function (t, x) {
-			if (t < this.max) {
-				this.sink.event(Math.max(t, this.min), x);
-			}
-		};
-
-		Segment.prototype.end = function (t, x) {
-			this.outer._endInner(Math.max(t, this.min), x, this);
-		};
-
-		Segment.prototype.error = function (t, e) {
-			this.outer._errorInner(Math.max(t, this.min), e, this);
-		};
-
-		Segment.prototype._dispose = function (t) {
-			this.max = t;
-			dispose.tryDispose(t, this.disposable, this.sink);
-		};
-
-	/***/ },
-	/* 62 */
-	/***/ function(module, exports, __webpack_require__) {
-
-		'use strict';
-
-		/** @license MIT License (c) copyright 2010-2016 original author or authors */
-		/** @author Brian Cavalier */
-		/** @author John Hann */
-
-		var Stream = __webpack_require__(4);
-		var Sink = __webpack_require__(37);
-		var Filter = __webpack_require__(46);
-
-		exports.filter = filter;
-		exports.skipRepeats = skipRepeats;
-		exports.skipRepeatsWith = skipRepeatsWith;
-
-		/**
-		 * Retain only items matching a predicate
-		 * @param {function(x:*):boolean} p filtering predicate called for each item
-		 * @param {Stream} stream stream to filter
-		 * @returns {Stream} stream containing only items for which predicate returns truthy
-		 */
-		function filter(p, stream) {
-			return new Stream(Filter.create(p, stream.source));
-		}
-
-		/**
-		 * Skip repeated events, using === to detect duplicates
-		 * @param {Stream} stream stream from which to omit repeated events
-		 * @returns {Stream} stream without repeated events
-		 */
-		function skipRepeats(stream) {
-			return skipRepeatsWith(same, stream);
-		}
-
-		/**
-		 * Skip repeated events using the provided equals function to detect duplicates
-		 * @param {function(a:*, b:*):boolean} equals optional function to compare items
-		 * @param {Stream} stream stream from which to omit repeated events
-		 * @returns {Stream} stream without repeated events
-		 */
-		function skipRepeatsWith(equals, stream) {
-			return new Stream(new SkipRepeats(equals, stream.source));
-		}
-
-		function SkipRepeats(equals, source) {
-			this.equals = equals;
-			this.source = source;
-		}
-
-		SkipRepeats.prototype.run = function (sink, scheduler) {
-			return this.source.run(new SkipRepeatsSink(this.equals, sink), scheduler);
-		};
-
-		function SkipRepeatsSink(equals, sink) {
-			this.equals = equals;
-			this.sink = sink;
-			this.value = void 0;
-			this.init = true;
-		}
-
-		SkipRepeatsSink.prototype.end = Sink.prototype.end;
-		SkipRepeatsSink.prototype.error = Sink.prototype.error;
-
-		SkipRepeatsSink.prototype.event = function (t, x) {
-			if (this.init) {
-				this.init = false;
-				this.value = x;
-				this.sink.event(t, x);
-			} else if (!this.equals(this.value, x)) {
-				this.value = x;
-				this.sink.event(t, x);
-			}
-		};
-
-		function same(a, b) {
-			return a === b;
-		}
-
-	/***/ },
-	/* 63 */
-	/***/ function(module, exports, __webpack_require__) {
-
-		'use strict';
-
-		/** @license MIT License (c) copyright 2010-2016 original author or authors */
-		/** @author Brian Cavalier */
-		/** @author John Hann */
-
-		var Stream = __webpack_require__(4);
-		var Sink = __webpack_require__(37);
-		var core = __webpack_require__(6);
-		var dispose = __webpack_require__(10);
-		var Map = __webpack_require__(45);
-
-		exports.take = take;
-		exports.skip = skip;
-		exports.slice = slice;
-		exports.takeWhile = takeWhile;
-		exports.skipWhile = skipWhile;
-
-		/**
-		 * @param {number} n
-		 * @param {Stream} stream
-		 * @returns {Stream} new stream containing only up to the first n items from stream
-		 */
-		function take(n, stream) {
-			return slice(0, n, stream);
-		}
-
-		/**
-		 * @param {number} n
-		 * @param {Stream} stream
-		 * @returns {Stream} new stream with the first n items removed
-		 */
-		function skip(n, stream) {
-			return slice(n, Infinity, stream);
-		}
-
-		/**
-		 * Slice a stream by index. Negative start/end indexes are not supported
-		 * @param {number} start
-		 * @param {number} end
-		 * @param {Stream} stream
-		 * @returns {Stream} stream containing items where start <= index < end
-		 */
-		function slice(start, end, stream) {
-			return end <= start ? core.empty() : new Stream(sliceSource(start, end, stream.source));
-		}
-
-		function sliceSource(start, end, source) {
-			return source instanceof Map ? commuteMapSlice(start, end, source) : source instanceof Slice ? fuseSlice(start, end, source) : new Slice(start, end, source);
-		}
-
-		function commuteMapSlice(start, end, source) {
-			return Map.create(source.f, sliceSource(start, end, source.source));
-		}
-
-		function fuseSlice(start, end, source) {
-			start += source.min;
-			end = Math.min(end + source.min, source.max);
-			return new Slice(start, end, source.source);
-		}
-
-		function Slice(min, max, source) {
-			this.source = source;
-			this.min = min;
-			this.max = max;
-		}
-
-		Slice.prototype.run = function (sink, scheduler) {
-			return new SliceSink(this.min, this.max - this.min, this.source, sink, scheduler);
-		};
-
-		function SliceSink(skip, take, source, sink, scheduler) {
-			this.sink = sink;
-			this.skip = skip;
-			this.take = take;
-			this.disposable = dispose.once(source.run(this, scheduler));
-		}
-
-		SliceSink.prototype.end = Sink.prototype.end;
-		SliceSink.prototype.error = Sink.prototype.error;
-
-		SliceSink.prototype.event = function (t, x) {
-			if (this.skip > 0) {
-				this.skip -= 1;
-				return;
-			}
-
-			if (this.take === 0) {
-				return;
-			}
-
-			this.take -= 1;
-			this.sink.event(t, x);
-			if (this.take === 0) {
-				this.dispose();
-				this.sink.end(t, x);
-			}
-		};
-
-		SliceSink.prototype.dispose = function () {
-			return this.disposable.dispose();
-		};
-
-		function takeWhile(p, stream) {
-			return new Stream(new TakeWhile(p, stream.source));
-		}
-
-		function TakeWhile(p, source) {
-			this.p = p;
-			this.source = source;
-		}
-
-		TakeWhile.prototype.run = function (sink, scheduler) {
-			return new TakeWhileSink(this.p, this.source, sink, scheduler);
-		};
-
-		function TakeWhileSink(p, source, sink, scheduler) {
-			this.p = p;
-			this.sink = sink;
-			this.active = true;
-			this.disposable = dispose.once(source.run(this, scheduler));
-		}
-
-		TakeWhileSink.prototype.end = Sink.prototype.end;
-		TakeWhileSink.prototype.error = Sink.prototype.error;
-
-		TakeWhileSink.prototype.event = function (t, x) {
-			if (!this.active) {
-				return;
-			}
-
-			var p = this.p;
-			this.active = p(x);
-			if (this.active) {
-				this.sink.event(t, x);
-			} else {
-				this.dispose();
-				this.sink.end(t, x);
-			}
-		};
-
-		TakeWhileSink.prototype.dispose = function () {
-			return this.disposable.dispose();
-		};
-
-		function skipWhile(p, stream) {
-			return new Stream(new SkipWhile(p, stream.source));
-		}
-
-		function SkipWhile(p, source) {
-			this.p = p;
-			this.source = source;
-		}
-
-		SkipWhile.prototype.run = function (sink, scheduler) {
-			return this.source.run(new SkipWhileSink(this.p, sink), scheduler);
-		};
-
-		function SkipWhileSink(p, sink) {
-			this.p = p;
-			this.sink = sink;
-			this.skipping = true;
-		}
-
-		SkipWhileSink.prototype.end = Sink.prototype.end;
-		SkipWhileSink.prototype.error = Sink.prototype.error;
-
-		SkipWhileSink.prototype.event = function (t, x) {
-			if (this.skipping) {
-				var p = this.p;
-				this.skipping = p(x);
-				if (this.skipping) {
-					return;
-				}
-			}
-
-			this.sink.event(t, x);
-		};
-
-	/***/ },
-	/* 64 */
-	/***/ function(module, exports, __webpack_require__) {
-
-		'use strict';
-
-		/** @license MIT License (c) copyright 2010-2016 original author or authors */
-		/** @author Brian Cavalier */
-		/** @author John Hann */
-
-		var Stream = __webpack_require__(4);
-		var Pipe = __webpack_require__(37);
-		var dispose = __webpack_require__(10);
-		var join = __webpack_require__(53).join;
-
-		exports.during = during;
-		exports.takeUntil = takeUntil;
-		exports.skipUntil = skipUntil;
-
-		function takeUntil(signal, stream) {
-			return new Stream(new Until(signal.source, stream.source));
-		}
-
-		function skipUntil(signal, stream) {
-			return new Stream(new Since(signal.source, stream.source));
-		}
-
-		function during(timeWindow, stream) {
-			return takeUntil(join(timeWindow), skipUntil(timeWindow, stream));
-		}
-
-		function Until(maxSignal, source) {
-			this.maxSignal = maxSignal;
-			this.source = source;
-		}
-
-		Until.prototype.run = function (sink, scheduler) {
-			var min = new Bound(-Infinity, sink);
-			var max = new UpperBound(this.maxSignal, sink, scheduler);
-			var disposable = this.source.run(new TimeWindowSink(min, max, sink), scheduler);
-
-			return dispose.all([min, max, disposable]);
-		};
-
-		function Since(minSignal, source) {
-			this.minSignal = minSignal;
-			this.source = source;
-		}
-
-		Since.prototype.run = function (sink, scheduler) {
-			var min = new LowerBound(this.minSignal, sink, scheduler);
-			var max = new Bound(Infinity, sink);
-			var disposable = this.source.run(new TimeWindowSink(min, max, sink), scheduler);
-
-			return dispose.all([min, max, disposable]);
-		};
-
-		function Bound(value, sink) {
-			this.value = value;
-			this.sink = sink;
-		}
-
-		Bound.prototype.error = Pipe.prototype.error;
-		Bound.prototype.event = noop;
-		Bound.prototype.end = noop;
-		Bound.prototype.dispose = noop;
-
-		function TimeWindowSink(min, max, sink) {
-			this.min = min;
-			this.max = max;
-			this.sink = sink;
-		}
-
-		TimeWindowSink.prototype.event = function (t, x) {
-			if (t >= this.min.value && t < this.max.value) {
-				this.sink.event(t, x);
-			}
-		};
-
-		TimeWindowSink.prototype.error = Pipe.prototype.error;
-		TimeWindowSink.prototype.end = Pipe.prototype.end;
-
-		function LowerBound(signal, sink, scheduler) {
-			this.value = Infinity;
-			this.sink = sink;
-			this.disposable = signal.run(this, scheduler);
-		}
-
-		LowerBound.prototype.event = function (t /*, x */) {
-			if (t < this.value) {
-				this.value = t;
-			}
-		};
-
-		LowerBound.prototype.end = noop;
-		LowerBound.prototype.error = Pipe.prototype.error;
-
-		LowerBound.prototype.dispose = function () {
-			return this.disposable.dispose();
-		};
-
-		function UpperBound(signal, sink, scheduler) {
-			this.value = Infinity;
-			this.sink = sink;
-			this.disposable = signal.run(this, scheduler);
-		}
-
-		UpperBound.prototype.event = function (t, x) {
-			if (t < this.value) {
-				this.value = t;
-				this.sink.end(t, x);
-			}
-		};
-
-		UpperBound.prototype.end = noop;
-		UpperBound.prototype.error = Pipe.prototype.error;
-
-		UpperBound.prototype.dispose = function () {
-			return this.disposable.dispose();
-		};
-
-		function noop() {}
-
-	/***/ },
-	/* 65 */
-	/***/ function(module, exports, __webpack_require__) {
-
-		'use strict';
-
-		/** @license MIT License (c) copyright 2010-2016 original author or authors */
-		/** @author Brian Cavalier */
-		/** @author John Hann */
-
-		var Stream = __webpack_require__(4);
-		var Sink = __webpack_require__(37);
-		var dispose = __webpack_require__(10);
-		var PropagateTask = __webpack_require__(8);
-
-		exports.delay = delay;
-
-		/**
-		 * @param {Number} delayTime milliseconds to delay each item
-		 * @param {Stream} stream
-		 * @returns {Stream} new stream containing the same items, but delayed by ms
-		 */
-		function delay(delayTime, stream) {
-			return delayTime <= 0 ? stream : new Stream(new Delay(delayTime, stream.source));
-		}
-
-		function Delay(dt, source) {
-			this.dt = dt;
-			this.source = source;
-		}
-
-		Delay.prototype.run = function (sink, scheduler) {
-			var delaySink = new DelaySink(this.dt, sink, scheduler);
-			return dispose.all([delaySink, this.source.run(delaySink, scheduler)]);
-		};
-
-		function DelaySink(dt, sink, scheduler) {
-			this.dt = dt;
-			this.sink = sink;
-			this.scheduler = scheduler;
-		}
-
-		DelaySink.prototype.dispose = function () {
-			var self = this;
-			this.scheduler.cancelAll(function (task) {
-				return task.sink === self.sink;
-			});
-		};
-
-		DelaySink.prototype.event = function (t, x) {
-			this.scheduler.delay(this.dt, PropagateTask.event(x, this.sink));
-		};
-
-		DelaySink.prototype.end = function (t, x) {
-			this.scheduler.delay(this.dt, PropagateTask.end(x, this.sink));
-		};
-
-		DelaySink.prototype.error = Sink.prototype.error;
-
-	/***/ },
-	/* 66 */
-	/***/ function(module, exports, __webpack_require__) {
-
-		'use strict';
-
-		/** @license MIT License (c) copyright 2010-2016 original author or authors */
-		/** @author Brian Cavalier */
-		/** @author John Hann */
-
-		var Stream = __webpack_require__(4);
-		var Sink = __webpack_require__(37);
-
-		exports.timestamp = timestamp;
-
-		function timestamp(stream) {
-			return new Stream(new Timestamp(stream.source));
-		}
-
-		function Timestamp(source) {
-			this.source = source;
-		}
-
-		Timestamp.prototype.run = function (sink, scheduler) {
-			return this.source.run(new TimestampSink(sink), scheduler);
-		};
-
-		function TimestampSink(sink) {
-			this.sink = sink;
-		}
-
-		TimestampSink.prototype.end = Sink.prototype.end;
-		TimestampSink.prototype.error = Sink.prototype.error;
-
-		TimestampSink.prototype.event = function (t, x) {
-			this.sink.event(t, { time: t, value: x });
-		};
-
-	/***/ },
-	/* 67 */
-	/***/ function(module, exports, __webpack_require__) {
-
-		'use strict';
-
-		/** @license MIT License (c) copyright 2010-2016 original author or authors */
-		/** @author Brian Cavalier */
-		/** @author John Hann */
-
-		var Stream = __webpack_require__(4);
-		var Sink = __webpack_require__(37);
-		var dispose = __webpack_require__(10);
-		var PropagateTask = __webpack_require__(8);
-		var Map = __webpack_require__(45);
-
-		exports.throttle = throttle;
-		exports.debounce = debounce;
-
-		/**
-		 * Limit the rate of events by suppressing events that occur too often
-		 * @param {Number} period time to suppress events
-		 * @param {Stream} stream
-		 * @returns {Stream}
-		 */
-		function throttle(period, stream) {
-			return new Stream(throttleSource(period, stream.source));
-		}
-
-		function throttleSource(period, source) {
-			return source instanceof Map ? commuteMapThrottle(period, source) : source instanceof Throttle ? fuseThrottle(period, source) : new Throttle(period, source);
-		}
-
-		function commuteMapThrottle(period, source) {
-			return Map.create(source.f, throttleSource(period, source.source));
-		}
-
-		function fuseThrottle(period, source) {
-			return new Throttle(Math.max(period, source.period), source.source);
-		}
-
-		function Throttle(period, source) {
-			this.period = period;
-			this.source = source;
-		}
-
-		Throttle.prototype.run = function (sink, scheduler) {
-			return this.source.run(new ThrottleSink(this.period, sink), scheduler);
-		};
-
-		function ThrottleSink(period, sink) {
-			this.time = 0;
-			this.period = period;
-			this.sink = sink;
-		}
-
-		ThrottleSink.prototype.event = function (t, x) {
-			if (t >= this.time) {
-				this.time = t + this.period;
-				this.sink.event(t, x);
-			}
-		};
-
-		ThrottleSink.prototype.end = Sink.prototype.end;
-
-		ThrottleSink.prototype.error = Sink.prototype.error;
-
-		/**
-		 * Wait for a burst of events to subside and emit only the last event in the burst
-		 * @param {Number} period events occuring more frequently than this
-		 *  will be suppressed
-		 * @param {Stream} stream stream to debounce
-		 * @returns {Stream} new debounced stream
-		 */
-		function debounce(period, stream) {
-			return new Stream(new Debounce(period, stream.source));
-		}
-
-		function Debounce(dt, source) {
-			this.dt = dt;
-			this.source = source;
-		}
-
-		Debounce.prototype.run = function (sink, scheduler) {
-			return new DebounceSink(this.dt, this.source, sink, scheduler);
-		};
-
-		function DebounceSink(dt, source, sink, scheduler) {
-			this.dt = dt;
-			this.sink = sink;
-			this.scheduler = scheduler;
-			this.value = void 0;
-			this.timer = null;
-
-			var sourceDisposable = source.run(this, scheduler);
-			this.disposable = dispose.all([this, sourceDisposable]);
-		}
-
-		DebounceSink.prototype.event = function (t, x) {
-			this._clearTimer();
-			this.value = x;
-			this.timer = this.scheduler.delay(this.dt, PropagateTask.event(x, this.sink));
-		};
-
-		DebounceSink.prototype.end = function (t, x) {
-			if (this._clearTimer()) {
-				this.sink.event(t, this.value);
-				this.value = void 0;
-			}
-			this.sink.end(t, x);
-		};
-
-		DebounceSink.prototype.error = function (t, x) {
-			this._clearTimer();
-			this.sink.error(t, x);
-		};
-
-		DebounceSink.prototype.dispose = function () {
-			this._clearTimer();
-		};
-
-		DebounceSink.prototype._clearTimer = function () {
-			if (this.timer === null) {
-				return false;
-			}
-			this.timer.cancel();
-			this.timer = null;
-			return true;
-		};
-
-	/***/ },
-	/* 68 */
-	/***/ function(module, exports, __webpack_require__) {
-
-		'use strict';
-
-		/** @license MIT License (c) copyright 2010-2016 original author or authors */
-		/** @author Brian Cavalier */
-		/** @author John Hann */
-
-		var Stream = __webpack_require__(4);
-		var fatal = __webpack_require__(9);
-		var just = __webpack_require__(6).of;
-
-		exports.fromPromise = fromPromise;
-		exports.awaitPromises = awaitPromises;
-
-		/**
-		 * Create a stream containing only the promise's fulfillment
-		 * value at the time it fulfills.
-		 * @param {Promise<T>} p promise
-		 * @return {Stream<T>} stream containing promise's fulfillment value.
-		 *  If the promise rejects, the stream will error
-		 */
-		function fromPromise(p) {
-			return awaitPromises(just(p));
-		}
-
-		/**
-		 * Turn a Stream<Promise<T>> into Stream<T> by awaiting each promise.
-		 * Event order is preserved.
-		 * @param {Stream<Promise<T>>} stream
-		 * @return {Stream<T>} stream of fulfillment values.  The stream will
-		 * error if any promise rejects.
-		 */
-		function awaitPromises(stream) {
-			return new Stream(new Await(stream.source));
-		}
-
-		function Await(source) {
-			this.source = source;
-		}
-
-		Await.prototype.run = function (sink, scheduler) {
-			return this.source.run(new AwaitSink(sink, scheduler), scheduler);
-		};
-
-		function AwaitSink(sink, scheduler) {
-			this.sink = sink;
-			this.scheduler = scheduler;
-			this.queue = Promise.resolve();
-			var self = this;
-
-			// Pre-create closures, to avoid creating them per event
-			this._eventBound = function (x) {
-				self.sink.event(self.scheduler.now(), x);
-			};
-
-			this._endBound = function (x) {
-				self.sink.end(self.scheduler.now(), x);
-			};
-
-			this._errorBound = function (e) {
-				self.sink.error(self.scheduler.now(), e);
-			};
-		}
-
-		AwaitSink.prototype.event = function (t, promise) {
-			var self = this;
-			this.queue = this.queue.then(function () {
-				return self._event(promise);
-			}).catch(this._errorBound);
-		};
-
-		AwaitSink.prototype.end = function (t, x) {
-			var self = this;
-			this.queue = this.queue.then(function () {
-				return self._end(x);
-			}).catch(this._errorBound);
-		};
-
-		AwaitSink.prototype.error = function (t, e) {
-			var self = this;
-			// Don't resolve error values, propagate directly
-			this.queue = this.queue.then(function () {
-				return self._errorBound(e);
-			}).catch(fatal);
-		};
-
-		AwaitSink.prototype._event = function (promise) {
-			return promise.then(this._eventBound);
-		};
-
-		AwaitSink.prototype._end = function (x) {
-			return Promise.resolve(x).then(this._endBound);
-		};
-
-	/***/ },
-	/* 69 */
-	/***/ function(module, exports, __webpack_require__) {
-
-		'use strict';
-
-		/** @license MIT License (c) copyright 2010-2016 original author or authors */
-		/** @author Brian Cavalier */
-		/** @author John Hann */
-
-		var Stream = __webpack_require__(4);
-		var ValueSource = __webpack_require__(7);
-		var SafeSink = __webpack_require__(70);
-		var Pipe = __webpack_require__(37);
-		var dispose = __webpack_require__(10);
-		var tryEvent = __webpack_require__(24);
-		var isPromise = __webpack_require__(13).isPromise;
-
-		exports.flatMapError = recoverWith;
-		exports.recoverWith = recoverWith;
-		exports.throwError = throwError;
-
-		/**
-		 * If stream encounters an error, recover and continue with items from stream
-		 * returned by f.
-		 * @param {function(error:*):Stream} f function which returns a new stream
-		 * @param {Stream} stream
-		 * @returns {Stream} new stream which will recover from an error by calling f
-		 */
-		function recoverWith(f, stream) {
-			return new Stream(new RecoverWith(f, stream.source));
-		}
-
-		/**
-		 * Create a stream containing only an error
-		 * @param {*} e error value, preferably an Error or Error subtype
-		 * @returns {Stream} new stream containing only an error
-		 */
-		function throwError(e) {
-			return new Stream(new ValueSource(error, e));
-		}
-
-		function error(t, e, sink) {
-			sink.error(t, e);
-		}
-
-		function RecoverWith(f, source) {
-			this.f = f;
-			this.source = source;
-		}
-
-		RecoverWith.prototype.run = function (sink, scheduler) {
-			return new RecoverWithSink(this.f, this.source, sink, scheduler);
-		};
-
-		function RecoverWithSink(f, source, sink, scheduler) {
-			this.f = f;
-			this.sink = new SafeSink(sink);
-			this.scheduler = scheduler;
-			this.disposable = source.run(this, scheduler);
-		}
-
-		RecoverWithSink.prototype.event = function (t, x) {
-			tryEvent.tryEvent(t, x, this.sink);
-		};
-
-		RecoverWithSink.prototype.end = function (t, x) {
-			tryEvent.tryEnd(t, x, this.sink);
-		};
-
-		RecoverWithSink.prototype.error = function (t, e) {
-			var nextSink = this.sink.disable();
-
-			var result = dispose.tryDispose(t, this.disposable, nextSink);
-			this.disposable = isPromise(result) ? dispose.promised(this._thenContinue(result, e, nextSink)) : this._continue(this.f, e, nextSink);
-		};
-
-		RecoverWithSink.prototype._thenContinue = function (p, x, sink) {
-			var self = this;
-			return p.then(function () {
-				return self._continue(self.f, x, sink);
-			});
-		};
-
-		RecoverWithSink.prototype._continue = function (f, x, sink) {
-			return f(x).source.run(sink, this.scheduler);
-		};
-
-		RecoverWithSink.prototype.dispose = function () {
-			return this.disposable.dispose();
-		};
-
-	/***/ },
-	/* 70 */
-	/***/ function(module, exports) {
-
-		"use strict";
-
-		/** @license MIT License (c) copyright 2010-2016 original author or authors */
-		/** @author Brian Cavalier */
-		/** @author John Hann */
-
-		module.exports = SafeSink;
-
-		function SafeSink(sink) {
-			this.sink = sink;
-			this.active = true;
-		}
-
-		SafeSink.prototype.event = function (t, x) {
-			if (!this.active) {
-				return;
-			}
-			this.sink.event(t, x);
-		};
-
-		SafeSink.prototype.end = function (t, x) {
-			if (!this.active) {
-				return;
-			}
-			this.disable();
-			this.sink.end(t, x);
-		};
-
-		SafeSink.prototype.error = function (t, e) {
-			this.disable();
-			this.sink.error(t, e);
-		};
-
-		SafeSink.prototype.disable = function () {
-			this.active = false;
-			return this.sink;
-		};
-
-	/***/ },
-	/* 71 */
-	/***/ function(module, exports) {
-
-		"use strict";
-
-		Object.defineProperty(exports, "__esModule", {
-		  value: true
-		});
-
-		var _createClass = function () {
-		  function defineProperties(target, props) {
-		    for (var i = 0; i < props.length; i++) {
-		      var descriptor = props[i];descriptor.enumerable = descriptor.enumerable || false;descriptor.configurable = true;if ("value" in descriptor) descriptor.writable = true;Object.defineProperty(target, descriptor.key, descriptor);
-		    }
-		  }return function (Constructor, protoProps, staticProps) {
-		    if (protoProps) defineProperties(Constructor.prototype, protoProps);if (staticProps) defineProperties(Constructor, staticProps);return Constructor;
-		  };
-		}();
-
-		function _classCallCheck(instance, Constructor) {
-		  if (!(instance instanceof Constructor)) {
-		    throw new TypeError("Cannot call a class as a function");
-		  }
-		}
-
-		function tryEvent(sink, scheduler, event) {
-		  try {
-		    sink.event(scheduler.now(), event);
-		  } catch (err) {
-		    sink.error(scheduler.now(), err);
-		  }
-		}
-
-		function tryEnd(sink, scheduler, event) {
-		  try {
-		    sink.end(scheduler.now(), event);
-		  } catch (err) {
-		    sink.error(scheduler.now(), err);
-		  }
-		}
-
-		var Observer = function () {
-		  function Observer() {
-		    var _this = this;
-
-		    _classCallCheck(this, Observer);
-
-		    this.run = function (sink, scheduler) {
-		      return _this._run(sink, scheduler);
-		    };
-		    this.next = function (x) {
-		      return _this._next(x);
-		    };
-		    this.error = function (err) {
-		      return _this._error(err);
-		    };
-		    this.complete = function (x) {
-		      return _this._complete(x);
-		    };
-		  }
-
-		  _createClass(Observer, [{
-		    key: "_run",
-		    value: function _run(sink, scheduler) {
-		      this.sink = sink;
-		      this.scheduler = scheduler;
-		      this.active = true;
-		      return this;
-		    }
-		  }, {
-		    key: "dispose",
-		    value: function dispose() {
-		      this.active = false;
-		    }
-		  }, {
-		    key: "_next",
-		    value: function _next(value) {
-		      if (!this.active) {
-		        return;
-		      }
-		      tryEvent(this.sink, this.scheduler, value);
-		    }
-		  }, {
-		    key: "_error",
-		    value: function _error(err) {
-		      this.active = false;
-		      this.sink.error(this.scheduler.now(), err);
-		    }
-		  }, {
-		    key: "_complete",
-		    value: function _complete(value) {
-		      if (!this.active) {
-		        return;
-		      }
-		      this.active = false;
-		      tryEnd(this.sink, this.scheduler, value);
-		    }
-		  }]);
-
-		  return Observer;
-		}();
-
-		exports.Observer = Observer;
-
-	/***/ },
-	/* 72 */
-	/***/ function(module, exports, __webpack_require__) {
-
-		'use strict';
-
-		Object.defineProperty(exports, "__esModule", {
-		  value: true
-		});
-		exports.replay = undefined;
-
-		var _createClass = function () {
-		  function defineProperties(target, props) {
-		    for (var i = 0; i < props.length; i++) {
-		      var descriptor = props[i];descriptor.enumerable = descriptor.enumerable || false;descriptor.configurable = true;if ("value" in descriptor) descriptor.writable = true;Object.defineProperty(target, descriptor.key, descriptor);
-		    }
-		  }return function (Constructor, protoProps, staticProps) {
-		    if (protoProps) defineProperties(Constructor.prototype, protoProps);if (staticProps) defineProperties(Constructor, staticProps);return Constructor;
-		  };
-		}();
-
-		var _most = __webpack_require__(3);
-
-		var _multicast = __webpack_require__(19);
-
-		function _classCallCheck(instance, Constructor) {
-		  if (!(instance instanceof Constructor)) {
-		    throw new TypeError("Cannot call a class as a function");
-		  }
-		}
-
-		function pushEvents(sink, buffer) {
-		  var i = 0;
-		  for (; i < buffer.length; ++i) {
-		    var item = buffer[i];
-		    sink.event(item.time, item.value);
-		  }
-		}
-
-		function replayAdd(sink) {
-		  var length = this._replayAdd(sink);
-		  if (this._replay.buffer.length > 0) {
-		    pushEvents(sink, this._replay.buffer);
-		  }
-		  return length;
-		}
-
-		function addToBuffer(event, replay) {
-		  if (replay.buffer.length >= replay.bufferSize) {
-		    replay.buffer.shift();
-		  }
-		  replay.buffer.push(event);
-		}
-
-		function replayEvent(time, value) {
-		  if (this._replay.bufferSize > 0) {
-		    addToBuffer({ time: time, value: value }, this._replay);
-		  }
-		  this._replayEvent(time, value);
-		}
-
-		var Replay = function () {
-		  function Replay(bufferSize, source) {
-		    _classCallCheck(this, Replay);
-
-		    this.source = source;
-		    this.bufferSize = bufferSize;
-		    this.buffer = [];
-		  }
-
-		  _createClass(Replay, [{
-		    key: 'run',
-		    value: function run(sink, scheduler) {
-		      if (sink._replay !== this) {
-		        sink._replay = this;
-		        sink._replayAdd = sink.add;
-		        sink.add = replayAdd;
-
-		        sink._replayEvent = sink.event;
-		        sink.event = replayEvent;
-		      }
-
-		      return this.source.run(sink, scheduler);
-		    }
-		  }]);
-
-		  return Replay;
-		}();
-
-		var replay = function replay(bufferSize, stream) {
-		  return new _most.Stream(new _multicast.MulticastSource(new Replay(bufferSize, stream.source)));
-		};
-
-		exports.replay = replay;
-
-	/***/ }
-	/******/ ]);
-
-/***/ },
 /* 39 */
 /***/ function(module, exports, __webpack_require__) {
 
-	"use strict";
-	/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__motorcycle_dom__ = __webpack_require__(15);
+	/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_most_subject__ = __webpack_require__(23);
+	/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_most_subject___default = __WEBPACK_IMPORTED_MODULE_0_most_subject__ && __WEBPACK_IMPORTED_MODULE_0_most_subject__.__esModule ? function() { return __WEBPACK_IMPORTED_MODULE_0_most_subject__['default'] } : function() { return __WEBPACK_IMPORTED_MODULE_0_most_subject__; }
+	/* harmony import */ Object.defineProperty(__WEBPACK_IMPORTED_MODULE_0_most_subject___default, 'a', { get: __WEBPACK_IMPORTED_MODULE_0_most_subject___default });
+
+	'use strict';
+
+	var O = {};
+
+	var tempStyle = {display: 'inline'}
+	var tempStyle2 = {display: 'none'}
+
+	function _classCallCheck(instance, Constructor) { 
+	  if (!(instance instanceof Constructor)) { 
+	    throw new TypeError("Cannot call a class as a function"); 
+	  } 
+	}
+
+
+	// var subject = require('most-subject');
+
+	var MonadStream = function MonadStream(g) {
+	  var _this = this;
+	  this.subject = /* harmony import */ __WEBPACK_IMPORTED_MODULE_0_most_subject__["subject"]();
+	  this.observer = this.subject.observer;
+	  this.stream = this.subject.stream;
+	  this.id = g;
+	  this.ret = function (a) {
+	    _this.observer.next(a);
+	    console.log('Streaming from ', _this.id);
+	    return _this;
+	  };
+	};
+
+	var mM$1 = new MonadStream('mM$1');
+
+	var Monad = function Monad(z, g) {
+	  var _this = this;
+
+	  this.x = z;
+	  if (arguments.length === 1) {
+	    this.id = 'anonymous';
+	  } else {
+	    this.id = g;
+	  }
+
+	  this.bnd = function (func, ...args) {
+	     return func(_this.x, ...args);
+	  };
+
+	  this.ret = function (a) {
+	    O[_this.id] = new Monad(a,_this.id);
+	    return O[_this.id];
+	  };
+	};
+
+	var MonadIter = function MonadIter() {
+	  var _this = this;
+	  this.p = function () {};
+
+	  this.release = function () {
+	    return this.p.apply(this, arguments);
+	  };
+
+	  this.bnd = function (func) {
+	    _this.p = func;
+	  };
+	};
+
+	var ret = function ret(v, id) {
+	  if (arguments.length === 1) {
+	    return (new Monad(v, 'anonymous'));
+	  }
+	  window[id] = new Monad(v, id);
+	  return window[id];
+	}
+
+	var cube = function(v,mon) {
+	  if (arguments.length === 2) {
+	    return mon.ret(v*v*v);
+	  }
+	  return ret(v*v*v);
+	}
+
+	var add = function(x,b,mon) {
+	  if (arguments.length === 3) {
+	    return mon.ret(x + b);
+	  }
+	  return ret(x+b);
+	}
+
+	var calc = function calc(a,op,b) { 
+	  var result;
+	  switch (op) {
+	      case "add": result = (parseFloat(a) + parseFloat(b));
+	      break;
+	      case "subtract": result = (a - b);
+	      break;
+	      case "mult": result = (a * b);
+	      break;
+	      case "div": result = (a / b);
+	      break;
+	      case "concat": result = (a+""+b)*1.0;
+	      break;
+	      default : 'Major Malfunction in calc.';
+	  }
+	  return result;
+	};
+
+	var equals = function equals (x, mon1, mon2, mon3) {
+	  if (mon1.id === mon2.id && mon1.x === mon2.x) {
+	    mon3.ret('true');
+	  } else mon3.ret('false');
+	  return ret(x);
+	}
+	var wait = function wait(x, y, mon) {
+	  if (x === y) {
+	    mon2.release();
+	  }
+	  return mon;
+	};
+
+	var unshift = function unshift(y,v,mon) {
+	  if (Array.isArray(y)) {
+	    let ar = [];
+	    let keys = Object.keys(y);
+	    for (let k in keys) {ar[k] = y[k]};
+	    ar.unshift(v);
+	    return mon.ret(ar);  
+	  }
+	  console.log('The value provided to unshift is not an array');
+	  return ret(y);
+	};
+
+	var unshift2 = function unshift(y,v,mon) {
+	  return mon.ret(ret(y).x.unshift(v));
+	};
+
+	var toFloat = function toFloat(x) {
+	    return ret(parseFloat(x));
+	};
+
+	var push = function push(y,v,mon) {
+	  console.log('In push. y, v, mon are: ', y, v, mon);
+	    let ar = [];
+	    if (y.length == 0) {
+	      ar = [v];
+	    }
+	    else {
+	      let keys = Object.keys(y);
+	      for (let k in keys) {ar[k] = y[k]};
+	      ar.push(v);
+	    }
+	    return mon.ret(ar);
+	};
+
+	var spliceRemove = function spliceRemove(x, index, location, mon) {
+	  if (Array.isArray(x)) {
+	    let ar = [];
+	    let keys = Object.keys(x[index]);
+	    for (let k in keys) {
+	      ar[k] = x[index][k];
+	    }
+	    ar.splice(location,1);
+	    return mon.ret(ar);  
+	  }
+	  console.log('Major malfunction in spliceRemove. x, index, location, mon: ', x, index, location, mon);
+	};
+
+	var spliceAdd = function spliceAdd(x, index, value, mon) {
+	  if (Array.isArray(x)) {
+	    let ar = [];
+	    let keys = Object.keys(x);
+	    for (let k in keys) {ar[k] = x[k]};
+	    ar.splice(index, 0, value);
+	    return mon.ret(ar);  
+	  }
+	  console.log('The value provided to spliceAdd is not an array');
+	  return ret(x);
+	};
+
+	var splice = function splice(x, start, n, mon) {
+	  if (Array.isArray(x)) {
+	    let ar = [];
+	    let keys = Object.keys(x);
+	    for (let k in keys) {ar[k] = x[k]};
+	    ar.splice(start, n);
+	    return mon.ret(ar);  
+	  }
+	  console.log('The value provided to splice is not an array');
+	  return ret(x);
+	};
+
+	var concat = function concat(x, str, mon) {
+	  mon.ret(x + str)
+	}
+
+	var sliceFront = function sliceFront(x, n, mon) {
+	  if (Array.isArray(x)) {
+	    let ar = x.slice(n);
+	    return mon.ret(ar);  
+	  }
+	  console.log('The value provided to sliceFront is not an array');
+	  return ret(x);
+	};
+
+	var filter = function filter(x, condition) {
+	  if (Array.isArray(x)) {
+	    let ar = ret(x);
+	    return ret(ar.x.filter(v => condition))
+	  }
+	  return ret(x);
+	}
+
+	var map = function map(x, f, mon) {
+	  if (Array.isArray(x)) {
+	    let ar = [];
+	    let keys = Object.keys(x);
+	    for (let k in keys) {
+	      ar[k] = f(x[k]);
+	      return mon.ret(ar);  
+	    }
+	  }
+	  console.log('The value provided to map is not an array');
+	  return ret(x);
+	};
+
+	var reduce = function reduce(x, f, mon) {
+	  console.log('In reduce.  Array.isArray(x), x.length: ', Array.isArray(x), x.length);
+	  if (Array.isArray(x) && x.length > 0) {
+	    let ar = [];
+	    let keys = Object.keys(x);
+	    for (let k in keys) {ar[k] = x[k]};
+	    console.log('ar in reduce is ', ar);
+	    return mon.ret(ar.reduce(f));  
+	  }
+	  console.log('The value provided to reduce is not an array or is empty . Value: ', x);
+	  return ret(x);
+	};
+
+	var next = function next(x, y, mon2, a1, a2) {
+	  if (x === y) {
+	    mon2.release(a1, a2);
+	  }
+	  return ret(x);
+	}
+
+	var next2 = function next(x, condition, mon2) {
+	  if (condition) {
+	    mon2.release();
+	  }
+	  return ret(x);
+	}
+
+	var next3 = function next(x, y, z, mon2) {
+	  if (x === y) {
+	    mon2.ret(z);
+	    mon2.release();
+	  }
+	  return ret(x);
+	}
+
+	var log = function log(x, message) {
+	  console.log('In log.  message is: ', message);
+	    return ret(x);
+	};
+
+	  var getIndex = function getIndex (event_object) {
+	    var task = event_object.currentTarget.parentNode.innerText;
+	    var possibilities = event_object.currentTarget.parentNode.parentNode.childNodes;
+	    var keys = Object.keys(possibilities);
+	    for (let k in keys) {
+	      if (task == possibilities[k].innerText) {
+	        return k
+	      }
+	    }
+	    console.log('In getIndex. No match');
+	  }
+
+	  var getIndex2 = function getIndex2 (e) {
+	    var elem = e.currentTarget.parentNode.children[0].innerHTML
+	    var elem2 = e.currentTarget.parentNode.parentNode.childNodes
+	    var keys = Object.keys(elem2);
+	    for (let k in keys) {
+	      if (elem == elem2[k].childNodes[0].innerHTML) {
+	        return k
+	      }
+	      console.log('In getIndex2. No match');
+	    }
+	  }
+
+	/* harmony default export */ exports["default"] = {O, ret, Monad, MonadIter, MonadStream, add, cube, push, equals, splice, map, filter, reduce, unshift, calc}
+
+
+
+/***/ },
+/* 40 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__motorcycle_dom__ = __webpack_require__(16);
 	/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__motorcycle_dom___default = __WEBPACK_IMPORTED_MODULE_0__motorcycle_dom__ && __WEBPACK_IMPORTED_MODULE_0__motorcycle_dom__.__esModule ? function() { return __WEBPACK_IMPORTED_MODULE_0__motorcycle_dom__['default'] } : function() { return __WEBPACK_IMPORTED_MODULE_0__motorcycle_dom__; }
 	/* harmony import */ Object.defineProperty(__WEBPACK_IMPORTED_MODULE_0__motorcycle_dom___default, 'a', { get: __WEBPACK_IMPORTED_MODULE_0__motorcycle_dom___default });
 	 
@@ -9411,7 +3671,7 @@
 
 	var mMname = new Monad('Fred', 'mMname');
 
-	const monad = /* harmony import */__WEBPACK_IMPORTED_MODULE_0__motorcycle_dom__["h"].bind()('pre', {style: {color: '#AFEEEE' }}, `  var Monad = function Monad(z, g) {
+	const monad = /* harmony import */ __WEBPACK_IMPORTED_MODULE_0__motorcycle_dom__["h"]('pre', {style: {color: '#AFEEEE' }}, `  var Monad = function Monad(z, g) {
 	    var _this = this;
 
 	    this.x = z;
@@ -9431,7 +3691,7 @@
 	    };
 	  }; ` )
 
-	const monadStr = /* harmony import */__WEBPACK_IMPORTED_MODULE_0__motorcycle_dom__["h"].bind()('pre', {style: {color: '#AFEEEE' }}, `  var MonadStream = function MonadStream(g) {
+	const monadStr = /* harmony import */ __WEBPACK_IMPORTED_MODULE_0__motorcycle_dom__["h"]('pre', {style: {color: '#AFEEEE' }}, `  var MonadStream = function MonadStream(g) {
 	    var _this = this;
 	    this.subject = subject();
 	    this.observer = this.subject.observer;
@@ -9443,7 +3703,7 @@
 	    };
 	  }; ` )
 
-	const monadIt = /* harmony import */__WEBPACK_IMPORTED_MODULE_0__motorcycle_dom__["h"].bind()('pre', {style: {color: '#AFEEEE' }}, `  var MonadIter = function MonadIter() {
+	const monadIt = /* harmony import */ __WEBPACK_IMPORTED_MODULE_0__motorcycle_dom__["h"]('pre', {style: {color: '#AFEEEE' }}, `  var MonadIter = function MonadIter() {
 	    var _this = this;
 	    this.p = function () {};
 	  
@@ -9456,7 +3716,7 @@
 	    };
 	  }; ` )
 
-	const ret = /* harmony import */__WEBPACK_IMPORTED_MODULE_0__motorcycle_dom__["h"].bind()('pre', {style: {color: '#AFEEEE' }}, `  var ret = function ret(v, id) {
+	const ret = /* harmony import */ __WEBPACK_IMPORTED_MODULE_0__motorcycle_dom__["h"]('pre', {style: {color: '#AFEEEE' }}, `  var ret = function ret(v, id) {
 	    if (arguments.length === 1) {
 	      return (new Monad(v, 'anonymous'));
 	    }
@@ -9464,7 +3724,7 @@
 	    return window[id];
 	  }; ` )
 
-	var fib = /* harmony import */__WEBPACK_IMPORTED_MODULE_0__motorcycle_dom__["h"].bind()('pre', `  var fib = function fib(x) {
+	var fib = /* harmony import */ __WEBPACK_IMPORTED_MODULE_0__motorcycle_dom__["h"]('pre', `  var fib = function fib(x) {
 	    return mMfib.ret([ O.mMfib.x[1], O.mMfib.x[0] + O.mMfib.x[1] ]);
 	  }
 
@@ -9475,14 +3735,14 @@
 	  }   ` )  
 
 
-	var driver = /* harmony import */__WEBPACK_IMPORTED_MODULE_0__motorcycle_dom__["h"].bind()('pre', `  var websocketsDriver = function () {
+	var driver = /* harmony import */ __WEBPACK_IMPORTED_MODULE_0__motorcycle_dom__["h"]('pre', `  var websocketsDriver = function () {
 	      return create((add) => {
 	        socket.onmessage = msg => add(msg)
 	      })
 	  };
 	` )
 
-	var messages = /* harmony import */__WEBPACK_IMPORTED_MODULE_0__motorcycle_dom__["h"].bind()('pre', `  const messages$ = (sources.WS).map(e => 
+	var messages = /* harmony import */ __WEBPACK_IMPORTED_MODULE_0__motorcycle_dom__["h"]('pre', `  const messages$ = (sources.WS).map(e => 
 	    mMtem.ret(e.data.split(',')).bnd(v => {
 	    mMZ10.bnd(() => mM$1
 	      .ret([v[3], v[4], v[5], v[6]])
@@ -9514,11 +3774,11 @@
 	    return ret(x);
 	  }`  )
 
-	var next = /* harmony import */__WEBPACK_IMPORTED_MODULE_0__motorcycle_dom__["h"].bind()('pre',  `  
+	var next = /* harmony import */ __WEBPACK_IMPORTED_MODULE_0__motorcycle_dom__["h"]('pre',  `  
 	  `  )
 
 
-	var Monad$ = /* harmony import */__WEBPACK_IMPORTED_MODULE_0__motorcycle_dom__["h"].bind()('pre',  `  var Monad$ = function Monad$(z, g) {
+	var Monad$ = /* harmony import */ __WEBPACK_IMPORTED_MODULE_0__motorcycle_dom__["h"]('pre',  `  var Monad$ = function Monad$(z, g) {
 	      var _this = this;
 	      this.subject = subject();
 	      this.observer = this.subject.observer;
@@ -9538,7 +3798,7 @@
 	    };
 	  `  )
 
-	var nums = /* harmony import */__WEBPACK_IMPORTED_MODULE_0__motorcycle_dom__["h"].bind()('pre',  `  
+	var nums = /* harmony import */ __WEBPACK_IMPORTED_MODULE_0__motorcycle_dom__["h"]('pre',  `  
 	    const numClick$ = sources.DOM
 	      .select('.num').events('click');
 	       
@@ -9579,7 +3839,7 @@
 	      }
 	  });  `  )
 
-	  const arrayFuncs = /* harmony import */__WEBPACK_IMPORTED_MODULE_0__motorcycle_dom__["h"].bind()('pre',  `  var push = function push(y,v,mon) {
+	  const arrayFuncs = /* harmony import */ __WEBPACK_IMPORTED_MODULE_0__motorcycle_dom__["h"]('pre',  `  var push = function push(y,v,mon) {
 	      if (Array.isArray(y)) {
 	        let ar = [];
 	        let keys = Object.keys(y);
@@ -9628,7 +3888,7 @@
 	    };
 	  `  )
 
-	var cleanup = /* harmony import */__WEBPACK_IMPORTED_MODULE_0__motorcycle_dom__["h"].bind()('pre',  `  function cleanup (x) {
+	var cleanup = /* harmony import */ __WEBPACK_IMPORTED_MODULE_0__motorcycle_dom__["h"]('pre',  `  function cleanup (x) {
 	      let target0 = document.getElementById('0');
 	      let target1 = document.getElementById('1');
 	      let target2 = document.getElementById('2');
@@ -9645,7 +3905,7 @@
 	      return ret(x);
 	  }; `  )
 
-	  var travel = /* harmony import */__WEBPACK_IMPORTED_MODULE_0__motorcycle_dom__["h"].bind()('pre',  `  const forwardClick$ = sources.DOM
+	  var travel = /* harmony import */ __WEBPACK_IMPORTED_MODULE_0__motorcycle_dom__["h"]('pre',  `  const forwardClick$ = sources.DOM
 	      .select('#forward2').events('click');
 	  
 	    const backClick$ = sources.DOM
@@ -9673,7 +3933,7 @@
 	      cleanup();
 	    })  `  )
 
-	  var C42 = /* harmony import */__WEBPACK_IMPORTED_MODULE_0__motorcycle_dom__["h"].bind()('pre',  `  mMZ10.bnd(() => mM$1
+	  var C42 = /* harmony import */ __WEBPACK_IMPORTED_MODULE_0__motorcycle_dom__["h"]('pre',  `  mMZ10.bnd(() => mM$1
 	     .ret([O.mMar.x[3], O.mMar.x[4], O.mMar.x[5], O.mMar.x[6]])
 	     .bnd(() => mM$2.ret([]))
 	     .bnd(displayInline,'0')
@@ -9681,13 +3941,13 @@
 	     .bnd(displayInline,'2')
 	     .bnd(displayInline,'3'));  `  )
 
-	  var taskStream = /* harmony import */__WEBPACK_IMPORTED_MODULE_0__motorcycle_dom__["h"].bind()('pre',  `  
+	  var taskStream = /* harmony import */ __WEBPACK_IMPORTED_MODULE_0__motorcycle_dom__["h"]('pre',  `  
 	    });  `  )
 
-	  var deleteTask2 = /* harmony import */__WEBPACK_IMPORTED_MODULE_0__motorcycle_dom__["h"].bind()('pre',  `  mMZ19.bnd(() => O.mM$task.bnd(spliceRemove, O.mMar.x[3], mM$task));
+	  var deleteTask2 = /* harmony import */ __WEBPACK_IMPORTED_MODULE_0__motorcycle_dom__["h"]('pre',  `  mMZ19.bnd(() => O.mM$task.bnd(spliceRemove, O.mMar.x[3], mM$task));
 	  `  )
 
-	  var newTask = /* harmony import */__WEBPACK_IMPORTED_MODULE_0__motorcycle_dom__["h"].bind()('pre',  `  const newTask$ = sources.DOM
+	  var newTask = /* harmony import */ __WEBPACK_IMPORTED_MODULE_0__motorcycle_dom__["h"]('pre',  `  const newTask$ = sources.DOM
 	    .select('input.newTask').events('keydown'); 
 
 	  const newTaskAction$ = newTask$.map(e => {
@@ -9720,7 +3980,7 @@
 	      } 
 	  };  ` )
 
-	  var process = /* harmony import */__WEBPACK_IMPORTED_MODULE_0__motorcycle_dom__["h"].bind()('pre',  `  const process = function(str) {
+	  var process = /* harmony import */ __WEBPACK_IMPORTED_MODULE_0__motorcycle_dom__["h"]('pre',  `  const process = function(str) {
 	    let a = str.split(",");
 	    console.log('In process. str and a are: ', str, a);
 	    if (a == undefined) {
@@ -9778,7 +4038,7 @@
 	    }
 	  };  `  )
 
-	  var colorClick = /* harmony import */__WEBPACK_IMPORTED_MODULE_0__motorcycle_dom__["h"].bind()('pre',  `  const colorClick$ = sources.DOM
+	  var colorClick = /* harmony import */ __WEBPACK_IMPORTED_MODULE_0__motorcycle_dom__["h"]('pre',  `  const colorClick$ = sources.DOM
 	    .select('#cb').events('click')
 	    
 	  const colorAction$ = colorClick$.map(e => {
@@ -9814,7 +4074,7 @@
 	    console.log('In getIndex. No match');
 	  }  `  )
 
-	  var edit = /* harmony import */__WEBPACK_IMPORTED_MODULE_0__motorcycle_dom__["h"].bind()('pre',  `  const edit1$ = sources.DOM
+	  var edit = /* harmony import */ __WEBPACK_IMPORTED_MODULE_0__motorcycle_dom__["h"]('pre',  `  const edit1$ = sources.DOM
 	    .select('#edit1').events('click')
 	    
 	  const edit1Action$ = edit1$.map(e => {
@@ -9855,12 +4115,12 @@
 	    }
 	  }  `  )
 
-	  var mM$task = /* harmony import */__WEBPACK_IMPORTED_MODULE_0__motorcycle_dom__["h"].bind()('pre',  `  const taskAction$ = mM$taskList.stream.map(str => {
+	  var mM$task = /* harmony import */ __WEBPACK_IMPORTED_MODULE_0__motorcycle_dom__["h"]('pre',  `  const taskAction$ = mM$taskList.stream.map(str => {
 	    socket.send('TD#$42' + ',' + O.mMgroup.x.trim() + 
 	        ',' + O.mMname.x.trim() + ',' + '@' + str);
 	  });  `  )
 
-	  var updateCalc = /* harmony import */__WEBPACK_IMPORTED_MODULE_0__motorcycle_dom__["h"].bind()('pre',  `  function updateCalc() { 
+	  var updateCalc = /* harmony import */ __WEBPACK_IMPORTED_MODULE_0__motorcycle_dom__["h"]('pre',  `  function updateCalc() { 
 	    O.mM3.bnd(x => mM7
 	    .ret(calc(x[0], O.mM8.x, x[1]))
 	    .bnd(result => {if (result == 20) {score(O.mM13.x, 1)}; return O.mM7}) 
@@ -9893,7 +4153,7 @@
 	  };  `  )
 
 
-	  var testZ = /* harmony import */__WEBPACK_IMPORTED_MODULE_0__motorcycle_dom__["h"].bind()('pre',  `  mMZ1.bnd(v => O.mMt1.bnd(add,v,mMt1)
+	  var testZ = /* harmony import */ __WEBPACK_IMPORTED_MODULE_0__motorcycle_dom__["h"]('pre',  `  mMZ1.bnd(v => O.mMt1.bnd(add,v,mMt1)
 	  .bnd(cube,mMt2)
 	  .bnd(() => mMt3.ret(O.mMt1.x + ' cubed is ' + O.mMt2.x)))  
 	  
@@ -9913,7 +4173,7 @@
 	    return ret(v*v*v);  // Returns an anonymous monad.
 	  }  `  )
 
-	  var quad = /* harmony import */__WEBPACK_IMPORTED_MODULE_0__motorcycle_dom__["h"].bind()('pre',  `  var solve = (function solve () {
+	  var quad = /* harmony import */ __WEBPACK_IMPORTED_MODULE_0__motorcycle_dom__["h"]('pre',  `  var solve = (function solve () {
 	    mMZ3
 	    .bnd(a => mMquad1.ret(a + 'x**2')
 	    .bnd(() => mMquad2.ret('').bnd(mMquad3.ret) // Clear the display.
@@ -9955,7 +4215,7 @@
 	    return mon.ret(n/2*a);
 	  }  `  )
 
-	  var mdem1 = /* harmony import */__WEBPACK_IMPORTED_MODULE_0__motorcycle_dom__["h"].bind()('pre',  `  var equals = function equals (x, mon1, mon2, mon3) {
+	  var mdem1 = /* harmony import */ __WEBPACK_IMPORTED_MODULE_0__motorcycle_dom__["h"]('pre',  `  var equals = function equals (x, mon1, mon2, mon3) {
 	    if (mon1.id === mon2.id && mon1.x === mon2.x) {
 	      mon3.ret('true');
 	    } else mon3.ret('false');
@@ -9976,7 +4236,7 @@
 	    return ret(v*v*v);
 	  }  `  )
 
-	  var runTest = /* harmony import */__WEBPACK_IMPORTED_MODULE_0__motorcycle_dom__["h"].bind()('pre',  `  var runTest = function monTest () {
+	  var runTest = /* harmony import */ __WEBPACK_IMPORTED_MODULE_0__motorcycle_dom__["h"]('pre',  `  var runTest = function monTest () {
 	  mM5.bnd( equals,  
 	    m.ret(0).bnd(v => add(v, 3, m).bnd(cube)), 
 	    m.ret(0).bnd(add, 3, m).bnd(cube), mMa)
@@ -9987,7 +4247,7 @@
 	  }  `  )
 
 	  
-	  var gameStream = /* harmony import */__WEBPACK_IMPORTED_MODULE_0__motorcycle_dom__["h"].bind()('pre',  `  const mM$1Action$ = mM$1.stream.map(v => {
+	  var gameStream = /* harmony import */ __WEBPACK_IMPORTED_MODULE_0__motorcycle_dom__["h"]('pre',  `  const mM$1Action$ = mM$1.stream.map(v => {
 	      O.mMindex2.bnd(inc, mMindex2);
 	      O.mMallRolls.bnd(spliceAdd, O.mMindex2.x, v, mMallRolls);
 	      document.getElementById('0').innerHTML = (O.mMallRolls.x[O.mMindex2.x])[0]; 
@@ -9997,7 +4257,7 @@
 	      cleanup(7)
 	  });  `  )
 
-	  var inc = /* harmony import */__WEBPACK_IMPORTED_MODULE_0__motorcycle_dom__["h"].bind()('pre',  `  var inc = function inc(x, mon) {
+	  var inc = /* harmony import */ __WEBPACK_IMPORTED_MODULE_0__motorcycle_dom__["h"]('pre',  `  var inc = function inc(x, mon) {
 	      return mon.ret(x + 1);
 	  };
 
@@ -10013,27 +4273,27 @@
 	    return ret(x);
 	  }  `  )
 
-	    var todoStream = /* harmony import */__WEBPACK_IMPORTED_MODULE_0__motorcycle_dom__["h"].bind()('pre',  `  const taskAction$ = mM$taskList.stream.map(str => {
+	    var todoStream = /* harmony import */ __WEBPACK_IMPORTED_MODULE_0__motorcycle_dom__["h"]('pre',  `  const taskAction$ = mM$taskList.stream.map(str => {
 	    socket.send('TD#$42' + ',' + O.mMgroup.x.trim() + 
 	        ',' + O.mMname.x.trim() + ',' + '@' + str);
 	  });  `  )
 
-	    var p3 = /* harmony import */__WEBPACK_IMPORTED_MODULE_0__motorcycle_dom__["h"].bind()('pre',  `  
+	    var p3 = /* harmony import */ __WEBPACK_IMPORTED_MODULE_0__motorcycle_dom__["h"]('pre',  `  
 	    `  )
 
-	    var p4 = /* harmony import */__WEBPACK_IMPORTED_MODULE_0__motorcycle_dom__["h"].bind()('pre',  `  
+	    var p4 = /* harmony import */ __WEBPACK_IMPORTED_MODULE_0__motorcycle_dom__["h"]('pre',  `  
 	    `  )
 
-	    var p5 = /* harmony import */__WEBPACK_IMPORTED_MODULE_0__motorcycle_dom__["h"].bind()('pre',  `  
+	    var p5 = /* harmony import */ __WEBPACK_IMPORTED_MODULE_0__motorcycle_dom__["h"]('pre',  `  
 	    `  )
 
-	var add = /* harmony import */__WEBPACK_IMPORTED_MODULE_0__motorcycle_dom__["h"].bind()('pre',  `  var add = function(x,b,mon) {
+	var add = /* harmony import */ __WEBPACK_IMPORTED_MODULE_0__motorcycle_dom__["h"]('pre',  `  var add = function(x,b,mon) {
 	  if (arguments.length === 3) {
 	    return mon.ret(x + b);
 	  }
 	  return ret(x+b);  `  )
 
-	var ret_cube = /* harmony import */__WEBPACK_IMPORTED_MODULE_0__motorcycle_dom__["h"].bind()('pre',  `  var ret = function ret(v, id) {
+	var ret_cube = /* harmony import */ __WEBPACK_IMPORTED_MODULE_0__motorcycle_dom__["h"]('pre',  `  var ret = function ret(v, id) {
 	    if (arguments.length === 1) {
 	      return (new Monad(v, 'anonymous'));
 	    }
@@ -10048,25 +4308,25 @@
 	  return ret(v*v*v);
 	}  `  )
 
-	    var p5 = /* harmony import */__WEBPACK_IMPORTED_MODULE_0__motorcycle_dom__["h"].bind()('pre',  `  
+	    var p5 = /* harmony import */ __WEBPACK_IMPORTED_MODULE_0__motorcycle_dom__["h"]('pre',  `  
 	    `  )
 
 
 
 
 
-	  /* harmony default export */ exports["a"] = {monad, monadStr, monadIt, fib, driver, messages, next, Monad$, updateCalc, arrayFuncs, travel, nums, cleanup, ret, C42, taskStream, newTask, process, mM$task, addString, colorClick, edit, testZ, quad, mdem1, runTest, todoStream, gameStream, inc, add, ret_cube };
+	  /* harmony default export */ exports["default"] = {monad, monadStr, monadIt, fib, driver, messages, next, Monad$, updateCalc, arrayFuncs, travel, nums, cleanup, ret, C42, taskStream, newTask, process, mM$task, addString, colorClick, edit, testZ, quad, mdem1, runTest, todoStream, gameStream, inc, add, ret_cube }
 
 
 
 
 /***/ },
-/* 40 */
+/* 41 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;(function (global, factory) {
 	    if (true) {
-	        !(__WEBPACK_AMD_DEFINE_ARRAY__ = [exports, __webpack_require__(5)], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+	        !(__WEBPACK_AMD_DEFINE_ARRAY__ = [exports, __webpack_require__(4)], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 	    } else if (typeof exports !== "undefined") {
 	        factory(exports, require('most'));
 	    } else {
@@ -10392,12 +4652,12 @@
 
 
 /***/ },
-/* 41 */
+/* 42 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;(function (global, factory) {
 	  if (true) {
-	    !(__WEBPACK_AMD_DEFINE_ARRAY__ = [exports, __webpack_require__(4)], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+	    !(__WEBPACK_AMD_DEFINE_ARRAY__ = [exports, __webpack_require__(5)], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 	  } else if (typeof exports !== "undefined") {
 	    factory(exports, require('@most/multicast'));
 	  } else {
@@ -10495,306 +4755,20 @@
 
 
 /***/ },
-/* 42 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;(function (global, factory) {
-	  if (true) {
-	    !(__WEBPACK_AMD_DEFINE_ARRAY__ = [exports], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-	  } else if (typeof exports !== "undefined") {
-	    factory(exports);
-	  } else {
-	    var mod = {
-	      exports: {}
-	    };
-	    factory(mod.exports);
-	    global.mostPrelude = mod.exports;
-	  }
-	})(this, function (exports) {
-	  'use strict';
-
-	  Object.defineProperty(exports, "__esModule", {
-	    value: true
-	  });
-	  /** @license MIT License (c) copyright 2010-2016 original author or authors */
-
-	  // Non-mutating array operations
-
-	  // cons :: a -> [a] -> [a]
-	  // a with x prepended
-	  function cons(x, a) {
-	    var l = a.length;
-	    var b = new Array(l + 1);
-	    b[0] = x;
-	    for (var i = 0; i < l; ++i) {
-	      b[i + 1] = a[i];
-	    }
-	    return b;
-	  }
-
-	  // append :: a -> [a] -> [a]
-	  // a with x appended
-	  function append(x, a) {
-	    var l = a.length;
-	    var b = new Array(l + 1);
-	    for (var i = 0; i < l; ++i) {
-	      b[i] = a[i];
-	    }
-
-	    b[l] = x;
-	    return b;
-	  }
-
-	  // drop :: Int -> [a] -> [a]
-	  // drop first n elements
-	  function drop(n, a) {
-	    // eslint-disable-line complexity
-	    if (n < 0) {
-	      throw new TypeError('n must be >= 0');
-	    }
-
-	    var l = a.length;
-	    if (n === 0 || l === 0) {
-	      return a;
-	    }
-
-	    if (n >= l) {
-	      return [];
-	    }
-
-	    return unsafeDrop(n, a, l - n);
-	  }
-
-	  // unsafeDrop :: Int -> [a] -> Int -> [a]
-	  // Internal helper for drop
-	  function unsafeDrop(n, a, l) {
-	    var b = new Array(l);
-	    for (var i = 0; i < l; ++i) {
-	      b[i] = a[n + i];
-	    }
-	    return b;
-	  }
-
-	  // tail :: [a] -> [a]
-	  // drop head element
-	  function tail(a) {
-	    return drop(1, a);
-	  }
-
-	  // copy :: [a] -> [a]
-	  // duplicate a (shallow duplication)
-	  function copy(a) {
-	    var l = a.length;
-	    var b = new Array(l);
-	    for (var i = 0; i < l; ++i) {
-	      b[i] = a[i];
-	    }
-	    return b;
-	  }
-
-	  // map :: (a -> b) -> [a] -> [b]
-	  // transform each element with f
-	  function map(f, a) {
-	    var l = a.length;
-	    var b = new Array(l);
-	    for (var i = 0; i < l; ++i) {
-	      b[i] = f(a[i]);
-	    }
-	    return b;
-	  }
-
-	  // reduce :: (a -> b -> a) -> a -> [b] -> a
-	  // accumulate via left-fold
-	  function reduce(f, z, a) {
-	    var r = z;
-	    for (var i = 0, l = a.length; i < l; ++i) {
-	      r = f(r, a[i], i);
-	    }
-	    return r;
-	  }
-
-	  // replace :: a -> Int -> [a]
-	  // replace element at index
-	  function replace(x, i, a) {
-	    // eslint-disable-line complexity
-	    if (i < 0) {
-	      throw new TypeError('i must be >= 0');
-	    }
-
-	    var l = a.length;
-	    var b = new Array(l);
-	    for (var j = 0; j < l; ++j) {
-	      b[j] = i === j ? x : a[j];
-	    }
-	    return b;
-	  }
-
-	  // remove :: Int -> [a] -> [a]
-	  // remove element at index
-	  function remove(i, a) {
-	    // eslint-disable-line complexity
-	    if (i < 0) {
-	      throw new TypeError('i must be >= 0');
-	    }
-
-	    var l = a.length;
-	    if (l === 0 || i >= l) {
-	      // exit early if index beyond end of array
-	      return a;
-	    }
-
-	    if (l === 1) {
-	      // exit early if index in bounds and length === 1
-	      return [];
-	    }
-
-	    return unsafeRemove(i, a, l - 1);
-	  }
-
-	  // unsafeRemove :: Int -> [a] -> Int -> [a]
-	  // Internal helper to remove element at index
-	  function unsafeRemove(i, a, l) {
-	    var b = new Array(l);
-	    var j = undefined;
-	    for (j = 0; j < i; ++j) {
-	      b[j] = a[j];
-	    }
-	    for (j = i; j < l; ++j) {
-	      b[j] = a[j + 1];
-	    }
-
-	    return b;
-	  }
-
-	  // removeAll :: (a -> boolean) -> [a] -> [a]
-	  // remove all elements matching a predicate
-	  function removeAll(f, a) {
-	    var l = a.length;
-	    var b = new Array(l);
-	    var j = 0;
-	    for (var x, i = 0; i < l; ++i) {
-	      x = a[i];
-	      if (!f(x)) {
-	        b[j] = x;
-	        ++j;
-	      }
-	    }
-
-	    b.length = j;
-	    return b;
-	  }
-
-	  // findIndex :: a -> [a] -> Int
-	  // find index of x in a, from the left
-	  function findIndex(x, a) {
-	    for (var i = 0, l = a.length; i < l; ++i) {
-	      if (x === a[i]) {
-	        return i;
-	      }
-	    }
-	    return -1;
-	  }
-
-	  // isArrayLike :: * -> boolean
-	  // Return true iff x is array-like
-	  function isArrayLike(x) {
-	    return x != null && typeof x.length === 'number' && typeof x !== 'function';
-	  }
-
-	  /** @license MIT License (c) copyright 2010-2016 original author or authors */
-
-	  // id :: a -> a
-	  var id = function id(x) {
-	    return x;
-	  };
-
-	  // compose :: (b -> c) -> (a -> b) -> (a -> c)
-	  var compose = function compose(f, g) {
-	    return function (x) {
-	      return f(g(x));
-	    };
-	  };
-
-	  // apply :: (a -> b) -> a -> b
-	  var apply = function apply(f, x) {
-	    return f(x);
-	  };
-
-	  // curry2 :: ((a, b) -> c) -> (a -> b -> c)
-	  function curry2(f) {
-	    function curried(a, b) {
-	      switch (arguments.length) {
-	        case 0:
-	          return curried;
-	        case 1:
-	          return function (b) {
-	            return f(a, b);
-	          };
-	        default:
-	          return f(a, b);
-	      }
-	    }
-	    return curried;
-	  }
-
-	  // curry3 :: ((a, b, c) -> d) -> (a -> b -> c -> d)
-	  function curry3(f) {
-	    function curried(a, b, c) {
-	      // eslint-disable-line complexity
-	      switch (arguments.length) {
-	        case 0:
-	          return curried;
-	        case 1:
-	          return curry2(function (b, c) {
-	            return f(a, b, c);
-	          });
-	        case 2:
-	          return function (c) {
-	            return f(a, b, c);
-	          };
-	        default:
-	          return f(a, b, c);
-	      }
-	    }
-	    return curried;
-	  }
-
-	  exports.cons = cons;
-	  exports.append = append;
-	  exports.drop = drop;
-	  exports.tail = tail;
-	  exports.copy = copy;
-	  exports.map = map;
-	  exports.reduce = reduce;
-	  exports.replace = replace;
-	  exports.remove = remove;
-	  exports.removeAll = removeAll;
-	  exports.findIndex = findIndex;
-	  exports.isArrayLike = isArrayLike;
-	  exports.id = id;
-	  exports.compose = compose;
-	  exports.apply = apply;
-	  exports.curry2 = curry2;
-	  exports.curry3 = curry3;
-	});
-
-
-/***/ },
 /* 43 */
 /***/ function(module, exports, __webpack_require__) {
 
-	"use strict";
 	'use strict';
 
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
 
-	var _vnode = __webpack_require__(14);
+	var _vnode = __webpack_require__(15);
 
 	var _vnode2 = _interopRequireDefault(_vnode);
 
-	var _is = __webpack_require__(11);
+	var _is = __webpack_require__(10);
 
 	var _is2 = _interopRequireDefault(_is);
 
@@ -10863,7 +4837,6 @@
 /* 44 */
 /***/ function(module, exports, __webpack_require__) {
 
-	"use strict";
 	'use strict';
 
 	Object.defineProperty(exports, "__esModule", {
@@ -10871,15 +4844,15 @@
 	});
 	exports.makeDOMDriver = undefined;
 
-	var _most = __webpack_require__(5);
+	var _most = __webpack_require__(4);
 
-	var _hold = __webpack_require__(41);
+	var _hold = __webpack_require__(42);
 
 	var _hold2 = _interopRequireDefault(_hold);
 
 	var _snabbdom = __webpack_require__(101);
 
-	var _h = __webpack_require__(36);
+	var _h = __webpack_require__(37);
 
 	var _h2 = _interopRequireDefault(_h);
 
@@ -10887,23 +4860,23 @@
 
 	var _classNameFromVNode2 = _interopRequireDefault(_classNameFromVNode);
 
-	var _selectorParser2 = __webpack_require__(35);
+	var _selectorParser2 = __webpack_require__(36);
 
 	var _selectorParser3 = _interopRequireDefault(_selectorParser2);
 
-	var _utils = __webpack_require__(21);
+	var _utils = __webpack_require__(22);
 
-	var _modules = __webpack_require__(20);
+	var _modules = __webpack_require__(21);
 
 	var _modules2 = _interopRequireDefault(_modules);
 
 	var _transposition = __webpack_require__(47);
 
-	var _isolate = __webpack_require__(18);
+	var _isolate = __webpack_require__(19);
 
 	var _select = __webpack_require__(46);
 
-	var _events = __webpack_require__(17);
+	var _events = __webpack_require__(18);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -11009,7 +4982,6 @@
 /* 45 */
 /***/ function(module, exports, __webpack_require__) {
 
-	"use strict";
 	'use strict';
 
 	Object.defineProperty(exports, "__esModule", {
@@ -11017,7 +4989,7 @@
 	});
 	exports.mockDOMSource = undefined;
 
-	var _most = __webpack_require__(5);
+	var _most = __webpack_require__(4);
 
 	var _most2 = _interopRequireDefault(_most);
 
@@ -11079,7 +5051,6 @@
 /* 46 */
 /***/ function(module, exports, __webpack_require__) {
 
-	"use strict";
 	'use strict';
 
 	Object.defineProperty(exports, "__esModule", {
@@ -11087,11 +5058,11 @@
 	});
 	exports.makeIsStrictlyInRootScope = exports.makeElementSelector = undefined;
 
-	var _makeIsStrictlyInRootScope = __webpack_require__(19);
+	var _makeIsStrictlyInRootScope = __webpack_require__(20);
 
-	var _events = __webpack_require__(17);
+	var _events = __webpack_require__(18);
 
-	var _isolate = __webpack_require__(18);
+	var _isolate = __webpack_require__(19);
 
 	var isValidString = function isValidString(param) {
 	  return typeof param === 'string' && param.length > 0;
@@ -11177,7 +5148,6 @@
 /* 47 */
 /***/ function(module, exports, __webpack_require__) {
 
-	"use strict";
 	'use strict';
 
 	Object.defineProperty(exports, "__esModule", {
@@ -11185,7 +5155,7 @@
 	});
 	exports.transposeVTree = undefined;
 
-	var _most = __webpack_require__(5);
+	var _most = __webpack_require__(4);
 
 	var _most2 = _interopRequireDefault(_most);
 
@@ -11348,7 +5318,6 @@
 /* 49 */
 /***/ function(module, exports) {
 
-	"use strict";
 	'use strict';
 
 	Object.defineProperty(exports, '__esModule', {
@@ -11400,7 +5369,6 @@
 /* 50 */
 /***/ function(module, exports) {
 
-	"use strict";
 	'use strict';
 
 	var proto = Element.prototype;
@@ -11435,7 +5403,6 @@
 /* 51 */
 /***/ function(module, exports) {
 
-	"use strict";
 	"use strict";
 
 	Object.defineProperty(exports, "__esModule", {
@@ -11529,7 +5496,6 @@
 /* 52 */
 /***/ function(module, exports, __webpack_require__) {
 
-	"use strict";
 	'use strict';
 
 	Object.defineProperty(exports, "__esModule", {
@@ -11539,9 +5505,9 @@
 
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-	var _most = __webpack_require__(5);
+	var _most = __webpack_require__(4);
 
-	var _multicast = __webpack_require__(4);
+	var _multicast = __webpack_require__(5);
 
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -11611,56 +5577,6 @@
 
 /***/ },
 /* 53 */
-/***/ function(module, exports, __webpack_require__) {
-
-	"use strict";
-	'use strict';
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-	exports.holdSubject = exports.subject = undefined;
-
-	var _most = __webpack_require__(5);
-
-	var _multicast = __webpack_require__(4);
-
-	var _Observer = __webpack_require__(51);
-
-	var _Replay = __webpack_require__(52);
-
-	function create(hold, bufferSize, initialValue) {
-	  var observer = new _Observer.Observer();
-	  var stream = hold ? (0, _Replay.replay)(bufferSize, new _most.Stream(observer)) : new _most.Stream(new _multicast.MulticastSource(observer));
-
-	  stream.drain();
-
-	  if (typeof initialValue !== 'undefined') {
-	    observer.next(initialValue);
-	  }
-
-	  return { stream: stream, observer: observer };
-	}
-
-	function subject() {
-	  return create(false, 0);
-	}
-
-	function holdSubject() {
-	  var bufferSize = arguments.length <= 0 || arguments[0] === undefined ? 1 : arguments[0];
-	  var initialValue = arguments[1];
-
-	  if (bufferSize < 1) {
-	    throw new Error('First argument to holdSubject is expected to be an ' + 'integer greater than or equal to 1');
-	  }
-	  return create(true, bufferSize, initialValue);
-	}
-
-	exports.subject = subject;
-	exports.holdSubject = holdSubject;
-
-/***/ },
-/* 54 */
 /***/ function(module, exports) {
 
 	/** @license MIT License (c) copyright 2010-2016 original author or authors */
@@ -11742,7 +5658,7 @@
 
 
 /***/ },
-/* 55 */
+/* 54 */
 /***/ function(module, exports) {
 
 	/** @license MIT License (c) copyright 2010-2016 original author or authors */
@@ -11813,7 +5729,7 @@
 
 
 /***/ },
-/* 56 */
+/* 55 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/** @license MIT License (c) copyright 2010-2016 original author or authors */
@@ -11822,9 +5738,8 @@
 
 	var Stream = __webpack_require__(0);
 	var Pipe = __webpack_require__(1);
-	var runSource = __webpack_require__(32);
-	var cons = __webpack_require__(23).cons;
-	var noop = __webpack_require__(3).noop;
+	var runSource = __webpack_require__(33);
+	var cons = __webpack_require__(24).cons;
 
 	exports.scan = scan;
 	exports.reduce = reduce;
@@ -11898,16 +5813,18 @@
 		this.sink.end(t, this.value);
 	};
 
+	function noop() {}
+
 
 /***/ },
-/* 57 */
+/* 56 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/** @license MIT License (c) copyright 2010-2016 original author or authors */
 	/** @author Brian Cavalier */
 	/** @author John Hann */
 
-	var combine = __webpack_require__(24).combine;
+	var combine = __webpack_require__(25).combine;
 	var apply = __webpack_require__(3).apply;
 
 	exports.ap  = ap;
@@ -11928,15 +5845,14 @@
 
 
 /***/ },
-/* 58 */
+/* 57 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/** @license MIT License (c) copyright 2010-2016 original author or authors */
 	/** @author Brian Cavalier */
 	/** @author John Hann */
 
-	var mergeConcurrently = __webpack_require__(9).mergeConcurrently;
-	var map = __webpack_require__(8).map;
+	var mergeMapConcurrently = __webpack_require__(8).mergeMapConcurrently;
 
 	exports.concatMap = concatMap;
 
@@ -11952,12 +5868,12 @@
 	 * @returns {Stream} new stream containing all events from each stream returned by f
 	 */
 	function concatMap(f, stream) {
-		return mergeConcurrently(1, map(f, stream));
+		return mergeMapConcurrently(f, 1, stream);
 	}
 
 
 /***/ },
-/* 59 */
+/* 58 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/** @license MIT License (c) copyright 2010-2016 original author or authors */
@@ -12016,7 +5932,7 @@
 
 
 /***/ },
-/* 60 */
+/* 59 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/** @license MIT License (c) copyright 2010-2016 original author or authors */
@@ -12024,10 +5940,12 @@
 	/** @author John Hann */
 
 	var Stream = __webpack_require__(0);
-	var ValueSource = __webpack_require__(34);
-	var tryDispose = __webpack_require__(2).tryDispose;
-	var tryEvent = __webpack_require__(10);
-	var apply = __webpack_require__(3).apply;
+	var ValueSource = __webpack_require__(35);
+	var SafeSink = __webpack_require__(81);
+	var Pipe = __webpack_require__(1);
+	var dispose = __webpack_require__(2);
+	var tryEvent = __webpack_require__(9);
+	var isPromise = __webpack_require__(11).isPromise;
 
 	exports.flatMapError = recoverWith;
 	exports.recoverWith  = recoverWith;
@@ -12068,46 +5986,46 @@
 
 	function RecoverWithSink(f, source, sink, scheduler) {
 		this.f = f;
-		this.sink = sink;
+		this.sink = new SafeSink(sink);
 		this.scheduler = scheduler;
-		this.active = true;
 		this.disposable = source.run(this, scheduler);
 	}
 
-	RecoverWithSink.prototype.error = function(t, e) {
-		if(!this.active) {
-			return;
-		}
-
-		// TODO: forward dispose errors
-		tryDispose(t, this.disposable, this);
-
-		var stream = apply(this.f, e);
-		this.disposable = stream.source.run(this.sink, this.scheduler);
-	};
-
 	RecoverWithSink.prototype.event = function(t, x) {
-		if(!this.active) {
-			return;
-		}
-		tryEvent.tryEvent(t, x, this.sink);
-	};
+			tryEvent.tryEvent(t, x, this.sink);
+	}
 
 	RecoverWithSink.prototype.end = function(t, x) {
-		if(!this.active) {
-			return;
-		}
-		tryEvent.tryEnd(t, x, this.sink);
+			tryEvent.tryEnd(t, x, this.sink);
+	}
+
+	RecoverWithSink.prototype.error = function(t, e) {
+		var nextSink = this.sink.disable();
+
+		var result = dispose.tryDispose(t, this.disposable, nextSink);
+		this.disposable = isPromise(result)
+			? dispose.promised(this._thenContinue(result, e, nextSink))
+			: this._continue(this.f, e, nextSink);
+	};
+
+	RecoverWithSink.prototype._thenContinue = function(p, x, sink) {
+		var self = this;
+		return p.then(function () {
+			return self._continue(self.f, x, sink);
+		});
+	};
+
+	RecoverWithSink.prototype._continue = function(f, x, sink) {
+		return f(x).source.run(sink, this.scheduler);
 	};
 
 	RecoverWithSink.prototype.dispose = function() {
-		this.active = false;
 		return this.disposable.dispose();
 	};
 
 
 /***/ },
-/* 61 */
+/* 60 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/** @license MIT License (c) copyright 2010-2016 original author or authors */
@@ -12187,7 +6105,7 @@
 
 
 /***/ },
-/* 62 */
+/* 61 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/** @license MIT License (c) copyright 2010-2016 original author or authors */
@@ -12303,7 +6221,7 @@
 
 
 /***/ },
-/* 63 */
+/* 62 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/** @license MIT License (c) copyright 2010-2016 original author or authors */
@@ -12360,7 +6278,7 @@
 
 
 /***/ },
-/* 64 */
+/* 63 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/** @license MIT License (c) copyright 2010-2016 original author or authors */
@@ -12369,7 +6287,7 @@
 
 	var Stream = __webpack_require__(0);
 	var Pipe = __webpack_require__(1);
-	var IndexSink = __webpack_require__(13);
+	var IndexSink = __webpack_require__(14);
 	var empty = __webpack_require__(7).empty;
 	var dispose = __webpack_require__(2);
 	var base = __webpack_require__(3);
@@ -12462,15 +6380,14 @@
 
 
 /***/ },
-/* 65 */
+/* 64 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/** @license MIT License (c) copyright 2010-2016 original author or authors */
 	/** @author Brian Cavalier */
 	/** @author John Hann */
 
-	var runSource = __webpack_require__(32);
-	var noop = __webpack_require__(3).noop;
+	var runSource = __webpack_require__(33);
 
 	exports.observe = observe;
 	exports.drain = drain;
@@ -12496,9 +6413,11 @@
 		return runSource.withDefaultScheduler(noop, stream.source);
 	}
 
+	function noop() {}
+
 
 /***/ },
-/* 66 */
+/* 65 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/** @license MIT License (c) copyright 2010-2016 original author or authors */
@@ -12594,7 +6513,7 @@
 
 
 /***/ },
-/* 67 */
+/* 66 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/** @license MIT License (c) copyright 2010-2016 original author or authors */
@@ -12605,7 +6524,7 @@
 	var Pipe = __webpack_require__(1);
 	var dispose = __webpack_require__(2);
 	var base = __webpack_require__(3);
-	var invoke = __webpack_require__(12);
+	var invoke = __webpack_require__(13);
 
 	exports.sample = sample;
 	exports.sampleWith = sampleWith;
@@ -12631,7 +6550,7 @@
 	 * @returns {Stream} sampled stream of values
 	 */
 	function sampleWith(sampler, stream) {
-		return new Stream(new Sampler(base.identity, sampler.source, [stream.source]));
+		return new Stream(new Sampler(base.id, sampler.source, [stream.source]));
 	}
 
 	function sampleArray(f, sampler, streams) {
@@ -12676,7 +6595,7 @@
 		this.sink._notify(this);
 	};
 
-	Hold.prototype.end = base.noop;
+	Hold.prototype.end = function () {};
 	Hold.prototype.error = Pipe.prototype.error;
 
 	function SampleSink(f, sinks, sink) {
@@ -12711,7 +6630,7 @@
 
 
 /***/ },
-/* 68 */
+/* 67 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/** @license MIT License (c) copyright 2010-2016 original author or authors */
@@ -12722,6 +6641,7 @@
 	var Sink = __webpack_require__(1);
 	var core = __webpack_require__(7);
 	var dispose = __webpack_require__(2);
+	var Map = __webpack_require__(31);
 
 	exports.take = take;
 	exports.skip = skip;
@@ -12756,23 +6676,39 @@
 	 */
 	function slice(start, end, stream) {
 		return end <= start ? core.empty()
-			: new Stream(new Slice(start, end, stream.source));
+			: new Stream(sliceSource(start, end, stream.source));
+	}
+
+	function sliceSource(start, end, source) {
+		return source instanceof Map ? commuteMapSlice(start, end, source)
+			: source instanceof Slice ? fuseSlice(start, end, source)
+			: new Slice(start, end, source);
+	}
+
+	function commuteMapSlice(start, end, source) {
+		return Map.create(source.f, sliceSource(start, end, source.source))
+	}
+
+	function fuseSlice(start, end, source) {
+		start += source.min;
+		end = Math.min(end + source.min, source.max);
+		return new Slice(start, end, source.source);
 	}
 
 	function Slice(min, max, source) {
-		this.skip = min;
-		this.take = max - min;
 		this.source = source;
+		this.min = min;
+		this.max = max;
 	}
 
 	Slice.prototype.run = function(sink, scheduler) {
-		return new SliceSink(this.skip, this.take, this.source, sink, scheduler);
+		return new SliceSink(this.min, this.max - this.min, this.source, sink, scheduler);
 	};
 
 	function SliceSink(skip, take, source, sink, scheduler) {
+		this.sink = sink;
 		this.skip = skip;
 		this.take = take;
-		this.sink = sink;
 		this.disposable = dispose.once(source.run(this, scheduler));
 	}
 
@@ -12879,7 +6815,7 @@
 
 
 /***/ },
-/* 69 */
+/* 68 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/** @license MIT License (c) copyright 2010-2016 original author or authors */
@@ -12887,10 +6823,7 @@
 	/** @author John Hann */
 
 	var Stream = __webpack_require__(0);
-	var MulticastSource = __webpack_require__(4).MulticastSource;
-	var until = __webpack_require__(27).takeUntil;
-	var mergeConcurrently = __webpack_require__(9).mergeConcurrently;
-	var map = __webpack_require__(8).map;
+	var dispose = __webpack_require__(2)
 
 	exports.switch = switchLatest;
 
@@ -12901,14 +6834,222 @@
 	 * @returns {Stream} switching stream
 	 */
 	function switchLatest(stream) {
-		var upstream = new Stream(new MulticastSource(stream.source));
-
-		return mergeConcurrently(1, map(untilNext, upstream));
-
-		function untilNext(s) {
-			return until(upstream, s);
-		}
+		return new Stream(new Switch(stream.source));
 	}
+
+	function Switch(source) {
+		this.source = source;
+	}
+
+	Switch.prototype.run = function(sink, scheduler) {
+		var switchSink = new SwitchSink(sink, scheduler);
+		return dispose.all(switchSink, this.source.run(switchSink, scheduler));
+	};
+
+	function SwitchSink(sink, scheduler) {
+		this.sink = sink;
+		this.scheduler = scheduler;
+		this.current = null;
+		this.ended = false;
+	}
+
+	SwitchSink.prototype.event = function(t, stream) {
+		this._disposeCurrent(t); // TODO: capture the result of this dispose
+		this.current = new Segment(t, Infinity, this, this.sink);
+		this.current.disposable = stream.source.run(this.current, this.scheduler);
+	};
+
+	SwitchSink.prototype.end = function(t, x) {
+		this.ended = true;
+		this._checkEnd(t, x);
+	};
+
+	SwitchSink.prototype.error = function(t, e) {
+		this.ended = true;
+		this.sink.error(t, e);
+	};
+
+	SwitchSink.prototype.dispose = function() {
+		return this._disposeCurrent(0);
+	};
+
+	SwitchSink.prototype._disposeCurrent = function(t) {
+		if(this.current !== null) {
+			return this.current._dispose(t);
+		}
+	};
+
+	SwitchSink.prototype._disposeInner = function(t, inner) {
+		inner._dispose(t); // TODO: capture the result of this dispose
+		if(inner === this.current) {
+			this.current = null;
+		}
+	};
+
+	SwitchSink.prototype._checkEnd = function(t, x) {
+		if(this.ended && this.current === null) {
+			this.sink.end(t, x);
+		}
+	};
+
+	SwitchSink.prototype._endInner = function(t, x, inner) {
+		this._disposeInner(t, inner);
+		this._checkEnd(t, x);
+	};
+
+	SwitchSink.prototype._errorInner = function(t, e, inner) {
+		this._disposeInner(t, inner);
+		this.sink.error(t, e);
+	};
+
+	function Segment(min, max, outer, sink) {
+		this.min = min;
+		this.max = max;
+		this.outer = outer;
+		this.sink = sink;
+		this.disposable = dispose.empty();
+	}
+
+	Segment.prototype.event = function(t, x) {
+		if(t < this.max) {
+			this.sink.event(Math.max(t, this.min), x);
+		}
+	};
+
+	Segment.prototype.end = function(t, x) {
+		this.outer._endInner(Math.max(t, this.min), x, this);
+	};
+
+	Segment.prototype.error = function(t, e) {
+		this.outer._errorInner(Math.max(t, this.min), e, this);
+	};
+
+	Segment.prototype._dispose = function(t) {
+		this.max = t;
+		dispose.tryDispose(t, this.disposable, this.sink)
+	};
+
+
+/***/ },
+/* 69 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/** @license MIT License (c) copyright 2010-2016 original author or authors */
+	/** @author Brian Cavalier */
+	/** @author John Hann */
+
+	var Stream = __webpack_require__(0);
+	var Pipe = __webpack_require__(1);
+	var dispose = __webpack_require__(2);
+	var join = __webpack_require__(27).join;
+
+	exports.during    = during;
+	exports.takeUntil = takeUntil;
+	exports.skipUntil = skipUntil;
+
+	function takeUntil(signal, stream) {
+		return new Stream(new Until(signal.source, stream.source));
+	}
+
+	function skipUntil(signal, stream) {
+		return new Stream(new Since(signal.source, stream.source));
+	}
+
+	function during(timeWindow, stream) {
+		return takeUntil(join(timeWindow), skipUntil(timeWindow, stream));
+	}
+
+	function Until(maxSignal, source) {
+		this.maxSignal = maxSignal;
+		this.source = source;
+	}
+
+	Until.prototype.run = function(sink, scheduler) {
+		var min = new Bound(-Infinity, sink);
+		var max = new UpperBound(this.maxSignal, sink, scheduler);
+		var disposable = this.source.run(new TimeWindowSink(min, max, sink), scheduler);
+
+		return dispose.all([min, max, disposable]);
+	};
+
+	function Since(minSignal, source) {
+		this.minSignal = minSignal;
+		this.source = source;
+	}
+
+	Since.prototype.run = function(sink, scheduler) {
+		var min = new LowerBound(this.minSignal, sink, scheduler);
+		var max = new Bound(Infinity, sink);
+		var disposable = this.source.run(new TimeWindowSink(min, max, sink), scheduler);
+
+		return dispose.all([min, max, disposable]);
+	};
+
+	function Bound(value, sink) {
+		this.value = value;
+		this.sink = sink;
+	}
+
+	Bound.prototype.error = Pipe.prototype.error;
+	Bound.prototype.event = noop;
+	Bound.prototype.end = noop;
+	Bound.prototype.dispose = noop;
+
+	function TimeWindowSink(min, max, sink) {
+		this.min = min;
+		this.max = max;
+		this.sink = sink;
+	}
+
+	TimeWindowSink.prototype.event = function(t, x) {
+		if(t >= this.min.value && t < this.max.value) {
+			this.sink.event(t, x);
+		}
+	};
+
+	TimeWindowSink.prototype.error = Pipe.prototype.error;
+	TimeWindowSink.prototype.end = Pipe.prototype.end;
+
+	function LowerBound(signal, sink, scheduler) {
+		this.value = Infinity;
+		this.sink = sink;
+		this.disposable = signal.run(this, scheduler);
+	}
+
+	LowerBound.prototype.event = function(t /*, x */) {
+		if(t < this.value) {
+			this.value = t;
+		}
+	};
+
+	LowerBound.prototype.end = noop;
+	LowerBound.prototype.error = Pipe.prototype.error;
+
+	LowerBound.prototype.dispose = function() {
+		return this.disposable.dispose();
+	};
+
+	function UpperBound(signal, sink, scheduler) {
+		this.value = Infinity;
+		this.sink = sink;
+		this.disposable = signal.run(this, scheduler);
+	}
+
+	UpperBound.prototype.event = function(t, x) {
+		if(t < this.value) {
+			this.value = t;
+			this.sink.end(t, x);
+		}
+	};
+
+	UpperBound.prototype.end = noop;
+	UpperBound.prototype.error = Pipe.prototype.error;
+
+	UpperBound.prototype.dispose = function() {
+		return this.disposable.dispose();
+	};
+
+	function noop() {}
 
 
 /***/ },
@@ -13086,14 +7227,14 @@
 	/** @author John Hann */
 
 	var Stream = __webpack_require__(0);
-	var transform = __webpack_require__(8);
+	var transform = __webpack_require__(12);
 	var core = __webpack_require__(7);
 	var Sink = __webpack_require__(1);
-	var IndexSink = __webpack_require__(13);
+	var IndexSink = __webpack_require__(14);
 	var dispose = __webpack_require__(2);
 	var base = __webpack_require__(3);
-	var invoke = __webpack_require__(12);
-	var Queue = __webpack_require__(55);
+	var invoke = __webpack_require__(13);
+	var Queue = __webpack_require__(54);
 
 	var map = base.map;
 	var tail = base.tail;
@@ -13336,67 +7477,6 @@
 	/** @author Brian Cavalier */
 	/** @author John Hann */
 
-	var Pipe = __webpack_require__(1);
-	var Filter = __webpack_require__(30);
-	var FilterMap = __webpack_require__(75);
-	var base = __webpack_require__(3);
-
-	module.exports = Map;
-
-	function Map(f, source) {
-		this.f = f;
-		this.source = source;
-	}
-
-	/**
-	 * Create a mapped source, fusing adjacent map.map, filter.map,
-	 * and filter.map.map if possible
-	 * @param {function(*):*} f mapping function
-	 * @param {{run:function}} source source to map
-	 * @returns {Map|FilterMap} mapped source, possibly fused
-	 */
-	Map.create = function createMap(f, source) {
-		if(source instanceof Map) {
-			return new Map(base.compose(f, source.f), source.source);
-		}
-
-		if(source instanceof Filter) {
-			return new FilterMap(source.p, f, source.source);
-		}
-
-		if(source instanceof FilterMap) {
-			return new FilterMap(source.p, base.compose(f, source.f), source.source);
-		}
-
-		return new Map(f, source);
-	};
-
-	Map.prototype.run = function(sink, scheduler) {
-		return this.source.run(new MapSink(this.f, sink), scheduler);
-	};
-
-	function MapSink(f, sink) {
-		this.f = f;
-		this.sink = sink;
-	}
-
-	MapSink.prototype.end   = Pipe.prototype.end;
-	MapSink.prototype.error = Pipe.prototype.error;
-
-	MapSink.prototype.event = function(t, x) {
-		var f = this.f;
-		this.sink.event(t, f(x));
-	};
-
-
-/***/ },
-/* 77 */
-/***/ function(module, exports, __webpack_require__) {
-
-	/** @license MIT License (c) copyright 2010-2016 original author or authors */
-	/** @author Brian Cavalier */
-	/** @author John Hann */
-
 	var base = __webpack_require__(3);
 
 	module.exports = Scheduler;
@@ -13618,26 +7698,26 @@
 
 
 /***/ },
-/* 78 */
+/* 77 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {/** @license MIT License (c) copyright 2010-2016 original author or authors */
 	/** @author Brian Cavalier */
 	/** @author John Hann */
 
-	var Scheduler = __webpack_require__(77);
-	var setTimeoutTimer = __webpack_require__(80);
-	var nodeTimer = __webpack_require__(79);
+	var Scheduler = __webpack_require__(76);
+	var setTimeoutTimer = __webpack_require__(79);
+	var nodeTimer = __webpack_require__(78);
 
 	var isNode = typeof process === 'object'
 			&& typeof process.nextTick === 'function';
 
 	module.exports = new Scheduler(isNode ? nodeTimer : setTimeoutTimer);
 
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(16)))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(17)))
 
 /***/ },
-/* 79 */
+/* 78 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/** @license MIT License (c) copyright 2010-2016 original author or authors */
@@ -13687,7 +7767,7 @@
 
 
 /***/ },
-/* 80 */
+/* 79 */
 /***/ function(module, exports) {
 
 	/** @license MIT License (c) copyright 2010-2016 original author or authors */
@@ -13708,7 +7788,7 @@
 
 
 /***/ },
-/* 81 */
+/* 80 */
 /***/ function(module, exports) {
 
 	/** @license MIT License (c) copyright 2010-2016 original author or authors */
@@ -13758,6 +7838,47 @@
 
 
 /***/ },
+/* 81 */
+/***/ function(module, exports) {
+
+	/** @license MIT License (c) copyright 2010-2016 original author or authors */
+	/** @author Brian Cavalier */
+	/** @author John Hann */
+
+	module.exports = SafeSink;
+
+	function SafeSink(sink) {
+		this.sink = sink;
+		this.active = true;
+	}
+
+	SafeSink.prototype.event = function(t, x) {
+		if(!this.active) {
+			return;
+		}
+		this.sink.event(t, x);
+	};
+
+	SafeSink.prototype.end = function(t, x) {
+		if(!this.active) {
+			return;
+		}
+		this.disable();
+		this.sink.end(t, x);
+	};
+
+	SafeSink.prototype.error = function(t, e) {
+		this.disable();
+		this.sink.error(t, e);
+	};
+
+	SafeSink.prototype.disable = function() {
+		this.active = false;
+		return this.sink;
+	}
+
+
+/***/ },
 /* 82 */
 /***/ function(module, exports, __webpack_require__) {
 
@@ -13765,9 +7886,9 @@
 	/** @author Brian Cavalier */
 	/** @author John Hann */
 
-	var DeferredSink = __webpack_require__(33);
+	var DeferredSink = __webpack_require__(34);
 	var dispose = __webpack_require__(2);
-	var tryEvent = __webpack_require__(10);
+	var tryEvent = __webpack_require__(9);
 
 	module.exports = EventEmitterSource;
 
@@ -13817,7 +7938,7 @@
 	/** @author John Hann */
 
 	var dispose = __webpack_require__(2);
-	var tryEvent = __webpack_require__(10);
+	var tryEvent = __webpack_require__(9);
 
 	module.exports = EventTargetSource;
 
@@ -13853,9 +7974,9 @@
 	/** @author John Hann */
 
 	var Stream = __webpack_require__(0);
-	var MulticastSource = __webpack_require__(4).MulticastSource;
-	var DeferredSink = __webpack_require__(33);
-	var tryEvent = __webpack_require__(10);
+	var MulticastSource = __webpack_require__(5).MulticastSource;
+	var DeferredSink = __webpack_require__(34);
+	var tryEvent = __webpack_require__(9);
 
 	exports.create = create;
 
@@ -13935,7 +8056,7 @@
 	/** @author John Hann */
 
 	var fromArray = __webpack_require__(86).fromArray;
-	var isIterable = __webpack_require__(31).isIterable;
+	var isIterable = __webpack_require__(32).isIterable;
 	var fromIterable = __webpack_require__(88).fromIterable;
 	var isArrayLike = __webpack_require__(3).isArrayLike;
 
@@ -14015,7 +8136,7 @@
 	/** @author John Hann */
 
 	var Stream = __webpack_require__(0);
-	var MulticastSource = __webpack_require__(4).MulticastSource;
+	var MulticastSource = __webpack_require__(5).MulticastSource;
 	var EventTargetSource = __webpack_require__(83);
 	var EventEmitterSource = __webpack_require__(82);
 
@@ -14055,7 +8176,7 @@
 	/** @author John Hann */
 
 	var Stream = __webpack_require__(0);
-	var getIterator = __webpack_require__(31).getIterator;
+	var getIterator = __webpack_require__(32).getIterator;
 	var PropagateTask = __webpack_require__(6);
 
 	exports.fromIterable = fromIterable;
@@ -14255,7 +8376,7 @@
 
 	var Stream = __webpack_require__(0);
 	var dispose = __webpack_require__(2);
-	var MulticastSource = __webpack_require__(4).MulticastSource;
+	var MulticastSource = __webpack_require__(5).MulticastSource;
 	var PropagateTask = __webpack_require__(6);
 
 	exports.periodic = periodic;
@@ -14372,7 +8493,6 @@
 /* 93 */
 /***/ function(module, exports, __webpack_require__) {
 
-	"use strict";
 	'use strict';
 
 	Object.defineProperty(exports, "__esModule", {
@@ -14380,7 +8500,7 @@
 	});
 	exports.default = classNameFromVNode;
 
-	var _selectorParser2 = __webpack_require__(35);
+	var _selectorParser2 = __webpack_require__(36);
 
 	var _selectorParser3 = _interopRequireDefault(_selectorParser2);
 
@@ -14546,7 +8666,7 @@
 /* 97 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var is = __webpack_require__(11);
+	var is = __webpack_require__(10);
 
 	function arrInvoker(arr) {
 	  return function() {
@@ -14845,13 +8965,12 @@
 /* 101 */
 /***/ function(module, exports, __webpack_require__) {
 
-	"use strict";
 	// jshint newcap: false
 	/* global require, module, document, Node */
 	'use strict';
 
-	var VNode = __webpack_require__(14);
-	var is = __webpack_require__(11);
+	var VNode = __webpack_require__(15);
+	var is = __webpack_require__(10);
 	var domApi = __webpack_require__(94);
 
 	function isUndef(s) { return s === undefined; }
@@ -15119,7 +9238,7 @@
 /* 102 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var h = __webpack_require__(36);
+	var h = __webpack_require__(37);
 
 	function init(thunk) {
 	  var i, cur = thunk.data;
@@ -15158,20 +9277,17 @@
 /* 103 */
 /***/ function(module, exports, __webpack_require__) {
 
-	"use strict";
-	/* WEBPACK VAR INJECTION */(function(process) {/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__motorcycle_core__ = __webpack_require__(37);
+	/* WEBPACK VAR INJECTION */(function(process) {/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__motorcycle_core__ = __webpack_require__(38);
 	/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__motorcycle_core___default = __WEBPACK_IMPORTED_MODULE_0__motorcycle_core__ && __WEBPACK_IMPORTED_MODULE_0__motorcycle_core__.__esModule ? function() { return __WEBPACK_IMPORTED_MODULE_0__motorcycle_core__['default'] } : function() { return __WEBPACK_IMPORTED_MODULE_0__motorcycle_core__; }
 	/* harmony import */ Object.defineProperty(__WEBPACK_IMPORTED_MODULE_0__motorcycle_core___default, 'a', { get: __WEBPACK_IMPORTED_MODULE_0__motorcycle_core___default });
-	/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__ = __webpack_require__(15);
+	/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__ = __webpack_require__(16);
 	/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom___default = __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__ && __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__.__esModule ? function() { return __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__['default'] } : function() { return __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__; }
 	/* harmony import */ Object.defineProperty(__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom___default, 'a', { get: __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom___default });
-	/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_most__ = __webpack_require__(5);
+	/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_most__ = __webpack_require__(4);
 	/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_most___default = __WEBPACK_IMPORTED_MODULE_2_most__ && __WEBPACK_IMPORTED_MODULE_2_most__.__esModule ? function() { return __WEBPACK_IMPORTED_MODULE_2_most__['default'] } : function() { return __WEBPACK_IMPORTED_MODULE_2_most__; }
 	/* harmony import */ Object.defineProperty(__WEBPACK_IMPORTED_MODULE_2_most___default, 'a', { get: __WEBPACK_IMPORTED_MODULE_2_most___default });
-	/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__code_js__ = __webpack_require__(39);
-	/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_js_monads__ = __webpack_require__(38);
-	/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_js_monads___default = __WEBPACK_IMPORTED_MODULE_4_js_monads__ && __WEBPACK_IMPORTED_MODULE_4_js_monads__.__esModule ? function() { return __WEBPACK_IMPORTED_MODULE_4_js_monads__['default'] } : function() { return __WEBPACK_IMPORTED_MODULE_4_js_monads__; }
-	/* harmony import */ Object.defineProperty(__WEBPACK_IMPORTED_MODULE_4_js_monads___default, 'a', { get: __WEBPACK_IMPORTED_MODULE_4_js_monads___default });
+	/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__code_js__ = __webpack_require__(40);
+	/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_js_monads__ = __webpack_require__(39);
 
 
 
@@ -15179,7 +9295,7 @@
 
 
 	setTimeout(function() {
-	  console.log(/* harmony import */__WEBPACK_IMPORTED_MODULE_4_js_monads___default.a);
+	  console.log(/* harmony import */ __WEBPACK_IMPORTED_MODULE_4_js_monads__["default"].cube);
 	},3000 );
 
 	function createWebSocket(path) {
@@ -15193,13 +9309,13 @@
 	const socket = createWebSocket('/');
 
 	const websocketsDriver = function () {
-	    return /* harmony import */__WEBPACK_IMPORTED_MODULE_2_most__["create"].bind()((add) => {
+	    return /* harmony import */ __WEBPACK_IMPORTED_MODULE_2_most__["create"]((add) => {
 	      socket.onmessage = msg => add(msg)
 	    })
 	}
 
 	const unitDriver = function () {
-	  return /* harmony import */__WEBPACK_IMPORTED_MODULE_2_most__["periodic"].bind()(1000, 1);
+	  return /* harmony import */ __WEBPACK_IMPORTED_MODULE_2_most__["periodic"](1000, 1);
 	}
 
 	window.onload = function (event) {
@@ -15259,7 +9375,7 @@
 	    mMhelper.ret(ar)
 	      .bnd(splice, 0, 3, mMhelper)
 	      .bnd(reduce, ((a,b) => {return a + ', ' + b}), mMhelper)
-	      .bnd(v => O.mMmsg.bnd(unshift, /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('div', sender + ': ' + v), O.mMmsg));
+	      .bnd(v => O.mMmsg.bnd(unshift, /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('div', sender + ': ' + v), O.mMmsg));
 	  }
 
 	  const loginPress$ = sources.DOM
@@ -15381,20 +9497,20 @@
 	    let keys = Object.keys(a);
 	    for (let k in keys) {
 	      tempArray.push(
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('div.todo',  [
-	          /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('span.task3', {style: {color: a[k].color, textDecoration: a[k].textDecoration}},
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('div.todo',  [
+	          /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('span.task3', {style: {color: a[k].color, textDecoration: a[k].textDecoration}},
 	              'Task: ' + a[k].task  ),  
-	          /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('br'),
-	          /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('button#edit1', 'Edit'  ),
-	          /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('input#edit2', {props: {type: 'textarea', value: a[k].task}, style: {display: 'none'}}  ), 
-	          /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('span#author.tao', 'Author: ' + a[k].author  + ' / ' + 'Responsibility: ' + a[k].responsible),
-	          /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('br'),
-	          /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('input#cb', {props: {type: 'checkbox', checked: a[k].checked}, style: {color: a[k].color,
+	          /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('br'),
+	          /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('button#edit1', 'Edit'  ),
+	          /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('input#edit2', {props: {type: 'textarea', value: a[k].task}, style: {display: 'none'}}  ), 
+	          /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('span#author.tao', 'Author: ' + a[k].author  + ' / ' + 'Responsibility: ' + a[k].responsible),
+	          /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('br'),
+	          /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('input#cb', {props: {type: 'checkbox', checked: a[k].checked}, style: {color: a[k].color,
 	               textDecoration: a[k].textDecoration} } ), 
-	          /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('label.cbox', { props: {for: '#cb'}}, 'Completed' ),
-	          /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('button.delete', 'Delete'  ),  
-	          /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('br'),
-	          /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('hr')])
+	          /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('label.cbox', { props: {for: '#cb'}}, 'Completed' ),
+	          /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('button.delete', 'Delete'  ),  
+	          /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('br'),
+	          /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('hr')])
 	      )
 	    }
 	    mMtaskList.ret(tempArray)
@@ -15669,255 +9785,255 @@
 	    }
 	  });
 
-	  const calcStream$ = /* harmony import */__WEBPACK_IMPORTED_MODULE_2_most__["merge"].bind()( runTestAction$, quadAction$, testWAction$, testZAction$, testQAction$, edit1Action$, edit2Action$, taskAction$, colorAction$, deleteAction$, newTaskAction$, chatClickAction$, gameClickAction$, todoClickAction$, captionClickAction$, mM$3Action$, mM$1Action$, backClickAction$, forwardClickAction$, fibPressAction$, groupPressAction$, rollClickAction$, messagePressAction$, loginPressAction$, messages$, numClickAction$, opClickAction$ );
+	  const calcStream$ = /* harmony import */ __WEBPACK_IMPORTED_MODULE_2_most__["merge"]( runTestAction$, quadAction$, testWAction$, testZAction$, testQAction$, edit1Action$, edit2Action$, taskAction$, colorAction$, deleteAction$, newTaskAction$, chatClickAction$, gameClickAction$, todoClickAction$, captionClickAction$, mM$3Action$, mM$1Action$, backClickAction$, forwardClickAction$, fibPressAction$, groupPressAction$, rollClickAction$, messagePressAction$, loginPressAction$, messages$, numClickAction$, opClickAction$ );
 
 	    return {
 	      DOM: 
 	        calcStream$.map(() => 
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('div.content', [ 
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('div#rightPanel',  {style: {display: 'none'}}, [
-	          /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('span#tog', [
-	          /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('button#game',  {style: {fontSize: '16px'}}, 'TOGGLE GAME'  ), 
-	          /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('span.tao',' ' ),
-	          /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('button#todoButton',  {style: {fontSize: '16px'}}, 'TOGGLE TODO LIST'  ),  
-	          /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('br'),
-	          /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('br'),
-	          /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('button#chat2',  {style: {fontSize: '16px'}}, 'TOGGLE CHAT'  ),
-	          /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('span.tao',' ' ),
-	          /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('button#caption',  {style: {fontSize: '16px'}}, 'TOGGLE CAPTION'  )  ]),
-	          /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('br'),
-	          /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('br'),
-	          /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('br'),
-	          /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('br'),
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('div.content', [ 
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('div#rightPanel',  {style: {display: 'none'}}, [
+	          /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('span#tog', [
+	          /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('button#game',  {style: {fontSize: '16px'}}, 'TOGGLE GAME'  ), 
+	          /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('span.tao',' ' ),
+	          /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('button#todoButton',  {style: {fontSize: '16px'}}, 'TOGGLE TODO LIST'  ),  
+	          /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('br'),
+	          /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('br'),
+	          /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('button#chat2',  {style: {fontSize: '16px'}}, 'TOGGLE CHAT'  ),
+	          /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('span.tao',' ' ),
+	          /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('button#caption',  {style: {fontSize: '16px'}}, 'TOGGLE CAPTION'  )  ]),
+	          /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('br'),
+	          /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('br'),
+	          /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('br'),
+	          /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('br'),
 
-	          /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('div#gameDiv',   [
-	          /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('span',  'Group: ' + O.mMgroup.x ),
-	          /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('br'),
-	          /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('span',  'Goals: ' + O.mMgoals.x ),
-	          /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('br'),
-	          /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('span',  'Name: ' + O.mMname.x ),
-	          /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('br'),
-	          /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('span', 'player[score][goals]' ),
-	          /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('div', O.mMscoreboard.x ) ]) ,
-	          /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('br'),
-	          /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('br'),  
-	          /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('br'),  
+	          /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('div#gameDiv',   [
+	          /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('span',  'Group: ' + O.mMgroup.x ),
+	          /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('br'),
+	          /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('span',  'Goals: ' + O.mMgoals.x ),
+	          /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('br'),
+	          /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('span',  'Name: ' + O.mMname.x ),
+	          /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('br'),
+	          /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('span', 'player[score][goals]' ),
+	          /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('div', O.mMscoreboard.x ) ]) ,
+	          /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('br'),
+	          /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('br'),  
+	          /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('br'),  
 	    
-	          /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('div#todoDiv',  [ 
-	            /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('div#taskList', O.mMtaskList.x ),
-	            /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('span', 'Author, Responsible Person, Task: '  ),  
-	            /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('input.newTask' ) ]),
-	          /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('br'),
-	          /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('span#alert' ),
-	          /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('br'),
-	          /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('br'),
+	          /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('div#todoDiv',  [ 
+	            /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('div#taskList', O.mMtaskList.x ),
+	            /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('span', 'Author, Responsible Person, Task: '  ),  
+	            /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('input.newTask' ) ]),
+	          /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('br'),
+	          /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('span#alert' ),
+	          /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('br'),
+	          /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('br'),
 
-	          /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('div#chatDiv', [ 
-	          /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('div#messages',  [
-	          /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('span', 'Message: '  ),
-	          /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('input.inputMessage' ),
-	          /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('div', O.mMmsg.x  ) ]) ]) 
+	          /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('div#chatDiv', [ 
+	          /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('div#messages',  [
+	          /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('span', 'Message: '  ),
+	          /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('input.inputMessage' ),
+	          /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('div', O.mMmsg.x  ) ]) ]) 
 	        ]),
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('div.leftPanel', {  style: {width: '60%'   }},   [  
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('br'),
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('a.tao', {props: {href: '#common'}}, 'Common Patterns'   ),  
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('a.tao', {props: {href: '#tdList'}}, 'Todo List Explanation'   ),  
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('a.tao', {props: {href: '#monads'}}, 'Why Call Them Monads'   ),  
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('div#captionDiv', [
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('h1', 'Motorcycle.js With JS-monads' ),
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('span.tao1', ' A shared, persistent todo list, ' ),
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('br'),
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('span.tao1', ' A websockets game with a traversable history of dice rolls, ' ),
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('br'),
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('span.tao1', ' Group chat rooms and more demonstrations of efficient, ' ),
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('br'),
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('span.tao2', ' maintainable code using Motorcycle.js and JS-monads.  ' ) ] ),
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('br'),
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('span.tao', 'This is a ' ),
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('a', {props: {href: "https://github.com/motorcyclejs"}}, 'Motorcycle.js' ),
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('span', ' application. Motorcycle.js is ' ), 
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('a', {props: {href: "https://github.com/cyclejs/core"}}, 'Cycle.js' ),
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('span', ' using ' ),
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('a', {props: {href: "https://github.com/cujojs/most"}}, 'Most' ),
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('span', ' , ' ),
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('a', {props: {href: "https://github.com/TylorS/most-subject"}}, 'Most-subject' ),
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('span', ' and '  ), 
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('a', {props: {href: "https://github.com/paldepind/snabbdom"}}, 'Snabbdom' ),
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('span', ' instead of RxJS and virtual-dom. The repository is at '  ),
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('a', {props: {href: "https://github.com/dschalk/JS-monads-stable"}}, 'JS-monads-stable' ),
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('div.leftPanel', {  style: {width: '60%'   }},   [  
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('br'),
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('a.tao', {props: {href: '#common'}}, 'Common Patterns'   ),  
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('a.tao', {props: {href: '#tdList'}}, 'Todo List Explanation'   ),  
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('a.tao', {props: {href: '#monads'}}, 'Why Call Them Monads'   ),  
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('div#captionDiv', [
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('h1', 'Motorcycle.js With JS-monads' ),
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('span.tao1', ' A shared, persistent todo list, ' ),
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('br'),
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('span.tao1', ' A websockets game with a traversable history of dice rolls, ' ),
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('br'),
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('span.tao1', ' Group chat rooms and more demonstrations of efficient, ' ),
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('br'),
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('span.tao2', ' maintainable code using Motorcycle.js and JS-monads.  ' ) ] ),
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('br'),
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('span.tao', 'This is a ' ),
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('a', {props: {href: "https://github.com/motorcyclejs"}}, 'Motorcycle.js' ),
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('span', ' application. Motorcycle.js is ' ), 
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('a', {props: {href: "https://github.com/cyclejs/core"}}, 'Cycle.js' ),
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('span', ' using ' ),
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('a', {props: {href: "https://github.com/cujojs/most"}}, 'Most' ),
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('span', ' , ' ),
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('a', {props: {href: "https://github.com/TylorS/most-subject"}}, 'Most-subject' ),
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('span', ' and '  ), 
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('a', {props: {href: "https://github.com/paldepind/snabbdom"}}, 'Snabbdom' ),
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('span', ' instead of RxJS and virtual-dom. The repository is at '  ),
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('a', {props: {href: "https://github.com/dschalk/JS-monads-stable"}}, 'JS-monads-stable' ),
 
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('div#gameDiv2',  {style: {display: 'none'}}, [
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('br'),
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('span', ' Here are the basic rules:' ), 
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('p', 'RULES: If clicking two numbers and an operator (in any order) results in 20 or 18, the score increases by 1 or 3, respectively. If the score becomes 0 mod 5, 5 points are added. A score of 25 results in one goal. That can only be achieved by arriving at a score of 20, which jumps the score to 25. Directly computing 25 results in a score of 30, and no goal. Each time ROLL is clicked, one point is deducted. Three goals wins the game. '    ),
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('button#0.num'),
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('button#1.num'),
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('button#2.num'),
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('button#3.num'),
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('br'),
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('button#4.op', 'add'  ),
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('button#5.op', 'subtract' ),
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('button#5.op', 'mult' ),
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('button#5.op', 'div' ),
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('button#5.op', 'concat' ),
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('br'),
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('div#dice', {style: {display: 'none'}}, [ 
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('button.roll', 'ROLL' ),
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('br'),
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('button#back2', 'BACK'  ),
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('button#forward2', 'FORWARD'  ) ]) ]),
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('div.winner', O.mMgoals2.x+''  ),
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('div#log1', [
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('p', 'IN ORDER TO SEE THE DEMONSTRATIONS, YOU MUST ENTER SOMETHING BELOW.'  ),
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('span', 'Name: ' ),
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('input#login', {props: {placeholder: "focus on; start typing"}} ) ]),
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('p', O.mM6.x.toString() ),
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('div#log2', {style: {display: 'none'}}, [
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('span', 'Change group: '  ),
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('input#group' ) ]),
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('p',  O.mMsoloAlert.x  ),
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('p', 'People who are in the same group, other than solo, share the same todo list, messages, and simulated dice game. In order to see any of these, you must establish an identity on the server by logging in. The websockets connection would terminate if the first message the server receives does not succefully participate in the login handshake. '  ),
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('hr' ),
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('h1', 'The Monads'  ),
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('p', ' There are three basic types of monads: Monad, MonadIter, and MonadStream. Instances of Monad have a method called "bnd" which takes a functions and possibly other values as arguments. I have not created a library of functions for because nobody needs that. You should create functions that suit your specific purposes. I use browserify or webpack so I can use ES6 functions such as map, reduce, and filter. I don\'t need the Ramda or Underscore-fs. ' ),
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('p', ' There is a basic pattern that I have found useful for computations and object (including array) manipulation. For what it is worth, I will demonstrate it with some simple examples in the discussion that follows. This will serve as a demonstration of how the monads work. ' ),
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('h2', 'Monad' ),
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_3__code_js__["a"].monad,
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('p', 'The following statements create instances of Monad named "m" with an initial value of "some value": var m = new Monad("some value", "m") and ret("some value", "m"). Monad instances maintain state in the unique, mutable, global object named "O". Where there is changing state, it is not practical to avoid mutating something. My choices narrowed down to the window object or an attribute of window like O. O seemed like the better choice. It is a place to keep the most recent versions of named monads. Earlier versions of named monads can persist elsewhere, or be left for the gargage collector.   ' ),
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('p', ' In the examples shown on this page, the initial values of instances of Monad remain unchaged. The ret() method places updated instances on O. The instances on O are never mutated. For any instance of Monad named m with id "m" and value v (i.e., m.x == v is true), m.ret(v2) creates a new attribute of O with key "m" or, if O.m already exists, m.ret(v2) mutates O by replacing its m attribute\'s value. The monad O.m is not mutated, so any O.m that is replaced will persist if there is a reference to it, or will be subject to garbage collection if there is not. ' ),
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('h3', 'Examples' ),
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('p', ' Here are the definitions of ret() and add(): '  ),
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_3__code_js__["a"].ret_cube,
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('p', ' calling ret() with only one argument creates an anonymous global monad. There is no reference to it, so when a computation sequence using it terminates, it becomes eligeble for garbage collection. Although the monad\'s scope is global, it can\'t be clobbered because it has no name (no variable referring to it). ' ),
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('p', ' As you see, cube() and ret() are overloaded functions. Here are some examples of various ways of using them: ' ),
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('span.red3', 'cube(3)' ),
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('span.td2', ' creates a useless anonymous monad with x == 27 and id == "anonymous". ' ),
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('br' ),  
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('br' ),  
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('span.red3', 'cube(5, m)' ), 
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('span.td2', ' where m is a monad leaves m unchanged, O.m.x == 125, and O.m.id == "m". ' ), 
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('br' ),  
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('br' ),  
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('span.red3', 'cube(5).bnd(m.ret)' ), 
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('span.td2', ' is equivalent to the previous example. m is unchanged and O.m.x == 125. ' ), 
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('br' ),  
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('br' ),  
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('span.red3', 'ret(5).bnd(cube).bnd(m.ret)' ), 
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('span.td2', ' is equivalent to the previous two examples. O.m.x == 125. ' ), 
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('br' ),  
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('br' ),  
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('span.red3', 'm.ret(4).bnd(cube)' ), 
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('span.td2', 'causes O.m.x == 2, and creates an anonymous monad with x == 64. ' ),
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('br' ),  
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('br' ),  
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('span.red3', 'm.ret(4).bnd(cube, m)' ), 
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('span.td2', ' leaves m unchanged, O.m.x == 64, and O.m.id == "m". ' ),
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('br' ),  
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('br' ),  
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('span.tao', ' The convention "a == b" in this presentation signifies that a == b is true. By the way, if you want to change the value of m, all you have to do is call ' ),
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('span.red3', 'ret(v, "m")' ),
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('span', ' to cause m.x == v and m.id = "m". This is the definition of add(): ' ),
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_3__code_js__["a"].add,   
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('span.red3', 'add(3, 4)' ),
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('span.td2', ' creates a useless anonymous monad with x == 7 and id == "anonymous". ' ),
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('br' ),  
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('br' ),  
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('span.red3', 'add(3, 4).bnd(m.ret)' ),
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('span.td2', ' causes O.m.x == 7 and O.m.id == "m". ' ),
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('br' ),  
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('br' ),  
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('span.red3', 'add(3, 4, m)' ), 
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('span.td2', ' is equivalent to the prior example. The result is O.m.x == 7, and O.m.id == "m". ' ), 
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('br' ),  
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('br' ),  
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('span.red3', 'm.ret(0).bnd(add, 3).bnd(cube)' ), 
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('span.td2', 'leaves m unchanged, O.m.x == 0, and creates an anonymous monad with x == 27. ' ),
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('br' ),  
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('br' ),  
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('span.red3', 'ret(0).bnd(add, 3).bnd(cube).bnd(m.ret)' ), 
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('span.td2', 'causes O.m.x == 27, and O.m.id = "m". ' ),
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('br' ),  
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('br' ),  
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('span.red3', 'ret(0).bnd(add, 2, m).bnd(cube, m2)' ), 
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('span.td2', ' where m, and m2 are monads causes O.m.x == 2, and O.m2.x == 8. ' ),
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('br' ),  
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('p#iterLink', ' O holds the current state of the monads. This is convenient. For example, mMcurrentList.ret() is seen in the application code whereever a todo list is created, removed, or altered. O.mMcurrentList.x sits in the virtual DOM, making sure that the todo list display is is always current. ' ),
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('h2', 'MonadIter' ),
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('p', 'For any instance of MonadIter, say "m", the statement "m.bnd(func)" causes m.p == func to be true. The statement "m.release(...args) causes p(...args) to execute. Here is the definition: ' ), 
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_3__code_js__["a"].monadIt,
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('p', 'As shown later on this page, MonadIter instances control the routing of incoming websockets messages and the flow of action in the simulated dice game. '  ), 
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('p', 'The following example illustrates the use of release() with an argument. It also shows lambda expressions being provided as arguments for bnd(). The initial values of mMt1, mMt2, and mMt3 are 0, 0, and "" respectively. When this page loads, the following code runs: ' ),
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_3__code_js__["a"].testZ,
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('p', ' add() and cube() function as arguments of the bnd() method, or as functions that return monads. Click "mMZ1.release(1)" several times to run the code with n == 1. O.mMt3.x is shown below the button. mMZ1.p doesn\'t change until its bnd() method is used again, so repeated calls to release(1) continue to run the function provided to bnd() in the code shown above. ' ),
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('button#testZ', 'mMZ1.release(1)'  ),
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('p.code2', O.mMt3.x ),
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('span', 'Refresh button: '  ),
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('button#testQ', 'mMt1.ret(0).bnd(mMt2.ret)'  ),
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('p', '  You can call release() with arguments other than 1 by entering numbers below. ' ), 
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('input#testW' ), 
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('p', ' Here is another example. It demonstrates lambda expressions passing values to a remote location for use in a computation. If you enter three numbers consecutively below, I\'ll call them a, b, and c, then the quadratic equation will be used to find solutions for a*x**2 + b*x + c = 0. The a, b, and c you select might not have a solution. If a and b are positive numbers, you are likely to see solutions if c is a negative number. For example, 12, 12, and -24 yields the solutions 1 and -2. ' ),
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('p.code2#quad4', O.mMquad1.x ),
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('span.red2', O.mMquad2.x ),
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('span.red2', O.mMquad3.x ),
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('br' ),
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('span.tao' , 'Run mMZ3.release(v) three times for three numbers. The numbers are a, b, and c in ax*x + b*x + c = 0: ' ),
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('input#quad' ),  
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('p', 'Here is the code:' ),
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_3__code_js__["a"].quad,
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('span#tdList' ),
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('h2', 'MonadStream'  ),
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('span.tao', ' MonadStream uses ' ),
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('a', {props: {href: "https://github.com/TylorS/most-subject"}}, 'most-subject' ),
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('span', '. In a Cycle application that is already using RxJS, RxJs could be substituted for most-subject. Bacon could be used. most-subject is light-weight and does the job, so you might want to use it in any application context. Here is the definition:  '  ),
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_3__code_js__["a"].monadStr,
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('h3', 'Todo List Side Effects' ),
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('p', ' When users do anything to the todo list, MonadStream instance mM$taskList runs its ret() method on the modified String representation of the list, causing the string to be added to mM$taskList.stream. mM$taskList.stream has only one subscriber, taskAction$, whose only purpose it to send the string representation of the todo list to the server. The server updates its persistent file and distributes a text representation of the updated todo list to all group members. Each group member receives the todo list as a string and parses it into a DOM node tree that is merged into the stream that updates the virtual DOM. All Todo List side effects can be traced to:' ),
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_3__code_js__["a"].todoStream,
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('span', ' Just search for "mM$taskList.ret" to find where all todo list changes were initiated. The following link takes you to a more detailed explanation of the todo list. ' ),
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('a', {props: {href: '#tdList2'}}, 'Detailed Todo List Explanation'   ),  
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('br' ),
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('h3', 'Dice Game Side Effects' ),
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('p', ' mM$1.ret() is called only when (1) a new dice roll comes in from the server, (2) when a player clicks a number, and (3) when clicking a number or operator results in a computation being performed. These are the three things that require a DOM update. When a player clicks a number, it disappears from number display. When a computation is performed, the result is added to the number display, unless the result is 18 or 20. A result of 18 or 20 results in a new roll coming in from the server and mM$1.ret() being called on an array of four numbers; something like mM$1.ret[4,2,11,17]). When a number is removed or a result added, mM$1.ret() is called on an array containing fewer than four numbers. ' ),
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('p', ' mM$1.stream is a stream of arrays of integers, as explained in the paragraph above. All game side effects can be traced to: ' ),
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_3__code_js__["a"].gameStream,
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('p', ' Because a player can traverse the history of number displays by clicking the BACK and FORWARD buttons, the current value of O.mMindex2.x must be incremented to determine where the new array of numbers will be placed in the O.mMallRolls.x array. Here are the definitions of inc and spliceAdd: ' ), 
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_3__code_js__["a"].inc,
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('hr' ),  
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('h2', 'Concise Code Blocks For Information Control' ),
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('p', ' Incoming websockets messages trigger updates to the game display, the chat display, and the todo list display. The members of a group see what other members are doing; and in the case of the todo list, they see the current list when they sign in to the group. When any member of a group adds a task, crosses it out as completed, edits its description, or removes it, the server updates the persistent file and all members of the group immediately see the revised list.  '  ),
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('p', 'The code below shows how incoming websockets messages are routed. For example, mMZ10.release() is called when a new dice roll (prefixed by CA#$42) comes in.   ' ),
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_3__code_js__["a"].messages,
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('p', ' The "mMZ" prefix designates instances of MonadIter. The bnd() method assigns its argument to the "p" attribute. "p" runs if and when the release() method is called. The next() function releases a specified MonadIter instance when the calling monad\'s value matches the specified value. next2() releases the specified monad when the specified condition returns true. The release method in next() has no argument, but next does take arguments, as illustrated below.' ),
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('span.tao', ' The incoming messages block is just a syntactic variation of a switch block, but that isn\'t all that MonadIter instances can do. They can provide fine-grained control over the lazy evaluation of blocks of code. Calling release() after a function completes some task provides Promise-like behavior. Error handling is optional. The MonadInter release(...args) method facilitates sequential evaluation of code blocks, remeniscent of video and blog explanations of ES6 iterators and generators. I prefer doing it with MonadIter over "yield" and "next". For one thing, ES6 generator "yield" blocks must be evaluated in a predetermined order. This link takes you back to the MonadIter section with interactive examples of the use of release() with arguments.  ' ),
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('a#tdList2', {props: {href: '#iterLink'}}, 'release() with arguments'   ),  
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('br' ),
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('br' ),
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('a', {props: {href: '#top'}}, 'Back To The Top'   ),  
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('br' ),
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('h3', 'The Todo List' ),
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('p', ' Next, I\'ll go over some features of the todo list application. This will show how Motorcycle.js and the monads work together.' ),
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('p', 'Creation Of A Task: If you enter something like Susan, Fred, Pay the water bill, the editable task will appear in your browser and in the browsers of any members a group you might have created or joined. If you have loaded this page in another tab and changed to the same group in both, you will see the task in both tabs, barring some malfunction. The task has a delete button, an edit button, and a "Completed" checkbox. It shows that Susan authorized the task and Fred is responsible for making sure it gets done. Instead of entering an authority and responsible person, you can just enter two commas before the task description. Without two commas, a message appears requesting more information. This is how Motorcycle.js handles the creation of a new task: ' ),
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_3__code_js__["a"].newTask,
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('p', ' mM$taskList is the todo application\'s worker function. Every time it executes its ret() method, the argument to ret() is added to its stream, causing the following code to run: ' ),
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_3__code_js__["a"].mM$task,
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('p', 'mM$taskList caries a string representing the task list. mMtaskList.x.split(",") produces an array whose length is a multiple of six. Commas in the task description are replaced by "$*$*$" so split(",") will put the entire task description in a single element. Commas are re-inserted when the list arrives from the server for rendering. Although a task list is a nested virtual DOM object (Snabbdom vnode), it can be conveniently passed back and forth to the server as a string without resorting to JSON.stringify. Its type is Text on the server and String in the front end, becomming a virtual DOM node only once, when it arrives from the server prefixed by "DD#$42" causing "process(e.data) to execute. Here is process(): ' ),
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_3__code_js__["a"].process,
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('span.tao', 'As you see, the string becomes a list of six-element objects, then those objects are used to create a Snabbdom vnode which is handed to mM$taskList.ret() leading to the update of O.mMtaskList. O.mMtaskList.x sits permanently in the main virtual DOM description. When its value gets refreshed, the DOM re-renders because taskStream$ is merged into the stream that is mapped into the virtural DOM description inside the object returned by "main". "main" and "sources" are the arguments provided to Cycle.run(). "sources" is the argument provided to "main". It is an array of drivers. The code is at '  ),
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('a', {props: {href: "https://github.com/dschalk/JS-monads-stable"}}, 'https://github.com/dschalk/JS-monads-stable' ),
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('br'),
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('p', ' Clicking "Completed": When the "Completed" button is clicked, the following code runs:         '  ),
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_3__code_js__["a"].colorClick,
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('p', 'O.mMtaskList is split into an array. Every sixth element is the start of a new task. colorAction$ toggles the second, third, and fourth element in the task pinpointed by "index" * 6. getIndex finds the index of the first and only the element whose task description matches the one that is being marked "Completed". I say "only" because users are prevented from adding duplicate tasks. After the changes are made, the array of strings is reduced to one string and sent to the server when mM$taskList.ret() updates mM$taskList.stream triggering . '  ),  
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('p', ' This is the code involved in editing a task description: '  ),
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_3__code_js__["a"].edit,
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('p', 'Clicking "Edit" causes a text box to be displayed. Pressing <ENTER> causes it to diappear. edit2Action$ obtains the edited description of the task and the index of the task iten and provides them as arguments to process. Process exchanges $*$*$ for any commas in the edited version and assigns the amended task description to the variable "task". O.mMtaskList.x is copied and split into an array. "index * 6" is replaced with "task" and the list of strings is reduced back to a single string and sent to the server for distribution. This pattern, - (1) split the string representation of the todo list into an array of strings, (2) do something, (3) reduce the list of strings back to a single string - is repeated when the "Delete" button is clicked. If the last item gets deleted, the server is instructed to delete the persistent file bearing the name of the group whose member deleted the last task. ' ), 
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('p#common', 'Cycle.js has been criticized for not keeping state in a single location, the way React.js does. Motorcycle.js didn\'t do it for me, or try to force me to do it, but it so happens that the current state of all active monads is in the object "O". I have written applications in Node.js and React.js, and I can say without a doubt that Motorcycle.js provides the best reactive interface for my purposes.  ' ),
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('hr'),
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('a', {props: {href: '#top'}}, 'Back To The Top'   ),  
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('h2', 'Common Patterns' ),
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('p', 'Anyone not yet familiar with functional programming can learn by studying the definition of the Monad bnd() method and considering the common patterns presented below. Often, we want to give a named monad the value of an anonymous monad returned by a monadic computation. Here are some ways to accomplish that: '  ),
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('p', 'For any monads m1 and m2 with values a and b respectively (in other words, m1.x == a and m2.x == b return true), m1.bnd(m2.ret) provides m1\'s value to m2.ret() causing O.m2 to have m1\'s value. So, after m1.bnd(m2.ret), m1.x == a, m2.x == b, O.m2.x == a all return true. The definition of Monad\s bnd() method shows that the function m2.ret() operates on m1.x. m1.bnd(m2.ret) is equivalent to m2.ret(m1.x). The stand-alone ret() function can be used to alter the current value of m2, rather than altering the value of O.m2. Here is one way of accomplishing this: m1.bnd(x => ret(x,"m2"). These relationships are verified in the following tests: ' ),
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('pre', 
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('div#gameDiv2',  {style: {display: 'none'}}, [
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('br'),
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('span', ' Here are the basic rules:' ), 
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('p', 'RULES: If clicking two numbers and an operator (in any order) results in 20 or 18, the score increases by 1 or 3, respectively. If the score becomes 0 mod 5, 5 points are added. A score of 25 results in one goal. That can only be achieved by arriving at a score of 20, which jumps the score to 25. Directly computing 25 results in a score of 30, and no goal. Each time ROLL is clicked, one point is deducted. Three goals wins the game. '    ),
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('button#0.num'),
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('button#1.num'),
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('button#2.num'),
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('button#3.num'),
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('br'),
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('button#4.op', 'add'  ),
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('button#5.op', 'subtract' ),
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('button#5.op', 'mult' ),
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('button#5.op', 'div' ),
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('button#5.op', 'concat' ),
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('br'),
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('div#dice', {style: {display: 'none'}}, [ 
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('button.roll', 'ROLL' ),
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('br'),
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('button#back2', 'BACK'  ),
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('button#forward2', 'FORWARD'  ) ]) ]),
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('div.winner', O.mMgoals2.x+''  ),
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('div#log1', [
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('p', 'IN ORDER TO SEE THE DEMONSTRATIONS, YOU MUST ENTER SOMETHING BELOW.'  ),
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('span', 'Name: ' ),
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('input#login', {props: {placeholder: "focus on; start typing"}} ) ]),
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('p', O.mM6.x.toString() ),
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('div#log2', {style: {display: 'none'}}, [
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('span', 'Change group: '  ),
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('input#group' ) ]),
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('p',  O.mMsoloAlert.x  ),
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('p', 'People who are in the same group, other than solo, share the same todo list, messages, and simulated dice game. In order to see any of these, you must establish an identity on the server by logging in. The websockets connection would terminate if the first message the server receives does not succefully participate in the login handshake. '  ),
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('hr' ),
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('h1', 'The Monads'  ),
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('p', ' There are three basic types of monads: Monad, MonadIter, and MonadStream. Instances of Monad have a method called "bnd" which takes a functions and possibly other values as arguments. I have not created a library of functions for because nobody needs that. You should create functions that suit your specific purposes. I use browserify or webpack so I can use ES6 functions such as map, reduce, and filter. I don\'t need the Ramda or Underscore-fs. ' ),
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('p', ' There is a basic pattern that I have found useful for computations and object (including array) manipulation. For what it is worth, I will demonstrate it with some simple examples in the discussion that follows. This will serve as a demonstration of how the monads work. ' ),
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('h2', 'Monad' ),
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_3__code_js__["default"].monad,
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('p', 'The following statements create instances of Monad named "m" with an initial value of "some value": var m = new Monad("some value", "m") and ret("some value", "m"). Monad instances maintain state in the unique, mutable, global object named "O". Where there is changing state, it is not practical to avoid mutating something. My choices narrowed down to the window object or an attribute of window like O. O seemed like the better choice. It is a place to keep the most recent versions of named monads. Earlier versions of named monads can persist elsewhere, or be left for the gargage collector.   ' ),
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('p', ' In the examples shown on this page, the initial values of instances of Monad remain unchaged. The ret() method places updated instances on O. The instances on O are never mutated. For any instance of Monad named m with id "m" and value v (i.e., m.x == v is true), m.ret(v2) creates a new attribute of O with key "m" or, if O.m already exists, m.ret(v2) mutates O by replacing its m attribute\'s value. The monad O.m is not mutated, so any O.m that is replaced will persist if there is a reference to it, or will be subject to garbage collection if there is not. ' ),
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('h3', 'Examples' ),
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('p', ' Here are the definitions of ret() and add(): '  ),
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_3__code_js__["default"].ret_cube,
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('p', ' calling ret() with only one argument creates an anonymous global monad. There is no reference to it, so when a computation sequence using it terminates, it becomes eligeble for garbage collection. Although the monad\'s scope is global, it can\'t be clobbered because it has no name (no variable referring to it). ' ),
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('p', ' As you see, cube() and ret() are overloaded functions. Here are some examples of various ways of using them: ' ),
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('span.red3', 'cube(3)' ),
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('span.td2', ' creates a useless anonymous monad with x == 27 and id == "anonymous". ' ),
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('br' ),  
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('br' ),  
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('span.red3', 'cube(5, m)' ), 
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('span.td2', ' where m is a monad leaves m unchanged, O.m.x == 125, and O.m.id == "m". ' ), 
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('br' ),  
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('br' ),  
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('span.red3', 'cube(5).bnd(m.ret)' ), 
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('span.td2', ' is equivalent to the previous example. m is unchanged and O.m.x == 125. ' ), 
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('br' ),  
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('br' ),  
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('span.red3', 'ret(5).bnd(cube).bnd(m.ret)' ), 
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('span.td2', ' is equivalent to the previous two examples. O.m.x == 125. ' ), 
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('br' ),  
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('br' ),  
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('span.red3', 'm.ret(4).bnd(cube)' ), 
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('span.td2', 'causes O.m.x == 2, and creates an anonymous monad with x == 64. ' ),
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('br' ),  
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('br' ),  
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('span.red3', 'm.ret(4).bnd(cube, m)' ), 
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('span.td2', ' leaves m unchanged, O.m.x == 64, and O.m.id == "m". ' ),
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('br' ),  
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('br' ),  
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('span.tao', ' The convention "a == b" in this presentation signifies that a == b is true. By the way, if you want to change the value of m, all you have to do is call ' ),
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('span.red3', 'ret(v, "m")' ),
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('span', ' to cause m.x == v and m.id = "m". This is the definition of add(): ' ),
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_3__code_js__["default"].add,   
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('span.red3', 'add(3, 4)' ),
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('span.td2', ' creates a useless anonymous monad with x == 7 and id == "anonymous". ' ),
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('br' ),  
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('br' ),  
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('span.red3', 'add(3, 4).bnd(m.ret)' ),
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('span.td2', ' causes O.m.x == 7 and O.m.id == "m". ' ),
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('br' ),  
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('br' ),  
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('span.red3', 'add(3, 4, m)' ), 
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('span.td2', ' is equivalent to the prior example. The result is O.m.x == 7, and O.m.id == "m". ' ), 
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('br' ),  
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('br' ),  
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('span.red3', 'm.ret(0).bnd(add, 3).bnd(cube)' ), 
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('span.td2', 'leaves m unchanged, O.m.x == 0, and creates an anonymous monad with x == 27. ' ),
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('br' ),  
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('br' ),  
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('span.red3', 'ret(0).bnd(add, 3).bnd(cube).bnd(m.ret)' ), 
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('span.td2', 'causes O.m.x == 27, and O.m.id = "m". ' ),
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('br' ),  
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('br' ),  
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('span.red3', 'ret(0).bnd(add, 2, m).bnd(cube, m2)' ), 
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('span.td2', ' where m, and m2 are monads causes O.m.x == 2, and O.m2.x == 8. ' ),
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('br' ),  
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('p#iterLink', ' O holds the current state of the monads. This is convenient. For example, mMcurrentList.ret() is seen in the application code whereever a todo list is created, removed, or altered. O.mMcurrentList.x sits in the virtual DOM, making sure that the todo list display is is always current. ' ),
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('h2', 'MonadIter' ),
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('p', 'For any instance of MonadIter, say "m", the statement "m.bnd(func)" causes m.p == func to be true. The statement "m.release(...args) causes p(...args) to execute. Here is the definition: ' ), 
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_3__code_js__["default"].monadIt,
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('p', 'As shown later on this page, MonadIter instances control the routing of incoming websockets messages and the flow of action in the simulated dice game. '  ), 
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('p', 'The following example illustrates the use of release() with an argument. It also shows lambda expressions being provided as arguments for bnd(). The initial values of mMt1, mMt2, and mMt3 are 0, 0, and "" respectively. When this page loads, the following code runs: ' ),
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_3__code_js__["default"].testZ,
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('p', ' add() and cube() function as arguments of the bnd() method, or as functions that return monads. Click "mMZ1.release(1)" several times to run the code with n == 1. O.mMt3.x is shown below the button. mMZ1.p doesn\'t change until its bnd() method is used again, so repeated calls to release(1) continue to run the function provided to bnd() in the code shown above. ' ),
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('button#testZ', 'mMZ1.release(1)'  ),
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('p.code2', O.mMt3.x ),
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('span', 'Refresh button: '  ),
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('button#testQ', 'mMt1.ret(0).bnd(mMt2.ret)'  ),
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('p', '  You can call release() with arguments other than 1 by entering numbers below. ' ), 
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('input#testW' ), 
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('p', ' Here is another example. It demonstrates lambda expressions passing values to a remote location for use in a computation. If you enter three numbers consecutively below, I\'ll call them a, b, and c, then the quadratic equation will be used to find solutions for a*x**2 + b*x + c = 0. The a, b, and c you select might not have a solution. If a and b are positive numbers, you are likely to see solutions if c is a negative number. For example, 12, 12, and -24 yields the solutions 1 and -2. ' ),
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('p.code2#quad4', O.mMquad1.x ),
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('span.red2', O.mMquad2.x ),
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('span.red2', O.mMquad3.x ),
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('br' ),
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('span.tao' , 'Run mMZ3.release(v) three times for three numbers. The numbers are a, b, and c in ax*x + b*x + c = 0: ' ),
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('input#quad' ),  
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('p', 'Here is the code:' ),
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_3__code_js__["default"].quad,
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('span#tdList' ),
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('h2', 'MonadStream'  ),
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('span.tao', ' MonadStream uses ' ),
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('a', {props: {href: "https://github.com/TylorS/most-subject"}}, 'most-subject' ),
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('span', '. In a Cycle application that is already using RxJS, RxJs could be substituted for most-subject. Bacon could be used. most-subject is light-weight and does the job, so you might want to use it in any application context. Here is the definition:  '  ),
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_3__code_js__["default"].monadStr,
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('h3', 'Todo List Side Effects' ),
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('p', ' When users do anything to the todo list, MonadStream instance mM$taskList runs its ret() method on the modified String representation of the list, causing the string to be added to mM$taskList.stream. mM$taskList.stream has only one subscriber, taskAction$, whose only purpose it to send the string representation of the todo list to the server. The server updates its persistent file and distributes a text representation of the updated todo list to all group members. Each group member receives the todo list as a string and parses it into a DOM node tree that is merged into the stream that updates the virtual DOM. All Todo List side effects can be traced to:' ),
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_3__code_js__["default"].todoStream,
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('span', ' Just search for "mM$taskList.ret" to find where all todo list changes were initiated. The following link takes you to a more detailed explanation of the todo list. ' ),
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('a', {props: {href: '#tdList2'}}, 'Detailed Todo List Explanation'   ),  
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('br' ),
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('h3', 'Dice Game Side Effects' ),
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('p', ' mM$1.ret() is called only when (1) a new dice roll comes in from the server, (2) when a player clicks a number, and (3) when clicking a number or operator results in a computation being performed. These are the three things that require a DOM update. When a player clicks a number, it disappears from number display. When a computation is performed, the result is added to the number display, unless the result is 18 or 20. A result of 18 or 20 results in a new roll coming in from the server and mM$1.ret() being called on an array of four numbers; something like mM$1.ret[4,2,11,17]). When a number is removed or a result added, mM$1.ret() is called on an array containing fewer than four numbers. ' ),
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('p', ' mM$1.stream is a stream of arrays of integers, as explained in the paragraph above. All game side effects can be traced to: ' ),
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_3__code_js__["default"].gameStream,
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('p', ' Because a player can traverse the history of number displays by clicking the BACK and FORWARD buttons, the current value of O.mMindex2.x must be incremented to determine where the new array of numbers will be placed in the O.mMallRolls.x array. Here are the definitions of inc and spliceAdd: ' ), 
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_3__code_js__["default"].inc,
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('hr' ),  
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('h2', 'Concise Code Blocks For Information Control' ),
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('p', ' Incoming websockets messages trigger updates to the game display, the chat display, and the todo list display. The members of a group see what other members are doing; and in the case of the todo list, they see the current list when they sign in to the group. When any member of a group adds a task, crosses it out as completed, edits its description, or removes it, the server updates the persistent file and all members of the group immediately see the revised list.  '  ),
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('p', 'The code below shows how incoming websockets messages are routed. For example, mMZ10.release() is called when a new dice roll (prefixed by CA#$42) comes in.   ' ),
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_3__code_js__["default"].messages,
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('p', ' The "mMZ" prefix designates instances of MonadIter. The bnd() method assigns its argument to the "p" attribute. "p" runs if and when the release() method is called. The next() function releases a specified MonadIter instance when the calling monad\'s value matches the specified value. next2() releases the specified monad when the specified condition returns true. The release method in next() has no argument, but next does take arguments, as illustrated below.' ),
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('span.tao', ' The incoming messages block is just a syntactic variation of a switch block, but that isn\'t all that MonadIter instances can do. They can provide fine-grained control over the lazy evaluation of blocks of code. Calling release() after a function completes some task provides Promise-like behavior. Error handling is optional. The MonadInter release(...args) method facilitates sequential evaluation of code blocks, remeniscent of video and blog explanations of ES6 iterators and generators. I prefer doing it with MonadIter over "yield" and "next". For one thing, ES6 generator "yield" blocks must be evaluated in a predetermined order. This link takes you back to the MonadIter section with interactive examples of the use of release() with arguments.  ' ),
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('a#tdList2', {props: {href: '#iterLink'}}, 'release() with arguments'   ),  
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('br' ),
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('br' ),
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('a', {props: {href: '#top'}}, 'Back To The Top'   ),  
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('br' ),
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('h3', 'The Todo List' ),
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('p', ' Next, I\'ll go over some features of the todo list application. This will show how Motorcycle.js and the monads work together.' ),
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('p', 'Creation Of A Task: If you enter something like Susan, Fred, Pay the water bill, the editable task will appear in your browser and in the browsers of any members a group you might have created or joined. If you have loaded this page in another tab and changed to the same group in both, you will see the task in both tabs, barring some malfunction. The task has a delete button, an edit button, and a "Completed" checkbox. It shows that Susan authorized the task and Fred is responsible for making sure it gets done. Instead of entering an authority and responsible person, you can just enter two commas before the task description. Without two commas, a message appears requesting more information. This is how Motorcycle.js handles the creation of a new task: ' ),
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_3__code_js__["default"].newTask,
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('p', ' mM$taskList is the todo application\'s worker function. Every time it executes its ret() method, the argument to ret() is added to its stream, causing the following code to run: ' ),
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_3__code_js__["default"].mM$task,
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('p', 'mM$taskList caries a string representing the task list. mMtaskList.x.split(",") produces an array whose length is a multiple of six. Commas in the task description are replaced by "$*$*$" so split(",") will put the entire task description in a single element. Commas are re-inserted when the list arrives from the server for rendering. Although a task list is a nested virtual DOM object (Snabbdom vnode), it can be conveniently passed back and forth to the server as a string without resorting to JSON.stringify. Its type is Text on the server and String in the front end, becomming a virtual DOM node only once, when it arrives from the server prefixed by "DD#$42" causing "process(e.data) to execute. Here is process(): ' ),
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_3__code_js__["default"].process,
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('span.tao', 'As you see, the string becomes a list of six-element objects, then those objects are used to create a Snabbdom vnode which is handed to mM$taskList.ret() leading to the update of O.mMtaskList. O.mMtaskList.x sits permanently in the main virtual DOM description. When its value gets refreshed, the DOM re-renders because taskStream$ is merged into the stream that is mapped into the virtural DOM description inside the object returned by "main". "main" and "sources" are the arguments provided to Cycle.run(). "sources" is the argument provided to "main". It is an array of drivers. The code is at '  ),
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('a', {props: {href: "https://github.com/dschalk/JS-monads-stable"}}, 'https://github.com/dschalk/JS-monads-stable' ),
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('br'),
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('p', ' Clicking "Completed": When the "Completed" button is clicked, the following code runs:         '  ),
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_3__code_js__["default"].colorClick,
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('p', 'O.mMtaskList is split into an array. Every sixth element is the start of a new task. colorAction$ toggles the second, third, and fourth element in the task pinpointed by "index" * 6. getIndex finds the index of the first and only the element whose task description matches the one that is being marked "Completed". I say "only" because users are prevented from adding duplicate tasks. After the changes are made, the array of strings is reduced to one string and sent to the server when mM$taskList.ret() updates mM$taskList.stream triggering . '  ),  
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('p', ' This is the code involved in editing a task description: '  ),
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_3__code_js__["default"].edit,
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('p', 'Clicking "Edit" causes a text box to be displayed. Pressing <ENTER> causes it to diappear. edit2Action$ obtains the edited description of the task and the index of the task iten and provides them as arguments to process. Process exchanges $*$*$ for any commas in the edited version and assigns the amended task description to the variable "task". O.mMtaskList.x is copied and split into an array. "index * 6" is replaced with "task" and the list of strings is reduced back to a single string and sent to the server for distribution. This pattern, - (1) split the string representation of the todo list into an array of strings, (2) do something, (3) reduce the list of strings back to a single string - is repeated when the "Delete" button is clicked. If the last item gets deleted, the server is instructed to delete the persistent file bearing the name of the group whose member deleted the last task. ' ), 
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('p#common', 'Cycle.js has been criticized for not keeping state in a single location, the way React.js does. Motorcycle.js didn\'t do it for me, or try to force me to do it, but it so happens that the current state of all active monads is in the object "O". I have written applications in Node.js and React.js, and I can say without a doubt that Motorcycle.js provides the best reactive interface for my purposes.  ' ),
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('hr'),
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('a', {props: {href: '#top'}}, 'Back To The Top'   ),  
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('h2', 'Common Patterns' ),
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('p', 'Anyone not yet familiar with functional programming can learn by studying the definition of the Monad bnd() method and considering the common patterns presented below. Often, we want to give a named monad the value of an anonymous monad returned by a monadic computation. Here are some ways to accomplish that: '  ),
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('p', 'For any monads m1 and m2 with values a and b respectively (in other words, m1.x == a and m2.x == b return true), m1.bnd(m2.ret) provides m1\'s value to m2.ret() causing O.m2 to have m1\'s value. So, after m1.bnd(m2.ret), m1.x == a, m2.x == b, O.m2.x == a all return true. The definition of Monad\s bnd() method shows that the function m2.ret() operates on m1.x. m1.bnd(m2.ret) is equivalent to m2.ret(m1.x). The stand-alone ret() function can be used to alter the current value of m2, rather than altering the value of O.m2. Here is one way of accomplishing this: m1.bnd(x => ret(x,"m2"). These relationships are verified in the following tests: ' ),
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('pre', 
 	`             ret('m1Val','m1')
 	             m1.x === 'm1Val'  // true
 	             ret('m2Val', 'm2')
@@ -15930,65 +10046,65 @@
 	             O.m1.bnd(v => ret(v, 'm2'))
 	             m2.x === 'newVal'  // true
 	             O.m2.x === 'm1Val' // true   still the same  `   ),
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('p', 'The bnd() method does not have to return anonymous monads. Consider, for example, the trivial function f = function(x, mon) {return mon.ret(x)}. The monad that calls its bnd() method with the argument f gives the monad designated as "mon" its value. So m1.bnd(f, m2) results in m1.x == a, m2.x == b, O.m2.x == a all returning true. ' ), 
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('p'  ), 
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('p', 'Frequently, some monad "m" will use its "bnd" method on some function which takes two arguments, say "f(x,v)". The first argument is the value of m (which is m.x). m.bnd(f,v) is equivalent to f(m.x, v). The following example demonstates the use of a two-argument function: ' ),
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_3__code_js__["a"].fib,
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('span.tao', 'In both functions, the "x" argument is ignored. It must be included, however, in order to make the bnd() method return the desired result. If you enter some number "n" in the box below, '  ),
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('pre',  '  mM19.bnd(fibCalc, e.target.value*1).bnd(mM19.ret)' ),
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('span', ' will execute and O.mM19.x will be displayed under the input box. ' ),
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('input#code' ),  
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('br'),
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('span', 'Fibonacci ' + O.mM21.x + ' is ' ), 
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('span.code2', ' ' + O.mM19.x ),  
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('br' ),
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('hr'),
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('h3', 'Immutable Data And The State Object "O" ' ),
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('p',  'The server updates scores in response to messages prefixed by "CG#$42". Each such message carries an integer specifying the amount of the change. The ServerState list of Client tupples is pulled from the game state TMVar and replaced by a new tupple whose Score field differs from the previous one.' ),
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('p', 'In front end code, mutating variables which are defined inside of functions often seems inocuous in applications written in an object oriented programming style. This is not the case in a Motorcycle.js application, where functions culminate in streams that merge into the stream that feeds the object returned by the main function, called "main" in this application. "sources" is an array of drivers. It is main\'s only argument, "sources" and "main" are Cycle.run()\'s arguments.' ), 
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('p', '"main" and "Cycle.run" are called only once. In the cyclic steady state that results, a reference should say what it means and mean what it says. If it suddenly refers to something other than what the other half of the cycle thinks it is, there will be a temporary disconnect. This will promptly staighten out, but having temporary disconnects shakes confidence in the consistency and reliability of the program. I don\'t have an example of mutating an object causing an unexpected result or crash. I would appreciate it if someone would give me such an example. ' ),
-	       /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('p', ' In this environment, avoiding mutations is recommended and I generally follow that recommendation. Mutations in this application are confined to the global state object "O" and MonadIter instances. In the examples above, the release() method moves the process forward to the next occurance of the MonadIter instance where the bnd() method provides a new function to the "p" attribute. The progressive morphing of "p" in MonadIter instances is desirable behavior, and I think that creating a clone each time it occurs would be a senseless waste of resources. Unless and until release() is called, the program is not affected by "p". If release() is called, the return value of p(...args) is returned, but "p" itself remains tucked away, never mixing with the flow of information through the program. The bnd() method is pure. Given the same argument, it will always do the same thing. It doesn\'t even return anything. It just updates the internal "p" attribute. This insulation of internal operations from the outer program is remeniscent of an important purpose of the Haskell IO monad. These are just hand-waving arguments for the harmlessness of letting the bnd() method mutate MonadIter instances, but I wanted to explain why I feel comfortable with letting the definition of MonadIter stand as it is.  ' ),           
-	       /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('p', 'All monad updates caused by the monad ret() method are stored in the object "O". When a monad m executes m.ret(v) for some value "v", m remains unchanged and the O attribute O.m is created or, if it already exists, is replaced by the update; i.e., O.m.x == v becomes true. Older versions of m are subject to garbage collection unless there is a reference to them or to an object (arrays are objects) containing m.  This is illustrated in the score-keeping code below.  All score changes are captured by mM13.ret(). Therefore, O.mM13.x is always the current score. Replacing monad attributes in O is vaguely analogous to swapping out ServerState in the Haskell server\'s state TMVar. Older versions of ServerState can be preserved in the server just as prior versions of O.mM13 can be preserved in the front end. ' ),     
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_3__code_js__["a"].updateCalc,
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('p', 'The socket messages prompt the server to update its application state and to broadcast messages to all members of the group whose member sent the message to the server. Let\'s take another look at the way incoming messages are handled.'  ),  
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_3__code_js__["a"].messages,
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('p#monads', ' Messages prefixed by CB#$42 are broadcast in response to CG#$42-prefixed messages from a browser. CB#$42 prefixes release mMZ11, causing the scoreboard to update. CA#$42-prefixed messages to the server result in CA#$42-prefixed messages carrying the next dice roll to be broadcast to the sender\'s group.  CE#$42 prefixed messages cause the release of mMZ14 which causes O.mMgoals2.x to change from an empty string to an anouncement of the name of the winner. ' ),  
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('hr' ),  
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('a', {props: {href: '#top'}}, 'Back To The Top'   ),  
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('h3', 'Why Call Them Monads?' ),  
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('p', 'For any monad m and function f mapping values to monads, inside the O object the bnd() method behaves like the Haskell >>= operator(pronounce "bind"). For example, if we set O.m.x to 0 and call O.m.bnd(add, 3, m), O.m.x == 3 becomes true. And, like Haskell monads that obey the optional Haskell monad laws, sequences of calls to bnd() are associative; i,e, how computations are grouped does not matter. Here are three functions we will use to illustrate this:' ),
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_3__code_js__["a"].mdem1,
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('p', ' The relationships being demonstrated here are readily derivable from the definition of Monad. This is just an example to illustrate the general properties. The "===" operator isn\'t useful for illustrating monadic behavior because it returns false for clones. A meaningful variation of associative property can be demonstrated with the equals() function. We will use equals() to test the associative property along with the left and right identity properties of the ret() mdethod. These relationships are similar to the relationships in the Haskell laws.'),
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('p', ' Click runTest() to see updated O.mMa.x, O.mMb.x, and O.mMc.x, colored red, displayed below.  ' ),  
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_3__code_js__["a"].runTest,  
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('button#runTest', 'runTest()' ),
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('br' ),
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('span.tao', 'O.mMa.x: ' ),  
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('span.red', O.mMa.x ), 
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('br' ),  
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('span.tao', 'O.mMb.x: ' ),  
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('span.red', O.mMb.x ), 
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('br' ),  
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('span.tao', 'O.mMc.x: ' ),  
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('span.red', O.mMc.x ), 
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('p' ),  
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('p' ),  
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('p', ' That\'s about it. That\'s why I call them "monads". But JS-monads can do much more than vaguely mirror Haskell monad functionality. There is no attempt to constrain JS-monads with type classes, or with restrictions on the types of functions the bnd() method can accept. m.bnd(x => x**3) returns a number, not a JS-monad. It would be the end of the line for a chained sequence of computations; but that might be exactly what you want: a monadic chain of computations that spits out a number when it is done. '  ),  
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('h2', 'Conclusion' ),
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('p', '  You might not need a ready-made framework or a bloated set of libraries for your project. It could be that improvisation, possibly with the help of JS-monads or your own variation on the JS-monads theme, is the key to creating a well-organized, understandable, and easily maintainable masterpiece. The libraries I imported, Motorcycle.js and Most-subject, were an immense help. I wholeheartedly endorse Motorcycle, with its Cycle, Snabbdom, and Most constitutents; along with Most-subject, which made MonadStream possible. '    ),  
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('a', {props: {href: '#top'}}, 'Back To The Top'   ),  
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('p' ),  
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('p' ),  
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('p' ),  
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('br'),  
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('br'),  
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('br'),  
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('hr'),  
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('p' ),  
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('p' ),  
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('p' ),  
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('p' ),  
-	        /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('p' )  
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('p', 'The bnd() method does not have to return anonymous monads. Consider, for example, the trivial function f = function(x, mon) {return mon.ret(x)}. The monad that calls its bnd() method with the argument f gives the monad designated as "mon" its value. So m1.bnd(f, m2) results in m1.x == a, m2.x == b, O.m2.x == a all returning true. ' ), 
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('p'  ), 
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('p', 'Frequently, some monad "m" will use its "bnd" method on some function which takes two arguments, say "f(x,v)". The first argument is the value of m (which is m.x). m.bnd(f,v) is equivalent to f(m.x, v). The following example demonstates the use of a two-argument function: ' ),
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_3__code_js__["default"].fib,
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('span.tao', 'In both functions, the "x" argument is ignored. It must be included, however, in order to make the bnd() method return the desired result. If you enter some number "n" in the box below, '  ),
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('pre',  '  mM19.bnd(fibCalc, e.target.value*1).bnd(mM19.ret)' ),
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('span', ' will execute and O.mM19.x will be displayed under the input box. ' ),
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('input#code' ),  
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('br'),
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('span', 'Fibonacci ' + O.mM21.x + ' is ' ), 
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('span.code2', ' ' + O.mM19.x ),  
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('br' ),
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('hr'),
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('h3', 'Immutable Data And The State Object "O" ' ),
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('p',  'The server updates scores in response to messages prefixed by "CG#$42". Each such message carries an integer specifying the amount of the change. The ServerState list of Client tupples is pulled from the game state TMVar and replaced by a new tupple whose Score field differs from the previous one.' ),
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('p', 'In front end code, mutating variables which are defined inside of functions often seems inocuous in applications written in an object oriented programming style. This is not the case in a Motorcycle.js application, where functions culminate in streams that merge into the stream that feeds the object returned by the main function, called "main" in this application. "sources" is an array of drivers. It is main\'s only argument, "sources" and "main" are Cycle.run()\'s arguments.' ), 
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('p', '"main" and "Cycle.run" are called only once. In the cyclic steady state that results, a reference should say what it means and mean what it says. If it suddenly refers to something other than what the other half of the cycle thinks it is, there will be a temporary disconnect. This will promptly staighten out, but having temporary disconnects shakes confidence in the consistency and reliability of the program. I don\'t have an example of mutating an object causing an unexpected result or crash. I would appreciate it if someone would give me such an example. ' ),
+	       /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('p', ' In this environment, avoiding mutations is recommended and I generally follow that recommendation. Mutations in this application are confined to the global state object "O" and MonadIter instances. In the examples above, the release() method moves the process forward to the next occurance of the MonadIter instance where the bnd() method provides a new function to the "p" attribute. The progressive morphing of "p" in MonadIter instances is desirable behavior, and I think that creating a clone each time it occurs would be a senseless waste of resources. Unless and until release() is called, the program is not affected by "p". If release() is called, the return value of p(...args) is returned, but "p" itself remains tucked away, never mixing with the flow of information through the program. The bnd() method is pure. Given the same argument, it will always do the same thing. It doesn\'t even return anything. It just updates the internal "p" attribute. This insulation of internal operations from the outer program is remeniscent of an important purpose of the Haskell IO monad. These are just hand-waving arguments for the harmlessness of letting the bnd() method mutate MonadIter instances, but I wanted to explain why I feel comfortable with letting the definition of MonadIter stand as it is.  ' ),           
+	       /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('p', 'All monad updates caused by the monad ret() method are stored in the object "O". When a monad m executes m.ret(v) for some value "v", m remains unchanged and the O attribute O.m is created or, if it already exists, is replaced by the update; i.e., O.m.x == v becomes true. Older versions of m are subject to garbage collection unless there is a reference to them or to an object (arrays are objects) containing m.  This is illustrated in the score-keeping code below.  All score changes are captured by mM13.ret(). Therefore, O.mM13.x is always the current score. Replacing monad attributes in O is vaguely analogous to swapping out ServerState in the Haskell server\'s state TMVar. Older versions of ServerState can be preserved in the server just as prior versions of O.mM13 can be preserved in the front end. ' ),     
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_3__code_js__["default"].updateCalc,
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('p', 'The socket messages prompt the server to update its application state and to broadcast messages to all members of the group whose member sent the message to the server. Let\'s take another look at the way incoming messages are handled.'  ),  
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_3__code_js__["default"].messages,
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('p#monads', ' Messages prefixed by CB#$42 are broadcast in response to CG#$42-prefixed messages from a browser. CB#$42 prefixes release mMZ11, causing the scoreboard to update. CA#$42-prefixed messages to the server result in CA#$42-prefixed messages carrying the next dice roll to be broadcast to the sender\'s group.  CE#$42 prefixed messages cause the release of mMZ14 which causes O.mMgoals2.x to change from an empty string to an anouncement of the name of the winner. ' ),  
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('hr' ),  
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('a', {props: {href: '#top'}}, 'Back To The Top'   ),  
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('h3', 'Why Call Them Monads?' ),  
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('p', 'For any monad m and function f mapping values to monads, inside the O object the bnd() method behaves like the Haskell >>= operator(pronounce "bind"). For example, if we set O.m.x to 0 and call O.m.bnd(add, 3, m), O.m.x == 3 becomes true. And, like Haskell monads that obey the optional Haskell monad laws, sequences of calls to bnd() are associative; i,e, how computations are grouped does not matter. Here are three functions we will use to illustrate this:' ),
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_3__code_js__["default"].mdem1,
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('p', ' The relationships being demonstrated here are readily derivable from the definition of Monad. This is just an example to illustrate the general properties. The "===" operator isn\'t useful for illustrating monadic behavior because it returns false for clones. A meaningful variation of associative property can be demonstrated with the equals() function. We will use equals() to test the associative property along with the left and right identity properties of the ret() mdethod. These relationships are similar to the relationships in the Haskell laws.'),
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('p', ' Click runTest() to see updated O.mMa.x, O.mMb.x, and O.mMc.x, colored red, displayed below.  ' ),  
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_3__code_js__["default"].runTest,  
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('button#runTest', 'runTest()' ),
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('br' ),
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('span.tao', 'O.mMa.x: ' ),  
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('span.red', O.mMa.x ), 
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('br' ),  
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('span.tao', 'O.mMb.x: ' ),  
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('span.red', O.mMb.x ), 
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('br' ),  
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('span.tao', 'O.mMc.x: ' ),  
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('span.red', O.mMc.x ), 
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('p' ),  
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('p' ),  
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('p', ' That\'s about it. That\'s why I call them "monads". But JS-monads can do much more than vaguely mirror Haskell monad functionality. There is no attempt to constrain JS-monads with type classes, or with restrictions on the types of functions the bnd() method can accept. m.bnd(x => x**3) returns a number, not a JS-monad. It would be the end of the line for a chained sequence of computations; but that might be exactly what you want: a monadic chain of computations that spits out a number when it is done. '  ),  
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('h2', 'Conclusion' ),
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('p', '  You might not need a ready-made framework or a bloated set of libraries for your project. It could be that improvisation, possibly with the help of JS-monads or your own variation on the JS-monads theme, is the key to creating a well-organized, understandable, and easily maintainable masterpiece. The libraries I imported, Motorcycle.js and Most-subject, were an immense help. I wholeheartedly endorse Motorcycle, with its Cycle, Snabbdom, and Most constitutents; along with Most-subject, which made MonadStream possible. '    ),  
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('a', {props: {href: '#top'}}, 'Back To The Top'   ),  
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('p' ),  
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('p' ),  
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('p' ),  
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('br'),  
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('br'),  
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('br'),  
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('hr'),  
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('p' ),  
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('p' ),  
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('p' ),  
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('p' ),  
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('p' )  
 	        ])
 	      ])
 	    )}} 
@@ -16053,7 +10169,7 @@
 	    let keys = Object.keys(ar2);
 	    let ar = [];
 	    keys.map(k => {
-	      ar.push(/* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"].bind()('div', ar2[k]))
+	      ar.push(/* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('div', ar2[k]))
 	    });
 	    return mMscoreboard.ret(ar);
 	  };
@@ -16080,16 +10196,16 @@
 	  };
 
 	  const sources = {
-	    DOM: /* harmony import */__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["makeDOMDriver"].bind()('#main-container'),
+	    DOM: /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["makeDOMDriver"]('#main-container'),
 	    WS: websocketsDriver,
 	    UNIT: unitDriver
 	  }
 
-	  /* harmony import */__WEBPACK_IMPORTED_MODULE_0__motorcycle_core___default.a.run(main, sources);
+	  /* harmony import */ __WEBPACK_IMPORTED_MODULE_0__motorcycle_core___default.a.run(main, sources);
 
 
 
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(16)))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(17)))
 
 /***/ }
 /******/ ]);
