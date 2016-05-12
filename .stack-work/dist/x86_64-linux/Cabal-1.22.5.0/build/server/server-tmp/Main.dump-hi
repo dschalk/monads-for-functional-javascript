@@ -1,9 +1,9 @@
 
 ==================== FINAL INTERFACE ====================
-2016-05-09 06:08:47.77678 UTC
+2016-05-12 15:02:28.594163 UTC
 
 interface main@main:Main 7103
-  interface hash: bc546d4dffbcfd70931144449ec9dc47
+  interface hash: 1816949715048021501267bcc6727df7
   ABI hash: e29b1d994cb03c3bdc6d5a2c12e51cdb
   export-list hash: ac084b9a81b1c3bd918c352b0df77b45
   orphan hash: 276323d23bdb3224e26fb4d203ffca48
@@ -161,11 +161,11 @@ import  -/  websockets-0.9.6.1@webso_06htVgOsSnnEiB19HQN1zE:Network.WebSockets 6
 import  -/  websockets-0.9.6.1@webso_06htVgOsSnnEiB19HQN1zE:Network.WebSockets.Connection fae2098f4dcc3be1d7cc2b6897653cd9
 import  -/  websockets-0.9.6.1@webso_06htVgOsSnnEiB19HQN1zE:Network.WebSockets.Server 3548efd16d84c19168c4ff85df0b76a6
 import  -/  websockets-0.9.6.1@webso_06htVgOsSnnEiB19HQN1zE:Network.WebSockets.Types 5d820df3d52f4ddf1d0392ee35be5bc9
+addDependentFile "client/dist/bundle.js"
 addDependentFile "client/dist/main.js"
 addDependentFile "client/src/code.js"
 addDependentFile "client/src/store.js"
 addDependentFile "client/src/most-subject.js"
-addDependentFile "client/src/main"
 addDependentFile "client/src/save.js"
 addDependentFile "client/src/main.js~"
 addDependentFile "client/src/monad.js"
@@ -243,8 +243,8 @@ addDependentFile "client/mostSub.js"
 addDependentFile "client/index.html"
 addDependentFile "client/bundle.js"
 addDependentFile "client/webpack.config.js"
-addDependentFile "client/package.json~"
 addDependentFile "client/main.js.map"
+addDependentFile "client/index.html~"
 addDependentFile "client/style.css"
 addDependentFile "client/package.json"
 addDependentFile "client/fetch.js"
