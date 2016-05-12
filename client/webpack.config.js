@@ -1,22 +1,23 @@
+var path = require('path');
+
 module.exports = {
-  context: "/mnt/B/StackZone/NPM/JS-monads-stable/client/src",
+  context: __dirname + "/src",
   entry: "./main.js",
   output: {
-      path: "/mnt/B/StackZone/NPM/JS-monads-stable/client/dist",
-      filename: "main.js"
+      path: __dirname + "/dist",
+      filename: "bundle.js"
   },
   module: {
     loaders: [
         {
             test:   /\.js/,
-            loader: 'babel',
-            include: "/mnt/B/StackZone/js-monads/",
+            loader: "babel?presets[]=es2015",
         }
     ],
     query: {
-      plugins: ['transform-runtime'],
-      presets: ['es2015', 'stage-0'],
+      presets: ['es2015', 'stage-2'],
     }
   }
 }
+
 
