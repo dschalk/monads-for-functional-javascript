@@ -517,21 +517,7 @@ var cleanup = h('pre',  `  function cleanup (x) {
   .bnd(cube,mMt2)
   .bnd(() => mMt3.ret(O.mMt1.x + ' cubed is ' + O.mMt2.x)))  
   
-  mMZ2.bnd(v => cube(v).bnd(w => mMt3.ret(v + ' cubed is ' + w)))  
-
-  var add = function(x,b,mon) {
-    if (arguments.length === 3) {
-      return mon.ret(x + b);
-    }
-    return ret(x+b);
-  }
-  
-  var cube = function(v,mon) {
-    if (arguments.length === 2) {
-      return mon.ret(v*v*v);
-    }
-    return ret(v*v*v);  // Returns an anonymous monad.
-  }  `  )
+  mMZ2.bnd(v => cube(v).bnd(w => mMt3.ret(v + ' cubed is ' + w)))  `  )
 
   var quad = h('pre',  `  var solve = (function solve () {
     mMZ3
@@ -647,13 +633,16 @@ var cleanup = h('pre',  `  function cleanup (x) {
     var p5 = h('pre',  `  
     `  )
 
-var add = h('pre',  `  var add = function(x,b,mon) {
+var add = h('pre',  `  
+var add = function(x,b,mon) {
   if (arguments.length === 3) {
     return mon.ret(x + b);
   }
-  return ret(x+b);  `  )
+  return ret(x+b);  
+  
+  `  )
 
-var ret_cube = h('pre',  `  var ret = function ret(v, id) {
+var ret_add_cube = h('pre',  `  var ret = function ret(v, id) {
     if (arguments.length === 1) {
       return (new Monad(v, 'anonymous'));
     }
@@ -661,11 +650,18 @@ var ret_cube = h('pre',  `  var ret = function ret(v, id) {
     return window[id];
   }  
 
- var cube = function(v,mon) {
-  if (arguments.length === 2) {
-    return mon.ret(v*v*v);
-  }
-  return ret(v*v*v);
+  var add = function(x,b,mon) {
+    if (arguments.length === 3) {
+      return mon.ret(x + b);
+    }
+    return ret(x+b);
+  };
+
+  var cube = function(v,mon) {
+    if (arguments.length === 2) {
+      return mon.ret(v*v*v);
+    }
+    return ret(v*v*v);
 }  `  )
 
     var p5 = h('pre',  `  
@@ -675,6 +671,6 @@ var ret_cube = h('pre',  `  var ret = function ret(v, id) {
 
 
 
-  export default {monad, monadStr, monadIt, fib, driver, messages, next, Monad$, updateCalc, arrayFuncs, travel, nums, cleanup, ret, C42, taskStream, newTask, process, mM$task, addString, colorClick, edit, testZ, quad, mdem1, runTest, todoStream, gameStream, inc, add, ret_cube }
+  export default {monad, monadStr, monadIt, fib, driver, messages, next, Monad$, updateCalc, arrayFuncs, travel, nums, cleanup, ret, C42, taskStream, newTask, process, mM$task, addString, colorClick, edit, testZ, quad, mdem1, runTest, todoStream, gameStream, inc, ret_add_cube }
 
 

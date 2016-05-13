@@ -13,7 +13,6 @@ input {
 .tao {
   margin-left: 3%;
 }
- #FF5733;
 
 .td1 {
   color: #F2650E;
@@ -34,6 +33,15 @@ input {
   margin-left: 6%;
   color: #b5f4ce;
   font-size: 28px;
+}
+
+#testW {
+  width: 100px;
+}
+
+.green {
+  color: #00ffa5;
+  font-size: 26px;
 }
 
 .red {
