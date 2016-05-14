@@ -1,36 +1,15 @@
 'use strict';
 
 var xs = xstream.Stream;
-var stream = xs.of(10, 20, 30, 40, 41, 42);
-
-stream.addListener({
-    next: x => console.log(x),
-        error: err => console.error(err),
-            complete: () => console.log('done'),
-});
-
 
 var O = {};
 
-var tempstyle = {display: 'inline'}
-var tempstyle2 = {display: 'none'}
-
-function _classcallcheck(instance, constructor) { 
-  if (!(instance instanceof constructor)) { 
-    throw new typeerror("cannot call a class as a function"); 
-  } 
-}
-
-var subject = mostSubject.subject;
-
 var MonadStream = function MonadStream(g) {
   var _this = this;
-  this.subject = subject();
-  this.observer = this.subject.observer;
-  this.stream = this.subject.stream;
+  this.stream = xs.create();
   this.id = g;
   this.ret = function (a) {
-    _this.observer.next(a);
+    _this.stream.shamefullySendNext(a);
     console.log('streaming from ', _this.id);
     return _this;
   };
@@ -679,6 +658,10 @@ var log = function log(x, message) {
       console.log('In getIndex2. No match');
     }
   }
+
+
+var tempstyle = {display: 'inline'}
+var tempstyle2 = {display: 'none'}
 
 /*
 var delay = function delay(x, mon) {

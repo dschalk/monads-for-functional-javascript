@@ -28,11 +28,10 @@ window.onload = function (event) {
 };
 
 function main(sources) {
-/*
-  setTimeout( function() {
-    document.querySelector('input#login').focus();
-  },1500 );
-  */
+
+setTimeout( function() {
+  document.querySelector('input#login').focus();
+},1200 );
 
   mMfib.ret([0,1]);
   mMpause.ret(0);
@@ -417,14 +416,19 @@ function main(sources) {
     }
   });
 
-  const taskAction$ = mM$taskList.stream.map(str => {
+  const taskAction$ = mM$taskList.stream.addListener({
+    next: str => {
     console.log('In taskAction$. str is: ', str)
     socket.send('TD#$42' + ',' + O.mMgroup.x.trim() + 
         ',' + O.mMname.x.trim() + ',' + '@' + str);
+    },
+    error: err => console.error(err),
+    complete: () => console.log('completed')
   });
   
 
-  const mM$1Action$ = mM$1.stream.map(v => {
+  const mM$1Action$ = mM$1.stream.addListener({
+    next: v => {
       console.log('In mM$1Action$. v is: ', v)
       O.mMindex2.bnd(inc, mMindex2);
       O.mMallRolls.bnd(spliceAdd, O.mMindex2.x, v, mMallRolls);
@@ -434,16 +438,23 @@ function main(sources) {
       document.getElementById('2').innerHTML = (O.mMallRolls.x[O.mMindex2.x])[2]; 
       document.getElementById('3').innerHTML = (O.mMallRolls.x[O.mMindex2.x])[3]; 
       cleanup(7)
-    })
+    },
+    error: err => console.error(err),
+    complete: () => console.log('completed')
+  })
  
 
-  const mM$3Action$ = mM$3.stream.map(v => {
+  const mM$3Action$ = mM$3.stream.addListener({
+    next: v => {
       console.log('In mM$3Action$. v is: ', v)
       document.getElementById('0').innerHTML = (O.mMallRolls.x[O.mMindex2.x])[0]; 
       document.getElementById('1').innerHTML = (O.mMallRolls.x[O.mMindex2.x])[1]; 
       document.getElementById('2').innerHTML = (O.mMallRolls.x[O.mMindex2.x])[2]; 
       document.getElementById('3').innerHTML = (O.mMallRolls.x[O.mMindex2.x])[3]; 
       cleanup(11);
+    },
+    error: err => console.error(err),
+    complete: () => console.log('completed')
   })
 
   const testZ = sources.DOM
@@ -491,7 +502,7 @@ function main(sources) {
     }
   });
 
-  const calcStream$ = merge( runTestAction$, quadAction$, testWAction$, testZAction$, testQAction$, edit1Action$, edit2Action$, taskAction$, colorAction$, deleteAction$, newTaskAction$, chatClickAction$, gameClickAction$, todoClickAction$, captionClickAction$, mM$3Action$, mM$1Action$, backClickAction$, forwardClickAction$, fibPressAction$, groupPressAction$, rollClickAction$, messagePressAction$, loginPressAction$, messages$, numClickAction$, opClickAction$ );
+  const calcStream$ = merge( runTestAction$, quadAction$, testWAction$, testZAction$, testQAction$, edit1Action$, edit2Action$, colorAction$, deleteAction$, newTaskAction$, chatClickAction$, gameClickAction$, todoClickAction$, captionClickAction$, backClickAction$, forwardClickAction$, fibPressAction$, groupPressAction$, rollClickAction$, messagePressAction$, loginPressAction$, messages$, numClickAction$, opClickAction$ );
 
     return {
       DOM: 
