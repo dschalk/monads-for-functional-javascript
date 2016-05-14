@@ -1,13 +1,23 @@
 'use strict';
 
+var xs = xstream.Stream;
+var stream = xs.of(10, 20, 30, 40, 41, 42);
+
+stream.addListener({
+    next: x => console.log(x),
+        error: err => console.error(err),
+            complete: () => console.log('done'),
+});
+
+
 var O = {};
 
-var tempStyle = {display: 'inline'}
-var tempStyle2 = {display: 'none'}
+var tempstyle = {display: 'inline'}
+var tempstyle2 = {display: 'none'}
 
-function _classCallCheck(instance, Constructor) { 
-  if (!(instance instanceof Constructor)) { 
-    throw new TypeError("Cannot call a class as a function"); 
+function _classcallcheck(instance, constructor) { 
+  if (!(instance instanceof constructor)) { 
+    throw new typeerror("cannot call a class as a function"); 
   } 
 }
 
@@ -21,7 +31,7 @@ var MonadStream = function MonadStream(g) {
   this.id = g;
   this.ret = function (a) {
     _this.observer.next(a);
-    console.log('Streaming from ', _this.id);
+    console.log('streaming from ', _this.id);
     return _this;
   };
 };
@@ -42,7 +52,7 @@ var mM$todo2 = new MonadStream('mM$todo2');
 
 var mM$todo3 = new MonadStream('mM$todo3');
 
-var emitEvent;
+var emitevent;
 var data$;
 
 var Monad = function Monad(z, g) {
@@ -89,7 +99,7 @@ var ret = function ret(v, id) {
   return window[id];
 }
 
-var testScore = function testScore (v) {
+var testscore = function testscore (v) {
   if ((v % 5) === 0) {
     mMZ25.release();
   };
@@ -117,65 +127,65 @@ var add = function(x,b,mon) {
   return ret(x+b);
 }
 
-var addAr = function(a,b) {
+var addar = function(a,b) {
   return ret(a.map(v => v*1 + b*1));
 }
 
-var M = function M(a,b) {
+var m = function m(a,b) {
   var mon = new Monad(a,b);
   return mon;
 };
 
-var MI = function MI(x) {
+var mi = function mi(x) {
   return new MonadIter(x);
 };
 
-var Count = 0;
-// var mM1 = M([],'mM1');
-var mM2 = M(0,'mM2');
-var mM3 = M([],'mM3');
-var mM4 = M([],'mM4');
-var mM5 = M(0,'mM5');
-var mM6 = M('','mM6');
-var mM7 = M(0,'mM7');
-var mM8 = M(0,'mM8');
-var mM9 = M(0,'mM9');
-var mM10 = M(0,'mM10');
-var mM11 = M([],'mM11');
-var mM12 = M(0,'mM12');
-var mM13 = M(0,'mM13');
-var mM14 = M(0,'mM14');
-var mM15 = M(0,'mM15');
-var mM16 = M(0,'mM16');
-var mM17 = M(0,'mM17');
-var mM18 = M(0,'mM18');
-var mM19 = M('waiting','mM19');
-var mM20 = M(0,'mM20');
-var mM21 = M('waiting','mM21');
-var mM22 = M(0,'mM22');
-var mM23 = M(0,'mM23');
-var mM24 = M(0,'mM24');
-var mM25 = M(0,'mM25');
-var mM26 = M(0,'mM26');
-var mM27 = M(0,'mM27');
-var mM28 = M([],'mM28');
-var mM29 = M([],'mM29');
-var mMscbd = M([],'mMscbd');
-var mMmessages = M([],'mMmessages');
-var mMscoreboard = M([],'mMscoreboard');
-var mMmsg = M([],'mMmsg');
-var mMgoals2 = M('','mMgoals2');
-var mMnbrs = M([],'mMnbrs');
-var mMnumbers = M([],'mMnumbers');
-var mMname = M('', 'mMname');
-var mMar = M([1,2,3,4,5], 'mMar');
-var mMar2 = M([], 'mMar2');
+var count = 0;
+// var mM1 = m([],'mM1');
+var mM2 = m(0,'mM2');
+var mM3 = m([],'mM3');
+var mM4 = m([],'mM4');
+var mM5 = m(0,'mM5');
+var mM6 = m('','mM6');
+var mM7 = m(0,'mM7');
+var mM8 = m(0,'mM8');
+var mM9 = m(0,'mM9');
+var mM10 = m(0,'mM10');
+var mM11 = m([],'mM11');
+var mM12 = m(0,'mM12');
+var mM13 = m(0,'mM13');
+var mM14 = m(0,'mM14');
+var mM15 = m(0,'mM15');
+var mM16 = m(0,'mM16');
+var mM17 = m(0,'mM17');
+var mM18 = m(0,'mM18');
+var mM19 = m('waiting','mM19');
+var mM20 = m(0,'mM20');
+var mM21 = m('waiting','mM21');
+var mM22 = m(0,'mM22');
+var mM23 = m(0,'mM23');
+var mM24 = m(0,'mM24');
+var mM25 = m(0,'mM25');
+var mM26 = m(0,'mM26');
+var mM27 = m(0,'mM27');
+var mM28 = m([],'mM28');
+var mM29 = m([],'mM29');
+var mMscbd = m([],'mMscbd');
+var mMmessages = m([],'mMmessages');
+var mMscoreboard = m([],'mMscoreboard');
+var mMmsg = m([],'mMmsg');
+var mMgoals2 = m('','mMgoals2');
+var mMnbrs = m([],'mMnbrs');
+var mMnumbers = m([],'mMnumbers');
+var mMname = m('', 'mMname');
+var mMar = m([1,2,3,4,5], 'mMar');
+var mMar2 = m([], 'mMar2');
 mMar2.ret(mMar2.x);
-var mMscores = M('', 'mMscores');
-var mMprefix = M('', 'mMprefix');
-var mMfib = M([0,1], 'mMfib');
-var mMmain = M(null, 'mMmain');
-var mMcalc = M(null, 'mMcalc');
+var mMscores = m('', 'mMscores');
+var mMprefix = m('', 'mMprefix');
+var mMfib = m([0,1], 'mMfib');
+var mMmain = m(null, 'mMmain');
+var mMcalc = m(null, 'mMcalc');
 var mMadd = new Monad(0, 'mMadd');
 var mMunit = new Monad(0, 'mMunit');
 var mMprod = new Monad(0, 'mMprod');
@@ -198,7 +208,7 @@ var mMsender = new Monad('nobody', 'mMsender');
 var mMextra = new Monad('nothing', 'mMextra');
 var mMextra2 = new Monad('nothing', 'mMextra2');
 var mMsave = new Monad({x: 'start'}, 'mMsave');
-var mMsaveAr = new Monad([ret([0,0,0,0])], 'mMsaveAr');
+var mMsavear = new Monad([ret([0,0,0,0])], 'mMsavear');
 var mMindex = new Monad(0, 'mMindex');
 var mMindex2 = new Monad(-1, 'mMindex2');
 var mMindex3 = new Monad(0, 'mMindex3');
@@ -216,14 +226,9 @@ var mMhelper = new Monad('helper', 'mMhelper');
 var mMtasks = new Monad([], 'mMtasks');
 var mMid = new Monad(42, 'mMid');
 var mMalert = new Monad('nothing');
-var fibMon = new Monad([0,1]);
+var fibmon = new Monad([0,1]);
 var mMscoreChange = new Monad(0, 'mMscoreChange');
 mMscoreChange.ret(mMscoreChange.x);
-var mMtasksPersist = new Monad(['Be here now'], 'mMtasksPersist');
-mMtasksPersist.ret(mMtasksPersist.x)
-var mMtodoList = new Monad([], 'mMtodoList');
-mMtodoList.ret(mMtodoList.x);
-
 var mMcurrentRoll = new Monad([], 'mMcurrentRoll');
 mMcurrentRoll.ret(mMcurrentRoll.x);
 
@@ -240,9 +245,6 @@ mMtaskList.ret(mMtaskList.x);
 var mMsenderList = new Monad([], 'mMsenderList');
 mMsenderList.ret(mMsenderList.x);
 
-var mMauthorList = new Monad([], 'mMauthorList');
-mMauthorList.ret(mMauthorList.x);
-
 var mMsoloAlert = new Monad('', 'mMsoloAlert');
 mMsoloAlert.ret(mMsoloAlert.x);
 
@@ -251,7 +253,7 @@ mMe.ret(mMe.x);
 
 var mMtaskList2 = new MonadStream('mMtaskList2');
 
-var mMgoals = M(0,'mMgoals');
+var mMgoals = m(0,'mMgoals');
 mMgoals.ret(mMgoals.x);
 
 var mMt1 = new Monad(0,'mMt1')
@@ -315,51 +317,51 @@ mMhelper.ret(mMhelper.x);
 mMtasks.ret(mMtasks.x);
 mMalert.ret(mMalert.x);
 mMfib.ret(mMfib.x);
-fibMon.ret(fibMon.x);
+fibmon.ret(fibmon.x);
 mM5.ret(mM5.x);
 mM6.ret(mM6.x);
 mM27.ret(mM27.x);
 mM21.ret(mM21.x);
 
 
-var mMZ1 = MI();
-var mMZ2 = MI();
-var mMZ3 = MI();
-var mMZ4 = MI();
-var mMZ5 = MI();
-var mMZ6 = MI();
-var mMZ7 = MI();
-var mMZ8 = MI();
-var mMZ9 = MI();
+var mMZ1 = mi();
+var mMZ2 = mi();
+var mMZ3 = mi();
+var mMZ4 = mi();
+var mMZ5 = mi();
+var mMZ6 = mi();
+var mMZ7 = mi();
+var mMZ8 = mi();
+var mMZ9 = mi();
 
-var mMZ10 = MI();
-var mMZ11 = MI();
-var mMZ12 = MI();
-var mMZ13 = MI();
-var mMZ14 = MI();
-var mMZ15 = MI();
-var mMZ16 = MI();
-var mMZ17 = MI();
-var mMZ18 = MI();
-var mMZ19 = MI();
+var mMZ10 = mi();
+var mMZ11 = mi();
+var mMZ12 = mi();
+var mMZ13 = mi();
+var mMZ14 = mi();
+var mMZ15 = mi();
+var mMZ16 = mi();
+var mMZ17 = mi();
+var mMZ18 = mi();
+var mMZ19 = mi();
 
-var mMZ20 = MI();
-var mMZ21 = MI();
-var mMZ22 = MI();
-var mMZ23 = MI();
-var mMZ24 = MI();
-var mMZ25 = MI();
-var mMZ26 = MI();
-var mMZ27 = MI();
-var mMZ28 = MI();
-var mMZ29 = MI();
+var mMZ20 = mi();
+var mMZ21 = mi();
+var mMZ22 = mi();
+var mMZ23 = mi();
+var mMZ24 = mi();
+var mMZ25 = mi();
+var mMZ26 = mi();
+var mMZ27 = mi();
+var mMZ28 = mi();
+var mMZ29 = mi();
 
 var sol1 = function sol1 (x,a,b,c,mon) {
   let n = (b*(-1)) + (Math.sqrt(b*b - 4*a*c));
   if (n != n) {
-    return mon.ret("No solution");
+    return mon.ret("no solution");
   }
-  console.log('In sol1. n is: ', n);
+  console.log('in sol1. n is: ', n);
   let solution = n/(2*a);
   return mon.ret(solution);
 }
@@ -367,9 +369,9 @@ var sol1 = function sol1 (x,a,b,c,mon) {
 var sol2 = function sol2 (x,a,b,c,mon) {
   let n = (b*(-1)) - (Math.sqrt(b*b - 4*a*c))
   if (n != n) {
-    return mon.ret("No solution");
+    return mon.ret("no solution");
   }
-  console.log('In sol2. n is: ', n);
+  console.log('in sol2. n is: ', n);
   let solution = n/(2*a);
   return mon.ret(solution);
 }
@@ -387,20 +389,12 @@ var convertBack = function convertBack(str) {
   return s
 }
 
-var convertFromString = function convertBack(str) {
-  return str.split(',').reduce((a,b) => a + '$*$*$' + b)
-}
-
 var split = function split(x, mon) {
   return mon.ret(x.split(','));
 }
 
-var convertFromArray = function convert(ar) {
-  return ar.reduce((a,b) => a + '$*$*$' + b)
-}
-
 var stringify = function stringify (ob) {
-  let str = ob.task + ',' + ob.color  + ',' + ob.textDecoration + ',' + ob.checked.toString() + 
+  let str = ob.task + ',' + ob.color  + ',' + ob.textdecoration + ',' + ob.checked.tostring() + 
     ',' +  ob.author + ',' + ob.responsible;
   return str;
 }
@@ -428,7 +422,7 @@ var intArray = function intArray (x, n) {
   return ret(ar);
 }
 
-var toNums = function toNums(x) {
+var tonums = function tonums(x) {
   let y = x.map(x => parseFloat(x));
   return ret(y);
 };
@@ -446,7 +440,7 @@ var calc = function calc(a,op,b) {
       break;
       case "concat": result = (a+""+b)*1.0;
       break;
-      default : 'Major Malfunction in calc.';
+      default : 'major malfunction in calc.';
   }
   return result;
 };
@@ -458,7 +452,7 @@ var equals = function equals (x, mon1, mon2, mon3) {
   return ret(x);
 }
 
-var runTest = function runTest () {
+var runtest = function runtest () {
   mM5.bnd( equals,  
     m.ret(0).bnd(v => add(v, 3, m).bnd(cube)), 
     m.ret(0).bnd(add, 3, m).bnd(cube), mMa)

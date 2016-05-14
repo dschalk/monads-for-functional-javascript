@@ -11,11 +11,11 @@ module.exports = {
     loaders: [
         {
             test:   /\.js/,
-            loader: "babel?presets[]=es2015",
+            loader: "babel?presets[]=stage-0",
         }
     ],
     query: {
-      presets: ['es2015', 'stage-2'],
+      presets: ['es2015', 'stage-0'],
     }
   }
 }

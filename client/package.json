@@ -6,9 +6,12 @@
   "dependencies": {
     "@motorcycle/core": "1.2.1",
     "@motorcycle/dom": "1.4.0",
+    "babel-preset-stage-0": "6.5.0",
     "js-monads": "2.1.11",
     "mkdirp": "0.5.1",
-    "most": "0.19.0"
+    "most": "0.19.0",
+    "trine": "0.1.1",
+    "xstream": "2.4.2"
   },
   "devDependencies": {
     "@motorcycle/core": "1.2.1",
