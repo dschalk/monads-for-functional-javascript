@@ -31,6 +31,7 @@ function main(sources) {
 
 setTimeout( function() {
   document.querySelector('input#login').focus();
+  mM$prime.ret([[2],3])
 },1200 );
 
   mMfib.ret([0,1]);
@@ -380,18 +381,58 @@ setTimeout( function() {
     socket.send('CA#$42,' + O.mMgroup.x.trim() + ',' + O.mMname.x.trim() + ',6,6,12,20')
   });
 
+  mM$fib.stream.addListener({
+    next: v => {
+      if (v[2] > 1) {mM$fib.ret([v[1], v[0] + v[1], v[2] -1])}
+      else {
+        console.log(v[1]);
+        mM19.ret(v[1]);
+      }
+    },
+    error: err => console.error(err),
+    complete: () => console.log('completed')
+  });
+
   const fibPress$ = sources.DOM
     .select('input#code').events('keydown');
 
   const fibPressAction$ = fibPress$.map(e => {
     if (e.target.value == '') {return};
     if( e.keyCode == 13 && Number.isInteger(e.target.value*1) ) {
-      mM19.bnd(fibCalc,e.target.value*1).bnd(mM19.ret);
       mM21.ret(e.target.value);
+      mM$fib.ret([0, 1, e.target.value]);
     }
     if( e.keyCode == 13 && !Number.isInteger(e.target.value*1 )) {
       mM19.ret("You didn't provide an integer");
     }
+  });
+
+  mM$prime.stream.addListener({
+    next: v => {
+      console.log('I heard that');
+      for (let i in v[0]) {
+        console.log(v);
+        if ((v[1] % v[0][i]) == 0) {
+          mM$prime.ret([v[0], v[1] + 1])
+          return;
+        }
+        if (i == (v[0].length - 1)) {
+          v[0].push(v[1]);
+          document.getElementById('prime2').innerHTML = v[0];
+          console.log(v[0]);
+          mMitterPrime.bnd(() =>  mM$prime.ret([v[0], v[1] + 1])) 
+        }
+      }
+    },
+    error: err => console.error(err),
+    complete: () => console.log('completed')
+  });
+
+  const primeClick$ = sources.DOM
+    .select('#prime').events('click');
+
+  const primeClickAction$ = primeClick$.map(() => {
+    mMitterPrime.release()
   });
 
   const forwardClick$ = sources.DOM
@@ -502,7 +543,7 @@ setTimeout( function() {
     }
   });
 
-  const calcStream$ = merge( runTestAction$, quadAction$, testWAction$, testZAction$, testQAction$, edit1Action$, edit2Action$, colorAction$, deleteAction$, newTaskAction$, chatClickAction$, gameClickAction$, todoClickAction$, captionClickAction$, backClickAction$, forwardClickAction$, fibPressAction$, groupPressAction$, rollClickAction$, messagePressAction$, loginPressAction$, messages$, numClickAction$, opClickAction$ );
+  const calcStream$ = merge( primeClickAction$, runTestAction$, quadAction$, testWAction$, testZAction$, testQAction$, edit1Action$, edit2Action$, colorAction$, deleteAction$, newTaskAction$, chatClickAction$, gameClickAction$, todoClickAction$, captionClickAction$, backClickAction$, forwardClickAction$, fibPressAction$, groupPressAction$, rollClickAction$, messagePressAction$, loginPressAction$, messages$, numClickAction$, opClickAction$ );
 
     return {
       DOM: 
@@ -704,11 +745,34 @@ setTimeout( function() {
         h('p', 'Here is the code:' ),
         code.quad,
         h('span#tdList' ),
+        
+
+
         h('h2', 'MonadStream'  ),
-        h('span.tao', ' MonadStream uses ' ),
-        h('a', {props: {href: "https://github.com/TylorS/most-subject"}}, 'most-subject' ),
-        h('span', '. In a Cycle application that is already using RxJS, RxJs could be substituted for most-subject. Bacon could be used. most-subject is light-weight and does the job, so you might want to use it in any application context. Here is the definition:  '  ),
         code.monadStr,
+        h('span.tao', ' MonadStream instances acquire values with the "ret()" method, placing them in the "stream" attribute. The stream depends on the ' ),
+        h('a', {props: {href: "http://staltz.com/xstream/", target: "_blank" }}, 'xstream' ),
+        h('span', ' library, which is published by André Staltz, the author of Cycle.js. ' ),
+        h('p', ' MonadStream in combination with MonadIter facilitates functionality similar to what is achieved with ES6 generators. In the following example, mM$prime.stream is the prime numbers lazily evaluated with the help of mMitterPrime, an instance of MonadIter. Here is the code: ' ),
+        code.primes,
+        h('p', ' The listener is ititiated with the following code when the web page loads: ' ),
+        code.seed,
+        h('p', ' Clicking the button below causes mMitterPrime.release() to execute. ' ),
+        h('button#prime', 'Keep Clicking To Generate Prime Numbers'  ),
+        h('br' ),
+        h('p#prime2.red',  ),
+        h('p', ' mMitterPrime.bnd and mMitter.release() provide functionality similar to "Yield" and "Then" in ES6 generator code.  As shown in the MonadIter section (above), the release() method can provide arguments to the code obtained by the bnd() methods and stored in the "p" attributes of MonadIter instances. ' ),
+        h('p', ' mM$prime.stream holds the history of computations in v[0], the first element of the arrays it emits. There is no need for traditional Javascript momoization. ' ),  
+        h('p',  ' The next example features another listener that recursively calls the MonadStream instance it monitors.         ' ),
+        code.fib,
+        h('p', 'If you enter some number "n" in the box below, the following code will execute: '  ),
+        h('pre',  ' mM$fib.ret([0, 1, e.target.value]) ' ),
+        h('input#code' ),  
+        h('br'),
+        h('span', 'Fibonacci ' + O.mM21.x + ' is ' ), 
+        h('span.code2', ' ' + O.mM19.x ),  
+        h('br' ),
+        h('div#fibStream',  ),
         h('h3', 'Todo List Side Effects' ),
         h('p', ' When users do anything to the todo list, MonadStream instance mM$taskList runs its ret() method on the modified String representation of the list, causing the string to be added to mM$taskList.stream. mM$taskList.stream has only one subscriber, taskAction$, whose only purpose it to send the string representation of the todo list to the server. The server updates its persistent file and distributes a text representation of the updated todo list to all group members. Each group member receives the todo list as a string and parses it into a DOM node tree that is merged into the stream that updates the virtual DOM. All Todo List side effects can be traced to:' ),
         code.todoStream,
@@ -722,6 +786,12 @@ setTimeout( function() {
         h('p', ' Because a player can traverse the history of number displays by clicking the BACK and FORWARD buttons, the current value of O.mMindex2.x must be incremented to determine where the new array of numbers will be placed in the O.mMallRolls.x array. Here are the definitions of inc and spliceAdd: ' ), 
         code.inc,
         h('hr' ),  
+
+
+
+
+
+
         h('h2', 'Concise Code Blocks For Information Control' ),
         h('p', ' Incoming websockets messages trigger updates to the game display, the chat display, and the todo list display. The members of a group see what other members are doing; and in the case of the todo list, they see the current list when they sign in to the group. When any member of a group adds a task, crosses it out as completed, edits its description, or removes it, the server updates the persistent file and all members of the group immediately see the revised list.  '  ),
         h('p', 'The code below shows how incoming websockets messages are routed. For example, mMZ10.release() is called when a new dice roll (prefixed by CA#$42) comes in.   ' ),
@@ -771,16 +841,6 @@ setTimeout( function() {
              O.m2.x === 'm1Val' // true   still the same  `   ),
         h('p', 'The bnd() method does not have to return anonymous monads. Consider, for example, the trivial function f = function(x, mon) {return mon.ret(x)}. The monad that calls its bnd() method with the argument f gives the monad designated as "mon" its value. So m1.bnd(f, m2) results in m1.x == a, m2.x == b, O.m2.x == a all returning true. ' ), 
         h('p'  ), 
-        h('p', 'Frequently, some monad "m" will use its "bnd" method on some function which takes two arguments, say "f(x,v)". The first argument is the value of m (which is m.x). m.bnd(f,v) is equivalent to f(m.x, v). The following example demonstates the use of a two-argument function: ' ),
-        code.fib,
-        h('span.tao', 'In both functions, the "x" argument is ignored. It must be included, however, in order to make the bnd() method return the desired result. If you enter some number "n" in the box below, '  ),
-        h('pre',  '  mM19.bnd(fibCalc, e.target.value*1).bnd(mM19.ret)' ),
-        h('span', ' will execute and O.mM19.x will be displayed under the input box. ' ),
-        h('input#code' ),  
-        h('br'),
-        h('span', 'Fibonacci ' + O.mM21.x + ' is ' ), 
-        h('span.code2', ' ' + O.mM19.x ),  
-        h('br' ),
         h('hr'),
         h('h3', 'Immutable Data And The State Object "O" ' ),
         h('p',  'The server updates scores in response to messages prefixed by "CG#$42". Each such message carries an integer specifying the amount of the change. The ServerState list of Client tupples is pulled from the game state TMVar and replaced by a new tupple whose Score field differs from the previous one.' ),

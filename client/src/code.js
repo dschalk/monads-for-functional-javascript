@@ -51,16 +51,14 @@ const monad = h('pre', {style: {color: '#AFEEEE' }}, `  var Monad = function Mon
     };
   }; ` )
 
-const monadStr = h('pre', {style: {color: '#AFEEEE' }}, `  var MonadStream = function MonadStream(g) {
-    var _this = this;
-    this.subject = subject();
-    this.observer = this.subject.observer;
-    this.stream = this.subject.stream;
-    this.id = g;
-    this.ret = function (a) {
-      _this.observer.next(a);
-      console.log('Streaming from ', _this.id);
-    };
+const monadStr = h('pre', {style: {color: '#AFEEEE' }}, `          var MonadStream = function MonadStream(g) {
+      var _this = this;
+      this.stream = xs.create();
+      this.id = g;
+      this.ret = function (a) {
+        _this.stream.shamefullySendNext(a);
+        return _this;
+      };
   }; ` )
 
 const monadIt = h('pre', {style: {color: '#AFEEEE' }}, `  var MonadIter = function MonadIter() {
@@ -84,15 +82,30 @@ const ret = h('pre', {style: {color: '#AFEEEE' }}, `  var ret = function ret(v, 
     return window[id];
   }; ` )
 
-var fib = h('pre', `  var fib = function fib(x) {
-    return mMfib.ret([ O.mMfib.x[1], O.mMfib.x[0] + O.mMfib.x[1] ]);
-  }
+var fib = h('pre', `          mM$fib.stream.addListener({
+    next: v => {
+      if (v[2] > 1) {mM$fib.ret([v[1], v[0] + v[1], v[2] -1])}
+      else {
+        mM19.ret(v[1]);
+      }
+    },
+    error: err => console.error(err),
+    complete: () => console.log('completed')
+  });
 
-  var fibCalc = function(x, n) {
-    mMfib.ret([0,1])
-    for(let k in Array(n).fill(1)) mMfib.bnd(fib)
-    return ret(O.mMfib.x[0])
-  }   ` )  
+  const fibPress$ = sources.DOM
+    .select('input#code').events('keydown');
+
+  const fibPressAction$ = fibPress$.map(e => {
+    if (e.target.value == '') {return};
+    if( e.keyCode == 13 && Number.isInteger(e.target.value*1) ) {
+      mM21.ret(e.target.value);
+      mM$fib.ret([0, 1, e.target.value]);
+    }
+    if( e.keyCode == 13 && !Number.isInteger(e.target.value*1 )) {
+      mM19.ret("You didn't provide an integer");
+    }
+  });  ` )  
 
 
 var driver = h('pre', `  var websocketsDriver = function () {
@@ -664,13 +677,52 @@ var ret_add_cube = h('pre',  `  var ret = function ret(v, id) {
     return ret(v*v*v);
 }  `  )
 
-    var p5 = h('pre',  `  
-    `  )
+    var primes = h('pre',  `          mM$prime.stream.addListener({
+    next: v => {
+      for (let i in v[0]) {
+        if ((v[1] % v[0][i]) == 0) {
+          mM$prime.ret([v[0], v[1] + 1, v[2]])
+          return;
+        }
+        if (i == (v[0].length - 1)) {
+          v[0].push(v[1]);
+          document.getElementById('prime').innerHTML = v[0];
+          mMitterPrime.bnd(() =>  mM$prime.ret([v[0], v[1] + 1])) 
+        }
+      }
+    },
+    error: err => console.error(err),
+    complete: () => console.log('completed')
+  });
+
+  const primeClick$ = sources.DOM
+    .select('#prime').events('click');
+
+  const primeClickAction$ = primeClick$.map(() => {
+    mMitterPrime.release()
+  });  `  )
+
+var seed = h('pre',  `          mM$prime.ret([[2],3])  `  )
+
+var seed2 = h('pre',  ` 
+             `  )
+
+var seed3 = h('pre',  ` 
+             `  )
+
+var seed4 = h('pre',  ` 
+             `  )
+
+var seed5 = h('pre',  ` 
+             `  )
+
+var seed6 = h('pre',  ` 
+             `  )
 
 
 
 
 
-  export default {monad, monadStr, monadIt, fib, driver, messages, next, Monad$, updateCalc, arrayFuncs, travel, nums, cleanup, ret, C42, taskStream, newTask, process, mM$task, addString, colorClick, edit, testZ, quad, mdem1, runTest, todoStream, gameStream, inc, ret_add_cube }
+  export default {monad, monadStr, monadIt, fib, driver, messages, next, Monad$, updateCalc, arrayFuncs, travel, nums, cleanup, ret, C42, taskStream, newTask, process, mM$task, addString, colorClick, edit, testZ, quad, mdem1, runTest, todoStream, gameStream, inc, ret_add_cube, primes, seed }
 
 

@@ -10,26 +10,22 @@ var MonadStream = function MonadStream(g) {
   this.id = g;
   this.ret = function (a) {
     _this.stream.shamefullySendNext(a);
-    console.log('streaming from ', _this.id);
     return _this;
   };
 };
 
 var mM$1 = new MonadStream('mM$1');
-
 var mM$taskList = new MonadStream('mM$taskList');
-
 var mM$3 = new MonadStream('mM$3');
-
 var mM$2 = new MonadStream('mM$2');
-
 var mM$todo = new MonadStream('mM$todo');
-
 var mM$task = new MonadStream('mM$task');
-
 var mM$todo2 = new MonadStream('mM$todo2');
-
 var mM$todo3 = new MonadStream('mM$todo3');
+var mM$prime = new MonadStream('mM$prime');
+var mM$fib = new MonadStream('mM$fib');
+var mM$prime2 = new MonadStream('mM$prime2');
+
 
 var emitevent;
 var data$;
@@ -110,61 +106,61 @@ var addar = function(a,b) {
   return ret(a.map(v => v*1 + b*1));
 }
 
-var m = function m(a,b) {
+var M = function M(a,b) {
   var mon = new Monad(a,b);
   return mon;
 };
 
-var mi = function mi(x) {
+var MI = function MI(x) {
   return new MonadIter(x);
 };
 
 var count = 0;
-// var mM1 = m([],'mM1');
-var mM2 = m(0,'mM2');
-var mM3 = m([],'mM3');
-var mM4 = m([],'mM4');
-var mM5 = m(0,'mM5');
-var mM6 = m('','mM6');
-var mM7 = m(0,'mM7');
-var mM8 = m(0,'mM8');
-var mM9 = m(0,'mM9');
-var mM10 = m(0,'mM10');
-var mM11 = m([],'mM11');
-var mM12 = m(0,'mM12');
-var mM13 = m(0,'mM13');
-var mM14 = m(0,'mM14');
-var mM15 = m(0,'mM15');
-var mM16 = m(0,'mM16');
-var mM17 = m(0,'mM17');
-var mM18 = m(0,'mM18');
-var mM19 = m('waiting','mM19');
-var mM20 = m(0,'mM20');
-var mM21 = m('waiting','mM21');
-var mM22 = m(0,'mM22');
-var mM23 = m(0,'mM23');
-var mM24 = m(0,'mM24');
-var mM25 = m(0,'mM25');
-var mM26 = m(0,'mM26');
-var mM27 = m(0,'mM27');
-var mM28 = m([],'mM28');
-var mM29 = m([],'mM29');
-var mMscbd = m([],'mMscbd');
-var mMmessages = m([],'mMmessages');
-var mMscoreboard = m([],'mMscoreboard');
-var mMmsg = m([],'mMmsg');
-var mMgoals2 = m('','mMgoals2');
-var mMnbrs = m([],'mMnbrs');
-var mMnumbers = m([],'mMnumbers');
-var mMname = m('', 'mMname');
-var mMar = m([1,2,3,4,5], 'mMar');
-var mMar2 = m([], 'mMar2');
+// var mM1 = M([],'mM1');
+var mM2 = M(0,'mM2');
+var mM3 = M([],'mM3');
+var mM4 = M([],'mM4');
+var mM5 = M(0,'mM5');
+var mM6 = M('','mM6');
+var mM7 = M(0,'mM7');
+var mM8 = M(0,'mM8');
+var mM9 = M(0,'mM9');
+var mM10 = M(0,'mM10');
+var mM11 = M([],'mM11');
+var mM12 = M(0,'mM12');
+var mM13 = M(0,'mM13');
+var mM14 = M(0,'mM14');
+var mM15 = M(0,'mM15');
+var mM16 = M(0,'mM16');
+var mM17 = M(0,'mM17');
+var mM18 = M(0,'mM18');
+var mM19 = M('waiting','mM19');
+var mM20 = M(0,'mM20');
+var mM21 = M('waiting','mM21');
+var mM22 = M(0,'mM22');
+var mM23 = M(0,'mM23');
+var mM24 = M(0,'mM24');
+var mM25 = M(0,'mM25');
+var mM26 = M(0,'mM26');
+var mM27 = M(0,'mM27');
+var mM28 = M([],'mM28');
+var mM29 = M([],'mM29');
+var mMscbd = M([],'mMscbd');
+var mMmessages = M([],'mMmessages');
+var mMscoreboard = M([],'mMscoreboard');
+var mMmsg = M([],'mMmsg');
+var mMgoals2 = M('','mMgoals2');
+var mMnbrs = M([],'mMnbrs');
+var mMnumbers = M([],'mMnumbers');
+var mMname = M('', 'mMname');
+var mMar = M([1,2,3,4,5], 'mMar');
+var mMar2 = M([], 'mMar2');
 mMar2.ret(mMar2.x);
-var mMscores = m('', 'mMscores');
-var mMprefix = m('', 'mMprefix');
-var mMfib = m([0,1], 'mMfib');
-var mMmain = m(null, 'mMmain');
-var mMcalc = m(null, 'mMcalc');
+var mMscores = M('', 'mMscores');
+var mMprefix = M('', 'mMprefix');
+var mMfib = M([0,1], 'mMfib');
+var mMmain = M(null, 'mMmain');
+var mMcalc = M(null, 'mMcalc');
 var mMadd = new Monad(0, 'mMadd');
 var mMunit = new Monad(0, 'mMunit');
 var mMprod = new Monad(0, 'mMprod');
@@ -232,7 +228,7 @@ mMe.ret(mMe.x);
 
 var mMtaskList2 = new MonadStream('mMtaskList2');
 
-var mMgoals = m(0,'mMgoals');
+var mMgoals = M(0,'mMgoals');
 mMgoals.ret(mMgoals.x);
 
 var mMt1 = new Monad(0,'mMt1')
@@ -262,7 +258,7 @@ mMquad2.ret(mMquad2.x)
 var mMquad3 = new Monad('','mMquad3')
 mMquad3.ret(mMquad3.x)
 
-var m = new Monad(0,'m')
+var m = new Monad([2],'m')
 m.ret(m.x)
 
 var m1 = new Monad(0,'m1')
@@ -273,6 +269,9 @@ m2.ret(m2.x)
 
 var m3 = new Monad(0,'m3')
 m3.ret(m3.x)
+
+var mMprime = new Monad([2],'mMprime')
+mMprime.ret(mMprime.x)
 
 mMgoals2.ret(mMgoals2.x)
 mM3.ret(mM3.x)
@@ -303,37 +302,39 @@ mM27.ret(mM27.x);
 mM21.ret(mM21.x);
 
 
-var mMZ1 = mi();
-var mMZ2 = mi();
-var mMZ3 = mi();
-var mMZ4 = mi();
-var mMZ5 = mi();
-var mMZ6 = mi();
-var mMZ7 = mi();
-var mMZ8 = mi();
-var mMZ9 = mi();
+var mMZ1 = MI();
+var mMZ2 = MI();
+var mMZ3 = MI();
+var mMZ4 = MI();
+var mMZ5 = MI();
+var mMZ6 = MI();
+var mMZ7 = MI();
+var mMZ8 = MI();
+var mMZ9 = MI();
 
-var mMZ10 = mi();
-var mMZ11 = mi();
-var mMZ12 = mi();
-var mMZ13 = mi();
-var mMZ14 = mi();
-var mMZ15 = mi();
-var mMZ16 = mi();
-var mMZ17 = mi();
-var mMZ18 = mi();
-var mMZ19 = mi();
+var mMZ10 = MI();
+var mMZ11 = MI();
+var mMZ12 = MI();
+var mMZ13 = MI();
+var mMZ14 = MI();
+var mMZ15 = MI();
+var mMZ16 = MI();
+var mMZ17 = MI();
+var mMZ18 = MI();
+var mMZ19 = MI();
 
-var mMZ20 = mi();
-var mMZ21 = mi();
-var mMZ22 = mi();
-var mMZ23 = mi();
-var mMZ24 = mi();
-var mMZ25 = mi();
-var mMZ26 = mi();
-var mMZ27 = mi();
-var mMZ28 = mi();
-var mMZ29 = mi();
+var mMZ20 = MI();
+var mMZ21 = MI();
+var mMZ22 = MI();
+var mMZ23 = MI();
+var mMZ24 = MI();
+var mMZ25 = MI();
+var mMZ26 = MI();
+var mMZ27 = MI();
+var mMZ28 = MI();
+var mMZ29 = MI();
+
+var mMitterPrime = MI();
 
 var sol1 = function sol1 (x,a,b,c,mon) {
   let n = (b*(-1)) + (Math.sqrt(b*b - 4*a*c));
@@ -386,25 +387,22 @@ var addString = function addString (x, str, mon) {
   return mon.ret(s);
 }
 
-var fib = function fib(x) {
-  return mMfib.ret([ O.mMfib.x[1], O.mMfib.x[0] + O.mMfib.x[1] ]);
-}
-
-var fibCalc = function(x, n) {
-  mMfib.ret([0,1])
-  for(let k in Array(n).fill(1)) mMfib.bnd(fib)
-  return ret(O.mMfib.x[0])
+var intersection = function (a, b, mon) {
+  let ar3 = []
+  for (let x of a) {
+    for (let y of b) {
+      if (x == y) {
+        ar3.push(x)
+      }
+    }
+  }
+  return mon.ret(ar3);
 }
 
 var intArray = function intArray (x, n) {
   let ar = Array(n).fill().map((_, i) => i + 1);
   return ret(ar);
 }
-
-var tonums = function tonums(x) {
-  let y = x.map(x => parseFloat(x));
-  return ret(y);
-};
 
 var calc = function calc(a,op,b) { 
   var result;
