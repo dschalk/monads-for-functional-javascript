@@ -755,7 +755,7 @@ setTimeout( function() {
         h('span', ' library, which is published by André Staltz, the author of Cycle.js. ' ),
         h('p', ' MonadStream in combination with MonadIter facilitates functionality similar to what is achieved with ES6 generators. In the following example, mM$prime.stream is the prime numbers lazily evaluated with the help of mMitterPrime, an instance of MonadIter. Here is the code: ' ),
         code.primes,
-        h('p', ' The listener is ititiated with the following code when the web page loads: ' ),
+        h('p', ' The listener is initiated with the following code when the web page loads: ' ),
         code.seed,
         h('p', ' Clicking the button below causes mMitterPrime.release() to execute. ' ),
         h('button#prime', 'Keep Clicking To Generate Prime Numbers'  ),
