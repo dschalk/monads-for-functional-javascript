@@ -29,12 +29,27 @@ window.onload = function (event) {
 
 function main(sources) {
 
-setTimeout( function() {
-  document.querySelector('input#login').focus();
-  mM$prime.ret([[2],3])
-},1200 );
+  setTimeout( function() {
+    document.querySelector('input#login').focus();
 
-  mMfib.ret([0,1]);
+/* mM$prime.ret([[2],3])
+    mM$prime2.ret([[2],3]);
+    mM$prime3.ret([[2], 3, 10])
+    mM$prime4.ret([[2],3]);
+    mMitterFib.release();
+    mMitterFib.release();
+    mMitterFib.release();
+    mMitterFib.release();
+    nextPrimeFib();
+    nextPrimeFib();
+    nextPrimeFib();
+    nextPrimeFib();
+*/
+  mM$primeKeyPress2.ret([[2], 3, 3]); 
+  mM$fib2.ret([0, 1, []]);
+  mM$fib4.ret( [ 0, 1, 11, [0] ] );
+  },1200 );
+
   mMpause.ret(0);
 
   mMZ1.bnd(v => O.mMt1.bnd(add,v,mMt1)
@@ -381,12 +396,33 @@ setTimeout( function() {
     socket.send('CA#$42,' + O.mMgroup.x.trim() + ',' + O.mMname.x.trim() + ',6,6,12,20')
   });
 
+  // *****************************************************************************************
+
+  const fibClick$ = sources.DOM
+    .select('button#fibButton').events('click');
+
+  const fibClickAction$ = fibClick$.map(() => {
+    console.log("fibClickAction$, you bet!");
+    mMitterFib2.release();
+  });
+
+  mM$fib2.stream.addListener({
+    next: v => {
+      v[2].push([v[0]]);
+      // document.getElementById('  ????   ').innerHTML = 'Fibonacci number: ' + v[2];
+      console.log('In mM$fib2.stream.addListener. v is: ', v);
+    mMitterFib2.bnd(() => mM$fib2.ret([v[1], v[0] + v[1], v[2] ]))
+    },
+    error: err => console.error(err),
+    complete: () => console.log('completed')
+  });
+
   mM$fib.stream.addListener({
     next: v => {
       if (v[2] > 1) {mM$fib.ret([v[1], v[0] + v[1], v[2] -1])}
       else {
-        console.log(v[1]);
-        mM19.ret(v[1]);
+        console.log(v[0]);
+        mM19.ret(v[0]);
       }
     },
     error: err => console.error(err),
@@ -406,6 +442,61 @@ setTimeout( function() {
       mM19.ret("You didn't provide an integer");
     }
   });
+  // *****************************************************************************************
+ /* 
+  mM$prime4.stream.addListener({
+    next: x => {
+        console.log('In mMprime4 listener. x is: ', x)
+        let a = x[0];  // array of prime numbers
+        let atop = x[0][x[0].length - 1];  // largest prime so far
+        let b = x[1];  // integer
+        for (let i in a) {
+          console.log('In prime4 listener for loop.  i and a.length are: ', i, a.length);
+          console.log(((b % a[i]) == 0));
+          if ((b % a[i]) == 0) {
+            mM$prime4.ret([a, b + 1])
+            return;
+          }
+        }
+        console.log('Past the for loop, approaching push in mM$prime4 listener. x is: ', x);
+        document.getElementById('fibStream').innerHTML = document.
+          getElementById('fibStream').innerHTML + ', ' + b
+        a.push(b);
+        if (b < O.mMmax.x) { 
+          mM$prime4.ret([a, b + 1 ])
+        } 
+        if (b == O.mMmax.x) {
+          document.getElementById('primeFibStream').innerHTML = document.
+            getElementById('primeFibStream').innerHTML + ', ' + b
+        }
+        mMitterPrime4.bnd(v => {
+        mMmax.ret(v);  
+      })
+    },
+    error: err => console.error(err),
+    complete: () => console.long('completed')
+  });
+
+  mM$fib4.stream.addListener({
+      next: y => {
+        console.log('In mMfib4 listener. y is: ', y);
+        let c = y[0];  // Fibonacci number
+        let d = y[1];  // Fibonacci number
+        console.log(' After push in mM$prime4 listener. y is: ', y);
+        let ar = [d, (c + d)]
+        mMitterFib4.bnd(() => mM$fib4.ret(ar));
+        mMitterPrime4.release(ar[0]);
+      },
+      error: err => console.error(err),
+      complete: () => console.log('completed')
+  });
+  var nextPrimeFib = function nextPrimeFib() {
+    mMitterFib4.release();
+    mMitterPrime4.release();
+  }
+
+*/
+  // *****************************************************************************************
 
   mM$prime.stream.addListener({
     next: v => {
@@ -420,7 +511,53 @@ setTimeout( function() {
           v[0].push(v[1]);
           document.getElementById('prime2').innerHTML = v[0];
           console.log(v[0]);
-          mMitterPrime.bnd(() =>  mM$prime.ret([v[0], v[1] + 1])) 
+    mMitterPrime.bnd(() =>  mM$prime.ret([v[0], v[1] + 1])) 
+        }
+      }
+    },
+    error: err => console.error(err),
+    complete: () => console.log('completed')
+  });
+
+  mM$prime2.stream.addListener({
+    next: v => {
+      console.log('I heard that');
+      for (let i in v[0]) {
+        console.log(v);
+        if ((v[1] % v[0][i]) == 0) {
+          mM$prime.ret([v[0], v[1] + 1])
+          return;
+        }
+        if (i == (v[0].length - 1)) {
+          v[0].push(v[1]);
+          document.getElementById('prime2').innerHTML = v[0];
+          console.log(v[0]);
+    mMitterPrime.bnd(() =>  mM$prime2.ret([v[0], v[1] + 1])) 
+        }
+      }
+    },
+    error: err => console.error(err),
+    complete: () => console.log('completed')
+  });
+
+  mM$prime333.stream.addListener({
+    next: v => {
+      console.log('I heard that -- mM$prime3 listener --  v is: ',  v);
+      for (let i in v[0]) {
+        console.log('In the prime listener for loop. i, v[0][i], and v[1] are: ', i, v[0][i], v[1]);
+        if ((v[1] % v[0][i]) == 0) {
+          mM$prime333.ret([v[0], v[1] + 1, v[2]])
+          return;
+        }
+        if (i == (v[0].length - 1)) {
+          v[0].push(v[1]);
+          document.getElementById('prime4').innerHTML = v[0];
+          console.log('Successfully add a prime number. v is; ', v);
+          if (v[0][v[0].length - 1] < v[2]) {
+            console.log('Inside the if statement in mMprime3 listener. v[0], v[2],' + 
+                        'and v[0][v[0].length - 1] < v[2] are:', v[0], v[2], v[0][v[0].length - 1] < v[2] );  
+    // mM$prime333.ret([v[0], v[0][v[0].length - 1] + 1, v[2]])
+          }
         }
       }
     },
@@ -430,10 +567,177 @@ setTimeout( function() {
 
   const primeClick$ = sources.DOM
     .select('#prime').events('click');
-
   const primeClickAction$ = primeClick$.map(() => {
-    mMitterPrime.release()
+    mMitterPrime.release();
   });
+
+
+  mM$fib.stream.addListener({
+    next: v => {
+      if (v[2] > 1) {mM$fib.ret([v[1], v[0] + v[1], v[2] -1])}
+      else {
+        console.log(v[0]);
+        mM19.ret(v[0]);
+      }
+    },
+    error: err => console.error(err),
+    complete: () => console.log('completed')
+  });
+
+
+
+
+// *************************************************************_primeKeyPress1 
+  mM$primeKeyPress.stream.addListener({
+    next: v => {
+      if (v[2] > 1) { 
+        console.log('Entering mM$primeKeyPress stream. v is: ', v);
+        for (let i in v[0]) {
+          console.log('In mM$primeKeyPress listener for loop.  i and a.length are: ', i, v[0].length);
+          console.log(((v[1] % v[0][i]) == 0), 'v[1] and v[0][i] are: ', v[1], v[0][i]);
+          if ((v[1] % v[0][i]) == 0) {
+            console.log(v[1], ' is divisible by ', v[0][i])
+            document.getElementById('prime33').appendChild(document.createTextNode(v[1] + ' is not a prime number'));
+            mM$primeKeyPress.ret([v[0], v[1] + 1, v[2]])
+            return;
+          }
+          if (i == (v[0].length - 1)) {
+            v[0].push(v[1]);
+            document.getElementById('prime2').innerHTML = v[0];
+            console.log('Past push in mM$primeKeyPress2. v is ', v );
+          }
+        }
+        if (v[0][v[0].length - 1] < v[2]) {
+          mM$primeKeyPress2.ret([v[0], v[1] + 1, v[2]])
+        }
+      }
+    },
+    error: err => console.error(err),
+    complete: () => console.log('completed')
+  });
+
+  const primeKeyPress$ = sources.DOM
+    .select('input#prime333').events('keydown');
+
+  const primeKeyPressAction$ = primeKeyPress$.map(e => {
+    console.log('I heard that -- primePressAction$ -- e is: ', e );
+    if (e.target.value == '') {return};
+    if( e.keyCode == 13 && Number.isInteger(e.target.value*1) ) {
+      mM$primeKeyPress.ret([[2], 3, e.target.value]);
+    }
+    if( e.keyCode == 13 && !Number.isInteger(e.target.value*1 )) {
+      mM19.ret("You didn't provide an integer");
+    }
+  });
+// *************************************************************_primeKeyPress2 
+
+  mM$fib4.stream.addListener({
+    next: v => {
+      let a = v[1];
+      let b = v[0] + v[1];
+      let c = v[2] - 1;
+      let d = v[3];
+      d.push(a);
+      console.log('In mM$fib4 listener. v is: ', v);
+      if (v[2] > 2) {mM$fib4.ret([a,b,c,d])}
+      else {
+        console.log('In mM$fib4. v is: ', v);
+        document.getElementById('fib4').innerHTML = v[3]; 
+        mMitterPrimeKeyPress2.release([a,d]);
+      }
+    },
+    error: err => console.error(err),
+    complete: () => console.log('completed')
+  });
+
+  const fibClick3$ = sources.DOM
+    .select('button#fibButton').events('click');
+
+  const fibClickAction3$ = fibClick3$.map(() => {
+    console.log("fibClickAction$, you bet!");
+    mMitterFib3.release();
+  });
+
+  mM$fib3.stream.addListener({
+    next: v => {
+      v[2].push([v[0]]);
+      console.log('In mM$fib3.stream.addListener. v is: ', v);
+    mMitterFib3.bnd(() => mM$fib3.ret([v[1], v[0] + v[1], v[2] ]))
+    console.log('In mM$fib3.stream.addListener. v is: ', v);
+    },
+    error: err => console.error(err),
+    complete: () => console.log('completed')
+  });
+
+  mM$primeKeyPress2.stream.addListener({
+    next: v => {
+      if (v[2] > 1) {
+        var arPrimeFibs;
+        console.log('Entering mM$primeKeyPress2 stream. v is: ', v);
+        for (let i in v[0]) {
+          console.log('In mM$primeKeyPress2 listener for loop.  i and a.length are: ', i, v[0].length);
+          console.log(((v[1] % v[0][i]) == 0), 'v[1] and v[0][i] are: ', v[1], v[0][i]);
+          if ((v[1] % v[0][i]) == 0) {
+            console.log(v[1], ' is divisible by ', v[0][i]);
+            mM$primeKeyPress2.ret([v[0], v[1] + 1, v[2]]);
+            return;
+          }
+          if (i == (v[0].length - 1)) {
+            v[0].push(v[1]);
+            document.getElementById('prime2').innerHTML = v[0];
+            console.log('Past push in mM$primeKeyPress2. v is ', v );
+          }
+        }
+        if (v[0][v[0].length - 1] < v[2]) {
+          mM$primeKeyPress2.ret([v[0], v[1] + 1, v[2]])
+        }
+        mMitterPrimeKeyPress2.bnd(x => {
+          console.log('>>>>>>>>>>>>>>><<<<<<<<<<<<<<<<<>>>>>>>><<<<<<<<>>>>  mMitterPrimeKeyPress2 has been released');
+          mMitterFib4.bnd(() => mM$fib4.ret([0, 1, x, [0]]));
+          console.log('mMitterPrimeKeyPress2 is released. x is: ', x);
+          let top = v[0][v[0].length -1];
+          console.log('>>>>>>>>>>>>>>>In mMitterPrimeKeyPress2.bnd ...   top and x are: ', top, x),
+          console.log(x[0] > top);
+          if (x[0] > top) { 
+            console.log('x > top --- x and top are: ', x, top);
+            mM$primeKeyPress2.ret([v[0], top + 1, x[0]]);
+          }
+          if (x[0] == top) { 
+              document.getElementById('prime2').innerHTML = v[0];
+          }
+          if (x[0] < top) {
+            var ar = v[0].filter(v => v <= x[0]);
+            var prime = v[0][ar.length];
+            ar.push(prime);
+            document.getElementById('prime2').innerHTML = ar;
+          }
+          arPrimeFibs = v[0].filter(function(n) {
+              return x[1].indexOf(n) != -1;
+          })
+          document.getElementById('primeFibs').innerHTML = arPrimeFibs;
+        })
+      }
+    },
+    error: err => console.error(err),
+    complete: () => console.log('completed')
+  });
+
+  const primeKeyPress2$ = sources.DOM
+    .select('input#prime3334').events('keydown');
+
+  const primeKeyPressAction2$ = primeKeyPress2$.map(e => {
+    console.log('I heard that -- primePressAction$ -- e is: ', e );
+    if (e.target.value == '') {return};
+    if( e.keyCode == 13 && Number.isInteger(e.target.value*1) ) {
+      mMitterPrimeKeyPress2.release(e.target.value);
+      mMitterFib4.release();
+    }
+    if( e.keyCode == 13 && !Number.isInteger(e.target.value*1 )) {
+      mM19.ret("You didn't provide an integer");
+    }
+  });
+
+// **************************************************************************************_End primeKeyPress2
 
   const forwardClick$ = sources.DOM
     .select('#forward2').events('click');
@@ -543,7 +847,8 @@ setTimeout( function() {
     }
   });
 
-  const calcStream$ = merge( primeClickAction$, runTestAction$, quadAction$, testWAction$, testZAction$, testQAction$, edit1Action$, edit2Action$, colorAction$, deleteAction$, newTaskAction$, chatClickAction$, gameClickAction$, todoClickAction$, captionClickAction$, backClickAction$, forwardClickAction$, fibPressAction$, groupPressAction$, rollClickAction$, messagePressAction$, loginPressAction$, messages$, numClickAction$, opClickAction$ );
+  const calcStream$ = merge( fibPressAction$, fibClickAction$, primeKeyPressAction2$, primeKeyPressAction$, primeClickAction$, runTestAction$, quadAction$, testWAction$, testZAction$, testQAction$, edit1Action$, edit2Action$, colorAction$, deleteAction$, newTaskAction$, chatClickAction$, gameClickAction$, todoClickAction$, captionClickAction$, backClickAction$, forwardClickAction$, groupPressAction$, rollClickAction$, messagePressAction$, loginPressAction$, messages$, numClickAction$, opClickAction$ );
+  
 
     return {
       DOM: 
@@ -758,9 +1063,11 @@ setTimeout( function() {
         h('p', ' The listener is initiated with the following code when the web page loads: ' ),
         code.seed,
         h('p', ' Clicking the button below causes mMitterPrime.release() to execute. ' ),
-        h('button#prime', 'Keep Clicking To Generate Prime Numbers'  ),
         h('br' ),
         h('p#prime2.red',  ),
+        h('input#prime3334',  ),
+        h('p#fib4', ),  
+        h('p#primeFibs', ),
         h('p', ' mMitterPrime.bnd and mMitter.release() provide functionality similar to "Yield" and "Then" in ES6 generator code.  As shown in the MonadIter section (above), the release() method can provide arguments to the code obtained by the bnd() methods and stored in the "p" attributes of MonadIter instances. ' ),
         h('p', ' mM$prime.stream holds the history of computations in v[0], the first element of the arrays it emits. There is no need for traditional Javascript momoization. ' ),  
         h('p',  ' The next example features another listener that recursively calls the MonadStream instance it monitors.         ' ),
@@ -772,7 +1079,6 @@ setTimeout( function() {
         h('span', 'Fibonacci ' + O.mM21.x + ' is ' ), 
         h('span.code2', ' ' + O.mM19.x ),  
         h('br' ),
-        h('div#fibStream',  ),
         h('h3', 'Todo List Side Effects' ),
         h('p', ' When users do anything to the todo list, MonadStream instance mM$taskList runs its ret() method on the modified String representation of the list, causing the string to be added to mM$taskList.stream. mM$taskList.stream has only one subscriber, taskAction$, whose only purpose it to send the string representation of the todo list to the server. The server updates its persistent file and distributes a text representation of the updated todo list to all group members. Each group member receives the todo list as a string and parses it into a DOM node tree that is merged into the stream that updates the virtual DOM. All Todo List side effects can be traced to:' ),
         code.todoStream,

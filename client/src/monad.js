@@ -10,6 +10,7 @@ var MonadStream = function MonadStream(g) {
   this.id = g;
   this.ret = function (a) {
     _this.stream.shamefullySendNext(a);
+    console.log('in ' + _this.id + ' emmitting ' + a);
     return _this;
   };
 };
@@ -23,9 +24,18 @@ var mM$task = new MonadStream('mM$task');
 var mM$todo2 = new MonadStream('mM$todo2');
 var mM$todo3 = new MonadStream('mM$todo3');
 var mM$prime = new MonadStream('mM$prime');
-var mM$fib = new MonadStream('mM$fib');
 var mM$prime2 = new MonadStream('mM$prime2');
+var mM$prime3 = new MonadStream('mM$prime3');
+var mM$prime33 = new MonadStream('mM$prime33');
+var mM$prime333 = new MonadStream('mM$prime333');
+var mM$prime4 = new MonadStream('mM$prime4');
+var mM$primeKeyPress = new MonadStream('mM$primeKeyPress');
+var mM$primeKeyPress2 = new MonadStream('mM$primeKeyPress2');
 
+var mM$fib = new MonadStream('mM$fib');
+var mM$fib2 = new MonadStream('mM$fib2');
+var mM$fib3 = new MonadStream('mM$fib3');
+var mM$fib4 = new MonadStream('mM$fib4');
 
 var emitevent;
 var data$;
@@ -202,6 +212,8 @@ var mMtasks = new Monad([], 'mMtasks');
 var mMid = new Monad(42, 'mMid');
 var mMalert = new Monad('nothing');
 var fibmon = new Monad([0,1]);
+var mMmax = new Monad(0, 'mMmax');
+mMmax.ret(mMmax.x);
 var mMscoreChange = new Monad(0, 'mMscoreChange');
 mMscoreChange.ret(mMscoreChange.x);
 var mMcurrentRoll = new Monad([], 'mMcurrentRoll');
@@ -273,6 +285,12 @@ m3.ret(m3.x)
 var mMprime = new Monad([2],'mMprime')
 mMprime.ret(mMprime.x)
 
+var mMprime2 = new Monad([2],'mMprime2')
+mMprime2.ret(mMprime2.x)
+
+var mMprime = new Monad([2],'mMprime3')
+mMprime.ret(mMprime.x)
+
 mMgoals2.ret(mMgoals2.x)
 mM3.ret(mM3.x)
 mM6.ret(mM6.x)
@@ -335,6 +353,13 @@ var mMZ28 = MI();
 var mMZ29 = MI();
 
 var mMitterPrime = MI();
+var mMitterPrime4 = MI();
+var mMitterFib = MI();
+var mMitterFib2 = MI();
+var mMitterFib3 = MI();
+var mMitterFib4 = MI();
+var mMitterFib5 = MI();
+var mMitterPrimeKeyPress2 = MI();
 
 var sol1 = function sol1 (x,a,b,c,mon) {
   let n = (b*(-1)) + (Math.sqrt(b*b - 4*a*c));
