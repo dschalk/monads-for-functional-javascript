@@ -1,8 +1,10 @@
 #JS-monads-stable
 
-This is the culmination of the experimental JS-monads series. It is running online at [JS-monads-stable](http://schalk.net:3055) in a [Motorcycle.js](https://github.com/motorcyclejs) application. Motorcycle.js is [Cycle.js](https://github.com/cyclejs/core) using [Most](https://github.com/cujojs/most) and [Snabbdom](https://github.com/paldepind/snabbdom) instead of RxJS and "virtual-dom". [most-subject](https://github.com/TylorS/most-subject) makes MonadStream work as intended. 
+This is the culmination of the experimental JS-monads series. It is running online at [JS-monads-stable](http://schalk.net:3055) in a [Motorcycle.js](https://github.com/motorcyclejs) application. Motorcycle.js is [Cycle.js](https://github.com/cyclejs/core) using [Most](https://github.com/cujojs/most) and [Snabbdom](https://github.com/paldepind/snabbdom) instead of RxJS and "virtual-dom". [xstream](https://github.com/staltz/xstream) makes MonadStream work as intended. 
 
 The use of the monads is explained at [the online presentation](http://schalk.net:3055). 
+
+The latest example involves MonadStream streams of prime and Fibonacci numbers. They use a special type of memoization and can be increased at any time with user input. The user input generates three sequinces of numbers: primes, Fibonacci numbers, and prime Fibonacci numbers.
 
 Here are some definitions, which can also be seen at [the online presentation](http://schalk.net:3055) :
 ## Basic Monad    

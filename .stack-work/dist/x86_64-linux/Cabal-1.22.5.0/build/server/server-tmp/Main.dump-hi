@@ -1,9 +1,9 @@
 
 ==================== FINAL INTERFACE ====================
-2016-05-16 14:35:06.419815 UTC
+2016-05-21 09:08:02.072541 UTC
 
 interface main@main:Main 7103
-  interface hash: 39a0b6ba0e3edac68011e562f77b5fad
+  interface hash: 0d25b00231e754dbcc7eb69a2c4ffe05
   ABI hash: e29b1d994cb03c3bdc6d5a2c12e51cdb
   export-list hash: ac084b9a81b1c3bd918c352b0df77b45
   orphan hash: 276323d23bdb3224e26fb4d203ffca48
@@ -161,9 +161,12 @@ import  -/  websockets-0.9.6.1@webso_06htVgOsSnnEiB19HQN1zE:Network.WebSockets 6
 import  -/  websockets-0.9.6.1@webso_06htVgOsSnnEiB19HQN1zE:Network.WebSockets.Connection fae2098f4dcc3be1d7cc2b6897653cd9
 import  -/  websockets-0.9.6.1@webso_06htVgOsSnnEiB19HQN1zE:Network.WebSockets.Server 3548efd16d84c19168c4ff85df0b76a6
 import  -/  websockets-0.9.6.1@webso_06htVgOsSnnEiB19HQN1zE:Network.WebSockets.Types 5d820df3d52f4ddf1d0392ee35be5bc9
+addDependentFile "client/dist/bundle.js~"
 addDependentFile "client/dist/bundle.js"
 addDependentFile "client/dist/main.js"
+addDependentFile "client/src/edit.js"
 addDependentFile "client/src/code.js"
+addDependentFile "client/src/edit.js~"
 addDependentFile "client/src/store.js"
 addDependentFile "client/src/most-subject.js"
 addDependentFile "client/src/code.js~"
@@ -192,8 +195,8 @@ addDependentFile "client/bower_components/mocha/bower.json"
 addDependentFile "client/bower_components/mocha/LICENSE"
 addDependentFile "client/bower_components/xstream.min.js"
 addDependentFile "client/mostSub.js"
+addDependentFile "client/bundle.js~"
 addDependentFile "client/index.html"
-addDependentFile "client/bundle.js"
 addDependentFile "client/webpack.config.js"
 addDependentFile "client/package.json~"
 addDependentFile "client/main.js.map"

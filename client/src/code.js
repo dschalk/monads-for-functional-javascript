@@ -704,11 +704,100 @@ var ret_add_cube = h('pre',  `  var ret = function ret(v, id) {
 
 var seed = h('pre',  `          mM$prime.ret([[2],3])  `  )
 
-var seed2 = h('pre',  ` 
-             `  )
+var primeFib1 = h('pre',  `          const primeKeyPress2$ = sources.DOM
+    .select('input#prime3334').events('keydown');
 
-var seed3 = h('pre',  ` 
-             `  )
+  const primeKeyPressAction2$ = primeKeyPress2$.map(e => {
+    if (e.target.value == '') {return};
+    if( e.keyCode == 13 && Number.isInteger(e.target.value*1) ) {
+      mMitterFib4.release(e.target.value);  // Sends e.target.value to the mM$primeFibs.stream listener.
+    }
+    if( e.keyCode == 13 && !Number.isInteger(e.target.value*1 )) {
+      mM19.ret("You didn't provide an integer");
+    }
+  });
+
+  mM$fib4.stream.addListener({   // mM$fib4.ret() is called by external code only once, when the browser loads.
+    next: v => {
+      let a = v[1];         // Fibonacci number
+      let b = v[0] + v[1];  // Fibonacci number
+      let c = v[2];         // Limit
+      let d = v[3];         // List of Fibonacci numbers
+      d.push(a);
+      var e = JSON.parse(JSON.stringify(v[3]));
+      e.pop();
+      if (a < c) {mM$fib4.ret([a,b,c,d])}
+      else {
+        console.log('In mM$fib4. calling mMitterPrimeKeyPress2.release([a,v[3]]); d and v[3] are: ', a, e);
+        document.getElementById('fib4').innerHTML = e; 
+        mMitterPrimeFibs.release([v[0], e]);
+      }
+      mMitterFib4.bnd(   // User input releases this.
+        x => {
+          let largest = v[3][v[3].length - 1];
+          console.log('In mMitterFib4.bnd  [x, a, b, c, v[3]] is: ', [x,a,b,c,v[3]]);
+          if (x < largest) {
+            var ar = v[3].filter(v => v <= x);
+            var arLargest = ar[ar.length - 1];
+            document.getElementById('fib4').innerHTML = ar; 
+            mMitterPrimeFibs.release([arLargest, ar]);
+          }
+          if (x == largest) {
+            document.getElementById('fib4').innerHTML = d; 
+            mMitterPrimeFibs.release([arLargest,ar]);
+          }
+          if (x > largest) {
+            mM$fib4.ret([a, b, x, d ]) // Picks up where it last left off.
+          }
+        });
+    },
+    error: err => console.error(err),
+    complete: () => console.log('completed')
+  });  `  )
+
+var primeFib2 = h('pre',  `          mM$primeFibs.stream.addListener({
+    next: v => {   // mM$primeFibs.ret() is called when the browser loads.
+      if (v[2] > 1) {
+        var arPrimeFibs;
+        for (let i in v[0]) {
+          if ((v[1] % v[0][i]) == 0) {
+            mM$primeFibs.ret([v[0], v[1] + 1, v[2]]);
+            return;
+          }
+          if (i == (v[0].length - 1)) {
+            v[0].push(v[1]);
+            document.getElementById('prime2').innerHTML = v[0];
+          }
+        }
+        if (v[0][v[0].length - 1] < v[2]) {
+          mM$primeFibs.ret([v[0], v[1] + 1, v[2]])
+        }
+          mMitterPrimeFibs.bnd(   // The mM$fib4.stream listener releases this.
+          x => {
+          console.log('In mMitterPrimeKeyPress2 x is: ', x);  
+          let top = v[0][v[0].length -1];
+          if (x[0] > top) { 
+            mM$primeFibs.ret([v[0], top + 1, x[0]]);
+          }
+          if (x[0] == top) { 
+              document.getElementById('prime2').innerHTML = v[0];
+          }
+          if (x[0] < top) {
+            var ar = v[0].filter(v => v <= x[0]);
+            var prime = v[0][ar.length];
+            ar.push(prime);
+            document.getElementById('prime2').innerHTML = ar;
+          }
+          arPrimeFibs = v[0].filter(function(n) {
+              return x[1].indexOf(n) != -1;   // Returns the intersection of the two arrays.
+          })
+          document.getElementById('primeFibs').innerHTML = arPrimeFibs;
+          })
+      }
+    },
+    error: err => console.error(err),
+    complete: () => console.log('completed')
+  });  `  )
 
 var seed4 = h('pre',  ` 
              `  )
@@ -723,6 +812,6 @@ var seed6 = h('pre',  `
 
 
 
-  export default {monad, monadStr, monadIt, fib, driver, messages, next, Monad$, updateCalc, arrayFuncs, travel, nums, cleanup, ret, C42, taskStream, newTask, process, mM$task, addString, colorClick, edit, testZ, quad, mdem1, runTest, todoStream, gameStream, inc, ret_add_cube, primes, seed }
+  export default {monad, monadStr, monadIt, fib, driver, messages, next, Monad$, updateCalc, arrayFuncs, travel, nums, cleanup, ret, C42, taskStream, newTask, process, mM$task, addString, colorClick, edit, testZ, quad, mdem1, runTest, todoStream, gameStream, inc, ret_add_cube, primes, seed, primeFib1, primeFib2}
 
 

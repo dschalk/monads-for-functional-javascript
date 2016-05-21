@@ -24,13 +24,12 @@ var mM$task = new MonadStream('mM$task');
 var mM$todo2 = new MonadStream('mM$todo2');
 var mM$todo3 = new MonadStream('mM$todo3');
 var mM$prime = new MonadStream('mM$prime');
+var mM$primeFibs = new MonadStream('mM$primeFibs');
 var mM$prime2 = new MonadStream('mM$prime2');
 var mM$prime3 = new MonadStream('mM$prime3');
 var mM$prime33 = new MonadStream('mM$prime33');
 var mM$prime333 = new MonadStream('mM$prime333');
 var mM$prime4 = new MonadStream('mM$prime4');
-var mM$primeKeyPress = new MonadStream('mM$primeKeyPress');
-var mM$primeKeyPress2 = new MonadStream('mM$primeKeyPress2');
 
 var mM$fib = new MonadStream('mM$fib');
 var mM$fib2 = new MonadStream('mM$fib2');
@@ -359,7 +358,7 @@ var mMitterFib2 = MI();
 var mMitterFib3 = MI();
 var mMitterFib4 = MI();
 var mMitterFib5 = MI();
-var mMitterPrimeKeyPress2 = MI();
+var mMitterPrimeFibs = MI();
 
 var sol1 = function sol1 (x,a,b,c,mon) {
   let n = (b*(-1)) + (Math.sqrt(b*b - 4*a*c));
