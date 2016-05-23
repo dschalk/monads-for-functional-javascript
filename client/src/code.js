@@ -717,7 +717,7 @@ var primeFib1 = h('pre',  `          const primeKeyPress2$ = sources.DOM
     }
   });
 
-  mM$fib4.stream.addListener({
+  mM$fib4.stream.addListener({                // Called while the web page is loading.
     next: v => {
       var a = v[1];         // Fibonacci number
       var b = v[0] + v[1];  // Fibonacci number
@@ -731,7 +731,7 @@ var primeFib1 = h('pre',  `          const primeKeyPress2$ = sources.DOM
         document.getElementById('fib4').innerHTML = wd; 
         mMitterPrimeFibs.release([v[0], wd]);
       };
-      mMitterFib8.bnd(limit => {
+      mMitterFib8.bnd(limit => {          // Released by primeKeyPressAction2$ (above).
         let e = [O.mMfibSave2.x[0], O.mMfibSave2.x[1], limit, O.mMfibSave2.x[3]];
         mM$fib4.ret(e);
       }) 
@@ -819,7 +819,7 @@ var primeFib2 = h('pre',  `          const fibKeyPress5$ = sources.DOM
     }
   });
 
-  mM$fib5.stream.addListener({
+  mM$fib5.stream.addListener({                     // Called as the web page loads.
     next: v => {
       var a = v[1];         // Fibonacci number
       var b = v[0] + v[1];  // Fibonacci number
@@ -832,7 +832,7 @@ var primeFib2 = h('pre',  `          const fibKeyPress5$ = sources.DOM
         mMfibSave.ret([a, b, c, d]);
         document.getElementById('fib5').innerHTML = wd; 
       };
-      mMitterFib6.bnd(limit => {
+      mMitterFib6.bnd(limit => {         // Released by fibKeyPressAction5$ (above).
         let w = JSON.parse(JSON.stringify(O.mMfibSave.x[3]));
         let e = [O.mMfibSave.x[0], O.mMfibSave.x[1], limit, w];
         mM$fib5.ret(e);
@@ -858,30 +858,48 @@ var primeFib2 = h('pre',  `          const fibKeyPress5$ = sources.DOM
 
              `  )
 
-var primeFib3 = h('pre',  `          mM$fib.stream.addListener({
+var primeFib3 = h('pre',  `          const primeKeyPress5$ = sources.DOM
+    .select('input#prime3336').events('keydown');
+
+  const primeKeyPressAction5$ = primeKeyPress5$.map(e => {
+    if (e.target.value == '') {return};
+    if( e.keyCode == 13 && Number.isInteger(e.target.value*1) ) {
+      console.log('In primeKeyPressAction5');
+      mMitterPrime5.release(e.target.value);
+    }
+    if( e.keyCode == 13 && !Number.isInteger(e.target.value*1 )) {
+        document.getElementById('prime5').innerHTML = "You didn't provide an integer";
+    }
+  });
+
+  mM$prime5.stream.addListener({              // Called while the web page is loading.
     next: v => {
-      if (v[2] > 1) {mM$fib.ret([v[1], v[0] + v[1], v[2] -1])}
-      else {
-        console.log(v[0]);
-        mM19.ret(v[0]);
+      while ((v[0][v[0].length - 1]) < v[2]) {
+        for (let i in v[0]) {
+          if ((v[1] % v[0][i]) == 0) {
+            mM$prime5.ret([v[0], v[1] + 1, v[2]]);
+          }
+          if (i == (v[0].length - 1)) {
+            v[0].push(v[1]);
+          }
+        }
       }
+      let ar = JSON.parse(JSON.stringify(v[0]));
+      ar.pop();
+      document.getElementById('prime5').innerHTML = ar;
+      mMitterPrime5.bnd(x => {               // Released by primeKeyPressAction5$ (above).
+        if (x > (v[0][v[0].length - 1])) {
+          mM$prime5.ret([v[0], v[1] + 1, x]);
+        }
+        else {
+          let ar2 = JSON.parse(JSON.stringify(v[0]));
+          let trunc = ar2.filter(a => a < x);
+          document.getElementById('prime5').innerHTML = trunc;
+        }
+      })
     },
     error: err => console.error(err),
     complete: () => console.log('completed')
-  });
-
-  const fibPress$ = sources.DOM
-    .select('input#code').events('keydown');
-
-  const fibPressAction$ = fibPress$.map(e => {
-    if (e.target.value == '') {return};
-    if( e.keyCode == 13 && Number.isInteger(e.target.value*1) ) {
-      mM21.ret(e.target.value);
-      mM$fib.ret([0, 1, e.target.value]);
-    }
-    if( e.keyCode == 13 && !Number.isInteger(e.target.value*1 )) {
-      mM19.ret("You didn't provide an integer");
-    }
   });  `  )
 
 var seed6 = h('pre',  ` 
