@@ -710,100 +710,179 @@ var primeFib1 = h('pre',  `          const primeKeyPress2$ = sources.DOM
   const primeKeyPressAction2$ = primeKeyPress2$.map(e => {
     if (e.target.value == '') {return};
     if( e.keyCode == 13 && Number.isInteger(e.target.value*1) ) {
-      mMitterFib4.release(e.target.value);  // Sends e.target.value to the mM$primeFibs.stream listener.
+      mMitterFib4.release(e.target.value);
     }
     if( e.keyCode == 13 && !Number.isInteger(e.target.value*1 )) {
       mM19.ret("You didn't provide an integer");
     }
   });
 
-  mM$fib4.stream.addListener({   // mM$fib4.ret() is called by external code only once, when the browser loads.
+  mM$fib4.stream.addListener({
     next: v => {
-      let a = v[1];         // Fibonacci number
-      let b = v[0] + v[1];  // Fibonacci number
-      let c = v[2];         // Limit
-      let d = v[3];         // List of Fibonacci numbers
+      var a = v[1];         // Fibonacci number
+      var b = v[0] + v[1];  // Fibonacci number
+      var c = v[2];         // Limit
+      var d = v[3];         // List of Fibonacci numbers
+      let wd = JSON.parse(JSON.stringify(d));
       d.push(a);
-      var e = JSON.parse(JSON.stringify(v[3]));
-      e.pop();
       if (a < c) {mM$fib4.ret([a,b,c,d])}
       else {
-        console.log('In mM$fib4. calling mMitterPrimeKeyPress2.release([a,v[3]]); d and v[3] are: ', a, e);
-        document.getElementById('fib4').innerHTML = e; 
-        mMitterPrimeFibs.release([v[0], e]);
-      }
-      mMitterFib4.bnd(   // User input releases this.
+        mMfibSave2.ret([a, b, c, d]);
+        document.getElementById('fib4').innerHTML = wd; 
+        mMitterPrimeFibs.release([v[0], wd]);
+      };
+      mMitterFib8.bnd(limit => {
+        let e = [O.mMfibSave2.x[0], O.mMfibSave2.x[1], limit, O.mMfibSave2.x[3]];
+        mM$fib4.ret(e);
+      }) 
+      mMitterFib4.bnd(
         x => {
-          let largest = v[3][v[3].length - 1];
-          console.log('In mMitterFib4.bnd  [x, a, b, c, v[3]] is: ', [x,a,b,c,v[3]]);
-          if (x < largest) {
-            var ar = v[3].filter(v => v <= x);
-            var arLargest = ar[ar.length - 1];
+          if (x > (v[3][v[3].length - 1])) {
+            mMitterFib8.release(x);
+          }
+          else {
+            var ar1 = JSON.parse(JSON.stringify(O.mMfibSave2.x[3]));
+            var ar = ar1.filter(v => v <= x);
+            mMitterPrimeFibs.release([ar[ar.length - 1], ar]);
             document.getElementById('fib4').innerHTML = ar; 
-            mMitterPrimeFibs.release([arLargest, ar]);
           }
-          if (x == largest) {
-            document.getElementById('fib4').innerHTML = d; 
-            mMitterPrimeFibs.release([arLargest,ar]);
-          }
-          if (x > largest) {
-            mM$fib4.ret([a, b, x, d ]) // Picks up where it last left off.
-          }
-        });
+      })
     },
     error: err => console.error(err),
     complete: () => console.log('completed')
-  });  `  )
+  });
 
-var primeFib2 = h('pre',  `          mM$primeFibs.stream.addListener({
-    next: v => {   // mM$primeFibs.ret() is called when the browser loads.
-      if (v[2] > 1) {
-        var arPrimeFibs;
+  mM$primeFibs.stream.addListener({
+    next: v => {
+      while (v[2] > v[0][v[0].length - 1]) {
         for (let i in v[0]) {
           if ((v[1] % v[0][i]) == 0) {
-            mM$primeFibs.ret([v[0], v[1] + 1, v[2]]);
-            return;
+            mM$primeFibs.ret([v[0], v[1] + 1, v[2], v[3]]);
           }
           if (i == (v[0].length - 1)) {
             v[0].push(v[1]);
             document.getElementById('prime2').innerHTML = v[0];
           }
         }
-        if (v[0][v[0].length - 1] < v[2]) {
-          mM$primeFibs.ret([v[0], v[1] + 1, v[2]])
+      }
+      mM$PF.ret(v[0].filter(function(n) {
+        return v[3].indexOf(n) != -1;
+      }));
+      mMitterFib7.bnd(z => {
+        let recent = v[0][v[0].length - 1];
+        mM$primeFibs.ret([ v[0], v[1] + 1, z[0], z[1] ]);
+      })
+      mMitterPrimeFibs.bnd(
+        x => {
+          if (x[0] > v[0][v[0].length - 1]) { 
+            mMitterFib7.release(x);
+          }
+          else {
+            var ar = JSON.parse(JSON.stringify(v[0]));
+            var ar2 = ar.filter(v => v <= x[0]);
+            var num = ar[ar2.length];
+            ar2.push(num);
+            document.getElementById('prime2').innerHTML = ar2;
+          }
         }
-          mMitterPrimeFibs.bnd(   // The mM$fib4.stream listener releases this.
-          x => {
-          console.log('In mMitterPrimeKeyPress2 x is: ', x);  
-          let top = v[0][v[0].length -1];
-          if (x[0] > top) { 
-            mM$primeFibs.ret([v[0], top + 1, x[0]]);
+      )
+    },
+    error: err => console.error(err),
+    complete: () => console.log('completed')
+  });
+
+  mM$PF.stream.addListener({
+    next: x => {
+      if (x[0] < x[1][x[1].length - 1]) {
+        let ar = JSON.parse(JSON.stringify(x[1]));
+        let ar2 = ar.filter(v => v <= x[0]);
+        document.getElementById('primeFibs').innerHTML = ar2;
+      }
+      else {document.getElementById('primeFibs').innerHTML = x[1];}
+    },
+  error: err => console.error(err),
+  complete: () => console.log('completed')
+  });  `  )
+
+var primeFib2 = h('pre',  `          const fibKeyPress5$ = sources.DOM
+    .select('input#fib3335').events('keydown');
+
+  const fibKeyPressAction5$ = fibKeyPress5$.map(e => {
+    console.log('In fibKeyPressAction');
+    if (e.target.value == '') {return};
+    if( e.keyCode == 13 && Number.isInteger(e.target.value*1) ) {
+      console.log('releasing mMitterFib5');
+      mMitterFib5.release(e.target.value);
+    }
+    if( e.keyCode == 13 && !Number.isInteger(e.target.value*1 )) {
+        document.getElementById('fib5').innerHTML = "You didn't provide an integer";
+    }
+  });
+
+  mM$fib5.stream.addListener({
+    next: v => {
+      var a = v[1];         // Fibonacci number
+      var b = v[0] + v[1];  // Fibonacci number
+      var c = v[2];         // Limit
+      var d = v[3];         // List of Fibonacci numbers
+      let wd = JSON.parse(JSON.stringify(d));
+      d.push(a);
+      if (a < c) {mM$fib5.ret([a,b,c,d])}
+      else {
+        mMfibSave.ret([a, b, c, d]);
+        document.getElementById('fib5').innerHTML = wd; 
+      };
+      mMitterFib6.bnd(limit => {
+        let w = JSON.parse(JSON.stringify(O.mMfibSave.x[3]));
+        let e = [O.mMfibSave.x[0], O.mMfibSave.x[1], limit, w];
+        mM$fib5.ret(e);
+      }) 
+      mMitterFib5.bnd(
+        x => {
+          console.log('In mMitterFib5.bnd -- x is: ', x);
+          if (x > (v[3][v[3].length - 1])) {
+            console.log('In the x > ... test. x and v are: ', x, v);
+            mMitterFib6.release(x);
           }
-          if (x[0] == top) { 
-              document.getElementById('prime2').innerHTML = v[0];
+          else {
+            var ar1 = O.mMfibSave.x[3];
+            var ar = ar1.filter(v => v <= x);
+            console.log('In mMitterFib4.bnd x < largest   x, ar1, and ar are: ', x, ar1, ar);
+            document.getElementById('fib5').innerHTML = ar; 
           }
-          if (x[0] < top) {
-            var ar = v[0].filter(v => v <= x[0]);
-            var prime = v[0][ar.length];
-            ar.push(prime);
-            document.getElementById('prime2').innerHTML = ar;
-          }
-          arPrimeFibs = v[0].filter(function(n) {
-              return x[1].indexOf(n) != -1;   // Returns the intersection of the two arrays.
-          })
-          document.getElementById('primeFibs').innerHTML = arPrimeFibs;
-          })
+      })
+    },
+    error: err => console.error(err),
+    complete: () => console.log('completed')
+  });
+
+             `  )
+
+var primeFib3 = h('pre',  `          mM$fib.stream.addListener({
+    next: v => {
+      if (v[2] > 1) {mM$fib.ret([v[1], v[0] + v[1], v[2] -1])}
+      else {
+        console.log(v[0]);
+        mM19.ret(v[0]);
       }
     },
     error: err => console.error(err),
     complete: () => console.log('completed')
+  });
+
+  const fibPress$ = sources.DOM
+    .select('input#code').events('keydown');
+
+  const fibPressAction$ = fibPress$.map(e => {
+    if (e.target.value == '') {return};
+    if( e.keyCode == 13 && Number.isInteger(e.target.value*1) ) {
+      mM21.ret(e.target.value);
+      mM$fib.ret([0, 1, e.target.value]);
+    }
+    if( e.keyCode == 13 && !Number.isInteger(e.target.value*1 )) {
+      mM19.ret("You didn't provide an integer");
+    }
   });  `  )
-
-var seed4 = h('pre',  ` 
-             `  )
-
-var seed5 = h('pre',  ` 
-             `  )
 
 var seed6 = h('pre',  ` 
              `  )
@@ -812,6 +891,6 @@ var seed6 = h('pre',  `
 
 
 
-  export default {monad, monadStr, monadIt, fib, driver, messages, next, Monad$, updateCalc, arrayFuncs, travel, nums, cleanup, ret, C42, taskStream, newTask, process, mM$task, addString, colorClick, edit, testZ, quad, mdem1, runTest, todoStream, gameStream, inc, ret_add_cube, primes, seed, primeFib1, primeFib2}
+  export default {monad, monadStr, monadIt, fib, driver, messages, next, Monad$, updateCalc, arrayFuncs, travel, nums, cleanup, ret, C42, taskStream, newTask, process, mM$task, addString, colorClick, edit, testZ, quad, mdem1, runTest, todoStream, gameStream, inc, ret_add_cube, primes, seed, primeFib1, primeFib2, primeFib3}
 
 

@@ -30,11 +30,14 @@ var mM$prime3 = new MonadStream('mM$prime3');
 var mM$prime33 = new MonadStream('mM$prime33');
 var mM$prime333 = new MonadStream('mM$prime333');
 var mM$prime4 = new MonadStream('mM$prime4');
+var mM$prime5 = new MonadStream('mM$prime5');
 
 var mM$fib = new MonadStream('mM$fib');
 var mM$fib2 = new MonadStream('mM$fib2');
 var mM$fib3 = new MonadStream('mM$fib3');
 var mM$fib4 = new MonadStream('mM$fib4');
+var mM$fib5 = new MonadStream('mM$fib5');
+var mM$PF = new MonadStream('mM#PF');
 
 var emitevent;
 var data$;
@@ -212,6 +215,8 @@ var mMid = new Monad(42, 'mMid');
 var mMalert = new Monad('nothing');
 var fibmon = new Monad([0,1]);
 var mMmax = new Monad(0, 'mMmax');
+var mMfibSave = new Monad(0, 'mMfibSave');
+var mMfibSave2 = new Monad(0, 'mMfibSave2');
 mMmax.ret(mMmax.x);
 var mMscoreChange = new Monad(0, 'mMscoreChange');
 mMscoreChange.ret(mMscoreChange.x);
@@ -353,12 +358,19 @@ var mMZ29 = MI();
 
 var mMitterPrime = MI();
 var mMitterPrime4 = MI();
+var mMitterPrime5 = MI();
 var mMitterFib = MI();
 var mMitterFib2 = MI();
 var mMitterFib3 = MI();
 var mMitterFib4 = MI();
 var mMitterFib5 = MI();
+var mMitterFib6 = MI();
+var mMitterFib7 = MI();
+var mMitterFib8 = MI();
+var mMitterFib9 = MI();
 var mMitterPrimeFibs = MI();
+var mMitterPF = MI();
+var mMitterPF2 = MI();
 
 var sol1 = function sol1 (x,a,b,c,mon) {
   let n = (b*(-1)) + (Math.sqrt(b*b - 4*a*c));
