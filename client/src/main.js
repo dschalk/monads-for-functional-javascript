@@ -31,11 +31,11 @@ function main(sources) {
 
   setTimeout( function() {
     document.querySelector('input#login').focus();
+    mM$fib5.ret( [ 0, 1, 1, [0] ] );
+    mM$prime5.ret([[2], 3, 3]);
     mM$primeFibs.ret([[2], 3, 3, [2,3]]); 
     mM$fib2.ret([0, 1, []]);
     mM$fib4.ret( [ 0, 1, 1, [0] ] );
-    mM$fib5.ret( [ 0, 1, 1, [0] ] );
-    mM$prime5.ret([[2], 3, 3]);
   },1200 );
 
   mMZ1.bnd(v => O.mMt1.bnd(add,v,mMt1)
@@ -966,6 +966,11 @@ function main(sources) {
         h('input#prime3336',  ),
         h('p#prime5.red4', ),  
         h('p', '    '  ),
+        h('p', ' The Fibonacci, prime, and prime Fibonacce streams are intitiated as follows:    '  ),
+        h('pre', `            mM$fib5.ret( [ 0, 1, 1, [0] ] );
+    mM$prime5.ret( [ [2], 3, 3 ] );
+    mM$primeFibs.ret( [ [2], 3, 3, [2,3 ] ]); 
+`    ),
         h('h3', 'Todo List Side Effects' ),
         h('p', ' When users do anything to the todo list, MonadStream instance mM$taskList runs its ret() method on the modified String representation of the list, causing the string to be added to mM$taskList.stream. mM$taskList.stream has only one subscriber, taskAction$, whose only purpose it to send the string representation of the todo list to the server. The server updates its persistent file and distributes a text representation of the updated todo list to all group members. Each group member receives the todo list as a string and parses it into a DOM node tree that is merged into the stream that updates the virtual DOM. All Todo List side effects can be traced to:' ),
         code.todoStream,
