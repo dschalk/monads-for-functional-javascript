@@ -858,21 +858,37 @@ var primeFib2 = h('pre',  `          const fibKeyPress5$ = sources.DOM
 
              `  )
 
-var primeFib3 = h('pre',  `          const primeKeyPress5$ = sources.DOM
-    .select('input#prime3336').events('keydown');
+var primeFib4 = h('pre',  `          mM$fib5.stream.addListener({
+    next: v => {
+      if (v[0] < v[2]) {
+        O.mMfibs8.bnd(push, v[0] + v[1], mMfibs8);
+        mM$fib5.ret([v[1], v[0] + v[1], v[2]]);
+      }
+      else {
+        let ar = JSON.parse(JSON.stringify(O.mMfibs8.x));
+        ar.pop();
+        ar.pop();
+        document.getElementById('fib5').innerHTML = ar;
+      } 
+      mMitterFib5.bnd(
+        x => {
+          if (x > O.mMfibs8.x[O.mMfibs8.x.length -1]) {
+            let ar = JSON.parse(JSON.stringify(O.mMfibs8.x));
+            let a = ar.pop();
+            let b = ar.pop();
+            mM$fib5.ret([b, a, x]);
+          }
+          else {
+            var ar2 = O.mMfibs8.x.filter(v => v <= x);
+            document.getElementById('fib5').innerHTML = ar2; 
+          }
+      })
+    },
+    error: err => console.error(err),
+    complete: () => console.log('completed')
+  });  `  )
 
-  const primeKeyPressAction5$ = primeKeyPress5$.map(e => {
-    if (e.target.value == '') {return};
-    if( e.keyCode == 13 && Number.isInteger(e.target.value*1) ) {
-      console.log('In primeKeyPressAction5');
-      mMitterPrime5.release(e.target.value);
-    }
-    if( e.keyCode == 13 && !Number.isInteger(e.target.value*1 )) {
-        document.getElementById('prime5').innerHTML = "You didn't provide an integer";
-    }
-  });
-
-  mM$prime5.stream.addListener({              // Called while the web page is loading.
+var primeFib3 = h('pre',  `          mM$prime5.stream.addListener({
     next: v => {
       while ((v[0][v[0].length - 1]) < v[2]) {
         for (let i in v[0]) {
@@ -887,7 +903,7 @@ var primeFib3 = h('pre',  `          const primeKeyPress5$ = sources.DOM
       let ar = JSON.parse(JSON.stringify(v[0]));
       ar.pop();
       document.getElementById('prime5').innerHTML = ar;
-      mMitterPrime5.bnd(x => {               // Released by primeKeyPressAction5$ (above).
+      mMitterPrime5.bnd(x => {
         if (x > (v[0][v[0].length - 1])) {
           mM$prime5.ret([v[0], v[1] + 1, x]);
         }
@@ -902,13 +918,25 @@ var primeFib3 = h('pre',  `          const primeKeyPress5$ = sources.DOM
     complete: () => console.log('completed')
   });  `  )
 
-var seed6 = h('pre',  ` 
+var seed1 = h('pre',  ` 
+             `  )
+
+var seed2 = h('pre',  ` 
+             `  )
+
+var seed3 = h('pre',  ` 
+             `  )
+
+var seed4 = h('pre',  ` 
+             `  )
+
+var seed5 = h('pre',  ` 
              `  )
 
 
 
 
 
-  export default {monad, monadStr, monadIt, fib, driver, messages, next, Monad$, updateCalc, arrayFuncs, travel, nums, cleanup, ret, C42, taskStream, newTask, process, mM$task, addString, colorClick, edit, testZ, quad, mdem1, runTest, todoStream, gameStream, inc, ret_add_cube, primes, seed, primeFib1, primeFib2, primeFib3}
+  export default {monad, monadStr, monadIt, fib, driver, messages, next, Monad$, updateCalc, arrayFuncs, travel, nums, cleanup, ret, C42, taskStream, newTask, process, mM$task, addString, colorClick, edit, testZ, quad, mdem1, runTest, todoStream, gameStream, inc, ret_add_cube, primes, seed, primeFib1, primeFib4, primeFib3}
 
 

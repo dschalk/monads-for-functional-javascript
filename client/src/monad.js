@@ -223,6 +223,9 @@ mMscoreChange.ret(mMscoreChange.x);
 var mMcurrentRoll = new Monad([], 'mMcurrentRoll');
 mMcurrentRoll.ret(mMcurrentRoll.x);
 
+var mMfibs8 = M([0,1], 'mMfibs8');
+mMfibs8.ret(mMfibs8.x);
+
 var mMallRolls = new Monad([], 'mMallRolls');
 mMallRolls.ret(mMallRolls.x);
 
@@ -231,7 +234,6 @@ mMcurrentList.ret(mMcurrentList.x);
 
 var mMtaskList = new Monad([], 'mMtaskList');
 mMtaskList.ret(mMtaskList.x);
-
 
 var mMsenderList = new Monad([], 'mMsenderList');
 mMsenderList.ret(mMsenderList.x);

@@ -31,7 +31,7 @@ function main(sources) {
 
   setTimeout( function() {
     document.querySelector('input#login').focus();
-    mM$fib5.ret( [ 0, 1, 1, [0] ] );
+    mM$fib5.ret( [ 0, 1, 1 ] );
     mM$prime5.ret([[2], 3, 3]);
     mM$primeFibs.ret([[2], 3, 3, [2,3]]); 
     mM$fib2.ret([0, 1, []]);
@@ -416,10 +416,8 @@ function main(sources) {
     .select('input#fib3335').events('keydown');
 
   const fibKeyPressAction5$ = fibKeyPress5$.map(e => {
-    console.log('In fibKeyPressAction');
     if (e.target.value == '') {return};
     if( e.keyCode == 13 && Number.isInteger(e.target.value*1) ) {
-      console.log('releasing mMitterFib5');
       mMitterFib5.release(e.target.value);
     }
     if( e.keyCode == 13 && !Number.isInteger(e.target.value*1 )) {
@@ -429,34 +427,27 @@ function main(sources) {
 
   mM$fib5.stream.addListener({
     next: v => {
-      var a = v[1];         // Fibonacci number
-      var b = v[0] + v[1];  // Fibonacci number
-      var c = v[2];         // Limit
-      var d = v[3];         // List of Fibonacci numbers
-      let wd = JSON.parse(JSON.stringify(d));
-      d.push(a);
-      if (a < c) {mM$fib5.ret([a,b,c,d])}
+      if (v[0] < v[2]) {
+        O.mMfibs8.bnd(push, v[0] + v[1], mMfibs8);
+        mM$fib5.ret([v[1], v[0] + v[1], v[2]]);
+      }
       else {
-        mMfibSave.ret([a, b, c, d]);
-        document.getElementById('fib5').innerHTML = wd; 
-      };
-      mMitterFib6.bnd(limit => {
-        let w = JSON.parse(JSON.stringify(O.mMfibSave.x[3]));
-        let e = [O.mMfibSave.x[0], O.mMfibSave.x[1], limit, w];
-        mM$fib5.ret(e);
-      }) 
+        let ar = JSON.parse(JSON.stringify(O.mMfibs8.x));
+        ar.pop();
+        ar.pop();
+        document.getElementById('fib5').innerHTML = ar;
+      } 
       mMitterFib5.bnd(
         x => {
-          console.log('In mMitterFib5.bnd -- x is: ', x);
-          if (x > (v[3][v[3].length - 1])) {
-            console.log('In the x > ... test. x and v are: ', x, v);
-            mMitterFib6.release(x);
+          if (x > O.mMfibs8.x[O.mMfibs8.x.length -1]) {
+            let ar = JSON.parse(JSON.stringify(O.mMfibs8.x));
+            let a = ar.pop();
+            let b = ar.pop();
+            mM$fib5.ret([b, a, x]);
           }
           else {
-            var ar1 = O.mMfibSave.x[3];
-            var ar = ar1.filter(v => v <= x);
-            console.log('In mMitterFib4.bnd x < largest   x, ar1, and ar are: ', x, ar1, ar);
-            document.getElementById('fib5').innerHTML = ar; 
+            var ar2 = O.mMfibs8.x.filter(v => v <= x);
+            document.getElementById('fib5').innerHTML = ar2; 
           }
       })
     },
@@ -951,23 +942,20 @@ function main(sources) {
         h('input#prime3334',  ),
         h('p#fib4.red4', ),  
         h('p#primeFibs.red4', ),
-        h('br' ),
-        h('p', ' Here is the code for a Fibonacci number generator that uses the same kind of memoization as shown above.  ' ),
-        code.primeFib2,
-        h('p', ' The above code is used in Fibonacci demonstration below. ' ),
-        h('h3', 'Prime And Fibonacci Streams' ),
-        h('p', ' Enter an integer below to generate a list of Fibonacci numbers: '  ), 
+        h('p', ' Here is the code for a Fibonacci number generator that does not keep the list of calculated numbers in a stream. Instead, it maintains the list in a monad named O.mMfibs8. As before, no calculation is performed more than once. ' ),
+        code.primeFib4,
+        h('p', ' Enter an integer below to run the code. '  ), 
         h('input#fib3335',  ),
         h('p#fib5.red4', ),  
         h('p', ' And here is the code for a memoizing prime number generator:   '  ),
         code.primeFib3,
         h('p', ' The prime number code is demonstrated below. ' ),
-        h('p', ' Enter an integer below to generate a list of Fibonacci numbers: '  ), 
+        h('p', ' Enter an integer below to generate a list of prime numbers: '  ), 
         h('input#prime3336',  ),
         h('p#prime5.red4', ),  
         h('p', '    '  ),
         h('p', ' The Fibonacci, prime, and prime Fibonacce streams are intitiated as follows:    '  ),
-        h('pre', `            mM$fib5.ret( [ 0, 1, 1, [0] ] );
+        h('pre', `            mM$fib5.ret( [ 0, 1, 1 ] );
     mM$prime5.ret( [ [2], 3, 3 ] );
     mM$primeFibs.ret( [ [2], 3, 3, [2,3] ] ); 
 `    ),
