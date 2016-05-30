@@ -1,5 +1,5 @@
-[1 of 1] Compiling Main             ( /tmp/stack14706/unix-time-0.3.6/Setup.hs, /tmp/stack14706/unix-time-0.3.6/.stack-work/dist/x86_64-linux/Cabal-1.22.5.0/setup/Main.o )
-Linking /tmp/stack14706/unix-time-0.3.6/.stack-work/dist/x86_64-linux/Cabal-1.22.5.0/setup/setup ...
+[1 of 1] Compiling Main             ( /tmp/stack29022/unix-time-0.3.6/Setup.hs, /tmp/stack29022/unix-time-0.3.6/.stack-work/dist/x86_64-linux/Cabal-1.22.5.0/setup/Main.o )
+Linking /tmp/stack29022/unix-time-0.3.6/.stack-work/dist/x86_64-linux/Cabal-1.22.5.0/setup/setup ...
 Configuring unix-time-0.3.6...
 checking for gcc... gcc
 checking whether the C compiler works... yes
@@ -48,6 +48,41 @@ Data/UnixTime/Conv.hs:11:1: Warning:
     To import instances alone, use: import Control.Applicative()
 [5 of 5] Compiling Data.UnixTime    ( Data/UnixTime.hs, .stack-work/dist/x86_64-linux/Cabal-1.22.5.0/build/Data/UnixTime.o )
 In-place registering unix-time-0.3.6...
+Running Haddock for unix-time-0.3.6...
+Running hscolour for unix-time-0.3.6...
+Preprocessing library unix-time-0.3.6...
+Preprocessing library unix-time-0.3.6...
+
+Data/UnixTime/Types.hsc:3:1: Warning:
+    The import of ‘Control.Applicative’ is redundant
+      except perhaps to import instances from ‘Control.Applicative’
+    To import instances alone, use: import Control.Applicative()
+
+Data/UnixTime/Conv.hs:11:1: Warning:
+    The import of ‘Control.Applicative’ is redundant
+      except perhaps to import instances from ‘Control.Applicative’
+    To import instances alone, use: import Control.Applicative()
+Haddock coverage:
+  50% (  3 /  6) in 'Data.UnixTime.Types'
+  Missing documentation for:
+    Module header
+     (Data/UnixTime/Types.hsc:34)
+     (Data/UnixTime/Types.hsc:45)
+  80% (  4 /  5) in 'Data.UnixTime.Diff'
+  Missing documentation for:
+    Module header
+  50% (  1 /  2) in 'Data.UnixTime.Sys'
+  Missing documentation for:
+    Module header
+  91% ( 10 / 11) in 'Data.UnixTime.Conv'
+  Missing documentation for:
+    Module header
+  96% ( 24 / 25) in 'Data.UnixTime'
+  Missing documentation for:
+    Module header
+Documentation created:
+.stack-work/dist/x86_64-linux/Cabal-1.22.5.0/doc/html/unix-time/index.html,
+.stack-work/dist/x86_64-linux/Cabal-1.22.5.0/doc/html/unix-time/unix-time.txt
 Installing library in
-/home/d/.stack/snapshots/x86_64-linux/lts-5.14/7.10.3/lib/x86_64-linux-ghc-7.10.3/unix-time-0.3.6-4DXmhADld9WFju1Q636Hdx
+/home/d/.stack/snapshots/x86_64-linux/lts-6.0/7.10.3/lib/x86_64-linux-ghc-7.10.3/unix-time-0.3.6-4DXmhADld9WFju1Q636Hdx
 Registering unix-time-0.3.6...

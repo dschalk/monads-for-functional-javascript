@@ -1,0 +1,51 @@
+Configuring simple-sendfile-0.2.24...
+Building simple-sendfile-0.2.24...
+Preprocessing library simple-sendfile-0.2.24...
+[1 of 4] Compiling Network.Sendfile.Types ( Network/Sendfile/Types.hs, .stack-work/dist/x86_64-linux/Cabal-1.22.5.0/build/Network/Sendfile/Types.o )
+[2 of 4] Compiling Network.Sendfile.Linux ( .stack-work/dist/x86_64-linux/Cabal-1.22.5.0/build/Network/Sendfile/Linux.hs, .stack-work/dist/x86_64-linux/Cabal-1.22.5.0/build/Network/Sendfile/Linux.o )
+
+Network/Sendfile/Linux.hsc:12:1: Warning:
+    The import of ‘Control.Applicative’ is redundant
+      except perhaps to import instances from ‘Control.Applicative’
+    To import instances alone, use: import Control.Applicative()
+
+Network/Sendfile/Linux.hsc:17:1: Warning:
+    The import of ‘Data.Int’ is redundant
+      except perhaps to import instances from ‘Data.Int’
+    To import instances alone, use: import Data.Int()
+[3 of 4] Compiling System.Linux.Sendfile ( System/Linux/Sendfile.hs, .stack-work/dist/x86_64-linux/Cabal-1.22.5.0/build/System/Linux/Sendfile.o )
+[4 of 4] Compiling Network.Sendfile ( Network/Sendfile.hs, .stack-work/dist/x86_64-linux/Cabal-1.22.5.0/build/Network/Sendfile.o )
+In-place registering simple-sendfile-0.2.24...
+Running Haddock for simple-sendfile-0.2.24...
+Running hscolour for simple-sendfile-0.2.24...
+Preprocessing library simple-sendfile-0.2.24...
+Preprocessing library simple-sendfile-0.2.24...
+
+Network/Sendfile/Linux.hsc:12:1: Warning:
+    The import of ‘Control.Applicative’ is redundant
+      except perhaps to import instances from ‘Control.Applicative’
+    To import instances alone, use: import Control.Applicative()
+
+Network/Sendfile/Linux.hsc:17:1: Warning:
+    The import of ‘Data.Int’ is redundant
+      except perhaps to import instances from ‘Data.Int’
+    To import instances alone, use: import Data.Int()
+Haddock coverage:
+  50% (  1 /  2) in 'Network.Sendfile.Types'
+  Missing documentation for:
+    Module header
+  57% (  4 /  7) in 'Network.Sendfile.Linux'
+  Missing documentation for:
+    Module header
+    sendfile' (Network/Sendfile/Linux.hsc:71)
+    sendfileFd' (Network/Sendfile/Linux.hsc:98)
+  75% (  3 /  4) in 'System.Linux.Sendfile'
+  Missing documentation for:
+    Module header
+ 100% (  6 /  6) in 'Network.Sendfile'
+Documentation created:
+.stack-work/dist/x86_64-linux/Cabal-1.22.5.0/doc/html/simple-sendfile/index.html,
+.stack-work/dist/x86_64-linux/Cabal-1.22.5.0/doc/html/simple-sendfile/simple-sendfile.txt
+Installing library in
+/home/d/.stack/snapshots/x86_64-linux/lts-6.0/7.10.3/lib/x86_64-linux-ghc-7.10.3/simple-sendfile-0.2.24-5F5mRzZSnjf3UA3gyfuuXK
+Registering simple-sendfile-0.2.24...

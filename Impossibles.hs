@@ -80,7 +80,7 @@ impossibles v w x y z = [ [a, b, c, d] | a <- [1..v], b <- [1..w], c <- [1..x], 
 
 main = do
     t1 <- getCPUTime
-    let imp = impossibles 5 5 5 5 15
+    let imp = impossibles 6 6 12 20 20
     print $ length imp
     mapM_ print imp
     t2 <- getCPUTime

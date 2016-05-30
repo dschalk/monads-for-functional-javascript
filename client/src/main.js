@@ -2,6 +2,19 @@ import Cycle from '@motorcycle/core';
 import {h, p, span, h1, h2, h3, br, div, label, input, hr, makeDOMDriver} from '@motorcycle/dom';
 import {just, create, merge, combine, fromEvent, periodic, observe, delay, filter, of} from 'most';
 import code from './code.js';
+import {observable, computed, autorun, asReference} from 'mobx'
+
+monadState = observable(O);
+console.log(monadState);
+
+O.mMcount.bnd(add, 1, mMcount);
+m.ret(1000),
+O.mMcount.bnd(add, 1, mMcount);
+O.mMcount2.bnd(add, 1, mMcount2);
+O.mMcount2.bnd(add, 1, mMcount2);
+O.mMcount.bnd(add, 1, mMcount);
+O.mMcount.bnd(add, 1, mMcount);
+O.mMcount2.bnd(add, 1, mMcount2);
 
 function createWebSocket(path) {
     let host = window.location.hostname;
@@ -18,6 +31,7 @@ const websocketsDriver = function () {
       socket.onmessage = msg => add(msg)
     })
 }
+
 
 const unitDriver = function () {
   return periodic(1000, 1);
@@ -36,7 +50,15 @@ function main(sources) {
     mM$primeFibs.ret([[2], 3, 3, [2,3]]); 
     mM$fib2.ret([0, 1, []]);
     mM$fib4.ret( [ 0, 1, 1, [0] ] );
-  },1200 );
+    var mathFunc = autorun(() => {
+      let a = monadState.mMcount.x
+      let b = monadState.mMcount2.x
+      document.getElementById('spreadsheet1').innerHTML = a + ' + ' + b + ' = ' + (a + b)  
+      document.getElementById('spreadsheet2').innerHTML = a + ' - ' + b + ' = ' + (a - b)  
+      document.getElementById('spreadsheet3').innerHTML = a + ' * ' + b + ' = ' + (a * b)  
+      document.getElementById('spreadsheet4').innerHTML = a + ' / ' + b + ' = ' + (a / b)  
+    });
+  });
 
   mMZ1.bnd(v => O.mMt1.bnd(add,v,mMt1)
   .bnd(cube,mMt2)
@@ -723,7 +745,30 @@ function main(sources) {
     }
   });
 
-  const calcStream$ = merge( fibKeyPressAction5$, primeKeyPressAction5$, fibPressAction$, primeKeyPressAction2$, runTestAction$, quadAction$, testWAction$, testZAction$, testQAction$, edit1Action$, edit2Action$, colorAction$, deleteAction$, newTaskAction$, chatClickAction$, gameClickAction$, todoClickAction$, captionClickAction$, backClickAction$, forwardClickAction$, groupPressAction$, rollClickAction$, messagePressAction$, loginPressAction$, messages$, numClickAction$, opClickAction$ );
+  const spread1Press$ = sources.DOM
+    .select('#spread1').events('keypress');
+
+  const spread1PressAction$ = spread1Press$.map(e => {
+    console.log('Hello from spread1');
+    let v = e.target.value;
+    if( e.keyCode == 13 ) {
+      O.mMcount.ret(e.target.value);
+    }
+  });
+
+  const spread2Press$ = sources.DOM
+    .select('#spread2').events('keypress');
+
+  const spread2PressAction$ = spread2Press$.map(e => {
+    console.log('Hello from spread2');
+    let v = e.target.value;
+    if( e.keyCode == 13 ) {
+      O.mMcount2.ret(e.target.value);
+      console.log( 'In spread2PressAction. e.target.value is: ', e.target.value);
+    }
+  });
+
+  const calcStream$ = merge( spread1PressAction$, spread2PressAction$, fibKeyPressAction5$, primeKeyPressAction5$, fibPressAction$, primeKeyPressAction2$, runTestAction$, quadAction$, testWAction$, testZAction$, testQAction$, edit1Action$, edit2Action$, colorAction$, deleteAction$, newTaskAction$, chatClickAction$, gameClickAction$, todoClickAction$, captionClickAction$, backClickAction$, forwardClickAction$, groupPressAction$, rollClickAction$, messagePressAction$, loginPressAction$, messages$, numClickAction$, opClickAction$ );
   
     return {
       DOM: 
@@ -797,9 +842,10 @@ function main(sources) {
         h('a', {props: {href: "https://github.com/TylorS/most-subject", target: "_blank" }}, 'Most-subject' ),
         h('span', ' and '  ), 
         h('a', {props: {href: "https://github.com/paldepind/snabbdom", target: "_blank" }}, 'Snabbdom' ),
-        h('span', ' instead of RxJS and virtual-dom. The repository is at '  ),
+        h('span', ' instead of RxJS and virtual-dom. Reactive evaluation of expression is made possible by '  ),
+        h('a', {props: {href: "https://github.com/mobxjs/mobx", target: "_blank" }}, 'MobX' ),
+        h('span', ' . The code for this repository is at ' ),
         h('a', {props: {href: "https://github.com/dschalk/JS-monads-stable", target: "_blank" }}, 'JS-monads-stable' ),
-
         h('div#gameDiv2',  {style: {display: 'none'}}, [
         h('br'),
         h('span', ' Here are the basic rules:' ), 
@@ -959,6 +1005,30 @@ function main(sources) {
     mM$prime5.ret( [ [2], 3, 3 ] );
     mM$primeFibs.ret( [ [2], 3, 3, [2,3] ] ); 
 `    ),
+
+
+
+        h('h2', 'Hot Monad State'   ),
+        h('p', ' Expressions involving parsing or computation can be automatically evaluated without function calls when using attributes of the global monad object "O". The following two lines of code bring this feature to life: ' ),
+        h('pre', 
+`import {observable, computed, autorun, asReference} from 'mobx'
+monadState = observable(O);
+`  ),
+        h('p', ' MobX is designed to work with mutable state. It is a perfect match for "O". For any monad m and value v, when m.ret(v) executes, O.m is automatically updated (by the definition of "ret()") so that O.m.x == v becomes true. And since monadState = observable(O), monadState.m.x == v is also true. Entering numbers below updates monadState.count and monadStatecount2 in this way. Subsequently,four computation expressions encapsulated by MobX.autorun automatically update the DOM, as demonstrated below. ' ), 
+        h('span', 'O.mMcount.ret(number): ' ), 
+        h('input#spread1' ), 
+        h('br' ),  
+        h('span', 'O.mMcount2.ret(number): ' ), 
+        h('input#spread2', ), 
+        h('p#spreadsheet1',  ), 
+        h('p#spreadsheet2',  ), 
+        h('p#spreadsheet3',  ), 
+        h('p#spreadsheet4',  ), 
+        h('p', 'Here is the code: ' ),
+        code.spreadsheet,
+        h('p', ' "autorun" is aptly named. There is no need for function calls; the code automatically executes whenever monadState.mMcount or monadState.mMcount2 change. That happens whenever mMcount.ret() or mMcount2.ret() are called. ' ),
+        h('p', ' Neither mMcount, O.mMcount, nor monadState.mMcount are mutated in the code above. Only "O" mutates. This helps prevent functions from interfering with one another. Once a function creates a reference to O.mMcount, the value of that reference cannot be altered by another function. On the other hand, having "O" constantly mutate as state changes is a powerful feature. Compared to other data structures in this application, to me "O" seems brilliant and alive, and kind of like the sun at the center of the solar system. It is full of firey potential, and it is what makes effortless MobX reactivity possible. '  ),
+        h('p', ' Religeously adhering to immutability, or anything else for that matter, limits possiblities. This application runs by feeding streems into the virtual DOM, but I took a shortcut in the code above and directly altered the DOM by calling "element.innerHTML = ". The  Motorcycle.js process appears to be completely oblivious to this parallel procedure. Motorcycle.js and settomg "element.innerHTML =" appear to be orthoginal to one another. I don\'t have to do everything the Motorcycle.js way just because I am using that outstanding library as the basis for this application. '  ),  
         h('h3', 'Todo List Side Effects' ),
         h('p', ' When users do anything to the todo list, MonadStream instance mM$taskList runs its ret() method on the modified String representation of the list, causing the string to be added to mM$taskList.stream. mM$taskList.stream has only one subscriber, taskAction$, whose only purpose it to send the string representation of the todo list to the server. The server updates its persistent file and distributes a text representation of the updated todo list to all group members. Each group member receives the todo list as a string and parses it into a DOM node tree that is merged into the stream that updates the virtual DOM. All Todo List side effects can be traced to:' ),
         code.todoStream,
@@ -973,12 +1043,6 @@ function main(sources) {
         code.inc,
         h('p', '    ' ),
         h('hr' ),  
-
-
-
-
-
-
         h('h2', 'Concise Code Blocks For Information Control' ),
         h('p', ' Incoming websockets messages trigger updates to the game display, the chat display, and the todo list display. The members of a group see what other members are doing; and in the case of the todo list, they see the current list when they sign in to the group. When any member of a group adds a task, crosses it out as completed, edits its description, or removes it, the server updates the persistent file and all members of the group immediately see the revised list.  '  ),
         h('p', 'The code below shows how incoming websockets messages are routed. For example, mMZ10.release() is called when a new dice roll (prefixed by CA#$42) comes in.   ' ),

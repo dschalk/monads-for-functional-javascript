@@ -39,12 +39,14 @@
 /******/ 	// __webpack_public_path__
 /******/ 	__webpack_require__.p = "";
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 102);
+/******/ 	return __webpack_require__(__webpack_require__.s = 103);
 /******/ })
 /************************************************************************/
 /******/ ([
 /* 0 */
 /***/ function(module, exports) {
+
+	"use strict";
 
 	/** @license MIT License (c) copyright 2010-2016 original author or authors */
 	/** @author Brian Cavalier */
@@ -59,6 +61,8 @@
 /***/ },
 /* 1 */
 /***/ function(module, exports) {
+
+	"use strict";
 
 	/** @license MIT License (c) copyright 2010-2016 original author or authors */
 	/** @author Brian Cavalier */
@@ -92,12 +96,14 @@
 /* 2 */
 /***/ function(module, exports, __webpack_require__) {
 
+	'use strict';
+
 	/** @license MIT License (c) copyright 2010-2016 original author or authors */
 	/** @author Brian Cavalier */
 	/** @author John Hann */
 
-	var Disposable = __webpack_require__(72);
-	var SettableDisposable = __webpack_require__(73);
+	var Disposable = __webpack_require__(73);
+	var SettableDisposable = __webpack_require__(74);
 	var isPromise = __webpack_require__(11).isPromise;
 	var base = __webpack_require__(3);
 
@@ -222,7 +228,9 @@
 /* 3 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;(function (global, factory) {
+	var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
+
+	(function (global, factory) {
 	  if (true) {
 	    !(__WEBPACK_AMD_DEFINE_ARRAY__ = [exports], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 	  } else if (typeof exports !== "undefined") {
@@ -234,7 +242,7 @@
 	    factory(mod.exports);
 	    global.mostPrelude = mod.exports;
 	  }
-	})(this, function (exports) {
+	})(undefined, function (exports) {
 	  'use strict';
 
 	  Object.defineProperty(exports, "__esModule", {
@@ -506,6 +514,8 @@
 /* 4 */
 /***/ function(module, exports, __webpack_require__) {
 
+	'use strict';
+
 	/** @license MIT License (c) copyright 2010-2016 original author or authors */
 	/** @author Brian Cavalier */
 	/** @author John Hann */
@@ -513,8 +523,8 @@
 	var Stream = __webpack_require__(0);
 	var base = __webpack_require__(3);
 	var core = __webpack_require__(7);
-	var from = __webpack_require__(84).from;
-	var periodic = __webpack_require__(90).periodic;
+	var from = __webpack_require__(85).from;
+	var periodic = __webpack_require__(91).periodic;
 
 	/**
 	 * Core stream type
@@ -533,7 +543,7 @@
 	//-----------------------------------------------------------------------
 	// Creating
 
-	var create = __webpack_require__(83);
+	var create = __webpack_require__(84);
 
 	/**
 	 * Create a stream by imperatively pushing events.
@@ -548,7 +558,7 @@
 	//-----------------------------------------------------------------------
 	// Adapting other sources
 
-	var events = __webpack_require__(86);
+	var events = __webpack_require__(87);
 
 	/**
 	 * Create a stream of events from the supplied EventTarget or EventEmitter
@@ -564,7 +574,7 @@
 	//-----------------------------------------------------------------------
 	// Observing
 
-	var observe = __webpack_require__(63);
+	var observe = __webpack_require__(64);
 
 	exports.observe = observe.observe;
 	exports.forEach = observe.observe;
@@ -593,7 +603,7 @@
 
 	//-------------------------------------------------------
 
-	var loop = __webpack_require__(61).loop;
+	var loop = __webpack_require__(62).loop;
 
 	exports.loop = loop;
 
@@ -613,7 +623,7 @@
 
 	//-------------------------------------------------------
 
-	var accumulate = __webpack_require__(54);
+	var accumulate = __webpack_require__(55);
 
 	exports.scan = accumulate.scan;
 	exports.reduce = accumulate.reduce;
@@ -644,9 +654,9 @@
 	//-----------------------------------------------------------------------
 	// Building and extending
 
-	var unfold = __webpack_require__(91);
-	var iterate = __webpack_require__(89);
-	var generate = __webpack_require__(88);
+	var unfold = __webpack_require__(92);
+	var iterate = __webpack_require__(90);
+	var generate = __webpack_require__(89);
 	var build = __webpack_require__(23);
 
 	exports.unfold = unfold.unfold;
@@ -686,7 +696,7 @@
 	// Transforming
 
 	var transform = __webpack_require__(12);
-	var applicative = __webpack_require__(55);
+	var applicative = __webpack_require__(56);
 
 	exports.map = transform.map;
 	exports.constant = transform.constant;
@@ -734,7 +744,7 @@
 	//-----------------------------------------------------------------------
 	// Transducer support
 
-	var transduce = __webpack_require__(70);
+	var transduce = __webpack_require__(71);
 
 	exports.transduce = transduce.transduce;
 
@@ -790,7 +800,7 @@
 	  return continueWith(f, this);
 	};
 
-	var concatMap = __webpack_require__(56).concatMap;
+	var concatMap = __webpack_require__(57).concatMap;
 
 	exports.concatMap = concatMap;
 
@@ -821,7 +831,7 @@
 	//-----------------------------------------------------------------------
 	// Merging
 
-	var merge = __webpack_require__(62);
+	var merge = __webpack_require__(63);
 
 	exports.merge = merge.merge;
 	exports.mergeArray = merge.mergeArray;
@@ -857,7 +867,7 @@
 	//-----------------------------------------------------------------------
 	// Sampling
 
-	var sample = __webpack_require__(65);
+	var sample = __webpack_require__(66);
 
 	exports.sample = sample.sample;
 	exports.sampleWith = sample.sampleWith;
@@ -885,7 +895,7 @@
 	//-----------------------------------------------------------------------
 	// Zipping
 
-	var zip = __webpack_require__(71);
+	var zip = __webpack_require__(72);
 
 	exports.zip = zip.zip;
 
@@ -903,7 +913,7 @@
 	//-----------------------------------------------------------------------
 	// Switching
 
-	var switchLatest = __webpack_require__(67).switch;
+	var switchLatest = __webpack_require__(68).switch;
 
 	exports.switch = switchLatest;
 	exports.switchLatest = switchLatest;
@@ -920,7 +930,7 @@
 	//-----------------------------------------------------------------------
 	// Filtering
 
-	var filter = __webpack_require__(59);
+	var filter = __webpack_require__(60);
 
 	exports.filter = filter.filter;
 	exports.skipRepeats = exports.distinct = filter.skipRepeats;
@@ -959,7 +969,7 @@
 	//-----------------------------------------------------------------------
 	// Slicing
 
-	var slice = __webpack_require__(66);
+	var slice = __webpack_require__(67);
 
 	exports.take = slice.take;
 	exports.skip = slice.skip;
@@ -1024,7 +1034,7 @@
 	//-----------------------------------------------------------------------
 	// Time slicing
 
-	var timeslice = __webpack_require__(68);
+	var timeslice = __webpack_require__(69);
 
 	exports.until = exports.takeUntil = timeslice.takeUntil;
 	exports.since = exports.skipUntil = timeslice.skipUntil;
@@ -1073,7 +1083,7 @@
 	//-----------------------------------------------------------------------
 	// Delaying
 
-	var delay = __webpack_require__(57).delay;
+	var delay = __webpack_require__(58).delay;
 
 	exports.delay = delay;
 
@@ -1088,7 +1098,7 @@
 	//-----------------------------------------------------------------------
 	// Getting event timestamp
 
-	var timestamp = __webpack_require__(69).timestamp;
+	var timestamp = __webpack_require__(70).timestamp;
 
 	exports.timestamp = timestamp;
 
@@ -1104,7 +1114,7 @@
 	//-----------------------------------------------------------------------
 	// Rate limiting
 
-	var limit = __webpack_require__(60);
+	var limit = __webpack_require__(61);
 
 	exports.throttle = limit.throttle;
 	exports.debounce = limit.debounce;
@@ -1135,7 +1145,7 @@
 	//-----------------------------------------------------------------------
 	// Awaiting Promises
 
-	var promises = __webpack_require__(64);
+	var promises = __webpack_require__(65);
 
 	exports.fromPromise = promises.fromPromise;
 	exports.await = promises.awaitPromises;
@@ -1152,7 +1162,7 @@
 	//-----------------------------------------------------------------------
 	// Error handling
 
-	var errors = __webpack_require__(58);
+	var errors = __webpack_require__(59);
 
 	exports.recoverWith = errors.flatMapError;
 	exports.flatMapError = errors.flatMapError;
@@ -1191,7 +1201,9 @@
 /* 5 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;(function (global, factory) {
+	var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
+
+	(function (global, factory) {
 	  if (true) {
 	    !(__WEBPACK_AMD_DEFINE_ARRAY__ = [exports, __webpack_require__(3)], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 	  } else if (typeof exports !== "undefined") {
@@ -1203,7 +1215,7 @@
 	    factory(mod.exports, global.prelude);
 	    global.mostMulticast = mod.exports;
 	  }
-	})(this, function (exports, _prelude) {
+	})(undefined, function (exports, _prelude) {
 	  'use strict';
 
 	  Object.defineProperty(exports, "__esModule", {
@@ -1288,7 +1300,6 @@
 	      _classCallCheck(this, MulticastSource);
 
 	      this.source = source;
-	      this.sink = undefined;
 	      this.sinks = [];
 	      this._disposable = emptyDisposable;
 	    }
@@ -1306,46 +1317,33 @@
 	      key: '_dispose',
 	      value: function _dispose() {
 	        var disposable = this._disposable;
-	        this._disposable = void 0;
+	        this._disposable = emptyDisposable;
 	        return Promise.resolve(disposable).then(dispose);
 	      }
 	    }, {
 	      key: 'add',
 	      value: function add(sink) {
-	        if (this.sink === undefined) {
-	          this.sink = sink;
-	          return 1;
-	        }
-
 	        this.sinks = (0, _prelude.append)(sink, this.sinks);
-	        return this.sinks.length + 1;
+	        return this.sinks.length;
 	      }
 	    }, {
 	      key: 'remove',
 	      value: function remove(sink) {
-	        if (sink === this.sink) {
-	          this.sink = this.sinks.shift();
-	          return this.sink === undefined ? 0 : this.sinks.length + 1;
+	        var i = (0, _prelude.findIndex)(sink, this.sinks);
+	        // istanbul ignore next
+	        if (i >= 0) {
+	          this.sinks = (0, _prelude.remove)(i, this.sinks);
 	        }
 
-	        this.sinks = (0, _prelude.remove)((0, _prelude.findIndex)(sink, this.sinks), this.sinks);
-	        return this.sinks.length + 1;
+	        return this.sinks.length;
 	      }
 	    }, {
 	      key: 'event',
 	      value: function event(time, value) {
-	        // eslint-disable-line complexity
-	        if (this.sink === undefined) {
-	          return;
-	        }
-
 	        var s = this.sinks;
-	        if (s.length === 0) {
-	          this.sink.event(time, value);
-	          return;
+	        if (s.length === 1) {
+	          return s[0].event(time, value);
 	        }
-
-	        tryEvent(time, value, this.sink);
 	        for (var i = 0; i < s.length; ++i) {
 	          tryEvent(time, value, s[i]);
 	        }
@@ -1353,10 +1351,7 @@
 	    }, {
 	      key: 'end',
 	      value: function end(time, value) {
-	        // Important: slice first since sink.end may change
-	        // the set of sinks
-	        var s = this.sinks.slice();
-	        tryEnd(time, value, this.sink);
+	        var s = this.sinks;
 	        for (var i = 0; i < s.length; ++i) {
 	          tryEnd(time, value, s[i]);
 	        }
@@ -1364,10 +1359,7 @@
 	    }, {
 	      key: 'error',
 	      value: function error(time, err) {
-	        // Important: slice first since sink.error may change
-	        // the set of sinks
-	        var s = this.sinks.slice();
-	        this.sink.error(time, err);
+	        var s = this.sinks;
 	        for (var i = 0; i < s.length; ++i) {
 	          s[i].error(time, err);
 	        }
@@ -1389,6 +1381,8 @@
 /***/ },
 /* 6 */
 /***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
 
 	/** @license MIT License (c) copyright 2010-2016 original author or authors */
 	/** @author Brian Cavalier */
@@ -1450,6 +1444,8 @@
 /***/ },
 /* 7 */
 /***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
 
 	/** @license MIT License (c) copyright 2010-2016 original author or authors */
 	/** @author Brian Cavalier */
@@ -1521,13 +1517,15 @@
 /* 8 */
 /***/ function(module, exports, __webpack_require__) {
 
+	'use strict';
+
 	/** @license MIT License (c) copyright 2010-2016 original author or authors */
 	/** @author Brian Cavalier */
 	/** @author John Hann */
 
 	var Stream = __webpack_require__(0);
 	var dispose = __webpack_require__(2);
-	var LinkedList = __webpack_require__(52);
+	var LinkedList = __webpack_require__(53);
 	var identity = __webpack_require__(3).id;
 
 	exports.mergeConcurrently = mergeConcurrently;
@@ -1646,6 +1644,8 @@
 /* 9 */
 /***/ function(module, exports) {
 
+	"use strict";
+
 	/** @license MIT License (c) copyright 2010-2016 original author or authors */
 	/** @author Brian Cavalier */
 	/** @author John Hann */
@@ -1673,9 +1673,11 @@
 /* 10 */
 /***/ function(module, exports) {
 
+	'use strict';
+
 	module.exports = {
 	  array: Array.isArray,
-	  primitive: function (s) {
+	  primitive: function primitive(s) {
 	    return typeof s === 'string' || typeof s === 'number';
 	  }
 	};
@@ -1684,6 +1686,10 @@
 /* 11 */
 /***/ function(module, exports) {
 
+	'use strict';
+
+	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
+
 	/** @license MIT License (c) copyright 2010-2016 original author or authors */
 	/** @author Brian Cavalier */
 	/** @author John Hann */
@@ -1691,12 +1697,14 @@
 	exports.isPromise = isPromise;
 
 	function isPromise(p) {
-		return p !== null && typeof p === 'object' && typeof p.then === 'function';
+		return p !== null && (typeof p === 'undefined' ? 'undefined' : _typeof(p)) === 'object' && typeof p.then === 'function';
 	}
 
 /***/ },
 /* 12 */
 /***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
 
 	/** @license MIT License (c) copyright 2010-2016 original author or authors */
 	/** @author Brian Cavalier */
@@ -1749,6 +1757,8 @@
 /* 13 */
 /***/ function(module, exports) {
 
+	"use strict";
+
 	/** @license MIT License (c) copyright 2010-2016 original author or authors */
 	/** @author Brian Cavalier */
 	/** @author John Hann */
@@ -1778,6 +1788,8 @@
 /***/ },
 /* 14 */
 /***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
 
 	/** @license MIT License (c) copyright 2010-2016 original author or authors */
 	/** @author Brian Cavalier */
@@ -1824,6 +1836,8 @@
 /* 15 */
 /***/ function(module, exports) {
 
+	"use strict";
+
 	module.exports = function (sel, data, children, text, elm) {
 	  var key = data === undefined ? undefined : data.key;
 	  return { sel: sel, data: data, children: children,
@@ -1841,7 +1855,7 @@
 	});
 	exports.mockDOMSource = exports.makeDOMDriver = exports.video = exports.ul = exports.u = exports.tr = exports.title = exports.thead = exports.th = exports.tfoot = exports.textarea = exports.td = exports.tbody = exports.table = exports.sup = exports.sub = exports.style = exports.strong = exports.span = exports.source = exports.small = exports.select = exports.section = exports.script = exports.samp = exports.s = exports.ruby = exports.rt = exports.rp = exports.q = exports.pre = exports.param = exports.p = exports.option = exports.optgroup = exports.ol = exports.object = exports.noscript = exports.nav = exports.meta = exports.menu = exports.mark = exports.map = exports.main = exports.link = exports.li = exports.legend = exports.label = exports.keygen = exports.kbd = exports.ins = exports.input = exports.img = exports.iframe = exports.i = exports.html = exports.hr = exports.hgroup = exports.header = exports.head = exports.h6 = exports.h5 = exports.h4 = exports.h3 = exports.h2 = exports.h1 = exports.form = exports.footer = exports.figure = exports.figcaption = exports.fieldset = exports.embed = exports.em = exports.dt = exports.dl = exports.div = exports.dir = exports.dfn = exports.del = exports.dd = exports.colgroup = exports.col = exports.code = exports.cite = exports.caption = exports.canvas = exports.button = exports.br = exports.body = exports.blockquote = exports.bdo = exports.bdi = exports.base = exports.b = exports.audio = exports.aside = exports.article = exports.area = exports.address = exports.abbr = exports.a = exports.h = exports.thunk = exports.modules = undefined;
 
-	var _makeDOMDriver = __webpack_require__(42);
+	var _makeDOMDriver = __webpack_require__(43);
 
 	Object.defineProperty(exports, 'makeDOMDriver', {
 	  enumerable: true,
@@ -1850,7 +1864,7 @@
 	  }
 	});
 
-	var _mockDOMSource = __webpack_require__(43);
+	var _mockDOMSource = __webpack_require__(44);
 
 	Object.defineProperty(exports, 'mockDOMSource', {
 	  enumerable: true,
@@ -1863,15 +1877,15 @@
 
 	var modules = _interopRequireWildcard(_modules);
 
-	var _thunk = __webpack_require__(101);
+	var _thunk = __webpack_require__(102);
 
 	var _thunk2 = _interopRequireDefault(_thunk);
 
-	var _hyperscript = __webpack_require__(41);
+	var _hyperscript = __webpack_require__(42);
 
 	var _hyperscript2 = _interopRequireDefault(_hyperscript);
 
-	var _hyperscriptHelpers = __webpack_require__(47);
+	var _hyperscriptHelpers = __webpack_require__(48);
 
 	var _hyperscriptHelpers2 = _interopRequireDefault(_hyperscriptHelpers);
 
@@ -2100,6 +2114,8 @@
 /* 17 */
 /***/ function(module, exports) {
 
+	'use strict';
+
 	// shim for using process in browser
 
 	var process = module.exports = {};
@@ -2210,13 +2226,13 @@
 	});
 	exports.makeEventsSelector = undefined;
 
-	var _domEvent = __webpack_require__(39);
+	var _domEvent = __webpack_require__(40);
 
 	var _makeIsStrictlyInRootScope = __webpack_require__(20);
 
 	var matchesSelector = void 0;
 	try {
-	  matchesSelector = __webpack_require__(48);
+	  matchesSelector = __webpack_require__(49);
 	} catch (e) {
 	  matchesSelector = function matchesSelector() {};
 	}
@@ -2393,27 +2409,27 @@
 	});
 	exports.EventsModule = exports.HeroModule = exports.AttrsModule = exports.PropsModule = exports.ClassModule = exports.StyleModule = undefined;
 
-	var _class = __webpack_require__(95);
+	var _class = __webpack_require__(96);
 
 	var _class2 = _interopRequireDefault(_class);
 
-	var _props = __webpack_require__(98);
+	var _props = __webpack_require__(99);
 
 	var _props2 = _interopRequireDefault(_props);
 
-	var _attributes = __webpack_require__(94);
+	var _attributes = __webpack_require__(95);
 
 	var _attributes2 = _interopRequireDefault(_attributes);
 
-	var _eventlisteners = __webpack_require__(96);
+	var _eventlisteners = __webpack_require__(97);
 
 	var _eventlisteners2 = _interopRequireDefault(_eventlisteners);
 
-	var _style = __webpack_require__(99);
+	var _style = __webpack_require__(100);
 
 	var _style2 = _interopRequireDefault(_style);
 
-	var _hero = __webpack_require__(97);
+	var _hero = __webpack_require__(98);
 
 	var _hero2 = _interopRequireDefault(_hero);
 
@@ -2435,13 +2451,15 @@
 
 	"use strict";
 
+	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
+
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
 	var SCOPE_PREFIX = "cycle-scope-";
 
 	var isElement = function isElement(obj) {
-	  return typeof HTMLElement === "object" ? obj instanceof HTMLElement || obj instanceof DocumentFragment : obj && typeof obj === "object" && obj !== null && (obj.nodeType === 1 || obj.nodeType === 11) && typeof obj.nodeName === "string";
+	  return (typeof HTMLElement === "undefined" ? "undefined" : _typeof(HTMLElement)) === "object" ? obj instanceof HTMLElement || obj instanceof DocumentFragment : obj && (typeof obj === "undefined" ? "undefined" : _typeof(obj)) === "object" && obj !== null && (obj.nodeType === 1 || obj.nodeType === 11) && typeof obj.nodeName === "string";
 	};
 
 	var domSelectorParser = function domSelectorParser(selectors) {
@@ -2461,6 +2479,8 @@
 /***/ },
 /* 23 */
 /***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
 
 	/** @license MIT License (c) copyright 2010-2016 original author or authors */
 	/** @author Brian Cavalier */
@@ -2509,6 +2529,8 @@
 /***/ },
 /* 24 */
 /***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
 
 	/** @license MIT License (c) copyright 2010-2016 original author or authors */
 	/** @author Brian Cavalier */
@@ -2615,6 +2637,8 @@
 /* 25 */
 /***/ function(module, exports, __webpack_require__) {
 
+	'use strict';
+
 	/** @license MIT License (c) copyright 2010-2016 original author or authors */
 	/** @author Brian Cavalier */
 	/** @author John Hann */
@@ -2685,6 +2709,8 @@
 /* 26 */
 /***/ function(module, exports, __webpack_require__) {
 
+	'use strict';
+
 	/** @license MIT License (c) copyright 2010-2016 original author or authors */
 	/** @author Brian Cavalier */
 	/** @author John Hann */
@@ -2720,6 +2746,8 @@
 /* 27 */
 /***/ function(module, exports) {
 
+	"use strict";
+
 	/** @license MIT License (c) copyright 2010-2016 original author or authors */
 	/** @author Brian Cavalier */
 	/** @author John Hann */
@@ -2742,6 +2770,8 @@
 /* 28 */
 /***/ function(module, exports) {
 
+	"use strict";
+
 	/** @license MIT License (c) copyright 2010-2016 original author or authors */
 	/** @author Brian Cavalier */
 	/** @author John Hann */
@@ -2757,6 +2787,8 @@
 /***/ },
 /* 29 */
 /***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
 
 	/** @license MIT License (c) copyright 2010-2016 original author or authors */
 	/** @author Brian Cavalier */
@@ -2812,13 +2844,15 @@
 /* 30 */
 /***/ function(module, exports, __webpack_require__) {
 
+	'use strict';
+
 	/** @license MIT License (c) copyright 2010-2016 original author or authors */
 	/** @author Brian Cavalier */
 	/** @author John Hann */
 
 	var Pipe = __webpack_require__(1);
 	var Filter = __webpack_require__(29);
-	var FilterMap = __webpack_require__(74);
+	var FilterMap = __webpack_require__(75);
 	var base = __webpack_require__(3);
 
 	module.exports = Map;
@@ -2872,6 +2906,8 @@
 /* 31 */
 /***/ function(module, exports) {
 
+	'use strict';
+
 	/** @license MIT License (c) copyright 2010-2016 original author or authors */
 	/** @author Brian Cavalier */
 	/** @author John Hann */
@@ -2907,13 +2943,15 @@
 /* 32 */
 /***/ function(module, exports, __webpack_require__) {
 
+	'use strict';
+
 	/** @license MIT License (c) copyright 2010-2016 original author or authors */
 	/** @author Brian Cavalier */
 	/** @author John Hann */
 
-	var Observer = __webpack_require__(79);
+	var Observer = __webpack_require__(80);
 	var dispose = __webpack_require__(2);
-	var defaultScheduler = __webpack_require__(76);
+	var defaultScheduler = __webpack_require__(77);
 
 	exports.withDefaultScheduler = withDefaultScheduler;
 	exports.withScheduler = withScheduler;
@@ -2938,6 +2976,8 @@
 /***/ },
 /* 33 */
 /***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
 
 	/** @license MIT License (c) copyright 2010-2016 original author or authors */
 	/** @author Brian Cavalier */
@@ -3031,6 +3071,8 @@
 /* 34 */
 /***/ function(module, exports, __webpack_require__) {
 
+	'use strict';
+
 	/** @license MIT License (c) copyright 2010-2016 original author or authors */
 	/** @author Brian Cavalier */
 	/** @author John Hann */
@@ -3067,7 +3109,7 @@
 	});
 	exports.default = selectorParser;
 
-	var _browserSplit = __webpack_require__(46);
+	var _browserSplit = __webpack_require__(47);
 
 	var _browserSplit2 = _interopRequireDefault(_browserSplit);
 
@@ -3124,6 +3166,8 @@
 /* 36 */
 /***/ function(module, exports, __webpack_require__) {
 
+	'use strict';
+
 	var VNode = __webpack_require__(15);
 	var is = __webpack_require__(10);
 
@@ -3174,12 +3218,14 @@
 
 	'use strict';
 
+	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
+
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
 	exports.run = undefined;
 
-	var _mostSubject = __webpack_require__(51);
+	var _mostSubject = __webpack_require__(52);
 
 	function makeSinkProxies(drivers) {
 	  var sinkProxies = {};
@@ -3250,7 +3296,7 @@
 	  if (typeof main !== 'function') {
 	    throw new Error('First argument given to run() must be the ' + '\'main\' function.');
 	  }
-	  if (typeof drivers !== 'object' || drivers === null) {
+	  if ((typeof drivers === 'undefined' ? 'undefined' : _typeof(drivers)) !== 'object' || drivers === null) {
 	    throw new Error('Second argument given to run() must be an ' + 'object with driver functions as properties.');
 	  }
 	  if (!Object.keys(drivers).length) {
@@ -3293,12 +3339,2088 @@
 
 /***/ },
 /* 38 */
+/***/ function(module, exports) {
+
+	/* WEBPACK VAR INJECTION */(function(global) {"use strict";
+
+	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
+
+	var __extends = undefined && undefined.__extends || function (d, b) {
+	    for (var p in b) {
+	        if (b.hasOwnProperty(p)) d[p] = b[p];
+	    }function __() {
+	        this.constructor = d;
+	    }
+	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+	};
+	registerGlobals();
+	exports.extras = {
+	    allowStateChanges: allowStateChanges,
+	    getAtom: getAtom,
+	    getDebugName: getDebugName,
+	    getDependencyTree: getDependencyTree,
+	    getObserverTree: getObserverTree,
+	    isComputingDerivation: isComputingDerivation,
+	    isSpyEnabled: isSpyEnabled,
+	    resetGlobalState: resetGlobalState,
+	    spyReport: spyReport,
+	    spyReportEnd: spyReportEnd,
+	    spyReportStart: spyReportStart,
+	    trackTransitions: trackTransitions
+	};
+	exports._ = {
+	    getAdministration: getAdministration,
+	    quickDiff: quickDiff,
+	    resetGlobalState: resetGlobalState
+	};
+	function autorun(view, scope) {
+	    assertUnwrapped(view, "autorun methods cannot have modifiers");
+	    invariant(typeof view === "function", "autorun expects a function");
+	    invariant(view.length === 0, "autorun expects a function without arguments");
+	    if (scope) view = view.bind(scope);
+	    var reaction = new Reaction(view.name || "Autorun@" + getNextId(), function () {
+	        this.track(view);
+	    });
+	    reaction.schedule();
+	    return reaction.getDisposer();
+	}
+	exports.autorun = autorun;
+	function when(predicate, effect, scope) {
+	    var disposeImmediately = false;
+	    var disposer = autorun(function () {
+	        if (predicate.call(scope)) {
+	            if (disposer) disposer();else disposeImmediately = true;
+	            untracked(function () {
+	                return effect.call(scope);
+	            });
+	        }
+	    });
+	    if (disposeImmediately) disposer();
+	    return disposer;
+	}
+	exports.when = when;
+	function autorunUntil(predicate, effect, scope) {
+	    deprecated("`autorunUntil` is deprecated, please use `when`.");
+	    return when.apply(null, arguments);
+	}
+	exports.autorunUntil = autorunUntil;
+	function autorunAsync(func, delay, scope) {
+	    if (delay === void 0) {
+	        delay = 1;
+	    }
+	    if (scope) func = func.bind(scope);
+	    var isScheduled = false;
+	    var r = new Reaction(func.name || "AutorunAsync@" + getNextId(), function () {
+	        if (!isScheduled) {
+	            isScheduled = true;
+	            setTimeout(function () {
+	                isScheduled = false;
+	                if (!r.isDisposed) r.track(func);
+	            }, delay);
+	        }
+	    });
+	    r.schedule();
+	    return r.getDisposer();
+	}
+	exports.autorunAsync = autorunAsync;
+	function reaction(expression, effect, fireImmediately, delay, scope) {
+	    if (fireImmediately === void 0) {
+	        fireImmediately = false;
+	    }
+	    if (delay === void 0) {
+	        delay = 0;
+	    }
+	    var name = expression.name || effect.name || "Reaction@" + getNextId();
+	    if (scope) {
+	        expression = expression.bind(scope);
+	        effect = action(name, effect.bind(scope));
+	    }
+	    var firstTime = true;
+	    var isScheduled = false;
+	    function reactionRunner() {
+	        if (r.isDisposed) return;
+	        var nextValue;
+	        r.track(function () {
+	            return nextValue = expression();
+	        });
+	        if (!firstTime || fireImmediately) effect(nextValue);
+	        if (firstTime) firstTime = false;
+	    }
+	    var r = new Reaction(name, function () {
+	        if (delay < 1) {
+	            reactionRunner();
+	        } else if (!isScheduled) {
+	            isScheduled = true;
+	            setTimeout(function () {
+	                isScheduled = false;
+	                reactionRunner();
+	            }, delay);
+	        }
+	    });
+	    r.schedule();
+	    return r.getDisposer();
+	}
+	exports.reaction = reaction;
+	function computed(targetOrExpr, keyOrScope, baseDescriptor, options) {
+	    if (arguments.length < 3 && typeof targetOrExpr === "function") return computedExpr(targetOrExpr, keyOrScope);
+	    return computedDecorator.apply(null, arguments);
+	}
+	exports.computed = computed;
+	function computedExpr(expr, scope) {
+	    var _a = getValueModeFromValue(expr, ValueMode.Recursive),
+	        mode = _a[0],
+	        value = _a[1];
+	    return new ComputedValue(value, scope, mode === ValueMode.Structure, value.name);
+	}
+	function computedDecorator(target, key, baseDescriptor, options) {
+	    if (arguments.length === 1) {
+	        var options_1 = target;
+	        return function (target, key, baseDescriptor) {
+	            return computedDecorator.call(null, target, key, baseDescriptor, options_1);
+	        };
+	    }
+	    invariant(baseDescriptor && baseDescriptor.hasOwnProperty("get"), "@computed can only be used on getter functions, like: '@computed get myProps() { return ...; }'");
+	    assertPropertyConfigurable(target, key);
+	    var descriptor = {};
+	    var getter = baseDescriptor.get;
+	    invariant((typeof target === "undefined" ? "undefined" : _typeof(target)) === "object", "The @observable decorator can only be used on objects", key);
+	    invariant(typeof getter === "function", "@observable expects a getter function if used on a property.", key);
+	    invariant(!baseDescriptor.set, "@observable properties cannot have a setter.", key);
+	    invariant(getter.length === 0, "@observable getter functions should not take arguments.", key);
+	    descriptor.configurable = true;
+	    descriptor.enumerable = false;
+	    descriptor.get = function () {
+	        setObservableObjectProperty(asObservableObject(this, undefined, ValueMode.Recursive), key, options && options.asStructure === true ? asStructure(getter) : getter);
+	        return this[key];
+	    };
+	    descriptor.set = throwingComputedValueSetter;
+	    if (!baseDescriptor) {
+	        Object.defineProperty(target, key, descriptor);
+	    } else {
+	        return descriptor;
+	    }
+	}
+	function throwingComputedValueSetter() {
+	    throw new Error("[ComputedValue] It is not allowed to assign new values to computed properties.");
+	}
+	function createTransformer(transformer, onCleanup) {
+	    invariant(typeof transformer === "function" && transformer.length === 1, "createTransformer expects a function that accepts one argument");
+	    var objectCache = {};
+	    var resetId = globalState.resetId;
+	    var Transformer = function (_super) {
+	        __extends(Transformer, _super);
+	        function Transformer(sourceIdentifier, sourceObject) {
+	            _super.call(this, function () {
+	                return transformer(sourceObject);
+	            }, null, false, "Transformer-" + transformer.name + "-" + sourceIdentifier);
+	            this.sourceIdentifier = sourceIdentifier;
+	            this.sourceObject = sourceObject;
+	        }
+	        Transformer.prototype.onBecomeUnobserved = function () {
+	            var lastValue = this.value;
+	            _super.prototype.onBecomeUnobserved.call(this);
+	            delete objectCache[this.sourceIdentifier];
+	            if (onCleanup) onCleanup(lastValue, this.sourceObject);
+	        };
+	        return Transformer;
+	    }(ComputedValue);
+	    return function (object) {
+	        if (resetId !== globalState.resetId) {
+	            objectCache = {};
+	            resetId = globalState.resetId;
+	        }
+	        var identifier = getMemoizationId(object);
+	        var reactiveTransformer = objectCache[identifier];
+	        if (reactiveTransformer) return reactiveTransformer.get();
+	        reactiveTransformer = objectCache[identifier] = new Transformer(identifier, object);
+	        return reactiveTransformer.get();
+	    };
+	}
+	exports.createTransformer = createTransformer;
+	function getMemoizationId(object) {
+	    if (object === null || (typeof object === "undefined" ? "undefined" : _typeof(object)) !== "object") throw new Error("[mobx] transform expected some kind of object, got: " + object);
+	    var tid = object.$transformId;
+	    if (tid === undefined) {
+	        tid = getNextId();
+	        Object.defineProperty(object, "$transformId", {
+	            configurable: true,
+	            writable: true,
+	            enumerable: false,
+	            value: tid
+	        });
+	    }
+	    return tid;
+	}
+	function expr(expr, scope) {
+	    if (!isComputingDerivation()) console.warn("[mobx.expr] 'expr' should only be used inside other reactive functions.");
+	    return computed(expr, scope).get();
+	}
+	exports.expr = expr;
+	function extendObservable(target) {
+	    var properties = [];
+	    for (var _i = 1; _i < arguments.length; _i++) {
+	        properties[_i - 1] = arguments[_i];
+	    }
+	    invariant(arguments.length >= 2, "extendObservable expected 2 or more arguments");
+	    invariant((typeof target === "undefined" ? "undefined" : _typeof(target)) === "object", "extendObservable expects an object as first argument");
+	    invariant(!(target instanceof ObservableMap), "extendObservable should not be used on maps, use map.merge instead");
+	    properties.forEach(function (propSet) {
+	        invariant((typeof propSet === "undefined" ? "undefined" : _typeof(propSet)) === "object", "all arguments of extendObservable should be objects");
+	        extendObservableHelper(target, propSet, ValueMode.Recursive, null);
+	    });
+	    return target;
+	}
+	exports.extendObservable = extendObservable;
+	function extendObservableHelper(target, properties, mode, name) {
+	    var adm = asObservableObject(target, name, mode);
+	    for (var key in properties) {
+	        if (properties.hasOwnProperty(key)) {
+	            if (target === properties && !isPropertyConfigurable(target, key)) continue;
+	            setObservableObjectProperty(adm, key, properties[key]);
+	        }
+	    }return target;
+	}
+	function getDependencyTree(thing, property) {
+	    return nodeToDependencyTree(getAtom(thing, property));
+	}
+	function nodeToDependencyTree(node) {
+	    var result = {
+	        name: node.name
+	    };
+	    if (node.observing && node.observing.length) result.dependencies = unique(node.observing).map(nodeToDependencyTree);
+	    return result;
+	}
+	function getObserverTree(thing, property) {
+	    return nodeToObserverTree(getAtom(thing, property));
+	}
+	function nodeToObserverTree(node) {
+	    var result = {
+	        name: node.name
+	    };
+	    if (node.observers && node.observers.length) result.observers = unique(node.observers).map(nodeToObserverTree);
+	    return result;
+	}
+	function intercept(thing, propOrHandler, handler) {
+	    if (typeof handler === "function") return interceptProperty(thing, propOrHandler, handler);else return interceptInterceptable(thing, propOrHandler);
+	}
+	exports.intercept = intercept;
+	function interceptInterceptable(thing, handler) {
+	    if (isPlainObject(thing) && !isObservableObject(thing)) {
+	        deprecated("Passing plain objects to intercept / observe is deprecated and will be removed in 3.0");
+	        return getAdministration(observable(thing)).intercept(handler);
+	    }
+	    return getAdministration(thing).intercept(handler);
+	}
+	function interceptProperty(thing, property, handler) {
+	    if (isPlainObject(thing) && !isObservableObject(thing)) {
+	        deprecated("Passing plain objects to intercept / observe is deprecated and will be removed in 3.0");
+	        extendObservable(thing, {
+	            property: thing[property]
+	        });
+	        return interceptProperty(thing, property, handler);
+	    }
+	    return getAdministration(thing, property).intercept(handler);
+	}
+	function isObservable(value, property) {
+	    if (value === null || value === undefined) return false;
+	    if (property !== undefined) {
+	        if (value instanceof ObservableMap || value instanceof ObservableArray) throw new Error("[mobx.isObservable] isObservable(object, propertyName) is not supported for arrays and maps. Use map.has or array.length instead.");else if (isObservableObject(value)) {
+	            var o = value.$mobx;
+	            return o.values && !!o.values[property];
+	        }
+	        return false;
+	    }
+	    return !!value.$mobx || value instanceof Atom || value instanceof Reaction || value instanceof ComputedValue;
+	}
+	exports.isObservable = isObservable;
+	function observableDecorator(target, key, baseDescriptor) {
+	    invariant(arguments.length >= 2 && arguments.length <= 3, "Illegal decorator config", key);
+	    assertPropertyConfigurable(target, key);
+	    if (baseDescriptor && baseDescriptor.hasOwnProperty("get")) {
+	        deprecated("Using @observable on computed values is deprecated. Use @computed instead.");
+	        return computed.apply(null, arguments);
+	    }
+	    var descriptor = {};
+	    invariant((typeof target === "undefined" ? "undefined" : _typeof(target)) === "object", "The @observable decorator can only be used on objects", key);
+	    descriptor.configurable = true;
+	    descriptor.enumerable = true;
+	    descriptor.get = function () {
+	        var _this = this;
+	        var baseValue = undefined;
+	        if (baseDescriptor && baseDescriptor.initializer) {
+	            baseValue = baseDescriptor.initializer();
+	            if (typeof baseValue === "function") baseValue = asReference(baseValue);
+	        }
+	        allowStateChanges(true, function () {
+	            setObservableObjectProperty(asObservableObject(_this, undefined, ValueMode.Recursive), key, baseValue);
+	        });
+	        return this[key];
+	    };
+	    descriptor.set = function (value) {
+	        setObservableObjectProperty(asObservableObject(this, undefined, ValueMode.Recursive), key, typeof value === "function" ? asReference(value) : value);
+	    };
+	    if (!baseDescriptor) {
+	        Object.defineProperty(target, key, descriptor);
+	    } else {
+	        return descriptor;
+	    }
+	}
+	function observable(v, keyOrScope) {
+	    if (v === void 0) {
+	        v = undefined;
+	    }
+	    if (typeof arguments[1] === "string") return observableDecorator.apply(null, arguments);
+	    invariant(arguments.length < 3, "observable expects zero, one or two arguments");
+	    if (isObservable(v)) return v;
+	    var _a = getValueModeFromValue(v, ValueMode.Recursive),
+	        mode = _a[0],
+	        value = _a[1];
+	    var sourceType = mode === ValueMode.Reference ? ValueType.Reference : getTypeOfValue(value);
+	    switch (sourceType) {
+	        case ValueType.Array:
+	        case ValueType.PlainObject:
+	            return makeChildObservable(value, mode);
+	        case ValueType.Reference:
+	        case ValueType.ComplexObject:
+	            return new ObservableValue(value, mode);
+	        case ValueType.ComplexFunction:
+	            throw new Error("[mobx.observable] To be able to make a function reactive it should not have arguments. If you need an observable reference to a function, use `observable(asReference(f))`");
+	        case ValueType.ViewFunction:
+	            deprecated("Use `computed(expr)` instead of `observable(expr)`");
+	            return computed(v, keyOrScope);
+	    }
+	    invariant(false, "Illegal State");
+	}
+	exports.observable = observable;
+	var ValueType;
+	(function (ValueType) {
+	    ValueType[ValueType["Reference"] = 0] = "Reference";
+	    ValueType[ValueType["PlainObject"] = 1] = "PlainObject";
+	    ValueType[ValueType["ComplexObject"] = 2] = "ComplexObject";
+	    ValueType[ValueType["Array"] = 3] = "Array";
+	    ValueType[ValueType["ViewFunction"] = 4] = "ViewFunction";
+	    ValueType[ValueType["ComplexFunction"] = 5] = "ComplexFunction";
+	})(ValueType || (ValueType = {}));
+	function getTypeOfValue(value) {
+	    if (value === null || value === undefined) return ValueType.Reference;
+	    if (typeof value === "function") return value.length ? ValueType.ComplexFunction : ValueType.ViewFunction;
+	    if (Array.isArray(value) || value instanceof ObservableArray) return ValueType.Array;
+	    if ((typeof value === "undefined" ? "undefined" : _typeof(value)) === "object") return isPlainObject(value) ? ValueType.PlainObject : ValueType.ComplexObject;
+	    return ValueType.Reference;
+	}
+	function observe(thing, propOrCb, cbOrFire, fireImmediately) {
+	    if (typeof cbOrFire === "function") return observeObservableProperty(thing, propOrCb, cbOrFire, fireImmediately);else return observeObservable(thing, propOrCb, cbOrFire);
+	}
+	exports.observe = observe;
+	function observeObservable(thing, listener, fireImmediately) {
+	    if (isPlainObject(thing) && !isObservableObject(thing)) {
+	        deprecated("Passing plain objects to intercept / observe is deprecated and will be removed in 3.0");
+	        return getAdministration(observable(thing)).observe(listener, fireImmediately);
+	    }
+	    return getAdministration(thing).observe(listener, fireImmediately);
+	}
+	function observeObservableProperty(thing, property, listener, fireImmediately) {
+	    if (isPlainObject(thing) && !isObservableObject(thing)) {
+	        deprecated("Passing plain objects to intercept / observe is deprecated and will be removed in 3.0");
+	        extendObservable(thing, {
+	            property: thing[property]
+	        });
+	        return observeObservableProperty(thing, property, listener, fireImmediately);
+	    }
+	    return getAdministration(thing, property).observe(listener, fireImmediately);
+	}
+	function toJS(source, detectCycles, __alreadySeen) {
+	    if (detectCycles === void 0) {
+	        detectCycles = true;
+	    }
+	    if (__alreadySeen === void 0) {
+	        __alreadySeen = null;
+	    }
+	    function cache(value) {
+	        if (detectCycles) __alreadySeen.push([source, value]);
+	        return value;
+	    }
+	    if (detectCycles && __alreadySeen === null) __alreadySeen = [];
+	    if (detectCycles && source !== null && (typeof source === "undefined" ? "undefined" : _typeof(source)) === "object") {
+	        for (var i = 0, l = __alreadySeen.length; i < l; i++) {
+	            if (__alreadySeen[i][0] === source) return __alreadySeen[i][1];
+	        }
+	    }
+	    if (!source) return source;
+	    if (Array.isArray(source) || source instanceof ObservableArray) {
+	        var res = cache([]);
+	        var toAdd = source.map(function (value) {
+	            return toJS(value, detectCycles, __alreadySeen);
+	        });
+	        res.length = toAdd.length;
+	        for (var i = 0, l = toAdd.length; i < l; i++) {
+	            res[i] = toAdd[i];
+	        }return res;
+	    }
+	    if (source instanceof ObservableMap) {
+	        var res_1 = cache({});
+	        source.forEach(function (value, key) {
+	            return res_1[key] = toJS(value, detectCycles, __alreadySeen);
+	        });
+	        return res_1;
+	    }
+	    if ((typeof source === "undefined" ? "undefined" : _typeof(source)) === "object" && isPlainObject(source)) {
+	        var res = cache({});
+	        for (var key in source) {
+	            if (source.hasOwnProperty(key)) res[key] = toJS(source[key], detectCycles, __alreadySeen);
+	        }return res;
+	    }
+	    if (isObservable(source) && source.$mobx instanceof ObservableValue) return toJS(source(), detectCycles, __alreadySeen);
+	    return source;
+	}
+	exports.toJS = toJS;
+	function toJSON(source, detectCycles, __alreadySeen) {
+	    if (detectCycles === void 0) {
+	        detectCycles = true;
+	    }
+	    if (__alreadySeen === void 0) {
+	        __alreadySeen = null;
+	    }
+	    deprecated("toJSON is deprecated. Use toJS instead");
+	    return toJS.apply(null, arguments);
+	}
+	exports.toJSON = toJSON;
+	function action(arg1, arg2, arg3, arg4) {
+	    switch (arguments.length) {
+	        case 1:
+	            if (typeof arg1 === "function") return actionImplementation(arg1.name || "<unnamed action>", arg1);else return function (target, key, descriptor) {
+	                return actionDecorator(arg1, target, key, descriptor);
+	            };
+	        case 2:
+	            if (typeof arg2 === "function") return actionImplementation(arg1, arg2);else return actionDecorator(arg2, arg1, arg2, undefined);
+	        case 3:
+	            return actionDecorator(arg2, arg1, arg2, arg3);
+	        default:
+	            invariant(false, "Invalid arguments for (@)action, please provide a function, name and function or use it as decorator on a class instance method");
+	    }
+	}
+	exports.action = action;
+	function actionDecorator(name, target, key, descriptor) {
+	    if (descriptor === undefined) {
+	        typescriptActionValueDecorator(name, target, key);
+	        return;
+	    }
+	    if (descriptor.value === undefined && typeof descriptor.initializer === "function") {
+	        return babelActionValueDecorator(name, target, key, descriptor);
+	    }
+	    var base = descriptor.value;
+	    descriptor.value = actionImplementation(name, base);
+	}
+	function babelActionValueDecorator(name, target, prop, descriptor) {
+	    return {
+	        configurable: true,
+	        enumerable: false,
+	        get: function get() {
+	            var v = descriptor.initializer.call(this);
+	            invariant(typeof v === "function", "Babel @action decorator expects the field '" + prop + " to be initialized with a function");
+	            var implementation = action(name, v);
+	            addBoundAction(this, prop, implementation);
+	            return implementation;
+	        },
+	        set: function set() {
+	            invariant(false, "Babel @action decorator: field '" + prop + "' not initialized");
+	        }
+	    };
+	}
+	function typescriptActionValueDecorator(name, target, prop) {
+	    Object.defineProperty(target, prop, {
+	        configurable: true,
+	        enumerable: false,
+	        get: function get() {
+	            invariant(false, "TypeScript @action decorator: field '" + prop + "' not initialized");
+	        },
+	        set: function set(v) {
+	            invariant(typeof v === "function", "TypeScript @action decorator expects the field '" + prop + " to be initialized with a function");
+	            addBoundAction(this, prop, action(name, v));
+	        }
+	    });
+	}
+	function addBoundAction(target, prop, implementation) {
+	    Object.defineProperty(target, prop, {
+	        enumerable: false,
+	        writable: false,
+	        value: implementation
+	    });
+	}
+	function actionImplementation(actionName, fn) {
+	    invariant(typeof fn === "function", "`action` can only be invoked on functions");
+	    invariant(typeof actionName === "string" && actionName.length > 0, "actions should have valid names, got: '" + actionName + "'");
+	    return function () {
+	        return executeWrapped(actionName, fn, this, arguments);
+	    };
+	}
+	function executeWrapped(actionName, fn, scope, args) {
+	    var ds = globalState.derivationStack;
+	    invariant(!(ds[ds.length - 1] instanceof ComputedValue), "Computed values or transformers should not invoke actions or trigger other side effects");
+	    var notifySpy = isSpyEnabled();
+	    var startTime;
+	    if (notifySpy) {
+	        startTime = Date.now();
+	        var flattendArgs = [];
+	        for (var i = 0, l = args.length; i < l; i++) {
+	            flattendArgs.push(args[i]);
+	        }spyReportStart({
+	            type: "action",
+	            name: actionName,
+	            fn: fn,
+	            target: scope,
+	            arguments: flattendArgs
+	        });
+	    }
+	    var res = untracked(function () {
+	        return transaction(function () {
+	            return allowStateChanges(true, function () {
+	                return fn.apply(scope, args);
+	            });
+	        }, undefined, false);
+	    });
+	    if (notifySpy) spyReportEnd({ time: Date.now() - startTime });
+	    return res;
+	}
+	function useStrict(strict) {
+	    invariant(globalState.derivationStack.length === 0, "It is not allowed to set `useStrict` when a derivation is running");
+	    globalState.strictMode = strict;
+	    globalState.allowStateChanges = !strict;
+	}
+	exports.useStrict = useStrict;
+	function allowStateChanges(allowStateChanges, func) {
+	    var prev = globalState.allowStateChanges;
+	    globalState.allowStateChanges = allowStateChanges;
+	    var res = func();
+	    globalState.allowStateChanges = prev;
+	    return res;
+	}
+	function propagateAtomReady(atom) {
+	    invariant(atom.isDirty, "atom not dirty");
+	    atom.isDirty = false;
+	    propagateReadiness(atom, true);
+	}
+	var Atom = function () {
+	    function Atom(name, onBecomeObserved, onBecomeUnobserved) {
+	        if (name === void 0) {
+	            name = "Atom@" + getNextId();
+	        }
+	        if (onBecomeObserved === void 0) {
+	            onBecomeObserved = noop;
+	        }
+	        if (onBecomeUnobserved === void 0) {
+	            onBecomeUnobserved = noop;
+	        }
+	        this.name = name;
+	        this.onBecomeObserved = onBecomeObserved;
+	        this.onBecomeUnobserved = onBecomeUnobserved;
+	        this.isDirty = false;
+	        this.staleObservers = [];
+	        this.observers = [];
+	    }
+	    Atom.prototype.reportObserved = function () {
+	        reportObserved(this);
+	    };
+	    Atom.prototype.reportChanged = function () {
+	        if (!this.isDirty) {
+	            this.reportStale();
+	            this.reportReady();
+	        }
+	    };
+	    Atom.prototype.reportStale = function () {
+	        if (!this.isDirty) {
+	            this.isDirty = true;
+	            propagateStaleness(this);
+	        }
+	    };
+	    Atom.prototype.reportReady = function () {
+	        invariant(this.isDirty, "atom not dirty");
+	        if (globalState.inTransaction > 0) globalState.changedAtoms.push(this);else {
+	            propagateAtomReady(this);
+	            runReactions();
+	        }
+	    };
+	    Atom.prototype.toString = function () {
+	        return this.name;
+	    };
+	    return Atom;
+	}();
+	exports.Atom = Atom;
+	var ComputedValue = function () {
+	    function ComputedValue(derivation, scope, compareStructural, name) {
+	        this.derivation = derivation;
+	        this.scope = scope;
+	        this.compareStructural = compareStructural;
+	        this.isLazy = true;
+	        this.isComputing = false;
+	        this.staleObservers = [];
+	        this.observers = [];
+	        this.observing = [];
+	        this.dependencyChangeCount = 0;
+	        this.dependencyStaleCount = 0;
+	        this.value = undefined;
+	        this.name = name || "ComputedValue@" + getNextId();
+	    }
+	    ComputedValue.prototype.peek = function () {
+	        this.isComputing = true;
+	        var prevAllowStateChanges = globalState.allowStateChanges;
+	        globalState.allowStateChanges = false;
+	        var res = this.derivation.call(this.scope);
+	        globalState.allowStateChanges = prevAllowStateChanges;
+	        this.isComputing = false;
+	        return res;
+	    };
+	    ;
+	    ComputedValue.prototype.onBecomeObserved = function () {};
+	    ComputedValue.prototype.onBecomeUnobserved = function () {
+	        for (var i = 0, l = this.observing.length; i < l; i++) {
+	            removeObserver(this.observing[i], this);
+	        }this.observing = [];
+	        this.isLazy = true;
+	        this.value = undefined;
+	    };
+	    ComputedValue.prototype.onDependenciesReady = function () {
+	        var changed = this.trackAndCompute();
+	        return changed;
+	    };
+	    ComputedValue.prototype.get = function () {
+	        invariant(!this.isComputing, "Cycle detected", this.derivation);
+	        reportObserved(this);
+	        if (this.dependencyStaleCount > 0) {
+	            return this.peek();
+	        }
+	        if (this.isLazy) {
+	            if (isComputingDerivation()) {
+	                this.isLazy = false;
+	                this.trackAndCompute();
+	            } else {
+	                return this.peek();
+	            }
+	        }
+	        return this.value;
+	    };
+	    ComputedValue.prototype.set = function (_) {
+	        throw new Error("[ComputedValue '" + name + "'] It is not possible to assign a new value to a computed value.");
+	    };
+	    ComputedValue.prototype.trackAndCompute = function () {
+	        if (isSpyEnabled()) {
+	            spyReport({
+	                object: this,
+	                type: "compute",
+	                fn: this.derivation,
+	                target: this.scope
+	            });
+	        }
+	        var oldValue = this.value;
+	        var newValue = this.value = trackDerivedFunction(this, this.peek);
+	        return valueDidChange(this.compareStructural, newValue, oldValue);
+	    };
+	    ComputedValue.prototype.observe = function (listener, fireImmediately) {
+	        var _this = this;
+	        var firstTime = true;
+	        var prevValue = undefined;
+	        return autorun(function () {
+	            var newValue = _this.get();
+	            if (!firstTime || fireImmediately) {
+	                untracked(function () {
+	                    listener(newValue, prevValue);
+	                });
+	            }
+	            firstTime = false;
+	            prevValue = newValue;
+	        });
+	    };
+	    ComputedValue.prototype.toJSON = function () {
+	        return this.get();
+	    };
+	    ComputedValue.prototype.toString = function () {
+	        return this.name + "[" + this.derivation.toString() + "]";
+	    };
+	    return ComputedValue;
+	}();
+	function isComputingDerivation() {
+	    return globalState.derivationStack.length > 0;
+	}
+	function checkIfStateModificationsAreAllowed() {
+	    if (!globalState.allowStateChanges) {
+	        invariant(false, globalState.strictMode ? "It is not allowed to create or change state outside an `action` when MobX is in strict mode. Wrap the current method in `action` if this state change is intended" : "It is not allowed to change the state when a computed value or transformer is being evaluated. Use 'autorun' to create reactive functions with side-effects.");
+	    }
+	}
+	function notifyDependencyStale(derivation) {
+	    if (++derivation.dependencyStaleCount === 1) {
+	        propagateStaleness(derivation);
+	    }
+	}
+	function notifyDependencyReady(derivation, dependencyDidChange) {
+	    invariant(derivation.dependencyStaleCount > 0, "unexpected ready notification");
+	    if (dependencyDidChange) derivation.dependencyChangeCount += 1;
+	    if (--derivation.dependencyStaleCount === 0) {
+	        if (derivation.dependencyChangeCount > 0) {
+	            derivation.dependencyChangeCount = 0;
+	            var changed = derivation.onDependenciesReady();
+	            propagateReadiness(derivation, changed);
+	        } else {
+	            propagateReadiness(derivation, false);
+	        }
+	    }
+	}
+	function trackDerivedFunction(derivation, f) {
+	    var hasException = true;
+	    var prevObserving = derivation.observing;
+	    derivation.observing = [];
+	    globalState.derivationStack.push(derivation);
+	    var prevTracking = globalState.isTracking;
+	    globalState.isTracking = true;
+	    try {
+	        var result = f.call(derivation);
+	        hasException = false;
+	        bindDependencies(derivation, prevObserving);
+	        globalState.isTracking = prevTracking;
+	        return result;
+	    } finally {
+	        if (hasException) {
+	            var message = "[mobx] An uncaught exception occurred while calculating your computed value, autorun or transformer. Or inside the render() method of an observer based React component. " + "These methods should never throw exceptions as MobX will usually not be able to recover from them. " + ("Please enable 'Pause on (caught) exceptions' in your debugger to find the root cause. In: '" + derivation.name + "'");
+	            if (isSpyEnabled()) {
+	                spyReport({
+	                    type: "error",
+	                    object: this,
+	                    message: message
+	                });
+	            }
+	            console.error(message);
+	            resetGlobalState();
+	        }
+	    }
+	}
+	function bindDependencies(derivation, prevObserving) {
+	    globalState.derivationStack.length -= 1;
+	    var _a = quickDiff(derivation.observing, prevObserving),
+	        added = _a[0],
+	        removed = _a[1];
+	    for (var i = 0, l = added.length; i < l; i++) {
+	        var dependency = added[i];
+	        invariant(!findCycle(derivation, dependency), "Cycle detected", derivation);
+	        addObserver(added[i], derivation);
+	    }
+	    for (var i = 0, l = removed.length; i < l; i++) {
+	        removeObserver(removed[i], derivation);
+	    }
+	}
+	function findCycle(needle, node) {
+	    if (needle === node) return true;
+	    var obs = node.observing;
+	    if (obs === undefined) return false;
+	    for (var l = obs.length, i = 0; i < l; i++) {
+	        if (findCycle(needle, obs[i])) return true;
+	    }return false;
+	}
+	function untracked(action) {
+	    var prevTracking = globalState.isTracking;
+	    globalState.isTracking = false;
+	    var res = action();
+	    globalState.isTracking = prevTracking;
+	    return res;
+	}
+	exports.untracked = untracked;
+	var persistentKeys = ["mobxGuid", "resetId", "spyListeners", "strictMode"];
+	var MobXGlobals = function () {
+	    function MobXGlobals() {
+	        this.version = 2;
+	        this.derivationStack = [];
+	        this.mobxGuid = 0;
+	        this.inTransaction = 0;
+	        this.isTracking = false;
+	        this.isRunningReactions = false;
+	        this.changedAtoms = [];
+	        this.pendingReactions = [];
+	        this.allowStateChanges = true;
+	        this.strictMode = false;
+	        this.resetId = 0;
+	        this.spyListeners = [];
+	    }
+	    return MobXGlobals;
+	}();
+	var globalState = function () {
+	    var res = new MobXGlobals();
+	    if (global.__mobservableTrackingStack || global.__mobservableViewStack) throw new Error("[mobx] An incompatible version of mobservable is already loaded.");
+	    if (global.__mobxGlobal && global.__mobxGlobal.version !== res.version) throw new Error("[mobx] An incompatible version of mobx is already loaded.");
+	    if (global.__mobxGlobal) return global.__mobxGlobal;
+	    return global.__mobxGlobal = res;
+	}();
+	function registerGlobals() {}
+	function resetGlobalState() {
+	    globalState.resetId++;
+	    var defaultGlobals = new MobXGlobals();
+	    for (var key in defaultGlobals) {
+	        if (persistentKeys.indexOf(key) === -1) globalState[key] = defaultGlobals[key];
+	    }globalState.allowStateChanges = !globalState.strictMode;
+	}
+	function addObserver(observable, node) {
+	    var obs = observable.observers,
+	        l = obs.length;
+	    obs[l] = node;
+	    if (l === 0) observable.onBecomeObserved();
+	}
+	function removeObserver(observable, node) {
+	    var obs = observable.observers,
+	        idx = obs.indexOf(node);
+	    if (idx !== -1) obs.splice(idx, 1);
+	    if (obs.length === 0) observable.onBecomeUnobserved();
+	}
+	function reportObserved(observable) {
+	    if (globalState.isTracking === false) return;
+	    var derivationStack = globalState.derivationStack;
+	    var deps = derivationStack[derivationStack.length - 1].observing;
+	    var depslength = deps.length;
+	    if (deps[depslength - 1] !== observable && deps[depslength - 2] !== observable) deps[depslength] = observable;
+	}
+	function propagateStaleness(observable) {
+	    var os = observable.observers.slice();
+	    os.forEach(notifyDependencyStale);
+	    observable.staleObservers = observable.staleObservers.concat(os);
+	}
+	function propagateReadiness(observable, valueDidActuallyChange) {
+	    observable.staleObservers.splice(0).forEach(function (o) {
+	        return notifyDependencyReady(o, valueDidActuallyChange);
+	    });
+	}
+	var Reaction = function () {
+	    function Reaction(name, onInvalidate) {
+	        if (name === void 0) {
+	            name = "Reaction@" + getNextId();
+	        }
+	        this.name = name;
+	        this.onInvalidate = onInvalidate;
+	        this.staleObservers = EMPTY_ARRAY;
+	        this.observers = EMPTY_ARRAY;
+	        this.observing = [];
+	        this.dependencyChangeCount = 0;
+	        this.dependencyStaleCount = 0;
+	        this.isDisposed = false;
+	        this._isScheduled = false;
+	        this._isTrackPending = false;
+	    }
+	    Reaction.prototype.onBecomeObserved = function () {};
+	    Reaction.prototype.onBecomeUnobserved = function () {};
+	    Reaction.prototype.onDependenciesReady = function () {
+	        this.schedule();
+	        return false;
+	    };
+	    Reaction.prototype.schedule = function () {
+	        if (!this._isScheduled) {
+	            this._isScheduled = true;
+	            globalState.pendingReactions.push(this);
+	            runReactions();
+	        }
+	    };
+	    Reaction.prototype.isScheduled = function () {
+	        return this.dependencyStaleCount > 0 || this._isScheduled;
+	    };
+	    Reaction.prototype.runReaction = function () {
+	        if (!this.isDisposed) {
+	            this._isScheduled = false;
+	            this._isTrackPending = true;
+	            this.onInvalidate();
+	            if (this._isTrackPending && isSpyEnabled()) {
+	                spyReport({
+	                    object: this,
+	                    type: "scheduled-reaction"
+	                });
+	            }
+	        }
+	    };
+	    Reaction.prototype.track = function (fn) {
+	        var notify = isSpyEnabled();
+	        var startTime;
+	        if (notify) {
+	            startTime = Date.now();
+	            spyReportStart({
+	                object: this,
+	                type: "reaction",
+	                fn: fn
+	            });
+	        }
+	        trackDerivedFunction(this, fn);
+	        this._isTrackPending = false;
+	        if (notify) {
+	            spyReportEnd({
+	                time: Date.now() - startTime
+	            });
+	        }
+	    };
+	    Reaction.prototype.dispose = function () {
+	        if (!this.isDisposed) {
+	            this.isDisposed = true;
+	            var deps = this.observing.splice(0);
+	            for (var i = 0, l = deps.length; i < l; i++) {
+	                removeObserver(deps[i], this);
+	            }
+	        }
+	    };
+	    Reaction.prototype.getDisposer = function () {
+	        var r = this.dispose.bind(this);
+	        r.$mobx = this;
+	        return r;
+	    };
+	    Reaction.prototype.toString = function () {
+	        return "Reaction[" + this.name + "]";
+	    };
+	    return Reaction;
+	}();
+	exports.Reaction = Reaction;
+	var MAX_REACTION_ITERATIONS = 100;
+	function runReactions() {
+	    if (globalState.isRunningReactions === true || globalState.inTransaction > 0) return;
+	    globalState.isRunningReactions = true;
+	    var allReactions = globalState.pendingReactions;
+	    var iterations = 0;
+	    while (allReactions.length > 0) {
+	        if (++iterations === MAX_REACTION_ITERATIONS) throw new Error("Reaction doesn't converge to a stable state. Probably there is a cycle in the reactive function: " + allReactions[0].toString());
+	        var remainingReactions = allReactions.splice(0);
+	        for (var i = 0, l = remainingReactions.length; i < l; i++) {
+	            remainingReactions[i].runReaction();
+	        }
+	    }
+	    globalState.isRunningReactions = false;
+	}
+	var spyEnabled = false;
+	function isSpyEnabled() {
+	    return spyEnabled;
+	}
+	function spyReport(event) {
+	    if (!spyEnabled) return false;
+	    var listeners = globalState.spyListeners;
+	    for (var i = 0, l = listeners.length; i < l; i++) {
+	        listeners[i](event);
+	    }
+	}
+	function spyReportStart(event) {
+	    var change = objectAssign({}, event, { spyReportStart: true });
+	    spyReport(change);
+	}
+	var END_EVENT = { spyReportEnd: true };
+	function spyReportEnd(change) {
+	    if (change) spyReport(objectAssign({}, change, END_EVENT));else spyReport(END_EVENT);
+	}
+	function spy(listener) {
+	    globalState.spyListeners.push(listener);
+	    spyEnabled = globalState.spyListeners.length > 0;
+	    return once(function () {
+	        var idx = globalState.spyListeners.indexOf(listener);
+	        if (idx !== -1) globalState.spyListeners.splice(idx, 1);
+	        spyEnabled = globalState.spyListeners.length > 0;
+	    });
+	}
+	exports.spy = spy;
+	function trackTransitions(onReport) {
+	    deprecated("trackTransitions is deprecated. Use mobx.spy instead");
+	    if (typeof onReport === "boolean") {
+	        deprecated("trackTransitions only takes a single callback function. If you are using the mobx-react-devtools, please update them first");
+	        onReport = arguments[1];
+	    }
+	    if (!onReport) {
+	        deprecated("trackTransitions without callback has been deprecated and is a no-op now. If you are using the mobx-react-devtools, please update them first");
+	        return function () {};
+	    }
+	    return spy(onReport);
+	}
+	function transaction(action, thisArg, report) {
+	    if (thisArg === void 0) {
+	        thisArg = undefined;
+	    }
+	    if (report === void 0) {
+	        report = true;
+	    }
+	    globalState.inTransaction += 1;
+	    if (report && isSpyEnabled()) {
+	        spyReportStart({
+	            type: "transaction",
+	            target: thisArg,
+	            name: action.name || "anonymous transaction"
+	        });
+	    }
+	    var res = action.call(thisArg);
+	    if (--globalState.inTransaction === 0) {
+	        var values = globalState.changedAtoms.splice(0);
+	        for (var i = 0, l = values.length; i < l; i++) {
+	            propagateAtomReady(values[i]);
+	        }runReactions();
+	    }
+	    if (report && isSpyEnabled()) spyReportEnd();
+	    return res;
+	}
+	exports.transaction = transaction;
+	function hasInterceptors(interceptable) {
+	    return interceptable.interceptors && interceptable.interceptors.length > 0;
+	}
+	function registerInterceptor(interceptable, handler) {
+	    var interceptors = interceptable.interceptors || (interceptable.interceptors = []);
+	    interceptors.push(handler);
+	    return once(function () {
+	        var idx = interceptors.indexOf(handler);
+	        if (idx !== -1) interceptors.splice(idx, 1);
+	    });
+	}
+	function interceptChange(interceptable, change) {
+	    return untracked(function () {
+	        var interceptors = interceptable.interceptors;
+	        for (var i = 0, l = interceptors.length; i < l; i++) {
+	            change = interceptors[i](change);
+	            invariant(!change || change.type, "Intercept handlers should return nothing or a change object");
+	            if (!change) return null;
+	        }
+	        return change;
+	    });
+	}
+	function hasListeners(listenable) {
+	    return listenable.changeListeners && listenable.changeListeners.length > 0;
+	}
+	function registerListener(listenable, handler) {
+	    var listeners = listenable.changeListeners || (listenable.changeListeners = []);
+	    listeners.push(handler);
+	    return once(function () {
+	        var idx = listeners.indexOf(handler);
+	        if (idx !== -1) listeners.splice(idx, 1);
+	    });
+	}
+	function notifyListeners(listenable, change) {
+	    untracked(function () {
+	        var listeners = listenable.changeListeners;
+	        if (!listeners) return;
+	        listeners = listeners.slice();
+	        if (Array.isArray(change)) {
+	            for (var i = 0, l = listeners.length; i < l; i++) {
+	                listeners[i].apply(null, change);
+	            }
+	        } else {
+	            for (var i = 0, l = listeners.length; i < l; i++) {
+	                listeners[i](change);
+	            }
+	        }
+	    });
+	}
+	var ValueMode;
+	(function (ValueMode) {
+	    ValueMode[ValueMode["Recursive"] = 0] = "Recursive";
+	    ValueMode[ValueMode["Reference"] = 1] = "Reference";
+	    ValueMode[ValueMode["Structure"] = 2] = "Structure";
+	    ValueMode[ValueMode["Flat"] = 3] = "Flat";
+	})(ValueMode || (ValueMode = {}));
+	function asReference(value) {
+	    return new AsReference(value);
+	}
+	exports.asReference = asReference;
+	function asStructure(value) {
+	    return new AsStructure(value);
+	}
+	exports.asStructure = asStructure;
+	function asFlat(value) {
+	    return new AsFlat(value);
+	}
+	exports.asFlat = asFlat;
+	var AsReference = function () {
+	    function AsReference(value) {
+	        this.value = value;
+	        assertUnwrapped(value, "Modifiers are not allowed to be nested");
+	    }
+	    return AsReference;
+	}();
+	var AsStructure = function () {
+	    function AsStructure(value) {
+	        this.value = value;
+	        assertUnwrapped(value, "Modifiers are not allowed to be nested");
+	    }
+	    return AsStructure;
+	}();
+	var AsFlat = function () {
+	    function AsFlat(value) {
+	        this.value = value;
+	        assertUnwrapped(value, "Modifiers are not allowed to be nested");
+	    }
+	    return AsFlat;
+	}();
+	function asMap(data, modifierFunc) {
+	    return map(data, modifierFunc);
+	}
+	exports.asMap = asMap;
+	function getValueModeFromValue(value, defaultMode) {
+	    if (value instanceof AsReference) return [ValueMode.Reference, value.value];
+	    if (value instanceof AsStructure) return [ValueMode.Structure, value.value];
+	    if (value instanceof AsFlat) return [ValueMode.Flat, value.value];
+	    return [defaultMode, value];
+	}
+	function getValueModeFromModifierFunc(func) {
+	    if (func === asReference) return ValueMode.Reference;else if (func === asStructure) return ValueMode.Structure;else if (func === asFlat) return ValueMode.Flat;
+	    invariant(func === undefined, "Cannot determine value mode from function. Please pass in one of these: mobx.asReference, mobx.asStructure or mobx.asFlat, got: " + func);
+	    return ValueMode.Recursive;
+	}
+	function makeChildObservable(value, parentMode, name) {
+	    var childMode;
+	    if (isObservable(value)) return value;
+	    switch (parentMode) {
+	        case ValueMode.Reference:
+	            return value;
+	        case ValueMode.Flat:
+	            assertUnwrapped(value, "Items inside 'asFlat' cannot have modifiers");
+	            childMode = ValueMode.Reference;
+	            break;
+	        case ValueMode.Structure:
+	            assertUnwrapped(value, "Items inside 'asStructure' cannot have modifiers");
+	            childMode = ValueMode.Structure;
+	            break;
+	        case ValueMode.Recursive:
+	            _a = getValueModeFromValue(value, ValueMode.Recursive), childMode = _a[0], value = _a[1];
+	            break;
+	        default:
+	            invariant(false, "Illegal State");
+	    }
+	    if (Array.isArray(value)) return createObservableArray(value, childMode, name);
+	    if (isPlainObject(value) && Object.isExtensible(value)) return extendObservableHelper(value, value, childMode, name);
+	    return value;
+	    var _a;
+	}
+	function assertUnwrapped(value, message) {
+	    if (value instanceof AsReference || value instanceof AsStructure || value instanceof AsFlat) throw new Error("[mobx] asStructure / asReference / asFlat cannot be used here. " + message);
+	}
+	var OBSERVABLE_ARRAY_BUFFER_SIZE = 0;
+	var StubArray = function () {
+	    function StubArray() {}
+	    return StubArray;
+	}();
+	StubArray.prototype = [];
+	var ObservableArrayAdministration = function () {
+	    function ObservableArrayAdministration(name, mode, array, owned) {
+	        this.mode = mode;
+	        this.array = array;
+	        this.owned = owned;
+	        this.lastKnownLength = 0;
+	        this.interceptors = null;
+	        this.changeListeners = null;
+	        this.atom = new Atom(name || "ObservableArray@" + getNextId());
+	    }
+	    ObservableArrayAdministration.prototype.makeReactiveArrayItem = function (value) {
+	        assertUnwrapped(value, "Array values cannot have modifiers");
+	        if (this.mode === ValueMode.Flat || this.mode === ValueMode.Reference) return value;
+	        return makeChildObservable(value, this.mode, this.atom.name + "[..]");
+	    };
+	    ObservableArrayAdministration.prototype.intercept = function (handler) {
+	        return registerInterceptor(this, handler);
+	    };
+	    ObservableArrayAdministration.prototype.observe = function (listener, fireImmediately) {
+	        if (fireImmediately === void 0) {
+	            fireImmediately = false;
+	        }
+	        if (fireImmediately) {
+	            listener({
+	                object: this.array,
+	                type: "splice",
+	                index: 0,
+	                added: this.values.slice(),
+	                addedCount: this.values.length,
+	                removed: [],
+	                removedCount: 0
+	            });
+	        }
+	        return registerListener(this, listener);
+	    };
+	    ObservableArrayAdministration.prototype.getArrayLength = function () {
+	        this.atom.reportObserved();
+	        return this.values.length;
+	    };
+	    ObservableArrayAdministration.prototype.setArrayLength = function (newLength) {
+	        if (typeof newLength !== "number" || newLength < 0) throw new Error("[mobx.array] Out of range: " + newLength);
+	        var currentLength = this.values.length;
+	        if (newLength === currentLength) return;else if (newLength > currentLength) this.spliceWithArray(currentLength, 0, new Array(newLength - currentLength));else this.spliceWithArray(newLength, currentLength - newLength);
+	    };
+	    ObservableArrayAdministration.prototype.updateArrayLength = function (oldLength, delta) {
+	        if (oldLength !== this.lastKnownLength) throw new Error("[mobx] Modification exception: the internal structure of an observable array was changed. Did you use peek() to change it?");
+	        this.lastKnownLength += delta;
+	        if (delta > 0 && oldLength + delta > OBSERVABLE_ARRAY_BUFFER_SIZE) reserveArrayBuffer(oldLength + delta);
+	    };
+	    ObservableArrayAdministration.prototype.spliceWithArray = function (index, deleteCount, newItems) {
+	        checkIfStateModificationsAreAllowed();
+	        var length = this.values.length;
+	        if (index === undefined) index = 0;else if (index > length) index = length;else if (index < 0) index = Math.max(0, length + index);
+	        if (arguments.length === 1) deleteCount = length - index;else if (deleteCount === undefined || deleteCount === null) deleteCount = 0;else deleteCount = Math.max(0, Math.min(deleteCount, length - index));
+	        if (newItems === undefined) newItems = [];
+	        if (hasInterceptors(this)) {
+	            var change = interceptChange(this, {
+	                object: this.array,
+	                type: "splice",
+	                index: index,
+	                removedCount: deleteCount,
+	                added: newItems
+	            });
+	            if (!change) return EMPTY_ARRAY;
+	            deleteCount = change.removedCount;
+	            newItems = change.added;
+	        }
+	        newItems = newItems.map(this.makeReactiveArrayItem, this);
+	        var lengthDelta = newItems.length - deleteCount;
+	        this.updateArrayLength(length, lengthDelta);
+	        var res = (_a = this.values).splice.apply(_a, [index, deleteCount].concat(newItems));
+	        if (deleteCount !== 0 || newItems.length !== 0) this.notifyArraySplice(index, newItems, res);
+	        return res;
+	        var _a;
+	    };
+	    ObservableArrayAdministration.prototype.notifyArrayChildUpdate = function (index, newValue, oldValue) {
+	        var notifySpy = !this.owned && isSpyEnabled();
+	        var notify = hasListeners(this);
+	        var change = notify || notifySpy ? {
+	            object: this.array,
+	            type: "update",
+	            index: index, newValue: newValue, oldValue: oldValue
+	        } : null;
+	        if (notifySpy) spyReportStart(change);
+	        this.atom.reportChanged();
+	        if (notify) notifyListeners(this, change);
+	        if (notifySpy) spyReportEnd();
+	    };
+	    ObservableArrayAdministration.prototype.notifyArraySplice = function (index, added, removed) {
+	        var notifySpy = !this.owned && isSpyEnabled();
+	        var notify = hasListeners(this);
+	        var change = notify || notifySpy ? {
+	            object: this.array,
+	            type: "splice",
+	            index: index, removed: removed, added: added,
+	            removedCount: removed.length,
+	            addedCount: added.length
+	        } : null;
+	        if (notifySpy) spyReportStart(change);
+	        this.atom.reportChanged();
+	        if (notify) notifyListeners(this, change);
+	        if (notifySpy) spyReportEnd();
+	    };
+	    return ObservableArrayAdministration;
+	}();
+	var ObservableArray = function (_super) {
+	    __extends(ObservableArray, _super);
+	    function ObservableArray(initialValues, mode, name, owned) {
+	        if (owned === void 0) {
+	            owned = false;
+	        }
+	        _super.call(this);
+	        var adm = new ObservableArrayAdministration(name, mode, this, owned);
+	        Object.defineProperty(this, "$mobx", {
+	            enumerable: false,
+	            configurable: false,
+	            writable: false,
+	            value: adm
+	        });
+	        if (initialValues && initialValues.length) {
+	            adm.updateArrayLength(0, initialValues.length);
+	            adm.values = initialValues.map(adm.makeReactiveArrayItem, adm);
+	            adm.notifyArraySplice(0, adm.values.slice(), EMPTY_ARRAY);
+	        } else {
+	            adm.values = [];
+	        }
+	    }
+	    ObservableArray.prototype.intercept = function (handler) {
+	        return this.$mobx.intercept(handler);
+	    };
+	    ObservableArray.prototype.observe = function (listener, fireImmediately) {
+	        if (fireImmediately === void 0) {
+	            fireImmediately = false;
+	        }
+	        return this.$mobx.observe(listener, fireImmediately);
+	    };
+	    ObservableArray.prototype.clear = function () {
+	        return this.splice(0);
+	    };
+	    ObservableArray.prototype.replace = function (newItems) {
+	        return this.$mobx.spliceWithArray(0, this.$mobx.values.length, newItems);
+	    };
+	    ObservableArray.prototype.toJS = function () {
+	        return this.slice();
+	    };
+	    ObservableArray.prototype.toJSON = function () {
+	        return this.toJS();
+	    };
+	    ObservableArray.prototype.peek = function () {
+	        return this.$mobx.values;
+	    };
+	    ObservableArray.prototype.find = function (predicate, thisArg, fromIndex) {
+	        if (fromIndex === void 0) {
+	            fromIndex = 0;
+	        }
+	        this.$mobx.atom.reportObserved();
+	        var items = this.$mobx.values,
+	            l = items.length;
+	        for (var i = fromIndex; i < l; i++) {
+	            if (predicate.call(thisArg, items[i], i, this)) return items[i];
+	        }return null;
+	    };
+	    ObservableArray.prototype.splice = function (index, deleteCount) {
+	        var newItems = [];
+	        for (var _i = 2; _i < arguments.length; _i++) {
+	            newItems[_i - 2] = arguments[_i];
+	        }
+	        switch (arguments.length) {
+	            case 0:
+	                return [];
+	            case 1:
+	                return this.$mobx.spliceWithArray(index);
+	            case 2:
+	                return this.$mobx.spliceWithArray(index, deleteCount);
+	        }
+	        return this.$mobx.spliceWithArray(index, deleteCount, newItems);
+	    };
+	    ObservableArray.prototype.push = function () {
+	        var items = [];
+	        for (var _i = 0; _i < arguments.length; _i++) {
+	            items[_i - 0] = arguments[_i];
+	        }
+	        var adm = this.$mobx;
+	        adm.spliceWithArray(adm.values.length, 0, items);
+	        return adm.values.length;
+	    };
+	    ObservableArray.prototype.pop = function () {
+	        return this.splice(Math.max(this.$mobx.values.length - 1, 0), 1)[0];
+	    };
+	    ObservableArray.prototype.shift = function () {
+	        return this.splice(0, 1)[0];
+	    };
+	    ObservableArray.prototype.unshift = function () {
+	        var items = [];
+	        for (var _i = 0; _i < arguments.length; _i++) {
+	            items[_i - 0] = arguments[_i];
+	        }
+	        var adm = this.$mobx;
+	        adm.spliceWithArray(0, 0, items);
+	        return adm.values.length;
+	    };
+	    ObservableArray.prototype.reverse = function () {
+	        this.$mobx.atom.reportObserved();
+	        var clone = this.slice();
+	        return clone.reverse.apply(clone, arguments);
+	    };
+	    ObservableArray.prototype.sort = function (compareFn) {
+	        this.$mobx.atom.reportObserved();
+	        var clone = this.slice();
+	        return clone.sort.apply(clone, arguments);
+	    };
+	    ObservableArray.prototype.remove = function (value) {
+	        var idx = this.$mobx.values.indexOf(value);
+	        if (idx > -1) {
+	            this.splice(idx, 1);
+	            return true;
+	        }
+	        return false;
+	    };
+	    ObservableArray.prototype.toString = function () {
+	        return "[mobx.array] " + Array.prototype.toString.apply(this.$mobx.values, arguments);
+	    };
+	    ObservableArray.prototype.toLocaleString = function () {
+	        return "[mobx.array] " + Array.prototype.toLocaleString.apply(this.$mobx.values, arguments);
+	    };
+	    return ObservableArray;
+	}(StubArray);
+	makeNonEnumerable(ObservableArray.prototype, ["constructor", "observe", "clear", "replace", "toJSON", "peek", "find", "splice", "push", "pop", "shift", "unshift", "reverse", "sort", "remove", "toString", "toLocaleString"]);
+	Object.defineProperty(ObservableArray.prototype, "length", {
+	    enumerable: false,
+	    configurable: true,
+	    get: function get() {
+	        return this.$mobx.getArrayLength();
+	    },
+	    set: function set(newLength) {
+	        this.$mobx.setArrayLength(newLength);
+	    }
+	});
+	["concat", "every", "filter", "forEach", "indexOf", "join", "lastIndexOf", "map", "reduce", "reduceRight", "slice", "some"].forEach(function (funcName) {
+	    var baseFunc = Array.prototype[funcName];
+	    Object.defineProperty(ObservableArray.prototype, funcName, {
+	        configurable: false,
+	        writable: true,
+	        enumerable: false,
+	        value: function value() {
+	            this.$mobx.atom.reportObserved();
+	            return baseFunc.apply(this.$mobx.values, arguments);
+	        }
+	    });
+	});
+	function createArrayBufferItem(index) {
+	    Object.defineProperty(ObservableArray.prototype, "" + index, {
+	        enumerable: false,
+	        configurable: false,
+	        set: createArraySetter(index),
+	        get: createArrayGetter(index)
+	    });
+	}
+	function createArraySetter(index) {
+	    return function (newValue) {
+	        var adm = this.$mobx;
+	        var values = adm.values;
+	        assertUnwrapped(newValue, "Modifiers cannot be used on array values. For non-reactive array values use makeReactive(asFlat(array)).");
+	        if (index < values.length) {
+	            checkIfStateModificationsAreAllowed();
+	            var oldValue = values[index];
+	            if (hasInterceptors(adm)) {
+	                var change = interceptChange(adm, {
+	                    type: "update",
+	                    object: adm.array,
+	                    index: index, newValue: newValue
+	                });
+	                if (!change) return;
+	                newValue = change.newValue;
+	            }
+	            newValue = adm.makeReactiveArrayItem(newValue);
+	            var changed = adm.mode === ValueMode.Structure ? !deepEquals(oldValue, newValue) : oldValue !== newValue;
+	            if (changed) {
+	                values[index] = newValue;
+	                adm.notifyArrayChildUpdate(index, newValue, oldValue);
+	            }
+	        } else if (index === values.length) {
+	            adm.spliceWithArray(index, 0, [newValue]);
+	        } else throw new Error("[mobx.array] Index out of bounds, " + index + " is larger than " + values.length);
+	    };
+	}
+	function createArrayGetter(index) {
+	    return function () {
+	        var impl = this.$mobx;
+	        if (impl && index < impl.values.length) {
+	            impl.atom.reportObserved();
+	            return impl.values[index];
+	        }
+	        return undefined;
+	    };
+	}
+	function reserveArrayBuffer(max) {
+	    for (var index = OBSERVABLE_ARRAY_BUFFER_SIZE; index < max; index++) {
+	        createArrayBufferItem(index);
+	    }OBSERVABLE_ARRAY_BUFFER_SIZE = max;
+	}
+	reserveArrayBuffer(1000);
+	function createObservableArray(initialValues, mode, name) {
+	    return new ObservableArray(initialValues, mode, name);
+	}
+	function fastArray(initialValues) {
+	    deprecated("fastArray is deprecated. Please use `observable(asFlat([]))`");
+	    return createObservableArray(initialValues, ValueMode.Flat, null);
+	}
+	exports.fastArray = fastArray;
+	function isObservableArray(thing) {
+	    return thing instanceof ObservableArray;
+	}
+	exports.isObservableArray = isObservableArray;
+	var ObservableMapMarker = {};
+	var ObservableMap = function () {
+	    function ObservableMap(initialData, valueModeFunc) {
+	        var _this = this;
+	        this.$mobx = ObservableMapMarker;
+	        this._data = {};
+	        this._hasMap = {};
+	        this.name = "ObservableMap@" + getNextId();
+	        this._keys = new ObservableArray(null, ValueMode.Reference, this.name + ".keys()", true);
+	        this.interceptors = null;
+	        this.changeListeners = null;
+	        this._valueMode = getValueModeFromModifierFunc(valueModeFunc);
+	        if (this._valueMode === ValueMode.Flat) this._valueMode = ValueMode.Reference;
+	        allowStateChanges(true, function () {
+	            if (isPlainObject(initialData)) _this.merge(initialData);else if (Array.isArray(initialData)) initialData.forEach(function (_a) {
+	                var key = _a[0],
+	                    value = _a[1];
+	                return _this.set(key, value);
+	            });
+	        });
+	    }
+	    ObservableMap.prototype._has = function (key) {
+	        return typeof this._data[key] !== "undefined";
+	    };
+	    ObservableMap.prototype.has = function (key) {
+	        if (!this.isValidKey(key)) return false;
+	        if (this._hasMap[key]) return this._hasMap[key].get();
+	        return this._updateHasMapEntry(key, false).get();
+	    };
+	    ObservableMap.prototype.set = function (key, value) {
+	        this.assertValidKey(key);
+	        var hasKey = this._has(key);
+	        assertUnwrapped(value, "[mobx.map.set] Expected unwrapped value to be inserted to key '" + key + "'. If you need to use modifiers pass them as second argument to the constructor");
+	        if (hasInterceptors(this)) {
+	            var change = interceptChange(this, {
+	                type: hasKey ? "update" : "add",
+	                object: this,
+	                newValue: value,
+	                name: key
+	            });
+	            if (!change) return;
+	            value = change.newValue;
+	        }
+	        if (hasKey) {
+	            this._updateValue(key, value);
+	        } else {
+	            this._addValue(key, value);
+	        }
+	    };
+	    ObservableMap.prototype.delete = function (key) {
+	        var _this = this;
+	        if (hasInterceptors(this)) {
+	            var change = interceptChange(this, {
+	                type: "delete",
+	                object: this,
+	                name: key
+	            });
+	            if (!change) return;
+	        }
+	        if (this._has(key)) {
+	            var notifySpy = isSpyEnabled();
+	            var notify = hasListeners(this);
+	            var change = notify || notifySpy ? {
+	                type: "delete",
+	                object: this,
+	                oldValue: this._data[key].value,
+	                name: key
+	            } : null;
+	            if (notifySpy) spyReportStart(change);
+	            transaction(function () {
+	                _this._keys.remove(key);
+	                _this._updateHasMapEntry(key, false);
+	                var observable = _this._data[key];
+	                observable.setNewValue(undefined);
+	                _this._data[key] = undefined;
+	            }, undefined, false);
+	            if (notify) notifyListeners(this, change);
+	            if (notifySpy) spyReportEnd();
+	        }
+	    };
+	    ObservableMap.prototype._updateHasMapEntry = function (key, value) {
+	        var entry = this._hasMap[key];
+	        if (entry) {
+	            entry.setNewValue(value);
+	        } else {
+	            entry = this._hasMap[key] = new ObservableValue(value, ValueMode.Reference, this.name + "." + key + "?", false);
+	        }
+	        return entry;
+	    };
+	    ObservableMap.prototype._updateValue = function (name, newValue) {
+	        var observable = this._data[name];
+	        newValue = observable.prepareNewValue(newValue);
+	        if (newValue !== UNCHANGED) {
+	            var notifySpy = isSpyEnabled();
+	            var notify = hasListeners(this);
+	            var change = notify || notifySpy ? {
+	                type: "update",
+	                object: this,
+	                oldValue: observable.value,
+	                name: name, newValue: newValue
+	            } : null;
+	            if (notifySpy) spyReportStart(change);
+	            observable.setNewValue(newValue);
+	            if (notify) notifyListeners(this, change);
+	            if (notifySpy) spyReportEnd();
+	        }
+	    };
+	    ObservableMap.prototype._addValue = function (name, newValue) {
+	        var _this = this;
+	        transaction(function () {
+	            var observable = _this._data[name] = new ObservableValue(newValue, _this._valueMode, _this.name + "." + name, false);
+	            newValue = observable.value;
+	            _this._updateHasMapEntry(name, true);
+	            _this._keys.push(name);
+	        }, undefined, false);
+	        var notifySpy = isSpyEnabled();
+	        var notify = hasListeners(this);
+	        var change = notify || notifySpy ? {
+	            type: "add",
+	            object: this,
+	            name: name, newValue: newValue
+	        } : null;
+	        if (notifySpy) spyReportStart(change);
+	        if (notify) notifyListeners(this, change);
+	        if (notifySpy) spyReportEnd();
+	    };
+	    ObservableMap.prototype.get = function (key) {
+	        if (this.has(key)) return this._data[key].get();
+	        return undefined;
+	    };
+	    ObservableMap.prototype.keys = function () {
+	        return this._keys.slice();
+	    };
+	    ObservableMap.prototype.values = function () {
+	        return this.keys().map(this.get, this);
+	    };
+	    ObservableMap.prototype.entries = function () {
+	        var _this = this;
+	        return this.keys().map(function (key) {
+	            return [key, _this.get(key)];
+	        });
+	    };
+	    ObservableMap.prototype.forEach = function (callback, thisArg) {
+	        var _this = this;
+	        this.keys().forEach(function (key) {
+	            return callback.call(thisArg, _this.get(key), key);
+	        });
+	    };
+	    ObservableMap.prototype.merge = function (other) {
+	        var _this = this;
+	        transaction(function () {
+	            if (other instanceof ObservableMap) other.keys().forEach(function (key) {
+	                return _this.set(key, other.get(key));
+	            });else Object.keys(other).forEach(function (key) {
+	                return _this.set(key, other[key]);
+	            });
+	        }, undefined, false);
+	        return this;
+	    };
+	    ObservableMap.prototype.clear = function () {
+	        var _this = this;
+	        transaction(function () {
+	            untracked(function () {
+	                _this.keys().forEach(_this.delete, _this);
+	            });
+	        }, undefined, false);
+	    };
+	    Object.defineProperty(ObservableMap.prototype, "size", {
+	        get: function get() {
+	            return this._keys.length;
+	        },
+	        enumerable: true,
+	        configurable: true
+	    });
+	    ObservableMap.prototype.toJS = function () {
+	        var _this = this;
+	        var res = {};
+	        this.keys().forEach(function (key) {
+	            return res[key] = _this.get(key);
+	        });
+	        return res;
+	    };
+	    ObservableMap.prototype.toJs = function () {
+	        deprecated("toJs is deprecated, use toJS instead");
+	        return this.toJS();
+	    };
+	    ObservableMap.prototype.toJSON = function () {
+	        return this.toJS();
+	    };
+	    ObservableMap.prototype.isValidKey = function (key) {
+	        if (key === null || key === undefined) return false;
+	        if (typeof key !== "string" && typeof key !== "number") return false;
+	        return true;
+	    };
+	    ObservableMap.prototype.assertValidKey = function (key) {
+	        if (!this.isValidKey(key)) throw new Error("[mobx.map] Invalid key: '" + key + "'");
+	    };
+	    ObservableMap.prototype.toString = function () {
+	        var _this = this;
+	        return this.name + "[{ " + this.keys().map(function (key) {
+	            return key + ": " + ("" + _this.get(key));
+	        }).join(", ") + " }]";
+	    };
+	    ObservableMap.prototype.observe = function (listener, fireImmediately) {
+	        invariant(fireImmediately !== true, "`observe` doesn't support the fire immediately property for observable maps.");
+	        return registerListener(this, listener);
+	    };
+	    ObservableMap.prototype.intercept = function (handler) {
+	        return registerInterceptor(this, handler);
+	    };
+	    return ObservableMap;
+	}();
+	exports.ObservableMap = ObservableMap;
+	function map(initialValues, valueModifier) {
+	    return new ObservableMap(initialValues, valueModifier);
+	}
+	exports.map = map;
+	function isObservableMap(thing) {
+	    return thing instanceof ObservableMap;
+	}
+	exports.isObservableMap = isObservableMap;
+	var ObservableObjectAdministration = function () {
+	    function ObservableObjectAdministration(target, name, mode) {
+	        this.target = target;
+	        this.name = name;
+	        this.mode = mode;
+	        this.values = {};
+	        this.changeListeners = null;
+	        this.interceptors = null;
+	    }
+	    ObservableObjectAdministration.prototype.observe = function (callback, fireImmediately) {
+	        invariant(fireImmediately !== true, "`observe` doesn't support the fire immediately property for observable objects.");
+	        return registerListener(this, callback);
+	    };
+	    ObservableObjectAdministration.prototype.intercept = function (handler) {
+	        return registerInterceptor(this, handler);
+	    };
+	    return ObservableObjectAdministration;
+	}();
+	function asObservableObject(target, name, mode) {
+	    if (mode === void 0) {
+	        mode = ValueMode.Recursive;
+	    }
+	    if (isObservableObject(target)) return target.$mobx;
+	    if (!isPlainObject(target)) name = target.constructor.name + "@" + getNextId();
+	    if (!name) name = "ObservableObject@" + getNextId();
+	    var adm = new ObservableObjectAdministration(target, name, mode);
+	    Object.defineProperty(target, "$mobx", {
+	        enumerable: false,
+	        configurable: false,
+	        writable: false,
+	        value: adm
+	    });
+	    return adm;
+	}
+	function setObservableObjectProperty(adm, propName, value) {
+	    if (adm.values[propName]) adm.target[propName] = value;else defineObservableProperty(adm, propName, value);
+	}
+	function defineObservableProperty(adm, propName, newValue) {
+	    assertPropertyConfigurable(adm.target, propName);
+	    var observable;
+	    var name = adm.name + "." + propName;
+	    var isComputed = true;
+	    if (typeof newValue === "function" && newValue.length === 0) observable = new ComputedValue(newValue, adm.target, false, name);else if (newValue instanceof AsStructure && typeof newValue.value === "function" && newValue.value.length === 0) observable = new ComputedValue(newValue.value, adm.target, true, name);else {
+	        isComputed = false;
+	        if (hasInterceptors(adm)) {
+	            var change = interceptChange(adm, {
+	                object: adm.target,
+	                name: propName,
+	                type: "add",
+	                newValue: newValue
+	            });
+	            if (!change) return;
+	            newValue = change.newValue;
+	        }
+	        observable = new ObservableValue(newValue, adm.mode, name, false);
+	        newValue = observable.value;
+	    }
+	    adm.values[propName] = observable;
+	    Object.defineProperty(adm.target, propName, {
+	        configurable: true,
+	        enumerable: !isComputed,
+	        get: function get() {
+	            return observable.get();
+	        },
+	        set: isComputed ? throwingComputedValueSetter : createSetter(adm, observable, propName)
+	    });
+	    if (!isComputed) notifyPropertyAddition(adm, adm.target, propName, newValue);
+	}
+	function createSetter(adm, observable, name) {
+	    return function (newValue) {
+	        if (hasInterceptors(adm)) {
+	            var change = interceptChange(adm, {
+	                type: "update",
+	                object: this,
+	                name: name, newValue: newValue
+	            });
+	            if (!change) return;
+	            newValue = change.newValue;
+	        }
+	        newValue = observable.prepareNewValue(newValue);
+	        if (newValue !== UNCHANGED) {
+	            var notify = hasListeners(adm);
+	            var notifySpy = isSpyEnabled();
+	            var change = notifyListeners || hasListeners ? {
+	                type: "update",
+	                object: this,
+	                oldValue: observable.value,
+	                name: name, newValue: newValue
+	            } : null;
+	            if (notifySpy) spyReportStart(change);
+	            observable.setNewValue(newValue);
+	            if (notify) notifyListeners(adm, change);
+	            if (notifySpy) spyReportEnd();
+	        }
+	    };
+	}
+	function notifyPropertyAddition(adm, object, name, newValue) {
+	    var notify = hasListeners(adm);
+	    var notifySpy = isSpyEnabled();
+	    var change = notify || notifySpy ? {
+	        type: "add",
+	        object: object, name: name, newValue: newValue
+	    } : null;
+	    if (notifySpy) spyReportStart(change);
+	    if (notify) notifyListeners(adm, change);
+	    if (notifySpy) spyReportEnd();
+	}
+	function isObservableObject(thing) {
+	    return thing && thing.$mobx instanceof ObservableObjectAdministration;
+	}
+	exports.isObservableObject = isObservableObject;
+	var UNCHANGED = {};
+	var ObservableValue = function (_super) {
+	    __extends(ObservableValue, _super);
+	    function ObservableValue(value, mode, name, notifySpy) {
+	        if (name === void 0) {
+	            name = "ObservableValue@" + getNextId();
+	        }
+	        if (notifySpy === void 0) {
+	            notifySpy = true;
+	        }
+	        _super.call(this, name);
+	        this.mode = mode;
+	        this.hasUnreportedChange = false;
+	        this.value = undefined;
+	        var _a = getValueModeFromValue(value, ValueMode.Recursive),
+	            childmode = _a[0],
+	            unwrappedValue = _a[1];
+	        if (this.mode === ValueMode.Recursive) this.mode = childmode;
+	        this.value = makeChildObservable(unwrappedValue, this.mode, this.name);
+	        if (notifySpy && isSpyEnabled()) {
+	            spyReport({ type: "create", object: this, newValue: this.value });
+	        }
+	    }
+	    ObservableValue.prototype.set = function (newValue) {
+	        var oldValue = this.value;
+	        newValue = this.prepareNewValue(newValue);
+	        if (newValue !== UNCHANGED) {
+	            var notifySpy = isSpyEnabled();
+	            if (notifySpy) {
+	                spyReportStart({
+	                    type: "update",
+	                    object: this,
+	                    newValue: newValue, oldValue: oldValue
+	                });
+	            }
+	            this.setNewValue(newValue);
+	            if (notifySpy) spyReportEnd();
+	        }
+	    };
+	    ObservableValue.prototype.prepareNewValue = function (newValue) {
+	        assertUnwrapped(newValue, "Modifiers cannot be used on non-initial values.");
+	        checkIfStateModificationsAreAllowed();
+	        if (hasInterceptors(this)) {
+	            var change = interceptChange(this, { object: this, type: "update", newValue: newValue });
+	            if (!change) return UNCHANGED;
+	            newValue = change.newValue;
+	        }
+	        var changed = valueDidChange(this.mode === ValueMode.Structure, this.value, newValue);
+	        if (changed) return makeChildObservable(newValue, this.mode, this.name);
+	        return UNCHANGED;
+	    };
+	    ObservableValue.prototype.setNewValue = function (newValue) {
+	        var oldValue = this.value;
+	        this.value = newValue;
+	        this.reportChanged();
+	        if (hasListeners(this)) notifyListeners(this, [newValue, oldValue]);
+	    };
+	    ObservableValue.prototype.get = function () {
+	        this.reportObserved();
+	        return this.value;
+	    };
+	    ObservableValue.prototype.intercept = function (handler) {
+	        return registerInterceptor(this, handler);
+	    };
+	    ObservableValue.prototype.observe = function (listener, fireImmediately) {
+	        if (fireImmediately) listener(this.value, undefined);
+	        return registerListener(this, listener);
+	    };
+	    ObservableValue.prototype.toJSON = function () {
+	        return this.get();
+	    };
+	    ObservableValue.prototype.toString = function () {
+	        return this.name + "[" + this.value + "]";
+	    };
+	    return ObservableValue;
+	}(Atom);
+	function getAtom(thing, property) {
+	    if ((typeof thing === "undefined" ? "undefined" : _typeof(thing)) === "object" && thing !== null) {
+	        if (isObservableArray(thing)) {
+	            invariant(property === undefined, "It is not possible to get index atoms from arrays");
+	            return thing.$mobx.atom;
+	        } else if (isObservableMap(thing)) {
+	            if (property === undefined) return getAtom(thing._keys);
+	            var observable_1 = thing._data[property] || thing._hasMap[property];
+	            invariant(!!observable_1, "the entry '" + property + "' does not exist in the observable map '" + getDebugName(thing) + "'");
+	            return observable_1;
+	        } else if (isObservableObject(thing)) {
+	            invariant(!!property, "please specify a property");
+	            var observable_2 = thing.$mobx.values[property];
+	            invariant(!!observable_2, "no observable property '" + property + "' found on the observable object '" + getDebugName(thing) + "'");
+	            return observable_2;
+	        } else if (thing instanceof Atom || thing instanceof ComputedValue || thing instanceof Reaction) {
+	            return thing;
+	        }
+	    } else if (typeof thing === "function") {
+	        if (thing.$mobx instanceof Reaction) {
+	            return thing.$mobx;
+	        }
+	    }
+	    invariant(false, "Cannot obtain atom from " + thing);
+	}
+	function getAdministration(thing, property) {
+	    invariant(thing, "Expection some object");
+	    if (property !== undefined) return getAdministration(getAtom(thing, property));
+	    if (thing instanceof Atom || thing instanceof ComputedValue || thing instanceof Reaction) return thing;
+	    if (isObservableMap(thing)) return thing;
+	    if (thing.$mobx) return thing.$mobx;
+	    invariant(false, "Cannot obtain administration from " + thing);
+	}
+	function getDebugName(thing, property) {
+	    var named;
+	    if (property !== undefined) named = getAtom(thing, property);else if (isObservableObject(thing) || isObservableMap(thing)) named = getAdministration(thing);else named = getAtom(thing);
+	    return named.name;
+	}
+	var SimpleEventEmitter = function () {
+	    function SimpleEventEmitter() {
+	        this.listeners = [];
+	        deprecated("extras.SimpleEventEmitter is deprecated and will be removed in the next major release");
+	    }
+	    SimpleEventEmitter.prototype.emit = function () {
+	        var listeners = this.listeners.slice();
+	        for (var i = 0, l = listeners.length; i < l; i++) {
+	            listeners[i].apply(null, arguments);
+	        }
+	    };
+	    SimpleEventEmitter.prototype.on = function (listener) {
+	        var _this = this;
+	        this.listeners.push(listener);
+	        return once(function () {
+	            var idx = _this.listeners.indexOf(listener);
+	            if (idx !== -1) _this.listeners.splice(idx, 1);
+	        });
+	    };
+	    SimpleEventEmitter.prototype.once = function (listener) {
+	        var subscription = this.on(function () {
+	            subscription();
+	            listener.apply(this, arguments);
+	        });
+	        return subscription;
+	    };
+	    return SimpleEventEmitter;
+	}();
+	exports.SimpleEventEmitter = SimpleEventEmitter;
+	var EMPTY_ARRAY = [];
+	Object.freeze(EMPTY_ARRAY);
+	function getNextId() {
+	    return ++globalState.mobxGuid;
+	}
+	function invariant(check, message, thing) {
+	    if (!check) throw new Error("[mobx] Invariant failed: " + message + (thing ? " in '" + thing + "'" : ""));
+	}
+	var deprecatedMessages = [];
+	function deprecated(msg) {
+	    if (deprecatedMessages.indexOf(msg) !== -1) return;
+	    deprecatedMessages.push(msg);
+	    console.error("[mobx] Deprecated: " + msg);
+	}
+	function once(func) {
+	    var invoked = false;
+	    return function () {
+	        if (invoked) return;
+	        invoked = true;
+	        return func.apply(this, arguments);
+	    };
+	}
+	var noop = function noop() {};
+	function unique(list) {
+	    var res = [];
+	    list.forEach(function (item) {
+	        if (res.indexOf(item) === -1) res.push(item);
+	    });
+	    return res;
+	}
+	function isPlainObject(value) {
+	    return value !== null && (typeof value === "undefined" ? "undefined" : _typeof(value)) === "object" && Object.getPrototypeOf(value) === Object.prototype;
+	}
+	function objectAssign() {
+	    var res = arguments[0];
+	    for (var i = 1, l = arguments.length; i < l; i++) {
+	        var source = arguments[i];
+	        for (var key in source) {
+	            if (source.hasOwnProperty(key)) {
+	                res[key] = source[key];
+	            }
+	        }
+	    }
+	    return res;
+	}
+	function valueDidChange(compareStructural, oldValue, newValue) {
+	    return compareStructural ? !deepEquals(oldValue, newValue) : oldValue !== newValue;
+	}
+	function makeNonEnumerable(object, props) {
+	    for (var i = 0; i < props.length; i++) {
+	        Object.defineProperty(object, props[i], {
+	            configurable: true,
+	            writable: true,
+	            enumerable: false,
+	            value: object[props[i]]
+	        });
+	    }
+	}
+	function isPropertyConfigurable(object, prop) {
+	    var descriptor = Object.getOwnPropertyDescriptor(object, prop);
+	    return !descriptor || descriptor.configurable !== false && descriptor.writable !== false;
+	}
+	function assertPropertyConfigurable(object, prop) {
+	    invariant(isPropertyConfigurable(object, prop), "Cannot make property '" + prop + "' observable, it is not configurable and writable in the target object");
+	}
+	function deepEquals(a, b) {
+	    if (a === null && b === null) return true;
+	    if (a === undefined && b === undefined) return true;
+	    var aIsArray = Array.isArray(a) || isObservableArray(a);
+	    if (aIsArray !== (Array.isArray(b) || isObservableArray(b))) {
+	        return false;
+	    } else if (aIsArray) {
+	        if (a.length !== b.length) return false;
+	        for (var i = a.length; i >= 0; i--) {
+	            if (!deepEquals(a[i], b[i])) return false;
+	        }return true;
+	    } else if ((typeof a === "undefined" ? "undefined" : _typeof(a)) === "object" && (typeof b === "undefined" ? "undefined" : _typeof(b)) === "object") {
+	        if (a === null || b === null) return false;
+	        if (Object.keys(a).length !== Object.keys(b).length) return false;
+	        for (var prop in a) {
+	            if (!b.hasOwnProperty(prop)) return false;
+	            if (!deepEquals(a[prop], b[prop])) return false;
+	        }
+	        return true;
+	    }
+	    return a === b;
+	}
+	function quickDiff(current, base) {
+	    if (!base || !base.length) return [current, []];
+	    if (!current || !current.length) return [[], base];
+	    var added = [];
+	    var removed = [];
+	    var currentIndex = 0,
+	        currentSearch = 0,
+	        currentLength = current.length,
+	        currentExhausted = false,
+	        baseIndex = 0,
+	        baseSearch = 0,
+	        baseLength = base.length,
+	        isSearching = false,
+	        baseExhausted = false;
+	    while (!baseExhausted && !currentExhausted) {
+	        if (!isSearching) {
+	            if (currentIndex < currentLength && baseIndex < baseLength && current[currentIndex] === base[baseIndex]) {
+	                currentIndex++;
+	                baseIndex++;
+	                if (currentIndex === currentLength && baseIndex === baseLength) return [added, removed];
+	                continue;
+	            }
+	            currentSearch = currentIndex;
+	            baseSearch = baseIndex;
+	            isSearching = true;
+	        }
+	        baseSearch += 1;
+	        currentSearch += 1;
+	        if (baseSearch >= baseLength) baseExhausted = true;
+	        if (currentSearch >= currentLength) currentExhausted = true;
+	        if (!currentExhausted && current[currentSearch] === base[baseIndex]) {
+	            added = added.concat(current.slice(currentIndex, currentSearch));
+	            currentIndex = currentSearch + 1;
+	            baseIndex++;
+	            isSearching = false;
+	        } else if (!baseExhausted && base[baseSearch] === current[currentIndex]) {
+	            removed = removed.concat(base.slice(baseIndex, baseSearch));
+	            baseIndex = baseSearch + 1;
+	            currentIndex++;
+	            isSearching = false;
+	        }
+	    }
+	    return [added.concat(current.slice(currentIndex)), removed.concat(base.slice(baseIndex))];
+	}
+	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }())))
+
+/***/ },
+/* 39 */
 /***/ function(module, exports, __webpack_require__) {
 
-	/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__motorcycle_dom__ = __webpack_require__(16);
-	/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__motorcycle_dom___default = __WEBPACK_IMPORTED_MODULE_0__motorcycle_dom__ && __WEBPACK_IMPORTED_MODULE_0__motorcycle_dom__.__esModule ? function() { return __WEBPACK_IMPORTED_MODULE_0__motorcycle_dom__['default'] } : function() { return __WEBPACK_IMPORTED_MODULE_0__motorcycle_dom__; }
-	/* harmony import */ Object.defineProperty(__WEBPACK_IMPORTED_MODULE_0__motorcycle_dom___default, 'a', { get: __WEBPACK_IMPORTED_MODULE_0__motorcycle_dom___default });
+	'use strict';
 
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _dom = __webpack_require__(16);
 
 	/*
 	import {subject} from 'most-subject'
@@ -3331,1241 +5453,436 @@
 
 	var mMname = new Monad('Fred', 'mMname');
 
-	const monad = /* harmony import */ __WEBPACK_IMPORTED_MODULE_0__motorcycle_dom__["h"]('pre', { style: { color: '#AFEEEE' } }, `  var Monad = function Monad(z, g) {
-	    var _this = this;
-
-	    this.x = z;
-	    if (arguments.length === 1) {
-	      this.id = 'anonymous';
-	    } else {
-	      this.id = g;
-	    };
-
-	    this.bnd = function (func, ...args) {
-	       return func(_this.x, ...args);
-	    };
-
-	    this.ret = function (a) {
-	      O.[_this.id] = new Monad(a, _this.id);
-	      return O.[_this.id]
-	    };
-	  }; `);
-
-	const monadStr = /* harmony import */ __WEBPACK_IMPORTED_MODULE_0__motorcycle_dom__["h"]('pre', { style: { color: '#AFEEEE' } }, `          var MonadStream = function MonadStream(g) {
-	      var _this = this;
-	      this.stream = xs.create();
-	      this.id = g;
-	      this.ret = function (a) {
-	        _this.stream.shamefullySendNext(a);
-	        return _this;
-	      };
-	  }; `);
-
-	const monadIt = /* harmony import */ __WEBPACK_IMPORTED_MODULE_0__motorcycle_dom__["h"]('pre', { style: { color: '#AFEEEE' } }, `  var MonadIter = function MonadIter() {
-	    var _this = this;
-	    this.p = function () {};
-	  
-	    this.release = function (...args) {
-	      return this.p(...args);
-	    };
-	  
-	    this.bnd = function (func) {
-	      _this.p = func;
-	    };
-	  }; `);
-
-	const ret = /* harmony import */ __WEBPACK_IMPORTED_MODULE_0__motorcycle_dom__["h"]('pre', { style: { color: '#AFEEEE' } }, `  var ret = function ret(v, id) {
-	    if (arguments.length === 1) {
-	      return (new Monad(v, 'anonymous'));
-	    }
-	    window[id] = new Monad(v, id);
-	    return window[id];
-	  }; `);
-
-	var fib = /* harmony import */ __WEBPACK_IMPORTED_MODULE_0__motorcycle_dom__["h"]('pre', `          mM$fib.stream.addListener({
-	    next: v => {
-	      if (v[2] > 1) {mM$fib.ret([v[1], v[0] + v[1], v[2] -1])}
-	      else {
-	        mM19.ret(v[1]);
-	      }
-	    },
-	    error: err => console.error(err),
-	    complete: () => console.log('completed')
-	  });
-
-	  const fibPress$ = sources.DOM
-	    .select('input#code').events('keydown');
-
-	  const fibPressAction$ = fibPress$.map(e => {
-	    if (e.target.value == '') {return};
-	    if( e.keyCode == 13 && Number.isInteger(e.target.value*1) ) {
-	      mM21.ret(e.target.value);
-	      mM$fib.ret([0, 1, e.target.value]);
-	    }
-	    if( e.keyCode == 13 && !Number.isInteger(e.target.value*1 )) {
-	      mM19.ret("You didn't provide an integer");
-	    }
-	  });  `);
-
-	var driver = /* harmony import */ __WEBPACK_IMPORTED_MODULE_0__motorcycle_dom__["h"]('pre', `  var websocketsDriver = function () {
-	      return create((add) => {
-	        socket.onmessage = msg => add(msg)
-	      })
-	  };
-	`);
-
-	var messages = /* harmony import */ __WEBPACK_IMPORTED_MODULE_0__motorcycle_dom__["h"]('pre', `  const messages$ = (sources.WS).map(e => 
-	    mMtem.ret(e.data.split(',')).bnd(v => {
-	    mMZ10.bnd(() => mM$1
-	      .ret([v[3], v[4], v[5], v[6]])
-	      .bnd(() => mM$2.ret([])))
-	    mMZ11.bnd(() => updateScoreboard(v[3]));
-	    mMZ12.bnd(() => mM6
-	      .ret(v[2] + ' successfully logged in.'))
-	    mMZ13.bnd(() => updateMessages(v))
-	    mMZ14.bnd(() => mMgoals2.ret('The winner is ' + v.x ))
-	    mMZ15.bnd(() => mMgoals2.ret('A player named ' + 
-	      O.mMname.x + 'is currently logged in. Page will refresh in 4 seconds.')
-	      .bnd(refresh))
-	    mMZ16.bnd(() => process(e.data))
-	    mMtemp.ret(e.data.split(',')[0])
-	      .bnd(next, 'CA#$42', mMZ10)
-	      .bnd(next, 'CB#$42', mMZ11)
-	      .bnd(next, 'CC#$42', mMZ12)
-	      .bnd(next, 'CD#$42', mMZ13)
-	      .bnd(next, 'CE#$42', mMZ14)
-	      .bnd(next, 'EE#$42', mMZ15)
-	      .bnd(next, 'DD#$42', mMZ16)
-	    }) 
-	  );
-	             
-	  var next = function next(x, y, mon2) {
-	    if (x === y) {
-	      mon2.release();
-	    }
-	    return ret(x);
-	  }`);
-
-	var next = /* harmony import */ __WEBPACK_IMPORTED_MODULE_0__motorcycle_dom__["h"]('pre', `  
-	  `);
-
-	var Monad$ = /* harmony import */ __WEBPACK_IMPORTED_MODULE_0__motorcycle_dom__["h"]('pre', `  var Monad$ = function Monad$(z, g) {
-	      var _this = this;
-	      this.subject = subject();
-	      this.observer = this.subject.observer;
-	      this.stream = this.subject.stream;
-	      this.x = z;
-	      this.id = g;
-
-	      this.bnd = function (func, ...args) {
-	         return func(_this.x, ...args);
-	      };
-
-	      this.ret = function (a) {
-	        O[_this.id] = new Monad$(a,_this.id);
-	        _this.observer.next(a);
-	        return O[_this.id];
-	      };
-	    };
-	  `);
-
-	var nums = /* harmony import */ __WEBPACK_IMPORTED_MODULE_0__motorcycle_dom__["h"]('pre', `  
-	    const numClick$ = sources.DOM
-	      .select('.num').events('click');
-	       
-	    const numClickAction$ = numClick$.map(e => {
-	      console.log(e);
-	      if (O.mM3.x.length < 2) {
-	        O.mM3.bnd(push, e.target.innerHTML, O.mM3)
-	        mM28.ret(O.mMhistorymM1.x[O.mMindex2.x])
-	        .bnd(spliceRemove, e.target.id, O.mM$1)
-	        .bnd(mM$1.ret);
-	        if (O.mM3.x.length === 2 && O.mM8.x !== 0) {
-	          updateCalc();
-	        }
-	      };
-	    }).startWith([0,0,0,0]);
-
-	    const opClick$ = sources.DOM
-	      .select('.op').events('click');
-	  
-	    const opClickAction$ = opClick$.map(e => {
-	      mM8.ret(e.target.textContent);
-	      if (O.mM3.x.length === 2) {
-	        updateCalc();
-	      }
-	    })
-
-	    const mM$1Action$ = mM$1.stream.map(v => {
-	      if (Array.isArray(v)) {
-	        O.mMhistorymM1.bnd(spliceAdd, O.mMindex2.x, v, O.mMhistorymM1);
-	        document.getElementById('0').innerHTML = (O.mMhistorymM1.x[O.mMindex2.x])[0]; 
-	        document.getElementById('1').innerHTML = (O.mMhistorymM1.x[O.mMindex2.x])[1]; 
-	        document.getElementById('2').innerHTML = (O.mMhistorymM1.x[O.mMindex2.x])[2]; 
-	        document.getElementById('3').innerHTML = (O.mMhistorymM1.x[O.mMindex2.x])[3]; 
-	        cleanup()
-	      }
-	      else {
-	        console.log('O.mM$1.stream is providing defective data to O.mM$1Action');
-	      }
-	  });  `);
-
-	const arrayFuncs = /* harmony import */ __WEBPACK_IMPORTED_MODULE_0__motorcycle_dom__["h"]('pre', `  var push = function push(y,v,mon) {
-	      if (Array.isArray(y)) {
-	        let ar = [];
-	        let keys = Object.keys(y);
-	        for (let k in keys) {ar[k] = y[k]};
-	        ar.push(v);
-	        return mon.ret(ar);  
-	      }
-	      console.log('The value provided to push is not an array');
-	      return ret(y);
-	    };
-	    
-	    var spliceRemove = function splice(x, j, mon) {
-	      if (Array.isArray(x)) {
-	        let ar = [];
-	        let keys = Object.keys(x);
-	        for (let k in keys) {ar[k] = x[k]};
-	        ar.splice(j,1);
-	        return mon.ret(ar);  
-	      }
-	      console.log('The value provided to spliceRemove is not an array');
-	      return ret(x);
-	    };
-	    
-	    var spliceAdd = function splice(x, index, value, mon) {
-	      if (Array.isArray(x)) {
-	        let ar = [];
-	        let keys = Object.keys(x);
-	        for (let k in keys) {ar[k] = x[k]};
-	        ar.splice(index, 0, value);
-	        return mon.ret(ar);  
-	      }
-	      console.log('The value provided to spliceAdd is not an array');
-	      return ret(x);
-	    };
-	    
-	    var splice = function splice(x, start, end, mon) {
-	      if (Array.isArray(x)) {
-	        let ar = [];
-	        let keys = Object.keys(x);
-	        for (let k in keys) {ar[k] = x[k]};
-	        ar.splice(start, end);
-	        return mon.ret(ar);  
-	      }
-	      console.log('The value provided to spliceAdd is not an array');
-	      return ret(x);
-	    };
-	  `);
-
-	var cleanup = /* harmony import */ __WEBPACK_IMPORTED_MODULE_0__motorcycle_dom__["h"]('pre', `  function cleanup (x) {
-	      let target0 = document.getElementById('0');
-	      let target1 = document.getElementById('1');
-	      let target2 = document.getElementById('2');
-	      let target3 = document.getElementById('3');
-	      let targetAr = [target0, target1, target2, target3];
-	      for (let i in [0,1,2,3]) {
-	        if (targetAr[i].innerHTML == 'undefined' )    {
-	          targetAr[i].style.display = 'none';
-	        }
-	        else {
-	          targetAr[i].style.display = 'inline';
-	        }
-	      }
-	      return ret(x);
-	  }; `);
-
-	var travel = /* harmony import */ __WEBPACK_IMPORTED_MODULE_0__motorcycle_dom__["h"]('pre', `  const forwardClick$ = sources.DOM
-	      .select('#forward2').events('click');
-	  
-	    const backClick$ = sources.DOM
-	      .select('#back2').events('click');
-	  
-	    const forwardClickAction$ = forwardClick$.map(() => {
-	      if (O.mMindex2.x < (O.mMhistorymM1.x.length - 1)) {
-	        inc(O.mMindex2.x, mMindex2)
-	        .bnd(() => mM$3.ret('Hello'))
-	      }
-	    });
-	  
-	    const backClickAction$ = backClick$.map(() => {
-	      if (O.mMindex2.x > 0) {
-	        dec(O.mMindex2.x, mMindex2)
-	        .bnd(() => mM$3.ret('You bet!'))
-	      }
-	    });
-
-	    const mM$3Action$ = mM$3.stream.map(v => {
-	      document.getElementById('0').innerHTML = (O.mMhistorymM1.x[O.mMindex2.x])[0]; 
-	      document.getElementById('1').innerHTML = (O.mMhistorymM1.x[O.mMindex2.x])[1]; 
-	      document.getElementById('2').innerHTML = (O.mMhistorymM1.x[O.mMindex2.x])[2]; 
-	      document.getElementById('3').innerHTML = (O.mMhistorymM1.x[O.mMindex2.x])[3]; 
-	      cleanup();
-	    })  `);
-
-	var C42 = /* harmony import */ __WEBPACK_IMPORTED_MODULE_0__motorcycle_dom__["h"]('pre', `  mMZ10.bnd(() => mM$1
-	     .ret([O.mMar.x[3], O.mMar.x[4], O.mMar.x[5], O.mMar.x[6]])
-	     .bnd(() => mM$2.ret([]))
-	     .bnd(displayInline,'0')
-	     .bnd(displayInline,'1')
-	     .bnd(displayInline,'2')
-	     .bnd(displayInline,'3'));  `);
-
-	var taskStream = /* harmony import */ __WEBPACK_IMPORTED_MODULE_0__motorcycle_dom__["h"]('pre', `  
-	    });  `);
-
-	var deleteTask2 = /* harmony import */ __WEBPACK_IMPORTED_MODULE_0__motorcycle_dom__["h"]('pre', `  mMZ19.bnd(() => O.mM$task.bnd(spliceRemove, O.mMar.x[3], mM$task));
-	  `);
-
-	var newTask = /* harmony import */ __WEBPACK_IMPORTED_MODULE_0__motorcycle_dom__["h"]('pre', `  const newTask$ = sources.DOM
-	    .select('input.newTask').events('keydown'); 
-
-	  const newTaskAction$ = newTask$.map(e => {
-	      let ob = {};
-	      var alert = '';
-	      var ar = e.target.value.split(',');
-	      var ar2 = ar.slice(2);
-	      var task = '';
-	      if (ar.length < 4) {
-	        task = ar[2];
-	      }
-	      if (ar.length > 3) {
-	        task = ar2.reduce((a,b) => a + '$*$*$' + b);
-	      }
-	      if( e.keyCode == 13 ) {
-	        if ( ar.length < 3 ) {
-	          alert = 'You should enter "author, responsible party, task" separated by commas';
-	          document.getElementById('alert').innerHTML = alert;
-	        }
-
-	        else if ( (O.mMar2.x.filter(v => (v.task == task)).length) > 0 ) {
-	          document.getElementById('alert').innerHTML = task + " is already listed.";
-	        }
-
-	        else if ( ar.length > 2 ) {
-	          O.mM$taskList.bnd(addString, task + ',yellow, none, false,' +  ar[0] + ',' + ar[1], mM$taskList);
-	          e.target.value = '';
-	          document.getElementById('alert').innerHTML = '';
-	        } 
-	      } 
-	  };  `);
-
-	var process = /* harmony import */ __WEBPACK_IMPORTED_MODULE_0__motorcycle_dom__["h"]('pre', `  const process = function(str) {
-	    let a = str.split(",");
-	    console.log('In process. str and a are: ', str, a);
-	    if (a == undefined) {
-	      return;
-	    };
-	    if (a.length < 9) {
-	      return
-	    };
-	    let ob = {};
-	    let ar = a.slice(3)
-	    let s = ar.reduce((a,b) => a + ',' + b);
-	    if (mM$taskList.x.length < 5) {
-	      O.mM$taskList.ret(s);
-	    }
-	    let ar2 = [];
-	    let tempArray = [];
-	    if (ar.length < 6) {return};
-	    if ((ar.length % 6) !== 0) {
-	      document.getElementById('alert').innerHTML = 'Error: array length is: ' + length;
-	    } else {
-	      let keys = Array(ar.length/6).fill(1);
-	      keys.map(_ => {
-	        ar2.push(
-	          {
-	            task: convertBack(ar.shift()),
-	            color: ar.shift(),
-	            textDecoration: ar.shift(),
-	            checked: ar.shift() === 'true',
-	            author: ar.shift(),
-	            responsible: ar.shift()
-	          }
-	        )
-	      })
-	      console.log('In process  ar2 is: ', ar2)
-	      let keys2 = Object.keys(ar2);
-	      for (let k in keys) {
-	        tempArray.push(
-	          h('div.todo',  [
-	            h('span.task3', {style: {color: ar2[k].color, textDecoration: ar2[k].textDecoration}},
-	                'Task: ' + ar2[k].task  ),  
-	            h('br'),
-	            h('button#edit1', 'Edit'  ),
-	            h('input#edit2', {props: {type: 'textarea', value: ar2[k].task}, style: {display: 'none'}}  ), 
-	            h('span#author.tao', 'Author: ' + ar2[k].author  + ' / ' + 'Responsibility: ' + ar2[k].responsible),
-	            h('br'),
-	            h('input#cb', {props: {type: 'checkbox', checked: ar2[k].checked}, style: {color: ar2[k].color,
-	                 textDecoration: ar2[k].textDecoration} } ), 
-	            h('label.cbox', { props: {for: '#cb'}}, 'Completed' ),
-	            h('button.delete', 'Delete'  ),  
-	            h('br'),
-	            h('hr')])
-	        )
-	      }
-	      mMtaskList.ret(tempArray)
-	    }
-	  };  `);
-
-	var colorClick = /* harmony import */ __WEBPACK_IMPORTED_MODULE_0__motorcycle_dom__["h"]('pre', `  const colorClick$ = sources.DOM
-	    .select('#cb').events('click')
-	    
-	  const colorAction$ = colorClick$.map(e => {
-	    let index = getIndex(e);
-	    let s = O.mM$taskList.x;
-	    let ar = s.split(',');
-	    let n = 6 * index + 3;
-	    let j = 6 * index + 2;
-	    let k = 6 * index + 1;
-	    let checked = ar[n];
-	    if (checked == 'true')  {
-	      ar[n] = 'false'; 
-	      ar[k] = 'yellow'; 
-	      ar[j] = 'none'; 
-	    }
-	    else {
-	      ar[n] = 'true'; 
-	      ar[k] = 'lightGreen'; 
-	      ar[j] = 'line-through'; 
-	    }
-	    mM$taskList.ret( ar.reduce((a,b) => a + ',' + b) )
-	  });  
-	                     
-	  var getIndex = function getIndex (event_object) {
-	    var task = event_object.currentTarget.parentNode.innerText;
-	    var possibilities = event_object.currentTarget.parentNode.parentNode.childNodes;
-	    var keys = Object.keys(possibilities);
-	    for (let k in keys) {
-	      if (task == possibilities[k].innerText) {
-	        return k
-	      }
-	    }
-	    console.log('In getIndex. No match');
-	  }  `);
-
-	var edit = /* harmony import */ __WEBPACK_IMPORTED_MODULE_0__motorcycle_dom__["h"]('pre', `  const edit1$ = sources.DOM
-	    .select('#edit1').events('click')
-	    
-	  const edit1Action$ = edit1$.map(e => {
-	    let index = getIndex2(e);
-	    O.mMtaskList.x[index].children[3].elm.style.display = 'block';
-	  });
-
-	  const edit2$ = sources.DOM
-	    .select('#edit2').events('keypress')
-	    
-	  const edit2Action$ = edit2$.map(e => {
-	    let v = e.target.value;
-	    let index = getIndex2(e);
-	    if( e.keyCode == 13 ) {
-	      process2(v, index);
-	    O.mMtaskList.x[index].children[3].elm.style.display = 'none';
-	    }
-	  });
-
-	  const process2 = function(str, index) {
-	    let a = O.mM$taskList.x;
-	    let ar = a.split(',');
-	    let task = str.split(',').reduce((a,b) => ar + '$*$*$' + b)
-	    ar[index * 6] = task;
-	    let s = ar.reduce((a,b) => a + ',' + b);
-	    mM$taskList.ret(s);
-	  };
-
-	  var getIndex2 = function getIndex2 (e) {
-	    var elem = e.currentTarget.parentNode.children[0].innerHTML
-	    var elem2 = e.currentTarget.parentNode.parentNode.childNodes
-	    var keys = Object.keys(elem2);
-	    for (let k in keys) {
-	      if (elem == elem2[k].childNodes[0].innerHTML) {
-	        return k
-	      }
-	      console.log('In getIndex2. No match');
-	    }
-	  }  `);
-
-	var mM$task = /* harmony import */ __WEBPACK_IMPORTED_MODULE_0__motorcycle_dom__["h"]('pre', `  const taskAction$ = mM$taskList.stream.map(str => {
-	    socket.send('TD#$42' + ',' + O.mMgroup.x.trim() + 
-	        ',' + O.mMname.x.trim() + ',' + '@' + str);
-	  });  `);
-
-	var updateCalc = /* harmony import */ __WEBPACK_IMPORTED_MODULE_0__motorcycle_dom__["h"]('pre', `  function updateCalc() { 
-	    O.mM3.bnd(x => mM7
-	    .ret(calc(x[0], O.mM8.x, x[1]))
-	    .bnd(result => {if (result == 20) {score(O.mM13.x, 1)}; return O.mM7}) 
-	    .bnd(result => {if (result == 18) {score(O.mM13.x, 3)}; return O.mM$1}) 
-	    .bnd(push, O.mM7.x, mM$1)
-	    .bnd(reset))
-	  };
-
-	  var score = function score(x,j) {
-	    if ((x + j) == 20) {
-	      mMgoals.ret(O.mMgoals.x == 2 ? 0 : (O.mMgoals.x + 1)); 
-	      mM13.ret(0);
-	      socket.send('CG#$42,' + O.mMgroup.x + ',' + O.mMname.x + ',' + -x + ',' + O.mMgoals.x); 
-	      if (O.mMgoals.x == 0) {
-	        socket.send('CE#$42,' + O.mMgroup.x + ',' + O.mMname.x + ',nothing ');
-	      }
-	      socket.send('CA#$42,' + O.mMgroup.x.trim() + ',' + O.mMname.x.trim() + ',6,6,12,20');
-	      return;
-	    }
-	    if ((x + j) % 5 == 0) {
-	      mMscoreChange.ret(j + 5);  
-	      socket.send('CG#$42,' + O.mMgroup.x + ',' + O.mMname.x + ','+(j+5)+',' + O.mMgoals.x); 
-	      mM13.ret(x + j + 5);
-	      socket.send('CA#$42,' + O.mMgroup.x.trim() + ',' + O.mMname.x.trim() + ',6,6,12,20');
-	      return;
-	    } 
-	    socket.send('CG#$42,' + O.mMgroup.x + ',' + O.mMname.x + ','+j+',' + O.mMgoals.x); 
-	    mM13.ret(x + j);
-	    socket.send('CA#$42,' + O.mMgroup.x.trim() + ',' + O.mMname.x.trim() + ',6,6,12,20');
-	  };  `);
-
-	var testZ = /* harmony import */ __WEBPACK_IMPORTED_MODULE_0__motorcycle_dom__["h"]('pre', `  mMZ1.bnd(v => O.mMt1.bnd(add,v,mMt1)
-	  .bnd(cube,mMt2)
-	  .bnd(() => mMt3.ret(O.mMt1.x + ' cubed is ' + O.mMt2.x)))  
-	  
-	  mMZ2.bnd(v => cube(v).bnd(w => mMt3.ret(v + ' cubed is ' + w)))  `);
-
-	var quad = /* harmony import */ __WEBPACK_IMPORTED_MODULE_0__motorcycle_dom__["h"]('pre', `  var solve = (function solve () {
-	    mMZ3
-	    .bnd(a => mMquad1.ret(a + 'x**2')
-	    .bnd(() => mMquad2.ret('').bnd(mMquad3.ret) // Clear the display.
-	    .bnd(() => 
-	    mMZ3
-	    .bnd(b => mMquad1.ret(a + 'x**x ' + ' + ' + b + 'x')
-	    .bnd(() =>  
-	    mMZ3
-	    .bnd(c => mMquad1
-	    .ret('Solutions for ' + a + 'x**x ' + ' + ' + b + 'x' + ' + ' + c + ' = 0:')
-	    .bnd(() => mMquad2.bnd(sol1,a,b,c,mMquad2)
-	    .bnd(() => mMquad3.bnd(sol2,a,b,c,mMquad3) 
-	    .bnd(() => solve()    
-	        )))))))))
-	  })();
-
-	  const quad$ = sources.DOM
-	    .select('#quad').events('keypress')
-	  const quadAction$ = quad$.map((e) => {
-	    if( e.keyCode == 13 ) {
-	      mMZ3.release(e.target.value)
-	      document.getElementById('quad').value = '';
-	    }
-	  });
-
-	  var sol1 = function sol1 (x,a,b,c,mon) {
-	    let n = b*(-1) + Math.sqrt(b*b - 4*a*c);
-	    if (n != n) {   // Test for NaN
-	      return mon.ret("No solution");
-	    }
-	    return mon.ret(n/2*a);
-	  }
-	  
-	  var sol2 = function sol2 (x,a,b,c,mon) {
-	    let n = b*(-1) - Math.sqrt(b*b - 4*a*c)
-	    if (n != n) {
-	      return mon.ret("No solution");
-	    }
-	    return mon.ret(n/2*a);
-	  }  `);
-
-	var mdem1 = /* harmony import */ __WEBPACK_IMPORTED_MODULE_0__motorcycle_dom__["h"]('pre', `  var equals = function equals (x, mon1, mon2, mon3) {
-	    if (mon1.id === mon2.id && mon1.x === mon2.x) {
-	      mon3.ret('true');
-	    } else mon3.ret('false');
-	    return ret(x);
-	  }
-	  
-	  var add = function(x,b,mon) {
-	    if (arguments.length === 3) {
-	      return mon.ret(x + b);
-	    }
-	    return ret(x+b);
-	  }
-
-	  var cube = function(v,mon) {
-	    if (arguments.length === 2) {
-	      return mon.ret(v*v*v);
-	    }
-	    return ret(v*v*v);
-	  }  `);
-
-	var runTest = /* harmony import */ __WEBPACK_IMPORTED_MODULE_0__motorcycle_dom__["h"]('pre', `  var runTest = function monTest () {
-	  mM5.bnd( equals,  
-	    m.ret(0).bnd(v => add(v, 3, m).bnd(cube)), 
-	    m.ret(0).bnd(add, 3, m).bnd(cube), mMa)
-
-	  mM5.bnd(equals, m, m.bnd(m.ret), mMb)
-
-	  mM5.bnd(equals, m, m.ret(m.x), mMc)
-	  }  `);
-
-	var gameStream = /* harmony import */ __WEBPACK_IMPORTED_MODULE_0__motorcycle_dom__["h"]('pre', `  const mM$1Action$ = mM$1.stream.map(v => {
-	      O.mMindex2.bnd(inc, mMindex2);
-	      O.mMallRolls.bnd(spliceAdd, O.mMindex2.x, v, mMallRolls);
-	      document.getElementById('0').innerHTML = (O.mMallRolls.x[O.mMindex2.x])[0]; 
-	      document.getElementById('1').innerHTML = (O.mMallRolls.x[O.mMindex2.x])[1]; 
-	      document.getElementById('2').innerHTML = (O.mMallRolls.x[O.mMindex2.x])[2]; 
-	      document.getElementById('3').innerHTML = (O.mMallRolls.x[O.mMindex2.x])[3]; 
-	      cleanup(7)
-	  });  `);
-
-	var inc = /* harmony import */ __WEBPACK_IMPORTED_MODULE_0__motorcycle_dom__["h"]('pre', `  var inc = function inc(x, mon) {
-	      return mon.ret(x + 1);
-	  };
-
-	  var spliceAdd = function spliceAdd(x, index, value, mon) {
-	    if (Array.isArray(x)) {
-	      let ar = [];
-	      let keys = Object.keys(x);
-	      for (let k in keys) {ar[k] = x[k]};
-	      ar.splice(index, 0, value);
-	      return mon.ret(ar);  
-	    }
-	    console.log('The value provided to spliceAdd is not an array');
-	    return ret(x);
-	  }  `);
-
-	var todoStream = /* harmony import */ __WEBPACK_IMPORTED_MODULE_0__motorcycle_dom__["h"]('pre', `  const taskAction$ = mM$taskList.stream.map(str => {
-	    socket.send('TD#$42' + ',' + O.mMgroup.x.trim() + 
-	        ',' + O.mMname.x.trim() + ',' + '@' + str);
-	  });  `);
-
-	var p3 = /* harmony import */ __WEBPACK_IMPORTED_MODULE_0__motorcycle_dom__["h"]('pre', `  
-	    `);
-
-	var p4 = /* harmony import */ __WEBPACK_IMPORTED_MODULE_0__motorcycle_dom__["h"]('pre', `  
-	    `);
-
-	var p5 = /* harmony import */ __WEBPACK_IMPORTED_MODULE_0__motorcycle_dom__["h"]('pre', `  
-	    `);
-
-	var add = /* harmony import */ __WEBPACK_IMPORTED_MODULE_0__motorcycle_dom__["h"]('pre', `  
-	var add = function(x,b,mon) {
-	  if (arguments.length === 3) {
-	    return mon.ret(x + b);
-	  }
-	  return ret(x+b);  
-	  
-	  `);
-
-	var ret_add_cube = /* harmony import */ __WEBPACK_IMPORTED_MODULE_0__motorcycle_dom__["h"]('pre', `  var ret = function ret(v, id) {
-	    if (arguments.length === 1) {
-	      return (new Monad(v, 'anonymous'));
-	    }
-	    window[id] = new Monad(v, id);
-	    return window[id];
-	  }  
-
-	  var add = function(x,b,mon) {
-	    if (arguments.length === 3) {
-	      return mon.ret(x + b);
-	    }
-	    return ret(x+b);
-	  };
-
-	  var cube = function(v,mon) {
-	    if (arguments.length === 2) {
-	      return mon.ret(v*v*v);
-	    }
-	    return ret(v*v*v);
-	}  `);
-
-	var primes = /* harmony import */ __WEBPACK_IMPORTED_MODULE_0__motorcycle_dom__["h"]('pre', `          mM$prime.stream.addListener({
-	    next: v => {
-	      for (let i in v[0]) {
-	        if ((v[1] % v[0][i]) == 0) {
-	          mM$prime.ret([v[0], v[1] + 1, v[2]])
-	          return;
-	        }
-	        if (i == (v[0].length - 1)) {
-	          v[0].push(v[1]);
-	          document.getElementById('prime').innerHTML = v[0];
-	          mMitterPrime.bnd(() =>  mM$prime.ret([v[0], v[1] + 1])) 
-	        }
-	      }
-	    },
-	    error: err => console.error(err),
-	    complete: () => console.log('completed')
-	  });
-
-	  const primeClick$ = sources.DOM
-	    .select('#prime').events('click');
-
-	  const primeClickAction$ = primeClick$.map(() => {
-	    mMitterPrime.release()
-	  });  `);
-
-	var seed = /* harmony import */ __WEBPACK_IMPORTED_MODULE_0__motorcycle_dom__["h"]('pre', `          mM$prime.ret([[2],3])  `);
-
-	var primeFib1 = /* harmony import */ __WEBPACK_IMPORTED_MODULE_0__motorcycle_dom__["h"]('pre', `          const primeKeyPress2$ = sources.DOM
-	    .select('input#prime3334').events('keydown');
-
-	  const primeKeyPressAction2$ = primeKeyPress2$.map(e => {
-	    if (e.target.value == '') {return};
-	    if( e.keyCode == 13 && Number.isInteger(e.target.value*1) ) {
-	      mMitterFib4.release(e.target.value);
-	    }
-	    if( e.keyCode == 13 && !Number.isInteger(e.target.value*1 )) {
-	      mM19.ret("You didn't provide an integer");
-	    }
-	  });
-
-	  mM$fib4.stream.addListener({                // Called while the web page is loading.
-	    next: v => {
-	      var a = v[1];         // Fibonacci number
-	      var b = v[0] + v[1];  // Fibonacci number
-	      var c = v[2];         // Limit
-	      var d = v[3];         // List of Fibonacci numbers
-	      let wd = JSON.parse(JSON.stringify(d));
-	      d.push(a);
-	      if (a < c) {mM$fib4.ret([a,b,c,d])}
-	      else {
-	        mMfibSave2.ret([a, b, c, d]);
-	        document.getElementById('fib4').innerHTML = wd; 
-	        mMitterPrimeFibs.release([v[0], wd]);
-	      };
-	      mMitterFib8.bnd(limit => {          // Released by primeKeyPressAction2$ (above).
-	        let e = [O.mMfibSave2.x[0], O.mMfibSave2.x[1], limit, O.mMfibSave2.x[3]];
-	        mM$fib4.ret(e);
-	      }) 
-	      mMitterFib4.bnd(
-	        x => {
-	          if (x > (v[3][v[3].length - 1])) {
-	            mMitterFib8.release(x);
-	          }
-	          else {
-	            var ar1 = JSON.parse(JSON.stringify(O.mMfibSave2.x[3]));
-	            var ar = ar1.filter(v => v <= x);
-	            mMitterPrimeFibs.release([ar[ar.length - 1], ar]);
-	            document.getElementById('fib4').innerHTML = ar; 
-	          }
-	      })
-	    },
-	    error: err => console.error(err),
-	    complete: () => console.log('completed')
-	  });
-
-	  mM$primeFibs.stream.addListener({
-	    next: v => {
-	      while (v[2] > v[0][v[0].length - 1]) {
-	        for (let i in v[0]) {
-	          if ((v[1] % v[0][i]) == 0) {
-	            mM$primeFibs.ret([v[0], v[1] + 1, v[2], v[3]]);
-	          }
-	          if (i == (v[0].length - 1)) {
-	            v[0].push(v[1]);
-	            document.getElementById('prime2').innerHTML = v[0];
-	          }
-	        }
-	      }
-	      mM$PF.ret(v[0].filter(function(n) {
-	        return v[3].indexOf(n) != -1;
-	      }));
-	      mMitterFib7.bnd(z => {
-	        let recent = v[0][v[0].length - 1];
-	        mM$primeFibs.ret([ v[0], v[1] + 1, z[0], z[1] ]);
-	      })
-	      mMitterPrimeFibs.bnd(
-	        x => {
-	          if (x[0] > v[0][v[0].length - 1]) { 
-	            mMitterFib7.release(x);
-	          }
-	          else {
-	            var ar = JSON.parse(JSON.stringify(v[0]));
-	            var ar2 = ar.filter(v => v <= x[0]);
-	            var num = ar[ar2.length];
-	            ar2.push(num);
-	            document.getElementById('prime2').innerHTML = ar2;
-	          }
-	        }
-	      )
-	    },
-	    error: err => console.error(err),
-	    complete: () => console.log('completed')
-	  });
-
-	  mM$PF.stream.addListener({
-	    next: x => {
-	      if (x[0] < x[1][x[1].length - 1]) {
-	        let ar = JSON.parse(JSON.stringify(x[1]));
-	        let ar2 = ar.filter(v => v <= x[0]);
-	        document.getElementById('primeFibs').innerHTML = ar2;
-	      }
-	      else {document.getElementById('primeFibs').innerHTML = x[1];}
-	    },
-	  error: err => console.error(err),
-	  complete: () => console.log('completed')
-	  });  `);
-
-	var primeFib2 = /* harmony import */ __WEBPACK_IMPORTED_MODULE_0__motorcycle_dom__["h"]('pre', `          const fibKeyPress5$ = sources.DOM
-	    .select('input#fib3335').events('keydown');
-
-	  const fibKeyPressAction5$ = fibKeyPress5$.map(e => {
-	    console.log('In fibKeyPressAction');
-	    if (e.target.value == '') {return};
-	    if( e.keyCode == 13 && Number.isInteger(e.target.value*1) ) {
-	      console.log('releasing mMitterFib5');
-	      mMitterFib5.release(e.target.value);
-	    }
-	    if( e.keyCode == 13 && !Number.isInteger(e.target.value*1 )) {
-	        document.getElementById('fib5').innerHTML = "You didn't provide an integer";
-	    }
-	  });
-
-	  mM$fib5.stream.addListener({                     // Called as the web page loads.
-	    next: v => {
-	      var a = v[1];         // Fibonacci number
-	      var b = v[0] + v[1];  // Fibonacci number
-	      var c = v[2];         // Limit
-	      var d = v[3];         // List of Fibonacci numbers
-	      let wd = JSON.parse(JSON.stringify(d));
-	      d.push(a);
-	      if (a < c) {mM$fib5.ret([a,b,c,d])}
-	      else {
-	        mMfibSave.ret([a, b, c, d]);
-	        document.getElementById('fib5').innerHTML = wd; 
-	      };
-	      mMitterFib6.bnd(limit => {         // Released by fibKeyPressAction5$ (above).
-	        let w = JSON.parse(JSON.stringify(O.mMfibSave.x[3]));
-	        let e = [O.mMfibSave.x[0], O.mMfibSave.x[1], limit, w];
-	        mM$fib5.ret(e);
-	      }) 
-	      mMitterFib5.bnd(
-	        x => {
-	          console.log('In mMitterFib5.bnd -- x is: ', x);
-	          if (x > (v[3][v[3].length - 1])) {
-	            console.log('In the x > ... test. x and v are: ', x, v);
-	            mMitterFib6.release(x);
-	          }
-	          else {
-	            var ar1 = O.mMfibSave.x[3];
-	            var ar = ar1.filter(v => v <= x);
-	            console.log('In mMitterFib4.bnd x < largest   x, ar1, and ar are: ', x, ar1, ar);
-	            document.getElementById('fib5').innerHTML = ar; 
-	          }
-	      })
-	    },
-	    error: err => console.error(err),
-	    complete: () => console.log('completed')
-	  });
-
-	             `);
-
-	var primeFib4 = /* harmony import */ __WEBPACK_IMPORTED_MODULE_0__motorcycle_dom__["h"]('pre', `          mM$fib5.stream.addListener({
-	    next: v => {
-	      if (v[0] < v[2]) {
-	        O.mMfibs8.bnd(push, v[0] + v[1], mMfibs8);
-	        mM$fib5.ret([v[1], v[0] + v[1], v[2]]);
-	      }
-	      else {
-	        let ar = JSON.parse(JSON.stringify(O.mMfibs8.x));
-	        ar.pop();
-	        ar.pop();
-	        document.getElementById('fib5').innerHTML = ar;
-	      } 
-	      mMitterFib5.bnd(
-	        x => {
-	          if (x > O.mMfibs8.x[O.mMfibs8.x.length -1]) {
-	            let ar = JSON.parse(JSON.stringify(O.mMfibs8.x));
-	            let a = ar.pop();
-	            let b = ar.pop();
-	            mM$fib5.ret([b, a, x]);
-	          }
-	          else {
-	            var ar2 = O.mMfibs8.x.filter(v => v <= x);
-	            document.getElementById('fib5').innerHTML = ar2; 
-	          }
-	      })
-	    },
-	    error: err => console.error(err),
-	    complete: () => console.log('completed')
-	  });  `);
-
-	var primeFib3 = /* harmony import */ __WEBPACK_IMPORTED_MODULE_0__motorcycle_dom__["h"]('pre', `          mM$prime5.stream.addListener({
-	    next: v => {
-	      while ((v[0][v[0].length - 1]) < v[2]) {
-	        for (let i in v[0]) {
-	          if ((v[1] % v[0][i]) == 0) {
-	            mM$prime5.ret([v[0], v[1] + 1, v[2]]);
-	          }
-	          if (i == (v[0].length - 1)) {
-	            v[0].push(v[1]);
-	          }
-	        }
-	      }
-	      let ar = JSON.parse(JSON.stringify(v[0]));
-	      ar.pop();
-	      document.getElementById('prime5').innerHTML = ar;
-	      mMitterPrime5.bnd(x => {
-	        if (x > (v[0][v[0].length - 1])) {
-	          mM$prime5.ret([v[0], v[1] + 1, x]);
-	        }
-	        else {
-	          let ar2 = JSON.parse(JSON.stringify(v[0]));
-	          let trunc = ar2.filter(a => a < x);
-	          document.getElementById('prime5').innerHTML = trunc;
-	        }
-	      })
-	    },
-	    error: err => console.error(err),
-	    complete: () => console.log('completed')
-	  });  `);
-
-	var seed1 = /* harmony import */ __WEBPACK_IMPORTED_MODULE_0__motorcycle_dom__["h"]('pre', ` 
-	             `);
-
-	var seed2 = /* harmony import */ __WEBPACK_IMPORTED_MODULE_0__motorcycle_dom__["h"]('pre', ` 
-	             `);
-
-	var seed3 = /* harmony import */ __WEBPACK_IMPORTED_MODULE_0__motorcycle_dom__["h"]('pre', ` 
-	             `);
-
-	var seed4 = /* harmony import */ __WEBPACK_IMPORTED_MODULE_0__motorcycle_dom__["h"]('pre', ` 
-	             `);
-
-	var seed5 = /* harmony import */ __WEBPACK_IMPORTED_MODULE_0__motorcycle_dom__["h"]('pre', ` 
-	             `);
-
-	/* harmony default export */ exports["default"] = { monad, monadStr, monadIt, fib, driver, messages, next, Monad$, updateCalc, arrayFuncs, travel, nums, cleanup, ret, C42, taskStream, newTask, process, mM$task, addString, colorClick, edit, testZ, quad, mdem1, runTest, todoStream, gameStream, inc, ret_add_cube, primes, seed, primeFib1, primeFib4, primeFib3 }
-
-/***/ },
-/* 39 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;(function (global, factory) {
-	    if (true) {
-	        !(__WEBPACK_AMD_DEFINE_ARRAY__ = [exports, __webpack_require__(4)], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-	    } else if (typeof exports !== "undefined") {
-	        factory(exports, require('most'));
-	    } else {
-	        var mod = {
-	            exports: {}
-	        };
-	        factory(mod.exports, global.most);
-	        global.mostDomEvent = mod.exports;
-	    }
-	})(this, function (exports, _most) {
-	    'use strict';
-
-	    Object.defineProperty(exports, "__esModule", {
-	        value: true
-	    });
-	    exports.touchcancel = exports.touchmove = exports.touchend = exports.touchstart = exports.pointerleave = exports.pointerout = exports.pointerenter = exports.pointerover = exports.pointermove = exports.pointerup = exports.pointerdown = exports.unload = exports.load = exports.popstate = exports.hashchange = exports.error = exports.scroll = exports.resize = exports.contextmenu = exports.input = exports.keyup = exports.keypress = exports.keydown = exports.submit = exports.select = exports.change = exports.mouseleave = exports.mouseout = exports.mouseenter = exports.mouseover = exports.mousemove = exports.mouseup = exports.mousedown = exports.dblclick = exports.click = exports.focusout = exports.focusin = exports.focus = exports.blur = exports.domEvent = undefined;
-
-	    function _classCallCheck(instance, Constructor) {
-	        if (!(instance instanceof Constructor)) {
-	            throw new TypeError("Cannot call a class as a function");
-	        }
-	    }
-
-	    var _createClass = function () {
-	        function defineProperties(target, props) {
-	            for (var i = 0; i < props.length; i++) {
-	                var descriptor = props[i];
-	                descriptor.enumerable = descriptor.enumerable || false;
-	                descriptor.configurable = true;
-	                if ("value" in descriptor) descriptor.writable = true;
-	                Object.defineProperty(target, descriptor.key, descriptor);
-	            }
-	        }
-
-	        return function (Constructor, protoProps, staticProps) {
-	            if (protoProps) defineProperties(Constructor.prototype, protoProps);
-	            if (staticProps) defineProperties(Constructor, staticProps);
-	            return Constructor;
-	        };
-	    }();
-
-	    var domEvent = function domEvent(event, node) {
-	        var capture = arguments.length <= 2 || arguments[2] === undefined ? false : arguments[2];
-	        return new _most.Stream(new DomEvent(event, node, capture));
-	    };
-
-	    var blur = function blur(node) {
-	        var capture = arguments.length <= 1 || arguments[1] === undefined ? false : arguments[1];
-	        return domEvent('blur', node, capture);
-	    };
-
-	    var focus = function focus(node) {
-	        var capture = arguments.length <= 1 || arguments[1] === undefined ? false : arguments[1];
-	        return domEvent('focus', node, capture);
-	    };
-
-	    var focusin = function focusin(node) {
-	        var capture = arguments.length <= 1 || arguments[1] === undefined ? false : arguments[1];
-	        return domEvent('focusin', node, capture);
-	    };
-
-	    var focusout = function focusout(node) {
-	        var capture = arguments.length <= 1 || arguments[1] === undefined ? false : arguments[1];
-	        return domEvent('focusout', node, capture);
-	    };
-
-	    var click = function click(node) {
-	        var capture = arguments.length <= 1 || arguments[1] === undefined ? false : arguments[1];
-	        return domEvent('click', node, capture);
-	    };
-
-	    var dblclick = function dblclick(node) {
-	        var capture = arguments.length <= 1 || arguments[1] === undefined ? false : arguments[1];
-	        return domEvent('dblclick', node, capture);
-	    };
-
-	    var mousedown = function mousedown(node) {
-	        var capture = arguments.length <= 1 || arguments[1] === undefined ? false : arguments[1];
-	        return domEvent('mousedown', node, capture);
-	    };
-
-	    var mouseup = function mouseup(node) {
-	        var capture = arguments.length <= 1 || arguments[1] === undefined ? false : arguments[1];
-	        return domEvent('mouseup', node, capture);
-	    };
-
-	    var mousemove = function mousemove(node) {
-	        var capture = arguments.length <= 1 || arguments[1] === undefined ? false : arguments[1];
-	        return domEvent('mousemove', node, capture);
-	    };
-
-	    var mouseover = function mouseover(node) {
-	        var capture = arguments.length <= 1 || arguments[1] === undefined ? false : arguments[1];
-	        return domEvent('mouseover', node, capture);
-	    };
-
-	    var mouseenter = function mouseenter(node) {
-	        var capture = arguments.length <= 1 || arguments[1] === undefined ? false : arguments[1];
-	        return domEvent('mouseenter', node, capture);
-	    };
-
-	    var mouseout = function mouseout(node) {
-	        var capture = arguments.length <= 1 || arguments[1] === undefined ? false : arguments[1];
-	        return domEvent('mouseout', node, capture);
-	    };
-
-	    var mouseleave = function mouseleave(node) {
-	        var capture = arguments.length <= 1 || arguments[1] === undefined ? false : arguments[1];
-	        return domEvent('mouseleave', node, capture);
-	    };
-
-	    var change = function change(node) {
-	        var capture = arguments.length <= 1 || arguments[1] === undefined ? false : arguments[1];
-	        return domEvent('change', node, capture);
-	    };
-
-	    var select = function select(node) {
-	        var capture = arguments.length <= 1 || arguments[1] === undefined ? false : arguments[1];
-	        return domEvent('select', node, capture);
-	    };
-
-	    var submit = function submit(node) {
-	        var capture = arguments.length <= 1 || arguments[1] === undefined ? false : arguments[1];
-	        return domEvent('submit', node, capture);
-	    };
-
-	    var keydown = function keydown(node) {
-	        var capture = arguments.length <= 1 || arguments[1] === undefined ? false : arguments[1];
-	        return domEvent('keydown', node, capture);
-	    };
-
-	    var keypress = function keypress(node) {
-	        var capture = arguments.length <= 1 || arguments[1] === undefined ? false : arguments[1];
-	        return domEvent('keypress', node, capture);
-	    };
-
-	    var keyup = function keyup(node) {
-	        var capture = arguments.length <= 1 || arguments[1] === undefined ? false : arguments[1];
-	        return domEvent('keyup', node, capture);
-	    };
-
-	    var input = function input(node) {
-	        var capture = arguments.length <= 1 || arguments[1] === undefined ? false : arguments[1];
-	        return domEvent('input', node, capture);
-	    };
-
-	    var contextmenu = function contextmenu(node) {
-	        var capture = arguments.length <= 1 || arguments[1] === undefined ? false : arguments[1];
-	        return domEvent('contextmenu', node, capture);
-	    };
-
-	    var resize = function resize(node) {
-	        var capture = arguments.length <= 1 || arguments[1] === undefined ? false : arguments[1];
-	        return domEvent('resize', node, capture);
-	    };
-
-	    var scroll = function scroll(node) {
-	        var capture = arguments.length <= 1 || arguments[1] === undefined ? false : arguments[1];
-	        return domEvent('scroll', node, capture);
-	    };
-
-	    var error = function error(node) {
-	        var capture = arguments.length <= 1 || arguments[1] === undefined ? false : arguments[1];
-	        return domEvent('error', node, capture);
-	    };
-
-	    var hashchange = function hashchange(node) {
-	        var capture = arguments.length <= 1 || arguments[1] === undefined ? false : arguments[1];
-	        return domEvent('hashchange', node, capture);
-	    };
-
-	    var popstate = function popstate(node) {
-	        var capture = arguments.length <= 1 || arguments[1] === undefined ? false : arguments[1];
-	        return domEvent('popstate', node, capture);
-	    };
-
-	    var load = function load(node) {
-	        var capture = arguments.length <= 1 || arguments[1] === undefined ? false : arguments[1];
-	        return domEvent('load', node, capture);
-	    };
-
-	    var unload = function unload(node) {
-	        var capture = arguments.length <= 1 || arguments[1] === undefined ? false : arguments[1];
-	        return domEvent('unload', node, capture);
-	    };
-
-	    var pointerdown = function pointerdown(node) {
-	        var capture = arguments.length <= 1 || arguments[1] === undefined ? false : arguments[1];
-	        return domEvent('pointerdown', node, capture);
-	    };
-
-	    var pointerup = function pointerup(node) {
-	        var capture = arguments.length <= 1 || arguments[1] === undefined ? false : arguments[1];
-	        return domEvent('pointerup', node, capture);
-	    };
-
-	    var pointermove = function pointermove(node) {
-	        var capture = arguments.length <= 1 || arguments[1] === undefined ? false : arguments[1];
-	        return domEvent('pointermove', node, capture);
-	    };
-
-	    var pointerover = function pointerover(node) {
-	        var capture = arguments.length <= 1 || arguments[1] === undefined ? false : arguments[1];
-	        return domEvent('pointerover', node, capture);
-	    };
-
-	    var pointerenter = function pointerenter(node) {
-	        var capture = arguments.length <= 1 || arguments[1] === undefined ? false : arguments[1];
-	        return domEvent('pointerenter', node, capture);
-	    };
-
-	    var pointerout = function pointerout(node) {
-	        var capture = arguments.length <= 1 || arguments[1] === undefined ? false : arguments[1];
-	        return domEvent('pointerout', node, capture);
-	    };
-
-	    var pointerleave = function pointerleave(node) {
-	        var capture = arguments.length <= 1 || arguments[1] === undefined ? false : arguments[1];
-	        return domEvent('pointerleave', node, capture);
-	    };
-
-	    var touchstart = function touchstart(node) {
-	        var capture = arguments.length <= 1 || arguments[1] === undefined ? false : arguments[1];
-	        return domEvent('touchstart', node, capture);
-	    };
-
-	    var touchend = function touchend(node) {
-	        var capture = arguments.length <= 1 || arguments[1] === undefined ? false : arguments[1];
-	        return domEvent('touchend', node, capture);
-	    };
-
-	    var touchmove = function touchmove(node) {
-	        var capture = arguments.length <= 1 || arguments[1] === undefined ? false : arguments[1];
-	        return domEvent('touchmove', node, capture);
-	    };
-
-	    var touchcancel = function touchcancel(node) {
-	        var capture = arguments.length <= 1 || arguments[1] === undefined ? false : arguments[1];
-	        return domEvent('touchcancel', node, capture);
-	    };
-
-	    var DomEvent = function () {
-	        function DomEvent(event, node, capture) {
-	            _classCallCheck(this, DomEvent);
-
-	            this.event = event;
-	            this.node = node;
-	            this.capture = capture;
-	        }
-
-	        _createClass(DomEvent, [{
-	            key: 'run',
-	            value: function run(sink, scheduler) {
-	                var _this = this;
-
-	                var send = function send(e) {
-	                    return tryEvent(scheduler.now(), e, sink);
-	                };
-
-	                var dispose = function dispose() {
-	                    return _this.node.removeEventListener(_this.event, send, _this.capture);
-	                };
-
-	                this.node.addEventListener(this.event, send, this.capture);
-	                return {
-	                    dispose: dispose
-	                };
-	            }
-	        }]);
-
-	        return DomEvent;
-	    }();
-
-	    function tryEvent(t, x, sink) {
-	        try {
-	            sink.event(t, x);
-	        } catch (e) {
-	            sink.error(t, e);
-	        }
-	    }
-
-	    exports.domEvent = domEvent;
-	    exports.blur = blur;
-	    exports.focus = focus;
-	    exports.focusin = focusin;
-	    exports.focusout = focusout;
-	    exports.click = click;
-	    exports.dblclick = dblclick;
-	    exports.mousedown = mousedown;
-	    exports.mouseup = mouseup;
-	    exports.mousemove = mousemove;
-	    exports.mouseover = mouseover;
-	    exports.mouseenter = mouseenter;
-	    exports.mouseout = mouseout;
-	    exports.mouseleave = mouseleave;
-	    exports.change = change;
-	    exports.select = select;
-	    exports.submit = submit;
-	    exports.keydown = keydown;
-	    exports.keypress = keypress;
-	    exports.keyup = keyup;
-	    exports.input = input;
-	    exports.contextmenu = contextmenu;
-	    exports.resize = resize;
-	    exports.scroll = scroll;
-	    exports.error = error;
-	    exports.hashchange = hashchange;
-	    exports.popstate = popstate;
-	    exports.load = load;
-	    exports.unload = unload;
-	    exports.pointerdown = pointerdown;
-	    exports.pointerup = pointerup;
-	    exports.pointermove = pointermove;
-	    exports.pointerover = pointerover;
-	    exports.pointerenter = pointerenter;
-	    exports.pointerout = pointerout;
-	    exports.pointerleave = pointerleave;
-	    exports.touchstart = touchstart;
-	    exports.touchend = touchend;
-	    exports.touchmove = touchmove;
-	    exports.touchcancel = touchcancel;
-	});
+	var monad = (0, _dom.h)('pre', { style: { color: '#AFEEEE' } }, '  var Monad = function Monad(z, g) {\n    var _this = this;\n\n    this.x = z;\n    if (arguments.length === 1) {\n      this.id = \'anonymous\';\n    } else {\n      this.id = g;\n    };\n\n    this.bnd = function (func, ...args) {\n       return func(_this.x, ...args);\n    };\n\n    this.ret = function (a) {\n      O.[_this.id] = new Monad(a, _this.id);\n      return O.[_this.id]\n    };\n  }; ');
+
+	var monadStr = (0, _dom.h)('pre', { style: { color: '#AFEEEE' } }, '          var MonadStream = function MonadStream(g) {\n      var _this = this;\n      this.stream = xs.create();\n      this.id = g;\n      this.ret = function (a) {\n        _this.stream.shamefullySendNext(a);\n        return _this;\n      };\n  }; ');
+
+	var monadIt = (0, _dom.h)('pre', { style: { color: '#AFEEEE' } }, '  var MonadIter = function MonadIter() {\n    var _this = this;\n    this.p = function () {};\n  \n    this.release = function (...args) {\n      return this.p(...args);\n    };\n  \n    this.bnd = function (func) {\n      _this.p = func;\n    };\n  }; ');
+
+	var ret = (0, _dom.h)('pre', { style: { color: '#AFEEEE' } }, '  var ret = function ret(v, id) {\n    if (arguments.length === 1) {\n      return (new Monad(v, \'anonymous\'));\n    }\n    window[id] = new Monad(v, id);\n    return window[id];\n  }; ');
+
+	var fib = (0, _dom.h)('pre', '          mM$fib.stream.addListener({\n    next: v => {\n      if (v[2] > 1) {mM$fib.ret([v[1], v[0] + v[1], v[2] -1])}\n      else {\n        mM19.ret(v[1]);\n      }\n    },\n    error: err => console.error(err),\n    complete: () => console.log(\'completed\')\n  });\n\n  const fibPress$ = sources.DOM\n    .select(\'input#code\').events(\'keydown\');\n\n  const fibPressAction$ = fibPress$.map(e => {\n    if (e.target.value == \'\') {return};\n    if( e.keyCode == 13 && Number.isInteger(e.target.value*1) ) {\n      mM21.ret(e.target.value);\n      mM$fib.ret([0, 1, e.target.value]);\n    }\n    if( e.keyCode == 13 && !Number.isInteger(e.target.value*1 )) {\n      mM19.ret("You didn\'t provide an integer");\n    }\n  });  ');
+
+	var driver = (0, _dom.h)('pre', '  var websocketsDriver = function () {\n      return create((add) => {\n        socket.onmessage = msg => add(msg)\n      })\n  };\n');
+
+	var messages = (0, _dom.h)('pre', '  const messages$ = (sources.WS).map(e => \n    mMtem.ret(e.data.split(\',\')).bnd(v => {\n    mMZ10.bnd(() => mM$1\n      .ret([v[3], v[4], v[5], v[6]])\n      .bnd(() => mM$2.ret([])))\n    mMZ11.bnd(() => updateScoreboard(v[3]));\n    mMZ12.bnd(() => mM6\n      .ret(v[2] + \' successfully logged in.\'))\n    mMZ13.bnd(() => updateMessages(v))\n    mMZ14.bnd(() => mMgoals2.ret(\'The winner is \' + v.x ))\n    mMZ15.bnd(() => mMgoals2.ret(\'A player named \' + \n      O.mMname.x + \'is currently logged in. Page will refresh in 4 seconds.\')\n      .bnd(refresh))\n    mMZ16.bnd(() => process(e.data))\n    mMtemp.ret(e.data.split(\',\')[0])\n      .bnd(next, \'CA#$42\', mMZ10)\n      .bnd(next, \'CB#$42\', mMZ11)\n      .bnd(next, \'CC#$42\', mMZ12)\n      .bnd(next, \'CD#$42\', mMZ13)\n      .bnd(next, \'CE#$42\', mMZ14)\n      .bnd(next, \'EE#$42\', mMZ15)\n      .bnd(next, \'DD#$42\', mMZ16)\n    }) \n  );\n             \n  var next = function next(x, y, mon2) {\n    if (x === y) {\n      mon2.release();\n    }\n    return ret(x);\n  }');
+
+	var next = (0, _dom.h)('pre', '  \n  ');
+
+	var Monad$ = (0, _dom.h)('pre', '  var Monad$ = function Monad$(z, g) {\n      var _this = this;\n      this.subject = subject();\n      this.observer = this.subject.observer;\n      this.stream = this.subject.stream;\n      this.x = z;\n      this.id = g;\n\n      this.bnd = function (func, ...args) {\n         return func(_this.x, ...args);\n      };\n\n      this.ret = function (a) {\n        O[_this.id] = new Monad$(a,_this.id);\n        _this.observer.next(a);\n        return O[_this.id];\n      };\n    };\n  ');
+
+	var nums = (0, _dom.h)('pre', '  \n    const numClick$ = sources.DOM\n      .select(\'.num\').events(\'click\');\n       \n    const numClickAction$ = numClick$.map(e => {\n      console.log(e);\n      if (O.mM3.x.length < 2) {\n        O.mM3.bnd(push, e.target.innerHTML, O.mM3)\n        mM28.ret(O.mMhistorymM1.x[O.mMindex2.x])\n        .bnd(spliceRemove, e.target.id, O.mM$1)\n        .bnd(mM$1.ret);\n        if (O.mM3.x.length === 2 && O.mM8.x !== 0) {\n          updateCalc();\n        }\n      };\n    }).startWith([0,0,0,0]);\n\n    const opClick$ = sources.DOM\n      .select(\'.op\').events(\'click\');\n  \n    const opClickAction$ = opClick$.map(e => {\n      mM8.ret(e.target.textContent);\n      if (O.mM3.x.length === 2) {\n        updateCalc();\n      }\n    })\n\n    const mM$1Action$ = mM$1.stream.map(v => {\n      if (Array.isArray(v)) {\n        O.mMhistorymM1.bnd(spliceAdd, O.mMindex2.x, v, O.mMhistorymM1);\n        document.getElementById(\'0\').innerHTML = (O.mMhistorymM1.x[O.mMindex2.x])[0]; \n        document.getElementById(\'1\').innerHTML = (O.mMhistorymM1.x[O.mMindex2.x])[1]; \n        document.getElementById(\'2\').innerHTML = (O.mMhistorymM1.x[O.mMindex2.x])[2]; \n        document.getElementById(\'3\').innerHTML = (O.mMhistorymM1.x[O.mMindex2.x])[3]; \n        cleanup()\n      }\n      else {\n        console.log(\'O.mM$1.stream is providing defective data to O.mM$1Action\');\n      }\n  });  ');
+
+	var arrayFuncs = (0, _dom.h)('pre', '  var push = function push(y,v,mon) {\n      if (Array.isArray(y)) {\n        let ar = [];\n        let keys = Object.keys(y);\n        for (let k in keys) {ar[k] = y[k]};\n        ar.push(v);\n        return mon.ret(ar);  \n      }\n      console.log(\'The value provided to push is not an array\');\n      return ret(y);\n    };\n    \n    var spliceRemove = function splice(x, j, mon) {\n      if (Array.isArray(x)) {\n        let ar = [];\n        let keys = Object.keys(x);\n        for (let k in keys) {ar[k] = x[k]};\n        ar.splice(j,1);\n        return mon.ret(ar);  \n      }\n      console.log(\'The value provided to spliceRemove is not an array\');\n      return ret(x);\n    };\n    \n    var spliceAdd = function splice(x, index, value, mon) {\n      if (Array.isArray(x)) {\n        let ar = [];\n        let keys = Object.keys(x);\n        for (let k in keys) {ar[k] = x[k]};\n        ar.splice(index, 0, value);\n        return mon.ret(ar);  \n      }\n      console.log(\'The value provided to spliceAdd is not an array\');\n      return ret(x);\n    };\n    \n    var splice = function splice(x, start, end, mon) {\n      if (Array.isArray(x)) {\n        let ar = [];\n        let keys = Object.keys(x);\n        for (let k in keys) {ar[k] = x[k]};\n        ar.splice(start, end);\n        return mon.ret(ar);  \n      }\n      console.log(\'The value provided to spliceAdd is not an array\');\n      return ret(x);\n    };\n  ');
+
+	var cleanup = (0, _dom.h)('pre', '  function cleanup (x) {\n      let target0 = document.getElementById(\'0\');\n      let target1 = document.getElementById(\'1\');\n      let target2 = document.getElementById(\'2\');\n      let target3 = document.getElementById(\'3\');\n      let targetAr = [target0, target1, target2, target3];\n      for (let i in [0,1,2,3]) {\n        if (targetAr[i].innerHTML == \'undefined\' )    {\n          targetAr[i].style.display = \'none\';\n        }\n        else {\n          targetAr[i].style.display = \'inline\';\n        }\n      }\n      return ret(x);\n  }; ');
+
+	var travel = (0, _dom.h)('pre', '  const forwardClick$ = sources.DOM\n      .select(\'#forward2\').events(\'click\');\n  \n    const backClick$ = sources.DOM\n      .select(\'#back2\').events(\'click\');\n  \n    const forwardClickAction$ = forwardClick$.map(() => {\n      if (O.mMindex2.x < (O.mMhistorymM1.x.length - 1)) {\n        inc(O.mMindex2.x, mMindex2)\n        .bnd(() => mM$3.ret(\'Hello\'))\n      }\n    });\n  \n    const backClickAction$ = backClick$.map(() => {\n      if (O.mMindex2.x > 0) {\n        dec(O.mMindex2.x, mMindex2)\n        .bnd(() => mM$3.ret(\'You bet!\'))\n      }\n    });\n\n    const mM$3Action$ = mM$3.stream.map(v => {\n      document.getElementById(\'0\').innerHTML = (O.mMhistorymM1.x[O.mMindex2.x])[0]; \n      document.getElementById(\'1\').innerHTML = (O.mMhistorymM1.x[O.mMindex2.x])[1]; \n      document.getElementById(\'2\').innerHTML = (O.mMhistorymM1.x[O.mMindex2.x])[2]; \n      document.getElementById(\'3\').innerHTML = (O.mMhistorymM1.x[O.mMindex2.x])[3]; \n      cleanup();\n    })  ');
+
+	var C42 = (0, _dom.h)('pre', '  mMZ10.bnd(() => mM$1\n     .ret([O.mMar.x[3], O.mMar.x[4], O.mMar.x[5], O.mMar.x[6]])\n     .bnd(() => mM$2.ret([]))\n     .bnd(displayInline,\'0\')\n     .bnd(displayInline,\'1\')\n     .bnd(displayInline,\'2\')\n     .bnd(displayInline,\'3\'));  ');
+
+	var taskStream = (0, _dom.h)('pre', '  \n    });  ');
+
+	var deleteTask2 = (0, _dom.h)('pre', '  mMZ19.bnd(() => O.mM$task.bnd(spliceRemove, O.mMar.x[3], mM$task));\n  ');
+
+	var newTask = (0, _dom.h)('pre', '  const newTask$ = sources.DOM\n    .select(\'input.newTask\').events(\'keydown\'); \n\n  const newTaskAction$ = newTask$.map(e => {\n      let ob = {};\n      var alert = \'\';\n      var ar = e.target.value.split(\',\');\n      var ar2 = ar.slice(2);\n      var task = \'\';\n      if (ar.length < 4) {\n        task = ar[2];\n      }\n      if (ar.length > 3) {\n        task = ar2.reduce((a,b) => a + \'$*$*$\' + b);\n      }\n      if( e.keyCode == 13 ) {\n        if ( ar.length < 3 ) {\n          alert = \'You should enter "author, responsible party, task" separated by commas\';\n          document.getElementById(\'alert\').innerHTML = alert;\n        }\n\n        else if ( (O.mMar2.x.filter(v => (v.task == task)).length) > 0 ) {\n          document.getElementById(\'alert\').innerHTML = task + " is already listed.";\n        }\n\n        else if ( ar.length > 2 ) {\n          O.mM$taskList.bnd(addString, task + \',yellow, none, false,\' +  ar[0] + \',\' + ar[1], mM$taskList);\n          e.target.value = \'\';\n          document.getElementById(\'alert\').innerHTML = \'\';\n        } \n      } \n  };  ');
+
+	var process = (0, _dom.h)('pre', '  const process = function(str) {\n    let a = str.split(",");\n    console.log(\'In process. str and a are: \', str, a);\n    if (a == undefined) {\n      return;\n    };\n    if (a.length < 9) {\n      return\n    };\n    let ob = {};\n    let ar = a.slice(3)\n    let s = ar.reduce((a,b) => a + \',\' + b);\n    if (mM$taskList.x.length < 5) {\n      O.mM$taskList.ret(s);\n    }\n    let ar2 = [];\n    let tempArray = [];\n    if (ar.length < 6) {return};\n    if ((ar.length % 6) !== 0) {\n      document.getElementById(\'alert\').innerHTML = \'Error: array length is: \' + length;\n    } else {\n      let keys = Array(ar.length/6).fill(1);\n      keys.map(_ => {\n        ar2.push(\n          {\n            task: convertBack(ar.shift()),\n            color: ar.shift(),\n            textDecoration: ar.shift(),\n            checked: ar.shift() === \'true\',\n            author: ar.shift(),\n            responsible: ar.shift()\n          }\n        )\n      })\n      console.log(\'In process  ar2 is: \', ar2)\n      let keys2 = Object.keys(ar2);\n      for (let k in keys) {\n        tempArray.push(\n          h(\'div.todo\',  [\n            h(\'span.task3\', {style: {color: ar2[k].color, textDecoration: ar2[k].textDecoration}},\n                \'Task: \' + ar2[k].task  ),  \n            h(\'br\'),\n            h(\'button#edit1\', \'Edit\'  ),\n            h(\'input#edit2\', {props: {type: \'textarea\', value: ar2[k].task}, style: {display: \'none\'}}  ), \n            h(\'span#author.tao\', \'Author: \' + ar2[k].author  + \' / \' + \'Responsibility: \' + ar2[k].responsible),\n            h(\'br\'),\n            h(\'input#cb\', {props: {type: \'checkbox\', checked: ar2[k].checked}, style: {color: ar2[k].color,\n                 textDecoration: ar2[k].textDecoration} } ), \n            h(\'label.cbox\', { props: {for: \'#cb\'}}, \'Completed\' ),\n            h(\'button.delete\', \'Delete\'  ),  \n            h(\'br\'),\n            h(\'hr\')])\n        )\n      }\n      mMtaskList.ret(tempArray)\n    }\n  };  ');
+
+	var colorClick = (0, _dom.h)('pre', '  const colorClick$ = sources.DOM\n    .select(\'#cb\').events(\'click\')\n    \n  const colorAction$ = colorClick$.map(e => {\n    let index = getIndex(e);\n    let s = O.mM$taskList.x;\n    let ar = s.split(\',\');\n    let n = 6 * index + 3;\n    let j = 6 * index + 2;\n    let k = 6 * index + 1;\n    let checked = ar[n];\n    if (checked == \'true\')  {\n      ar[n] = \'false\'; \n      ar[k] = \'yellow\'; \n      ar[j] = \'none\'; \n    }\n    else {\n      ar[n] = \'true\'; \n      ar[k] = \'lightGreen\'; \n      ar[j] = \'line-through\'; \n    }\n    mM$taskList.ret( ar.reduce((a,b) => a + \',\' + b) )\n  });  \n                     \n  var getIndex = function getIndex (event_object) {\n    var task = event_object.currentTarget.parentNode.innerText;\n    var possibilities = event_object.currentTarget.parentNode.parentNode.childNodes;\n    var keys = Object.keys(possibilities);\n    for (let k in keys) {\n      if (task == possibilities[k].innerText) {\n        return k\n      }\n    }\n    console.log(\'In getIndex. No match\');\n  }  ');
+
+	var edit = (0, _dom.h)('pre', '  const edit1$ = sources.DOM\n    .select(\'#edit1\').events(\'click\')\n    \n  const edit1Action$ = edit1$.map(e => {\n    let index = getIndex2(e);\n    O.mMtaskList.x[index].children[3].elm.style.display = \'block\';\n  });\n\n  const edit2$ = sources.DOM\n    .select(\'#edit2\').events(\'keypress\')\n    \n  const edit2Action$ = edit2$.map(e => {\n    let v = e.target.value;\n    let index = getIndex2(e);\n    if( e.keyCode == 13 ) {\n      process2(v, index);\n    O.mMtaskList.x[index].children[3].elm.style.display = \'none\';\n    }\n  });\n\n  const process2 = function(str, index) {\n    let a = O.mM$taskList.x;\n    let ar = a.split(\',\');\n    let task = str.split(\',\').reduce((a,b) => ar + \'$*$*$\' + b)\n    ar[index * 6] = task;\n    let s = ar.reduce((a,b) => a + \',\' + b);\n    mM$taskList.ret(s);\n  };\n\n  var getIndex2 = function getIndex2 (e) {\n    var elem = e.currentTarget.parentNode.children[0].innerHTML\n    var elem2 = e.currentTarget.parentNode.parentNode.childNodes\n    var keys = Object.keys(elem2);\n    for (let k in keys) {\n      if (elem == elem2[k].childNodes[0].innerHTML) {\n        return k\n      }\n      console.log(\'In getIndex2. No match\');\n    }\n  }  ');
+
+	var mM$task = (0, _dom.h)('pre', '  const taskAction$ = mM$taskList.stream.map(str => {\n    socket.send(\'TD#$42\' + \',\' + O.mMgroup.x.trim() + \n        \',\' + O.mMname.x.trim() + \',\' + \'@\' + str);\n  });  ');
+
+	var updateCalc = (0, _dom.h)('pre', '  function updateCalc() { \n    O.mM3.bnd(x => mM7\n    .ret(calc(x[0], O.mM8.x, x[1]))\n    .bnd(result => {if (result == 20) {score(O.mM13.x, 1)}; return O.mM7}) \n    .bnd(result => {if (result == 18) {score(O.mM13.x, 3)}; return O.mM$1}) \n    .bnd(push, O.mM7.x, mM$1)\n    .bnd(reset))\n  };\n\n  var score = function score(x,j) {\n    if ((x + j) == 20) {\n      mMgoals.ret(O.mMgoals.x == 2 ? 0 : (O.mMgoals.x + 1)); \n      mM13.ret(0);\n      socket.send(\'CG#$42,\' + O.mMgroup.x + \',\' + O.mMname.x + \',\' + -x + \',\' + O.mMgoals.x); \n      if (O.mMgoals.x == 0) {\n        socket.send(\'CE#$42,\' + O.mMgroup.x + \',\' + O.mMname.x + \',nothing \');\n      }\n      socket.send(\'CA#$42,\' + O.mMgroup.x.trim() + \',\' + O.mMname.x.trim() + \',6,6,12,20\');\n      return;\n    }\n    if ((x + j) % 5 == 0) {\n      mMscoreChange.ret(j + 5);  \n      socket.send(\'CG#$42,\' + O.mMgroup.x + \',\' + O.mMname.x + \',\'+(j+5)+\',\' + O.mMgoals.x); \n      mM13.ret(x + j + 5);\n      socket.send(\'CA#$42,\' + O.mMgroup.x.trim() + \',\' + O.mMname.x.trim() + \',6,6,12,20\');\n      return;\n    } \n    socket.send(\'CG#$42,\' + O.mMgroup.x + \',\' + O.mMname.x + \',\'+j+\',\' + O.mMgoals.x); \n    mM13.ret(x + j);\n    socket.send(\'CA#$42,\' + O.mMgroup.x.trim() + \',\' + O.mMname.x.trim() + \',6,6,12,20\');\n  };  ');
+
+	var testZ = (0, _dom.h)('pre', '  mMZ1.bnd(v => O.mMt1.bnd(add,v,mMt1)\n  .bnd(cube,mMt2)\n  .bnd(() => mMt3.ret(O.mMt1.x + \' cubed is \' + O.mMt2.x)))  \n  \n  mMZ2.bnd(v => cube(v).bnd(w => mMt3.ret(v + \' cubed is \' + w)))  ');
+
+	var quad = (0, _dom.h)('pre', '  var solve = (function solve () {\n    mMZ3\n    .bnd(a => mMquad1.ret(a + \'x**2\')\n    .bnd(() => mMquad2.ret(\'\').bnd(mMquad3.ret) // Clear the display.\n    .bnd(() => \n    mMZ3\n    .bnd(b => mMquad1.ret(a + \'x**x \' + \' + \' + b + \'x\')\n    .bnd(() =>  \n    mMZ3\n    .bnd(c => mMquad1\n    .ret(\'Solutions for \' + a + \'x**x \' + \' + \' + b + \'x\' + \' + \' + c + \' = 0:\')\n    .bnd(() => mMquad2.bnd(sol1,a,b,c,mMquad2)\n    .bnd(() => mMquad3.bnd(sol2,a,b,c,mMquad3) \n    .bnd(() => solve()    \n        )))))))))\n  })();\n\n  const quad$ = sources.DOM\n    .select(\'#quad\').events(\'keypress\')\n  const quadAction$ = quad$.map((e) => {\n    if( e.keyCode == 13 ) {\n      mMZ3.release(e.target.value)\n      document.getElementById(\'quad\').value = \'\';\n    }\n  });\n\n  var sol1 = function sol1 (x,a,b,c,mon) {\n    let n = b*(-1) + Math.sqrt(b*b - 4*a*c);\n    if (n != n) {   // Test for NaN\n      return mon.ret("No solution");\n    }\n    return mon.ret(n/2*a);\n  }\n  \n  var sol2 = function sol2 (x,a,b,c,mon) {\n    let n = b*(-1) - Math.sqrt(b*b - 4*a*c)\n    if (n != n) {\n      return mon.ret("No solution");\n    }\n    return mon.ret(n/2*a);\n  }  ');
+
+	var mdem1 = (0, _dom.h)('pre', '  var equals = function equals (x, mon1, mon2, mon3) {\n    if (mon1.id === mon2.id && mon1.x === mon2.x) {\n      mon3.ret(\'true\');\n    } else mon3.ret(\'false\');\n    return ret(x);\n  }\n  \n  var add = function(x,b,mon) {\n    if (arguments.length === 3) {\n      return mon.ret(x + b);\n    }\n    return ret(x+b);\n  }\n\n  var cube = function(v,mon) {\n    if (arguments.length === 2) {\n      return mon.ret(v*v*v);\n    }\n    return ret(v*v*v);\n  }  ');
+
+	var runTest = (0, _dom.h)('pre', '  var runTest = function monTest () {\n  mM5.bnd( equals,  \n    m.ret(0).bnd(v => add(v, 3, m).bnd(cube)), \n    m.ret(0).bnd(add, 3, m).bnd(cube), mMa)\n\n  mM5.bnd(equals, m, m.bnd(m.ret), mMb)\n\n  mM5.bnd(equals, m, m.ret(m.x), mMc)\n  }  ');
+
+	var gameStream = (0, _dom.h)('pre', '  const mM$1Action$ = mM$1.stream.map(v => {\n      O.mMindex2.bnd(inc, mMindex2);\n      O.mMallRolls.bnd(spliceAdd, O.mMindex2.x, v, mMallRolls);\n      document.getElementById(\'0\').innerHTML = (O.mMallRolls.x[O.mMindex2.x])[0]; \n      document.getElementById(\'1\').innerHTML = (O.mMallRolls.x[O.mMindex2.x])[1]; \n      document.getElementById(\'2\').innerHTML = (O.mMallRolls.x[O.mMindex2.x])[2]; \n      document.getElementById(\'3\').innerHTML = (O.mMallRolls.x[O.mMindex2.x])[3]; \n      cleanup(7)\n  });  ');
+
+	var inc = (0, _dom.h)('pre', '  var inc = function inc(x, mon) {\n      return mon.ret(x + 1);\n  };\n\n  var spliceAdd = function spliceAdd(x, index, value, mon) {\n    if (Array.isArray(x)) {\n      let ar = [];\n      let keys = Object.keys(x);\n      for (let k in keys) {ar[k] = x[k]};\n      ar.splice(index, 0, value);\n      return mon.ret(ar);  \n    }\n    console.log(\'The value provided to spliceAdd is not an array\');\n    return ret(x);\n  }  ');
+
+	var todoStream = (0, _dom.h)('pre', '  const taskAction$ = mM$taskList.stream.map(str => {\n    socket.send(\'TD#$42\' + \',\' + O.mMgroup.x.trim() + \n        \',\' + O.mMname.x.trim() + \',\' + \'@\' + str);\n  });  ');
+
+	var p3 = (0, _dom.h)('pre', '  \n    ');
+
+	var p4 = (0, _dom.h)('pre', '  \n    ');
+
+	var p5 = (0, _dom.h)('pre', '  \n    ');
+
+	var add = (0, _dom.h)('pre', '  \nvar add = function(x,b,mon) {\n  if (arguments.length === 3) {\n    return mon.ret(x + b);\n  }\n  return ret(x+b);  \n  \n  ');
+
+	var ret_add_cube = (0, _dom.h)('pre', '  var ret = function ret(v, id) {\n    if (arguments.length === 1) {\n      return (new Monad(v, \'anonymous\'));\n    }\n    window[id] = new Monad(v, id);\n    return window[id];\n  }  \n\n  var add = function(x,b,mon) {\n    if (arguments.length === 3) {\n      return mon.ret(x + b);\n    }\n    return ret(x+b);\n  };\n\n  var cube = function(v,mon) {\n    if (arguments.length === 2) {\n      return mon.ret(v*v*v);\n    }\n    return ret(v*v*v);\n}  ');
+
+	var primes = (0, _dom.h)('pre', '          mM$prime.stream.addListener({\n    next: v => {\n      for (let i in v[0]) {\n        if ((v[1] % v[0][i]) == 0) {\n          mM$prime.ret([v[0], v[1] + 1, v[2]])\n          return;\n        }\n        if (i == (v[0].length - 1)) {\n          v[0].push(v[1]);\n          document.getElementById(\'prime\').innerHTML = v[0];\n          mMitterPrime.bnd(() =>  mM$prime.ret([v[0], v[1] + 1])) \n        }\n      }\n    },\n    error: err => console.error(err),\n    complete: () => console.log(\'completed\')\n  });\n\n  const primeClick$ = sources.DOM\n    .select(\'#prime\').events(\'click\');\n\n  const primeClickAction$ = primeClick$.map(() => {\n    mMitterPrime.release()\n  });  ');
+
+	var seed = (0, _dom.h)('pre', '          mM$prime.ret([[2],3])  ');
+
+	var primeFib1 = (0, _dom.h)('pre', '          const primeKeyPress2$ = sources.DOM\n    .select(\'input#prime3334\').events(\'keydown\');\n\n  const primeKeyPressAction2$ = primeKeyPress2$.map(e => {\n    if (e.target.value == \'\') {return};\n    if( e.keyCode == 13 && Number.isInteger(e.target.value*1) ) {\n      mMitterFib4.release(e.target.value);\n    }\n    if( e.keyCode == 13 && !Number.isInteger(e.target.value*1 )) {\n      mM19.ret("You didn\'t provide an integer");\n    }\n  });\n\n  mM$fib4.stream.addListener({                // Called while the web page is loading.\n    next: v => {\n      var a = v[1];         // Fibonacci number\n      var b = v[0] + v[1];  // Fibonacci number\n      var c = v[2];         // Limit\n      var d = v[3];         // List of Fibonacci numbers\n      let wd = JSON.parse(JSON.stringify(d));\n      d.push(a);\n      if (a < c) {mM$fib4.ret([a,b,c,d])}\n      else {\n        mMfibSave2.ret([a, b, c, d]);\n        document.getElementById(\'fib4\').innerHTML = wd; \n        mMitterPrimeFibs.release([v[0], wd]);\n      };\n      mMitterFib8.bnd(limit => {          // Released by primeKeyPressAction2$ (above).\n        let e = [O.mMfibSave2.x[0], O.mMfibSave2.x[1], limit, O.mMfibSave2.x[3]];\n        mM$fib4.ret(e);\n      }) \n      mMitterFib4.bnd(\n        x => {\n          if (x > (v[3][v[3].length - 1])) {\n            mMitterFib8.release(x);\n          }\n          else {\n            var ar1 = JSON.parse(JSON.stringify(O.mMfibSave2.x[3]));\n            var ar = ar1.filter(v => v <= x);\n            mMitterPrimeFibs.release([ar[ar.length - 1], ar]);\n            document.getElementById(\'fib4\').innerHTML = ar; \n          }\n      })\n    },\n    error: err => console.error(err),\n    complete: () => console.log(\'completed\')\n  });\n\n  mM$primeFibs.stream.addListener({\n    next: v => {\n      while (v[2] > v[0][v[0].length - 1]) {\n        for (let i in v[0]) {\n          if ((v[1] % v[0][i]) == 0) {\n            mM$primeFibs.ret([v[0], v[1] + 1, v[2], v[3]]);\n          }\n          if (i == (v[0].length - 1)) {\n            v[0].push(v[1]);\n            document.getElementById(\'prime2\').innerHTML = v[0];\n          }\n        }\n      }\n      mM$PF.ret(v[0].filter(function(n) {\n        return v[3].indexOf(n) != -1;\n      }));\n      mMitterFib7.bnd(z => {\n        let recent = v[0][v[0].length - 1];\n        mM$primeFibs.ret([ v[0], v[1] + 1, z[0], z[1] ]);\n      })\n      mMitterPrimeFibs.bnd(\n        x => {\n          if (x[0] > v[0][v[0].length - 1]) { \n            mMitterFib7.release(x);\n          }\n          else {\n            var ar = JSON.parse(JSON.stringify(v[0]));\n            var ar2 = ar.filter(v => v <= x[0]);\n            var num = ar[ar2.length];\n            ar2.push(num);\n            document.getElementById(\'prime2\').innerHTML = ar2;\n          }\n        }\n      )\n    },\n    error: err => console.error(err),\n    complete: () => console.log(\'completed\')\n  });\n\n  mM$PF.stream.addListener({\n    next: x => {\n      if (x[0] < x[1][x[1].length - 1]) {\n        let ar = JSON.parse(JSON.stringify(x[1]));\n        let ar2 = ar.filter(v => v <= x[0]);\n        document.getElementById(\'primeFibs\').innerHTML = ar2;\n      }\n      else {document.getElementById(\'primeFibs\').innerHTML = x[1];}\n    },\n  error: err => console.error(err),\n  complete: () => console.log(\'completed\')\n  });  ');
+
+	var primeFib2 = (0, _dom.h)('pre', '          const fibKeyPress5$ = sources.DOM\n    .select(\'input#fib3335\').events(\'keydown\');\n\n  const fibKeyPressAction5$ = fibKeyPress5$.map(e => {\n    console.log(\'In fibKeyPressAction\');\n    if (e.target.value == \'\') {return};\n    if( e.keyCode == 13 && Number.isInteger(e.target.value*1) ) {\n      console.log(\'releasing mMitterFib5\');\n      mMitterFib5.release(e.target.value);\n    }\n    if( e.keyCode == 13 && !Number.isInteger(e.target.value*1 )) {\n        document.getElementById(\'fib5\').innerHTML = "You didn\'t provide an integer";\n    }\n  });\n\n  mM$fib5.stream.addListener({                     // Called as the web page loads.\n    next: v => {\n      var a = v[1];         // Fibonacci number\n      var b = v[0] + v[1];  // Fibonacci number\n      var c = v[2];         // Limit\n      var d = v[3];         // List of Fibonacci numbers\n      let wd = JSON.parse(JSON.stringify(d));\n      d.push(a);\n      if (a < c) {mM$fib5.ret([a,b,c,d])}\n      else {\n        mMfibSave.ret([a, b, c, d]);\n        document.getElementById(\'fib5\').innerHTML = wd; \n      };\n      mMitterFib6.bnd(limit => {         // Released by fibKeyPressAction5$ (above).\n        let w = JSON.parse(JSON.stringify(O.mMfibSave.x[3]));\n        let e = [O.mMfibSave.x[0], O.mMfibSave.x[1], limit, w];\n        mM$fib5.ret(e);\n      }) \n      mMitterFib5.bnd(\n        x => {\n          console.log(\'In mMitterFib5.bnd -- x is: \', x);\n          if (x > (v[3][v[3].length - 1])) {\n            console.log(\'In the x > ... test. x and v are: \', x, v);\n            mMitterFib6.release(x);\n          }\n          else {\n            var ar1 = O.mMfibSave.x[3];\n            var ar = ar1.filter(v => v <= x);\n            console.log(\'In mMitterFib4.bnd x < largest   x, ar1, and ar are: \', x, ar1, ar);\n            document.getElementById(\'fib5\').innerHTML = ar; \n          }\n      })\n    },\n    error: err => console.error(err),\n    complete: () => console.log(\'completed\')\n  });\n\n             ');
+
+	var primeFib4 = (0, _dom.h)('pre', '          mM$fib5.stream.addListener({\n    next: v => {\n      if (v[0] < v[2]) {\n        O.mMfibs8.bnd(push, v[0] + v[1], mMfibs8);\n        mM$fib5.ret([v[1], v[0] + v[1], v[2]]);\n      }\n      else {\n        let ar = JSON.parse(JSON.stringify(O.mMfibs8.x));\n        ar.pop();\n        ar.pop();\n        document.getElementById(\'fib5\').innerHTML = ar;\n      } \n      mMitterFib5.bnd(\n        x => {\n          if (x > O.mMfibs8.x[O.mMfibs8.x.length -1]) {\n            let ar = JSON.parse(JSON.stringify(O.mMfibs8.x));\n            let a = ar.pop();\n            let b = ar.pop();\n            mM$fib5.ret([b, a, x]);\n          }\n          else {\n            var ar2 = O.mMfibs8.x.filter(v => v <= x);\n            document.getElementById(\'fib5\').innerHTML = ar2; \n          }\n      })\n    },\n    error: err => console.error(err),\n    complete: () => console.log(\'completed\')\n  });  ');
+
+	var primeFib3 = (0, _dom.h)('pre', '          mM$prime5.stream.addListener({\n    next: v => {\n      while ((v[0][v[0].length - 1]) < v[2]) {\n        for (let i in v[0]) {\n          if ((v[1] % v[0][i]) == 0) {\n            mM$prime5.ret([v[0], v[1] + 1, v[2]]);\n          }\n          if (i == (v[0].length - 1)) {\n            v[0].push(v[1]);\n          }\n        }\n      }\n      let ar = JSON.parse(JSON.stringify(v[0]));\n      ar.pop();\n      document.getElementById(\'prime5\').innerHTML = ar;\n      mMitterPrime5.bnd(x => {\n        if (x > (v[0][v[0].length - 1])) {\n          mM$prime5.ret([v[0], v[1] + 1, x]);\n        }\n        else {\n          let ar2 = JSON.parse(JSON.stringify(v[0]));\n          let trunc = ar2.filter(a => a < x);\n          document.getElementById(\'prime5\').innerHTML = trunc;\n        }\n      })\n    },\n    error: err => console.error(err),\n    complete: () => console.log(\'completed\')\n  });  ');
+
+	var spreadsheet = (0, _dom.h)('pre', '    var mathFunc = autorun(() => {\n      let a = monadState.mMcount.x\n      let b = monadState.mMcount2.x\n      document.getElementById(\'spreadsheet1\').innerHTML = a + \' + \' + b + \' = \' + (a + b)  \n      document.getElementById(\'spreadsheet2\').innerHTML = a + \' - \' + b + \' = \' + (a - b)  \n      document.getElementById(\'spreadsheet3\').innerHTML = a + \' * \' + b + \' = \' + (a * b)  \n      document.getElementById(\'spreadsheet4\').innerHTML = a + \' / \' + b + \' / \' + (a + b)  ');
+	var seed2 = (0, _dom.h)('pre', ' \n             ');
+
+	var seed3 = (0, _dom.h)('pre', ' \n             ');
+
+	var seed4 = (0, _dom.h)('pre', ' \n             ');
+
+	var seed5 = (0, _dom.h)('pre', ' \n             ');
+
+	exports.default = { monad: monad, monadStr: monadStr, monadIt: monadIt, fib: fib, driver: driver, messages: messages, next: next, Monad$: Monad$, updateCalc: updateCalc, arrayFuncs: arrayFuncs, travel: travel, nums: nums, cleanup: cleanup, ret: ret, C42: C42, taskStream: taskStream, newTask: newTask, process: process, mM$task: mM$task, addString: addString, colorClick: colorClick, edit: edit, testZ: testZ, quad: quad, mdem1: mdem1, runTest: runTest, todoStream: todoStream, gameStream: gameStream, inc: inc, ret_add_cube: ret_add_cube, primes: primes, seed: seed, primeFib1: primeFib1, primeFib4: primeFib4, primeFib3: primeFib3, spreadsheet: spreadsheet };
 
 /***/ },
 /* 40 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;(function (global, factory) {
+	var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
+
+	(function (global, factory) {
+	  if (true) {
+	    !(__WEBPACK_AMD_DEFINE_ARRAY__ = [exports, __webpack_require__(4)], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+	  } else if (typeof exports !== "undefined") {
+	    factory(exports, require('most'));
+	  } else {
+	    var mod = {
+	      exports: {}
+	    };
+	    factory(mod.exports, global.most);
+	    global.mostDomEvent = mod.exports;
+	  }
+	})(undefined, function (exports, _most) {
+	  'use strict';
+
+	  Object.defineProperty(exports, "__esModule", {
+	    value: true
+	  });
+	  exports.touchcancel = exports.touchmove = exports.touchend = exports.touchstart = exports.pointerleave = exports.pointerout = exports.pointerenter = exports.pointerover = exports.pointermove = exports.pointerup = exports.pointerdown = exports.unload = exports.load = exports.popstate = exports.hashchange = exports.error = exports.scroll = exports.resize = exports.contextmenu = exports.input = exports.keyup = exports.keypress = exports.keydown = exports.submit = exports.select = exports.change = exports.mouseleave = exports.mouseout = exports.mouseenter = exports.mouseover = exports.mousemove = exports.mouseup = exports.mousedown = exports.dblclick = exports.click = exports.focusout = exports.focusin = exports.focus = exports.blur = exports.domEvent = undefined;
+
+	  function _classCallCheck(instance, Constructor) {
+	    if (!(instance instanceof Constructor)) {
+	      throw new TypeError("Cannot call a class as a function");
+	    }
+	  }
+
+	  var _createClass = function () {
+	    function defineProperties(target, props) {
+	      for (var i = 0; i < props.length; i++) {
+	        var descriptor = props[i];
+	        descriptor.enumerable = descriptor.enumerable || false;
+	        descriptor.configurable = true;
+	        if ("value" in descriptor) descriptor.writable = true;
+	        Object.defineProperty(target, descriptor.key, descriptor);
+	      }
+	    }
+
+	    return function (Constructor, protoProps, staticProps) {
+	      if (protoProps) defineProperties(Constructor.prototype, protoProps);
+	      if (staticProps) defineProperties(Constructor, staticProps);
+	      return Constructor;
+	    };
+	  }();
+
+	  var domEvent = function domEvent(event, node) {
+	    var capture = arguments.length <= 2 || arguments[2] === undefined ? false : arguments[2];
+	    return new _most.Stream(new DomEvent(event, node, capture));
+	  };
+
+	  var blur = function blur(node) {
+	    var capture = arguments.length <= 1 || arguments[1] === undefined ? false : arguments[1];
+	    return domEvent('blur', node, capture);
+	  };
+
+	  var focus = function focus(node) {
+	    var capture = arguments.length <= 1 || arguments[1] === undefined ? false : arguments[1];
+	    return domEvent('focus', node, capture);
+	  };
+
+	  var focusin = function focusin(node) {
+	    var capture = arguments.length <= 1 || arguments[1] === undefined ? false : arguments[1];
+	    return domEvent('focusin', node, capture);
+	  };
+
+	  var focusout = function focusout(node) {
+	    var capture = arguments.length <= 1 || arguments[1] === undefined ? false : arguments[1];
+	    return domEvent('focusout', node, capture);
+	  };
+
+	  var click = function click(node) {
+	    var capture = arguments.length <= 1 || arguments[1] === undefined ? false : arguments[1];
+	    return domEvent('click', node, capture);
+	  };
+
+	  var dblclick = function dblclick(node) {
+	    var capture = arguments.length <= 1 || arguments[1] === undefined ? false : arguments[1];
+	    return domEvent('dblclick', node, capture);
+	  };
+
+	  var mousedown = function mousedown(node) {
+	    var capture = arguments.length <= 1 || arguments[1] === undefined ? false : arguments[1];
+	    return domEvent('mousedown', node, capture);
+	  };
+
+	  var mouseup = function mouseup(node) {
+	    var capture = arguments.length <= 1 || arguments[1] === undefined ? false : arguments[1];
+	    return domEvent('mouseup', node, capture);
+	  };
+
+	  var mousemove = function mousemove(node) {
+	    var capture = arguments.length <= 1 || arguments[1] === undefined ? false : arguments[1];
+	    return domEvent('mousemove', node, capture);
+	  };
+
+	  var mouseover = function mouseover(node) {
+	    var capture = arguments.length <= 1 || arguments[1] === undefined ? false : arguments[1];
+	    return domEvent('mouseover', node, capture);
+	  };
+
+	  var mouseenter = function mouseenter(node) {
+	    var capture = arguments.length <= 1 || arguments[1] === undefined ? false : arguments[1];
+	    return domEvent('mouseenter', node, capture);
+	  };
+
+	  var mouseout = function mouseout(node) {
+	    var capture = arguments.length <= 1 || arguments[1] === undefined ? false : arguments[1];
+	    return domEvent('mouseout', node, capture);
+	  };
+
+	  var mouseleave = function mouseleave(node) {
+	    var capture = arguments.length <= 1 || arguments[1] === undefined ? false : arguments[1];
+	    return domEvent('mouseleave', node, capture);
+	  };
+
+	  var change = function change(node) {
+	    var capture = arguments.length <= 1 || arguments[1] === undefined ? false : arguments[1];
+	    return domEvent('change', node, capture);
+	  };
+
+	  var select = function select(node) {
+	    var capture = arguments.length <= 1 || arguments[1] === undefined ? false : arguments[1];
+	    return domEvent('select', node, capture);
+	  };
+
+	  var submit = function submit(node) {
+	    var capture = arguments.length <= 1 || arguments[1] === undefined ? false : arguments[1];
+	    return domEvent('submit', node, capture);
+	  };
+
+	  var keydown = function keydown(node) {
+	    var capture = arguments.length <= 1 || arguments[1] === undefined ? false : arguments[1];
+	    return domEvent('keydown', node, capture);
+	  };
+
+	  var keypress = function keypress(node) {
+	    var capture = arguments.length <= 1 || arguments[1] === undefined ? false : arguments[1];
+	    return domEvent('keypress', node, capture);
+	  };
+
+	  var keyup = function keyup(node) {
+	    var capture = arguments.length <= 1 || arguments[1] === undefined ? false : arguments[1];
+	    return domEvent('keyup', node, capture);
+	  };
+
+	  var input = function input(node) {
+	    var capture = arguments.length <= 1 || arguments[1] === undefined ? false : arguments[1];
+	    return domEvent('input', node, capture);
+	  };
+
+	  var contextmenu = function contextmenu(node) {
+	    var capture = arguments.length <= 1 || arguments[1] === undefined ? false : arguments[1];
+	    return domEvent('contextmenu', node, capture);
+	  };
+
+	  var resize = function resize(node) {
+	    var capture = arguments.length <= 1 || arguments[1] === undefined ? false : arguments[1];
+	    return domEvent('resize', node, capture);
+	  };
+
+	  var scroll = function scroll(node) {
+	    var capture = arguments.length <= 1 || arguments[1] === undefined ? false : arguments[1];
+	    return domEvent('scroll', node, capture);
+	  };
+
+	  var error = function error(node) {
+	    var capture = arguments.length <= 1 || arguments[1] === undefined ? false : arguments[1];
+	    return domEvent('error', node, capture);
+	  };
+
+	  var hashchange = function hashchange(node) {
+	    var capture = arguments.length <= 1 || arguments[1] === undefined ? false : arguments[1];
+	    return domEvent('hashchange', node, capture);
+	  };
+
+	  var popstate = function popstate(node) {
+	    var capture = arguments.length <= 1 || arguments[1] === undefined ? false : arguments[1];
+	    return domEvent('popstate', node, capture);
+	  };
+
+	  var load = function load(node) {
+	    var capture = arguments.length <= 1 || arguments[1] === undefined ? false : arguments[1];
+	    return domEvent('load', node, capture);
+	  };
+
+	  var unload = function unload(node) {
+	    var capture = arguments.length <= 1 || arguments[1] === undefined ? false : arguments[1];
+	    return domEvent('unload', node, capture);
+	  };
+
+	  var pointerdown = function pointerdown(node) {
+	    var capture = arguments.length <= 1 || arguments[1] === undefined ? false : arguments[1];
+	    return domEvent('pointerdown', node, capture);
+	  };
+
+	  var pointerup = function pointerup(node) {
+	    var capture = arguments.length <= 1 || arguments[1] === undefined ? false : arguments[1];
+	    return domEvent('pointerup', node, capture);
+	  };
+
+	  var pointermove = function pointermove(node) {
+	    var capture = arguments.length <= 1 || arguments[1] === undefined ? false : arguments[1];
+	    return domEvent('pointermove', node, capture);
+	  };
+
+	  var pointerover = function pointerover(node) {
+	    var capture = arguments.length <= 1 || arguments[1] === undefined ? false : arguments[1];
+	    return domEvent('pointerover', node, capture);
+	  };
+
+	  var pointerenter = function pointerenter(node) {
+	    var capture = arguments.length <= 1 || arguments[1] === undefined ? false : arguments[1];
+	    return domEvent('pointerenter', node, capture);
+	  };
+
+	  var pointerout = function pointerout(node) {
+	    var capture = arguments.length <= 1 || arguments[1] === undefined ? false : arguments[1];
+	    return domEvent('pointerout', node, capture);
+	  };
+
+	  var pointerleave = function pointerleave(node) {
+	    var capture = arguments.length <= 1 || arguments[1] === undefined ? false : arguments[1];
+	    return domEvent('pointerleave', node, capture);
+	  };
+
+	  var touchstart = function touchstart(node) {
+	    var capture = arguments.length <= 1 || arguments[1] === undefined ? false : arguments[1];
+	    return domEvent('touchstart', node, capture);
+	  };
+
+	  var touchend = function touchend(node) {
+	    var capture = arguments.length <= 1 || arguments[1] === undefined ? false : arguments[1];
+	    return domEvent('touchend', node, capture);
+	  };
+
+	  var touchmove = function touchmove(node) {
+	    var capture = arguments.length <= 1 || arguments[1] === undefined ? false : arguments[1];
+	    return domEvent('touchmove', node, capture);
+	  };
+
+	  var touchcancel = function touchcancel(node) {
+	    var capture = arguments.length <= 1 || arguments[1] === undefined ? false : arguments[1];
+	    return domEvent('touchcancel', node, capture);
+	  };
+
+	  var DomEvent = function () {
+	    function DomEvent(event, node, capture) {
+	      _classCallCheck(this, DomEvent);
+
+	      this.event = event;
+	      this.node = node;
+	      this.capture = capture;
+	    }
+
+	    _createClass(DomEvent, [{
+	      key: 'run',
+	      value: function run(sink, scheduler) {
+	        var _this = this;
+
+	        var send = function send(e) {
+	          return tryEvent(scheduler.now(), e, sink);
+	        };
+
+	        var dispose = function dispose() {
+	          return _this.node.removeEventListener(_this.event, send, _this.capture);
+	        };
+
+	        this.node.addEventListener(this.event, send, this.capture);
+	        return {
+	          dispose: dispose
+	        };
+	      }
+	    }]);
+
+	    return DomEvent;
+	  }();
+
+	  function tryEvent(t, x, sink) {
+	    try {
+	      sink.event(t, x);
+	    } catch (e) {
+	      sink.error(t, e);
+	    }
+	  }
+
+	  exports.domEvent = domEvent;
+	  exports.blur = blur;
+	  exports.focus = focus;
+	  exports.focusin = focusin;
+	  exports.focusout = focusout;
+	  exports.click = click;
+	  exports.dblclick = dblclick;
+	  exports.mousedown = mousedown;
+	  exports.mouseup = mouseup;
+	  exports.mousemove = mousemove;
+	  exports.mouseover = mouseover;
+	  exports.mouseenter = mouseenter;
+	  exports.mouseout = mouseout;
+	  exports.mouseleave = mouseleave;
+	  exports.change = change;
+	  exports.select = select;
+	  exports.submit = submit;
+	  exports.keydown = keydown;
+	  exports.keypress = keypress;
+	  exports.keyup = keyup;
+	  exports.input = input;
+	  exports.contextmenu = contextmenu;
+	  exports.resize = resize;
+	  exports.scroll = scroll;
+	  exports.error = error;
+	  exports.hashchange = hashchange;
+	  exports.popstate = popstate;
+	  exports.load = load;
+	  exports.unload = unload;
+	  exports.pointerdown = pointerdown;
+	  exports.pointerup = pointerup;
+	  exports.pointermove = pointermove;
+	  exports.pointerover = pointerover;
+	  exports.pointerenter = pointerenter;
+	  exports.pointerout = pointerout;
+	  exports.pointerleave = pointerleave;
+	  exports.touchstart = touchstart;
+	  exports.touchend = touchend;
+	  exports.touchmove = touchmove;
+	  exports.touchcancel = touchcancel;
+	});
+
+/***/ },
+/* 41 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
+
+	(function (global, factory) {
 	  if (true) {
 	    !(__WEBPACK_AMD_DEFINE_ARRAY__ = [exports, __webpack_require__(5)], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 	  } else if (typeof exports !== "undefined") {
@@ -4577,7 +5894,7 @@
 	    factory(mod.exports, global.multicast);
 	    global.mostHold = mod.exports;
 	  }
-	})(this, function (exports, _multicast) {
+	})(undefined, function (exports, _multicast) {
 	  'use strict';
 
 	  Object.defineProperty(exports, "__esModule", {
@@ -4664,7 +5981,7 @@
 	});
 
 /***/ },
-/* 41 */
+/* 42 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -4745,7 +6062,7 @@
 	exports.default = h;
 
 /***/ },
-/* 42 */
+/* 43 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -4757,17 +6074,17 @@
 
 	var _most = __webpack_require__(4);
 
-	var _hold = __webpack_require__(40);
+	var _hold = __webpack_require__(41);
 
 	var _hold2 = _interopRequireDefault(_hold);
 
-	var _snabbdom = __webpack_require__(100);
+	var _snabbdom = __webpack_require__(101);
 
 	var _h = __webpack_require__(36);
 
 	var _h2 = _interopRequireDefault(_h);
 
-	var _classNameFromVNode = __webpack_require__(92);
+	var _classNameFromVNode = __webpack_require__(93);
 
 	var _classNameFromVNode2 = _interopRequireDefault(_classNameFromVNode);
 
@@ -4781,11 +6098,11 @@
 
 	var _modules2 = _interopRequireDefault(_modules);
 
-	var _transposition = __webpack_require__(45);
+	var _transposition = __webpack_require__(46);
 
 	var _isolate = __webpack_require__(19);
 
-	var _select = __webpack_require__(44);
+	var _select = __webpack_require__(45);
 
 	var _events = __webpack_require__(18);
 
@@ -4891,7 +6208,7 @@
 	exports.makeDOMDriver = makeDOMDriver;
 
 /***/ },
-/* 43 */
+/* 44 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -4962,7 +6279,7 @@
 	exports.mockDOMSource = mockDOMSource;
 
 /***/ },
-/* 44 */
+/* 45 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -5059,10 +6376,12 @@
 	exports.makeIsStrictlyInRootScope = _makeIsStrictlyInRootScope.makeIsStrictlyInRootScope;
 
 /***/ },
-/* 45 */
+/* 46 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
+
+	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
 
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
@@ -5091,11 +6410,11 @@
 	function transposeVTree(vTree) {
 	  if (!vTree) {
 	    return null;
-	  } else if (vTree && typeof vTree.data === 'object' && vTree.data.static) {
+	  } else if (vTree && _typeof(vTree.data) === 'object' && vTree.data.static) {
 	    return _most2.default.just(vTree);
 	  } else if (typeof vTree.observe === 'function') {
 	    return vTree.map(transposeVTree).switch();
-	  } else if (typeof vTree === 'object') {
+	  } else if ((typeof vTree === 'undefined' ? 'undefined' : _typeof(vTree)) === 'object') {
 	    if (!vTree.children || vTree.children.length === 0) {
 	      return _most2.default.just(vTree);
 	    }
@@ -5119,8 +6438,10 @@
 	exports.transposeVTree = transposeVTree;
 
 /***/ },
-/* 46 */
+/* 47 */
 /***/ function(module, exports) {
+
+	"use strict";
 
 	/*!
 	 * Cross-Browser Split 1.1.1
@@ -5161,7 +6482,7 @@
 	  // NPCG: nonparticipating capturing group
 	  self;
 
-	  self = function (str, separator, limit) {
+	  self = function self(str, separator, limit) {
 	    // If `separator` is not a regex, use `nativeSplit`
 	    if (Object.prototype.toString.call(separator) !== "[object RegExp]") {
 	      return nativeSplit.call(str, separator, limit);
@@ -5236,7 +6557,7 @@
 	}();
 
 /***/ },
-/* 47 */
+/* 48 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -5286,7 +6607,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 48 */
+/* 49 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -5315,7 +6636,7 @@
 	}
 
 /***/ },
-/* 49 */
+/* 50 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -5420,7 +6741,7 @@
 	exports.Observer = Observer;
 
 /***/ },
-/* 50 */
+/* 51 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -5515,7 +6836,7 @@
 	exports.replay = replay;
 
 /***/ },
-/* 51 */
+/* 52 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -5529,9 +6850,9 @@
 
 	var _multicast = __webpack_require__(5);
 
-	var _Observer = __webpack_require__(49);
+	var _Observer = __webpack_require__(50);
 
-	var _Replay = __webpack_require__(50);
+	var _Replay = __webpack_require__(51);
 
 	function create(hold, bufferSize, initialValue) {
 	  var observer = new _Observer.Observer();
@@ -5564,8 +6885,10 @@
 	exports.holdSubject = holdSubject;
 
 /***/ },
-/* 52 */
+/* 53 */
 /***/ function(module, exports) {
+
+	"use strict";
 
 	/** @license MIT License (c) copyright 2010-2016 original author or authors */
 	/** @author Brian Cavalier */
@@ -5645,8 +6968,10 @@
 	};
 
 /***/ },
-/* 53 */
+/* 54 */
 /***/ function(module, exports) {
+
+	"use strict";
 
 	/** @license MIT License (c) copyright 2010-2016 original author or authors */
 	/** @author Brian Cavalier */
@@ -5714,8 +7039,10 @@
 	}
 
 /***/ },
-/* 54 */
+/* 55 */
 /***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
 
 	/** @license MIT License (c) copyright 2010-2016 original author or authors */
 	/** @author Brian Cavalier */
@@ -5801,8 +7128,10 @@
 	function noop() {}
 
 /***/ },
-/* 55 */
+/* 56 */
 /***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
 
 	/** @license MIT License (c) copyright 2010-2016 original author or authors */
 	/** @author Brian Cavalier */
@@ -5828,8 +7157,10 @@
 	}
 
 /***/ },
-/* 56 */
+/* 57 */
 /***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
 
 	/** @license MIT License (c) copyright 2010-2016 original author or authors */
 	/** @author Brian Cavalier */
@@ -5855,8 +7186,10 @@
 	}
 
 /***/ },
-/* 57 */
+/* 58 */
 /***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
 
 	/** @license MIT License (c) copyright 2010-2016 original author or authors */
 	/** @author Brian Cavalier */
@@ -5912,8 +7245,10 @@
 	DelaySink.prototype.error = Sink.prototype.error;
 
 /***/ },
-/* 58 */
+/* 59 */
 /***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
 
 	/** @license MIT License (c) copyright 2010-2016 original author or authors */
 	/** @author Brian Cavalier */
@@ -5921,7 +7256,7 @@
 
 	var Stream = __webpack_require__(0);
 	var ValueSource = __webpack_require__(34);
-	var SafeSink = __webpack_require__(80);
+	var SafeSink = __webpack_require__(81);
 	var Pipe = __webpack_require__(1);
 	var dispose = __webpack_require__(2);
 	var tryEvent = __webpack_require__(9);
@@ -6002,8 +7337,10 @@
 	};
 
 /***/ },
-/* 59 */
+/* 60 */
 /***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
 
 	/** @license MIT License (c) copyright 2010-2016 original author or authors */
 	/** @author Brian Cavalier */
@@ -6081,8 +7418,10 @@
 	}
 
 /***/ },
-/* 60 */
+/* 61 */
 /***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
 
 	/** @license MIT License (c) copyright 2010-2016 original author or authors */
 	/** @author Brian Cavalier */
@@ -6196,8 +7535,10 @@
 	};
 
 /***/ },
-/* 61 */
+/* 62 */
 /***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
 
 	/** @license MIT License (c) copyright 2010-2016 original author or authors */
 	/** @author Brian Cavalier */
@@ -6252,8 +7593,10 @@
 	};
 
 /***/ },
-/* 62 */
+/* 63 */
 /***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
 
 	/** @license MIT License (c) copyright 2010-2016 original author or authors */
 	/** @author Brian Cavalier */
@@ -6349,8 +7692,10 @@
 	};
 
 /***/ },
-/* 63 */
+/* 64 */
 /***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
 
 	/** @license MIT License (c) copyright 2010-2016 original author or authors */
 	/** @author Brian Cavalier */
@@ -6385,8 +7730,10 @@
 	function noop() {}
 
 /***/ },
-/* 64 */
+/* 65 */
 /***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
 
 	/** @license MIT License (c) copyright 2010-2016 original author or authors */
 	/** @author Brian Cavalier */
@@ -6480,8 +7827,10 @@
 	};
 
 /***/ },
-/* 65 */
+/* 66 */
 /***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
 
 	/** @license MIT License (c) copyright 2010-2016 original author or authors */
 	/** @author Brian Cavalier */
@@ -6596,8 +7945,10 @@
 	}
 
 /***/ },
-/* 66 */
+/* 67 */
 /***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
 
 	/** @license MIT License (c) copyright 2010-2016 original author or authors */
 	/** @author Brian Cavalier */
@@ -6777,8 +8128,10 @@
 	};
 
 /***/ },
-/* 67 */
+/* 68 */
 /***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
 
 	/** @license MIT License (c) copyright 2010-2016 original author or authors */
 	/** @author Brian Cavalier */
@@ -6892,8 +8245,10 @@
 	};
 
 /***/ },
-/* 68 */
+/* 69 */
 /***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
 
 	/** @license MIT License (c) copyright 2010-2016 original author or authors */
 	/** @author Brian Cavalier */
@@ -7013,8 +8368,10 @@
 	function noop() {}
 
 /***/ },
-/* 69 */
+/* 70 */
 /***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
 
 	/** @license MIT License (c) copyright 2010-2016 original author or authors */
 	/** @author Brian Cavalier */
@@ -7049,8 +8406,10 @@
 	};
 
 /***/ },
-/* 70 */
+/* 71 */
 /***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
 
 	/** @license MIT License (c) copyright 2010-2016 original author or authors */
 	/** @author Brian Cavalier */
@@ -7173,8 +8532,10 @@
 	};
 
 /***/ },
-/* 71 */
+/* 72 */
 /***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
 
 	/** @license MIT License (c) copyright 2010-2016 original author or authors */
 	/** @author Brian Cavalier */
@@ -7188,7 +8549,7 @@
 	var dispose = __webpack_require__(2);
 	var base = __webpack_require__(3);
 	var invoke = __webpack_require__(13);
-	var Queue = __webpack_require__(53);
+	var Queue = __webpack_require__(54);
 
 	var map = base.map;
 	var tail = base.tail;
@@ -7309,8 +8670,10 @@
 	}
 
 /***/ },
-/* 72 */
+/* 73 */
 /***/ function(module, exports) {
+
+	"use strict";
 
 	/** @license MIT License (c) copyright 2010-2016 original author or authors */
 	/** @author Brian Cavalier */
@@ -7334,8 +8697,10 @@
 	};
 
 /***/ },
-/* 73 */
+/* 74 */
 /***/ function(module, exports) {
+
+	'use strict';
 
 	/** @license MIT License (c) copyright 2010-2016 original author or authors */
 	/** @author Brian Cavalier */
@@ -7381,8 +8746,10 @@
 	};
 
 /***/ },
-/* 74 */
+/* 75 */
 /***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
 
 	/** @license MIT License (c) copyright 2010-2016 original author or authors */
 	/** @author Brian Cavalier */
@@ -7418,8 +8785,10 @@
 	FilterMapSink.prototype.error = Pipe.prototype.error;
 
 /***/ },
-/* 75 */
+/* 76 */
 /***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
 
 	/** @license MIT License (c) copyright 2010-2016 original author or authors */
 	/** @author Brian Cavalier */
@@ -7644,25 +9013,31 @@
 	}
 
 /***/ },
-/* 76 */
+/* 77 */
 /***/ function(module, exports, __webpack_require__) {
 
-	/* WEBPACK VAR INJECTION */(function(process) {/** @license MIT License (c) copyright 2010-2016 original author or authors */
+	/* WEBPACK VAR INJECTION */(function(process) {'use strict';
+
+	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
+
+	/** @license MIT License (c) copyright 2010-2016 original author or authors */
 	/** @author Brian Cavalier */
 	/** @author John Hann */
 
-	var Scheduler = __webpack_require__(75);
-	var setTimeoutTimer = __webpack_require__(78);
-	var nodeTimer = __webpack_require__(77);
+	var Scheduler = __webpack_require__(76);
+	var setTimeoutTimer = __webpack_require__(79);
+	var nodeTimer = __webpack_require__(78);
 
-	var isNode = typeof process === 'object' && typeof process.nextTick === 'function';
+	var isNode = (typeof process === 'undefined' ? 'undefined' : _typeof(process)) === 'object' && typeof process.nextTick === 'function';
 
 	module.exports = new Scheduler(isNode ? nodeTimer : setTimeoutTimer);
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(17)))
 
 /***/ },
-/* 77 */
+/* 78 */
 /***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
 
 	/** @license MIT License (c) copyright 2010-2016 original author or authors */
 	/** @author Brian Cavalier */
@@ -7701,17 +9076,19 @@
 
 	module.exports = {
 		now: Date.now,
-		setTimer: function (f, dt) {
+		setTimer: function setTimer(f, dt) {
 			return dt <= 0 ? runAsTask(f) : setTimeout(f, dt);
 		},
-		clearTimer: function (t) {
+		clearTimer: function clearTimer(t) {
 			return t instanceof Task ? t.cancel() : clearTimeout(t);
 		}
 	};
 
 /***/ },
-/* 78 */
+/* 79 */
 /***/ function(module, exports) {
+
+	"use strict";
 
 	/** @license MIT License (c) copyright 2010-2016 original author or authors */
 	/** @author Brian Cavalier */
@@ -7721,17 +9098,19 @@
 
 	module.exports = {
 		now: Date.now,
-		setTimer: function (f, dt) {
+		setTimer: function setTimer(f, dt) {
 			return setTimeout(f, dt);
 		},
-		clearTimer: function (t) {
+		clearTimer: function clearTimer(t) {
 			return clearTimeout(t);
 		}
 	};
 
 /***/ },
-/* 79 */
+/* 80 */
 /***/ function(module, exports) {
+
+	"use strict";
 
 	/** @license MIT License (c) copyright 2010-2016 original author or authors */
 	/** @author Brian Cavalier */
@@ -7779,8 +9158,10 @@
 	}
 
 /***/ },
-/* 80 */
+/* 81 */
 /***/ function(module, exports) {
+
+	"use strict";
 
 	/** @license MIT License (c) copyright 2010-2016 original author or authors */
 	/** @author Brian Cavalier */
@@ -7819,8 +9200,10 @@
 	};
 
 /***/ },
-/* 81 */
+/* 82 */
 /***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
 
 	/** @license MIT License (c) copyright 2010-2016 original author or authors */
 	/** @author Brian Cavalier */
@@ -7869,8 +9252,10 @@
 	}
 
 /***/ },
-/* 82 */
+/* 83 */
 /***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
 
 	/** @license MIT License (c) copyright 2010-2016 original author or authors */
 	/** @author Brian Cavalier */
@@ -7903,8 +9288,10 @@
 	}
 
 /***/ },
-/* 83 */
+/* 84 */
 /***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
 
 	/** @license MIT License (c) copyright 2010-2016 original author or authors */
 	/** @author Brian Cavalier */
@@ -7984,16 +9371,18 @@
 	};
 
 /***/ },
-/* 84 */
+/* 85 */
 /***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
 
 	/** @license MIT License (c) copyright 2010-2016 original author or authors */
 	/** @author Brian Cavalier */
 	/** @author John Hann */
 
-	var fromArray = __webpack_require__(85).fromArray;
+	var fromArray = __webpack_require__(86).fromArray;
 	var isIterable = __webpack_require__(31).isIterable;
-	var fromIterable = __webpack_require__(87).fromIterable;
+	var fromIterable = __webpack_require__(88).fromIterable;
 	var isArrayLike = __webpack_require__(3).isArrayLike;
 
 	exports.from = from;
@@ -8011,8 +9400,10 @@
 	}
 
 /***/ },
-/* 85 */
+/* 86 */
 /***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
 
 	/** @license MIT License (c) copyright 2010-2016 original author or authors */
 	/** @author Brian Cavalier */
@@ -8062,8 +9453,10 @@
 	}
 
 /***/ },
-/* 86 */
+/* 87 */
 /***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
 
 	/** @license MIT License (c) copyright 2010-2016 original author or authors */
 	/** @author Brian Cavalier */
@@ -8071,8 +9464,8 @@
 
 	var Stream = __webpack_require__(0);
 	var MulticastSource = __webpack_require__(5).MulticastSource;
-	var EventTargetSource = __webpack_require__(82);
-	var EventEmitterSource = __webpack_require__(81);
+	var EventTargetSource = __webpack_require__(83);
+	var EventEmitterSource = __webpack_require__(82);
 
 	exports.fromEvent = fromEvent;
 
@@ -8101,8 +9494,10 @@
 	}
 
 /***/ },
-/* 87 */
+/* 88 */
 /***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
 
 	/** @license MIT License (c) copyright 2010-2016 original author or authors */
 	/** @author Brian Cavalier */
@@ -8149,8 +9544,10 @@
 	}
 
 /***/ },
-/* 88 */
+/* 89 */
 /***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
 
 	/** @license MIT License (c) copyright 2010-2014 original author or authors */
 	/** @author Brian Cavalier */
@@ -8224,8 +9621,10 @@
 	};
 
 /***/ },
-/* 89 */
+/* 90 */
 /***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
 
 	/** @license MIT License (c) copyright 2010-2016 original author or authors */
 	/** @author Brian Cavalier */
@@ -8297,8 +9696,10 @@
 	}
 
 /***/ },
-/* 90 */
+/* 91 */
 /***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
 
 	/** @license MIT License (c) copyright 2010-2016 original author or authors */
 	/** @author Brian Cavalier */
@@ -8340,8 +9741,10 @@
 	}
 
 /***/ },
-/* 91 */
+/* 92 */
 /***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
 
 	/** @license MIT License (c) copyright 2010-2016 original author or authors */
 	/** @author Brian Cavalier */
@@ -8418,7 +9821,7 @@
 	}
 
 /***/ },
-/* 92 */
+/* 93 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -8464,8 +9867,10 @@
 	}
 
 /***/ },
-/* 93 */
+/* 94 */
 /***/ function(module, exports) {
+
+	"use strict";
 
 	function createElement(tagName) {
 	  return document.createElement(tagName);
@@ -8521,8 +9926,10 @@
 	};
 
 /***/ },
-/* 94 */
+/* 95 */
 /***/ function(module, exports) {
+
+	"use strict";
 
 	var booleanAttrs = ["allowfullscreen", "async", "autofocus", "autoplay", "checked", "compact", "controls", "declare", "default", "defaultchecked", "defaultmuted", "defaultselected", "defer", "disabled", "draggable", "enabled", "formnovalidate", "hidden", "indeterminate", "inert", "ismap", "itemscope", "loop", "multiple", "muted", "nohref", "noresize", "noshade", "novalidate", "nowrap", "open", "pauseonexit", "readonly", "required", "reversed", "scoped", "seamless", "selected", "sortable", "spellcheck", "translate", "truespeed", "typemustmatch", "visible"];
 
@@ -8561,8 +9968,10 @@
 	module.exports = { create: updateAttrs, update: updateAttrs };
 
 /***/ },
-/* 95 */
+/* 96 */
 /***/ function(module, exports) {
+
+	'use strict';
 
 	function updateClass(oldVnode, vnode) {
 	  var cur,
@@ -8586,8 +9995,10 @@
 	module.exports = { create: updateClass, update: updateClass };
 
 /***/ },
-/* 96 */
+/* 97 */
 /***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
 
 	var is = __webpack_require__(10);
 
@@ -8626,8 +10037,9 @@
 	    } else if (is.array(old)) {
 	      // Deliberately modify old array since it's captured in closure created with `arrInvoker`
 	      old.length = cur.length;
-	      for (var i = 0; i < old.length; ++i) old[i] = cur[i];
-	      on[name] = old;
+	      for (var i = 0; i < old.length; ++i) {
+	        old[i] = cur[i];
+	      }on[name] = old;
 	    } else {
 	      old.fn = cur;
 	      on[name] = old;
@@ -8638,11 +10050,13 @@
 	module.exports = { create: updateEventListeners, update: updateEventListeners };
 
 /***/ },
-/* 97 */
+/* 98 */
 /***/ function(module, exports) {
 
+	'use strict';
+
 	var raf = typeof window !== 'undefined' && window.requestAnimationFrame || setTimeout;
-	var nextFrame = function (fn) {
+	var nextFrame = function nextFrame(fn) {
 	  raf(function () {
 	    raf(fn);
 	  });
@@ -8797,8 +10211,10 @@
 	module.exports = { pre: pre, create: create, destroy: destroy, post: post };
 
 /***/ },
-/* 98 */
+/* 99 */
 /***/ function(module, exports) {
+
+	'use strict';
 
 	function updateProps(oldVnode, vnode) {
 	  var key,
@@ -8824,11 +10240,13 @@
 	module.exports = { create: updateProps, update: updateProps };
 
 /***/ },
-/* 99 */
+/* 100 */
 /***/ function(module, exports) {
 
+	'use strict';
+
 	var raf = typeof window !== 'undefined' && window.requestAnimationFrame || setTimeout;
-	var nextFrame = function (fn) {
+	var nextFrame = function nextFrame(fn) {
 	  raf(function () {
 	    raf(fn);
 	  });
@@ -8911,7 +10329,7 @@
 	module.exports = { create: updateStyle, update: updateStyle, destroy: applyDestroyStyle, remove: applyRemoveStyle };
 
 /***/ },
-/* 100 */
+/* 101 */
 /***/ function(module, exports, __webpack_require__) {
 
 	// jshint newcap: false
@@ -8920,7 +10338,7 @@
 
 	var VNode = __webpack_require__(15);
 	var is = __webpack_require__(10);
-	var domApi = __webpack_require__(93);
+	var domApi = __webpack_require__(94);
 
 	function isUndef(s) {
 	  return s === undefined;
@@ -9006,8 +10424,9 @@
 	      } else if (is.primitive(vnode.text)) {
 	        api.appendChild(elm, api.createTextNode(vnode.text));
 	      }
-	      for (i = 0; i < cbs.create.length; ++i) cbs.create[i](emptyNode, vnode);
-	      i = vnode.data.hook; // Reuse variable
+	      for (i = 0; i < cbs.create.length; ++i) {
+	        cbs.create[i](emptyNode, vnode);
+	      }i = vnode.data.hook; // Reuse variable
 	      if (isDef(i)) {
 	        if (i.create) i.create(emptyNode, vnode);
 	        if (i.insert) insertedVnodeQueue.push(vnode);
@@ -9031,8 +10450,9 @@
 	        data = vnode.data;
 	    if (isDef(data)) {
 	      if (isDef(i = data.hook) && isDef(i = i.destroy)) i(vnode);
-	      for (i = 0; i < cbs.destroy.length; ++i) cbs.destroy[i](vnode);
-	      if (isDef(i = vnode.children)) {
+	      for (i = 0; i < cbs.destroy.length; ++i) {
+	        cbs.destroy[i](vnode);
+	      }if (isDef(i = vnode.children)) {
 	        for (j = 0; j < vnode.children.length; ++j) {
 	          invokeDestroyHook(vnode.children[j]);
 	        }
@@ -9052,8 +10472,9 @@
 	          invokeDestroyHook(ch);
 	          listeners = cbs.remove.length + 1;
 	          rm = createRmCb(ch.elm, listeners);
-	          for (i = 0; i < cbs.remove.length; ++i) cbs.remove[i](ch, rm);
-	          if (isDef(i = ch.data) && isDef(i = i.hook) && isDef(i = i.remove)) {
+	          for (i = 0; i < cbs.remove.length; ++i) {
+	            cbs.remove[i](ch, rm);
+	          }if (isDef(i = ch.data) && isDef(i = i.hook) && isDef(i = i.remove)) {
 	            i(ch, rm);
 	          } else {
 	            rm();
@@ -9149,8 +10570,9 @@
 	      return;
 	    }
 	    if (isDef(vnode.data)) {
-	      for (i = 0; i < cbs.update.length; ++i) cbs.update[i](oldVnode, vnode);
-	      i = vnode.data.hook;
+	      for (i = 0; i < cbs.update.length; ++i) {
+	        cbs.update[i](oldVnode, vnode);
+	      }i = vnode.data.hook;
 	      if (isDef(i) && isDef(i = i.update)) i(oldVnode, vnode);
 	    }
 	    if (isUndef(vnode.text)) {
@@ -9175,9 +10597,9 @@
 	  return function (oldVnode, vnode) {
 	    var i, elm, parent;
 	    var insertedVnodeQueue = [];
-	    for (i = 0; i < cbs.pre.length; ++i) cbs.pre[i]();
-
-	    if (isUndef(oldVnode.sel)) {
+	    for (i = 0; i < cbs.pre.length; ++i) {
+	      cbs.pre[i]();
+	    }if (isUndef(oldVnode.sel)) {
 	      oldVnode = emptyNodeAt(oldVnode);
 	    }
 
@@ -9198,16 +10620,19 @@
 	    for (i = 0; i < insertedVnodeQueue.length; ++i) {
 	      insertedVnodeQueue[i].data.hook.insert(insertedVnodeQueue[i]);
 	    }
-	    for (i = 0; i < cbs.post.length; ++i) cbs.post[i]();
-	    return vnode;
+	    for (i = 0; i < cbs.post.length; ++i) {
+	      cbs.post[i]();
+	    }return vnode;
 	  };
 	}
 
 	module.exports = { init: init };
 
 /***/ },
-/* 101 */
+/* 102 */
 /***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
 
 	var h = __webpack_require__(36);
 
@@ -9249,42 +10674,58 @@
 	};
 
 /***/ },
-/* 102 */
+/* 103 */
 /***/ function(module, exports, __webpack_require__) {
 
-	/* WEBPACK VAR INJECTION */(function(process) {/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__motorcycle_core__ = __webpack_require__(37);
-	/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__motorcycle_core___default = __WEBPACK_IMPORTED_MODULE_0__motorcycle_core__ && __WEBPACK_IMPORTED_MODULE_0__motorcycle_core__.__esModule ? function() { return __WEBPACK_IMPORTED_MODULE_0__motorcycle_core__['default'] } : function() { return __WEBPACK_IMPORTED_MODULE_0__motorcycle_core__; }
-	/* harmony import */ Object.defineProperty(__WEBPACK_IMPORTED_MODULE_0__motorcycle_core___default, 'a', { get: __WEBPACK_IMPORTED_MODULE_0__motorcycle_core___default });
-	/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__ = __webpack_require__(16);
-	/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom___default = __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__ && __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__.__esModule ? function() { return __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__['default'] } : function() { return __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__; }
-	/* harmony import */ Object.defineProperty(__WEBPACK_IMPORTED_MODULE_1__motorcycle_dom___default, 'a', { get: __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom___default });
-	/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_most__ = __webpack_require__(4);
-	/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_most___default = __WEBPACK_IMPORTED_MODULE_2_most__ && __WEBPACK_IMPORTED_MODULE_2_most__.__esModule ? function() { return __WEBPACK_IMPORTED_MODULE_2_most__['default'] } : function() { return __WEBPACK_IMPORTED_MODULE_2_most__; }
-	/* harmony import */ Object.defineProperty(__WEBPACK_IMPORTED_MODULE_2_most___default, 'a', { get: __WEBPACK_IMPORTED_MODULE_2_most___default });
-	/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__code_js__ = __webpack_require__(38);
+	/* WEBPACK VAR INJECTION */(function(process) {'use strict';
 
+	var _core = __webpack_require__(37);
 
+	var _core2 = _interopRequireDefault(_core);
 
+	var _dom = __webpack_require__(16);
 
+	var _most = __webpack_require__(4);
+
+	var _code = __webpack_require__(39);
+
+	var _code2 = _interopRequireDefault(_code);
+
+	var _mobx = __webpack_require__(38);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	monadState = (0, _mobx.observable)(O);
+	console.log(monadState);
+
+	O.mMcount.bnd(add, 1, mMcount);
+	m.ret(1000), O.mMcount.bnd(add, 1, mMcount);
+	O.mMcount2.bnd(add, 1, mMcount2);
+	O.mMcount2.bnd(add, 1, mMcount2);
+	O.mMcount.bnd(add, 1, mMcount);
+	O.mMcount.bnd(add, 1, mMcount);
+	O.mMcount2.bnd(add, 1, mMcount2);
 
 	function createWebSocket(path) {
-	  let host = window.location.hostname;
+	  var host = window.location.hostname;
 	  if (host == '') host = 'localhost';
-	  let uri = 'ws://' + host + ':3055' + path;
-	  let Socket = "MozWebSocket" in window ? MozWebSocket : WebSocket;
+	  var uri = 'ws://' + host + ':3055' + path;
+	  var Socket = "MozWebSocket" in window ? MozWebSocket : WebSocket;
 	  return new Socket(uri);
 	}
 
-	const socket = createWebSocket('/');
+	var socket = createWebSocket('/');
 
-	const websocketsDriver = function () {
-	  return /* harmony import */ __WEBPACK_IMPORTED_MODULE_2_most__["create"](add => {
-	    socket.onmessage = msg => add(msg);
+	var websocketsDriver = function websocketsDriver() {
+	  return (0, _most.create)(function (add) {
+	    socket.onmessage = function (msg) {
+	      return add(msg);
+	    };
 	  });
 	};
 
-	const unitDriver = function () {
-	  return /* harmony import */ __WEBPACK_IMPORTED_MODULE_2_most__["periodic"](1000, 1);
+	var unitDriver = function unitDriver() {
+	  return (0, _most.periodic)(1000, 1);
 	};
 
 	window.onload = function (event) {
@@ -9300,25 +10741,51 @@
 	    mM$primeFibs.ret([[2], 3, 3, [2, 3]]);
 	    mM$fib2.ret([0, 1, []]);
 	    mM$fib4.ret([0, 1, 1, [0]]);
-	  }, 1200);
+	    var mathFunc = (0, _mobx.autorun)(function () {
+	      var a = monadState.mMcount.x;
+	      var b = monadState.mMcount2.x;
+	      document.getElementById('spreadsheet1').innerHTML = a + ' + ' + b + ' = ' + (a + b);
+	      document.getElementById('spreadsheet2').innerHTML = a + ' - ' + b + ' = ' + (a - b);
+	      document.getElementById('spreadsheet3').innerHTML = a + ' * ' + b + ' = ' + a * b;
+	      document.getElementById('spreadsheet4').innerHTML = a + ' / ' + b + ' = ' + a / b;
+	    });
+	  });
 
-	  mMZ1.bnd(v => O.mMt1.bnd(add, v, mMt1).bnd(cube, mMt2).bnd(() => mMt3.ret(O.mMt1.x + ' cubed is ' + O.mMt2.x)));
+	  mMZ1.bnd(function (v) {
+	    return O.mMt1.bnd(add, v, mMt1).bnd(cube, mMt2).bnd(function () {
+	      return mMt3.ret(O.mMt1.x + ' cubed is ' + O.mMt2.x);
+	    });
+	  });
 
-	  mMZ2.bnd(v => cube(v).bnd(w => mMt3.ret(v + ' cubed is ' + w)));
+	  mMZ2.bnd(function (v) {
+	    return cube(v).bnd(function (w) {
+	      return mMt3.ret(v + ' cubed is ' + w);
+	    });
+	  });
 
-	  const messages$ = sources.WS.map(e => {
+	  var messages$ = sources.WS.map(function (e) {
 	    console.log('******____&&&&&&&&&&&&&&&&&&&____**************_In messages$  e.data is: ', e.data);
-	    mMtem.ret(e.data.split(',')).bnd(v => {
-	      mMZ10.bnd(() => {
+	    mMtem.ret(e.data.split(',')).bnd(function (v) {
+	      mMZ10.bnd(function () {
 	        mM$2.ret([]);
 	        mM$1.ret([v[3], v[4], v[5], v[6]]);
 	      });
-	      mMZ11.bnd(() => updateScoreboard(v[3]));
-	      mMZ12.bnd(() => mM6.ret(v[2] + ' successfully logged in.'));
-	      mMZ13.bnd(() => updateMessages(v));
-	      mMZ14.bnd(() => mMgoals2.ret('The winner is ' + v.x));
-	      mMZ15.bnd(() => mMgoals2.ret('A player named ' + O.mMname.x + 'is currently logged in. Page will refresh in 4 seconds.').bnd(refresh));
-	      mMZ16.bnd(() => {
+	      mMZ11.bnd(function () {
+	        return updateScoreboard(v[3]);
+	      });
+	      mMZ12.bnd(function () {
+	        return mM6.ret(v[2] + ' successfully logged in.');
+	      });
+	      mMZ13.bnd(function () {
+	        return updateMessages(v);
+	      });
+	      mMZ14.bnd(function () {
+	        return mMgoals2.ret('The winner is ' + v.x);
+	      });
+	      mMZ15.bnd(function () {
+	        return mMgoals2.ret('A player named ' + O.mMname.x + 'is currently logged in. Page will refresh in 4 seconds.').bnd(refresh);
+	      });
+	      mMZ16.bnd(function () {
 	        if (v[3] == 'no file') {
 	          mMtaskList.ret([]);
 	        } else {
@@ -9329,17 +10796,19 @@
 	    });
 	  });
 
-	  const updateMessages = function updateMessages(ar) {
+	  var updateMessages = function updateMessages(ar) {
 	    var sender = ar[2];
-	    mMhelper.ret(ar).bnd(splice, 0, 3, mMhelper).bnd(reduce, (a, b) => {
+	    mMhelper.ret(ar).bnd(splice, 0, 3, mMhelper).bnd(reduce, function (a, b) {
 	      return a + ', ' + b;
-	    }, mMhelper).bnd(v => O.mMmsg.bnd(unshift, /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('div', sender + ': ' + v), O.mMmsg));
+	    }, mMhelper).bnd(function (v) {
+	      return O.mMmsg.bnd(unshift, (0, _dom.h)('div', sender + ': ' + v), O.mMmsg);
+	    });
 	  };
 
-	  const loginPress$ = sources.DOM.select('input#login').events('keypress');
+	  var loginPress$ = sources.DOM.select('input#login').events('keypress');
 
-	  const loginPressAction$ = loginPress$.map(e => {
-	    let v = e.target.value;
+	  var loginPressAction$ = loginPress$.map(function (e) {
+	    var v = e.target.value;
 	    if (v == '') {
 	      return;
 	    }
@@ -9356,29 +10825,29 @@
 	    }
 	  });
 
-	  const groupPress$ = sources.DOM.select('input#group').events('keypress');
+	  var groupPress$ = sources.DOM.select('input#group').events('keypress');
 
-	  const groupPressAction$ = groupPress$.map(e => {
-	    let v = e.target.value;
+	  var groupPressAction$ = groupPress$.map(function (e) {
+	    var v = e.target.value;
 	    if (e.keyCode == 13) {
 	      mMgroup.ret(v);
-	      socket.send(`CO#$42,${ v },${ O.mMname.x.trim() },${ v }`);
+	      socket.send('CO#$42,' + v + ',' + O.mMname.x.trim() + ',' + v);
 	    }
 	  });
 
-	  const messagePress$ = sources.DOM.select('input.inputMessage').events('keydown');
+	  var messagePress$ = sources.DOM.select('input.inputMessage').events('keydown');
 
-	  const messagePressAction$ = messagePress$.map(e => {
+	  var messagePressAction$ = messagePress$.map(function (e) {
 	    if (e.keyCode == 13) {
-	      socket.send(`CD#$42,${ O.mMgroup.x.trim() },${ O.mMname.x.trim() },${ e.target.value }`);
+	      socket.send('CD#$42,' + O.mMgroup.x.trim() + ',' + O.mMname.x.trim() + ',' + e.target.value);
 	      e.target.value = '';
 	    }
 	  });
 
-	  const newTask$ = sources.DOM.select('input.newTask').events('keydown');
+	  var newTask$ = sources.DOM.select('input.newTask').events('keydown');
 
-	  const newTaskAction$ = newTask$.map(e => {
-	    let ob = {};
+	  var newTaskAction$ = newTask$.map(function (e) {
+	    var ob = {};
 	    var alert = '';
 	    var task = '';
 	    if (e.keyCode == 13) {
@@ -9393,9 +10862,13 @@
 	        task = ar[2];
 	      }
 	      if (ar2.length > 1) {
-	        task = ar2.reduce((a, b) => a + '$*$*$' + b);
+	        task = ar2.reduce(function (a, b) {
+	          return a + '$*$*$' + b;
+	        });
 	      }
-	      if (O.mMar2.x.filter(v => v.task == task).length > 0) {
+	      if (O.mMar2.x.filter(function (v) {
+	        return v.task == task;
+	      }).length > 0) {
 	        document.getElementById('alert').innerHTML = task + " is already listed.";
 	      } else if (ar.length > 2) {
 	        O.mMcurrentList.bnd(addString, task + ',yellow, none, false,' + ar[0] + ',' + ar[1], mM$taskList);
@@ -9405,7 +10878,7 @@
 	    }
 	  });
 
-	  const process = function (str) {
+	  var process = function process(str) {
 	    var a = str.split(",");
 	    if (a == undefined) {
 	      return;
@@ -9415,7 +10888,9 @@
 	    };
 	    var ob = {};
 	    var ar = a.slice(3);
-	    var s = ar.reduce((a, b) => a + ',' + b);
+	    var s = ar.reduce(function (a, b) {
+	      return a + ',' + b;
+	    });
 	    console.log('In process. ar and s are: ', ar, s);
 	    var tempArray = [];
 	    if (ar.length < 6) {
@@ -9428,10 +10903,10 @@
 	    process3(ar);
 	  };
 
-	  const process3 = function (a) {
+	  var process3 = function process3(a) {
 	    var ar5 = [];
 	    var keys = Array(a.length / 6).fill(1);
-	    keys.map(_ => {
+	    keys.map(function (_) {
 	      ar5.push({
 	        task: convertBack(a.shift()),
 	        color: a.shift(),
@@ -9445,26 +10920,26 @@
 	    process4(ar5);
 	  };
 
-	  const process4 = function (a) {
+	  var process4 = function process4(a) {
 	    var tempArray = [];
-	    let keys = Object.keys(a);
-	    for (let k in keys) {
-	      tempArray.push(/* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('div.todo', [/* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('span.task3', { style: { color: a[k].color, textDecoration: a[k].textDecoration } }, 'Task: ' + a[k].task), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('br'), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('button#edit1', 'Edit'), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('input#edit2', { props: { type: 'textarea', value: a[k].task }, style: { display: 'none' } }), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('span#author.tao', 'Author: ' + a[k].author + ' / ' + 'Responsibility: ' + a[k].responsible), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('br'), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('input#cb', { props: { type: 'checkbox', checked: a[k].checked }, style: { color: a[k].color,
-	          textDecoration: a[k].textDecoration } }), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('label.cbox', { props: { for: '#cb' } }, 'Completed'), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('button.delete', 'Delete'), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('br'), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('hr')]));
+	    var keys = Object.keys(a);
+	    for (var k in keys) {
+	      tempArray.push((0, _dom.h)('div.todo', [(0, _dom.h)('span.task3', { style: { color: a[k].color, textDecoration: a[k].textDecoration } }, 'Task: ' + a[k].task), (0, _dom.h)('br'), (0, _dom.h)('button#edit1', 'Edit'), (0, _dom.h)('input#edit2', { props: { type: 'textarea', value: a[k].task }, style: { display: 'none' } }), (0, _dom.h)('span#author.tao', 'Author: ' + a[k].author + ' / ' + 'Responsibility: ' + a[k].responsible), (0, _dom.h)('br'), (0, _dom.h)('input#cb', { props: { type: 'checkbox', checked: a[k].checked }, style: { color: a[k].color,
+	          textDecoration: a[k].textDecoration } }), (0, _dom.h)('label.cbox', { props: { for: '#cb' } }, 'Completed'), (0, _dom.h)('button.delete', 'Delete'), (0, _dom.h)('br'), (0, _dom.h)('hr')]));
 	    }
 	    mMtaskList.ret(tempArray);
 	  };
 
-	  const colorClick$ = sources.DOM.select('#cb').events('click');
+	  var colorClick$ = sources.DOM.select('#cb').events('click');
 
-	  const colorAction$ = colorClick$.map(e => {
-	    let index = getIndex(e);
-	    let s = O.mMcurrentList.x;
-	    let ar = s.split(',');
-	    let n = 6 * index + 3;
-	    let j = 6 * index + 2;
-	    let k = 6 * index + 1;
-	    let checked = ar[n];
+	  var colorAction$ = colorClick$.map(function (e) {
+	    var index = getIndex(e);
+	    var s = O.mMcurrentList.x;
+	    var ar = s.split(',');
+	    var n = 6 * index + 3;
+	    var j = 6 * index + 2;
+	    var k = 6 * index + 1;
+	    var checked = ar[n];
 	    if (checked == 'true') {
 	      ar[n] = 'false';
 	      ar[k] = 'yellow';
@@ -9474,69 +10949,77 @@
 	      ar[k] = 'lightGreen';
 	      ar[j] = 'line-through';
 	    }
-	    mM$taskList.ret(ar.reduce((a, b) => a + ',' + b));
+	    mM$taskList.ret(ar.reduce(function (a, b) {
+	      return a + ',' + b;
+	    }));
 	  });
 
-	  const edit1$ = sources.DOM.select('#edit1').events('click');
+	  var edit1$ = sources.DOM.select('#edit1').events('click');
 
-	  const edit1Action$ = edit1$.map(e => {
-	    let index = getIndex2(e);
+	  var edit1Action$ = edit1$.map(function (e) {
+	    var index = getIndex2(e);
 	    O.mMtaskList.x[index].children[3].elm.style.display = 'block';
 	  });
 
-	  const edit2$ = sources.DOM.select('#edit2').events('keypress');
+	  var edit2$ = sources.DOM.select('#edit2').events('keypress');
 
-	  const edit2Action$ = edit2$.map(e => {
-	    let v = e.target.value;
-	    let index = getIndex2(e);
+	  var edit2Action$ = edit2$.map(function (e) {
+	    var v = e.target.value;
+	    var index = getIndex2(e);
 	    if (e.keyCode == 13) {
 	      process2(v, index);
 	      O.mMtaskList.x[index].children[3].elm.style.display = 'none';
 	    }
 	  });
 
-	  const process2 = function (str, index) {
-	    let a = O.mMcurrentList.x;
-	    let ar = a.split(',');
-	    let task = str.split(',').reduce((a, b) => ar + '$*$*$' + b);
+	  var process2 = function process2(str, index) {
+	    var a = O.mMcurrentList.x;
+	    var ar = a.split(',');
+	    var task = str.split(',').reduce(function (a, b) {
+	      return ar + '$*$*$' + b;
+	    });
 	    ar[index * 6] = task;
-	    let s = ar.reduce((a, b) => a + ',' + b);
+	    var s = ar.reduce(function (a, b) {
+	      return a + ',' + b;
+	    });
 	    mM$taskList.ret(s);
 	  };
 
-	  const deleteClick$ = sources.DOM.select('.delete').events('click');
+	  var deleteClick$ = sources.DOM.select('.delete').events('click');
 
-	  const deleteAction$ = deleteClick$.map(e => {
-	    let index = getIndex(e);
-	    let s = O.mMcurrentList.x;
-	    let ar = s.split(',');
-	    let str = '';
+	  var deleteAction$ = deleteClick$.map(function (e) {
+	    var index = getIndex(e);
+	    var s = O.mMcurrentList.x;
+	    var ar = s.split(',');
+	    var str = '';
 	    ar.splice(index * 6, 6);
 	    if (ar.length > 0) {
-	      mM$taskList.ret(ar.reduce((a, b) => a + ',' + b));
+	      mM$taskList.ret(ar.reduce(function (a, b) {
+	        return a + ',' + b;
+	      }));
 	    } else {
 	      socket.send('TX#$42' + ',' + O.mMgroup.x.trim() + ',' + O.mMname.x.trim());
 	      mMtaskList.ret('');
 	    }
 	  });
 
-	  const chatClick$ = sources.DOM.select('#chat2').events('click');
+	  var chatClick$ = sources.DOM.select('#chat2').events('click');
 
-	  const chatClickAction$ = chatClick$.map(() => {
+	  var chatClickAction$ = chatClick$.map(function () {
 	    var el = document.getElementById('chatDiv');
 	    el.style.display == 'none' ? el.style.display = 'inline' : el.style.display = 'none';
 	  });
 
-	  const captionClick$ = sources.DOM.select('#caption').events('click');
+	  var captionClick$ = sources.DOM.select('#caption').events('click');
 
-	  const captionClickAction$ = captionClick$.map(() => {
+	  var captionClickAction$ = captionClick$.map(function () {
 	    var el = document.getElementById('captionDiv');
 	    el.style.display == 'none' ? el.style.display = 'inline' : el.style.display = 'none';
 	  });
 
-	  const gameClick$ = sources.DOM.select('#game').events('click');
+	  var gameClick$ = sources.DOM.select('#game').events('click');
 
-	  const gameClickAction$ = gameClick$.map(() => {
+	  var gameClickAction$ = gameClick$.map(function () {
 	    var el = document.getElementById('gameDiv');
 	    el.style.display == 'none' ? el.style.display = 'inline' : el.style.display = 'none';
 
@@ -9544,22 +11027,22 @@
 	    el2.style.display == 'none' ? el2.style.display = 'inline' : el2.style.display = 'none';
 	  });
 
-	  const runTest$ = sources.DOM.select('#runTest').events('click');
+	  var runTest$ = sources.DOM.select('#runTest').events('click');
 
-	  const runTestAction$ = runTest$.map(() => {
+	  var runTestAction$ = runTest$.map(function () {
 	    runTest();
 	  });
 
-	  const todoClick$ = sources.DOM.select('#todoButton').events('click');
+	  var todoClick$ = sources.DOM.select('#todoButton').events('click');
 
-	  const todoClickAction$ = todoClick$.map(e => {
+	  var todoClickAction$ = todoClick$.map(function (e) {
 	    var el = document.getElementById('todoDiv');
 	    el.style.display == 'none' ? el.style.display = 'inline' : el.style.display = 'none';
 	  });
 
-	  const numClick$ = sources.DOM.select('.num').events('click');
+	  var numClick$ = sources.DOM.select('.num').events('click');
 
-	  const numClickAction$ = numClick$.map(e => {
+	  var numClickAction$ = numClick$.map(function (e) {
 	    console.log('In numClickAction$ O.mM3.x and e are: ', O.mM3.x, e);
 	    if (O.mM3.x.length < 2) {
 	      O.mM3.bnd(push, e.target.innerHTML, O.mM3);
@@ -9571,18 +11054,18 @@
 	    };
 	  }).startWith([0, 0, 0, 0]);
 
-	  const opClick$ = sources.DOM.select('.op').events('click');
+	  var opClick$ = sources.DOM.select('.op').events('click');
 
-	  const opClickAction$ = opClick$.map(e => {
+	  var opClickAction$ = opClick$.map(function (e) {
 	    mM8.ret(e.target.textContent);
 	    if (O.mM3.x.length === 2) {
 	      updateCalc();
 	    }
 	  });
 
-	  const rollClick$ = sources.DOM.select('.roll').events('click');
+	  var rollClick$ = sources.DOM.select('.roll').events('click');
 
-	  const rollClickAction$ = rollClick$.map(e => {
+	  var rollClickAction$ = rollClick$.map(function (e) {
 	    mM13.ret(O.mM13.x - 1);
 	    mM8.ret(0);
 	    mM3.ret([]);
@@ -9592,7 +11075,7 @@
 
 	  // ************************************************************************* Original Fibonacci enter
 	  mM$fib.stream.addListener({
-	    next: v => {
+	    next: function next(v) {
 	      if (v[2] > 1) {
 	        mM$fib.ret([v[1], v[0] + v[1], v[2] - 1]);
 	      } else {
@@ -9600,13 +11083,17 @@
 	        mM19.ret(v[0]);
 	      }
 	    },
-	    error: err => console.error(err),
-	    complete: () => console.log('completed')
+	    error: function error(err) {
+	      return console.error(err);
+	    },
+	    complete: function complete() {
+	      return console.log('completed');
+	    }
 	  });
 
-	  const fibPress$ = sources.DOM.select('input#code').events('keydown');
+	  var fibPress$ = sources.DOM.select('input#code').events('keydown');
 
-	  const fibPressAction$ = fibPress$.map(e => {
+	  var fibPressAction$ = fibPress$.map(function (e) {
 	    if (e.target.value == '') {
 	      return;
 	    };
@@ -9622,9 +11109,9 @@
 
 	  // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> START fib 
 
-	  const fibKeyPress5$ = sources.DOM.select('input#fib3335').events('keydown');
+	  var fibKeyPress5$ = sources.DOM.select('input#fib3335').events('keydown');
 
-	  const fibKeyPressAction5$ = fibKeyPress5$.map(e => {
+	  var fibKeyPressAction5$ = fibKeyPress5$.map(function (e) {
 	    if (e.target.value == '') {
 	      return;
 	    };
@@ -9637,38 +11124,44 @@
 	  });
 
 	  mM$fib5.stream.addListener({
-	    next: v => {
+	    next: function next(v) {
 	      if (v[0] < v[2]) {
 	        O.mMfibs8.bnd(push, v[0] + v[1], mMfibs8);
 	        mM$fib5.ret([v[1], v[0] + v[1], v[2]]);
 	      } else {
-	        let ar = JSON.parse(JSON.stringify(O.mMfibs8.x));
+	        var ar = JSON.parse(JSON.stringify(O.mMfibs8.x));
 	        ar.pop();
 	        ar.pop();
 	        document.getElementById('fib5').innerHTML = ar;
 	      }
-	      mMitterFib5.bnd(x => {
+	      mMitterFib5.bnd(function (x) {
 	        if (x > O.mMfibs8.x[O.mMfibs8.x.length - 1]) {
-	          let ar = JSON.parse(JSON.stringify(O.mMfibs8.x));
-	          let a = ar.pop();
-	          let b = ar.pop();
+	          var _ar = JSON.parse(JSON.stringify(O.mMfibs8.x));
+	          var a = _ar.pop();
+	          var b = _ar.pop();
 	          mM$fib5.ret([b, a, x]);
 	        } else {
-	          var ar2 = O.mMfibs8.x.filter(v => v <= x);
+	          var ar2 = O.mMfibs8.x.filter(function (v) {
+	            return v <= x;
+	          });
 	          document.getElementById('fib5').innerHTML = ar2;
 	        }
 	      });
 	    },
-	    error: err => console.error(err),
-	    complete: () => console.log('completed')
+	    error: function error(err) {
+	      return console.error(err);
+	    },
+	    complete: function complete() {
+	      return console.log('completed');
+	    }
 	  });
 
 	  // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> END fib END
 
 	  // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> basic prime
-	  const primeKeyPress5$ = sources.DOM.select('input#prime3336').events('keydown');
+	  var primeKeyPress5$ = sources.DOM.select('input#prime3336').events('keydown');
 
-	  const primeKeyPressAction5$ = primeKeyPress5$.map(e => {
+	  var primeKeyPressAction5$ = primeKeyPress5$.map(function (e) {
 	    if (e.target.value == '') {
 	      return;
 	    };
@@ -9682,9 +11175,9 @@
 	  });
 
 	  mM$prime5.stream.addListener({
-	    next: v => {
+	    next: function next(v) {
 	      while (v[0][v[0].length - 1] < v[2]) {
-	        for (let i in v[0]) {
+	        for (var i in v[0]) {
 	          if (v[1] % v[0][i] == 0) {
 	            mM$prime5.ret([v[0], v[1] + 1, v[2]]);
 	          }
@@ -9693,30 +11186,36 @@
 	          }
 	        }
 	      }
-	      let ar = JSON.parse(JSON.stringify(v[0]));
+	      var ar = JSON.parse(JSON.stringify(v[0]));
 	      ar.pop();
 	      document.getElementById('prime5').innerHTML = ar;
-	      mMitterPrime5.bnd(x => {
+	      mMitterPrime5.bnd(function (x) {
 	        if (x > v[0][v[0].length - 1]) {
 	          mM$prime5.ret([v[0], v[1] + 1, x]);
 	        } else {
-	          let ar2 = JSON.parse(JSON.stringify(v[0]));
-	          let trunc = ar2.filter(a => a < x);
+	          var ar2 = JSON.parse(JSON.stringify(v[0]));
+	          var trunc = ar2.filter(function (a) {
+	            return a < x;
+	          });
 	          document.getElementById('prime5').innerHTML = trunc;
 	        }
 	      });
 	    },
-	    error: err => console.error(err),
-	    complete: () => console.log('completed')
+	    error: function error(err) {
+	      return console.error(err);
+	    },
+	    complete: function complete() {
+	      return console.log('completed');
+	    }
 	  });
 
 	  // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> END basic prime END
 
 	  // *************************************************************<<<<<<>>>>>  START prime fib
 
-	  const primeKeyPress2$ = sources.DOM.select('input#prime3334').events('keydown');
+	  var primeKeyPress2$ = sources.DOM.select('input#prime3334').events('keydown');
 
-	  const primeKeyPressAction2$ = primeKeyPress2$.map(e => {
+	  var primeKeyPressAction2$ = primeKeyPress2$.map(function (e) {
 	    if (e.target.value == '') {
 	      return;
 	    };
@@ -9729,12 +11228,12 @@
 	  });
 
 	  mM$fib4.stream.addListener({
-	    next: v => {
+	    next: function next(v) {
 	      var a = v[1]; // Fibonacci number
 	      var b = v[0] + v[1]; // Fibonacci number
 	      var c = v[2]; // Limit
 	      var d = v[3]; // List of Fibonacci numbers
-	      let wd = JSON.parse(JSON.stringify(d));
+	      var wd = JSON.parse(JSON.stringify(d));
 	      d.push(a);
 	      if (a < c) {
 	        mM$fib4.ret([a, b, c, d]);
@@ -9743,29 +11242,35 @@
 	        document.getElementById('fib4').innerHTML = wd;
 	        mMitterPrimeFibs.release([v[0], wd]);
 	      };
-	      mMitterFib8.bnd(limit => {
-	        let e = [O.mMfibSave2.x[0], O.mMfibSave2.x[1], limit, O.mMfibSave2.x[3]];
+	      mMitterFib8.bnd(function (limit) {
+	        var e = [O.mMfibSave2.x[0], O.mMfibSave2.x[1], limit, O.mMfibSave2.x[3]];
 	        mM$fib4.ret(e);
 	      });
-	      mMitterFib4.bnd(x => {
+	      mMitterFib4.bnd(function (x) {
 	        if (x > v[3][v[3].length - 1]) {
 	          mMitterFib8.release(x);
 	        } else {
 	          var ar1 = JSON.parse(JSON.stringify(O.mMfibSave2.x[3]));
-	          var ar = ar1.filter(v => v <= x);
+	          var ar = ar1.filter(function (v) {
+	            return v <= x;
+	          });
 	          mMitterPrimeFibs.release([ar[ar.length - 1], ar]);
 	          document.getElementById('fib4').innerHTML = ar;
 	        }
 	      });
 	    },
-	    error: err => console.error(err),
-	    complete: () => console.log('completed')
+	    error: function error(err) {
+	      return console.error(err);
+	    },
+	    complete: function complete() {
+	      return console.log('completed');
+	    }
 	  });
 
 	  mM$primeFibs.stream.addListener({
-	    next: v => {
+	    next: function next(v) {
 	      while (v[2] > v[0][v[0].length - 1]) {
-	        for (let i in v[0]) {
+	        for (var i in v[0]) {
 	          if (v[1] % v[0][i] == 0) {
 	            mM$primeFibs.ret([v[0], v[1] + 1, v[2], v[3]]);
 	          }
@@ -9775,22 +11280,24 @@
 	          }
 	        }
 	      }
-	      mMitterFib9.bnd(k => {
-	        let ar = v[0].filter(function (n) {
+	      mMitterFib9.bnd(function (k) {
+	        var ar = v[0].filter(function (n) {
 	          return v[3].indexOf(n) != -1;
 	        });
 	        mM$PF.ret([k, ar]);
 	      });
-	      mMitterFib7.bnd(z => {
-	        let recent = v[0][v[0].length - 1];
+	      mMitterFib7.bnd(function (z) {
+	        var recent = v[0][v[0].length - 1];
 	        mM$primeFibs.ret([v[0], v[1] + 1, z[0], z[1]]);
 	      });
-	      mMitterPrimeFibs.bnd(x => {
+	      mMitterPrimeFibs.bnd(function (x) {
 	        if (x[0] > v[0][v[0].length - 1]) {
 	          mMitterFib7.release(x);
 	        } else {
 	          var ar = JSON.parse(JSON.stringify(v[0]));
-	          var ar2 = ar.filter(v => v <= x[0]);
+	          var ar2 = ar.filter(function (v) {
+	            return v <= x[0];
+	          });
 	          var num = ar[ar2.length];
 	          ar2.push(num);
 	          document.getElementById('prime2').innerHTML = ar2;
@@ -9798,57 +11305,75 @@
 	        mMitterFib9.release(x[0]);
 	      });
 	    },
-	    error: err => console.error(err),
-	    complete: () => console.log('completed')
+	    error: function error(err) {
+	      return console.error(err);
+	    },
+	    complete: function complete() {
+	      return console.log('completed');
+	    }
 	  });
 
 	  mM$PF.stream.addListener({
-	    next: x => {
+	    next: function next(x) {
 	      console.log('>>>>>>>>>>>>>> In mM$PF.stream listener. x is: ', x);
 	      if (x[0] < x[1][x[1].length - 1]) {
 	        console.log('In the if block in the mM$PF.stream listener.');
-	        let ar = JSON.parse(JSON.stringify(x[1]));
-	        let ar2 = ar.filter(v => v <= x[0]);
+	        var ar = JSON.parse(JSON.stringify(x[1]));
+	        var ar2 = ar.filter(function (v) {
+	          return v <= x[0];
+	        });
 	        document.getElementById('primeFibs').innerHTML = ar2;
 	      } else {
 	        document.getElementById('primeFibs').innerHTML = x[1];
 	      }
 	    },
-	    error: err => console.error(err),
-	    complete: () => console.log('completed')
+	    error: function error(err) {
+	      return console.error(err);
+	    },
+	    complete: function complete() {
+	      return console.log('completed');
+	    }
 	  });
 
 	  // ************************************************************************************** END prime fib END
 
-	  const forwardClick$ = sources.DOM.select('#forward2').events('click');
+	  var forwardClick$ = sources.DOM.select('#forward2').events('click');
 
-	  const backClick$ = sources.DOM.select('#back2').events('click');
+	  var backClick$ = sources.DOM.select('#back2').events('click');
 
-	  const forwardClickAction$ = forwardClick$.map(() => {
+	  var forwardClickAction$ = forwardClick$.map(function () {
 	    if (O.mMindex2.x < O.mMallRolls.x.length - 1) {
-	      inc(O.mMindex2.x, mMindex2).bnd(() => mM$3.ret('Hello'));
+	      inc(O.mMindex2.x, mMindex2).bnd(function () {
+	        return mM$3.ret('Hello');
+	      });
 	    }
 	  });
 
-	  const backClickAction$ = backClick$.map(() => {
+	  var backClickAction$ = backClick$.map(function () {
 	    if (O.mMindex2.x > 0) {
 	      console.log('In backClickAction$ O.mMindex2.x is: ', O.mMindex2.x);
-	      dec(O.mMindex2.x, mMindex2).bnd(() => mM$3.ret('You bet!'));
+	      dec(O.mMindex2.x, mMindex2).bnd(function () {
+	        return mM$3.ret('You bet!');
+	      });
 	      console.log('In backClickAction$ again ***** O.mMindex2.x is: ', O.mMindex2.x);
 	    }
 	  });
 
-	  const taskAction$ = mM$taskList.stream.addListener({
-	    next: str => {
+	  var taskAction$ = mM$taskList.stream.addListener({
+	    next: function next(str) {
 	      console.log('In taskAction$. str is: ', str);
 	      socket.send('TD#$42' + ',' + O.mMgroup.x.trim() + ',' + O.mMname.x.trim() + ',' + '@' + str);
 	    },
-	    error: err => console.error(err),
-	    complete: () => console.log('completed')
+	    error: function error(err) {
+	      return console.error(err);
+	    },
+	    complete: function complete() {
+	      return console.log('completed');
+	    }
 	  });
 
-	  const mM$1Action$ = mM$1.stream.addListener({
-	    next: v => {
+	  var mM$1Action$ = mM$1.stream.addListener({
+	    next: function next(v) {
 	      console.log('In mM$1Action$. v is: ', v);
 	      O.mMindex2.bnd(inc, mMindex2);
 	      O.mMallRolls.bnd(spliceAdd, O.mMindex2.x, v, mMallRolls);
@@ -9859,12 +11384,16 @@
 	      document.getElementById('3').innerHTML = O.mMallRolls.x[O.mMindex2.x][3];
 	      cleanup(7);
 	    },
-	    error: err => console.error(err),
-	    complete: () => console.log('completed')
+	    error: function error(err) {
+	      return console.error(err);
+	    },
+	    complete: function complete() {
+	      return console.log('completed');
+	    }
 	  });
 
-	  const mM$3Action$ = mM$3.stream.addListener({
-	    next: v => {
+	  var mM$3Action$ = mM$3.stream.addListener({
+	    next: function next(v) {
 	      console.log('In mM$3Action$. v is: ', v);
 	      document.getElementById('0').innerHTML = O.mMallRolls.x[O.mMindex2.x][0];
 	      document.getElementById('1').innerHTML = O.mMallRolls.x[O.mMindex2.x][1];
@@ -9872,63 +11401,100 @@
 	      document.getElementById('3').innerHTML = O.mMallRolls.x[O.mMindex2.x][3];
 	      cleanup(11);
 	    },
-	    error: err => console.error(err),
-	    complete: () => console.log('completed')
+	    error: function error(err) {
+	      return console.error(err);
+	    },
+	    complete: function complete() {
+	      return console.log('completed');
+	    }
 	  });
 
-	  const testZ = sources.DOM.select('#testZ').events('click');
-	  const testZAction$ = testZ.map(() => mMZ1.release(1));
+	  var testZ = sources.DOM.select('#testZ').events('click');
+	  var testZAction$ = testZ.map(function () {
+	    return mMZ1.release(1);
+	  });
 
-	  const testQ = sources.DOM.select('#testQ').events('click');
-	  const testQAction$ = testQ.map(() => mMt1.ret(-1).bnd(mM2.ret).bnd(() => mMZ1.release(1)));
+	  var testQ = sources.DOM.select('#testQ').events('click');
+	  var testQAction$ = testQ.map(function () {
+	    return mMt1.ret(-1).bnd(mM2.ret).bnd(function () {
+	      return mMZ1.release(1);
+	    });
+	  });
 
-	  const testW = sources.DOM.select('#testW').events('keypress');
-	  const testWAction$ = testW.map(e => {
+	  var testW = sources.DOM.select('#testW').events('keypress');
+	  var testWAction$ = testW.map(function (e) {
 	    if (e.keyCode == 13) {
 	      mMZ2.release(e.target.value);
 	    }
 	  });
 
 	  var solve = function solve() {
-	    mMZ3.bnd(a => mMquad1.ret(a + 'x**2').bnd(() => mMquad2.ret('').bnd(mMquad3.ret) // Clear the display.
-	    .bnd(() => mMZ3.bnd(b => mMquad1.ret(a + 'x**2 ' + ' + ' + b + 'x').bnd(() => mMZ3.bnd(c => mMquad1.ret('Solutions for ' + a + 'x**2 ' + ' + ' + b + 'x' + ' + ' + c + ' = 0:').bnd(() => mMquad2.bnd(sol1, a, b, c, mMquad2).bnd(() => mMquad3.bnd(sol2, a, b, c, mMquad3).bnd(() => solve())))))))));
+	    mMZ3.bnd(function (a) {
+	      return mMquad1.ret(a + 'x**2').bnd(function () {
+	        return mMquad2.ret('').bnd(mMquad3.ret) // Clear the display.
+	        .bnd(function () {
+	          return mMZ3.bnd(function (b) {
+	            return mMquad1.ret(a + 'x**2 ' + ' + ' + b + 'x').bnd(function () {
+	              return mMZ3.bnd(function (c) {
+	                return mMquad1.ret('Solutions for ' + a + 'x**2 ' + ' + ' + b + 'x' + ' + ' + c + ' = 0:').bnd(function () {
+	                  return mMquad2.bnd(sol1, a, b, c, mMquad2).bnd(function () {
+	                    return mMquad3.bnd(sol2, a, b, c, mMquad3).bnd(function () {
+	                      return solve();
+	                    });
+	                  });
+	                });
+	              });
+	            });
+	          });
+	        });
+	      });
+	    });
 	  }();
 
-	  const quad$ = sources.DOM.select('#quad').events('keypress');
-	  const quadAction$ = quad$.map(e => {
+	  var quad$ = sources.DOM.select('#quad').events('keypress');
+	  var quadAction$ = quad$.map(function (e) {
 	    if (e.keyCode == 13) {
 	      mMZ3.release(e.target.value);
 	      document.getElementById('quad').value = '';
 	    }
 	  });
 
-	  const calcStream$ = /* harmony import */ __WEBPACK_IMPORTED_MODULE_2_most__["merge"](fibKeyPressAction5$, primeKeyPressAction5$, fibPressAction$, primeKeyPressAction2$, runTestAction$, quadAction$, testWAction$, testZAction$, testQAction$, edit1Action$, edit2Action$, colorAction$, deleteAction$, newTaskAction$, chatClickAction$, gameClickAction$, todoClickAction$, captionClickAction$, backClickAction$, forwardClickAction$, groupPressAction$, rollClickAction$, messagePressAction$, loginPressAction$, messages$, numClickAction$, opClickAction$);
+	  var spread1Press$ = sources.DOM.select('#spread1').events('keypress');
+
+	  var spread1PressAction$ = spread1Press$.map(function (e) {
+	    console.log('Hello from spread1');
+	    var v = e.target.value;
+	    if (e.keyCode == 13) {
+	      O.mMcount.ret(e.target.value);
+	    }
+	  });
+
+	  var spread2Press$ = sources.DOM.select('#spread2').events('keypress');
+
+	  var spread2PressAction$ = spread2Press$.map(function (e) {
+	    console.log('Hello from spread2');
+	    var v = e.target.value;
+	    if (e.keyCode == 13) {
+	      O.mMcount2.ret(e.target.value);
+	      console.log('In spread2PressAction. e.target.value is: ', e.target.value);
+	    }
+	  });
+
+	  var calcStream$ = (0, _most.merge)(spread1PressAction$, spread2PressAction$, fibKeyPressAction5$, primeKeyPressAction5$, fibPressAction$, primeKeyPressAction2$, runTestAction$, quadAction$, testWAction$, testZAction$, testQAction$, edit1Action$, edit2Action$, colorAction$, deleteAction$, newTaskAction$, chatClickAction$, gameClickAction$, todoClickAction$, captionClickAction$, backClickAction$, forwardClickAction$, groupPressAction$, rollClickAction$, messagePressAction$, loginPressAction$, messages$, numClickAction$, opClickAction$);
 
 	  return {
-	    DOM: calcStream$.map(() => /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('div.content', [/* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('div#rightPanel', { style: { display: 'none' } }, [/* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('span#tog', [/* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('button#game', { style: { fontSize: '16px' } }, 'TOGGLE GAME'), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('span.tao', ' '), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('button#todoButton', { style: { fontSize: '16px' } }, 'TOGGLE TODO LIST'), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('br'), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('br'), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('button#chat2', { style: { fontSize: '16px' } }, 'TOGGLE CHAT'), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('span.tao', ' '), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('button#caption', { style: { fontSize: '16px' } }, 'TOGGLE CAPTION')]), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('br'), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('br'), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('br'), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('br'), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('div#gameDiv', [/* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('span', 'Group: ' + O.mMgroup.x), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('br'), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('span', 'Goals: ' + O.mMgoals.x), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('br'), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('span', 'Name: ' + O.mMname.x), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('br'), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('span', 'player[score][goals]'), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('div', O.mMscoreboard.x)]), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('br'), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('br'), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('br'), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('div#todoDiv', [/* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('div#taskList', O.mMtaskList.x), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('span', 'Author, Responsible Person, Task: '), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('input.newTask')]), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('br'), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('span#alert'), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('br'), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('br'), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('div#chatDiv', [/* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('div#messages', [/* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('span', 'Message: '), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('input.inputMessage'), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('div', O.mMmsg.x)])])]), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('div.leftPanel', { style: { width: '60%' } }, [/* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('br'), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('a.tao', { props: { href: '#common' } }, 'Common Patterns'), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('a.tao', { props: { href: '#tdList' } }, 'Todo List Explanation'), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('a.tao', { props: { href: '#monads' } }, 'Why Call Them Monads'), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('div#captionDiv', [/* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('h1', 'Motorcycle.js With JS-monads'), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('span.tao1', ' A shared, persistent todo list, '), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('br'), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('span.tao1', ' A websockets game with a traversable history of dice rolls, '), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('br'), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('span.tao1', ' Group chat rooms and more demonstrations of efficient, '), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('br'), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('span.tao2', ' maintainable code using Motorcycle.js and JS-monads.  ')]), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('br'), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('span.tao', 'This is a '), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('a', { props: { href: "https://github.com/motorcyclejs", target: "_blank" } }, 'Motorcycle.js'), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('span', ' application. Motorcycle.js is '), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('a', { props: { href: "https://github.com/cyclejs/core", target: "_blank" } }, 'Cycle.js'), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('span', ' using '), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('a', { props: { href: "https://github.com/cujojs/most", target: "_blank" } }, 'Most'), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('span', ' , '), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('a', { props: { href: "https://github.com/TylorS/most-subject", target: "_blank" } }, 'Most-subject'), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('span', ' and '), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('a', { props: { href: "https://github.com/paldepind/snabbdom", target: "_blank" } }, 'Snabbdom'), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('span', ' instead of RxJS and virtual-dom. The repository is at '), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('a', { props: { href: "https://github.com/dschalk/JS-monads-stable", target: "_blank" } }, 'JS-monads-stable'), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('div#gameDiv2', { style: { display: 'none' } }, [/* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('br'), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('span', ' Here are the basic rules:'), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('p', 'RULES: If clicking two numbers and an operator (in any order) results in 20 or 18, the score increases by 1 or 3, respectively. If the score becomes 0 mod 5, 5 points are added. A score of 25 results in one goal. That can only be achieved by arriving at a score of 20, which jumps the score to 25. Directly computing 25 results in a score of 30, and no goal. Each time ROLL is clicked, one point is deducted. Three goals wins the game. '), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('button#0.num'), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('button#1.num'), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('button#2.num'), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('button#3.num'), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('br'), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('button#4.op', 'add'), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('button#5.op', 'subtract'), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('button#5.op', 'mult'), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('button#5.op', 'div'), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('button#5.op', 'concat'), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('br'), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('div#dice', { style: { display: 'none' } }, [/* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('button.roll', 'ROLL'), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('br'), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('button#back2', 'BACK'), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('button#forward2', 'FORWARD')])]), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('div.winner', O.mMgoals2.x + ''), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('div#log1', [/* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('p', 'IN ORDER TO SEE THE DEMONSTRATIONS, YOU MUST ENTER SOMETHING BELOW.'), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('span', 'Name: '), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('input#login', { props: { placeholder: "focus on; start typing" } })]), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('p', O.mM6.x.toString()), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('div#log2', { style: { display: 'none' } }, [/* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('span', 'Change group: '), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('input#group')]), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('p', O.mMsoloAlert.x), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('p', 'People who are in the same group, other than solo, share the same todo list, messages, and simulated dice game. In order to see any of these, you must establish an identity on the server by logging in. The websockets connection would terminate if the first message the server receives does not succefully participate in the login handshake. '), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('hr'), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('h1', 'The Monads'), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('p', ' There are three basic types of monads: Monad, MonadIter, and MonadStream. Instances of Monad have a method called "bnd" which takes a function and possibly other values as arguments. I have not created a comprehensive library of functions for bnd(), but most of the functions used in this demonstration are in the NPM package "js-monads", and all of them are in the Github repository. I create functions to suit specific purposes and I assume that anyone who uses these monads, or their own variations on the theme, will likewise want to create functions to suit their specific purposes. '), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('p', ' There is a basic pattern that I have found useful for computations and manipulating objects, including arrays. add() and cube() are examples of the pattern. They will be defined and used in the examples below. '), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('h2', 'Monad'), /* harmony import */ __WEBPACK_IMPORTED_MODULE_3__code_js__["default"].monad, /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('p', 'The following statements create instances of Monad named "m" with initial values of "some value": var m = new Monad("some value", "m") and ret("some value", "m"). Monad instances maintain state in the unique, mutable, global object named "O". Where there is changing state, it is not practical to avoid mutating something. My choices narrowed down to the window object or an attribute of window like O. O seemed like the better choice. It is a place to keep the most recent versions of named monads. Earlier versions of named monads can persist elsewhere, or be left for the gargage collector.   '), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('p', ' In the examples shown on this page, the initial values of instances of Monad remain unchaged. The ret() method places updated instances on O. The instances on O are never mutated. For any instance of Monad named m with id "m" and value v (i.e., m.x == v is true), m.ret(v2) creates a new attribute of O with key "m" or, if O.m already exists, m.ret(v2) mutates O by replacing its m attribute\'s value. The monad O.m is not mutated, so any O.m that is replaced will persist if there is a reference to it, or will be subject to garbage collection if there is not. '), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('h3', 'Examples'), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('p', ' Here are the definitions of ret(), add(), and cube(): '), /* harmony import */ __WEBPACK_IMPORTED_MODULE_3__code_js__["default"].ret_add_cube, /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('p', ' calling ret() with only one argument creates an anonymous global monad. There is no reference to it, so when a computation sequence using it terminates, it becomes eligeble for garbage collection. Although the monad\'s scope is global, it can\'t be clobbered because it has no name (no variable referring to it). '), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('p', ' As you see, cube() and ret() are overloaded functions. Here are some examples of various ways of using them: '), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('span.red3', 'cube(3)'), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('span.td2', ' creates a useless anonymous monad with x == 27 and id == "anonymous". '), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('br'), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('br'), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('span.red3', 'cube(5, m)'), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('span.td2', ' where m is a monad leaves m unchanged, O.m.x == 125, and O.m.id == "m". '), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('br'), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('br'), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('span.red3', 'cube(5).bnd(m.ret)'), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('span.td2', ' is equivalent to the previous example. m is unchanged and O.m.x == 125. '), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('br'), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('br'), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('span.red3', 'ret(5).bnd(cube).bnd(m.ret)'), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('span.td2', ' is equivalent to the previous two examples. O.m.x == 125. '), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('br'), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('br'), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('span.red3', 'm.ret(4).bnd(cube)'), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('span.td2', 'causes O.m.x == 4, and creates an anonymous monad with x == 64. '), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('br'), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('br'), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('span.red3', 'm.ret(4).bnd(cube, m)'), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('span.td2', ' leaves m unchanged, O.m.x == 64, and O.m.id == "m". '), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('br'), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('br'), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('span.tao', ' The convention "a == b" in this presentation signifies that a == b is true. By the way, if you want to change the value of m, all you have to do is call '), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('span.red3', 'ret(v, "m")'), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('span', ' to cause m.x == v and m.id = "m". This is the definition of add(): '), /* harmony import */ __WEBPACK_IMPORTED_MODULE_3__code_js__["default"].add, /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('span.red3', 'add(3, 4)'), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('span.td2', ' creates a useless anonymous monad with x == 7 and id == "anonymous". '), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('br'), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('br'), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('span.red3', 'add(3, 4).bnd(m.ret)'), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('span.td2', ' causes O.m.x == 7 and O.m.id == "m". '), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('br'), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('br'), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('span.red3', 'add(3, 4, m)'), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('span.td2', ' is equivalent to the prior example. The result is O.m.x == 7, and O.m.id == "m". '), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('br'), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('br'), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('span.red3', 'm.ret(0).bnd(add, 3).bnd(cube)'), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('span.td2', 'leaves m unchanged, O.m.x == 0, and creates an anonymous monad with x == 27. '), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('br'), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('br'), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('span.red3', 'ret(0).bnd(add, 3).bnd(cube).bnd(m.ret)'), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('span.td2', 'causes O.m.x == 27, and O.m.id = "m". '), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('br'), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('br'), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('span.red3', 'ret(0).bnd(add, 2, m).bnd(cube, m2)'), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('span.td2', ' where m, and m2 are monads causes O.m.x == 2, and O.m2.x == 8. '), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('br'), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('p#iterLink', ' O holds the current state of the monads. This is convenient. For example, mMcurrentList.ret() is seen in the application code whereever a todo list is created, removed, or altered. O.mMcurrentList.x sits in the virtual DOM, making sure that the todo list display is is always current. '), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('h2', 'MonadIter'), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('p', 'For any instance of MonadIter, say "m", the statement "m.bnd(func)" causes m.p == func to be true. The statement "m.release(...args) causes p(...args) to execute. Here is the definition: '), /* harmony import */ __WEBPACK_IMPORTED_MODULE_3__code_js__["default"].monadIt, /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('p', 'As shown later on this page, MonadIter instances control the routing of incoming websockets messages and the flow of action in the simulated dice game. '), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('p', 'The following example illustrates the use of release() with an argument. It also shows lambda expressions being provided as arguments for bnd(). The initial values of mMt1, mMt2, and mMt3 are 0, 0, and "" respectively. When this page loads, the following code runs: '), /* harmony import */ __WEBPACK_IMPORTED_MODULE_3__code_js__["default"].testZ, /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('p', ' add() and cube() are defined in the Monad section (above). If you click "mMZ1.release(1)" several times, the code (above) beginning with "mMZ1" will run several times, each time with v == 1. The result, O.mMt3.x, is shown below the button. mMZ1.p (bnd()\'s argument) remains constant while mMZ1.release(1) is repeatedly called. '), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('button#testZ', 'mMZ1.release(1)'), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('p.code2', O.mMt3.x), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('span', 'Refresh button: '), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('button#testQ', 'mMt1.ret(0).bnd(mMt2.ret)'), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('br'), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('br'), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('span.tao', '  You can call '), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('span.green', 'mMZ2.release(v)'), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('span', ' by entering a value for v below: '), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('br'), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('span', 'Please enter an integer here: '), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('input#testW'), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('p', ' Here is another example. It demonstrates lambda expressions passing values to a remote location for use in a computation. If you enter three numbers consecutively below, I\'ll call them a, b, and c, then the quadratic equation will be used to find solutions for a*x**2 + b*x + c = 0. The a, b, and c you select might not have a solution. If a and b are positive numbers, you are likely to see solutions if c is a negative number. For example, 12, 12, and -24 yields the solutions 1 and -2. '), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('p.code2#quad4', O.mMquad1.x), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('span.red2', O.mMquad2.x), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('span.red2', O.mMquad3.x), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('br'), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('span.tao', 'Run mMZ3.release(v) three times for three numbers. The numbers are a, b, and c in ax*x + b*x + c = 0: '), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('input#quad'), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('p', 'Here is the code:'), /* harmony import */ __WEBPACK_IMPORTED_MODULE_3__code_js__["default"].quad, /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('span#tdList'), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('h2', 'MonadStream'), /* harmony import */ __WEBPACK_IMPORTED_MODULE_3__code_js__["default"].monadStr, /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('span.tao', ' MonadStream instances acquire values with the "ret()" method, placing them in the "stream" attribute. The stream depends on the '), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('a', { props: { href: "http://staltz.com/xstream/", target: "_blank" } }, 'xstream'), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('span', ' library, which is published by André Staltz, the author of Cycle.js. '), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('br'), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('p', 'The following example involves two MonadStream instances: mM$fib4 and mM$primeFibs. mM$fib4.ret() and mM$primeFibs.ret() are called when the web page loads. That is the only time that external code calls these ret() methods. After that, all calls to ret() are internal, recursive calls. No computation is performed twice so, for example, if the number 100 is entered after the number 200 has been entered, the previously calculated lists are truncated and displayed. If the number 300 is enter, computations pick up where they left off at 200. mM$PF.stream holds the prime Fibonacci numbers. '), /* harmony import */ __WEBPACK_IMPORTED_MODULE_3__code_js__["default"].primeFib1, /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('p', ' When mMitterPrimeFibs.p executes; that is, when mMitterPrimeFibs.release(x) is called, v[3] (the list of primes) is increased up to the limit x[0], unless v[3] is already sufficiently large. If the last element in v[3] is larger than x[0], x[3] is truncated accordingly. No prime number is calculated more than once during the lifetime of the loaded web page. The same goes for the array of Fibonacci numbers. Rather than rely on an explicit memoization function, the application holds the calculated values in streams. '), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('p', ' After sending the list of primes to the virtual DOM, the mM$PrimeFibs.stream listener calculates the intersection of the prime numbers and Fibonacci numbers arrays and puts the result in mM$PF.stream. If you enter an upper bound below, you should see a list of prime numbers, a list of Fibonacci numbers, and a list of prime Fibonacci numbers. Numbers over 1000 might cause a stack overflow error, necessitating a browser window reload. I have incrementally moved above 10,000 before going too far and needing to reload the browser window. When I get around to refactoring the code, I might find ways to optimize it. '), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('p#prime2.red4'), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('input#prime3334'), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('p#fib4.red4'), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('p#primeFibs.red4'), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('p', ' Here is the code for a Fibonacci number generator that does not keep the list of calculated numbers in a stream. Instead, it maintains the list in a monad named O.mMfibs8. As before, no calculation is performed more than once. '), /* harmony import */ __WEBPACK_IMPORTED_MODULE_3__code_js__["default"].primeFib4, /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('p', ' Enter an integer below to run the code. '), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('input#fib3335'), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('p#fib5.red4'), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('p', ' And here is the code for a memoizing prime number generator:   '), /* harmony import */ __WEBPACK_IMPORTED_MODULE_3__code_js__["default"].primeFib3, /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('p', ' The prime number code is demonstrated below. '), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('p', ' Enter an integer below to generate a list of prime numbers: '), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('input#prime3336'), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('p#prime5.red4'), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('p', '    '), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('p', ' The Fibonacci, prime, and prime Fibonacce streams are intitiated as follows:    '), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('pre', `            mM$fib5.ret( [ 0, 1, 1 ] );
-	    mM$prime5.ret( [ [2], 3, 3 ] );
-	    mM$primeFibs.ret( [ [2], 3, 3, [2,3] ] ); 
-	`), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('h3', 'Todo List Side Effects'), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('p', ' When users do anything to the todo list, MonadStream instance mM$taskList runs its ret() method on the modified String representation of the list, causing the string to be added to mM$taskList.stream. mM$taskList.stream has only one subscriber, taskAction$, whose only purpose it to send the string representation of the todo list to the server. The server updates its persistent file and distributes a text representation of the updated todo list to all group members. Each group member receives the todo list as a string and parses it into a DOM node tree that is merged into the stream that updates the virtual DOM. All Todo List side effects can be traced to:'), /* harmony import */ __WEBPACK_IMPORTED_MODULE_3__code_js__["default"].todoStream, /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('span', ' Just search for "mM$taskList.ret" to find where all todo list changes were initiated. The following link takes you to a more detailed explanation of the todo list. '), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('a', { props: { href: '#tdList2' } }, 'Detailed Todo List Explanation'), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('br'), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('h3', 'Dice Game Side Effects'), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('p', ' mM$1.ret() is called only when (1) a new dice roll comes in from the server, (2) when a player clicks a number, and (3) when clicking a number or operator results in a computation being performed. These are the three things that require a DOM update. When a player clicks a number, it disappears from number display. When a computation is performed, the result is added to the number display, unless the result is 18 or 20. A result of 18 or 20 results in a new roll coming in from the server and mM$1.ret() being called on an array of four numbers; something like mM$1.ret[4,2,11,17]). When a number is removed or a result added, mM$1.ret() is called on an array containing fewer than four numbers. '), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('p', ' mM$1.stream is a stream of arrays of integers, as explained in the paragraph above. All game side effects can be traced to: '), /* harmony import */ __WEBPACK_IMPORTED_MODULE_3__code_js__["default"].gameStream, /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('p', ' Because a player can traverse the history of number displays by clicking the BACK and FORWARD buttons, the current value of O.mMindex2.x must be incremented to determine where the new array of numbers will be placed in the O.mMallRolls.x array. Here are the definitions of inc and spliceAdd: '), /* harmony import */ __WEBPACK_IMPORTED_MODULE_3__code_js__["default"].inc, /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('p', '    '), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('hr'), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('h2', 'Concise Code Blocks For Information Control'), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('p', ' Incoming websockets messages trigger updates to the game display, the chat display, and the todo list display. The members of a group see what other members are doing; and in the case of the todo list, they see the current list when they sign in to the group. When any member of a group adds a task, crosses it out as completed, edits its description, or removes it, the server updates the persistent file and all members of the group immediately see the revised list.  '), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('p', 'The code below shows how incoming websockets messages are routed. For example, mMZ10.release() is called when a new dice roll (prefixed by CA#$42) comes in.   '), /* harmony import */ __WEBPACK_IMPORTED_MODULE_3__code_js__["default"].messages, /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('p', ' The "mMZ" prefix designates instances of MonadIter. The bnd() method assigns its argument to the "p" attribute. "p" runs if and when the release() method is called. The next() function releases a specified MonadIter instance when the calling monad\'s value matches the specified value. next2() releases the specified monad when the specified condition returns true. The release method in next() has no argument, but next does take arguments, as illustrated below.'), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('span.tao', ' The incoming messages block is just a syntactic variation of a switch block, but that isn\'t all that MonadIter instances can do. They can provide fine-grained control over the lazy evaluation of blocks of code. Calling release() after a function completes some task provides Promise-like behavior. Error handling is optional. The MonadInter release(...args) method facilitates sequential evaluation of code blocks, remeniscent of video and blog explanations of ES6 iterators and generators. I prefer doing it with MonadIter over "yield" and "next". For one thing, ES6 generator "yield" blocks must be evaluated in a predetermined order. This link takes you back to the MonadIter section with interactive examples of the use of release() with arguments.  '), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('a#tdList2', { props: { href: '#iterLink' } }, 'release() with arguments'), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('br'), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('br'), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('a', { props: { href: '#top' } }, 'Back To The Top'), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('br'), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('h3', 'The Todo List'), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('p', ' Next, I\'ll go over some features of the todo list application. This will show how Motorcycle.js and the monads work together.'), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('p', 'Creation Of A Task: If you enter something like Susan, Fred, Pay the water bill, the editable task will appear in your browser and in the browsers of any members a group you might have created or joined. If you have loaded this page in another tab and changed to the same group in both, you will see the task in both tabs, barring some malfunction. The task has a delete button, an edit button, and a "Completed" checkbox. It shows that Susan authorized the task and Fred is responsible for making sure it gets done. Instead of entering an authority and responsible person, you can just enter two commas before the task description. Without two commas, a message appears requesting more information. This is how Motorcycle.js handles the creation of a new task: '), /* harmony import */ __WEBPACK_IMPORTED_MODULE_3__code_js__["default"].newTask, /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('p', ' mM$taskList is the todo application\'s worker function. Every time it executes its ret() method, the argument to ret() is added to its stream, causing the following code to run: '), /* harmony import */ __WEBPACK_IMPORTED_MODULE_3__code_js__["default"].mM$task, /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('p', 'mM$taskList caries a string representing the task list. mMtaskList.x.split(",") produces an array whose length is a multiple of six. Commas in the task description are replaced by "$*$*$" so split(",") will put the entire task description in a single element. Commas are re-inserted when the list arrives from the server for rendering. Although a task list is a nested virtual DOM object (Snabbdom vnode), it can be conveniently passed back and forth to the server as a string without resorting to JSON.stringify. Its type is Text on the server and String in the front end, becomming a virtual DOM node only once, when it arrives from the server prefixed by "DD#$42" causing "process(e.data) to execute. Here is process(): '), /* harmony import */ __WEBPACK_IMPORTED_MODULE_3__code_js__["default"].process, /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('span.tao', 'As you see, the string becomes a list of six-element objects, then those objects are used to create a Snabbdom vnode which is handed to mM$taskList.ret() leading to the update of O.mMtaskList. O.mMtaskList.x sits permanently in the main virtual DOM description. When its value gets refreshed, the DOM re-renders because taskStream$ is merged into the stream that is mapped into the virtural DOM description inside the object returned by "main". "main" and "sources" are the arguments provided to Cycle.run(). "sources" is the argument provided to "main". It is an array of drivers. The code is at '), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('a', { props: { href: "https://github.com/dschalk/JS-monads-stable" } }, 'https://github.com/dschalk/JS-monads-stable'), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('br'), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('p', ' Clicking "Completed": When the "Completed" button is clicked, the following code runs:         '), /* harmony import */ __WEBPACK_IMPORTED_MODULE_3__code_js__["default"].colorClick, /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('p', 'O.mMtaskList is split into an array. Every sixth element is the start of a new task. colorAction$ toggles the second, third, and fourth element in the task pinpointed by "index" * 6. getIndex finds the index of the first and only the element whose task description matches the one that is being marked "Completed". I say "only" because users are prevented from adding duplicate tasks. After the changes are made, the array of strings is reduced to one string and sent to the server when mM$taskList.ret() updates mM$taskList.stream triggering . '), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('p', ' This is the code involved in editing a task description: '), /* harmony import */ __WEBPACK_IMPORTED_MODULE_3__code_js__["default"].edit, /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('p', 'Clicking "Edit" causes a text box to be displayed. Pressing <ENTER> causes it to diappear. edit2Action$ obtains the edited description of the task and the index of the task iten and provides them as arguments to process. Process exchanges $*$*$ for any commas in the edited version and assigns the amended task description to the variable "task". O.mMtaskList.x is copied and split into an array. "index * 6" is replaced with "task" and the list of strings is reduced back to a single string and sent to the server for distribution. This pattern, - (1) split the string representation of the todo list into an array of strings, (2) do something, (3) reduce the list of strings back to a single string - is repeated when the "Delete" button is clicked. If the last item gets deleted, the server is instructed to delete the persistent file bearing the name of the group whose member deleted the last task. '), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('p#common', 'Cycle.js has been criticized for not keeping state in a single location, the way React.js does. Motorcycle.js didn\'t do it for me, or try to force me to do it, but it so happens that the current state of all active monads is in the object "O". I have written applications in Node.js and React.js, and I can say without a doubt that Motorcycle.js provides the best reactive interface for my purposes.  '), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('hr'), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('a', { props: { href: '#top' } }, 'Back To The Top'), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('h2', 'Common Patterns'), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('p', 'Anyone not yet familiar with functional programming can learn by studying the definition of the Monad bnd() method and considering the common patterns presented below. Often, we want to give a named monad the value of an anonymous monad returned by a monadic computation. Here are some ways to accomplish that: '), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('p', 'For any monads m1 and m2 with values a and b respectively (in other words, m1.x == a and m2.x == b return true), m1.bnd(m2.ret) provides m1\'s value to m2.ret() causing O.m2 to have m1\'s value. So, after m1.bnd(m2.ret), m1.x == a, m2.x == b, O.m2.x == a all return true. The definition of Monad\s bnd() method shows that the function m2.ret() operates on m1.x. m1.bnd(m2.ret) is equivalent to m2.ret(m1.x). The stand-alone ret() function can be used to alter the current value of m2, rather than altering the value of O.m2. Here is one way of accomplishing this: m1.bnd(x => ret(x,"m2"). These relationships are verified in the following tests: '), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('pre', `             ret('m1Val','m1')
-	             m1.x === 'm1Val'  // true
-	             ret('m2Val', 'm2')
-	             m2.x === 'm2Val'  // true
-
-	             m1.bnd(m2.ret)
-	             O.m2.x === 'm1Val' // true
-
-	             m1.ret('newVal')
-	             O.m1.bnd(v => ret(v, 'm2'))
-	             m2.x === 'newVal'  // true
-	             O.m2.x === 'm1Val' // true   still the same  `), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('p', 'The bnd() method does not have to return anonymous monads. Consider, for example, the trivial function f = function(x, mon) {return mon.ret(x)}. The monad that calls its bnd() method with the argument f gives the monad designated as "mon" its value. So m1.bnd(f, m2) results in m1.x == a, m2.x == b, O.m2.x == a all returning true. '), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('p'), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('hr'), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('h3', 'Immutable Data And The State Object "O" '), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('p', 'The server updates scores in response to messages prefixed by "CG#$42". Each such message carries an integer specifying the amount of the change. The ServerState list of Client tupples is pulled from the game state TMVar and replaced by a new tupple whose Score field differs from the previous one.'), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('p', 'In front end code, mutating variables which are defined inside of functions often seems inocuous in applications written in an object oriented programming style. This is not the case in a Motorcycle.js application, where functions culminate in streams that merge into the stream that feeds the object returned by the main function, called "main" in this application. "sources" is an array of drivers. It is main\'s only argument, "sources" and "main" are Cycle.run()\'s arguments.'), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('p', '"main" and "Cycle.run" are called only once. In the cyclic steady state that results, a reference should say what it means and mean what it says. If it suddenly refers to something other than what the other half of the cycle thinks it is, there will be a temporary disconnect. This will promptly staighten out, but having temporary disconnects shakes confidence in the consistency and reliability of the program. I don\'t have an example of mutating an object causing an unexpected result or crash. I would appreciate it if someone would give me such an example. '), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('p', ' In this environment, avoiding mutations is recommended and I generally follow that recommendation. Mutations in this application are confined to the global state object "O" and MonadIter instances. In the examples above, the release() method moves the process forward to the next occurance of the MonadIter instance where the bnd() method provides a new function to the "p" attribute. The progressive morphing of "p" in MonadIter instances is desirable behavior, and I think that creating a clone each time it occurs would be a senseless waste of resources. Unless and until release() is called, the program is not affected by "p". If release() is called, the return value of p(...args) is returned, but "p" itself remains tucked away, never mixing with the flow of information through the program. The bnd() method is pure. Given the same argument, it will always do the same thing. It doesn\'t even return anything. It just updates the internal "p" attribute. This insulation of internal operations from the outer program is remeniscent of an important purpose of the Haskell IO monad. These are just hand-waving arguments for the harmlessness of letting the bnd() method mutate MonadIter instances, but I wanted to explain why I feel comfortable with letting the definition of MonadIter stand as it is.  '), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('p', 'All monad updates caused by the monad ret() method are stored in the object "O". When a monad m executes m.ret(v) for some value "v", m remains unchanged and the O attribute O.m is created or, if it already exists, is replaced by the update; i.e., O.m.x == v becomes true. Older versions of m are subject to garbage collection unless there is a reference to them or to an object (arrays are objects) containing m.  This is illustrated in the score-keeping code below.  All score changes are captured by mM13.ret(). Therefore, O.mM13.x is always the current score. Replacing monad attributes in O is vaguely analogous to swapping out ServerState in the Haskell server\'s state TMVar. Older versions of ServerState can be preserved in the server just as prior versions of O.mM13 can be preserved in the front end. '), /* harmony import */ __WEBPACK_IMPORTED_MODULE_3__code_js__["default"].updateCalc, /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('p', 'The socket messages prompt the server to update its application state and to broadcast messages to all members of the group whose member sent the message to the server. Let\'s take another look at the way incoming messages are handled.'), /* harmony import */ __WEBPACK_IMPORTED_MODULE_3__code_js__["default"].messages, /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('p#monads', ' Messages prefixed by CB#$42 are broadcast in response to CG#$42-prefixed messages from a browser. CB#$42 prefixes release mMZ11, causing the scoreboard to update. CA#$42-prefixed messages to the server result in CA#$42-prefixed messages carrying the next dice roll to be broadcast to the sender\'s group.  CE#$42 prefixed messages cause the release of mMZ14 which causes O.mMgoals2.x to change from an empty string to an anouncement of the name of the winner. '), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('hr'), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('a', { props: { href: '#top' } }, 'Back To The Top'), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('h3', 'Why Call Them Monads?'), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('p', 'For any monad m and function f mapping values to monads, inside the O object the bnd() method behaves like the Haskell >>= operator(pronounce "bind"). Sequences of calls to bnd() are associative; i,e, how computations are grouped does not matter. And the ret() method and ret() function provide a kind of left and right identity similar to the specification in the Haskell monad laws. Here are three functions we will use to illustrate this:'), /* harmony import */ __WEBPACK_IMPORTED_MODULE_3__code_js__["default"].mdem1, /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('span.tao', ' The relationships being demonstrated here are readily derivable from the definition of Monads; but just for illustration, here are some examples tested with Mocha: '), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('a', { props: { href: "http://schalk.net:3056", target: "_blank" } }, 'Mocha Tests.'), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('p', ' That\'s about it. That\'s why I call them "monads". But JS-monads can do much more than vaguely mirror Haskell monad functionality. There is no attempt to constrain JS-monads with type classes, or with restrictions on the types of functions the bnd() method can accept. m.bnd(x => x**3) returns a number, not a JS-monad. It would be the end of the line for a chained sequence of computations; but that might be exactly what you want: a monadic chain of computations that spits out a number when it is done. '), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('h2', 'Conclusion'), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('p', '  You might not need a ready-made framework or a bloated set of libraries for your project. It could be that improvisation, possibly with the help of JS-monads or your own variation on the JS-monads theme, is the key to creating a well-organized, understandable, and easily maintainable masterpiece. The libraries I imported, Motorcycle.js and xstream, were an immense help. I wholeheartedly endorse Motorcycle, with its Cycle, Snabbdom, and Most constitutents; along with xstream, which made MonadStream possible. '), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('a', { props: { href: '#top' } }, 'Back To The Top'), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('p'), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('p'), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('p'), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('br'), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('br'), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('br'), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('hr'), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('p'), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('p'), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('p'), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('p'), /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('p')])])) };
+	    DOM: calcStream$.map(function () {
+	      return (0, _dom.h)('div.content', [(0, _dom.h)('div#rightPanel', { style: { display: 'none' } }, [(0, _dom.h)('span#tog', [(0, _dom.h)('button#game', { style: { fontSize: '16px' } }, 'TOGGLE GAME'), (0, _dom.h)('span.tao', ' '), (0, _dom.h)('button#todoButton', { style: { fontSize: '16px' } }, 'TOGGLE TODO LIST'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('button#chat2', { style: { fontSize: '16px' } }, 'TOGGLE CHAT'), (0, _dom.h)('span.tao', ' '), (0, _dom.h)('button#caption', { style: { fontSize: '16px' } }, 'TOGGLE CAPTION')]), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('div#gameDiv', [(0, _dom.h)('span', 'Group: ' + O.mMgroup.x), (0, _dom.h)('br'), (0, _dom.h)('span', 'Goals: ' + O.mMgoals.x), (0, _dom.h)('br'), (0, _dom.h)('span', 'Name: ' + O.mMname.x), (0, _dom.h)('br'), (0, _dom.h)('span', 'player[score][goals]'), (0, _dom.h)('div', O.mMscoreboard.x)]), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('div#todoDiv', [(0, _dom.h)('div#taskList', O.mMtaskList.x), (0, _dom.h)('span', 'Author, Responsible Person, Task: '), (0, _dom.h)('input.newTask')]), (0, _dom.h)('br'), (0, _dom.h)('span#alert'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('div#chatDiv', [(0, _dom.h)('div#messages', [(0, _dom.h)('span', 'Message: '), (0, _dom.h)('input.inputMessage'), (0, _dom.h)('div', O.mMmsg.x)])])]), (0, _dom.h)('div.leftPanel', { style: { width: '60%' } }, [(0, _dom.h)('br'), (0, _dom.h)('a.tao', { props: { href: '#common' } }, 'Common Patterns'), (0, _dom.h)('a.tao', { props: { href: '#tdList' } }, 'Todo List Explanation'), (0, _dom.h)('a.tao', { props: { href: '#monads' } }, 'Why Call Them Monads'), (0, _dom.h)('div#captionDiv', [(0, _dom.h)('h1', 'Motorcycle.js With JS-monads'), (0, _dom.h)('span.tao1', ' A shared, persistent todo list, '), (0, _dom.h)('br'), (0, _dom.h)('span.tao1', ' A websockets game with a traversable history of dice rolls, '), (0, _dom.h)('br'), (0, _dom.h)('span.tao1', ' Group chat rooms and more demonstrations of efficient, '), (0, _dom.h)('br'), (0, _dom.h)('span.tao2', ' maintainable code using Motorcycle.js and JS-monads.  ')]), (0, _dom.h)('br'), (0, _dom.h)('span.tao', 'This is a '), (0, _dom.h)('a', { props: { href: "https://github.com/motorcyclejs", target: "_blank" } }, 'Motorcycle.js'), (0, _dom.h)('span', ' application. Motorcycle.js is '), (0, _dom.h)('a', { props: { href: "https://github.com/cyclejs/core", target: "_blank" } }, 'Cycle.js'), (0, _dom.h)('span', ' using '), (0, _dom.h)('a', { props: { href: "https://github.com/cujojs/most", target: "_blank" } }, 'Most'), (0, _dom.h)('span', ' , '), (0, _dom.h)('a', { props: { href: "https://github.com/TylorS/most-subject", target: "_blank" } }, 'Most-subject'), (0, _dom.h)('span', ' and '), (0, _dom.h)('a', { props: { href: "https://github.com/paldepind/snabbdom", target: "_blank" } }, 'Snabbdom'), (0, _dom.h)('span', ' instead of RxJS and virtual-dom. Reactive evaluation of expression is made possible by '), (0, _dom.h)('a', { props: { href: "https://github.com/mobxjs/mobx", target: "_blank" } }, 'MobX'), (0, _dom.h)('span', ' . The code for this repository is at '), (0, _dom.h)('a', { props: { href: "https://github.com/dschalk/JS-monads-stable", target: "_blank" } }, 'JS-monads-stable'), (0, _dom.h)('div#gameDiv2', { style: { display: 'none' } }, [(0, _dom.h)('br'), (0, _dom.h)('span', ' Here are the basic rules:'), (0, _dom.h)('p', 'RULES: If clicking two numbers and an operator (in any order) results in 20 or 18, the score increases by 1 or 3, respectively. If the score becomes 0 mod 5, 5 points are added. A score of 25 results in one goal. That can only be achieved by arriving at a score of 20, which jumps the score to 25. Directly computing 25 results in a score of 30, and no goal. Each time ROLL is clicked, one point is deducted. Three goals wins the game. '), (0, _dom.h)('button#0.num'), (0, _dom.h)('button#1.num'), (0, _dom.h)('button#2.num'), (0, _dom.h)('button#3.num'), (0, _dom.h)('br'), (0, _dom.h)('button#4.op', 'add'), (0, _dom.h)('button#5.op', 'subtract'), (0, _dom.h)('button#5.op', 'mult'), (0, _dom.h)('button#5.op', 'div'), (0, _dom.h)('button#5.op', 'concat'), (0, _dom.h)('br'), (0, _dom.h)('div#dice', { style: { display: 'none' } }, [(0, _dom.h)('button.roll', 'ROLL'), (0, _dom.h)('br'), (0, _dom.h)('button#back2', 'BACK'), (0, _dom.h)('button#forward2', 'FORWARD')])]), (0, _dom.h)('div.winner', O.mMgoals2.x + ''), (0, _dom.h)('div#log1', [(0, _dom.h)('p', 'IN ORDER TO SEE THE DEMONSTRATIONS, YOU MUST ENTER SOMETHING BELOW.'), (0, _dom.h)('span', 'Name: '), (0, _dom.h)('input#login', { props: { placeholder: "focus on; start typing" } })]), (0, _dom.h)('p', O.mM6.x.toString()), (0, _dom.h)('div#log2', { style: { display: 'none' } }, [(0, _dom.h)('span', 'Change group: '), (0, _dom.h)('input#group')]), (0, _dom.h)('p', O.mMsoloAlert.x), (0, _dom.h)('p', 'People who are in the same group, other than solo, share the same todo list, messages, and simulated dice game. In order to see any of these, you must establish an identity on the server by logging in. The websockets connection would terminate if the first message the server receives does not succefully participate in the login handshake. '), (0, _dom.h)('hr'), (0, _dom.h)('h1', 'The Monads'), (0, _dom.h)('p', ' There are three basic types of monads: Monad, MonadIter, and MonadStream. Instances of Monad have a method called "bnd" which takes a function and possibly other values as arguments. I have not created a comprehensive library of functions for bnd(), but most of the functions used in this demonstration are in the NPM package "js-monads", and all of them are in the Github repository. I create functions to suit specific purposes and I assume that anyone who uses these monads, or their own variations on the theme, will likewise want to create functions to suit their specific purposes. '), (0, _dom.h)('p', ' There is a basic pattern that I have found useful for computations and manipulating objects, including arrays. add() and cube() are examples of the pattern. They will be defined and used in the examples below. '), (0, _dom.h)('h2', 'Monad'), _code2.default.monad, (0, _dom.h)('p', 'The following statements create instances of Monad named "m" with initial values of "some value": var m = new Monad("some value", "m") and ret("some value", "m"). Monad instances maintain state in the unique, mutable, global object named "O". Where there is changing state, it is not practical to avoid mutating something. My choices narrowed down to the window object or an attribute of window like O. O seemed like the better choice. It is a place to keep the most recent versions of named monads. Earlier versions of named monads can persist elsewhere, or be left for the gargage collector.   '), (0, _dom.h)('p', ' In the examples shown on this page, the initial values of instances of Monad remain unchaged. The ret() method places updated instances on O. The instances on O are never mutated. For any instance of Monad named m with id "m" and value v (i.e., m.x == v is true), m.ret(v2) creates a new attribute of O with key "m" or, if O.m already exists, m.ret(v2) mutates O by replacing its m attribute\'s value. The monad O.m is not mutated, so any O.m that is replaced will persist if there is a reference to it, or will be subject to garbage collection if there is not. '), (0, _dom.h)('h3', 'Examples'), (0, _dom.h)('p', ' Here are the definitions of ret(), add(), and cube(): '), _code2.default.ret_add_cube, (0, _dom.h)('p', ' calling ret() with only one argument creates an anonymous global monad. There is no reference to it, so when a computation sequence using it terminates, it becomes eligeble for garbage collection. Although the monad\'s scope is global, it can\'t be clobbered because it has no name (no variable referring to it). '), (0, _dom.h)('p', ' As you see, cube() and ret() are overloaded functions. Here are some examples of various ways of using them: '), (0, _dom.h)('span.red3', 'cube(3)'), (0, _dom.h)('span.td2', ' creates a useless anonymous monad with x == 27 and id == "anonymous". '), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('span.red3', 'cube(5, m)'), (0, _dom.h)('span.td2', ' where m is a monad leaves m unchanged, O.m.x == 125, and O.m.id == "m". '), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('span.red3', 'cube(5).bnd(m.ret)'), (0, _dom.h)('span.td2', ' is equivalent to the previous example. m is unchanged and O.m.x == 125. '), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('span.red3', 'ret(5).bnd(cube).bnd(m.ret)'), (0, _dom.h)('span.td2', ' is equivalent to the previous two examples. O.m.x == 125. '), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('span.red3', 'm.ret(4).bnd(cube)'), (0, _dom.h)('span.td2', 'causes O.m.x == 4, and creates an anonymous monad with x == 64. '), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('span.red3', 'm.ret(4).bnd(cube, m)'), (0, _dom.h)('span.td2', ' leaves m unchanged, O.m.x == 64, and O.m.id == "m". '), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('span.tao', ' The convention "a == b" in this presentation signifies that a == b is true. By the way, if you want to change the value of m, all you have to do is call '), (0, _dom.h)('span.red3', 'ret(v, "m")'), (0, _dom.h)('span', ' to cause m.x == v and m.id = "m". This is the definition of add(): '), _code2.default.add, (0, _dom.h)('span.red3', 'add(3, 4)'), (0, _dom.h)('span.td2', ' creates a useless anonymous monad with x == 7 and id == "anonymous". '), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('span.red3', 'add(3, 4).bnd(m.ret)'), (0, _dom.h)('span.td2', ' causes O.m.x == 7 and O.m.id == "m". '), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('span.red3', 'add(3, 4, m)'), (0, _dom.h)('span.td2', ' is equivalent to the prior example. The result is O.m.x == 7, and O.m.id == "m". '), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('span.red3', 'm.ret(0).bnd(add, 3).bnd(cube)'), (0, _dom.h)('span.td2', 'leaves m unchanged, O.m.x == 0, and creates an anonymous monad with x == 27. '), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('span.red3', 'ret(0).bnd(add, 3).bnd(cube).bnd(m.ret)'), (0, _dom.h)('span.td2', 'causes O.m.x == 27, and O.m.id = "m". '), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('span.red3', 'ret(0).bnd(add, 2, m).bnd(cube, m2)'), (0, _dom.h)('span.td2', ' where m, and m2 are monads causes O.m.x == 2, and O.m2.x == 8. '), (0, _dom.h)('br'), (0, _dom.h)('p#iterLink', ' O holds the current state of the monads. This is convenient. For example, mMcurrentList.ret() is seen in the application code whereever a todo list is created, removed, or altered. O.mMcurrentList.x sits in the virtual DOM, making sure that the todo list display is is always current. '), (0, _dom.h)('h2', 'MonadIter'), (0, _dom.h)('p', 'For any instance of MonadIter, say "m", the statement "m.bnd(func)" causes m.p == func to be true. The statement "m.release(...args) causes p(...args) to execute. Here is the definition: '), _code2.default.monadIt, (0, _dom.h)('p', 'As shown later on this page, MonadIter instances control the routing of incoming websockets messages and the flow of action in the simulated dice game. '), (0, _dom.h)('p', 'The following example illustrates the use of release() with an argument. It also shows lambda expressions being provided as arguments for bnd(). The initial values of mMt1, mMt2, and mMt3 are 0, 0, and "" respectively. When this page loads, the following code runs: '), _code2.default.testZ, (0, _dom.h)('p', ' add() and cube() are defined in the Monad section (above). If you click "mMZ1.release(1)" several times, the code (above) beginning with "mMZ1" will run several times, each time with v == 1. The result, O.mMt3.x, is shown below the button. mMZ1.p (bnd()\'s argument) remains constant while mMZ1.release(1) is repeatedly called. '), (0, _dom.h)('button#testZ', 'mMZ1.release(1)'), (0, _dom.h)('p.code2', O.mMt3.x), (0, _dom.h)('span', 'Refresh button: '), (0, _dom.h)('button#testQ', 'mMt1.ret(0).bnd(mMt2.ret)'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('span.tao', '  You can call '), (0, _dom.h)('span.green', 'mMZ2.release(v)'), (0, _dom.h)('span', ' by entering a value for v below: '), (0, _dom.h)('br'), (0, _dom.h)('span', 'Please enter an integer here: '), (0, _dom.h)('input#testW'), (0, _dom.h)('p', ' Here is another example. It demonstrates lambda expressions passing values to a remote location for use in a computation. If you enter three numbers consecutively below, I\'ll call them a, b, and c, then the quadratic equation will be used to find solutions for a*x**2 + b*x + c = 0. The a, b, and c you select might not have a solution. If a and b are positive numbers, you are likely to see solutions if c is a negative number. For example, 12, 12, and -24 yields the solutions 1 and -2. '), (0, _dom.h)('p.code2#quad4', O.mMquad1.x), (0, _dom.h)('span.red2', O.mMquad2.x), (0, _dom.h)('span.red2', O.mMquad3.x), (0, _dom.h)('br'), (0, _dom.h)('span.tao', 'Run mMZ3.release(v) three times for three numbers. The numbers are a, b, and c in ax*x + b*x + c = 0: '), (0, _dom.h)('input#quad'), (0, _dom.h)('p', 'Here is the code:'), _code2.default.quad, (0, _dom.h)('span#tdList'), (0, _dom.h)('h2', 'MonadStream'), _code2.default.monadStr, (0, _dom.h)('span.tao', ' MonadStream instances acquire values with the "ret()" method, placing them in the "stream" attribute. The stream depends on the '), (0, _dom.h)('a', { props: { href: "http://staltz.com/xstream/", target: "_blank" } }, 'xstream'), (0, _dom.h)('span', ' library, which is published by André Staltz, the author of Cycle.js. '), (0, _dom.h)('br'), (0, _dom.h)('p', 'The following example involves two MonadStream instances: mM$fib4 and mM$primeFibs. mM$fib4.ret() and mM$primeFibs.ret() are called when the web page loads. That is the only time that external code calls these ret() methods. After that, all calls to ret() are internal, recursive calls. No computation is performed twice so, for example, if the number 100 is entered after the number 200 has been entered, the previously calculated lists are truncated and displayed. If the number 300 is enter, computations pick up where they left off at 200. mM$PF.stream holds the prime Fibonacci numbers. '), _code2.default.primeFib1, (0, _dom.h)('p', ' When mMitterPrimeFibs.p executes; that is, when mMitterPrimeFibs.release(x) is called, v[3] (the list of primes) is increased up to the limit x[0], unless v[3] is already sufficiently large. If the last element in v[3] is larger than x[0], x[3] is truncated accordingly. No prime number is calculated more than once during the lifetime of the loaded web page. The same goes for the array of Fibonacci numbers. Rather than rely on an explicit memoization function, the application holds the calculated values in streams. '), (0, _dom.h)('p', ' After sending the list of primes to the virtual DOM, the mM$PrimeFibs.stream listener calculates the intersection of the prime numbers and Fibonacci numbers arrays and puts the result in mM$PF.stream. If you enter an upper bound below, you should see a list of prime numbers, a list of Fibonacci numbers, and a list of prime Fibonacci numbers. Numbers over 1000 might cause a stack overflow error, necessitating a browser window reload. I have incrementally moved above 10,000 before going too far and needing to reload the browser window. When I get around to refactoring the code, I might find ways to optimize it. '), (0, _dom.h)('p#prime2.red4'), (0, _dom.h)('input#prime3334'), (0, _dom.h)('p#fib4.red4'), (0, _dom.h)('p#primeFibs.red4'), (0, _dom.h)('p', ' Here is the code for a Fibonacci number generator that does not keep the list of calculated numbers in a stream. Instead, it maintains the list in a monad named O.mMfibs8. As before, no calculation is performed more than once. '), _code2.default.primeFib4, (0, _dom.h)('p', ' Enter an integer below to run the code. '), (0, _dom.h)('input#fib3335'), (0, _dom.h)('p#fib5.red4'), (0, _dom.h)('p', ' And here is the code for a memoizing prime number generator:   '), _code2.default.primeFib3, (0, _dom.h)('p', ' The prime number code is demonstrated below. '), (0, _dom.h)('p', ' Enter an integer below to generate a list of prime numbers: '), (0, _dom.h)('input#prime3336'), (0, _dom.h)('p#prime5.red4'), (0, _dom.h)('p', '    '), (0, _dom.h)('p', ' The Fibonacci, prime, and prime Fibonacce streams are intitiated as follows:    '), (0, _dom.h)('pre', '            mM$fib5.ret( [ 0, 1, 1 ] );\n    mM$prime5.ret( [ [2], 3, 3 ] );\n    mM$primeFibs.ret( [ [2], 3, 3, [2,3] ] ); \n'), (0, _dom.h)('h2', 'Hot Monad State'), (0, _dom.h)('p', ' Expressions involving parsing or computation can be automatically evaluated without function calls when using attributes of the global monad object "O". The following two lines of code bring this feature to life: '), (0, _dom.h)('pre', 'import {observable, computed, autorun, asReference} from \'mobx\'\nmonadState = observable(O);\n'), (0, _dom.h)('p', ' MobX is designed to work with mutable state. It is a perfect match for "O". For any monad m and value v, when m.ret(v) executes, O.m is automatically updated (by the definition of "ret()") so that O.m.x == v becomes true. And since monadState = observable(O), monadState.m.x == v is also true. Entering numbers below updates monadState.count and monadStatecount2 in this way. Subsequently,four computation expressions encapsulated by MobX.autorun automatically update the DOM, as demonstrated below. '), (0, _dom.h)('span', 'O.mMcount.ret(number): '), (0, _dom.h)('input#spread1'), (0, _dom.h)('br'), (0, _dom.h)('span', 'O.mMcount2.ret(number): '), (0, _dom.h)('input#spread2'), (0, _dom.h)('p#spreadsheet1'), (0, _dom.h)('p#spreadsheet2'), (0, _dom.h)('p#spreadsheet3'), (0, _dom.h)('p#spreadsheet4'), (0, _dom.h)('p', 'Here is the code: '), _code2.default.spreadsheet, (0, _dom.h)('p', ' "autorun" is aptly named. There is no need for function calls; the code automatically executes whenever monadState.mMcount or monadState.mMcount2 change. That happens whenever mMcount.ret() or mMcount2.ret() are called. '), (0, _dom.h)('p', ' Neither mMcount, O.mMcount, nor monadState.mMcount are mutated in the code above. Only "O" mutates. This helps prevent functions from interfering with one another. Once a function creates a reference to O.mMcount, the value of that reference cannot be altered by another function. On the other hand, having "O" constantly mutate as state changes is a powerful feature. Compared to other data structures in this application, to me it seems brilliant and alive, kind of like the sun at the center of the solar system. It is full of firey potential, and is what makes MobX reactivity possible. '), (0, _dom.h)('p', ' Religeously adhering to immutability, or anything else for that matter, limits possiblities. This application runs by feeding streems into the virtual DOM, but I took a shortcut in the code above and directly manipulated the DOM by calling "element.innerHTML = ". The  Motorcycle.js process appears to be completely oblivious to this parallel procedure. In other words, Motorcycle.js and settomg "element.innerHTML =" appear to be orthoginal to one another. I don\'t have to do everything the Motorcycle.js way just because I am using that outstanding library as the basis for this application. '), (0, _dom.h)('h3', 'Todo List Side Effects'), (0, _dom.h)('p', ' When users do anything to the todo list, MonadStream instance mM$taskList runs its ret() method on the modified String representation of the list, causing the string to be added to mM$taskList.stream. mM$taskList.stream has only one subscriber, taskAction$, whose only purpose it to send the string representation of the todo list to the server. The server updates its persistent file and distributes a text representation of the updated todo list to all group members. Each group member receives the todo list as a string and parses it into a DOM node tree that is merged into the stream that updates the virtual DOM. All Todo List side effects can be traced to:'), _code2.default.todoStream, (0, _dom.h)('span', ' Just search for "mM$taskList.ret" to find where all todo list changes were initiated. The following link takes you to a more detailed explanation of the todo list. '), (0, _dom.h)('a', { props: { href: '#tdList2' } }, 'Detailed Todo List Explanation'), (0, _dom.h)('br'), (0, _dom.h)('h3', 'Dice Game Side Effects'), (0, _dom.h)('p', ' mM$1.ret() is called only when (1) a new dice roll comes in from the server, (2) when a player clicks a number, and (3) when clicking a number or operator results in a computation being performed. These are the three things that require a DOM update. When a player clicks a number, it disappears from number display. When a computation is performed, the result is added to the number display, unless the result is 18 or 20. A result of 18 or 20 results in a new roll coming in from the server and mM$1.ret() being called on an array of four numbers; something like mM$1.ret[4,2,11,17]). When a number is removed or a result added, mM$1.ret() is called on an array containing fewer than four numbers. '), (0, _dom.h)('p', ' mM$1.stream is a stream of arrays of integers, as explained in the paragraph above. All game side effects can be traced to: '), _code2.default.gameStream, (0, _dom.h)('p', ' Because a player can traverse the history of number displays by clicking the BACK and FORWARD buttons, the current value of O.mMindex2.x must be incremented to determine where the new array of numbers will be placed in the O.mMallRolls.x array. Here are the definitions of inc and spliceAdd: '), _code2.default.inc, (0, _dom.h)('p', '    '), (0, _dom.h)('hr'), (0, _dom.h)('h2', 'Concise Code Blocks For Information Control'), (0, _dom.h)('p', ' Incoming websockets messages trigger updates to the game display, the chat display, and the todo list display. The members of a group see what other members are doing; and in the case of the todo list, they see the current list when they sign in to the group. When any member of a group adds a task, crosses it out as completed, edits its description, or removes it, the server updates the persistent file and all members of the group immediately see the revised list.  '), (0, _dom.h)('p', 'The code below shows how incoming websockets messages are routed. For example, mMZ10.release() is called when a new dice roll (prefixed by CA#$42) comes in.   '), _code2.default.messages, (0, _dom.h)('p', ' The "mMZ" prefix designates instances of MonadIter. The bnd() method assigns its argument to the "p" attribute. "p" runs if and when the release() method is called. The next() function releases a specified MonadIter instance when the calling monad\'s value matches the specified value. next2() releases the specified monad when the specified condition returns true. The release method in next() has no argument, but next does take arguments, as illustrated below.'), (0, _dom.h)('span.tao', ' The incoming messages block is just a syntactic variation of a switch block, but that isn\'t all that MonadIter instances can do. They can provide fine-grained control over the lazy evaluation of blocks of code. Calling release() after a function completes some task provides Promise-like behavior. Error handling is optional. The MonadInter release(...args) method facilitates sequential evaluation of code blocks, remeniscent of video and blog explanations of ES6 iterators and generators. I prefer doing it with MonadIter over "yield" and "next". For one thing, ES6 generator "yield" blocks must be evaluated in a predetermined order. This link takes you back to the MonadIter section with interactive examples of the use of release() with arguments.  '), (0, _dom.h)('a#tdList2', { props: { href: '#iterLink' } }, 'release() with arguments'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('a', { props: { href: '#top' } }, 'Back To The Top'), (0, _dom.h)('br'), (0, _dom.h)('h3', 'The Todo List'), (0, _dom.h)('p', ' Next, I\'ll go over some features of the todo list application. This will show how Motorcycle.js and the monads work together.'), (0, _dom.h)('p', 'Creation Of A Task: If you enter something like Susan, Fred, Pay the water bill, the editable task will appear in your browser and in the browsers of any members a group you might have created or joined. If you have loaded this page in another tab and changed to the same group in both, you will see the task in both tabs, barring some malfunction. The task has a delete button, an edit button, and a "Completed" checkbox. It shows that Susan authorized the task and Fred is responsible for making sure it gets done. Instead of entering an authority and responsible person, you can just enter two commas before the task description. Without two commas, a message appears requesting more information. This is how Motorcycle.js handles the creation of a new task: '), _code2.default.newTask, (0, _dom.h)('p', ' mM$taskList is the todo application\'s worker function. Every time it executes its ret() method, the argument to ret() is added to its stream, causing the following code to run: '), _code2.default.mM$task, (0, _dom.h)('p', 'mM$taskList caries a string representing the task list. mMtaskList.x.split(",") produces an array whose length is a multiple of six. Commas in the task description are replaced by "$*$*$" so split(",") will put the entire task description in a single element. Commas are re-inserted when the list arrives from the server for rendering. Although a task list is a nested virtual DOM object (Snabbdom vnode), it can be conveniently passed back and forth to the server as a string without resorting to JSON.stringify. Its type is Text on the server and String in the front end, becomming a virtual DOM node only once, when it arrives from the server prefixed by "DD#$42" causing "process(e.data) to execute. Here is process(): '), _code2.default.process, (0, _dom.h)('span.tao', 'As you see, the string becomes a list of six-element objects, then those objects are used to create a Snabbdom vnode which is handed to mM$taskList.ret() leading to the update of O.mMtaskList. O.mMtaskList.x sits permanently in the main virtual DOM description. When its value gets refreshed, the DOM re-renders because taskStream$ is merged into the stream that is mapped into the virtural DOM description inside the object returned by "main". "main" and "sources" are the arguments provided to Cycle.run(). "sources" is the argument provided to "main". It is an array of drivers. The code is at '), (0, _dom.h)('a', { props: { href: "https://github.com/dschalk/JS-monads-stable" } }, 'https://github.com/dschalk/JS-monads-stable'), (0, _dom.h)('br'), (0, _dom.h)('p', ' Clicking "Completed": When the "Completed" button is clicked, the following code runs:         '), _code2.default.colorClick, (0, _dom.h)('p', 'O.mMtaskList is split into an array. Every sixth element is the start of a new task. colorAction$ toggles the second, third, and fourth element in the task pinpointed by "index" * 6. getIndex finds the index of the first and only the element whose task description matches the one that is being marked "Completed". I say "only" because users are prevented from adding duplicate tasks. After the changes are made, the array of strings is reduced to one string and sent to the server when mM$taskList.ret() updates mM$taskList.stream triggering . '), (0, _dom.h)('p', ' This is the code involved in editing a task description: '), _code2.default.edit, (0, _dom.h)('p', 'Clicking "Edit" causes a text box to be displayed. Pressing <ENTER> causes it to diappear. edit2Action$ obtains the edited description of the task and the index of the task iten and provides them as arguments to process. Process exchanges $*$*$ for any commas in the edited version and assigns the amended task description to the variable "task". O.mMtaskList.x is copied and split into an array. "index * 6" is replaced with "task" and the list of strings is reduced back to a single string and sent to the server for distribution. This pattern, - (1) split the string representation of the todo list into an array of strings, (2) do something, (3) reduce the list of strings back to a single string - is repeated when the "Delete" button is clicked. If the last item gets deleted, the server is instructed to delete the persistent file bearing the name of the group whose member deleted the last task. '), (0, _dom.h)('p#common', 'Cycle.js has been criticized for not keeping state in a single location, the way React.js does. Motorcycle.js didn\'t do it for me, or try to force me to do it, but it so happens that the current state of all active monads is in the object "O". I have written applications in Node.js and React.js, and I can say without a doubt that Motorcycle.js provides the best reactive interface for my purposes.  '), (0, _dom.h)('hr'), (0, _dom.h)('a', { props: { href: '#top' } }, 'Back To The Top'), (0, _dom.h)('h2', 'Common Patterns'), (0, _dom.h)('p', 'Anyone not yet familiar with functional programming can learn by studying the definition of the Monad bnd() method and considering the common patterns presented below. Often, we want to give a named monad the value of an anonymous monad returned by a monadic computation. Here are some ways to accomplish that: '), (0, _dom.h)('p', 'For any monads m1 and m2 with values a and b respectively (in other words, m1.x == a and m2.x == b return true), m1.bnd(m2.ret) provides m1\'s value to m2.ret() causing O.m2 to have m1\'s value. So, after m1.bnd(m2.ret), m1.x == a, m2.x == b, O.m2.x == a all return true. The definition of Monad\s bnd() method shows that the function m2.ret() operates on m1.x. m1.bnd(m2.ret) is equivalent to m2.ret(m1.x). The stand-alone ret() function can be used to alter the current value of m2, rather than altering the value of O.m2. Here is one way of accomplishing this: m1.bnd(x => ret(x,"m2"). These relationships are verified in the following tests: '), (0, _dom.h)('pre', '             ret(\'m1Val\',\'m1\')\n             m1.x === \'m1Val\'  // true\n             ret(\'m2Val\', \'m2\')\n             m2.x === \'m2Val\'  // true\n\n             m1.bnd(m2.ret)\n             O.m2.x === \'m1Val\' // true\n\n             m1.ret(\'newVal\')\n             O.m1.bnd(v => ret(v, \'m2\'))\n             m2.x === \'newVal\'  // true\n             O.m2.x === \'m1Val\' // true   still the same  '), (0, _dom.h)('p', 'The bnd() method does not have to return anonymous monads. Consider, for example, the trivial function f = function(x, mon) {return mon.ret(x)}. The monad that calls its bnd() method with the argument f gives the monad designated as "mon" its value. So m1.bnd(f, m2) results in m1.x == a, m2.x == b, O.m2.x == a all returning true. '), (0, _dom.h)('p'), (0, _dom.h)('hr'), (0, _dom.h)('h3', 'Immutable Data And The State Object "O" '), (0, _dom.h)('p', 'The server updates scores in response to messages prefixed by "CG#$42". Each such message carries an integer specifying the amount of the change. The ServerState list of Client tupples is pulled from the game state TMVar and replaced by a new tupple whose Score field differs from the previous one.'), (0, _dom.h)('p', 'In front end code, mutating variables which are defined inside of functions often seems inocuous in applications written in an object oriented programming style. This is not the case in a Motorcycle.js application, where functions culminate in streams that merge into the stream that feeds the object returned by the main function, called "main" in this application. "sources" is an array of drivers. It is main\'s only argument, "sources" and "main" are Cycle.run()\'s arguments.'), (0, _dom.h)('p', '"main" and "Cycle.run" are called only once. In the cyclic steady state that results, a reference should say what it means and mean what it says. If it suddenly refers to something other than what the other half of the cycle thinks it is, there will be a temporary disconnect. This will promptly staighten out, but having temporary disconnects shakes confidence in the consistency and reliability of the program. I don\'t have an example of mutating an object causing an unexpected result or crash. I would appreciate it if someone would give me such an example. '), (0, _dom.h)('p', ' In this environment, avoiding mutations is recommended and I generally follow that recommendation. Mutations in this application are confined to the global state object "O" and MonadIter instances. In the examples above, the release() method moves the process forward to the next occurance of the MonadIter instance where the bnd() method provides a new function to the "p" attribute. The progressive morphing of "p" in MonadIter instances is desirable behavior, and I think that creating a clone each time it occurs would be a senseless waste of resources. Unless and until release() is called, the program is not affected by "p". If release() is called, the return value of p(...args) is returned, but "p" itself remains tucked away, never mixing with the flow of information through the program. The bnd() method is pure. Given the same argument, it will always do the same thing. It doesn\'t even return anything. It just updates the internal "p" attribute. This insulation of internal operations from the outer program is remeniscent of an important purpose of the Haskell IO monad. These are just hand-waving arguments for the harmlessness of letting the bnd() method mutate MonadIter instances, but I wanted to explain why I feel comfortable with letting the definition of MonadIter stand as it is.  '), (0, _dom.h)('p', 'All monad updates caused by the monad ret() method are stored in the object "O". When a monad m executes m.ret(v) for some value "v", m remains unchanged and the O attribute O.m is created or, if it already exists, is replaced by the update; i.e., O.m.x == v becomes true. Older versions of m are subject to garbage collection unless there is a reference to them or to an object (arrays are objects) containing m.  This is illustrated in the score-keeping code below.  All score changes are captured by mM13.ret(). Therefore, O.mM13.x is always the current score. Replacing monad attributes in O is vaguely analogous to swapping out ServerState in the Haskell server\'s state TMVar. Older versions of ServerState can be preserved in the server just as prior versions of O.mM13 can be preserved in the front end. '), _code2.default.updateCalc, (0, _dom.h)('p', 'The socket messages prompt the server to update its application state and to broadcast messages to all members of the group whose member sent the message to the server. Let\'s take another look at the way incoming messages are handled.'), _code2.default.messages, (0, _dom.h)('p#monads', ' Messages prefixed by CB#$42 are broadcast in response to CG#$42-prefixed messages from a browser. CB#$42 prefixes release mMZ11, causing the scoreboard to update. CA#$42-prefixed messages to the server result in CA#$42-prefixed messages carrying the next dice roll to be broadcast to the sender\'s group.  CE#$42 prefixed messages cause the release of mMZ14 which causes O.mMgoals2.x to change from an empty string to an anouncement of the name of the winner. '), (0, _dom.h)('hr'), (0, _dom.h)('a', { props: { href: '#top' } }, 'Back To The Top'), (0, _dom.h)('h3', 'Why Call Them Monads?'), (0, _dom.h)('p', 'For any monad m and function f mapping values to monads, inside the O object the bnd() method behaves like the Haskell >>= operator(pronounce "bind"). Sequences of calls to bnd() are associative; i,e, how computations are grouped does not matter. And the ret() method and ret() function provide a kind of left and right identity similar to the specification in the Haskell monad laws. Here are three functions we will use to illustrate this:'), _code2.default.mdem1, (0, _dom.h)('span.tao', ' The relationships being demonstrated here are readily derivable from the definition of Monads; but just for illustration, here are some examples tested with Mocha: '), (0, _dom.h)('a', { props: { href: "http://schalk.net:3056", target: "_blank" } }, 'Mocha Tests.'), (0, _dom.h)('p', ' That\'s about it. That\'s why I call them "monads". But JS-monads can do much more than vaguely mirror Haskell monad functionality. There is no attempt to constrain JS-monads with type classes, or with restrictions on the types of functions the bnd() method can accept. m.bnd(x => x**3) returns a number, not a JS-monad. It would be the end of the line for a chained sequence of computations; but that might be exactly what you want: a monadic chain of computations that spits out a number when it is done. '), (0, _dom.h)('h2', 'Conclusion'), (0, _dom.h)('p', '  You might not need a ready-made framework or a bloated set of libraries for your project. It could be that improvisation, possibly with the help of JS-monads or your own variation on the JS-monads theme, is the key to creating a well-organized, understandable, and easily maintainable masterpiece. The libraries I imported, Motorcycle.js and xstream, were an immense help. I wholeheartedly endorse Motorcycle, with its Cycle, Snabbdom, and Most constitutents; along with xstream, which made MonadStream possible. '), (0, _dom.h)('a', { props: { href: '#top' } }, 'Back To The Top'), (0, _dom.h)('p'), (0, _dom.h)('p'), (0, _dom.h)('p'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('hr'), (0, _dom.h)('p'), (0, _dom.h)('p'), (0, _dom.h)('p'), (0, _dom.h)('p'), (0, _dom.h)('p')])]);
+	    }) };
 	}
 
 	function cleanup(x) {
-	  let target0 = document.getElementById('0');
-	  let target1 = document.getElementById('1');
-	  let target2 = document.getElementById('2');
-	  let target3 = document.getElementById('3');
-	  let targetAr = [target0, target1, target2, target3];
-	  [0, 1, 2, 3].map(i => {
+	  var target0 = document.getElementById('0');
+	  var target1 = document.getElementById('1');
+	  var target2 = document.getElementById('2');
+	  var target3 = document.getElementById('3');
+	  var targetAr = [target0, target1, target2, target3];
+	  [0, 1, 2, 3].map(function (i) {
 	    if (targetAr[i].innerHTML == 'undefined') {
 	      targetAr[i].style.display = 'none';
 	    } else {
@@ -9939,15 +11505,17 @@
 	};
 
 	function updateCalc() {
-	  O.mM3.bnd(x => mM7.ret(calc(x[0], O.mM8.x, x[1])).bnd(result => {
-	    if (result == 20) {
-	      score(O.mM13.x, 1);
-	    };return O.mM7;
-	  }).bnd(result => {
-	    if (result == 18) {
-	      score(O.mM13.x, 3);
-	    };return O.mMcurrentRoll;
-	  }).bnd(push, O.mM7.x, mM$1));
+	  O.mM3.bnd(function (x) {
+	    return mM7.ret(calc(x[0], O.mM8.x, x[1])).bnd(function (result) {
+	      if (result == 20) {
+	        score(O.mM13.x, 1);
+	      };return O.mM7;
+	    }).bnd(function (result) {
+	      if (result == 18) {
+	        score(O.mM13.x, 3);
+	      };return O.mMcurrentRoll;
+	    }).bnd(push, O.mM7.x, mM$1);
+	  });
 	  reset();
 	};
 
@@ -9974,15 +11542,17 @@
 	};
 
 	var reset = function reset() {
-	  mM3.ret([]).bnd(() => mM4.ret(0).bnd(mM8.ret).bnd(cleanup));
+	  mM3.ret([]).bnd(function () {
+	    return mM4.ret(0).bnd(mM8.ret).bnd(cleanup);
+	  });
 	};
 
 	var updateScoreboard = function updateScoreboard(v) {
-	  let ar2 = v.split("<br>");
-	  let keys = Object.keys(ar2);
-	  let ar = [];
-	  keys.map(k => {
-	    ar.push(/* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["h"]('div', ar2[k]));
+	  var ar2 = v.split("<br>");
+	  var keys = Object.keys(ar2);
+	  var ar = [];
+	  keys.map(function (k) {
+	    ar.push((0, _dom.h)('div', ar2[k]));
 	  });
 	  return mMscoreboard.ret(ar);
 	};
@@ -9997,24 +11567,24 @@
 	  return ret(x);
 	};
 
-	var newRoll = function (v) {
+	var newRoll = function newRoll(v) {
 	  socket.send('CA#$42,' + O.mMgroup.x.trim() + ',' + O.mMname.x.trim() + ',6,6,12,20');
 	  return ret(v);
 	};
 
-	var refresh = function () {
+	var refresh = function refresh() {
 	  setTimeout(function () {
 	    document.location.reload(false);
 	  }, 4000);
 	};
 
-	const sources = {
-	  DOM: /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__motorcycle_dom__["makeDOMDriver"]('#main-container'),
+	var sources = {
+	  DOM: (0, _dom.makeDOMDriver)('#main-container'),
 	  WS: websocketsDriver,
 	  UNIT: unitDriver
 	};
 
-	/* harmony import */ __WEBPACK_IMPORTED_MODULE_0__motorcycle_core___default.a.run(main, sources);
+	_core2.default.run(main, sources);
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(17)))
 
 /***/ }

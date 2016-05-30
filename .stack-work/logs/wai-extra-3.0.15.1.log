@@ -42,6 +42,134 @@ Network/Wai/Middleware/RequestLogger.hs:36:1: Warning:
 [29 of 30] Compiling Network.Wai.Handler.CGI ( Network/Wai/Handler/CGI.hs, .stack-work/dist/x86_64-linux/Cabal-1.22.5.0/build/Network/Wai/Handler/CGI.o )
 [30 of 30] Compiling Network.Wai.Handler.SCGI ( Network/Wai/Handler/SCGI.hs, .stack-work/dist/x86_64-linux/Cabal-1.22.5.0/build/Network/Wai/Handler/SCGI.o )
 In-place registering wai-extra-3.0.15.1...
+Running Haddock for wai-extra-3.0.15.1...
+Running hscolour for wai-extra-3.0.15.1...
+Preprocessing library wai-extra-3.0.15.1...
+Preprocessing library wai-extra-3.0.15.1...
+Warning: The documentation for the following packages are not installed. No
+links will be generated to these packages: bytestring-builder-0.10.6.0.0,
+transformers-compat-0.4.0.4
+
+Network/Wai/Middleware/ForceDomain.hs:7:1: Warning:
+    The import of ‘mempty’ from module ‘Data.Monoid’ is redundant
+
+Network/Wai/Middleware/RequestLogger.hs:25:1: Warning:
+    The import of ‘unpack’
+    from module ‘Data.ByteString.Char8’ is redundant
+
+Network/Wai/Middleware/RequestLogger.hs:36:1: Warning:
+    The import of ‘mconcat’ from module ‘Data.Monoid’ is redundant
+Haddock coverage:
+ 100% (  3 /  3) in 'Network.Wai.EventSource.EventStream'
+ 100% (  4 /  4) in 'Network.Wai.EventSource'
+  48% ( 14 / 29) in 'Network.Wai.Test'
+  Missing documentation for:
+    Module header
+    Session (Network/Wai/Test.hs:67)
+    runSession (Network/Wai/Test.hs:110)
+    request (Network/Wai/Test.hs:123)
+    srequest (Network/Wai/Test.hs:183)
+    SRequest (Network/Wai/Test.hs:113)
+    SResponse (Network/Wai/Test.hs:117)
+    setRawPathInfo (Network/Wai/Test.hs:137)
+    assertStatus (Network/Wai/Test.hs:245)
+    assertContentType (Network/Wai/Test.hs:228)
+    assertBody (Network/Wai/Test.hs:255)
+    assertBodyContains (Network/Wai/Test.hs:263)
+    assertHeader (Network/Wai/Test.hs:273)
+    assertNoHeader (Network/Wai/Test.hs:292)
+    WaiTestFailure (Network/Wai/Test.hs:224)
+  57% (  4 /  7) in 'Network.Wai.UrlMap'
+  Missing documentation for:
+    UrlMap' (Network/Wai/UrlMap.hs:38)
+    UrlMap (Network/Wai/UrlMap.hs:53)
+    mapUrls (Network/Wai/UrlMap.hs:103)
+ 100% (  3 /  3) in 'Network.Wai.Middleware.Routed'
+ 100% (  2 /  2) in 'Network.Wai.Middleware.StreamFile'
+ 100% ( 11 / 11) in 'Network.Wai.Middleware.HttpAuth'
+   0% (  0 /  5) in 'Network.Wai.Middleware.Vhost'
+  Missing documentation for:
+    Module header
+    vhost (Network/Wai/Middleware/Vhost.hs:14)
+    redirectWWW (Network/Wai/Middleware/Vhost.hs:20)
+    redirectTo (Network/Wai/Middleware/Vhost.hs:30)
+    redirectToLogged (Network/Wai/Middleware/Vhost.hs:34)
+  40% (  2 /  5) in 'Network.Wai.Middleware.StripHeaders'
+  Missing documentation for:
+    Module header
+    stripHeader (Network/Wai/Middleware/StripHeaders.hs:23)
+    stripHeaders (Network/Wai/Middleware/StripHeaders.hs:26)
+  67% (  2 /  3) in 'Network.Wai.Middleware.Rewrite'
+  Missing documentation for:
+    Module header
+ 100% (  2 /  2) in 'Network.Wai.Middleware.MethodOverridePost'
+  50% (  1 /  2) in 'Network.Wai.Middleware.MethodOverride'
+  Missing documentation for:
+    Module header
+ 100% (  2 /  2) in 'Network.Wai.Middleware.Jsonp'
+  33% (  1 /  3) in 'Network.Wai.Middleware.RequestLogger.Internal'
+  Missing documentation for:
+    logToByteString (Network/Wai/Middleware/RequestLogger/Internal.hs:17)
+    getDateGetter (Network/Wai/Middleware/RequestLogger/Internal.hs:20)
+  71% ( 10 / 14) in 'Network.Wai.Parse'
+  Missing documentation for:
+    parseRequestBody (Network/Wai/Parse.hs:175)
+    RequestBodyType (Network/Wai/Parse.hs:140)
+    getRequestBodyType (Network/Wai/Parse.hs:142)
+    sinkRequestBody (Network/Wai/Parse.hs:183)
+ 100% (  2 /  2) in 'Network.Wai.Middleware.Local'
+   0% (  0 /  2) in 'Network.Wai.Middleware.CleanPath'
+  Missing documentation for:
+    Module header
+    cleanPath (Network/Wai/Middleware/CleanPath.hs:15)
+  50% (  1 /  2) in 'Network.Wai.Middleware.Autohead'
+  Missing documentation for:
+    autohead (Network/Wai/Middleware/Autohead.hs:11)
+ 100% (  5 /  5) in 'Network.Wai.Request'
+ 100% (  2 /  2) in 'Network.Wai.Middleware.ForceDomain'
+ 100% (  2 /  2) in 'Network.Wai.Middleware.ForceSSL'
+ 100% ( 11 / 11) in 'Network.Wai.Middleware.Approot'
+ 100% (  2 /  2) in 'Network.Wai.Middleware.AddHeaders'
+   0% (  0 /  2) in 'Network.Wai.Middleware.AcceptOverride'
+  Missing documentation for:
+    Module header
+    acceptOverride (Network/Wai/Middleware/AcceptOverride.hs:9)
+ 100% (  2 /  2) in 'Network.Wai.Header'
+  56% (  9 / 16) in 'Network.Wai.Middleware.RequestLogger'
+  Missing documentation for:
+    Module header
+    mkRequestLogger (Network/Wai/Middleware/RequestLogger.hs:91)
+    OutputFormat (Network/Wai/Middleware/RequestLogger.hs:52)
+    OutputFormatter (Network/Wai/Middleware/RequestLogger.hs:57)
+    OutputFormatterWithDetails (Network/Wai/Middleware/RequestLogger.hs:58)
+    Destination (Network/Wai/Middleware/RequestLogger.hs:61)
+    Callback (Network/Wai/Middleware/RequestLogger.hs:65)
+   0% (  0 /  2) in 'Network.Wai.Middleware.RequestLogger.JSON'
+  Missing documentation for:
+    Module header
+    formatAsJSON (Network/Wai/Middleware/RequestLogger/JSON.hs:23)
+  38% (  3 /  8) in 'Network.Wai.Middleware.Gzip'
+  Missing documentation for:
+    GzipSettings (Network/Wai/Middleware/Gzip.hs:48)
+    gzipFiles (Network/Wai/Middleware/Gzip.hs:49)
+    GzipFiles (Network/Wai/Middleware/Gzip.hs:53)
+    gzipCheckMime (Network/Wai/Middleware/Gzip.hs:50)
+    defaultCheckMime (Network/Wai/Middleware/Gzip.hs:59)
+  80% (  4 /  5) in 'Network.Wai.Handler.CGI'
+  Missing documentation for:
+    requestBodyFunc (Network/Wai/Handler/CGI.hs:190)
+   0% (  0 /  3) in 'Network.Wai.Handler.SCGI'
+  Missing documentation for:
+    Module header
+    run (Network/Wai/Handler/SCGI.hs:19)
+    runSendfile (Network/Wai/Handler/SCGI.hs:22)
+Warning: Network.Wai.Test: could not find link destinations for:
+    ClientState
+Warning: Network.Wai.UrlMap: could not find link destinations for:
+    ToApplication Path
+Documentation created:
+.stack-work/dist/x86_64-linux/Cabal-1.22.5.0/doc/html/wai-extra/index.html,
+.stack-work/dist/x86_64-linux/Cabal-1.22.5.0/doc/html/wai-extra/wai-extra.txt
 Installing library in
-/home/d/.stack/snapshots/x86_64-linux/lts-5.14/7.10.3/lib/x86_64-linux-ghc-7.10.3/wai-extra-3.0.15.1-HVeMJPtNVePGVRPKEHPQr1
+/home/d/.stack/snapshots/x86_64-linux/lts-6.0/7.10.3/lib/x86_64-linux-ghc-7.10.3/wai-extra-3.0.15.1-Bnb7JJhRGYuDMfrRm5fYZH
 Registering wai-extra-3.0.15.1...

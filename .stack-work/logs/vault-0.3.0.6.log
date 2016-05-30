@@ -32,6 +32,52 @@ src/Data/Vault/ST/ST.hs:17:1: Warning:
     To import instances alone, use: import Control.Applicative()
 [5 of 5] Compiling Data.Vault.Lazy  ( src/Data/Vault/Lazy.hs, .stack-work/dist/x86_64-linux/Cabal-1.22.5.0/build/Data/Vault/Lazy.o )
 In-place registering vault-0.3.0.6...
+Running Haddock for vault-0.3.0.6...
+Running hscolour for vault-0.3.0.6...
+Preprocessing library vault-0.3.0.6...
+Preprocessing library vault-0.3.0.6...
+
+src/Data/Unique/Really.hs:6:1: Warning:
+    The import of ‘Control.Applicative’ is redundant
+      except perhaps to import instances from ‘Control.Applicative’
+    To import instances alone, use: import Control.Applicative()
+
+src/Data/Vault/ST/ST.hs:15:1: Warning:
+    The import of ‘Data.Monoid’ is redundant
+      except perhaps to import instances from ‘Data.Monoid’
+    To import instances alone, use: import Data.Monoid()
+
+src/Data/Vault/ST/ST.hs:17:1: Warning:
+    The import of ‘Control.Applicative’ is redundant
+      except perhaps to import instances from ‘Control.Applicative’
+    To import instances alone, use: import Control.Applicative()
+
+src/Data/Vault/ST/ST.hs:15:1: Warning:
+    The import of ‘Data.Monoid’ is redundant
+      except perhaps to import instances from ‘Data.Monoid’
+    To import instances alone, use: import Data.Monoid()
+
+src/Data/Vault/ST/ST.hs:17:1: Warning:
+    The import of ‘Control.Applicative’ is redundant
+      except perhaps to import instances from ‘Control.Applicative’
+    To import instances alone, use: import Control.Applicative()
+Haddock coverage:
+ 100% (  4 /  4) in 'Data.Unique.Really'
+  80% ( 12 / 15) in 'Data.Vault.ST.Strict'
+  Missing documentation for:
+    Vault (src/Data/Vault/ST/backends/GHC.hs:18)
+    Key (src/Data/Vault/ST/backends/GHC.hs:19)
+    Locker (src/Data/Vault/ST/backends/GHC.hs:40)
+ 100% ( 15 / 15) in 'Data.Vault.Strict'
+  80% ( 12 / 15) in 'Data.Vault.ST.Lazy'
+  Missing documentation for:
+    Vault (src/Data/Vault/ST/backends/GHC.hs:18)
+    Key (src/Data/Vault/ST/backends/GHC.hs:19)
+    Locker (src/Data/Vault/ST/backends/GHC.hs:40)
+ 100% ( 15 / 15) in 'Data.Vault.Lazy'
+Documentation created:
+.stack-work/dist/x86_64-linux/Cabal-1.22.5.0/doc/html/vault/index.html,
+.stack-work/dist/x86_64-linux/Cabal-1.22.5.0/doc/html/vault/vault.txt
 Installing library in
-/home/d/.stack/snapshots/x86_64-linux/lts-5.14/7.10.3/lib/x86_64-linux-ghc-7.10.3/vault-0.3.0.6-8aId1RjvIBs9AcRd6Dlytd
+/home/d/.stack/snapshots/x86_64-linux/lts-6.0/7.10.3/lib/x86_64-linux-ghc-7.10.3/vault-0.3.0.6-Ds02DFWDupK8kyaJ6uM5fA
 Registering vault-0.3.0.6...

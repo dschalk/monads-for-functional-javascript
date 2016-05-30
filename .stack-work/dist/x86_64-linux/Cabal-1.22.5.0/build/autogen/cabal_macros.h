@@ -28,8 +28,8 @@
   (major1) == 1 && (major2) <  1 || \
   (major1) == 1 && (major2) == 1 && (minor) <= 0)
 
-/* package split-0.2.3 */
-#define VERSION_split "0.2.3"
+/* package split-0.2.3.1 */
+#define VERSION_split "0.2.3.1"
 #define MIN_VERSION_split(major1,major2,minor) (\
   (major1) <  0 || \
   (major1) == 0 && (major2) <  2 || \
@@ -56,8 +56,8 @@
   (major1) == 0 && (major2) <  4 || \
   (major1) == 0 && (major2) == 4 && (minor) <= 2)
 
-/* package wai-3.2.1 */
-#define VERSION_wai "3.2.1"
+/* package wai-3.2.1.1 */
+#define VERSION_wai "3.2.1.1"
 #define MIN_VERSION_wai(major1,major2,minor) (\
   (major1) <  3 || \
   (major1) == 3 && (major2) <  2 || \
@@ -70,19 +70,19 @@
   (major1) == 3 && (major2) <  1 || \
   (major1) == 3 && (major2) == 1 && (minor) <= 5)
 
-/* package wai-websockets-3.0.0.8 */
-#define VERSION_wai_websockets "3.0.0.8"
+/* package wai-websockets-3.0.0.9 */
+#define VERSION_wai_websockets "3.0.0.9"
 #define MIN_VERSION_wai_websockets(major1,major2,minor) (\
   (major1) <  3 || \
   (major1) == 3 && (major2) <  0 || \
   (major1) == 3 && (major2) == 0 && (minor) <= 0)
 
-/* package warp-3.2.2 */
-#define VERSION_warp "3.2.2"
+/* package warp-3.2.6 */
+#define VERSION_warp "3.2.6"
 #define MIN_VERSION_warp(major1,major2,minor) (\
   (major1) <  3 || \
   (major1) == 3 && (major2) <  2 || \
-  (major1) == 3 && (major2) == 2 && (minor) <= 2)
+  (major1) == 3 && (major2) == 2 && (minor) <= 6)
 
 /* package websockets-0.9.6.1 */
 #define VERSION_websockets "0.9.6.1"
@@ -175,5 +175,5 @@
   (major1) == 2 && (major2) <  24 || \
   (major1) == 2 && (major2) == 24 && (minor) <= 0)
 
-#define CURRENT_PACKAGE_KEY "JSmon_BQ800DhakbCLtBFdLK5Ps7"
+#define CURRENT_PACKAGE_KEY "JSmon_4i3w8QPy7tyFocgLYk0Z0E"
 

@@ -918,9 +918,13 @@ var primeFib3 = h('pre',  `          mM$prime5.stream.addListener({
     complete: () => console.log('completed')
   });  `  )
 
-var seed1 = h('pre',  ` 
-             `  )
-
+var spreadsheet = h('pre',  `    var mathFunc = autorun(() => {
+      let a = monadState.mMcount.x
+      let b = monadState.mMcount2.x
+      document.getElementById('spreadsheet1').innerHTML = a + ' + ' + b + ' = ' + (a + b)  
+      document.getElementById('spreadsheet2').innerHTML = a + ' - ' + b + ' = ' + (a - b)  
+      document.getElementById('spreadsheet3').innerHTML = a + ' * ' + b + ' = ' + (a * b)  
+      document.getElementById('spreadsheet4').innerHTML = a + ' / ' + b + ' / ' + (a + b)  `  )
 var seed2 = h('pre',  ` 
              `  )
 
@@ -937,6 +941,6 @@ var seed5 = h('pre',  `
 
 
 
-  export default {monad, monadStr, monadIt, fib, driver, messages, next, Monad$, updateCalc, arrayFuncs, travel, nums, cleanup, ret, C42, taskStream, newTask, process, mM$task, addString, colorClick, edit, testZ, quad, mdem1, runTest, todoStream, gameStream, inc, ret_add_cube, primes, seed, primeFib1, primeFib4, primeFib3}
+  export default {monad, monadStr, monadIt, fib, driver, messages, next, Monad$, updateCalc, arrayFuncs, travel, nums, cleanup, ret, C42, taskStream, newTask, process, mM$task, addString, colorClick, edit, testZ, quad, mdem1, runTest, todoStream, gameStream, inc, ret_add_cube, primes, seed, primeFib1, primeFib4, primeFib3, spreadsheet}
 
 

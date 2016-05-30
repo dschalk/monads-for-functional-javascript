@@ -1,0 +1,163 @@
+Configuring memory-0.13...
+Building memory-0.13...
+Preprocessing library memory-0.13...
+[ 1 of 28] Compiling Data.Memory.MemMap.Posix ( .stack-work/dist/x86_64-linux/Cabal-1.22.5.0/build/Data/Memory/MemMap/Posix.hs, .stack-work/dist/x86_64-linux/Cabal-1.22.5.0/build/Data/Memory/MemMap/Posix.o )
+[ 2 of 28] Compiling Data.Memory.Internal.DeepSeq ( Data/Memory/Internal/DeepSeq.hs, .stack-work/dist/x86_64-linux/Cabal-1.22.5.0/build/Data/Memory/Internal/DeepSeq.o )
+[ 3 of 28] Compiling Data.Memory.Internal.CompatPrim64 ( Data/Memory/Internal/CompatPrim64.hs, .stack-work/dist/x86_64-linux/Cabal-1.22.5.0/build/Data/Memory/Internal/CompatPrim64.o )
+[ 4 of 28] Compiling Data.Memory.Internal.CompatPrim ( Data/Memory/Internal/CompatPrim.hs, .stack-work/dist/x86_64-linux/Cabal-1.22.5.0/build/Data/Memory/Internal/CompatPrim.o )
+[ 5 of 28] Compiling Data.Memory.Internal.Scrubber ( Data/Memory/Internal/Scrubber.hs, .stack-work/dist/x86_64-linux/Cabal-1.22.5.0/build/Data/Memory/Internal/Scrubber.o )
+[ 6 of 28] Compiling Data.Memory.ExtendedWords ( Data/Memory/ExtendedWords.hs, .stack-work/dist/x86_64-linux/Cabal-1.22.5.0/build/Data/Memory/ExtendedWords.o )
+[ 7 of 28] Compiling Data.Memory.Internal.Imports ( Data/Memory/Internal/Imports.hs, .stack-work/dist/x86_64-linux/Cabal-1.22.5.0/build/Data/Memory/Internal/Imports.o )
+[ 8 of 28] Compiling Data.Memory.PtrMethods ( Data/Memory/PtrMethods.hs, .stack-work/dist/x86_64-linux/Cabal-1.22.5.0/build/Data/Memory/PtrMethods.o )
+[ 9 of 28] Compiling Data.Memory.Internal.Compat ( Data/Memory/Internal/Compat.hs, .stack-work/dist/x86_64-linux/Cabal-1.22.5.0/build/Data/Memory/Internal/Compat.o )
+[10 of 28] Compiling Data.Memory.Encoding.Base16 ( Data/Memory/Encoding/Base16.hs, .stack-work/dist/x86_64-linux/Cabal-1.22.5.0/build/Data/Memory/Encoding/Base16.o )
+[11 of 28] Compiling Data.Memory.Encoding.Base32 ( Data/Memory/Encoding/Base32.hs, .stack-work/dist/x86_64-linux/Cabal-1.22.5.0/build/Data/Memory/Encoding/Base32.o )
+[12 of 28] Compiling Data.Memory.Encoding.Base64 ( Data/Memory/Encoding/Base64.hs, .stack-work/dist/x86_64-linux/Cabal-1.22.5.0/build/Data/Memory/Encoding/Base64.o )
+[13 of 28] Compiling Data.Memory.Endian ( Data/Memory/Endian.hs, .stack-work/dist/x86_64-linux/Cabal-1.22.5.0/build/Data/Memory/Endian.o )
+[14 of 28] Compiling Data.Memory.Hash.SipHash ( Data/Memory/Hash/SipHash.hs, .stack-work/dist/x86_64-linux/Cabal-1.22.5.0/build/Data/Memory/Hash/SipHash.o )
+[15 of 28] Compiling Data.Memory.Hash.FNV ( Data/Memory/Hash/FNV.hs, .stack-work/dist/x86_64-linux/Cabal-1.22.5.0/build/Data/Memory/Hash/FNV.o )
+[16 of 28] Compiling Data.ByteArray.Types ( Data/ByteArray/Types.hs, .stack-work/dist/x86_64-linux/Cabal-1.22.5.0/build/Data/ByteArray/Types.o )
+
+Data/ByteArray/Types.hs:15:1: Warning:
+    The import of ‘Data.Monoid’ is redundant
+      except perhaps to import instances from ‘Data.Monoid’
+    To import instances alone, use: import Data.Monoid()
+[17 of 28] Compiling Data.ByteArray.Bytes ( Data/ByteArray/Bytes.hs, .stack-work/dist/x86_64-linux/Cabal-1.22.5.0/build/Data/ByteArray/Bytes.o )
+
+Data/ByteArray/Bytes.hs:20:1: Warning:
+    The import of ‘Data.Monoid’ is redundant
+      except perhaps to import instances from ‘Data.Monoid’
+    To import instances alone, use: import Data.Monoid()
+[18 of 28] Compiling Data.ByteArray.ScrubbedBytes ( Data/ByteArray/ScrubbedBytes.hs, .stack-work/dist/x86_64-linux/Cabal-1.22.5.0/build/Data/ByteArray/ScrubbedBytes.o )
+
+Data/ByteArray/ScrubbedBytes.hs:19:1: Warning:
+    The import of ‘Data.Monoid’ is redundant
+      except perhaps to import instances from ‘Data.Monoid’
+    To import instances alone, use: import Data.Monoid()
+[19 of 28] Compiling Data.ByteArray.MemView ( Data/ByteArray/MemView.hs, .stack-work/dist/x86_64-linux/Cabal-1.22.5.0/build/Data/ByteArray/MemView.o )
+[20 of 28] Compiling Data.ByteArray.Pack.Internal ( Data/ByteArray/Pack/Internal.hs, .stack-work/dist/x86_64-linux/Cabal-1.22.5.0/build/Data/ByteArray/Pack/Internal.o )
+
+Data/ByteArray/Pack/Internal.hs:20:1: Warning:
+    The import of ‘Data.Memory.Internal.Imports’ is redundant
+      except perhaps to import instances from ‘Data.Memory.Internal.Imports’
+    To import instances alone, use: import Data.Memory.Internal.Imports()
+[21 of 28] Compiling Data.ByteArray.Methods ( Data/ByteArray/Methods.hs, .stack-work/dist/x86_64-linux/Cabal-1.22.5.0/build/Data/ByteArray/Methods.o )
+[22 of 28] Compiling Data.ByteArray.View ( Data/ByteArray/View.hs, .stack-work/dist/x86_64-linux/Cabal-1.22.5.0/build/Data/ByteArray/View.o )
+[23 of 28] Compiling Data.ByteArray.Encoding ( Data/ByteArray/Encoding.hs, .stack-work/dist/x86_64-linux/Cabal-1.22.5.0/build/Data/ByteArray/Encoding.o )
+[24 of 28] Compiling Data.ByteArray.Mapping ( Data/ByteArray/Mapping.hs, .stack-work/dist/x86_64-linux/Cabal-1.22.5.0/build/Data/ByteArray/Mapping.o )
+
+Data/ByteArray/Mapping.hs:16:1: Warning:
+    The import of ‘Data.Bits’ is redundant
+      except perhaps to import instances from ‘Data.Bits’
+    To import instances alone, use: import Data.Bits()
+[25 of 28] Compiling Data.ByteArray.Parse ( Data/ByteArray/Parse.hs, .stack-work/dist/x86_64-linux/Cabal-1.22.5.0/build/Data/ByteArray/Parse.o )
+[26 of 28] Compiling Data.ByteArray.Hash ( Data/ByteArray/Hash.hs, .stack-work/dist/x86_64-linux/Cabal-1.22.5.0/build/Data/ByteArray/Hash.o )
+[27 of 28] Compiling Data.ByteArray   ( Data/ByteArray.hs, .stack-work/dist/x86_64-linux/Cabal-1.22.5.0/build/Data/ByteArray.o )
+[28 of 28] Compiling Data.ByteArray.Pack ( Data/ByteArray/Pack.hs, .stack-work/dist/x86_64-linux/Cabal-1.22.5.0/build/Data/ByteArray/Pack.o )
+In-place registering memory-0.13...
+Running Haddock for memory-0.13...
+Running hscolour for memory-0.13...
+Preprocessing library memory-0.13...
+Preprocessing library memory-0.13...
+
+Data/ByteArray/Types.hs:15:1: Warning:
+    The import of ‘Data.Monoid’ is redundant
+      except perhaps to import instances from ‘Data.Monoid’
+    To import instances alone, use: import Data.Monoid()
+
+Data/ByteArray/Bytes.hs:20:1: Warning:
+    The import of ‘Data.Monoid’ is redundant
+      except perhaps to import instances from ‘Data.Monoid’
+    To import instances alone, use: import Data.Monoid()
+
+Data/ByteArray/ScrubbedBytes.hs:19:1: Warning:
+    The import of ‘Data.Monoid’ is redundant
+      except perhaps to import instances from ‘Data.Monoid’
+    To import instances alone, use: import Data.Monoid()
+
+Data/ByteArray/Pack/Internal.hs:20:1: Warning:
+    The import of ‘Data.Memory.Internal.Imports’ is redundant
+      except perhaps to import instances from ‘Data.Memory.Internal.Imports’
+    To import instances alone, use: import Data.Memory.Internal.Imports()
+
+Data/ByteArray/Mapping.hs:16:1: Warning:
+    The import of ‘Data.Bits’ is redundant
+      except perhaps to import instances from ‘Data.Bits’
+    To import instances alone, use: import Data.Bits()
+Haddock coverage:
+ 100% ( 15 / 15) in 'Data.Memory.MemMap.Posix'
+ 100% (  2 /  2) in 'Data.Memory.Internal.DeepSeq'
+   3% (  1 / 31) in 'Data.Memory.Internal.CompatPrim64'
+  Missing documentation for:
+    Word64# (Data/Memory/Internal/CompatPrim64.hs:63)
+    Int64# (Data/Memory/Internal/CompatPrim64.hs:64)
+    eqInt64# (Data/Memory/Internal/CompatPrim64.hs:84)
+    neInt64# (Data/Memory/Internal/CompatPrim64.hs:87)
+    ltInt64# (Data/Memory/Internal/CompatPrim64.hs:90)
+    leInt64# (Data/Memory/Internal/CompatPrim64.hs:93)
+    gtInt64# (Data/Memory/Internal/CompatPrim64.hs:96)
+    geInt64# (Data/Memory/Internal/CompatPrim64.hs:99)
+    quotInt64# (Data/Memory/Internal/CompatPrim64.hs:102)
+    remInt64# (Data/Memory/Internal/CompatPrim64.hs:105)
+    eqWord64# (Data/Memory/Internal/CompatPrim64.hs:66)
+    neWord64# (Data/Memory/Internal/CompatPrim64.hs:69)
+    ltWord64# (Data/Memory/Internal/CompatPrim64.hs:72)
+    leWord64# (Data/Memory/Internal/CompatPrim64.hs:75)
+    gtWord64# (Data/Memory/Internal/CompatPrim64.hs:78)
+    geWord64# (Data/Memory/Internal/CompatPrim64.hs:81)
+    and64# (Data/Memory/Internal/CompatPrim64.hs:108)
+    or64# (Data/Memory/Internal/CompatPrim64.hs:111)
+    xor64# (Data/Memory/Internal/CompatPrim64.hs:114)
+    not64# (Data/Memory/Internal/CompatPrim64.hs:117)
+    timesWord64# (Data/Memory/Internal/CompatPrim64.hs:144)
+    uncheckedShiftL64# (Data/Memory/Internal/CompatPrim64.hs:120)
+    uncheckedShiftRL64# (Data/Memory/Internal/CompatPrim64.hs:123)
+    int64ToWord64# (Data/Memory/Internal/CompatPrim64.hs:126)
+    word64ToInt64# (Data/Memory/Internal/CompatPrim64.hs:129)
+    intToInt64# (Data/Memory/Internal/CompatPrim64.hs:132)
+    int64ToInt# (Data/Memory/Internal/CompatPrim64.hs:135)
+    wordToWord64# (Data/Memory/Internal/CompatPrim64.hs:138)
+    word64ToWord# (Data/Memory/Internal/CompatPrim64.hs:141)
+    w64# (Data/Memory/Internal/CompatPrim64.hs:147)
+ 100% (  6 /  6) in 'Data.Memory.Internal.CompatPrim'
+  50% (  1 /  2) in 'Data.Memory.Internal.Scrubber'
+  Missing documentation for:
+    getScrubber (Data/Memory/Internal/Scrubber.hs:20)
+ 100% (  2 /  2) in 'Data.Memory.ExtendedWords'
+Warning: Data.Memory.Internal.Imports: Could not find documentation for exported module: X
+ 100% (  1 /  1) in 'Data.Memory.Internal.Imports'
+ 100% (  9 /  9) in 'Data.Memory.PtrMethods'
+ 100% (  8 /  8) in 'Data.Memory.Internal.Compat'
+ 100% (  4 /  4) in 'Data.Memory.Encoding.Base16'
+ 100% (  4 /  4) in 'Data.Memory.Encoding.Base32'
+  67% (  6 /  9) in 'Data.Memory.Encoding.Base64'
+  Missing documentation for:
+    toBase64OpenBSD (Data/Memory/Encoding/Base64.hs:56)
+    fromBase64URLUnpadded (Data/Memory/Encoding/Base64.hs:135)
+    fromBase64OpenBSD (Data/Memory/Encoding/Base64.hs:132)
+ 100% ( 10 / 10) in 'Data.Memory.Endian'
+ 100% (  5 /  5) in 'Data.Memory.Hash.SipHash'
+ 100% (  9 /  9) in 'Data.Memory.Hash.FNV'
+ 100% (  3 /  3) in 'Data.ByteArray.Types'
+ 100% (  2 /  2) in 'Data.ByteArray.Bytes'
+ 100% (  2 /  2) in 'Data.ByteArray.ScrubbedBytes'
+ 100% (  3 /  3) in 'Data.ByteArray.MemView'
+ 100% (  5 /  5) in 'Data.ByteArray.Pack.Internal'
+ 100% ( 31 / 31) in 'Data.ByteArray.Methods'
+ 100% (  5 /  5) in 'Data.ByteArray.View'
+ 100% (  4 /  4) in 'Data.ByteArray.Encoding'
+ 100% (  6 /  6) in 'Data.ByteArray.Mapping'
+  94% ( 17 / 18) in 'Data.ByteArray.Parse'
+  Missing documentation for:
+    hasMore (Data/ByteArray/Parse.hs:152)
+ 100% ( 13 / 13) in 'Data.ByteArray.Hash'
+ 100% ( 44 / 44) in 'Data.ByteArray'
+ 100% ( 17 / 17) in 'Data.ByteArray.Pack'
+Warning: Data.Memory.Endian: could not find link destinations for:
+    byteSwap
+Documentation created:
+.stack-work/dist/x86_64-linux/Cabal-1.22.5.0/doc/html/memory/index.html,
+.stack-work/dist/x86_64-linux/Cabal-1.22.5.0/doc/html/memory/memory.txt
+Installing library in
+/home/d/.stack/snapshots/x86_64-linux/lts-6.0/7.10.3/lib/x86_64-linux-ghc-7.10.3/memory-0.13-AtLbf837cOS9kNhIuRhbe8
+Registering memory-0.13...

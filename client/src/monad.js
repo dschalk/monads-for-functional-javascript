@@ -2,6 +2,15 @@
 
 var xs = xstream.Stream;
 
+var O2;
+var count = 0;
+var state, monadState, total;
+
+function st(mon) {
+  console.log('In st. ',mon.id + '.x is: ', mon.x);
+  return mon.x;
+};
+
 var O = {};
 
 var MonadStream = function MonadStream(g) {
@@ -199,8 +208,6 @@ var mMsavear = new Monad([ret([0,0,0,0])], 'mMsavear');
 var mMindex = new Monad(0, 'mMindex');
 var mMindex2 = new Monad(-1, 'mMindex2');
 var mMindex3 = new Monad(0, 'mMindex3');
-var mMcount = new Monad(0, 'mMcount');
-var mMcount2 = new Monad(0, 'mMcount2');
 var mMhistory = new Monad([], 'mMhistory');
 var mMhistorymM1 = new Monad([[0,0,0,0]], 'mMhistorymM1');
 var mMhistorymM3 = new Monad([], 'mMhistorymM3');
@@ -296,6 +303,16 @@ mMprime2.ret(mMprime2.x)
 
 var mMprime = new Monad([2],'mMprime3')
 mMprime.ret(mMprime.x)
+
+var mMspreadsheet = new Monad(0, 'spreadsheet');
+mMspreadsheet.ret(mMspreadsheet.x)
+
+var mMcount = new Monad(0, 'mMcount');
+var mMcount2 = new Monad(0, 'mMcount2');
+var mMcount3 = new Monad(0, 'mMcount3');
+mMcount.ret(mMcount.x);
+mMcount2.ret(mMcount2.x);
+mMcount3.ret(mMcount3.x);
 
 mMgoals2.ret(mMgoals2.x)
 mM3.ret(mM3.x)

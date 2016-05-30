@@ -1,0 +1,220 @@
+
+==================== FINAL INTERFACE ====================
+2016-05-28 11:07:51.090944 UTC
+
+interface main@main:Tasks 7103
+  interface hash: 5837603f81a383ba836787b2a768e25e
+  ABI hash: aaecbba411bb74a268b107561753c46c
+  export-list hash: 9aba2e6b8bb7d346aeb354a5d62552b2
+  orphan hash: 693e9af84d3dfcc71e640e005bdc5e2e
+  flag hash: 71b9e32c03cf01d3117f219b5300dd73
+  sig of: Nothing
+  used TH splices: False
+  where
+exports:
+  Tasks.append
+  Tasks.main
+  Tasks.read2
+  Tasks.save
+module dependencies:
+package dependencies: array-0.5.1.0@array_67iodizgJQIIxYVTp4emlA
+                      base-4.8.2.0* binary-0.7.5.0@binar_3uXFWMoAGBg0xKP9MHKRwi
+                      bytestring-0.10.6.0@bytes_6VWy06pWzJq9evDvK2d4w6
+                      containers-0.5.6.2@conta_2C3ZI8RgPO2LBMidXKTvIU
+                      deepseq-1.4.1.1@deeps_6vMKxt5sPFR0XsbRWvvq59 ghc-prim-0.4.0.0
+                      integer-gmp-1.0.0.0 text-1.2.2.1@text_HmqVQnZSpjaC156ABqPhne*
+orphans: base-4.8.2.0:GHC.Base base-4.8.2.0:GHC.Float
+         binary-0.7.5.0@binar_3uXFWMoAGBg0xKP9MHKRwi:Data.Binary.Generic
+         bytestring-0.10.6.0@bytes_6VWy06pWzJq9evDvK2d4w6:Data.ByteString.Builder
+         text-1.2.2.1@text_HmqVQnZSpjaC156ABqPhne:Data.Text
+         text-1.2.2.1@text_HmqVQnZSpjaC156ABqPhne:Data.Text.Show
+family instance modules: base-4.8.2.0:Control.Applicative
+                         base-4.8.2.0:Data.Either base-4.8.2.0:Data.Functor.Identity
+                         base-4.8.2.0:Data.Monoid base-4.8.2.0:Data.Type.Equality
+                         base-4.8.2.0:Data.Void base-4.8.2.0:GHC.Exts
+                         base-4.8.2.0:GHC.Generics
+                         containers-0.5.6.2@conta_2C3ZI8RgPO2LBMidXKTvIU:Data.IntMap.Base
+                         containers-0.5.6.2@conta_2C3ZI8RgPO2LBMidXKTvIU:Data.IntSet.Base
+                         containers-0.5.6.2@conta_2C3ZI8RgPO2LBMidXKTvIU:Data.Map.Base
+                         containers-0.5.6.2@conta_2C3ZI8RgPO2LBMidXKTvIU:Data.Sequence
+                         containers-0.5.6.2@conta_2C3ZI8RgPO2LBMidXKTvIU:Data.Set.Base
+                         text-1.2.2.1@text_HmqVQnZSpjaC156ABqPhne:Data.Text
+import  -/  base-4.8.2.0:Control.Exception e9090e246fba030faecf7b81b3e8e320
+import  -/  base-4.8.2.0:Control.Exception.Base b99410eaf0cc6bb119b1d45a497c1b10
+import  -/  base-4.8.2.0:GHC.Base 1db77db5dae73d8c424c85b09fbadb89
+import  -/  base-4.8.2.0:GHC.IO bb5b81adcea33b14bd4abe16d7dde45f
+import  -/  base-4.8.2.0:GHC.IO.Exception e38c1261b70caecb7af416b94c82c925
+import  -/  base-4.8.2.0:GHC.Show 0e1d8380a8fb0cfb07ebeda3b70cbf38
+import  -/  base-4.8.2.0:Prelude 694dcaf039efe62df1c44834e2dbd2fb
+import  -/  base-4.8.2.0:System.IO 0248c1e850b7ea124cf7a2e1669ebf67
+import  -/  ghc-prim-0.4.0.0:GHC.Types 6b27fb3fdbd0e3f0925a4496c66513bb
+import  -/  text-1.2.2.1@text_HmqVQnZSpjaC156ABqPhne:Data.Text 677c532e2dd56476a11a0a8a53880ce7
+import  -/  text-1.2.2.1@text_HmqVQnZSpjaC156ABqPhne:Data.Text.IO 4cee1d85a3c7d8e2e10b21ed89777999
+import  -/  text-1.2.2.1@text_HmqVQnZSpjaC156ABqPhne:Data.Text.Internal d9b6b9a9dd535595b612aea5738b7466
+aba51c2bbbe6aa5688b00868b9033239
+  append ::
+    GHC.IO.FilePath -> Data.Text.Internal.Text -> GHC.Types.IO ()
+  {- Arity: 3, Strictness: <L,U><L,1*U(U,U,U)><L,U>,
+     Unfolding: InlineRule (0, True, True)
+                Data.Text.IO.appendFile1
+                  `cast`
+                (<GHC.IO.FilePath>_R
+                 ->_R <Data.Text.Internal.Text>_R
+                 ->_R Sym (GHC.Types.NTCo:IO[0] <()>_R)) -}
+6c686420b5071d6d166c3f95c8bfc0c2
+  main :: GHC.Types.IO Data.Text.Internal.Text
+  {- Arity: 1, Strictness: <L,U>,
+     Unfolding: InlineRule (0, True, True)
+                Tasks.main1
+                  `cast`
+                (Sym (GHC.Types.NTCo:IO[0] <Data.Text.Internal.Text>_R)) -}
+cb0cbd69fea240a6c8dac3038c338df3
+  main1 ::
+    GHC.Prim.State# GHC.Prim.RealWorld
+    -> (# GHC.Prim.State# GHC.Prim.RealWorld,
+          Data.Text.Internal.Text #)
+  {- Arity: 1, Strictness: <L,U>,
+     Unfolding: (\ s :: GHC.Prim.State# GHC.Prim.RealWorld[OneShot] ->
+                 case Control.Exception.Base.bracket1
+                        @ GHC.IO.Handle.Types.Handle
+                        @ ()
+                        @ ()
+                        Tasks.main8
+                          `cast`
+                        (Sym (GHC.Types.NTCo:IO[0] <GHC.IO.Handle.Types.Handle>_R))
+                        GHC.IO.Handle.hClose1
+                          `cast`
+                        (<GHC.IO.Handle.Types.Handle>_R
+                         ->_R Sym (GHC.Types.NTCo:IO[0] <()>_R))
+                        Tasks.main6
+                          `cast`
+                        (<GHC.IO.Handle.Types.Handle>_R
+                         ->_R Sym (GHC.Types.NTCo:IO[0] <()>_R))
+                        s of ds1 { (#,#) ipv ipv1 ->
+                 Tasks.main3 Tasks.main2 ipv }) -}
+8cdff227b3541f74931e1465a657ea2f
+  main2 :: [GHC.Types.Char]
+  {- Unfolding: (GHC.CString.unpackCString# "./yes.js"#) -}
+119df052ed6a2b2afb35c83dcd3d39b8
+  main3 ::
+    GHC.IO.FilePath
+    -> GHC.Prim.State# GHC.Prim.RealWorld
+    -> (# GHC.Prim.State# GHC.Prim.RealWorld,
+          Data.Text.Internal.Text #)
+  {- Arity: 2, Strictness: <L,U><L,U>,
+     Unfolding: (\ f :: GHC.IO.FilePath
+                   eta :: GHC.Prim.State# GHC.Prim.RealWorld[OneShot] ->
+                 GHC.Prim.catch#
+                   @ Data.Text.Internal.Text
+                   @ GHC.Exception.SomeException
+                   (Data.Text.IO.readFile1 f)
+                   (\ e1 :: GHC.Exception.SomeException[OneShot]
+                      eta1 :: GHC.Prim.State# GHC.Prim.RealWorld[OneShot] ->
+                    case e1 of wild { GHC.Exception.SomeException e100 $dException1 e2 ->
+                    case (GHC.Exception.$p1Exception @ e100 $dException1)
+                           `cast`
+                         (Data.Typeable.Internal.NTCo:Typeable[0] <*>_N <e100>_N)
+                           (GHC.Prim.proxy#
+                              @ *
+                              @ e100) of wild1 { Data.Typeable.Internal.TypeRep dt dt1 ds2 ds3 ds4 ->
+                    case dt of wild2 {
+                      DEFAULT
+                      -> GHC.Prim.raiseIO#
+                           @ GHC.Exception.SomeException
+                           @ Data.Text.Internal.Text
+                           wild
+                           eta1
+                      __word 7238999624334008818
+                      -> case dt1 of wild3 {
+                           DEFAULT
+                           -> GHC.Prim.raiseIO#
+                                @ GHC.Exception.SomeException
+                                @ Data.Text.Internal.Text
+                                wild
+                                eta1
+                           __word 10769272474234763719
+                           -> case GHC.IO.Handle.Text.hPutStr2
+                                     GHC.IO.Handle.FD.stdout
+                                     (GHC.Types.:
+                                        @ GHC.Types.Char
+                                        GHC.Show.shows6
+                                        (GHC.Show.showLitString
+                                           (GHC.CString.unpackAppendCString#
+                                              "Warning: Couldn't open "#
+                                              (GHC.Base.++
+                                                 @ GHC.Types.Char
+                                                 f
+                                                 (GHC.CString.unpackAppendCString#
+                                                    ": "#
+                                                    (case e2
+                                                            `cast`
+                                                          (UnivCo mkUnsafeCo representational e100 GHC.IO.Exception.IOException) of ww { GHC.IO.Exception.IOError ww1 ww2 ww3 ww4 ww5 ww6 ->
+                                                     GHC.IO.Exception.$w$cshowsPrec2
+                                                       ww1
+                                                       ww2
+                                                       ww3
+                                                       ww4
+                                                       ww6
+                                                       (GHC.Types.[] @ GHC.Types.Char) }))))
+                                           Tasks.main5))
+                                     GHC.Types.True
+                                     eta1 of ds1 { (#,#) ipv ipv1 ->
+                              (# ipv, Tasks.main4 #) } } } } })
+                   eta) -}
+c60792fc58636cac9bfc26727101e920
+  main4 :: Data.Text.Internal.Text
+  {- Unfolding: (Data.Text.Show.unpackCString# "no file"#) -}
+e44e90959bd4eac9d91a92f64f05c04b
+  main5 :: [GHC.Types.Char]
+  {- HasNoCafRefs,
+     Unfolding: (GHC.Types.:
+                   @ GHC.Types.Char
+                   GHC.Show.shows6
+                   (GHC.Types.[] @ GHC.Types.Char)) -}
+84f69ce3a2fed9158aca9d767247841e
+  main6 ::
+    GHC.IO.Handle.Types.Handle
+    -> GHC.Prim.State# GHC.Prim.RealWorld
+    -> (# GHC.Prim.State# GHC.Prim.RealWorld, () #)
+  {- Arity: 2,
+     Unfolding: (\ y :: GHC.IO.Handle.Types.Handle[OneShot]
+                   eta2 :: GHC.Prim.State# GHC.Prim.RealWorld[OneShot] ->
+                 Data.Text.IO.appendFile2 y Tasks.main7 eta2) -}
+2c18e94302e143e843ba9c0d8f25cabe
+  main7 :: Data.Text.Internal.Text
+  {- Unfolding: (Data.Text.Show.unpackCString# "Oh yes."#) -}
+ce125af7a77d193d85a464d69d6de931
+  main8 ::
+    GHC.Prim.State# GHC.Prim.RealWorld
+    -> (# GHC.Prim.State# GHC.Prim.RealWorld,
+          GHC.IO.Handle.Types.Handle #)
+  {- Arity: 1,
+     Unfolding: (GHC.IO.Handle.FD.openFile1
+                   Tasks.main2
+                   GHC.IO.IOMode.WriteMode) -}
+b737822b5734b05faacb713d5d210339
+  read2 :: GHC.IO.FilePath -> GHC.Types.IO Data.Text.Internal.Text
+  {- Arity: 2, Strictness: <L,U><L,U>,
+     Unfolding: InlineRule (0, True, True)
+                Tasks.main3
+                  `cast`
+                (<GHC.IO.FilePath>_R
+                 ->_R Sym (GHC.Types.NTCo:IO[0] <Data.Text.Internal.Text>_R)) -}
+99d8c72d4e2705fc4b743e57d0d2e1dd
+  save ::
+    GHC.IO.FilePath -> Data.Text.Internal.Text -> GHC.Types.IO ()
+  {- Arity: 3, Strictness: <L,U><L,1*U(U,U,U)><L,U>,
+     Unfolding: InlineRule (0, True, True)
+                Data.Text.IO.writeFile1
+                  `cast`
+                (<GHC.IO.FilePath>_R
+                 ->_R <Data.Text.Internal.Text>_R
+                 ->_R Sym (GHC.Types.NTCo:IO[0] <()>_R)) -}
+vectorised variables:
+vectorised tycons:
+vectorised reused tycons:
+parallel variables:
+parallel tycons:
+trusted: safe
+require own pkg trusted: False
+

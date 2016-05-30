@@ -27,6 +27,178 @@ Preprocessing library cmdargs-0.10.14...
 [24 of 25] Compiling System.Console.CmdArgs.Quote ( System/Console/CmdArgs/Quote.hs, .stack-work/dist/x86_64-linux/Cabal-1.22.5.0/build/System/Console/CmdArgs/Quote.o )
 [25 of 25] Compiling System.Console.CmdArgs ( System/Console/CmdArgs.hs, .stack-work/dist/x86_64-linux/Cabal-1.22.5.0/build/System/Console/CmdArgs.o )
 In-place registering cmdargs-0.10.14...
+Running Haddock for cmdargs-0.10.14...
+Running hscolour for cmdargs-0.10.14...
+Preprocessing library cmdargs-0.10.14...
+Preprocessing library cmdargs-0.10.14...
+Haddock coverage:
+  50% (  1 /  2) in 'System.Console.CmdArgs.Implicit.Ann'
+  Missing documentation for:
+    Module header
+ 100% ( 21 / 21) in 'System.Console.CmdArgs.Implicit.UI'
+ 100% (  8 /  8) in 'System.Console.CmdArgs.Verbosity'
+  25% (  2 /  8) in 'System.Console.CmdArgs.Implicit.Type'
+  Missing documentation for:
+    cmdArgsHasValue (System/Console/CmdArgs/Implicit/Type.hs:28)
+    embed (System/Console/CmdArgs/Implicit/Type.hs:35)
+    reembed (System/Console/CmdArgs/Implicit/Type.hs:38)
+    CmdArgsPrivate (System/Console/CmdArgs/Implicit/Type.hs:42)
+    incArgsSeen (System/Console/CmdArgs/Implicit/Type.hs:46)
+    getArgsSeen (System/Console/CmdArgs/Implicit/Type.hs:47)
+  67% (  2 /  3) in 'System.Console.CmdArgs.Explicit.SplitJoin'
+  Missing documentation for:
+    Module header
+  50% (  1 /  2) in 'System.Console.CmdArgs.Explicit.ExpandArgsAt'
+  Missing documentation for:
+    Module header
+  73% ( 24 / 33) in 'System.Console.CmdArgs.Explicit.Type'
+  Missing documentation for:
+    Module header
+     (System/Console/CmdArgs/Explicit/Type.hs:50)
+     (System/Console/CmdArgs/Explicit/Type.hs:53)
+    Remap (System/Console/CmdArgs/Explicit/Type.hs:184)
+    remap2 (System/Console/CmdArgs/Explicit/Type.hs:189)
+     (System/Console/CmdArgs/Explicit/Type.hs:192)
+     (System/Console/CmdArgs/Explicit/Type.hs:201)
+     (System/Console/CmdArgs/Explicit/Type.hs:204)
+    remapUpdate (System/Console/CmdArgs/Explicit/Type.hs:207)
+  50% (  1 /  2) in 'System.Console.CmdArgs.Explicit.Process'
+  Missing documentation for:
+    Module header
+  60% (  3 /  5) in 'System.Console.CmdArgs.Explicit.Complete'
+  Missing documentation for:
+    completeBash (System/Console/CmdArgs/Explicit/Complete.hs:144)
+    completeZsh (System/Console/CmdArgs/Explicit/Complete.hs:200)
+ 100% (  8 /  8) in 'System.Console.CmdArgs.Helper'
+   7% (  2 / 28) in 'System.Console.CmdArgs.Default'
+  Missing documentation for:
+     (System/Console/CmdArgs/Default.hs:14)
+     (System/Console/CmdArgs/Default.hs:15)
+     (System/Console/CmdArgs/Default.hs:16)
+     (System/Console/CmdArgs/Default.hs:17)
+     (System/Console/CmdArgs/Default.hs:18)
+     (System/Console/CmdArgs/Default.hs:19)
+     (System/Console/CmdArgs/Default.hs:20)
+     (System/Console/CmdArgs/Default.hs:21)
+     (System/Console/CmdArgs/Default.hs:23)
+     (System/Console/CmdArgs/Default.hs:24)
+     (System/Console/CmdArgs/Default.hs:25)
+     (System/Console/CmdArgs/Default.hs:26)
+     (System/Console/CmdArgs/Default.hs:27)
+     (System/Console/CmdArgs/Default.hs:28)
+     (System/Console/CmdArgs/Default.hs:29)
+     (System/Console/CmdArgs/Default.hs:30)
+     (System/Console/CmdArgs/Default.hs:31)
+     (System/Console/CmdArgs/Default.hs:34)
+     (System/Console/CmdArgs/Default.hs:35)
+     (System/Console/CmdArgs/Default.hs:36)
+     (System/Console/CmdArgs/Default.hs:37)
+     (System/Console/CmdArgs/Default.hs:38)
+     (System/Console/CmdArgs/Default.hs:39)
+     (System/Console/CmdArgs/Default.hs:40)
+     (System/Console/CmdArgs/Default.hs:41)
+     (System/Console/CmdArgs/Default.hs:42)
+ 100% (  5 /  5) in 'System.Console.CmdArgs.Text'
+  67% (  2 /  3) in 'System.Console.CmdArgs.Explicit.Help'
+  Missing documentation for:
+    Module header
+  85% ( 44 / 52) in 'System.Console.CmdArgs.Explicit'
+  Missing documentation for:
+     (System/Console/CmdArgs/Explicit/Type.hs:50)
+     (System/Console/CmdArgs/Explicit/Type.hs:53)
+    Remap (System/Console/CmdArgs/Explicit/Type.hs:184)
+    remap2 (System/Console/CmdArgs/Explicit/Type.hs:189)
+     (System/Console/CmdArgs/Explicit/Type.hs:192)
+     (System/Console/CmdArgs/Explicit/Type.hs:201)
+     (System/Console/CmdArgs/Explicit/Type.hs:204)
+    remapUpdate (System/Console/CmdArgs/Explicit/Type.hs:207)
+ 100% (  8 /  8) in 'System.Console.CmdArgs.GetOpt'
+   4% (  1 / 28) in 'Data.Generics.Any'
+  Missing documentation for:
+    Module header
+    CtorName (Data/Generics/Any.hs:15)
+    FieldName (Data/Generics/Any.hs:16)
+    readTupleType (Data/Generics/Any.hs:19)
+    try1 (Data/Generics/Any.hs:24)
+    AnyT (Data/Generics/Any.hs:33)
+     (Data/Generics/Any.hs:35)
+    fromAny (Data/Generics/Any.hs:38)
+    cast (Data/Generics/Any.hs:45)
+    toConstr (Data/Generics/Any.hs:51)
+    typeOf (Data/Generics/Any.hs:54)
+    dataTypeOf (Data/Generics/Any.hs:57)
+    isAlgType (Data/Generics/Any.hs:60)
+    typeShell (Data/Generics/Any.hs:66)
+    typeShellFull (Data/Generics/Any.hs:69)
+    typeName (Data/Generics/Any.hs:72)
+    ctor (Data/Generics/Any.hs:78)
+    fields (Data/Generics/Any.hs:81)
+    children (Data/Generics/Any.hs:84)
+    compose0 (Data/Generics/Any.hs:88)
+    recompose (Data/Generics/Any.hs:95)
+    ctors (Data/Generics/Any.hs:111)
+    decompose (Data/Generics/Any.hs:117)
+    arity (Data/Generics/Any.hs:120)
+    compose (Data/Generics/Any.hs:122)
+    getField (Data/Generics/Any.hs:129)
+    setField (Data/Generics/Any.hs:134)
+   0% (  0 / 20) in 'Data.Generics.Any.Prelude'
+  Missing documentation for:
+    Module header
+    head (Data/Generics/Any/Prelude.hs:10)
+    tail (Data/Generics/Any/Prelude.hs:13)
+    cons (Data/Generics/Any/Prelude.hs:16)
+    uncons (Data/Generics/Any/Prelude.hs:19)
+    null (Data/Generics/Any/Prelude.hs:24)
+    just_ (Data/Generics/Any/Prelude.hs:27)
+    nil_ (Data/Generics/Any/Prelude.hs:30)
+    list_ (Data/Generics/Any/Prelude.hs:33)
+    append (Data/Generics/Any/Prelude.hs:36)
+    reverse (Data/Generics/Any/Prelude.hs:42)
+    isString (Data/Generics/Any/Prelude.hs:49)
+    isList (Data/Generics/Any/Prelude.hs:50)
+    isMaybe (Data/Generics/Any/Prelude.hs:51)
+    isTuple (Data/Generics/Any/Prelude.hs:52)
+    fromList (Data/Generics/Any/Prelude.hs:54)
+    fromMaybe (Data/Generics/Any/Prelude.hs:55)
+    fromTuple (Data/Generics/Any/Prelude.hs:56)
+    unit (Data/Generics/Any/Prelude.hs:58)
+    tuple (Data/Generics/Any/Prelude.hs:63)
+   0% (  0 /  3) in 'System.Console.CmdArgs.Implicit.Reader'
+  Missing documentation for:
+    Module header
+    Reader (System/Console/CmdArgs/Implicit/Reader.hs:15)
+    reader (System/Console/CmdArgs/Implicit/Reader.hs:28)
+ 100% ( 17 / 17) in 'System.Console.CmdArgs.Annotate'
+   8% (  1 / 12) in 'System.Console.CmdArgs.Implicit.Local'
+  Missing documentation for:
+    local (System/Console/CmdArgs/Implicit/Local.hs:110)
+    err (System/Console/CmdArgs/Implicit/Local.hs:106)
+    Prog_ (System/Console/CmdArgs/Implicit/Local.hs:27)
+    Builtin_ (System/Console/CmdArgs/Implicit/Local.hs:55)
+    Mode_ (System/Console/CmdArgs/Implicit/Local.hs:65)
+    Flag_ (System/Console/CmdArgs/Implicit/Local.hs:75)
+    Fixup (System/Console/CmdArgs/Implicit/Local.hs:94)
+    isFlag_ (System/Console/CmdArgs/Implicit/Local.hs:99)
+    progHelpOutput (System/Console/CmdArgs/Implicit/Local.hs:43)
+    progVersionOutput (System/Console/CmdArgs/Implicit/Local.hs:44)
+    progNumericVersionOutput (System/Console/CmdArgs/Implicit/Local.hs:45)
+   0% (  0 /  2) in 'System.Console.CmdArgs.Implicit.Reform'
+  Missing documentation for:
+    Module header
+    reform (System/Console/CmdArgs/Implicit/Reform.hs:14)
+   0% (  0 /  2) in 'System.Console.CmdArgs.Implicit.Global'
+  Missing documentation for:
+    Module header
+    global (System/Console/CmdArgs/Implicit/Global.hs:21)
+ 100% ( 50 / 50) in 'System.Console.CmdArgs.Implicit'
+ 100% (  9 /  9) in 'System.Console.CmdArgs.Quote'
+ 100% (  2 /  2) in 'System.Console.CmdArgs'
+Warning: System.Console.CmdArgs.Implicit: could not find link destinations for:
+    CmdArgsPrivate
+Documentation created:
+.stack-work/dist/x86_64-linux/Cabal-1.22.5.0/doc/html/cmdargs/index.html,
+.stack-work/dist/x86_64-linux/Cabal-1.22.5.0/doc/html/cmdargs/cmdargs.txt
 Installing library in
-/home/d/.stack/snapshots/x86_64-linux/lts-5.14/7.10.3/lib/x86_64-linux-ghc-7.10.3/cmdargs-0.10.14-3X5ZqkX9cRxBIIPeikYpqr
+/home/d/.stack/snapshots/x86_64-linux/lts-6.0/7.10.3/lib/x86_64-linux-ghc-7.10.3/cmdargs-0.10.14-3X5ZqkX9cRxBIIPeikYpqr
 Registering cmdargs-0.10.14...

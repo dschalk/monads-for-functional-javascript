@@ -36,6 +36,60 @@ src/Text/Blaze.hs:91:1: Warning:
 src/Text/Blaze.hs:92:1: Warning:
     The import of ‘Word’ from module ‘Data.Word’ is redundant
 In-place registering blaze-markup-0.7.0.3...
+Running Haddock for blaze-markup-0.7.0.3...
+Running hscolour for blaze-markup-0.7.0.3...
+Preprocessing library blaze-markup-0.7.0.3...
+Preprocessing library blaze-markup-0.7.0.3...
+
+src/Text/Blaze/Internal.hs:74:1: Warning:
+    The import of ‘Control.Applicative’ is redundant
+      except perhaps to import instances from ‘Control.Applicative’
+    To import instances alone, use: import Control.Applicative()
+
+src/Text/Blaze/Internal.hs:75:1: Warning:
+    The import of ‘Data.Monoid’ is redundant
+      except perhaps to import instances from ‘Data.Monoid’
+    To import instances alone, use: import Data.Monoid()
+
+src/Text/Blaze/Renderer/Text.hs:15:1: Warning:
+    The import of ‘Data.Monoid’ is redundant
+      except perhaps to import instances from ‘Data.Monoid’
+    To import instances alone, use: import Data.Monoid()
+
+src/Text/Blaze/Renderer/Utf8.hs:11:1: Warning:
+    The import of ‘Data.Monoid’ is redundant
+      except perhaps to import instances from ‘Data.Monoid’
+    To import instances alone, use: import Data.Monoid()
+
+src/Text/Blaze.hs:91:1: Warning:
+    The import of ‘Data.Monoid’ is redundant
+      except perhaps to import instances from ‘Data.Monoid’
+    To import instances alone, use: import Data.Monoid()
+
+src/Text/Blaze.hs:92:1: Warning:
+    The import of ‘Word’ from module ‘Data.Word’ is redundant
+Haddock coverage:
+Warning: Text.Blaze.Internal: ! is exported separately but will be documented under Attributable. Consider exporting it together with its parent(s) for code clarity.
+ 100% ( 50 / 50) in 'Text.Blaze.Internal'
+  75% (  3 /  4) in 'Text.Blaze.Renderer.String'
+  Missing documentation for:
+    renderHtml (src/Text/Blaze/Renderer/String.hs:93)
+  67% (  2 /  3) in 'Text.Blaze.Renderer.Pretty'
+  Missing documentation for:
+    renderHtml (src/Text/Blaze/Renderer/Pretty.hs:56)
+  56% (  5 /  9) in 'Text.Blaze.Renderer.Text'
+  Missing documentation for:
+    renderHtmlBuilder (src/Text/Blaze/Renderer/Text.hs:73)
+    renderHtmlBuilderWith (src/Text/Blaze/Renderer/Text.hs:133)
+    renderHtml (src/Text/Blaze/Renderer/Text.hs:149)
+    renderHtmlWith (src/Text/Blaze/Renderer/Text.hs:164)
+  86% (  6 /  7) in 'Text.Blaze.Renderer.Utf8'
+  Missing documentation for:
+    Module header
+ 100% ( 43 / 43) in 'Text.Blaze'
+Documentation created:
+.stack-work/dist/x86_64-linux/Cabal-1.22.5.0/doc/html/blaze-markup/index.html,
+.stack-work/dist/x86_64-linux/Cabal-1.22.5.0/doc/html/blaze-markup/blaze-markup.txt
 Installing library in
-/home/d/.stack/snapshots/x86_64-linux/lts-5.14/7.10.3/lib/x86_64-linux-ghc-7.10.3/blaze-markup-0.7.0.3-JGtgJgx8yqB3DdKuU3sbgD
+/home/d/.stack/snapshots/x86_64-linux/lts-6.0/7.10.3/lib/x86_64-linux-ghc-7.10.3/blaze-markup-0.7.0.3-JGtgJgx8yqB3DdKuU3sbgD
 Registering blaze-markup-0.7.0.3...

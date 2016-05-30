@@ -12,6 +12,42 @@ Preprocessing library stm-2.4.4.1...
 [ 9 of 10] Compiling Control.Concurrent.STM ( Control/Concurrent/STM.hs, .stack-work/dist/x86_64-linux/Cabal-1.22.5.0/build/Control/Concurrent/STM.o )
 [10 of 10] Compiling Control.Concurrent.STM.TSem ( Control/Concurrent/STM/TSem.hs, .stack-work/dist/x86_64-linux/Cabal-1.22.5.0/build/Control/Concurrent/STM/TSem.o )
 In-place registering stm-2.4.4.1...
+Running Haddock for stm-2.4.4.1...
+Running hscolour for stm-2.4.4.1...
+Preprocessing library stm-2.4.4.1...
+Preprocessing library stm-2.4.4.1...
+Haddock coverage:
+   0% (  0 / 11) in 'Control.Sequential.STM'
+  Missing documentation for:
+    Module header
+    STM (Control/Sequential/STM.hs:29)
+    atomically (Control/Sequential/STM.hs:47)
+    throwSTM (Control/Sequential/STM.hs:54)
+    catchSTM (Control/Sequential/STM.hs:57)
+    TVar (Control/Sequential/STM.hs:72)
+    newTVar (Control/Sequential/STM.hs:75)
+    newTVarIO (Control/Sequential/STM.hs:78)
+    readTVar (Control/Sequential/STM.hs:83)
+    readTVarIO (Control/Sequential/STM.hs:86)
+    writeTVar (Control/Sequential/STM.hs:89)
+ 100% ( 13 / 13) in 'Control.Concurrent.STM.TBQueue'
+ 100% ( 12 / 12) in 'Control.Concurrent.STM.TQueue'
+ 100% ( 18 / 18) in 'Control.Concurrent.STM.TChan'
+ 100% ( 16 / 16) in 'Control.Concurrent.STM.TMVar'
+ 100% ( 13 / 13) in 'Control.Concurrent.STM.TVar'
+ 100% (  2 /  2) in 'Control.Concurrent.STM.TArray'
+  90% (  9 / 10) in 'Control.Monad.STM'
+  Missing documentation for:
+    check (Control/Monad/STM.hs:81)
+ 100% (  8 /  8) in 'Control.Concurrent.STM'
+  40% (  2 /  5) in 'Control.Concurrent.STM.TSem'
+  Missing documentation for:
+    newTSem (Control/Concurrent/STM/TSem.hs:42)
+    waitTSem (Control/Concurrent/STM/TSem.hs:45)
+    signalTSem (Control/Concurrent/STM/TSem.hs:51)
+Documentation created:
+.stack-work/dist/x86_64-linux/Cabal-1.22.5.0/doc/html/stm/index.html,
+.stack-work/dist/x86_64-linux/Cabal-1.22.5.0/doc/html/stm/stm.txt
 Installing library in
-/home/d/.stack/snapshots/x86_64-linux/lts-5.14/7.10.3/lib/x86_64-linux-ghc-7.10.3/stm-2.4.4.1-EyxFXFfnfY05IrjGaqCxeD
+/home/d/.stack/snapshots/x86_64-linux/lts-6.0/7.10.3/lib/x86_64-linux-ghc-7.10.3/stm-2.4.4.1-EyxFXFfnfY05IrjGaqCxeD
 Registering stm-2.4.4.1...

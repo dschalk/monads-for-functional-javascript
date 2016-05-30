@@ -11,13 +11,12 @@ module.exports = {
     loaders: [
         {
             test:   /\.js/,
-            loader: "babel?presets[]=stage-0",
+            loader: "babel-loader"
         }
     ],
     query: {
-      presets: ['es2015', 'stage-0'],
+      plugins: ["transform-decorators-legacy"],
+      presets: ['es2015', 'stage-0']
     }
   }
 }
-
-

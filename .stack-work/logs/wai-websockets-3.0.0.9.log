@@ -1,0 +1,25 @@
+Configuring wai-websockets-3.0.0.9...
+Building wai-websockets-3.0.0.9...
+Preprocessing library wai-websockets-3.0.0.9...
+[1 of 1] Compiling Network.Wai.Handler.WebSockets ( Network/Wai/Handler/WebSockets.hs, .stack-work/dist/x86_64-linux/Cabal-1.24.0.0/build/Network/Wai/Handler/WebSockets.o )
+Preprocessing executable 'wai-websockets-example' for
+wai-websockets-3.0.0.9...
+[1 of 2] Compiling Network.Wai.Handler.WebSockets ( Network/Wai/Handler/WebSockets.hs, .stack-work/dist/x86_64-linux/Cabal-1.24.0.0/build/wai-websockets-example/wai-websockets-example-tmp/Network/Wai/Handler/WebSockets.o )
+[2 of 2] Compiling Main             ( server.lhs, .stack-work/dist/x86_64-linux/Cabal-1.24.0.0/build/wai-websockets-example/wai-websockets-example-tmp/Main.o )
+
+server.lhs:12:3: Warning:
+    The import of ‘Data.Monoid’ is redundant
+      except perhaps to import instances from ‘Data.Monoid’
+    To import instances alone, use: import Data.Monoid()
+
+server.lhs:16:3: Warning:
+    The import of ‘forkIO’
+    from module ‘Control.Concurrent’ is redundant
+
+server.lhs:47:3: Warning: Defined but not used: ‘numClients’
+Linking .stack-work/dist/x86_64-linux/Cabal-1.24.0.0/build/wai-websockets-example/wai-websockets-example ...
+Installing library in
+/home/d/.stack/snapshots/x86_64-linux/lts-6.0/7.10.3/lib/x86_64-linux-ghc-7.10.3/wai-websockets-3.0.0.9-Jo4FgG9C4xo4RxCBR1Hza0
+Installing executable(s) in
+/home/d/.stack/snapshots/x86_64-linux/lts-6.0/7.10.3/bin
+Registering wai-websockets-3.0.0.9...

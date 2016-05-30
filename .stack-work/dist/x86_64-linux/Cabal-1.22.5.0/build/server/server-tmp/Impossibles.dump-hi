@@ -1,10 +1,10 @@
 
 ==================== FINAL INTERFACE ====================
-2016-05-25 04:47:33.939646 UTC
+2016-05-28 09:49:26.212914 UTC
 
 interface main@main:Impossibles 7103
-  interface hash: 04dc7b98bb1104958efc54837834e510
-  ABI hash: d02a99d6ed7dd33a7b2c17fbe8629395
+  interface hash: f8259ba11427523fbec8bc42aee2ac3f
+  ABI hash: 0af01533e0e3b77c03c51dc332042324
   export-list hash: 82e201a1754cffbd9ed38387ad4d4db5
   orphan hash: 693e9af84d3dfcc71e640e005bdc5e2e
   flag hash: 27993c98942bb6835ce33b9285999fca
@@ -200,12 +200,12 @@ ad1da85bdd9ceefcc91a7b4679c1ad73
     -> GHC.Types.Double
     -> [[GHC.Types.Double]]
   {- Arity: 5, Strictness: <L,U><L,U><L,U><L,U><L,U(U)> -}
-d0b31e79e517b2f712dfe6937d0abdb9
+ee1633f13335a7ee9d82b684eb24e894
   main :: GHC.Types.IO ()
   {- Arity: 1, Strictness: <L,U>,
      Unfolding: InlineRule (0, True, True)
                 Impossibles.main1 `cast` (Sym (GHC.Types.NTCo:IO[0] <()>_R)) -}
-b67fb65c400143ee0443b5673869fd1e
+46c7a6777a4abc37f5db04bc5352c787
   main1 ::
     GHC.Prim.State# GHC.Prim.RealWorld
     -> (# GHC.Prim.State# GHC.Prim.RealWorld, () #)
@@ -214,10 +214,10 @@ b67fb65c400143ee0443b5673869fd1e
                  case System.CPUTime.getCPUTime1 s of ds1 { (#,#) ipv ipv1 ->
                  case GHC.IO.Handle.Text.hPutStr2
                         GHC.IO.Handle.FD.stdout
-                        Impossibles.main5
+                        Impossibles.main6
                         GHC.Types.True
                         ipv of ds2 { (#,#) ipv2 ipv3 ->
-                 case Impossibles.main4
+                 case Impossibles.main5
                         Impossibles.main_imp
                         ipv2 of ds3 { (#,#) ipv4 ipv5 ->
                  case System.CPUTime.getCPUTime1 ipv4 of ds4 { (#,#) ipv6 ipv7 ->
@@ -232,20 +232,23 @@ b67fb65c400143ee0443b5673869fd1e
                       (GHC.Types.[] @ GHC.Types.Char) })
                    GHC.Types.True
                    ipv6 } } } }) -}
-bc16a8fa3bbeabc9a5604a9270355ef2
+0f90a16635eeb9418d832e41be1058a4
   main2 :: GHC.Types.Double
-  {- HasNoCafRefs, Unfolding: (GHC.Types.D# 15.0) -}
-6b075a99b48f0d7f50b32e6243f132f7
+  {- HasNoCafRefs, Unfolding: (GHC.Types.D# 20.0) -}
+441fc9b5c324d8eb9d05a85c10256894
   main3 :: GHC.Types.Double
-  {- HasNoCafRefs, Unfolding: (GHC.Types.D# 5.0) -}
-2b6c0444a04e6c990d1492d3b2dcf40e
-  main4 ::
+  {- HasNoCafRefs, Unfolding: (GHC.Types.D# 12.0) -}
+88ff37224ad049469035dd67a5d9c30b
+  main4 :: GHC.Types.Double
+  {- HasNoCafRefs, Unfolding: (GHC.Types.D# 6.0) -}
+cac971c80f93e840e7533e2fe6540c85
+  main5 ::
     [[GHC.Types.Double]]
     -> GHC.Prim.State# GHC.Prim.RealWorld
     -> (# GHC.Prim.State# GHC.Prim.RealWorld, () #)
   {- Arity: 2, Strictness: <S,1*U><L,U> -}
-e849f7196624085c7ba6b105ad6b05a4
-  main5 :: GHC.Base.String
+ed50e010d9955e8819bbc7bdfc03e79d
+  main6 :: GHC.Base.String
   {- Unfolding: (case GHC.List.$wlenAcc
                         @ [GHC.Types.Double]
                         Impossibles.main_imp
@@ -255,13 +258,13 @@ e849f7196624085c7ba6b105ad6b05a4
                         ww2
                         (GHC.Types.[] @ GHC.Types.Char) of ww4 { (#,#) ww5 ww6 ->
                  GHC.Types.: @ GHC.Types.Char ww5 ww6 } }) -}
-4200e52f62a7d84a13a9387aa3082f7e
+a0193c952c94a554030b7efb5a693e35
   main_imp :: [[GHC.Types.Double]]
   {- Unfolding: (Impossibles.impossibles
+                   Impossibles.main4
+                   Impossibles.main4
                    Impossibles.main3
-                   Impossibles.main3
-                   Impossibles.main3
-                   Impossibles.main3
+                   Impossibles.main2
                    Impossibles.main2) -}
 c329ee324130aa4ecdbfe575ca65728e
   notWhole :: GHC.Types.Double -> GHC.Types.Bool

@@ -87,6 +87,226 @@ Options/Applicative/Extra.hs:25:1: Warning:
 [14 of 15] Compiling Options.Applicative ( Options/Applicative.hs, .stack-work/dist/x86_64-linux/Cabal-1.22.5.0/build/Options/Applicative.o )
 [15 of 15] Compiling Options.Applicative.Arrows ( Options/Applicative/Arrows.hs, .stack-work/dist/x86_64-linux/Cabal-1.22.5.0/build/Options/Applicative/Arrows.o )
 In-place registering optparse-applicative-0.12.1.0...
+Running Haddock for optparse-applicative-0.12.1.0...
+Running hscolour for optparse-applicative-0.12.1.0...
+Preprocessing library optparse-applicative-0.12.1.0...
+Preprocessing library optparse-applicative-0.12.1.0...
+Warning: The documentation for the following packages are not installed. No
+links will be generated to these packages: transformers-compat-0.4.0.4
+
+Options/Applicative/Help/Chunk.hs:21:1: Warning:
+    The import of ‘Data.Monoid’ is redundant
+      except perhaps to import instances from ‘Data.Monoid’
+    To import instances alone, use: import Data.Monoid()
+
+Options/Applicative/Help/Types.hs:6:1: Warning:
+    The import of ‘Data.Monoid’ is redundant
+      except perhaps to import instances from ‘Data.Monoid’
+    To import instances alone, use: import Data.Monoid()
+
+Options/Applicative/Types.hs:42:1: Warning:
+    The import of ‘Applicative, <$>’
+    from module ‘Control.Applicative’ is redundant
+
+Options/Applicative/Types.hs:48:1: Warning:
+    The import of ‘Data.Monoid’ is redundant
+      except perhaps to import instances from ‘Data.Monoid’
+    To import instances alone, use: import Data.Monoid()
+
+Options/Applicative/Internal.hs:32:1: Warning:
+    The import of ‘Applicative, <$>’
+    from module ‘Control.Applicative’ is redundant
+
+Options/Applicative/Builder/Completer.hs:9:1: Warning:
+    The import of ‘Control.Applicative’ is redundant
+      except perhaps to import instances from ‘Control.Applicative’
+    To import instances alone, use: import Control.Applicative()
+
+Options/Applicative/Common.hs:55:1: Warning:
+    The import of ‘<*>, pure, <$>, <$, <*, *>’
+    from module ‘Control.Applicative’ is redundant
+
+Options/Applicative/Common.hs:62:1: Warning:
+    The import of ‘Data.Monoid’ is redundant
+      except perhaps to import instances from ‘Data.Monoid’
+    To import instances alone, use: import Data.Monoid()
+
+Options/Applicative/Builder/Internal.hs:26:1: Warning:
+    The import of ‘<*>, pure’
+    from module ‘Control.Applicative’ is redundant
+
+Options/Applicative/Builder/Internal.hs:28:1: Warning:
+    The import of ‘Data.Monoid’ is redundant
+      except perhaps to import instances from ‘Data.Monoid’
+    To import instances alone, use: import Data.Monoid()
+
+Options/Applicative/Builder.hs:98:1: Warning:
+    The import of ‘pure’ from module ‘Control.Applicative’ is redundant
+
+Options/Applicative/Builder.hs:99:1: Warning:
+    The import of ‘Monoid’ from module ‘Data.Monoid’ is redundant
+
+Options/Applicative/BashCompletion.hs:10:1: Warning:
+    The import of ‘<*>, <$>’
+    from module ‘Control.Applicative’ is redundant
+
+Options/Applicative/Help/Core.hs:18:1: Warning:
+    The import of ‘Data.Monoid’ is redundant
+      except perhaps to import instances from ‘Data.Monoid’
+    To import instances alone, use: import Data.Monoid()
+
+Options/Applicative/Extra.hs:24:1: Warning:
+    The import of ‘pure, <$>’
+    from module ‘Control.Applicative’ is redundant
+
+Options/Applicative/Extra.hs:25:1: Warning:
+    The import of ‘Data.Monoid’ is redundant
+      except perhaps to import instances from ‘Data.Monoid’
+    To import instances alone, use: import Data.Monoid()
+Haddock coverage:
+  33% (  1 /  3) in 'Options.Applicative.Help.Pretty'
+  Missing documentation for:
+    Module header
+    .$. (Options/Applicative/Help/Pretty.hs:9)
+  86% ( 12 / 14) in 'Options.Applicative.Help.Chunk'
+  Missing documentation for:
+    Module header
+    mappendWith (Options/Applicative/Help/Chunk.hs:25)
+  33% (  1 /  3) in 'Options.Applicative.Help.Types'
+  Missing documentation for:
+    Module header
+    ParserHelp (Options/Applicative/Help/Types.hs:11)
+  34% ( 12 / 35) in 'Options.Applicative.Types'
+  Missing documentation for:
+    Module header
+    ParseError (Options/Applicative/Types.hs:55)
+    OptName (Options/Applicative/Types.hs:97)
+    CReader (Options/Applicative/Types.hs:164)
+    ParserM (Options/Applicative/Types.hs:203)
+    Completer (Options/Applicative/Types.hs:239)
+    mkCompleter (Options/Applicative/Types.hs:242)
+    CompletionResult (Options/Applicative/Types.hs:250)
+    ParserFailure (Options/Applicative/Types.hs:257)
+    overFailure (Options/Applicative/Types.hs:282)
+    Args (Options/Applicative/Types.hs:299)
+    ArgPolicy (Options/Applicative/Types.hs:301)
+    OptHelpInfo (Options/Applicative/Types.hs:306)
+    OptTree (Options/Applicative/Types.hs:311)
+    ParserHelp (Options/Applicative/Help/Types.hs:11)
+    fromM (Options/Applicative/Types.hs:217)
+    oneM (Options/Applicative/Types.hs:220)
+    manyM (Options/Applicative/Types.hs:223)
+    someM (Options/Applicative/Types.hs:230)
+    optVisibility (Options/Applicative/Types.hs:317)
+    optMetaVar (Options/Applicative/Types.hs:323)
+    optHelp (Options/Applicative/Types.hs:320)
+    optShowDefault (Options/Applicative/Types.hs:326)
+   0% (  0 / 23) in 'Options.Applicative.Internal'
+  Missing documentation for:
+    Module header
+    P (Options/Applicative/Internal.hs:53)
+    Context (Options/Applicative/Internal.hs:75)
+    MonadP (Options/Applicative/Internal.hs:43)
+    ParseError (Options/Applicative/Types.hs:55)
+    uncons (Options/Applicative/Internal.hs:102)
+    hoistMaybe (Options/Applicative/Internal.hs:93)
+    hoistEither (Options/Applicative/Internal.hs:96)
+    runReadM (Options/Applicative/Internal.hs:106)
+    withReadM (Options/Applicative/Internal.hs:109)
+    runP (Options/Applicative/Internal.hs:99)
+    Completion (Options/Applicative/Internal.hs:140)
+    runCompletion (Options/Applicative/Internal.hs:172)
+    SomeParser (Options/Applicative/Internal.hs:115)
+    ComplError (Options/Applicative/Internal.hs:117)
+    contextNames (Options/Applicative/Internal.hs:78)
+    ListT (Options/Applicative/Internal.hs:180)
+    takeListT (Options/Applicative/Internal.hs:194)
+    runListT (Options/Applicative/Internal.hs:198)
+    NondetT (Options/Applicative/Internal.hs:239)
+    cut (Options/Applicative/Internal.hs:270)
+    <!> (Options/Applicative/Internal.hs:264)
+    disamb (Options/Applicative/Internal.hs:273)
+   0% (  0 /  6) in 'Options.Applicative.Builder.Completer'
+  Missing documentation for:
+    Module header
+    Completer (Options/Applicative/Types.hs:239)
+    mkCompleter (Options/Applicative/Types.hs:242)
+    listIOCompleter (Options/Applicative/Builder/Completer.hs:16)
+    listCompleter (Options/Applicative/Builder/Completer.hs:20)
+    bashCompleter (Options/Applicative/Builder/Completer.hs:23)
+  75% ( 15 / 20) in 'Options.Applicative.Common'
+  Missing documentation for:
+    Module header
+    showOption (Options/Applicative/Common.hs:70)
+    runParserInfo (Options/Applicative/Common.hs:239)
+    runParserFully (Options/Applicative/Common.hs:242)
+    optionNames (Options/Applicative/Common.hs:74)
+  20% (  4 / 20) in 'Options.Applicative.Builder.Internal'
+  Missing documentation for:
+    Module header
+    HasName (Options/Applicative/Builder/Internal.hs:48)
+    HasCompleter (Options/Applicative/Builder/Internal.hs:57)
+    HasValue (Options/Applicative/Builder/Internal.hs:66)
+    HasMetavar (Options/Applicative/Builder/Internal.hs:74)
+    OptionFields (Options/Applicative/Builder/Internal.hs:33)
+    FlagFields (Options/Applicative/Builder/Internal.hs:38)
+    CommandFields (Options/Applicative/Builder/Internal.hs:42)
+    ArgumentFields (Options/Applicative/Builder/Internal.hs:45)
+    DefaultProp (Options/Applicative/Builder/Internal.hs:85)
+    optionMod (Options/Applicative/Builder/Internal.hs:123)
+    fieldMod (Options/Applicative/Builder/Internal.hs:126)
+    mkCommand (Options/Applicative/Builder/Internal.hs:142)
+    mkParser (Options/Applicative/Builder/Internal.hs:148)
+    mkOption (Options/Applicative/Builder/Internal.hs:156)
+    mkProps (Options/Applicative/Builder/Internal.hs:162)
+  82% ( 58 / 71) in 'Options.Applicative.Builder'
+  Missing documentation for:
+    Module header
+    ParseError (Options/Applicative/Types.hs:55)
+    PrefsMod (Options/Applicative/Builder.hs:360)
+    multiSuffix (Options/Applicative/Builder.hs:367)
+    disambiguate (Options/Applicative/Builder.hs:370)
+    showHelpOnError (Options/Applicative/Builder.hs:373)
+    noBacktrack (Options/Applicative/Builder.hs:376)
+    columns (Options/Applicative/Builder.hs:379)
+    prefs (Options/Applicative/Builder.hs:382)
+    OptionFields (Options/Applicative/Builder/Internal.hs:33)
+    FlagFields (Options/Applicative/Builder/Internal.hs:38)
+    ArgumentFields (Options/Applicative/Builder/Internal.hs:45)
+    CommandFields (Options/Applicative/Builder/Internal.hs:42)
+  50% (  1 /  2) in 'Options.Applicative.BashCompletion'
+  Missing documentation for:
+    bashCompletionParser (Options/Applicative/BashCompletion.hs:20)
+  38% (  5 / 13) in 'Options.Applicative.Help.Core'
+  Missing documentation for:
+    Module header
+    fold_tree (Options/Applicative/Help/Core.hs:46)
+    ParserHelp (Options/Applicative/Help/Types.hs:11)
+    errorHelp (Options/Applicative/Help/Core.hs:77)
+    headerHelp (Options/Applicative/Help/Core.hs:80)
+    usageHelp (Options/Applicative/Help/Core.hs:83)
+    bodyHelp (Options/Applicative/Help/Core.hs:86)
+    footerHelp (Options/Applicative/Help/Core.hs:89)
+Warning: Options.Applicative.Help: Could not find documentation for exported module: X
+   0% (  0 /  1) in 'Options.Applicative.Help'
+  Missing documentation for:
+    Module header
+  74% ( 14 / 19) in 'Options.Applicative.Extra'
+  Missing documentation for:
+    Module header
+    renderFailure (Options/Applicative/Extra.hs:189)
+    ParserFailure (Options/Applicative/Types.hs:257)
+    overFailure (Options/Applicative/Types.hs:282)
+    CompletionResult (Options/Applicative/Types.hs:250)
+  93% ( 13 / 14) in 'Options.Applicative'
+  Missing documentation for:
+    Module header
+ 100% (  6 /  6) in 'Options.Applicative.Arrows'
+Warning: Options.Applicative.Builder.Internal: could not find link destinations for:
+    hasValueDummy hasMetavarDummy
+Documentation created:
+.stack-work/dist/x86_64-linux/Cabal-1.22.5.0/doc/html/optparse-applicative/index.html,
+.stack-work/dist/x86_64-linux/Cabal-1.22.5.0/doc/html/optparse-applicative/optparse-applicative.txt
 Installing library in
-/home/d/.stack/snapshots/x86_64-linux/lts-5.14/7.10.3/lib/x86_64-linux-ghc-7.10.3/optparse-applicative-0.12.1.0-FpNJ7fLofFNEy3rK4ZnBoD
+/home/d/.stack/snapshots/x86_64-linux/lts-6.0/7.10.3/lib/x86_64-linux-ghc-7.10.3/optparse-applicative-0.12.1.0-FpNJ7fLofFNEy3rK4ZnBoD
 Registering optparse-applicative-0.12.1.0...

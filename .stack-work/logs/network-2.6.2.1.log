@@ -1,5 +1,5 @@
-[1 of 1] Compiling Main             ( /tmp/stack14706/network-2.6.2.1/Setup.hs, /tmp/stack14706/network-2.6.2.1/.stack-work/dist/x86_64-linux/Cabal-1.22.5.0/setup/Main.o )
-Linking /tmp/stack14706/network-2.6.2.1/.stack-work/dist/x86_64-linux/Cabal-1.22.5.0/setup/setup ...
+[1 of 1] Compiling Main             ( /tmp/stack29022/network-2.6.2.1/Setup.hs, /tmp/stack29022/network-2.6.2.1/.stack-work/dist/x86_64-linux/Cabal-1.22.5.0/setup/Main.o )
+Linking /tmp/stack29022/network-2.6.2.1/.stack-work/dist/x86_64-linux/Cabal-1.22.5.0/setup/setup ...
 Configuring network-2.6.2.1...
 configure: WARNING: unrecognized options: --with-compiler, --with-gcc
 checking build system type... x86_64-unknown-linux-gnu
@@ -222,6 +222,182 @@ Network.hs:401:5: Warning:
     Pattern match(es) are non-exhaustive
     In a case alternative: Patterns not matched: SockAddrCan _
 In-place registering network-2.6.2.1...
+Running Haddock for network-2.6.2.1...
+Running hscolour for network-2.6.2.1...
+Preprocessing library network-2.6.2.1...
+Preprocessing library network-2.6.2.1...
+
+Network/Socket/Types.hsc:1012:10: Warning:
+    Orphan instance: instance Storable HostAddress6
+    To avoid this
+        move the instance declaration to the module of the class or of the type, or
+        wrap the type with a newtype and declare the instance on the new type.
+
+Network/Socket/Internal.hsc:75:1: Warning:
+    The import of ‘Foreign.C.String’ is redundant
+      except perhaps to import instances from ‘Foreign.C.String’
+    To import instances alone, use: import Foreign.C.String()
+
+Network/Socket/Internal.hsc:77:1: Warning:
+    The import of ‘Foreign.Ptr’ is redundant
+      except perhaps to import instances from ‘Foreign.Ptr’
+    To import instances alone, use: import Foreign.Ptr()
+
+Network/Socket.hsc:177:1: Warning:
+    The import of ‘delete’ from module ‘Data.List’ is redundant
+
+Network/Socket.hsc:193:1: Warning:
+    The qualified import of ‘Control.Exception’ is redundant
+      except perhaps to import instances from ‘Control.Exception’
+    To import instances alone, use: import Control.Exception()
+
+Network/Socket.hsc:212:1: Warning:
+    The import of ‘GHC.IO.FD’ is redundant
+      except perhaps to import instances from ‘GHC.IO.FD’
+    To import instances alone, use: import GHC.IO.FD()
+
+Network/Socket.hsc:949:13: Warning:
+    Defaulting the following constraint(s) to type ‘Integer’
+      (Integral a0)
+        arising from a use of ‘fromIntegral’
+        at Network/Socket.hsc:949:13-24
+      (Num a0)
+        arising from the literal ‘12’ at Network/Socket.hsc:949:27-28
+    In the expression: (fromIntegral (12))
+    In an equation for ‘sz’: sz = (fromIntegral (12))
+    In the expression:
+      do { let fd = fdSocket sock;
+           let sz = (fromIntegral (12));
+           with sz $ \ ptr_cr -> alloca $ \ ptr_sz -> ... }
+
+Network/Socket.hsc:1571:1: Warning:
+    Defined but not used: ‘c_accept’
+
+Network/Socket/ByteString.hsc:54:1: Warning:
+    The import of ‘SockAddr, Socket’
+    from module ‘Network.Socket’ is redundant
+
+Network/BSD.hsc:166:43: Warning:
+    In the use of data constructor ‘PortNum’
+    (imported from Network.Socket, but defined in Network.Socket.Types):
+    Deprecated: "Do not use the PortNum constructor. Use the Num instance. PortNum will be removed in the next release."
+
+Network/BSD.hsc:190:19: Warning:
+    In the use of data constructor ‘PortNum’
+    (imported from Network.Socket, but defined in Network.Socket.Types):
+    Deprecated: "Do not use the PortNum constructor. Use the Num instance. PortNum will be removed in the next release."
+Haddock coverage:
+  50% (  1 /  2) in 'Network.Socket.ByteString.IOVec'
+  Missing documentation for:
+    IOVec (Network/Socket/ByteString/IOVec.hsc:15)
+  68% ( 27 / 40) in 'Network.Socket.Types'
+  Missing documentation for:
+    Module header
+    sockFd (Network/Socket/Types.hsc:90)
+    sockFamily (Network/Socket/Types.hsc:93)
+    sockType (Network/Socket/Types.hsc:96)
+    sockProtocol (Network/Socket/Types.hsc:99)
+    sockStatus (Network/Socket/Types.hsc:102)
+    packSocketType (Network/Socket/Types.hsc:187)
+    unpackSocketType (Network/Socket/Types.hsc:202)
+    packFamily (Network/Socket/Types.hsc:306)
+    unpackFamily (Network/Socket/Types.hsc:522)
+    FlowInfo (Network/Socket/Types.hsc:801)
+    ScopeID (Network/Socket/Types.hsc:802)
+    ProtocolNumber (Network/Socket/Types.hsc:112)
+  94% ( 30 / 32) in 'Network.Socket.Internal'
+  Missing documentation for:
+    FlowInfo (Network/Socket/Types.hsc:801)
+    ScopeID (Network/Socket/Types.hsc:802)
+  71% ( 68 / 96) in 'Network.Socket'
+  Missing documentation for:
+    FlowInfo (Network/Socket/Types.hsc:801)
+    ScopeID (Network/Socket/Types.hsc:802)
+    ShutdownCmd (Network/Socket.hsc:1045)
+    ProtocolNumber (Network/Socket/Types.hsc:112)
+    ServiceName (Network/Socket.hsc:221)
+    AddrInfo (Network/Socket.hsc:1233)
+    NameInfoFlag (Network/Socket.hsc:1286)
+    getPeerName (Network/Socket.hsc:752)
+    getSocketName (Network/Socket.hsc:760)
+    socketPort (Network/Socket.hsc:729)
+    recvLen (Network/Socket.hsc:670)
+    inet_addr (Network/Socket.hsc:1128)
+    inet_ntoa (Network/Socket.hsc:1136)
+    isBound (Network/Socket.hsc:1095)
+    isListening (Network/Socket.hsc:1100)
+    isReadable (Network/Socket.hsc:1105)
+    isWritable (Network/Socket.hsc:1110)
+    sendFd (Network/Socket.hsc:987)
+    recvFd (Network/Socket.hsc:995)
+    aNY_PORT (Network/Socket.hsc:1009)
+    sOMAXCONN (Network/Socket.hsc:1026)
+    sOL_SOCKET (Network/Socket.hsc:1029)
+    sCM_RIGHTS (Network/Socket.hsc:1033)
+    fdSocket (Network/Socket.hsc:264)
+    mkSocket (Network/Socket.hsc:252)
+    packFamily (Network/Socket/Types.hsc:306)
+    unpackFamily (Network/Socket/Types.hsc:522)
+    packSocketType (Network/Socket/Types.hsc:187)
+  50% (  1 /  2) in 'Network.Socket.ByteString.MsgHdr'
+  Missing documentation for:
+    MsgHdr (Network/Socket/ByteString/MsgHdr.hsc:22)
+  25% (  1 /  4) in 'Network.Socket.ByteString.Internal'
+  Missing documentation for:
+    mkInvalidRecvArgError (Network/Socket/ByteString/Internal.hs:34)
+    c_writev (Network/Socket/ByteString/Internal.hs:40)
+    c_sendmsg (Network/Socket/ByteString/Internal.hs:43)
+ 100% ( 15 / 15) in 'Network.Socket.ByteString'
+  25% (  1 /  4) in 'Network.Socket.ByteString.Lazy.Posix'
+  Missing documentation for:
+    Module header
+    send (Network/Socket/ByteString/Lazy/Posix.hs:27)
+    sendAll (Network/Socket/ByteString/Lazy/Posix.hs:50)
+  71% (  5 /  7) in 'Network.Socket.ByteString.Lazy'
+  Missing documentation for:
+    send (Network/Socket/ByteString/Lazy/Posix.hs:27)
+    sendAll (Network/Socket/ByteString/Lazy/Posix.hs:50)
+  44% ( 23 / 52) in 'Network.BSD'
+  Missing documentation for:
+    HostEntry (Network/BSD.hsc:329)
+    hostAddress (Network/BSD.hsc:366)
+    getHostEntries (Network/BSD.hsc:419)
+    setHostEntry (Network/BSD.hsc:409)
+    getHostEntry (Network/BSD.hsc:401)
+    endHostEntry (Network/BSD.hsc:414)
+    ServiceEntry (Network/BSD.hsc:139)
+    ServiceName (Network/Socket.hsc:221)
+    getServiceEntries (Network/BSD.hsc:224)
+    getServiceEntry (Network/BSD.hsc:206)
+    setServiceEntry (Network/BSD.hsc:214)
+    endServiceEntry (Network/BSD.hsc:219)
+    ProtocolName (Network/BSD.hsc:123)
+    ProtocolNumber (Network/Socket/Types.hsc:112)
+    ProtocolEntry (Network/BSD.hsc:242)
+    getProtocolByName (Network/BSD.hsc:275)
+    getProtocolByNumber (Network/BSD.hsc:286)
+    getProtocolNumber (Network/BSD.hsc:296)
+    getProtocolEntries (Network/BSD.hsc:320)
+    setProtocolEntry (Network/BSD.hsc:310)
+    getProtocolEntry (Network/BSD.hsc:302)
+    endProtocolEntry (Network/BSD.hsc:315)
+    NetworkName (Network/BSD.hsc:434)
+    NetworkAddr (Network/BSD.hsc:432)
+    NetworkEntry (Network/BSD.hsc:436)
+    getNetworkByName (Network/BSD.hsc:467)
+    getNetworkByAddr (Network/BSD.hsc:477)
+    getNetworkEntry (Network/BSD.hsc:486)
+    ifNameToIndex (Network/BSD.hsc:521)
+  89% ( 24 / 27) in 'Network'
+  Missing documentation for:
+    PortID (Network.hs:83)
+    sendTo (Network.hs:333)
+    recvFrom (Network.hs:342)
+Warning: Network.Socket.ByteString: could not find link destinations for:
+    IOVec
+Documentation created:
+.stack-work/dist/x86_64-linux/Cabal-1.22.5.0/doc/html/network/index.html,
+.stack-work/dist/x86_64-linux/Cabal-1.22.5.0/doc/html/network/network.txt
 Installing library in
-/home/d/.stack/snapshots/x86_64-linux/lts-5.14/7.10.3/lib/x86_64-linux-ghc-7.10.3/network-2.6.2.1-A6pE0dLgMEk2GtUa1JtTJQ
+/home/d/.stack/snapshots/x86_64-linux/lts-6.0/7.10.3/lib/x86_64-linux-ghc-7.10.3/network-2.6.2.1-A6pE0dLgMEk2GtUa1JtTJQ
 Registering network-2.6.2.1...
