@@ -53,7 +53,7 @@ function main(sources) {
     var mathFunc = autorun(() => {
       let a = monadState.mMcount.x
       let b = monadState.mMcount2.x
-      document.getElementById('spreadsheet1').innerHTML = a + ' + ' + b + ' = ' + (a + b)  
+      document.getElementById('spreadsheet1').innerHTML = a + ' + ' + b + ' = ' + (a*1 + b*1)  
       document.getElementById('spreadsheet2').innerHTML = a + ' - ' + b + ' = ' + (a - b)  
       document.getElementById('spreadsheet3').innerHTML = a + ' * ' + b + ' = ' + (a * b)  
       document.getElementById('spreadsheet4').innerHTML = a + ' / ' + b + ' = ' + (a / b)  
