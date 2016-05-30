@@ -5,16 +5,6 @@ import code from './code.js';
 import {observable, computed, autorun, asReference} from 'mobx'
 
 monadState = observable(O);
-console.log(monadState);
-
-O.mMcount.bnd(add, 1, mMcount);
-m.ret(1000),
-O.mMcount.bnd(add, 1, mMcount);
-O.mMcount2.bnd(add, 1, mMcount2);
-O.mMcount2.bnd(add, 1, mMcount2);
-O.mMcount.bnd(add, 1, mMcount);
-O.mMcount.bnd(add, 1, mMcount);
-O.mMcount2.bnd(add, 1, mMcount2);
 
 function createWebSocket(path) {
     let host = window.location.hostname;
@@ -32,18 +22,8 @@ const websocketsDriver = function () {
     })
 }
 
-
-const unitDriver = function () {
-  return periodic(1000, 1);
-}
-
 window.onload = function (event) {
   console.log('onopen event: ', event);
-};
-
-function main(sources) {
-
-  setTimeout( function() {
     document.querySelector('input#login').focus();
     mM$fib5.ret( [ 0, 1, 1 ] );
     mM$prime5.ret([[2], 3, 3]);
@@ -58,7 +38,9 @@ function main(sources) {
       document.getElementById('spreadsheet3').innerHTML = a + ' * ' + b + ' = ' + (a * b)  
       document.getElementById('spreadsheet4').innerHTML = a + ' / ' + b + ' = ' + (a / b)  
     });
-  });
+};
+
+function main(sources) {
 
   mMZ1.bnd(v => O.mMt1.bnd(add,v,mMt1)
   .bnd(cube,mMt2)
@@ -454,9 +436,7 @@ function main(sources) {
         mM$fib5.ret([v[1], v[0] + v[1], v[2]]);
       }
       else {
-        let ar = JSON.parse(JSON.stringify(O.mMfibs8.x));
-        ar.pop();
-        ar.pop();
+        let ar = O.mMfibs8.x.slice(0, O.mMfibs8.length - 2);
         document.getElementById('fib5').innerHTML = ar;
       } 
       mMitterFib5.bnd(
@@ -764,7 +744,6 @@ function main(sources) {
     let v = e.target.value;
     if( e.keyCode == 13 ) {
       O.mMcount2.ret(e.target.value);
-      console.log( 'In spread2PressAction. e.target.value is: ', e.target.value);
     }
   });
 
@@ -971,9 +950,6 @@ function main(sources) {
         h('p', 'Here is the code:' ),
         code.quad,
         h('span#tdList' ),
-        
-
-
         h('h2', 'MonadStream'  ),
         code.monadStr,
         h('span.tao', ' MonadStream instances acquire values with the "ret()" method, placing them in the "stream" attribute. The stream depends on the ' ),
@@ -1005,9 +981,6 @@ function main(sources) {
     mM$prime5.ret( [ [2], 3, 3 ] );
     mM$primeFibs.ret( [ [2], 3, 3, [2,3] ] ); 
 `    ),
-
-
-
         h('h2', 'Hot Monad State'   ),
         h('p', ' Expressions involving parsing or computation can be automatically evaluated without function calls when using attributes of the global monad object "O". The following two lines of code bring this feature to life: ' ),
         h('pre', 
@@ -1029,13 +1002,14 @@ monadState = observable(O);
         h('p', ' "autorun" is aptly named. There is no need for function calls; the code automatically executes whenever monadState.mMcount or monadState.mMcount2 change. That happens whenever mMcount.ret() or mMcount2.ret() are called. ' ),
         h('p', ' Neither mMcount, O.mMcount, nor monadState.mMcount are mutated in the code above. Only "O" mutates. This helps prevent functions from interfering with one another. Once a function creates a reference to O.mMcount, the value of that reference cannot be altered by another function. On the other hand, having "O" constantly mutate as state changes is a powerful feature. Compared to other data structures in this application, to me "O" seems brilliant and alive, and kind of like the sun at the center of the solar system. It is full of firey potential, and it is what makes effortless MobX reactivity possible. '  ),
         h('p', ' Religeously adhering to immutability, or anything else for that matter, limits possiblities. This application runs by feeding streems into the virtual DOM, but I took a shortcut in the code above and directly altered the DOM by calling "element.innerHTML = ". The  Motorcycle.js process appears to be completely oblivious to this parallel procedure. Motorcycle.js and settomg "element.innerHTML =" appear to be orthoginal to one another. I don\'t have to do everything the Motorcycle.js way just because I am using that outstanding library as the basis for this application. '  ),  
-        h('h3', 'Todo List Side Effects' ),
+        h('h2', 'Updating the DOM'  ),
+        h('h3', 'Todo List DOM Updates' ),
         h('p', ' When users do anything to the todo list, MonadStream instance mM$taskList runs its ret() method on the modified String representation of the list, causing the string to be added to mM$taskList.stream. mM$taskList.stream has only one subscriber, taskAction$, whose only purpose it to send the string representation of the todo list to the server. The server updates its persistent file and distributes a text representation of the updated todo list to all group members. Each group member receives the todo list as a string and parses it into a DOM node tree that is merged into the stream that updates the virtual DOM. All Todo List side effects can be traced to:' ),
         code.todoStream,
         h('span', ' Just search for "mM$taskList.ret" to find where all todo list changes were initiated. The following link takes you to a more detailed explanation of the todo list. ' ),
         h('a', {props: {href: '#tdList2'}}, 'Detailed Todo List Explanation'   ),  
         h('br' ),
-        h('h3', 'Dice Game Side Effects' ),
+        h('h3', 'Dice Game DOM updates' ),
         h('p', ' mM$1.ret() is called only when (1) a new dice roll comes in from the server, (2) when a player clicks a number, and (3) when clicking a number or operator results in a computation being performed. These are the three things that require a DOM update. When a player clicks a number, it disappears from number display. When a computation is performed, the result is added to the number display, unless the result is 18 or 20. A result of 18 or 20 results in a new roll coming in from the server and mM$1.ret() being called on an array of four numbers; something like mM$1.ret[4,2,11,17]). When a number is removed or a result added, mM$1.ret() is called on an array containing fewer than four numbers. ' ),
         h('p', ' mM$1.stream is a stream of arrays of integers, as explained in the paragraph above. All game side effects can be traced to: ' ),
         code.gameStream,
@@ -1076,21 +1050,27 @@ monadState = observable(O);
         h('a', {props: {href: '#top'}}, 'Back To The Top'   ),  
         h('h2', 'Common Patterns' ),
         h('p', 'Anyone not yet familiar with functional programming can learn by studying the definition of the Monad bnd() method and considering the common patterns presented below. Often, we want to give a named monad the value of an anonymous monad returned by a monadic computation. Here are some ways to accomplish that: '  ),
-        h('p', 'For any monads m1 and m2 with values a and b respectively (in other words, m1.x == a and m2.x == b return true), m1.bnd(m2.ret) provides m1\'s value to m2.ret() causing O.m2 to have m1\'s value. So, after m1.bnd(m2.ret), m1.x == a, m2.x == b, O.m2.x == a all return true. The definition of Monad\s bnd() method shows that the function m2.ret() operates on m1.x. m1.bnd(m2.ret) is equivalent to m2.ret(m1.x). The stand-alone ret() function can be used to alter the current value of m2, rather than altering the value of O.m2. Here is one way of accomplishing this: m1.bnd(x => ret(x,"m2"). These relationships are verified in the following tests: ' ),
+        h('p', 'For any monads m1 and m2 with values a and b respectively (in other words, m1.x == a and m2.x == b return true), m1.bnd(m2.ret) provides m1\'s value to m2.ret() causing O.m2 to have m1\'s value. So, after m1.bnd(m2.ret), m1.x == a, m2.x == b, O.m2.x == a all return true. The definition of Monad\s bnd() method shows that the function m2.ret() operates on m1.x. m1.bnd(m2.ret) is equivalent to m2.ret(m1.x). The stand-alone ret() function can be used to alter the current value of m2, rather than altering the value of O.m2. Here is one way of accomplishing this: m1.bnd(x => ret(x,"m2"). These relationships are demonstrated in the following tests: ' ),
         h('pre', 
 `             ret('m1Val','m1')
-             m1.x === 'm1Val'  // true
+             m1.x === 'm1Val'   // true
              ret('m2Val', 'm2')
-             m2.x === 'm2Val'  // true
+             m2.x === 'm2Val'   // true
 
              m1.bnd(m2.ret)
              O.m2.x === 'm1Val' // true
+             m2.x === 'm2Val'   // still true
 
              m1.ret('newVal')
              O.m1.bnd(v => ret(v, 'm2'))
              m2.x === 'newVal'  // true
              O.m2.x === 'm1Val' // true   still the same  `   ),
-        h('p', 'The bnd() method does not have to return anonymous monads. Consider, for example, the trivial function f = function(x, mon) {return mon.ret(x)}. The monad that calls its bnd() method with the argument f gives the monad designated as "mon" its value. So m1.bnd(f, m2) results in m1.x == a, m2.x == b, O.m2.x == a all returning true. ' ), 
+        h('p', ' Here are two basic ways to create a monad named "m" with id = "m" and value v: '  ),
+        h('pre',
+`  var m = new Monad(v, "m");
+  ret(v, "m");  `  ),  
+        h('p', 'Let m be a monad with id == "m" and value v. Its bnd() method can return an anonymous monad, a new named monad, or a previously existing monad containing the computation result. To illustrate, here is the definition of "add" along with five uses of it: ' ),
+        code.add,  
         h('p'  ), 
         h('hr'),
         h('h3', 'Immutable Data And The State Object "O" ' ),
@@ -1219,7 +1199,6 @@ monadState = observable(O);
   const sources = {
     DOM: makeDOMDriver('#main-container'),
     WS: websocketsDriver,
-    UNIT: unitDriver
   }
 
   Cycle.run(main, sources);

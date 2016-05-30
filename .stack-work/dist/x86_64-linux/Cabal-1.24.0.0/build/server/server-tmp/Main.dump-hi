@@ -1,9 +1,9 @@
 
 ==================== FINAL INTERFACE ====================
-2016-05-30 02:55:39.101586 UTC
+2016-05-30 08:33:16.37623 UTC
 
 interface main@main:Main 7103
-  interface hash: 272973c0450d58ba0b64bacfda02a190
+  interface hash: bf3ee517f66962dd8856422c5e4d1b9d
   ABI hash: b42b1b0b756167d454042987f8e647c7
   export-list hash: 472ddfc42c1d1a17eb93193fa3ec8d58
   orphan hash: 276323d23bdb3224e26fb4d203ffca48
@@ -184,16 +184,12 @@ addDependentFile "client/dist/main.js"
 addDependentFile "client/dist/bundle.js"
 addDependentFile "client/src/monad.js~"
 addDependentFile "client/src/code.js"
-addDependentFile "client/src/edit.js"
 addDependentFile "client/src/main.js"
-addDependentFile "client/src/store.js"
 addDependentFile "client/src/monad.js"
-addDependentFile "client/src/save.js"
 addDependentFile "client/src/main.js~"
 addDependentFile "client/src/index.js"
 addDependentFile "client/src/most-subject.js"
 addDependentFile "client/src/code.js~"
-addDependentFile "client/webpack.config.js~"
 addDependentFile "client/fetch.js"
 addDependentFile "client/package.json"
 addDependentFile "client/index.html"
