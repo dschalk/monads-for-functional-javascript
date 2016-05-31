@@ -387,16 +387,12 @@ function main(sources) {
   });
 
   // ************************************************************************* Original Fibonacci enter
-  mM$fib.stream.addListener({
-    next: v => {
+  mM$fib.stream.observe(v => {
       if (v[2] > 1) {mM$fib.ret([v[1], v[0] + v[1], v[2] -1])}
       else {
         console.log(v[0]);
         mM19.ret(v[0]);
       }
-    },
-    error: err => console.error(err),
-    complete: () => console.log('completed')
   });
 
   const fibPress$ = sources.DOM
@@ -429,8 +425,7 @@ function main(sources) {
     }
   });
 
-  mM$fib5.stream.addListener({
-    next: v => {
+  mM$fib5.stream.observe(v => {
       if (v[0] < v[2]) {
         O.mMfibs8.bnd(push, v[0] + v[1], mMfibs8);
         mM$fib5.ret([v[1], v[0] + v[1], v[2]]);
@@ -452,9 +447,6 @@ function main(sources) {
             document.getElementById('fib5').innerHTML = ar2; 
           }
       })
-    },
-    error: err => console.error(err),
-    complete: () => console.log('completed')
   });
 
 
@@ -475,8 +467,7 @@ function main(sources) {
     }
   });
 
-  mM$prime5.stream.addListener({
-    next: v => {
+  mM$prime5.stream.observe(v => {
       while ((v[0][v[0].length - 1]) < v[2]) {
         for (let i in v[0]) {
           if ((v[1] % v[0][i]) == 0) {
@@ -500,9 +491,6 @@ function main(sources) {
           document.getElementById('prime5').innerHTML = trunc;
         }
       })
-    },
-    error: err => console.error(err),
-    complete: () => console.log('completed')
   });
 
 // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> END basic prime END
@@ -522,8 +510,7 @@ function main(sources) {
     }
   });
 
-  mM$fib4.stream.addListener({
-    next: v => {
+  mM$fib4.stream.observe(v => {
       var a = v[1];         // Fibonacci number
       var b = v[0] + v[1];  // Fibonacci number
       var c = v[2];         // Limit
@@ -552,13 +539,9 @@ function main(sources) {
             document.getElementById('fib4').innerHTML = ar; 
           }
       })
-    },
-    error: err => console.error(err),
-    complete: () => console.log('completed')
   });
 
-  mM$primeFibs.stream.addListener({
-    next: v => {
+  mM$primeFibs.stream.observe(v => {
       while (v[2] > v[0][v[0].length - 1]) {
         for (let i in v[0]) {
           if ((v[1] % v[0][i]) == 0) {
@@ -595,13 +578,9 @@ function main(sources) {
           mMitterFib9.release(x[0]);
         }
       )
-    },
-    error: err => console.error(err),
-    complete: () => console.log('completed')
   });
 
-  mM$PF.stream.addListener({
-    next: x => {
+  mM$PF.stream.observe(x => {
       console.log('>>>>>>>>>>>>>> In mM$PF.stream listener. x is: ', x );
       if (x[0] < x[1][x[1].length - 1]) {
         console.log('In the if block in the mM$PF.stream listener.');
@@ -610,9 +589,6 @@ function main(sources) {
         document.getElementById('primeFibs').innerHTML = ar2;
       }
       else {document.getElementById('primeFibs').innerHTML = x[1];}
-    },
-  error: err => console.error(err),
-  complete: () => console.log('completed')
   });
 
  
@@ -641,18 +617,13 @@ function main(sources) {
     }
   });
 
-  const taskAction$ = mM$taskList.stream.addListener({
-    next: str => {
+  const taskAction$ = mM$taskList.stream.observe(str => {
     console.log('In taskAction$. str is: ', str)
     socket.send('TD#$42' + ',' + O.mMgroup.x.trim() + 
         ',' + O.mMname.x.trim() + ',' + '@' + str);
-    },
-    error: err => console.error(err),
-    complete: () => console.log('completed')
   });
 
-  const mM$1Action$ = mM$1.stream.addListener({
-    next: v => {
+  const mM$1Action$ = mM$1.stream.observe(v => {
       console.log('In mM$1Action$. v is: ', v)
       O.mMindex2.bnd(inc, mMindex2);
       O.mMallRolls.bnd(spliceAdd, O.mMindex2.x, v, mMallRolls);
@@ -662,22 +633,16 @@ function main(sources) {
       document.getElementById('2').innerHTML = (O.mMallRolls.x[O.mMindex2.x])[2]; 
       document.getElementById('3').innerHTML = (O.mMallRolls.x[O.mMindex2.x])[3]; 
       cleanup(7)
-    },
-    error: err => console.error(err),
-    complete: () => console.log('completed')
+
   })
 
-  const mM$3Action$ = mM$3.stream.addListener({
-    next: v => {
+  const mM$3Action$ = mM$3.stream.observe(v => {
       console.log('In mM$3Action$. v is: ', v)
       document.getElementById('0').innerHTML = (O.mMallRolls.x[O.mMindex2.x])[0]; 
       document.getElementById('1').innerHTML = (O.mMallRolls.x[O.mMindex2.x])[1]; 
       document.getElementById('2').innerHTML = (O.mMallRolls.x[O.mMindex2.x])[2]; 
       document.getElementById('3').innerHTML = (O.mMallRolls.x[O.mMindex2.x])[3]; 
       cleanup(11);
-    },
-    error: err => console.error(err),
-    complete: () => console.log('completed')
   })
 
   const testZ = sources.DOM

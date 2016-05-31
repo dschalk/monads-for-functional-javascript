@@ -11058,20 +11058,12 @@
 	  });
 
 	  // ************************************************************************* Original Fibonacci enter
-	  mM$fib.stream.addListener({
-	    next: function next(v) {
-	      if (v[2] > 1) {
-	        mM$fib.ret([v[1], v[0] + v[1], v[2] - 1]);
-	      } else {
-	        console.log(v[0]);
-	        mM19.ret(v[0]);
-	      }
-	    },
-	    error: function error(err) {
-	      return console.error(err);
-	    },
-	    complete: function complete() {
-	      return console.log('completed');
+	  mM$fib.stream.observe(function (v) {
+	    if (v[2] > 1) {
+	      mM$fib.ret([v[1], v[0] + v[1], v[2] - 1]);
+	    } else {
+	      console.log(v[0]);
+	      mM19.ret(v[0]);
 	    }
 	  });
 
@@ -11107,35 +11099,27 @@
 	    }
 	  });
 
-	  mM$fib5.stream.addListener({
-	    next: function next(v) {
-	      if (v[0] < v[2]) {
-	        O.mMfibs8.bnd(push, v[0] + v[1], mMfibs8);
-	        mM$fib5.ret([v[1], v[0] + v[1], v[2]]);
-	      } else {
-	        var ar = O.mMfibs8.x.slice(0, O.mMfibs8.length - 2);
-	        document.getElementById('fib5').innerHTML = ar;
-	      }
-	      mMitterFib5.bnd(function (x) {
-	        if (x > O.mMfibs8.x[O.mMfibs8.x.length - 1]) {
-	          var _ar = JSON.parse(JSON.stringify(O.mMfibs8.x));
-	          var a = _ar.pop();
-	          var b = _ar.pop();
-	          mM$fib5.ret([b, a, x]);
-	        } else {
-	          var ar2 = O.mMfibs8.x.filter(function (v) {
-	            return v <= x;
-	          });
-	          document.getElementById('fib5').innerHTML = ar2;
-	        }
-	      });
-	    },
-	    error: function error(err) {
-	      return console.error(err);
-	    },
-	    complete: function complete() {
-	      return console.log('completed');
+	  mM$fib5.stream.observe(function (v) {
+	    if (v[0] < v[2]) {
+	      O.mMfibs8.bnd(push, v[0] + v[1], mMfibs8);
+	      mM$fib5.ret([v[1], v[0] + v[1], v[2]]);
+	    } else {
+	      var ar = O.mMfibs8.x.slice(0, O.mMfibs8.length - 2);
+	      document.getElementById('fib5').innerHTML = ar;
 	    }
+	    mMitterFib5.bnd(function (x) {
+	      if (x > O.mMfibs8.x[O.mMfibs8.x.length - 1]) {
+	        var _ar = JSON.parse(JSON.stringify(O.mMfibs8.x));
+	        var a = _ar.pop();
+	        var b = _ar.pop();
+	        mM$fib5.ret([b, a, x]);
+	      } else {
+	        var ar2 = O.mMfibs8.x.filter(function (v) {
+	          return v <= x;
+	        });
+	        document.getElementById('fib5').innerHTML = ar2;
+	      }
+	    });
 	  });
 
 	  // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> END fib END
@@ -11156,39 +11140,31 @@
 	    }
 	  });
 
-	  mM$prime5.stream.addListener({
-	    next: function next(v) {
-	      while (v[0][v[0].length - 1] < v[2]) {
-	        for (var i in v[0]) {
-	          if (v[1] % v[0][i] == 0) {
-	            mM$prime5.ret([v[0], v[1] + 1, v[2]]);
-	          }
-	          if (i == v[0].length - 1) {
-	            v[0].push(v[1]);
-	          }
+	  mM$prime5.stream.observe(function (v) {
+	    while (v[0][v[0].length - 1] < v[2]) {
+	      for (var i in v[0]) {
+	        if (v[1] % v[0][i] == 0) {
+	          mM$prime5.ret([v[0], v[1] + 1, v[2]]);
+	        }
+	        if (i == v[0].length - 1) {
+	          v[0].push(v[1]);
 	        }
 	      }
-	      var ar = JSON.parse(JSON.stringify(v[0]));
-	      ar.pop();
-	      document.getElementById('prime5').innerHTML = ar;
-	      mMitterPrime5.bnd(function (x) {
-	        if (x > v[0][v[0].length - 1]) {
-	          mM$prime5.ret([v[0], v[1] + 1, x]);
-	        } else {
-	          var ar2 = JSON.parse(JSON.stringify(v[0]));
-	          var trunc = ar2.filter(function (a) {
-	            return a < x;
-	          });
-	          document.getElementById('prime5').innerHTML = trunc;
-	        }
-	      });
-	    },
-	    error: function error(err) {
-	      return console.error(err);
-	    },
-	    complete: function complete() {
-	      return console.log('completed');
 	    }
+	    var ar = JSON.parse(JSON.stringify(v[0]));
+	    ar.pop();
+	    document.getElementById('prime5').innerHTML = ar;
+	    mMitterPrime5.bnd(function (x) {
+	      if (x > v[0][v[0].length - 1]) {
+	        mM$prime5.ret([v[0], v[1] + 1, x]);
+	      } else {
+	        var ar2 = JSON.parse(JSON.stringify(v[0]));
+	        var trunc = ar2.filter(function (a) {
+	          return a < x;
+	        });
+	        document.getElementById('prime5').innerHTML = trunc;
+	      }
+	    });
 	  });
 
 	  // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> END basic prime END
@@ -11209,111 +11185,87 @@
 	    }
 	  });
 
-	  mM$fib4.stream.addListener({
-	    next: function next(v) {
-	      var a = v[1]; // Fibonacci number
-	      var b = v[0] + v[1]; // Fibonacci number
-	      var c = v[2]; // Limit
-	      var d = v[3]; // List of Fibonacci numbers
-	      var wd = JSON.parse(JSON.stringify(d));
-	      d.push(a);
-	      if (a < c) {
-	        mM$fib4.ret([a, b, c, d]);
+	  mM$fib4.stream.observe(function (v) {
+	    var a = v[1]; // Fibonacci number
+	    var b = v[0] + v[1]; // Fibonacci number
+	    var c = v[2]; // Limit
+	    var d = v[3]; // List of Fibonacci numbers
+	    var wd = JSON.parse(JSON.stringify(d));
+	    d.push(a);
+	    if (a < c) {
+	      mM$fib4.ret([a, b, c, d]);
+	    } else {
+	      mMfibSave2.ret([a, b, c, d]);
+	      document.getElementById('fib4').innerHTML = wd;
+	      mMitterPrimeFibs.release([v[0], wd]);
+	    };
+	    mMitterFib8.bnd(function (limit) {
+	      var e = [O.mMfibSave2.x[0], O.mMfibSave2.x[1], limit, O.mMfibSave2.x[3]];
+	      mM$fib4.ret(e);
+	    });
+	    mMitterFib4.bnd(function (x) {
+	      if (x > v[3][v[3].length - 1]) {
+	        mMitterFib8.release(x);
 	      } else {
-	        mMfibSave2.ret([a, b, c, d]);
-	        document.getElementById('fib4').innerHTML = wd;
-	        mMitterPrimeFibs.release([v[0], wd]);
-	      };
-	      mMitterFib8.bnd(function (limit) {
-	        var e = [O.mMfibSave2.x[0], O.mMfibSave2.x[1], limit, O.mMfibSave2.x[3]];
-	        mM$fib4.ret(e);
-	      });
-	      mMitterFib4.bnd(function (x) {
-	        if (x > v[3][v[3].length - 1]) {
-	          mMitterFib8.release(x);
-	        } else {
-	          var ar1 = JSON.parse(JSON.stringify(O.mMfibSave2.x[3]));
-	          var ar = ar1.filter(function (v) {
-	            return v <= x;
-	          });
-	          mMitterPrimeFibs.release([ar[ar.length - 1], ar]);
-	          document.getElementById('fib4').innerHTML = ar;
-	        }
-	      });
-	    },
-	    error: function error(err) {
-	      return console.error(err);
-	    },
-	    complete: function complete() {
-	      return console.log('completed');
-	    }
+	        var ar1 = JSON.parse(JSON.stringify(O.mMfibSave2.x[3]));
+	        var ar = ar1.filter(function (v) {
+	          return v <= x;
+	        });
+	        mMitterPrimeFibs.release([ar[ar.length - 1], ar]);
+	        document.getElementById('fib4').innerHTML = ar;
+	      }
+	    });
 	  });
 
-	  mM$primeFibs.stream.addListener({
-	    next: function next(v) {
-	      while (v[2] > v[0][v[0].length - 1]) {
-	        for (var i in v[0]) {
-	          if (v[1] % v[0][i] == 0) {
-	            mM$primeFibs.ret([v[0], v[1] + 1, v[2], v[3]]);
-	          }
-	          if (i == v[0].length - 1) {
-	            v[0].push(v[1]);
-	            document.getElementById('prime2').innerHTML = v[0];
-	          }
+	  mM$primeFibs.stream.observe(function (v) {
+	    while (v[2] > v[0][v[0].length - 1]) {
+	      for (var i in v[0]) {
+	        if (v[1] % v[0][i] == 0) {
+	          mM$primeFibs.ret([v[0], v[1] + 1, v[2], v[3]]);
+	        }
+	        if (i == v[0].length - 1) {
+	          v[0].push(v[1]);
+	          document.getElementById('prime2').innerHTML = v[0];
 	        }
 	      }
-	      mMitterFib9.bnd(function (k) {
-	        var ar = v[0].filter(function (n) {
-	          return v[3].indexOf(n) != -1;
-	        });
-	        mM$PF.ret([k, ar]);
-	      });
-	      mMitterFib7.bnd(function (z) {
-	        var recent = v[0][v[0].length - 1];
-	        mM$primeFibs.ret([v[0], v[1] + 1, z[0], z[1]]);
-	      });
-	      mMitterPrimeFibs.bnd(function (x) {
-	        if (x[0] > v[0][v[0].length - 1]) {
-	          mMitterFib7.release(x);
-	        } else {
-	          var ar = JSON.parse(JSON.stringify(v[0]));
-	          var ar2 = ar.filter(function (v) {
-	            return v <= x[0];
-	          });
-	          var num = ar[ar2.length];
-	          ar2.push(num);
-	          document.getElementById('prime2').innerHTML = ar2;
-	        }
-	        mMitterFib9.release(x[0]);
-	      });
-	    },
-	    error: function error(err) {
-	      return console.error(err);
-	    },
-	    complete: function complete() {
-	      return console.log('completed');
 	    }
-	  });
-
-	  mM$PF.stream.addListener({
-	    next: function next(x) {
-	      console.log('>>>>>>>>>>>>>> In mM$PF.stream listener. x is: ', x);
-	      if (x[0] < x[1][x[1].length - 1]) {
-	        console.log('In the if block in the mM$PF.stream listener.');
-	        var ar = JSON.parse(JSON.stringify(x[1]));
+	    mMitterFib9.bnd(function (k) {
+	      var ar = v[0].filter(function (n) {
+	        return v[3].indexOf(n) != -1;
+	      });
+	      mM$PF.ret([k, ar]);
+	    });
+	    mMitterFib7.bnd(function (z) {
+	      var recent = v[0][v[0].length - 1];
+	      mM$primeFibs.ret([v[0], v[1] + 1, z[0], z[1]]);
+	    });
+	    mMitterPrimeFibs.bnd(function (x) {
+	      if (x[0] > v[0][v[0].length - 1]) {
+	        mMitterFib7.release(x);
+	      } else {
+	        var ar = JSON.parse(JSON.stringify(v[0]));
 	        var ar2 = ar.filter(function (v) {
 	          return v <= x[0];
 	        });
-	        document.getElementById('primeFibs').innerHTML = ar2;
-	      } else {
-	        document.getElementById('primeFibs').innerHTML = x[1];
+	        var num = ar[ar2.length];
+	        ar2.push(num);
+	        document.getElementById('prime2').innerHTML = ar2;
 	      }
-	    },
-	    error: function error(err) {
-	      return console.error(err);
-	    },
-	    complete: function complete() {
-	      return console.log('completed');
+	      mMitterFib9.release(x[0]);
+	    });
+	  });
+
+	  mM$PF.stream.observe(function (x) {
+	    console.log('>>>>>>>>>>>>>> In mM$PF.stream listener. x is: ', x);
+	    if (x[0] < x[1][x[1].length - 1]) {
+	      console.log('In the if block in the mM$PF.stream listener.');
+	      var ar = JSON.parse(JSON.stringify(x[1]));
+	      var ar2 = ar.filter(function (v) {
+	        return v <= x[0];
+	      });
+	      document.getElementById('primeFibs').innerHTML = ar2;
+	    } else {
+	      document.getElementById('primeFibs').innerHTML = x[1];
 	    }
 	  });
 
@@ -11341,54 +11293,30 @@
 	    }
 	  });
 
-	  var taskAction$ = mM$taskList.stream.addListener({
-	    next: function next(str) {
-	      console.log('In taskAction$. str is: ', str);
-	      socket.send('TD#$42' + ',' + O.mMgroup.x.trim() + ',' + O.mMname.x.trim() + ',' + '@' + str);
-	    },
-	    error: function error(err) {
-	      return console.error(err);
-	    },
-	    complete: function complete() {
-	      return console.log('completed');
-	    }
+	  var taskAction$ = mM$taskList.stream.observe(function (str) {
+	    console.log('In taskAction$. str is: ', str);
+	    socket.send('TD#$42' + ',' + O.mMgroup.x.trim() + ',' + O.mMname.x.trim() + ',' + '@' + str);
 	  });
 
-	  var mM$1Action$ = mM$1.stream.addListener({
-	    next: function next(v) {
-	      console.log('In mM$1Action$. v is: ', v);
-	      O.mMindex2.bnd(inc, mMindex2);
-	      O.mMallRolls.bnd(spliceAdd, O.mMindex2.x, v, mMallRolls);
-	      mMcurrentRoll.ret(v);
-	      document.getElementById('0').innerHTML = O.mMallRolls.x[O.mMindex2.x][0];
-	      document.getElementById('1').innerHTML = O.mMallRolls.x[O.mMindex2.x][1];
-	      document.getElementById('2').innerHTML = O.mMallRolls.x[O.mMindex2.x][2];
-	      document.getElementById('3').innerHTML = O.mMallRolls.x[O.mMindex2.x][3];
-	      cleanup(7);
-	    },
-	    error: function error(err) {
-	      return console.error(err);
-	    },
-	    complete: function complete() {
-	      return console.log('completed');
-	    }
+	  var mM$1Action$ = mM$1.stream.observe(function (v) {
+	    console.log('In mM$1Action$. v is: ', v);
+	    O.mMindex2.bnd(inc, mMindex2);
+	    O.mMallRolls.bnd(spliceAdd, O.mMindex2.x, v, mMallRolls);
+	    mMcurrentRoll.ret(v);
+	    document.getElementById('0').innerHTML = O.mMallRolls.x[O.mMindex2.x][0];
+	    document.getElementById('1').innerHTML = O.mMallRolls.x[O.mMindex2.x][1];
+	    document.getElementById('2').innerHTML = O.mMallRolls.x[O.mMindex2.x][2];
+	    document.getElementById('3').innerHTML = O.mMallRolls.x[O.mMindex2.x][3];
+	    cleanup(7);
 	  });
 
-	  var mM$3Action$ = mM$3.stream.addListener({
-	    next: function next(v) {
-	      console.log('In mM$3Action$. v is: ', v);
-	      document.getElementById('0').innerHTML = O.mMallRolls.x[O.mMindex2.x][0];
-	      document.getElementById('1').innerHTML = O.mMallRolls.x[O.mMindex2.x][1];
-	      document.getElementById('2').innerHTML = O.mMallRolls.x[O.mMindex2.x][2];
-	      document.getElementById('3').innerHTML = O.mMallRolls.x[O.mMindex2.x][3];
-	      cleanup(11);
-	    },
-	    error: function error(err) {
-	      return console.error(err);
-	    },
-	    complete: function complete() {
-	      return console.log('completed');
-	    }
+	  var mM$3Action$ = mM$3.stream.observe(function (v) {
+	    console.log('In mM$3Action$. v is: ', v);
+	    document.getElementById('0').innerHTML = O.mMallRolls.x[O.mMindex2.x][0];
+	    document.getElementById('1').innerHTML = O.mMallRolls.x[O.mMindex2.x][1];
+	    document.getElementById('2').innerHTML = O.mMallRolls.x[O.mMindex2.x][2];
+	    document.getElementById('3').innerHTML = O.mMallRolls.x[O.mMindex2.x][3];
+	    cleanup(11);
 	  });
 
 	  var testZ = sources.DOM.select('#testZ').events('click');

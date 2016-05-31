@@ -6,19 +6,14 @@ var O2;
 var count = 0;
 var state, monadState, total;
 
-function st(mon) {
-  console.log('In st. ',mon.id + '.x is: ', mon.x);
-  return mon.x;
-};
-
 var O = {};
 
 var MonadStream = function MonadStream(g) {
   var _this = this;
-  this.stream = xs.create();
   this.id = g;
+  this.stream = mostSubject.subject()
   this.ret = function (a) {
-    _this.stream.shamefullySendNext(a);
+    _this.stream.next(a);
     console.log('in ' + _this.id + ' emmitting ' + a);
     return _this;
   };
