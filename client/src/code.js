@@ -928,8 +928,23 @@ var spreadsheet = h('pre',  `    var mathFunc = autorun(() => {
       document.getElementById('spreadsheet2').innerHTML = a + ' - ' + b + ' = ' + (a - b)  
       document.getElementById('spreadsheet3').innerHTML = a + ' * ' + b + ' = ' + (a * b)  
       document.getElementById('spreadsheet4').innerHTML = a + ' / ' + b + ' / ' + (a + b)  `  )
-var seed2 = h('pre',  ` 
-             `  )
+
+var observableFib = h('pre',  `  function fibFunc(n) {
+    var a = observable(1);
+    var ar = ['0, 1'];
+    var k = 0;
+    a.observe(function(b, c) {
+        k+=1;
+        ar.push(', '+c);
+        if (k < n) {
+            a.set(b + c);
+        }
+        mM27.ret(ar)
+        .bnd(v => {
+          console.log(v);
+        })
+    })
+  }  `  )
 
 var seed3 = h('pre',  ` 
              `  )

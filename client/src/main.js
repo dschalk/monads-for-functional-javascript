@@ -712,7 +712,36 @@ function main(sources) {
     }
   });
 
-  const calcStream$ = merge( spread1PressAction$, spread2PressAction$, fibKeyPressAction5$, primeKeyPressAction5$, fibPressAction$, primeKeyPressAction2$, runTestAction$, quadAction$, testWAction$, testZAction$, testQAction$, edit1Action$, edit2Action$, colorAction$, deleteAction$, newTaskAction$, chatClickAction$, gameClickAction$, todoClickAction$, captionClickAction$, backClickAction$, forwardClickAction$, groupPressAction$, rollClickAction$, messagePressAction$, loginPressAction$, messages$, numClickAction$, opClickAction$ );
+  const newFibpress$ = sources.DOM
+    .select('input#fibF').events('keypress');
+
+  const newFibAction$ = newFibpress$.map(e => {
+    if( e.keyCode == 13 ) {
+      console.log('InFibAction$ e.target.value is: ', e.target.value);
+      var x = fibFunc(e.target.value - 2);
+    }
+  });
+
+    function fibFunc(n) {
+      var a = observable(1);
+      var ar = ['0, 1'];
+      var k = 0;
+      a.observe(function(b, c) {
+          k+=1;
+          ar.push(', '+c);
+          if (k < n) {
+              a.set(b + c);
+          }
+          mM27.ret(ar)
+          .bnd(v => {
+            console.log(v);
+          })
+      })
+      a.set(1);
+      a.set(2);
+    }
+
+  const calcStream$ = merge( newFibAction$, spread1PressAction$, spread2PressAction$, fibKeyPressAction5$, primeKeyPressAction5$, fibPressAction$, primeKeyPressAction2$, runTestAction$, quadAction$, testWAction$, testZAction$, testQAction$, edit1Action$, edit2Action$, colorAction$, deleteAction$, newTaskAction$, chatClickAction$, gameClickAction$, todoClickAction$, captionClickAction$, backClickAction$, forwardClickAction$, groupPressAction$, rollClickAction$, messagePressAction$, loginPressAction$, messages$, numClickAction$, opClickAction$ );
   
     return {
       DOM: 
@@ -967,6 +996,18 @@ monadState = observable(O);
         h('p', ' "autorun" is aptly named. There is no need for function calls; the code automatically executes whenever monadState.mMcount or monadState.mMcount2 change. That happens whenever mMcount.ret() or mMcount2.ret() are called. ' ),
         h('p', ' Neither mMcount, O.mMcount, nor monadState.mMcount are mutated in the code above. Only "O" mutates. This helps prevent functions from interfering with one another. Once a function creates a reference to O.mMcount, the value of that reference cannot be altered by another function. On the other hand, having "O" constantly mutate as state changes is a powerful feature. Compared to other data structures in this application, to me "O" seems brilliant and alive, and kind of like the sun at the center of the solar system. It is full of firey potential, and it is what makes effortless MobX reactivity possible. '  ),
         h('p', ' Religeously adhering to immutability, or anything else for that matter, limits possiblities. This application runs by feeding streems into the virtual DOM, but I took a shortcut in the code above and directly altered the DOM by calling "element.innerHTML = ". The  Motorcycle.js process appears to be completely oblivious to this parallel procedure. Motorcycle.js and settomg "element.innerHTML =" appear to be orthoginal to one another. I don\'t have to do everything the Motorcycle.js way just because I am using that outstanding library as the basis for this application. '  ),  
+        h('p',  'In the next domonstration, MobX is used to create arrays of Fibonacci numbers. Here is the code: ' ),
+        code.observableFib,
+        h('span.tao', ' When you enter a number below, ' ),
+        h('pre', `fibFunc(<entered number>)` ),
+        h('span', 'executes with the number you entered. The number must be greater than 2.  '  ),
+        h('br' ),
+        h('span', ' Enter a number greater than 2 here: ' ), 
+        h('input#fibF',   ), 
+        h('p#newFib', O.mM27.x  ),
+
+
+
         h('h2', 'Updating the DOM'  ),
         h('h3', 'Todo List DOM Updates' ),
         h('p', ' When users do anything to the todo list, MonadStream instance mM$taskList runs its ret() method on the modified String representation of the list, causing the string to be added to mM$taskList.stream. mM$taskList.stream has only one subscriber, taskAction$, whose only purpose it to send the string representation of the todo list to the server. The server updates its persistent file and distributes a text representation of the updated todo list to all group members. Each group member receives the todo list as a string and parses it into a DOM node tree that is merged into the stream that updates the virtual DOM. All Todo List side effects can be traced to:' ),

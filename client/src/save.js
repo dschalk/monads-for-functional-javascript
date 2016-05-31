@@ -1,4 +1,28 @@
 
+const fibber = observable(0);
+fibber.set(1);
+var fibby = function fibby(n) {
+  var k = 0;
+  var ar = [0,1];
+  fibber.observe((a,b) => {
+    k+=1;
+    if (k < n) {
+      ar.push(a+b);
+      fibber.set(a+b)
+     } 
+  }) 
+  console.log(ar); 
+}
+fibby(300);
+
+
+
+
+
+
+
+
+
   const fetchTasks$ = sources.DOM
     .select('#fetchTasks').events('click')
 
