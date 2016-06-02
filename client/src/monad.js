@@ -175,6 +175,8 @@ mMar2.ret(mMar2.x);
 var mMscores = M('', 'mMscores');
 var mMprefix = M('', 'mMprefix');
 var mMfib = M([0,1], 'mMfib');
+var mMfib2 = M([0,1], 'mMfib2');
+mMfib2.ret(mMfib.x);
 var mMmain = M(null, 'mMmain');
 var mMcalc = M(null, 'mMcalc');
 var mMadd = new Monad(0, 'mMadd');
@@ -299,7 +301,7 @@ mMprime2.ret(mMprime2.x)
 var mMprime = new Monad([2],'mMprime3')
 mMprime.ret(mMprime.x)
 
-var mMspreadsheet = new Monad(0, 'spreadsheet');
+var mMspreadsheet = new Monad([0,0,0,0], 'mMspreadsheet');
 mMspreadsheet.ret(mMspreadsheet.x)
 
 var mMcount = new Monad(0, 'mMcount');
@@ -680,6 +682,11 @@ var mult = function mult(x, y, mon) {
 
 var log = function log(x, message) {
   console.log('In log.  message is: ', message);
+    return ret(x);
+};
+
+var log2 = function log2(x) {
+  console.log('In log2.  x is: ', x);
     return ret(x);
 };
 

@@ -4,7 +4,8 @@ import {just, create, merge, combine, fromEvent, periodic, observe, delay, filte
 import code from './code.js';
 import {observable, computed, autorun, asReference} from 'mobx'
 
-monadState = observable(O);
+monadState = O;
+// monadState = observable(O);
 
 function createWebSocket(path) {
     let host = window.location.hostname;
@@ -30,14 +31,6 @@ window.onload = function (event) {
     mM$primeFibs.ret([[2], 3, 3, [2,3]]); 
     mM$fib2.ret([0, 1, []]);
     mM$fib4.ret( [ 0, 1, 1, [0] ] );
-    var mathFunc = autorun(() => {
-      let a = monadState.mMcount.x
-      let b = monadState.mMcount2.x
-      document.getElementById('spreadsheet1').innerHTML = a + ' + ' + b + ' = ' + (a*1 + b*1)  
-      document.getElementById('spreadsheet2').innerHTML = a + ' - ' + b + ' = ' + (a - b)  
-      document.getElementById('spreadsheet3').innerHTML = a + ' * ' + b + ' = ' + (a * b)  
-      document.getElementById('spreadsheet4').innerHTML = a + ' / ' + b + ' = ' + (a / b)  
-    });
 };
 
 function main(sources) {
@@ -58,7 +51,7 @@ function main(sources) {
     mMZ12.bnd(() => mM6
       .ret(v[2] + ' successfully logged in.'))
     mMZ13.bnd(() => updateMessages(v))
-    mMZ14.bnd(() => mMgoals2.ret('The winner is ' + v.x ))
+    mMZ14.bnd(() => mMgoals2.ret('The winner is ' + v[2] ))
     mMZ15.bnd(() => mMgoals2.ret('A player named ' + 
       O.mMname.x + 'is currently logged in. Page will refresh in 4 seconds.')
       .bnd(refresh))
@@ -697,7 +690,15 @@ function main(sources) {
     console.log('Hello from spread1');
     let v = e.target.value;
     if( e.keyCode == 13 ) {
-      O.mMcount.ret(e.target.value);
+      mMcount.ret(e.target.value)
+      .bnd(log2);
+      let a = e.target.value;
+      let b = monadState.mMcount2.x
+      let c = [ a + ' + ' + b + ' = ' + (a*1 + b*1),  
+      a + ' - ' + b + ' = ' + (a - b),  
+      a + ' * ' + b + ' = ' + (a * b),  
+      a + ' / ' + b + ' = ' + (a / b) ];
+      mMspreadsheet.ret(c);
     }
   });
 
@@ -708,7 +709,15 @@ function main(sources) {
     console.log('Hello from spread2');
     let v = e.target.value;
     if( e.keyCode == 13 ) {
-      O.mMcount2.ret(e.target.value);
+      mMcount2.ret(e.target.value)
+      .bnd(log2);
+    let a = monadState.mMcount.x
+    let b = e.target.value;
+    let c = [ a + ' + ' + b + ' = ' + (a*1 + b*1),  
+    a + ' - ' + b + ' = ' + (a - b),  
+    a + ' * ' + b + ' = ' + (a * b),  
+    a + ' / ' + b + ' = ' + (a / b) ];
+    mMspreadsheet.ret(c);
     }
   });
 
@@ -717,22 +726,16 @@ function main(sources) {
 
   const newFibAction$ = newFibpress$.map(e => {
     if( e.keyCode == 13 ) {
-      console.log('InFibAction$ e.target.value is: ', e.target.value);
-      var x = fibFunc(e.target.value - 2);
-    }
-  });
-
-    function fibFunc(n) {
       var a = observable(1);
       var ar = ['0, 1'];
       var k = 0;
       a.observe(function(b, c) {
           k+=1;
           ar.push(', '+c);
-          if (k < n) {
+          if (k < (e.target.value - 2)) {
               a.set(b + c);
           }
-          mM27.ret(ar)
+          mMfib2.ret(ar)
           .bnd(v => {
             console.log(v);
           })
@@ -740,6 +743,7 @@ function main(sources) {
       a.set(1);
       a.set(2);
     }
+  });
 
   const calcStream$ = merge( newFibAction$, spread1PressAction$, spread2PressAction$, fibKeyPressAction5$, primeKeyPressAction5$, fibPressAction$, primeKeyPressAction2$, runTestAction$, quadAction$, testWAction$, testZAction$, testQAction$, edit1Action$, edit2Action$, colorAction$, deleteAction$, newTaskAction$, chatClickAction$, gameClickAction$, todoClickAction$, captionClickAction$, backClickAction$, forwardClickAction$, groupPressAction$, rollClickAction$, messagePressAction$, loginPressAction$, messages$, numClickAction$, opClickAction$ );
   
@@ -975,36 +979,39 @@ function main(sources) {
     mM$prime5.ret( [ [2], 3, 3 ] );
     mM$primeFibs.ret( [ [2], 3, 3, [2,3] ] ); 
 `    ),
+
+
+
+
         h('h2', 'Hot Monad State'   ),
-        h('p', ' Expressions involving parsing or computation can be automatically evaluated without function calls when using attributes of the global monad object "O". The following two lines of code bring this feature to life: ' ),
+        h('p', ' Expressions involving parsing or computation can be automatically evaluated without function calls. MobX facilitates this kind of functionality by making mutable data observable. The mutable global object O is a good match for MobX. After the following two lines of code, any expression involving the Monad ret() method automatically executes. ' ),
         h('pre', 
 `import {observable, computed, autorun, asReference} from 'mobx'
 monadState = observable(O);
 `  ),
-        h('p', ' MobX is designed to work with mutable state. It is a perfect match for "O". For any monad m and value v, when m.ret(v) executes, O.m is automatically updated (by the definition of "ret()") so that O.m.x == v becomes true. And since monadState = observable(O), monadState.m.x == v is also true. Entering numbers below updates monadState.count and monadStatecount2 in this way. Subsequently,four computation expressions encapsulated by MobX.autorun automatically update the DOM, as demonstrated below. ' ), 
-        h('span', 'O.mMcount.ret(number): ' ), 
-        h('input#spread1' ), 
-        h('br' ),  
-        h('span', 'O.mMcount2.ret(number): ' ), 
-        h('input#spread2', ), 
-        h('p#spreadsheet1',  ), 
-        h('p#spreadsheet2',  ), 
-        h('p#spreadsheet3',  ), 
-        h('p#spreadsheet4',  ), 
-        h('p', 'Here is the code: ' ),
-        code.spreadsheet,
-        h('p', ' "autorun" is aptly named. There is no need for function calls; the code automatically executes whenever monadState.mMcount or monadState.mMcount2 change. That happens whenever mMcount.ret() or mMcount2.ret() are called. ' ),
-        h('p', ' Neither mMcount, O.mMcount, nor monadState.mMcount are mutated in the code above. Only "O" mutates. This helps prevent functions from interfering with one another. Once a function creates a reference to O.mMcount, the value of that reference cannot be altered by another function. On the other hand, having "O" constantly mutate as state changes is a powerful feature. Compared to other data structures in this application, to me "O" seems brilliant and alive, and kind of like the sun at the center of the solar system. It is full of firey potential, and it is what makes effortless MobX reactivity possible. '  ),
-        h('p', ' Religeously adhering to immutability, or anything else for that matter, limits possiblities. This application runs by feeding streems into the virtual DOM, but I took a shortcut in the code above and directly altered the DOM by calling "element.innerHTML = ". The  Motorcycle.js process appears to be completely oblivious to this parallel procedure. Motorcycle.js and settomg "element.innerHTML =" appear to be orthoginal to one another. I don\'t have to do everything the Motorcycle.js way just because I am using that outstanding library as the basis for this application. '  ),  
-        h('p',  'In the next domonstration, MobX is used to create arrays of Fibonacci numbers. Here is the code: ' ),
-        code.observableFib,
-        h('span.tao', ' When you enter a number below, ' ),
+        h('p', ' Now, for any monad m and value v, when m.ret(v) executes, O.m is automatically updated (by the definition of "ret()") so that O.m.x == v becomes true. And since monadState = observable(O), monadState.m.x == v is also true. In the next domonstration, MobX is used to help create arrays of Fibonacci numbers. Here is the code: ' ),
+        code.reactiveFib,
+        h('div.tao', ' When you enter a number below, ' [ 
         h('pre', `fibFunc(<entered number>)` ),
-        h('span', 'executes with the number you entered. The number must be greater than 2.  '  ),
+        h('span', 'executes with the number you entered. The number must be greater than 2.  '  ) ] ),
         h('br' ),
         h('span', ' Enter a number greater than 2 here: ' ), 
         h('input#fibF',   ), 
-        h('p#newFib', O.mM27.x  ),
+        h('p#newFib', O.mMfib2.x  ),
+        h('p', ' Neither mMcount, O.mMcount, nor monadState.mMcount are mutated in the code above. Only "O" mutates. This helps prevent functions from interfering with one another. Once a function creates a reference to O.mMcount, the value of that reference cannot be altered by another function. On the other hand, having "O" constantly mutate as state changes is a powerful feature. Compared to other data structures in this application, to me "O" seems brilliant and alive, and kind of like the sun at the center of the solar system. It is full of firey potential, and it is what makes effortless MobX reactivity possible. '  ),
+        h('p', ' Religeously adhering to immutability, or anything else for that matter, limits possiblities. If your boss does that; well, that\'s part of the job. If you are doing it to yourself, maybe you would do well to step back and think it over for a while. '  ),  
+        h('p', ' Motorcycle provides a great deal of reactive functionality. spread1PressAction$ and spread2Action$ (shown below) are merged into the main stream that feeds the virtual DOM. There is no need for MobX. Here is the code: ' ), 
+        code.spreadsheet,
+        h('p', ' And here is where you can enter numbers: ' ),
+        h('span', 'O.mMcount.ret(number): ' ), 
+        h('input#spread1', ), 
+        h('br' ),  
+        h('span', 'O.mMcount2.ret(number): ' ), 
+        h('input#spread2', ), 
+        h('p#spreadsheet1',  O.mMspreadsheet.x[0] ), 
+        h('p#spreadsheet2',  O.mMspreadsheet.x[1] ), 
+        h('p#spreadsheet3',  O.mMspreadsheet.x[2] ), 
+        h('p#spreadsheet4',  O.mMspreadsheet.x[3] ), 
 
 
 

@@ -921,30 +921,67 @@ var primeFib3 = h('pre',  `  mM$prime5.stream.addListener({
     complete: () => console.log('completed')
   });  `  )
 
-var spreadsheet = h('pre',  `    var mathFunc = autorun(() => {
-      let a = monadState.mMcount.x
-      let b = monadState.mMcount2.x
-      document.getElementById('spreadsheet1').innerHTML = a + ' + ' + b + ' = ' + (a + b)  
-      document.getElementById('spreadsheet2').innerHTML = a + ' - ' + b + ' = ' + (a - b)  
-      document.getElementById('spreadsheet3').innerHTML = a + ' * ' + b + ' = ' + (a * b)  
-      document.getElementById('spreadsheet4').innerHTML = a + ' / ' + b + ' / ' + (a + b)  `  )
+var spreadsheet = h('pre',  `  const spread1Press$ = sources.DOM
+    .select('#spread1').events('keypress');
 
-var observableFib = h('pre',  `  function fibFunc(n) {
-    var a = observable(1);
-    var ar = ['0, 1'];
-    var k = 0;
-    a.observe(function(b, c) {
-        k+=1;
-        ar.push(', '+c);
-        if (k < n) {
-            a.set(b + c);
-        }
-        mM27.ret(ar)
-        .bnd(v => {
-          console.log(v);
-        })
-    })
-  }  `  )
+  const spread1PressAction$ = spread1Press$.map(e => {
+    console.log('Hello from spread1');
+    let v = e.target.value;
+    if( e.keyCode == 13 ) {
+      mMcount.ret(e.target.value)
+      .bnd(log2);
+      let a = e.target.value;
+      let b = monadState.mMcount2.x
+      let c = [ a + ' + ' + b + ' = ' + (a*1 + b*1),  
+      a + ' - ' + b + ' = ' + (a - b),  
+      a + ' * ' + b + ' = ' + (a * b),  
+      a + ' / ' + b + ' = ' + (a / b) ];
+      mMspreadsheet.ret(c);
+    }
+  });
+
+  const spread2Press$ = sources.DOM
+    .select('#spread2').events('keypress');
+
+  const spread2PressAction$ = spread2Press$.map(e => {
+    console.log('Hello from spread2');
+    let v = e.target.value;
+    if( e.keyCode == 13 ) {
+      mMcount2.ret(e.target.value)
+      .bnd(log2);
+    let a = monadState.mMcount.x
+    let b = e.target.value;
+    let c = [ a + ' + ' + b + ' = ' + (a*1 + b*1),  
+    a + ' - ' + b + ' = ' + (a - b),  
+    a + ' * ' + b + ' = ' + (a * b),  
+    a + ' / ' + b + ' = ' + (a / b) ];
+    mMspreadsheet.ret(c);
+    }
+  });  `  )
+
+var reactiveFib = h('pre',  `  const newFibpress$ = sources.DOM
+    .select('input#fibF').events('keypress');
+
+  const newFibAction$ = newFibpress$.map(e => {
+    if( e.keyCode == 13 ) {
+      var a = observable(1);
+      var ar = ['0, 1'];
+      var k = 0;
+      a.observe(function(b, c) {
+          k+=1;
+          ar.push(', '+c);
+          if (k < (e.target.value - 2)) {
+              a.set(b + c);
+          }
+          mMfib2.ret(ar)
+          .bnd(v => {
+            console.log(v);
+          })
+      })
+      a.set(1);
+      a.set(2);
+    }
+  });  `  )
 
 var seed3 = h('pre',  ` 
              `  )
@@ -959,6 +996,6 @@ var seed5 = h('pre',  `
 
 
 
-  export default {monad, monadStr, monadIt, fib, driver, messages, next, Monad$, updateCalc, arrayFuncs, travel, nums, cleanup, ret, C42, taskStream, newTask, process, mM$task, addString, colorClick, edit, testZ, quad, mdem1, runTest, todoStream, gameStream, inc, ret_add_cube, primes, seed, primeFib1, primeFib4, primeFib3, spreadsheet, add}
+  export default {monad, monadStr, monadIt, fib, driver, messages, next, Monad$, updateCalc, arrayFuncs, travel, nums, cleanup, ret, C42, taskStream, newTask, process, mM$task, addString, colorClick, edit, testZ, quad, mdem1, runTest, todoStream, gameStream, inc, ret_add_cube, primes, seed, primeFib1, primeFib4, primeFib3, spreadsheet, add, reactiveFib}
 
 

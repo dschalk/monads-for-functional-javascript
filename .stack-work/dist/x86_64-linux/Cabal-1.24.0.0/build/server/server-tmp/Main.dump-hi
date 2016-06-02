@@ -1,9 +1,9 @@
 
 ==================== FINAL INTERFACE ====================
-2016-05-31 14:31:15.015713 UTC
+2016-06-02 04:11:21.425144 UTC
 
 interface main@main:Main 7103
-  interface hash: a176d4972001241a94e1c88e8b024e42
+  interface hash: 653832a5f08c1a77fe331864a9093ba7
   ABI hash: b42b1b0b756167d454042987f8e647c7
   export-list hash: 472ddfc42c1d1a17eb93193fa3ec8d58
   orphan hash: 276323d23bdb3224e26fb4d203ffca48
@@ -247,7 +247,6 @@ addDependentFile "client/src/main.js"
 addDependentFile "client/src/store.js"
 addDependentFile "client/src/monad.js"
 addDependentFile "client/src/save.js"
-addDependentFile "client/src/save.js~"
 addDependentFile "client/src/main.js~"
 addDependentFile "client/src/index.js"
 addDependentFile "client/src/most-subject.js"
@@ -260,7 +259,6 @@ addDependentFile "client/style.css"
 addDependentFile "client/webpack.config.js"
 addDependentFile "client/index.js"
 addDependentFile "client/main.js.map"
-addDependentFile "client/index.html~"
 addDependentFile "client/glackage.json"
 8fbc6c93b882a452d72df59744d3773d
   $sread :: GHC.Base.String -> GHC.Types.Int
