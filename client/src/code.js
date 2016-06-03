@@ -863,36 +863,7 @@ var primeFib2 = h('pre',  `  const fibKeyPress5$ = sources.DOM
 
              `  )
 
-var primeFib4 = h('pre',  `  mM$fib5.stream.addListener({
-    next: v => {
-      if (v[0] < v[2]) {
-        O.mMfibs8.bnd(push, v[0] + v[1], mMfibs8);
-        mM$fib5.ret([v[1], v[0] + v[1], v[2]]);
-      }
-      else {
-        let ar = O.mMfibs8.x.slice(0, O.mMfibs8.length - 2);
-        document.getElementById('fib5').innerHTML = ar;
-      } 
-      mMitterFib5.bnd(
-        x => {
-          if (x > O.mMfibs8.x[O.mMfibs8.x.length -1]) {
-            let ar = JSON.parse(JSON.stringify(O.mMfibs8.x));
-            let a = ar.pop();
-            let b = ar.pop();
-            mM$fib5.ret([b, a, x]);
-          }
-          else {
-            var ar2 = O.mMfibs8.x.filter(v => v <= x);
-            document.getElementById('fib5').innerHTML = ar2; 
-          }
-      })
-    },
-    error: err => console.error(err),
-    complete: () => console.log('completed')
-  });  `  )
-
-var primeFib3 = h('pre',  `  mM$prime5.stream.addListener({
-    next: v => {
+var primeFib4 = h('pre',  `  mM$prime5.stream.observe(v => {
       while ((v[0][v[0].length - 1]) < v[2]) {
         for (let i in v[0]) {
           if ((v[1] % v[0][i]) == 0) {
@@ -903,22 +874,52 @@ var primeFib3 = h('pre',  `  mM$prime5.stream.addListener({
           }
         }
       }
-      let ar = JSON.parse(JSON.stringify(v[0]));
-      ar.pop();
+      let ar = v[0].slice(0, v[0].length)
       document.getElementById('prime5').innerHTML = ar;
-      mMitterPrime5.bnd(x => {
+      var prFibs = ar.filter(v => O.mMfibs8.x.includes(v));
+      document.getElementById('primeFibs').innerHTML = prFibs;
+      mMitterPrime5.bnd(arr => {
+        var x = arr[0];
+        var fibs = arr[1];
         if (x > (v[0][v[0].length - 1])) {
           mM$prime5.ret([v[0], v[1] + 1, x]);
         }
         else {
-          let ar2 = JSON.parse(JSON.stringify(v[0]));
-          let trunc = ar2.filter(a => a < x);
-          document.getElementById('prime5').innerHTML = trunc;
+          let trunc = ar.filter(a => a < x);
+          let ar2 = ar.slice(0, trunc.length + 1);
+          document.getElementById('prime5').innerHTML = ar2;
+          var primeFibs = fibs.filter(v => ar2.includes(v)); 
+          document.getElementById('primeFibs').innerHTML = primeFibs;
+           
         }
       })
-    },
-    error: err => console.error(err),
-    complete: () => console.log('completed')
+  });  `  )
+
+var primeFib3 = h('pre',  `  mM$fib5.stream.observe(v => {
+    var x = v.splice(0, v.length);
+      if (x[1] < x[2]) {
+          monadState.mMfibs8.bnd(push, x[0] + x[1], mMfibs8);
+          mM$fib5.ret([x[1], x[0] + x[1], x[2]]);
+      }
+      else {
+        let ar = O.mMfibs8.x.slice(0, O.mMfibs8.x.length - 1);
+        document.getElementById('fib5').innerHTML = ar;
+        mMitterPrime5.release([x[0], ar]);
+      } 
+      mMitterFib5.bnd(
+        x => {
+          let ar = O.mMfibs8.x.slice(0, O.mMfibs8.x.length);
+          if (x > ar[ar.length - 1]) {
+            let a = ar.pop();
+            let b = ar.pop();
+            mM$fib5.ret([b, a, x]);
+          }
+          else {
+            let ar2 = ar.filter(v => v <= x);
+            document.getElementById('fib5').innerHTML = ar2;
+            mMitterPrime5.release(([ar2[ar2.length-1], ar2]));
+          }
+      })
   });  `  )
 
 var spreadsheet = h('pre',  `  const spread1Press$ = sources.DOM

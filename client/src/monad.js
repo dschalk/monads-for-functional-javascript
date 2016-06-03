@@ -304,6 +304,9 @@ mMprime.ret(mMprime.x)
 var mMspreadsheet = new Monad([0,0,0,0], 'mMspreadsheet');
 mMspreadsheet.ret(mMspreadsheet.x)
 
+var mMdisplayFibs = new Monad([0,1], 'mMdisplayFibs');
+mMdisplayFibs.ret(mMdisplayFibs.x);
+
 var mMcount = new Monad(0, 'mMcount');
 var mMcount2 = new Monad(0, 'mMcount2');
 var mMcount3 = new Monad(0, 'mMcount3');
@@ -582,8 +585,11 @@ var splice = function splice(x, start, n, mon) {
   return ret(x);
 };
 
-var concat = function concat(x, str, mon) {
-  mon.ret(x + str)
+var concat = function concat(x, v, mon) {
+  if (Array.isArray(v)) {
+    mon.ret(x.concat(v));
+  }
+  mon.ret(x + v)
 }
 
 var sliceFront = function sliceFront(x, n, mon) {
