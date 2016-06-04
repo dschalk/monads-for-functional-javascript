@@ -724,7 +724,7 @@ var primeFib4 = h('pre',  `  mM$prime5.stream.observe(v => {
       document.getElementById('prime5').innerHTML = ar;
       var prFibs = ar.filter(v => O.mMfibs8.x.includes(v));
       document.getElementById('primeFibs').innerHTML = prFibs;
-      mMitterPrime5.bnd(arr => {
+      mMitterPrime5.bnd(arr => {         // Access point.
         var x = arr[0];
         var fibs = arr[1];
         if (x > (v[0][v[0].length - 1])) {
@@ -752,7 +752,7 @@ var primeFib3 = h('pre',  `  mM$fib5.stream.observe(v => {
         document.getElementById('fib5').innerHTML = ar;
         mMitterPrime5.release([x[0], ar]);
       } 
-      mMitterFib5.bnd(
+      mMitterFib5.bnd(  // Access point. Send data with mMitterFib5.release(data).
         x => {
           let ar = O.mMfibs8.x.slice(0, O.mMfibs8.x.length);
           if (x > ar[ar.length - 1]) {
