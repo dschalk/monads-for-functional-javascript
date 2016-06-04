@@ -5,6 +5,7 @@ import code from './code.js';
 import {observable, computed, autorun, asReference} from 'mobx'
 
 monadState = O;
+
 // monadState = observable(O);
 
 function createWebSocket(path) {
@@ -598,7 +599,6 @@ function main(sources) {
     let v = e.target.value;
     if( e.keyCode == 13 ) {
       mMcount.ret(e.target.value)
-      .bnd(log2);
       let a = e.target.value;
       let b = monadState.mMcount2.x
       let c = [ a + ' + ' + b + ' = ' + (a*1 + b*1),  
@@ -617,7 +617,6 @@ function main(sources) {
     let v = e.target.value;
     if( e.keyCode == 13 ) {
       mMcount2.ret(e.target.value)
-      .bnd(log2);
     let a = monadState.mMcount.x
     let b = e.target.value;
     let c = [ a + ' + ' + b + ' = ' + (a*1 + b*1),  
@@ -859,7 +858,7 @@ function main(sources) {
         code.monadStr,
         h('span.tao', ' MonadStream instances acquire values with the "ret()" method, placing them in the "stream" attribute. The stream depends on the ' ),
         h('a', {props: {href: "https://github.com/TylorS/most-subject/", target: "_blank" }}, 'most-subject' ),
-        h('p', ' The next example uses MonadStream instances to display a array of Fibonacci numbers, an array of Prime numbers, and an array of prime Fibonacci numbers. The number entered into the box below puts an upper bound on the arrays. '  ),
+        h('p', ' The next example uses MonadStream instances to display an array of Fibonacci numbers, an array of Prime numbers, and an array of prime Fibonacci numbers. The number entered into the box below puts an upper bound on the arrays. '  ),
         h('p', ' Enter an integer below to run the code. '  ), 
         h('input#fib3335',  ),
         h('p#fib5.red4',  ),  
@@ -877,23 +876,7 @@ function main(sources) {
 
 
         h('h2', 'Hot Monad State'   ),
-        h('p', ' Expressions involving parsing or computation can be automatically evaluated without function calls. MobX facilitates this kind of functionality by making mutable data observable. The mutable global object O is a good match for MobX. After the following two lines of code, any expression involving the Monad ret() method automatically executes. ' ),
-        h('pre', 
-`import {observable, computed, autorun, asReference} from 'mobx'
-monadState = observable(O);
-`  ),
-        h('p', ' Now, for any monad m and value v, when m.ret(v) executes, O.m is automatically updated (by the definition of "ret()") so that O.m.x == v becomes true. And since monadState = observable(O), monadState.m.x == v is also true. In the next domonstration, MobX is used to help create arrays of Fibonacci numbers. Here is the code: ' ),
-        code.reactiveFib,
-        h('div.tao', ' When you enter a number below, ' [ 
-        h('pre', `fibFunc(<entered number>)` ),
-        h('span', 'executes with the number you entered. The number must be greater than 2.  '  ) ] ),
-        h('br' ),
-        h('span', ' Enter a number greater than 2 here: ' ), 
-        h('input#fibF',   ), 
-        h('p#newFib', O.mMfib2.x  ),
-        h('p', ' Neither mMcount, O.mMcount, nor monadState.mMcount are mutated in the code above. Only "O" mutates. This helps prevent functions from interfering with one another. Once a function creates a reference to O.mMcount, the value of that reference cannot be altered by another function. On the other hand, having "O" constantly mutate as state changes is a powerful feature. Compared to other data structures in this application, to me "O" seems brilliant and alive, and kind of like the sun at the center of the solar system. It is full of firey potential, and it is what makes effortless MobX reactivity possible. '  ),
-        h('p', ' Religeously adhering to immutability, or anything else for that matter, limits possiblities. If your boss does that; well, that\'s part of the job. If you are doing it to yourself, maybe you would do well to step back and think it over for a while. '  ),  
-        h('p', ' Motorcycle provides a great deal of reactive functionality. spread1PressAction$ and spread2Action$ (shown below) are merged into the main stream that feeds the virtual DOM. There is no need for MobX. Here is the code: ' ), 
+        h('p', ' Motorcycle provides a great deal of reactive functionality. I was thinking of making the monad state object "O" observable with MobX so any expressions using the Monad ret() would automatically execute. A basic MobX example is a spreadsheet-like calculator whose results automatically update whenever one of the numbers in the computation changes. The code for the spread1PressAction$ and spread2Action$ streams is shown below. spread1Action$ and spread2Action$ are merged into the main stream that feeds the virtual DOM. There is no need for MobX. The calculations automatically update whenever numbers are entered into the boxes under the following code: ' ), 
         code.spreadsheet,
         h('p', ' And here is where you can enter numbers: ' ),
         h('span', 'O.mMcount.ret(number): ' ), 

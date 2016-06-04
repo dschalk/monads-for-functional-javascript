@@ -69,7 +69,7 @@ var Monad = function Monad(z, g) {
   };
 };
 
-var MonadIter = function MonadIter() {
+var MonadItter = function MonadItter() {
   var _this = this;
   this.p = function () {};
 
@@ -128,7 +128,7 @@ var M = function M(a,b) {
 };
 
 var MI = function MI(x) {
-  return new MonadIter(x);
+  return new MonadItter(x);
 };
 
 var count = 0;

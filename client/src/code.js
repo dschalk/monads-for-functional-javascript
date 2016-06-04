@@ -52,16 +52,16 @@ const monad = h('pre', {style: {color: '#AFEEEE' }}, `  var Monad = function Mon
   }; ` )
 
 const monadStr = h('pre', {style: {color: '#AFEEEE' }}, `  var MonadStream = function MonadStream(g) {
-      var _this = this;
-      this.stream = xs.create();
-      this.id = g;
-      this.ret = function (a) {
-        _this.stream.shamefullySendNext(a);
-        return _this;
-      };
+        var _this = this;
+        this.id = g;
+        this.stream = mostSubject.subject()
+        this.ret = function (a) {
+          _this.stream.next(a);
+          return _this;
+        };
   }; ` )
 
-const monadIt = h('pre', {style: {color: '#AFEEEE' }}, `  var MonadIter = function MonadIter() {
+const monadIt = h('pre', {style: {color: '#AFEEEE' }}, `  var MonadItter = function MonadItter() {
     var _this = this;
     this.p = function () {};
   
@@ -709,160 +709,6 @@ var ret_add_cube = h('pre',  `  var ret = function ret(v, id) {
 
 var seed = h('pre',  `  mM$prime.ret([[2],3])  `  )
 
-var primeFib1 = h('pre',  `  const primeKeyPress2$ = sources.DOM
-    .select('input#prime3334').events('keydown');
-
-  const primeKeyPressAction2$ = primeKeyPress2$.map(e => {
-    if (e.target.value == '') {return};
-    if( e.keyCode == 13 && Number.isInteger(e.target.value*1) ) {
-      mMitterFib4.release(e.target.value);
-    }
-    if( e.keyCode == 13 && !Number.isInteger(e.target.value*1 )) {
-      mM19.ret("You didn't provide an integer");
-    }
-  });
-
-  mM$fib4.stream.addListener({                // Called while the web page is loading.
-    next: v => {
-      var a = v[1];         // Fibonacci number
-      var b = v[0] + v[1];  // Fibonacci number
-      var c = v[2];         // Limit
-      var d = v[3];         // List of Fibonacci numbers
-      let wd = JSON.parse(JSON.stringify(d));
-      d.push(a);
-      if (a < c) {mM$fib4.ret([a,b,c,d])}
-      else {
-        mMfibSave2.ret([a, b, c, d]);
-        document.getElementById('fib4').innerHTML = wd; 
-        mMitterPrimeFibs.release([v[0], wd]);
-      };
-      mMitterFib8.bnd(limit => {          // Released by primeKeyPressAction2$ (above).
-        let e = [O.mMfibSave2.x[0], O.mMfibSave2.x[1], limit, O.mMfibSave2.x[3]];
-        mM$fib4.ret(e);
-      }) 
-      mMitterFib4.bnd(
-        x => {
-          if (x > (v[3][v[3].length - 1])) {
-            mMitterFib8.release(x);
-          }
-          else {
-            var ar1 = JSON.parse(JSON.stringify(O.mMfibSave2.x[3]));
-            var ar = ar1.filter(v => v <= x);
-            mMitterPrimeFibs.release([ar[ar.length - 1], ar]);
-            document.getElementById('fib4').innerHTML = ar; 
-          }
-      })
-    },
-    error: err => console.error(err),
-    complete: () => console.log('completed')
-  });
-
-  mM$primeFibs.stream.addListener({
-    next: v => {
-      while (v[2] > v[0][v[0].length - 1]) {
-        for (let i in v[0]) {
-          if ((v[1] % v[0][i]) == 0) {
-            mM$primeFibs.ret([v[0], v[1] + 1, v[2], v[3]]);
-          }
-          if (i == (v[0].length - 1)) {
-            v[0].push(v[1]);
-            document.getElementById('prime2').innerHTML = v[0];
-          }
-        }
-      }
-      mM$PF.ret(v[0].filter(function(n) {
-        return v[3].indexOf(n) != -1;
-      }));
-      mMitterFib7.bnd(z => {
-        let recent = v[0][v[0].length - 1];
-        mM$primeFibs.ret([ v[0], v[1] + 1, z[0], z[1] ]);
-      })
-      mMitterPrimeFibs.bnd(
-        x => {
-          if (x[0] > v[0][v[0].length - 1]) { 
-            mMitterFib7.release(x);
-          }
-          else {
-            var ar = JSON.parse(JSON.stringify(v[0]));
-            var ar2 = ar.filter(v => v <= x[0]);
-            var num = ar[ar2.length];
-            ar2.push(num);
-            document.getElementById('prime2').innerHTML = ar2;
-          }
-        }
-      )
-    },
-    error: err => console.error(err),
-    complete: () => console.log('completed')
-  });
-
-  mM$PF.stream.addListener({
-    next: x => {
-      if (x[0] < x[1][x[1].length - 1]) {
-        let ar = JSON.parse(JSON.stringify(x[1]));
-        let ar2 = ar.filter(v => v <= x[0]);
-        document.getElementById('primeFibs').innerHTML = ar2;
-      }
-      else {document.getElementById('primeFibs').innerHTML = x[1];}
-    },
-  error: err => console.error(err),
-  complete: () => console.log('completed')
-  });  `  )
-
-var primeFib2 = h('pre',  `  const fibKeyPress5$ = sources.DOM
-    .select('input#fib3335').events('keydown');
-
-  const fibKeyPressAction5$ = fibKeyPress5$.map(e => {
-    console.log('In fibKeyPressAction');
-    if (e.target.value == '') {return};
-    if( e.keyCode == 13 && Number.isInteger(e.target.value*1) ) {
-      console.log('releasing mMitterFib5');
-      mMitterFib5.release(e.target.value);
-    }
-    if( e.keyCode == 13 && !Number.isInteger(e.target.value*1 )) {
-        document.getElementById('fib5').innerHTML = "You didn't provide an integer";
-    }
-  });
-
-  mM$fib5.stream.addListener({                     // Called as the web page loads.
-    next: v => {
-      var a = v[1];         // Fibonacci number
-      var b = v[0] + v[1];  // Fibonacci number
-      var c = v[2];         // Limit
-      var d = v[3];         // List of Fibonacci numbers
-      let wd = JSON.parse(JSON.stringify(d));
-      d.push(a);
-      if (a < c) {mM$fib5.ret([a,b,c,d])}
-      else {
-        mMfibSave.ret([a, b, c, d]);
-        document.getElementById('fib5').innerHTML = wd; 
-      };
-      mMitterFib6.bnd(limit => {         // Released by fibKeyPressAction5$ (above).
-        let w = JSON.parse(JSON.stringify(O.mMfibSave.x[3]));
-        let e = [O.mMfibSave.x[0], O.mMfibSave.x[1], limit, w];
-        mM$fib5.ret(e);
-      }) 
-      mMitterFib5.bnd(
-        x => {
-          console.log('In mMitterFib5.bnd -- x is: ', x);
-          if (x > (v[3][v[3].length - 1])) {
-            console.log('In the x > ... test. x and v are: ', x, v);
-            mMitterFib6.release(x);
-          }
-          else {
-            var ar1 = O.mMfibSave.x[3];
-            var ar = ar1.filter(v => v <= x);
-            console.log('In mMitterFib4.bnd x < largest   x, ar1, and ar are: ', x, ar1, ar);
-            document.getElementById('fib5').innerHTML = ar; 
-          }
-      })
-    },
-    error: err => console.error(err),
-    complete: () => console.log('completed')
-  });
-
-             `  )
-
 var primeFib4 = h('pre',  `  mM$prime5.stream.observe(v => {
       while ((v[0][v[0].length - 1]) < v[2]) {
         for (let i in v[0]) {
@@ -930,7 +776,6 @@ var spreadsheet = h('pre',  `  const spread1Press$ = sources.DOM
     let v = e.target.value;
     if( e.keyCode == 13 ) {
       mMcount.ret(e.target.value)
-      .bnd(log2);
       let a = e.target.value;
       let b = monadState.mMcount2.x
       let c = [ a + ' + ' + b + ' = ' + (a*1 + b*1),  
@@ -949,7 +794,6 @@ var spreadsheet = h('pre',  `  const spread1Press$ = sources.DOM
     let v = e.target.value;
     if( e.keyCode == 13 ) {
       mMcount2.ret(e.target.value)
-      .bnd(log2);
     let a = monadState.mMcount.x
     let b = e.target.value;
     let c = [ a + ' + ' + b + ' = ' + (a*1 + b*1),  
@@ -997,6 +841,6 @@ var seed5 = h('pre',  `
 
 
 
-  export default {monad, monadStr, monadIt, fib, driver, messages, next, Monad$, updateCalc, arrayFuncs, travel, nums, cleanup, ret, C42, taskStream, newTask, process, mM$task, addString, colorClick, edit, testZ, quad, mdem1, runTest, todoStream, gameStream, inc, ret_add_cube, primes, seed, primeFib1, primeFib4, primeFib3, spreadsheet, add, reactiveFib}
+  export default {monad, monadStr, monadIt, fib, driver, messages, next, Monad$, updateCalc, arrayFuncs, travel, nums, cleanup, ret, C42, taskStream, newTask, process, mM$task, addString, colorClick, edit, testZ, quad, mdem1, runTest, todoStream, gameStream, inc, ret_add_cube, primes, seed, primeFib4, primeFib3, spreadsheet, add, reactiveFib}
 
 

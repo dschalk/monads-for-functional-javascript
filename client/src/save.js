@@ -1,4 +1,25 @@
 
+
+
+        h('p', ' Expressions involving parsing or computation can be automatically evaluated without function calls. MobX facilitates this kind of functionality by making mutable data observable. The mutable global object O is a good match for MobX. After the following two lines of code, any expression involving the Monad ret() method automatically executes. ' ),
+        h('pre', 
+`import {observable, computed, autorun, asReference} from 'mobx'
+monadState = observable(O);
+`  ),
+        h('p', ' Now, for any monad m and value v, when m.ret(v) executes, O.m is automatically updated (by the definition of "ret()") so that O.m.x == v becomes true. And since monadState = observable(O), monadState.m.x == v is also true. In the next domonstration, MobX is used to help create arrays of Fibonacci numbers. Here is the code: ' ),
+        code.reactiveFib,
+        h('div.tao', ' When you enter a number below, ' [ 
+        h('pre', `fibFunc(<entered number>)` ),
+        h('span', 'executes with the number you entered. The number must be greater than 2.  '  ) ] ),
+        h('br' ),
+        h('span', ' Enter a number greater than 2 here: ' ), 
+        h('input#fibF',   ), 
+        h('p#newFib', O.mMfib2.x  ),
+        h('p', ' Neither mMcount, O.mMcount, nor monadState.mMcount are mutated in the code above. Only "O" mutates. This helps prevent functions from interfering with one another. Once a function creates a reference to O.mMcount, the value of that reference cannot be altered by another function. On the other hand, having "O" constantly mutate as state changes is a powerful feature. Compared to other data structures in this application, to me "O" seems brilliant and alive, and kind of like the sun at the center of the solar system. It is full of firey potential, and it is what makes effortless MobX reactivity possible. '  ),
+        h('p', ' Religeously adhering to immutability, or anything else for that matter, limits possiblities. If your boss does that; well, that\'s part of the job. If you are doing it to yourself, maybe you would do well to step back and think it over for a while. '  ),  
+
+
+
 const fibber = observable(0);
 fibber.set(1);
 var fibby = function fibby(n) {

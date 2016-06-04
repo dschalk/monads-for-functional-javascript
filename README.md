@@ -31,7 +31,7 @@ Here are some definitions, which can also be seen at [the online presentation](h
     };
   }; ` 
 ```
-##MonadIter
+##MonadItter
 ```javascript
   var MonadIter = function MonadIter() {
     var _this = this;
@@ -101,14 +101,80 @@ Other than O, MonatIter instances are the only objects that mutate in this prese
 ### Implications of "O" for Cycle.js and Motorcycle.js
 [Cycle.js](https://github.com/cyclejs/core) has been criticized for not keeping state in a central location. Well, there it is, in O. I have created applications using Node.js and React.js. [Motorcycle.js](https://github.com/motorcyclejs) is such a relief. It and the monads presented here work well together. As previously mentioned, Motorcycle.js is Cycle.js, only using [Most](https://github.com/cujojs/most) and [Snabbdom](https://github.com/paldepind/snabbdom) instead of RxJS and "virtual-dom").
 
-###[The Online Demonstration](http://schalk.net:3055)
+##[The Online Demonstration](http://schalk.net:3055)
 The online demonstration features a game with a traversible dice-roll history; group chat rooms; and a persistent, multi-user todo list. People in the same group share the game, chat messages, and whatever todo list they might have. Updating, adding, removing, or checking "Complete" by any member causes every member 's todo list to update. The Haskell websockets server preserves a unique text file for each group's todo list. Restarting the server does not affect the lists. Restarting or refreshing the browser window causes the list display to disappear, but signing in and re-joining the old group brings it back. If the final task is removed, the server deletes the group's todo text file. 
 
 With Motorcycle.js, the application runs smoothly and is easy to understand and maintain. I say "easy to understand", but some effort must first be invested into getting used to functions that take functions as arguments, and the Cycle.js / Motorcycle.js API. After that, seeing how the monads work is a matter of contemplating their definitions and experimenting a little. Most of the monads and the functions they use in this demonstration are immediately available in the browser console. Just load [http://schalk.net:3055](http://schalk.net:3055) and press F12 to explore and experiment.
 
+### Example
+One of the examples in the online demonstration uses MonadStream and MonadIter to produce an array of Fibonacci numbers, an array of prime numbers, and an array of prime Fibonacci numbers whenever a user enter an upper bound. The stream listeners are accessed through MonadItter's bnd() method. User data enters mM$fib5, then mM$fib5 calls mMitterPrime5.release([number, array]) sending a Fibonacci number and an array of Fibonacci numbers to mM$prime5. Fibonacci numbers and prime numbers are calculated only once. If an array shorter than one already computed is requested, a truncated version of the older list is displayed. Further explanation and an interactive demonstration are at [http://schalk.net:3055](http://schalk.net:3055).
+
+```javascript
+  mM$fib5.stream.observe(v => {
+    var x = v.splice(0, v.length);
+      if (x[1] < x[2]) {
+          monadState.mMfibs8.bnd(push, x[0] + x[1], mMfibs8);
+          mM$fib5.ret([x[1], x[0] + x[1], x[2]]);
+      }
+      else {
+        let ar = O.mMfibs8.x.slice(0, O.mMfibs8.x.length - 1);
+        document.getElementById('fib5').innerHTML = ar;
+        mMitterPrime5.release([x[0], ar]);
+      } 
+      mMitterFib5.bnd(
+        x => {
+          let ar = O.mMfibs8.x.slice(0, O.mMfibs8.x.length);
+          if (x > ar[ar.length - 1]) {
+            let a = ar.pop();
+            let b = ar.pop();
+            mM$fib5.ret([b, a, x]);
+          }
+          else {
+            let ar2 = ar.filter(v => v <= x);
+            document.getElementById('fib5').innerHTML = ar2;
+            mMitterPrime5.release(([ar2[ar2.length-1], ar2]));
+          }
+      })
+  });
+```
+The code above passes a Fibonacci number and an array of Fibonacci numbers to the code below.
+```javascript
+  mM$prime5.stream.observe(v => {
+      while ((v[0][v[0].length - 1]) < v[2]) {
+        for (let i in v[0]) {
+          if ((v[1] % v[0][i]) == 0) {
+            mM$prime5.ret([v[0], v[1] + 1, v[2]]);
+          }
+          if (i == (v[0].length - 1)) {
+            v[0].push(v[1]);
+          }
+        }
+      }
+      let ar = v[0].slice(0, v[0].length)
+      document.getElementById('prime5').innerHTML = ar;
+      var prFibs = ar.filter(v => O.mMfibs8.x.includes(v));
+      document.getElementById('primeFibs').innerHTML = prFibs;
+      mMitterPrime5.bnd(arr => {
+        var x = arr[0];
+        var fibs = arr[1];
+        if (x > (v[0][v[0].length - 1])) {
+          mM$prime5.ret([v[0], v[1] + 1, x]);
+        }
+        else {
+          let trunc = ar.filter(a => a < x);
+          let ar2 = ar.slice(0, trunc.length + 1);
+          document.getElementById('prime5').innerHTML = ar2;
+          var primeFibs = fibs.filter(v => ar2.includes(v)); 
+          document.getElementById('primeFibs').innerHTML = primeFibs;
+           
+        }
+      })
+  });
+```
+Other ways of generating the three arrays might be more efficient; but when you are familiar with the monads, the above code is easy to read and understand. User data -> mMitterFib5.release(num) -> test -> (A) generate a longer array and display or (B) truncate and display -> mMitterPrime5.release -> test -> (A) generate a longer array and display or (B) truncate and display.
 
 
-.
+ 
 .
 .
 
