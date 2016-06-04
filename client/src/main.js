@@ -4,9 +4,24 @@ import {just, create, merge, combine, fromEvent, periodic, observe, delay, filte
 import code from './code.js';
 import {observable, computed, autorun, asReference} from 'mobx'
 
-monadState = O;
+// monadState = O;
 
-// monadState = observable(O);
+monadState = observable(O);
+
+
+autorun(() => console.log(' O.mM27.x ', O.mM27.x));
+
+mM24.ret(100);
+mM25.ret(1000);
+mM27.ret(O.mM24.x + O.mM25.x);
+mM27.ret(O.mM24.x - O.mM25.x);
+mM27.ret(O.mM24.x * O.mM25.x);
+mM27.ret(O.mM24.x / O.mM25.x);
+autorun(() => console.log(O.mM24.x + O.mM25.x));
+autorun(() => console.log(O.mM24.x - O.mM25.x));
+autorun(() => console.log(O.mM24.x * O.mM25.x));
+autorun(() => console.log(O.mM24.x / O.mM25.x));
+mM25.ret(100);
 
 function createWebSocket(path) {
     let host = window.location.hostname;
@@ -775,6 +790,10 @@ function main(sources) {
         h('p', ' As you see, cube() and ret() are overloaded functions. Here are some examples of various ways of using them: ' ),
         h('span.red3', 'cube(3)' ),
         h('span.td2', ' creates a useless anonymous monad with x == 27 and id == "anonymous". ' ),
+        h('br' ),  
+        h('br' ),  
+        h('span.red3', 'cube(3).bnd(m.ret)' ),
+        h('span.td2', ' O.m.x == 27 and O.m.id == "m". ' ),
         h('br' ),  
         h('br' ),  
         h('span.red3', 'cube(5, m)' ), 

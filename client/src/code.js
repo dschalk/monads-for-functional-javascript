@@ -772,7 +772,6 @@ var spreadsheet = h('pre',  `  const spread1Press$ = sources.DOM
     .select('#spread1').events('keypress');
 
   const spread1PressAction$ = spread1Press$.map(e => {
-    console.log('Hello from spread1');
     let v = e.target.value;
     if( e.keyCode == 13 ) {
       mMcount.ret(e.target.value)
@@ -790,7 +789,6 @@ var spreadsheet = h('pre',  `  const spread1Press$ = sources.DOM
     .select('#spread2').events('keypress');
 
   const spread2PressAction$ = spread2Press$.map(e => {
-    console.log('Hello from spread2');
     let v = e.target.value;
     if( e.keyCode == 13 ) {
       mMcount2.ret(e.target.value)

@@ -14,7 +14,6 @@ var MonadStream = function MonadStream(g) {
   this.stream = mostSubject.subject()
   this.ret = function (a) {
     _this.stream.next(a);
-    console.log('in ' + _this.id + ' emmitting ' + a);
     return _this;
   };
 };
@@ -318,6 +317,8 @@ mMgoals2.ret(mMgoals2.x)
 mM3.ret(mM3.x)
 mM6.ret(mM6.x)
 mM24.ret(mM24.x)
+mM25.ret(mM25.x)
+mM26.ret(mM26.x)
 mMmsg.ret(mMmsg.x)
 mMmessages.ret(mMmessages.x)
 mMgroup.ret(mMgroup.x)
