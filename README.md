@@ -33,7 +33,7 @@ Here are some definitions, which can also be seen at [the online presentation](h
 ```
 ##MonadItter
 ```javascript
-  var MonadIter = function MonadIter() {
+  var MonadItter = function MonadItter() {
     var _this = this;
     this.p = function () {};
   
