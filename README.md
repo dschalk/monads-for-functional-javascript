@@ -33,6 +33,21 @@ Here are some definitions, which can also be seen at [the online presentation](h
 ```
 ##MonadItter
 ```javascript
+  var MonadItter = function MonadItter() {
+    var _this = this;
+    this.p = function () {};
+  
+    this.release = function (...args) {
+      return this.p(...args);
+    };
+  
+    this.bnd = function (func) {
+      _this.p = func;
+    };
+  }; ` 
+```
+## MonadStream
+```javascript
   var MonadStream = function MonadStream(g) {
     var _this = this;
     this.id = g;
@@ -42,21 +57,6 @@ Here are some definitions, which can also be seen at [the online presentation](h
       return _this;
     };
   };
-```
-## MonadStream
-```javascript
-  var MonadStream = function MonadStream(g) {
-    var _this = this;
-    this.subject = subject();
-    this.observer = this.subject.observer;
-    this.stream = this.subject.stream;
-    this.id = g;
-    this.ret = function (a) {
-      O[_this.id] = new MonadStream(a,_this.id);
-      _this.observer.next(a);
-      console.log('Streaming from ', _this.id);
-    };
-  }; ` 
 ```
 ## Stand alone ret()
 ```javascript
