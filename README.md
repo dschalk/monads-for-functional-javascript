@@ -33,18 +33,15 @@ Here are some definitions, which can also be seen at [the online presentation](h
 ```
 ##MonadItter
 ```javascript
-  var MonadItter = function MonadItter() {
+  var MonadStream = function MonadStream(g) {
     var _this = this;
-    this.p = function () {};
-  
-    this.release = function (...args) {
-      return this.p(...args);
+    this.id = g;
+    this.stream = mostSubject.subject()
+    this.ret = function (a) {
+      _this.stream.next(a);
+      return _this;
     };
-  
-    this.bnd = function (func) {
-      _this.p = func;
-    };
-  }; ` 
+  };
 ```
 ## MonadStream
 ```javascript
