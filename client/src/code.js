@@ -772,16 +772,11 @@ var spreadsheet = h('pre',  `  const spread1Press$ = sources.DOM
     .select('#spread1').events('keypress');
 
   const spread1PressAction$ = spread1Press$.map(e => {
+    console.log('Hello from spread1');
     let v = e.target.value;
     if( e.keyCode == 13 ) {
       mMcount.ret(e.target.value)
-      let a = e.target.value;
-      let b = monadState.mMcount2.x
-      let c = [ a + ' + ' + b + ' = ' + (a*1 + b*1),  
-      a + ' - ' + b + ' = ' + (a - b),  
-      a + ' * ' + b + ' = ' + (a * b),  
-      a + ' / ' + b + ' = ' + (a / b) ];
-      mMspreadsheet.ret(c);
+      .bnd(() => calculate());
     }
   });
 
@@ -789,18 +784,29 @@ var spreadsheet = h('pre',  `  const spread1Press$ = sources.DOM
     .select('#spread2').events('keypress');
 
   const spread2PressAction$ = spread2Press$.map(e => {
+    console.log('Hello from spread2');
     let v = e.target.value;
     if( e.keyCode == 13 ) {
       mMcount2.ret(e.target.value)
-    let a = monadState.mMcount.x
-    let b = e.target.value;
-    let c = [ a + ' + ' + b + ' = ' + (a*1 + b*1),  
-    a + ' - ' + b + ' = ' + (a - b),  
-    a + ' * ' + b + ' = ' + (a * b),  
-    a + ' / ' + b + ' = ' + (a / b) ];
-    mMspreadsheet.ret(c);
+      .bnd(() => calculate());
     }
-  });  `  )
+  });
+
+  var calculate = function calculate() {
+      let a = O.mMcount.x;
+      let b = O.mMcount2.x
+      let c = [ a + ' + ' + b + ' = ' + (a*1 + b*1),  
+      a + ' - ' + b + ' = ' + (a - b),  
+      a + ' * ' + b + ' = ' + (a * b),  
+      a + ' / ' + b + ' = ' + (a / b) ];
+      mMspreadsheet.ret(c);
+  };  `  )
+
+var spreadsheet2 = h('pre',  `  autorun(() => RESULT = (
+  [O.mMcount.x + ' + ' + O.mMcount2.x + ' = ' + (O.mMcount.x*1 + O.mMcount2.x*1),  
+   O.mMcount.x + ' - ' + O.mMcount2.x + ' = ' + (O.mMcount.x - O.mMcount2.x),  
+   O.mMcount.x + ' * ' + O.mMcount2.x + ' = ' + (O.mMcount.x * O.mMcount2.x),  
+   O.mMcount.x + ' / ' + O.mMcount2.x + ' = ' + (O.mMcount.x / O.mMcount2.x)]));  `  )
 
 var reactiveFib = h('pre',  `  const newFibpress$ = sources.DOM
     .select('input#fibF').events('keypress');
@@ -826,9 +832,6 @@ var reactiveFib = h('pre',  `  const newFibpress$ = sources.DOM
     }
   });  `  )
 
-var seed3 = h('pre',  ` 
-             `  )
-
 var seed4 = h('pre',  ` 
              `  )
 
@@ -839,6 +842,6 @@ var seed5 = h('pre',  `
 
 
 
-  export default {monad, monadStr, monadIt, fib, driver, messages, next, Monad$, updateCalc, arrayFuncs, travel, nums, cleanup, ret, C42, taskStream, newTask, process, mM$task, addString, colorClick, edit, testZ, quad, mdem1, runTest, todoStream, gameStream, inc, ret_add_cube, primes, seed, primeFib4, primeFib3, spreadsheet, add, reactiveFib}
+  export default {monad, monadStr, monadIt, fib, driver, messages, next, Monad$, updateCalc, arrayFuncs, travel, nums, cleanup, ret, C42, taskStream, newTask, process, mM$task, addString, colorClick, edit, testZ, quad, mdem1, runTest, todoStream, gameStream, inc, ret_add_cube, primes, seed, primeFib4, primeFib3, spreadsheet, spreadsheet2, add, reactiveFib}
 
 

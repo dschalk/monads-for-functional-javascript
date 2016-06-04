@@ -303,15 +303,22 @@ mMprime.ret(mMprime.x)
 var mMspreadsheet = new Monad([0,0,0,0], 'mMspreadsheet');
 mMspreadsheet.ret(mMspreadsheet.x)
 
+var mMspreadsheet2 = new Monad([0,0,0,0], 'mMspreadsheet2');
+mMspreadsheet2.ret(mMspreadsheet2.x)
+
+var RESULT =[0,0,0,0];
+
 var mMdisplayFibs = new Monad([0,1], 'mMdisplayFibs');
 mMdisplayFibs.ret(mMdisplayFibs.x);
 
 var mMcount = new Monad(0, 'mMcount');
 var mMcount2 = new Monad(0, 'mMcount2');
 var mMcount3 = new Monad(0, 'mMcount3');
+var mMcount4 = new Monad(0, 'mMcount4');
 mMcount.ret(mMcount.x);
 mMcount2.ret(mMcount2.x);
 mMcount3.ret(mMcount3.x);
+mMcount4.ret(mMcount4.x);
 
 mMgoals2.ret(mMgoals2.x)
 mM3.ret(mM3.x)

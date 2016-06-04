@@ -614,13 +614,7 @@ function main(sources) {
     let v = e.target.value;
     if( e.keyCode == 13 ) {
       mMcount.ret(e.target.value)
-      let a = e.target.value;
-      let b = monadState.mMcount2.x
-      let c = [ a + ' + ' + b + ' = ' + (a*1 + b*1),  
-      a + ' - ' + b + ' = ' + (a - b),  
-      a + ' * ' + b + ' = ' + (a * b),  
-      a + ' / ' + b + ' = ' + (a / b) ];
-      mMspreadsheet.ret(c);
+      .bnd(() => calculate());
     }
   });
 
@@ -632,15 +626,48 @@ function main(sources) {
     let v = e.target.value;
     if( e.keyCode == 13 ) {
       mMcount2.ret(e.target.value)
-    let a = monadState.mMcount.x
-    let b = e.target.value;
-    let c = [ a + ' + ' + b + ' = ' + (a*1 + b*1),  
-    a + ' - ' + b + ' = ' + (a - b),  
-    a + ' * ' + b + ' = ' + (a * b),  
-    a + ' / ' + b + ' = ' + (a / b) ];
-    mMspreadsheet.ret(c);
+      .bnd(() => calculate());
     }
   });
+
+  var calculate = function calculate() {
+      let a = O.mMcount.x;
+      let b = O.mMcount2.x
+      let c = [ a + ' + ' + b + ' = ' + (a*1 + b*1),  
+      a + ' - ' + b + ' = ' + (a - b),  
+      a + ' * ' + b + ' = ' + (a * b),  
+      a + ' / ' + b + ' = ' + (a / b) ];
+      mMspreadsheet.ret(c);
+  };
+
+  const spread3Press$ = sources.DOM
+    .select('#spread3').events('keypress');
+
+  const spread3PressAction$ = spread3Press$.map(e => {
+    console.log('Hello from spread3');
+    let v = e.target.value;
+    if( e.keyCode == 13 ) {
+      mMcount3.ret(e.target.value)
+    }
+  });
+
+  const spread4Press$ = sources.DOM
+    .select('#spread4').events('keypress');
+
+  const spread4PressAction$ = spread4Press$.map(e => {
+    console.log('Hello from spread4');
+    let v = e.target.value;
+    if( e.keyCode == 13 ) {
+      mMcount4.ret(e.target.value)
+    }
+  });
+
+ autorun(() => RESULT = (
+ [O.mMcount.x + ' + ' + O.mMcount2.x + ' = ' + (O.mMcount.x*1 + O.mMcount2.x*1),  
+  O.mMcount.x + ' - ' + O.mMcount2.x + ' = ' + (O.mMcount.x - O.mMcount2.x),  
+  O.mMcount.x + ' * ' + O.mMcount2.x + ' = ' + (O.mMcount.x * O.mMcount2.x),  
+  O.mMcount.x + ' / ' + O.mMcount2.x + ' = ' + (O.mMcount.x / O.mMcount2.x)]));
+
 
   const newFibpress$ = sources.DOM
     .select('input#fibF').events('keypress');
@@ -666,7 +693,7 @@ function main(sources) {
     }
   });
 
-  const calcStream$ = merge( newFibAction$, spread1PressAction$, spread2PressAction$, fibKeyPressAction5$, primeKeyPressAction5$, fibPressAction$, runTestAction$, quadAction$, testWAction$, testZAction$, testQAction$, edit1Action$, edit2Action$, colorAction$, deleteAction$, newTaskAction$, chatClickAction$, gameClickAction$, todoClickAction$, captionClickAction$, backClickAction$, forwardClickAction$, groupPressAction$, rollClickAction$, messagePressAction$, loginPressAction$, messages$, numClickAction$, opClickAction$ );
+  const calcStream$ = merge( newFibAction$, spread1PressAction$, spread2PressAction$, spread3PressAction$, spread4PressAction$, fibKeyPressAction5$, primeKeyPressAction5$, fibPressAction$, runTestAction$, quadAction$, testWAction$, testZAction$, testQAction$, edit1Action$, edit2Action$, colorAction$, deleteAction$, newTaskAction$, chatClickAction$, gameClickAction$, todoClickAction$, captionClickAction$, backClickAction$, forwardClickAction$, groupPressAction$, rollClickAction$, messagePressAction$, loginPressAction$, messages$, numClickAction$, opClickAction$ );
   
     return {
       DOM: 
@@ -895,7 +922,10 @@ function main(sources) {
 
 
         h('h2', 'Hot Monad State'   ),
-        h('p', ' Motorcycle provides a great deal of reactive functionality. I was thinking of making the monad state object "O" observable with MobX so any expressions using the Monad ret() would automatically execute. A basic MobX example is a spreadsheet-like calculator whose results automatically update whenever one of the numbers in the computation changes. The code for the spread1PressAction$ and spread2Action$ streams is shown below. spread1Action$ and spread2Action$ are merged into the main stream that feeds the virtual DOM. There is no need for MobX. The calculations automatically update whenever numbers are entered into the boxes under the following code: ' ), 
+        h('p', ' I made the global object "O" observable with the following two lines of code: ' ),
+        h('pre', `    import {observable, autorun} from 'mobx'
+    monadState = observable(O);    ` ),
+        h('p', ' So now, whenever an instance of Monad, say m, calls its ret() method, O gets mutated and any expression containing O.m can be made to automatically update by a MobX observer. First, here is the code for a calculator that does not use MobX: '  ), 
         code.spreadsheet,
         h('p', ' And here is where you can enter numbers: ' ),
         h('span', 'O.mMcount.ret(number): ' ), 
@@ -907,9 +937,14 @@ function main(sources) {
         h('p#spreadsheet2',  O.mMspreadsheet.x[1] ), 
         h('p#spreadsheet3',  O.mMspreadsheet.x[2] ), 
         h('p#spreadsheet4',  O.mMspreadsheet.x[3] ), 
-
-
-
+        h('p', ' The MobX expression (shown below) produces these results:  '  ),
+        h('p#spreadsheet5',  RESULT[0] ), 
+        h('p#spreadsheet6',  RESULT[1] ), 
+        h('p#spreadsheet7',  RESULT[2] ), 
+        h('p#spreadsheet8',  RESULT[3] ), 
+        h('p', ' Here is the code that is responsible for the second set of results: '  ),
+        code.spreadsheet2,
+        h('p', ' User input changes O.mMcount.x and O.mMcount2.x; and since they were made observable by "monadState = observable(O)", autorun can make RESULT automatically update whenever either of them changes. As shown in the first block of calculations, the additional overhead of adding the MobX library to the application code base would not be justified if making a calculater was all that we wanted to do. MobX is extreemly useful in ReactJS applications, so I wanted to see what it could add here. I doubt that there is anything MobX can do that Motorcycle doesn\'t already have covered.   ' ),
         h('h2', 'Updating the DOM'  ),
         h('h3', 'Todo List DOM Updates' ),
         h('p', ' When users do anything to the todo list, MonadStream instance mM$taskList runs its ret() method on the modified String representation of the list, causing the string to be added to mM$taskList.stream. mM$taskList.stream has only one subscriber, taskAction$, whose only purpose it to send the string representation of the todo list to the server. The server updates its persistent file and distributes a text representation of the updated todo list to all group members. Each group member receives the todo list as a string and parses it into a DOM node tree that is merged into the stream that updates the virtual DOM. All Todo List side effects can be traced to:' ),
