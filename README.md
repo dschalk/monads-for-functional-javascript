@@ -168,7 +168,7 @@ The code above passes a Fibonacci number and an array of Fibonacci numbers to th
       })
   });
 ```
-Other ways of generating the three arrays might be more efficient; but when you are familiar with the monads, the above code is easy to read and understand. User data -> mMitterFib5.release(num) -> test -> (A) generate a longer array and display or (B) truncate and display -> mMitterPrime5.release -> test -> (A) generate a longer array and display or (B) truncate and display.
+Other ways of generating the three arrays might be more efficient; but when you are familiar with the monads, the above code is easy to read and understand. User data -> mMitterFib5.release(num) -> test -> (A) generate a longer array and display or (B) truncate and display -> mMitterPrime5.release -> test -> (A) generate a longer array and display or (B) truncate and display -> generate the prime Fibonacci numbers and display them.
 
 
  
