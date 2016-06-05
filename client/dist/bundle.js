@@ -10710,12 +10710,10 @@
 	    mM23.ret([O.mM23.x[1], O.mM23.x[0] + O.mM23.x[1]]);
 	  },2000  )
 	});
-	*/
 
-	arTest.observe(function (v) {
-	  return console.log('computed mM23', v);
-	});
-	mM23.ret([0, 1]);
+	arTest.observe(v => console.log('computed mM23', v));
+	mM23.ret([0,1]);
+	*/
 
 	var sumTest = (0, _mobx.computed)(function () {
 	  return O.mM22.x + O.mM23.x;
