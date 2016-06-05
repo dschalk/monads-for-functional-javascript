@@ -5531,7 +5531,7 @@
 
 	var spreadsheet = (0, _dom.h)('pre', '  const spread1Press$ = sources.DOM\n    .select(\'#spread1\').events(\'keypress\');\n\n  const spread1PressAction$ = spread1Press$.map(e => {\n    console.log(\'Hello from spread1\');\n    let v = e.target.value;\n    if( e.keyCode == 13 ) {\n      mMcount.ret(e.target.value)\n      .bnd(() => calculate());\n    }\n  });\n\n  const spread2Press$ = sources.DOM\n    .select(\'#spread2\').events(\'keypress\');\n\n  const spread2PressAction$ = spread2Press$.map(e => {\n    console.log(\'Hello from spread2\');\n    let v = e.target.value;\n    if( e.keyCode == 13 ) {\n      mMcount2.ret(e.target.value)\n      .bnd(() => calculate());\n    }\n  });\n\n  var calculate = function calculate() {\n      let a = O.mMcount.x;\n      let b = O.mMcount2.x\n      let c = [ a + \' + \' + b + \' = \' + (a*1 + b*1),  \n      a + \' - \' + b + \' = \' + (a - b),  \n      a + \' * \' + b + \' = \' + (a * b),  \n      a + \' / \' + b + \' = \' + (a / b) ];\n      mMspreadsheet.ret(c);\n  };  ');
 
-	var spreadsheet2 = (0, _dom.h)('pre', '  autorun(() => RESULT = (\n  [O.mMcount.x + \' + \' + O.mMcount2.x + \' = \' + (O.mMcount.x*1 + O.mMcount2.x*1),  \n   O.mMcount.x + \' - \' + O.mMcount2.x + \' = \' + (O.mMcount.x - O.mMcount2.x),  \n   O.mMcount.x + \' * \' + O.mMcount2.x + \' = \' + (O.mMcount.x * O.mMcount2.x),  \n   O.mMcount.x + \' / \' + O.mMcount2.x + \' = \' + (O.mMcount.x / O.mMcount2.x)]));  ');
+	var spreadsheet2 = (0, _dom.h)('pre', '  var R = computed(() => \n    [O.mMcount.x + \' + \' + O.mMcount2.x + \' = \' + (O.mMcount.x*1 + O.mMcount2.x*1),  \n     O.mMcount.x + \' - \' + O.mMcount2.x + \' = \' + (O.mMcount.x - O.mMcount2.x),  \n     O.mMcount.x + \' * \' + O.mMcount2.x + \' = \' + (O.mMcount.x * O.mMcount2.x),  \n     O.mMcount.x + \' / \' + O.mMcount2.x + \' = \' + (O.mMcount.x / O.mMcount2.x)]);\n\n  R.observe(v => {RESULT = v});  ');
 
 	var reactiveFib = (0, _dom.h)('pre', '  const newFibpress$ = sources.DOM\n    .select(\'input#fibF\').events(\'keypress\');\n\n  const newFibAction$ = newFibpress$.map(e => {\n    if( e.keyCode == 13 ) {\n      var a = observable(1);\n      var ar = [\'0, 1\'];\n      var k = 0;\n      a.observe(function(b, c) {\n          k+=1;\n          ar.push(\', \'+c);\n          if (k < (e.target.value - 2)) {\n              a.set(b + c);\n          }\n          mMfib2.ret(ar)\n          .bnd(v => {\n            console.log(v);\n          })\n      })\n      a.set(1);\n      a.set(2);\n    }\n  });  ');
 
@@ -10692,33 +10692,48 @@
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-	// monadState = O;
-
 	monadState = (0, _mobx.observable)(O);
+
+	var person = (0, _mobx.observable)({
+	  firstName: "Maarten",
+	  lastName: "Luther"
+	});
+	person.$mobx.observe(function (v) {
+	  return console.log(v);
+	});
+	person.firstName = "Andy";
+	person.firstName = "Jill";
+
+	/*
+	var arTest = computed(() => {
+	  setInterval(function() {
+	    mM23.ret([O.mM23.x[1], O.mM23.x[0] + O.mM23.x[1]]);
+	  },2000  )
+	});
+	*/
+
+	arTest.observe(function (v) {
+	  return console.log('computed mM23', v);
+	});
+	mM23.ret([0, 1]);
+
+	var sumTest = (0, _mobx.computed)(function () {
+	  return O.mM22.x + O.mM23.x;
+	});
+	sumTest.observe(function (v) {
+	  return console.log('computed ', v);
+	});
 
 	(0, _mobx.autorun)(function () {
 	  return console.log(' O.mM27.x ', O.mM27.x);
 	});
-
-	mM24.ret(100);
-	mM25.ret(1000);
+	mM24.ret(5);
+	mM25.ret(10);
 	mM27.ret(O.mM24.x + O.mM25.x);
-	mM27.ret(O.mM24.x - O.mM25.x);
-	mM27.ret(O.mM24.x * O.mM25.x);
-	mM27.ret(O.mM24.x / O.mM25.x);
 	(0, _mobx.autorun)(function () {
-	  return console.log(O.mM24.x + O.mM25.x);
+	  return console.log('O.mM24 + O.mM25: ', O.mM24.x + O.mM25.x);
 	});
-	(0, _mobx.autorun)(function () {
-	  return console.log(O.mM24.x - O.mM25.x);
-	});
-	(0, _mobx.autorun)(function () {
-	  return console.log(O.mM24.x * O.mM25.x);
-	});
-	(0, _mobx.autorun)(function () {
-	  return console.log(O.mM24.x / O.mM25.x);
-	});
-	mM25.ret(100);
+	mM24.ret(10);
 
 	function createWebSocket(path) {
 	  var host = window.location.hostname;
@@ -11043,7 +11058,6 @@
 	    console.log('In numClickAction$ O.mM3.x and e are: ', O.mM3.x, e);
 	    if (O.mM3.x.length < 2) {
 	      O.mM3.bnd(push, e.target.innerHTML, O.mM3);
-	      // mMtemp.ret(O.mMhistorymM1.x[O.mMindex2.x])
 	      O.mMallRolls.bnd(spliceRemove, O.mMindex2.x, e.target.id, mM$1);
 	      if (O.mM3.x.length === 2 && O.mM8.x !== 0) {
 	        updateCalc();
@@ -11123,7 +11137,7 @@
 	      mMitterPrime5.release([x[0], ar]);
 	    }
 	    mMitterFib5.bnd(function (x) {
-	      var ar = O.mMfibs8.x.slice(0, O.mMfibs8.x.length);
+	      var ar = O.mMfibs8.x.slice();
 	      if (x > ar[ar.length - 1]) {
 	        var a = ar.pop();
 	        var b = ar.pop();
@@ -11167,7 +11181,7 @@
 	        }
 	      }
 	    }
-	    var ar = v[0].slice(0, v[0].length);
+	    var ar = v[0].slice();
 	    document.getElementById('prime5').innerHTML = ar;
 	    var prFibs = ar.filter(function (v) {
 	      return O.mMfibs8.x.includes(v);
@@ -11348,8 +11362,12 @@
 	    }
 	  });
 
-	  (0, _mobx.autorun)(function () {
-	    return RESULT = [O.mMcount.x + ' + ' + O.mMcount2.x + ' = ' + (O.mMcount.x * 1 + O.mMcount2.x * 1), O.mMcount.x + ' - ' + O.mMcount2.x + ' = ' + (O.mMcount.x - O.mMcount2.x), O.mMcount.x + ' * ' + O.mMcount2.x + ' = ' + O.mMcount.x * O.mMcount2.x, O.mMcount.x + ' / ' + O.mMcount2.x + ' = ' + O.mMcount.x / O.mMcount2.x];
+	  var R = (0, _mobx.computed)(function () {
+	    return [O.mMcount.x + ' + ' + O.mMcount2.x + ' = ' + (O.mMcount.x * 1 + O.mMcount2.x * 1), O.mMcount.x + ' - ' + O.mMcount2.x + ' = ' + (O.mMcount.x - O.mMcount2.x), O.mMcount.x + ' * ' + O.mMcount2.x + ' = ' + O.mMcount.x * O.mMcount2.x, O.mMcount.x + ' / ' + O.mMcount2.x + ' = ' + O.mMcount.x / O.mMcount2.x];
+	  });
+
+	  R.observe(function (v) {
+	    RESULT = v;
 	  });
 
 	  var newFibpress$ = sources.DOM.select('input#fibF').events('keypress');

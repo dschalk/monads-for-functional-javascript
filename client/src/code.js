@@ -802,11 +802,13 @@ var spreadsheet = h('pre',  `  const spread1Press$ = sources.DOM
       mMspreadsheet.ret(c);
   };  `  )
 
-var spreadsheet2 = h('pre',  `  autorun(() => RESULT = (
-  [O.mMcount.x + ' + ' + O.mMcount2.x + ' = ' + (O.mMcount.x*1 + O.mMcount2.x*1),  
-   O.mMcount.x + ' - ' + O.mMcount2.x + ' = ' + (O.mMcount.x - O.mMcount2.x),  
-   O.mMcount.x + ' * ' + O.mMcount2.x + ' = ' + (O.mMcount.x * O.mMcount2.x),  
-   O.mMcount.x + ' / ' + O.mMcount2.x + ' = ' + (O.mMcount.x / O.mMcount2.x)]));  `  )
+var spreadsheet2 = h('pre',  `  var R = computed(() => 
+    [O.mMcount.x + ' + ' + O.mMcount2.x + ' = ' + (O.mMcount.x*1 + O.mMcount2.x*1),  
+     O.mMcount.x + ' - ' + O.mMcount2.x + ' = ' + (O.mMcount.x - O.mMcount2.x),  
+     O.mMcount.x + ' * ' + O.mMcount2.x + ' = ' + (O.mMcount.x * O.mMcount2.x),  
+     O.mMcount.x + ' / ' + O.mMcount2.x + ' = ' + (O.mMcount.x / O.mMcount2.x)]);
+
+  R.observe(v => {RESULT = v});  `  )
 
 var reactiveFib = h('pre',  `  const newFibpress$ = sources.DOM
     .select('input#fibF').events('keypress');

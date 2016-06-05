@@ -2,26 +2,39 @@ import Cycle from '@motorcycle/core';
 import {h, p, span, h1, h2, h3, br, div, label, input, hr, makeDOMDriver} from '@motorcycle/dom';
 import {just, create, merge, combine, fromEvent, periodic, observe, delay, filter, of} from 'most';
 import code from './code.js';
-import {observable, computed, autorun, asReference} from 'mobx'
-
-// monadState = O;
-
+import {observable, when, computed, autorun, asReference} from 'mobx'
 monadState = observable(O);
 
 
-autorun(() => console.log(' O.mM27.x ', O.mM27.x));
+const person = observable({
+    firstName: "Maarten",
+    lastName: "Luther"
+});
+person.$mobx.observe(v => console.log(v));
+person.firstName = "Andy";
+person.firstName = "Jill";
 
-mM24.ret(100);
-mM25.ret(1000);
+/*
+var arTest = computed(() => {
+  setInterval(function() {
+    mM23.ret([O.mM23.x[1], O.mM23.x[0] + O.mM23.x[1]]);
+  },2000  )
+});
+*/
+
+arTest.observe(v => console.log('computed mM23', v));
+mM23.ret([0,1]);
+
+
+var sumTest = computed(() => O.mM22.x + O.mM23.x);
+sumTest.observe(v => console.log('computed ', v));
+
+autorun(() => console.log(' O.mM27.x ', O.mM27.x));
+mM24.ret(5);
+mM25.ret(10);
 mM27.ret(O.mM24.x + O.mM25.x);
-mM27.ret(O.mM24.x - O.mM25.x);
-mM27.ret(O.mM24.x * O.mM25.x);
-mM27.ret(O.mM24.x / O.mM25.x);
-autorun(() => console.log(O.mM24.x + O.mM25.x));
-autorun(() => console.log(O.mM24.x - O.mM25.x));
-autorun(() => console.log(O.mM24.x * O.mM25.x));
-autorun(() => console.log(O.mM24.x / O.mM25.x));
-mM25.ret(100);
+autorun(() => console.log('O.mM24 + O.mM25: ', O.mM24.x + O.mM25.x));
+mM24.ret(10);
 
 function createWebSocket(path) {
     let host = window.location.hostname;
@@ -363,7 +376,6 @@ function main(sources) {
     console.log('In numClickAction$ O.mM3.x and e are: ', O.mM3.x, e);
     if (O.mM3.x.length < 2) {
       O.mM3.bnd(push, e.target.innerHTML, O.mM3)
-      // mMtemp.ret(O.mMhistorymM1.x[O.mMindex2.x])
       O.mMallRolls.bnd(spliceRemove, O.mMindex2.x, e.target.id, mM$1)
       if (O.mM3.x.length === 2 && O.mM8.x !== 0) {
         updateCalc();
@@ -445,7 +457,7 @@ function main(sources) {
       } 
       mMitterFib5.bnd(
         x => {
-          let ar = O.mMfibs8.x.slice(0, O.mMfibs8.x.length);
+          let ar = O.mMfibs8.x.slice();
           if (x > ar[ar.length - 1]) {
             let a = ar.pop();
             let b = ar.pop();
@@ -488,7 +500,7 @@ function main(sources) {
           }
         }
       }
-      let ar = v[0].slice(0, v[0].length)
+      let ar = v[0].slice()
       document.getElementById('prime5').innerHTML = ar;
       var prFibs = ar.filter(v => O.mMfibs8.x.includes(v));
       document.getElementById('primeFibs').innerHTML = prFibs;
@@ -662,11 +674,13 @@ function main(sources) {
     }
   });
 
- autorun(() => RESULT = (
+ var R = computed(() => 
  [O.mMcount.x + ' + ' + O.mMcount2.x + ' = ' + (O.mMcount.x*1 + O.mMcount2.x*1),  
   O.mMcount.x + ' - ' + O.mMcount2.x + ' = ' + (O.mMcount.x - O.mMcount2.x),  
   O.mMcount.x + ' * ' + O.mMcount2.x + ' = ' + (O.mMcount.x * O.mMcount2.x),  
-  O.mMcount.x + ' / ' + O.mMcount2.x + ' = ' + (O.mMcount.x / O.mMcount2.x)]));
+  O.mMcount.x + ' / ' + O.mMcount2.x + ' = ' + (O.mMcount.x / O.mMcount2.x)]);
+
+ R.observe(v => {RESULT = v}); 
 
 
   const newFibpress$ = sources.DOM
