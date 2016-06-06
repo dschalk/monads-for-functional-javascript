@@ -802,13 +802,36 @@ var spreadsheet = h('pre',  `  const spread1Press$ = sources.DOM
       mMspreadsheet.ret(c);
   };  `  )
 
-var spreadsheet2 = h('pre',  `  var R = computed(() => 
-    [O.mMcount.x + ' + ' + O.mMcount2.x + ' = ' + (O.mMcount.x*1 + O.mMcount2.x*1),  
-     O.mMcount.x + ' - ' + O.mMcount2.x + ' = ' + (O.mMcount.x - O.mMcount2.x),  
-     O.mMcount.x + ' * ' + O.mMcount2.x + ' = ' + (O.mMcount.x * O.mMcount2.x),  
-     O.mMcount.x + ' / ' + O.mMcount2.x + ' = ' + (O.mMcount.x / O.mMcount2.x)]);
+var spreadsheet2 = h('pre',  `  const spread1Press$ = sources.DOM
+    .select('#spread1').events('keypress');
 
-  R.observe(v => {RESULT = v});  `  )
+  const spread1PressAction$ = spread1Press$.map(e => {
+    if( e.keyCode == 13 ) {
+      mMcount.ret(e.target.value)
+      calcFunc();
+    }
+  });
+
+  const spread2Press$ = sources.DOM
+    .select('#spread2').events('keypress');
+
+  const spread2PressAction$ = spread2Press$.map(e => {
+    if( e.keyCode == 13 ) {
+      mMcount2.ret(e.target.value)
+      calcFunc();
+    }
+  });
+
+ var calcFunc = function calcFunc() {
+   let A = O.mMcount.x;
+   let B = O.mMcount2.x;
+   mMspreadsheet.ret(
+   [A + ' + ' + B + ' = ' + (A*1 + B*1),  
+    A + ' - ' + B + ' = ' + (A - B),  
+    A + ' * ' + B + ' = ' + (A * B),  
+    A + ' / ' + B + ' = ' + (A / B)])};  
+
+ autorun(() => {O.mMspreadsheet.x});  `  )
 
 var reactiveFib = h('pre',  `  const newFibpress$ = sources.DOM
     .select('input#fibF').events('keypress');

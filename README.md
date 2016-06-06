@@ -1,9 +1,11 @@
-#JS-monads-stable
+#JS-monads-stable -v1.1
+
+## Second Release. The first is v1.0 . 
+## MobX has replaced streams for updating the game display.
 
 This is the culmination of the experimental JS-monads series. Features are still being added, but the core definitions are stable. It is running online at [JS-monads-stable](http://schalk.net:3055) in a [Motorcycle.js](https://github.com/motorcyclejs) application. Motorcycle.js is [Cycle.js](https://github.com/cyclejs/core) using [Most](https://github.com/cujojs/most) and [Snabbdom](https://github.com/paldepind/snabbdom) instead of RxJS and "virtual-dom". [most-subject](https://github.com/TylorS/most-subject) makes MonadStream work as intended. The application runs online at [http://schalk.net:3055](http://schalk.net:3055).  
 
-[MobX](https://github.com/mobxjs/mobx) is the latest addition to the application. It makes the monads reactive. An example of its use is included in the application. It shows computation values automatically updating the way they do in spreadsheets.
-
+[MobX](https://github.com/mobxjs/mobx) is the latest addition to the application. It makes the monads reactive. Updating the number display in the simulated dice game is now handled by mobx.autorun(), rather than streams. A spreadsheet-like calculator demonstration uses mobx.computed and mobx.observe.
 The use of the monads is explained at [the online presentation](http://schalk.net:3055), which is the running version of this code. 
 
 A recently added example involves MonadStream streams of prime and Fibonacci numbers. They use a special type of memoization and can be increased at any time with user input. The user input generates three sequinces of numbers: primes, Fibonacci numbers, and prime Fibonacci numbers.

@@ -22,6 +22,15 @@ input {
   color: #EFD5AA;
 }
 
+#spread1 {
+  margin-left: 3%;
+  width: 100px;
+}
+
+#spread2 {
+  margin-left: 3%;
+  width: 100px;
+}
 
 .tao1 {
   margin-left: 3%;

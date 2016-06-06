@@ -18,6 +18,7 @@ var MonadStream = function MonadStream(g) {
   };
 };
 
+var CURRENT_ROLL = [];
 var mM$1 = new MonadStream('mM$1');
 var mM$taskList = new MonadStream('mM$taskList');
 var mM$3 = new MonadStream('mM$3');
@@ -225,13 +226,13 @@ var mMfibSave2 = new Monad(0, 'mMfibSave2');
 mMmax.ret(mMmax.x);
 var mMscoreChange = new Monad(0, 'mMscoreChange');
 mMscoreChange.ret(mMscoreChange.x);
-var mMcurrentRoll = new Monad([], 'mMcurrentRoll');
+var mMcurrentRoll = new Monad([0,0,0,0], 'mMcurrentRoll');
 mMcurrentRoll.ret(mMcurrentRoll.x);
 
 var mMfibs8 = M([0,1], 'mMfibs8');
 mMfibs8.ret(mMfibs8.x);
 
-var mMallRolls = new Monad([], 'mMallRolls');
+var mMallRolls = new Monad([[0,0,0,0]], 'mMallRolls');
 mMallRolls.ret(mMallRolls.x);
 
 var mMcurrentList = new Monad([], 'mMcurrentList');
@@ -560,11 +561,7 @@ var push = function push(y,v,mon) {
 
 var spliceRemove = function spliceRemove(x, index, location, mon) {
   if (Array.isArray(x)) {
-    let ar = [];
-    let keys = Object.keys(x[index]);
-    for (let k in keys) {
-      ar[k] = x[index][k];
-    }
+    let ar = x[index].slice();
     ar.splice(location,1);
     return mon.ret(ar);  
   }
@@ -585,9 +582,7 @@ var spliceAdd = function spliceAdd(x, index, value, mon) {
 
 var splice = function splice(x, start, n, mon) {
   if (Array.isArray(x)) {
-    let ar = [];
-    let keys = Object.keys(x);
-    for (let k in keys) {ar[k] = x[k]};
+    let ar = x.slice();
     ar.splice(start, n);
     return mon.ret(ar);  
   }
