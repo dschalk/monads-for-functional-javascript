@@ -91,8 +91,8 @@
   (major1) == 3 && (major2) <  2 || \
   (major1) == 3 && (major2) == 2 && (minor) <= 6)
 
-/* package websockets-0.9.6.1 */
-#define VERSION_websockets "0.9.6.1"
+/* package websockets-0.9.6.2 */
+#define VERSION_websockets "0.9.6.2"
 #define MIN_VERSION_websockets(major1,major2,minor) (\
   (major1) <  0 || \
   (major1) == 0 && (major2) <  9 || \

@@ -8,5 +8,5 @@ Data/FileEmbed.hs:67:1: Warning:
       except perhaps to import instances from ‘Control.Applicative’
     To import instances alone, use: import Control.Applicative()
 Installing library in
-/media/C/StackZone/JS-monads-stable/.stack-work/install/x86_64-linux/lts-6.0/7.10.3/lib/x86_64-linux-ghc-7.10.3/file-embed-0.0.10-Hshq16e2wRYK4MooDluqc0
+/home/d/.stack/snapshots/x86_64-linux/lts-6.2/7.10.3/lib/x86_64-linux-ghc-7.10.3/file-embed-0.0.10-Hshq16e2wRYK4MooDluqc0
 Registering file-embed-0.0.10...

@@ -1,114 +1,14 @@
 Configuring iproute-1.7.0...
 Building iproute-1.7.0...
 Preprocessing library iproute-1.7.0...
-[1 of 8] Compiling Data.IP.Addr     ( Data/IP/Addr.hs, .stack-work/dist/x86_64-linux/Cabal-1.22.5.0/build/Data/IP/Addr.o )
-[2 of 8] Compiling Data.IP.Mask     ( Data/IP/Mask.hs, .stack-work/dist/x86_64-linux/Cabal-1.22.5.0/build/Data/IP/Mask.o )
-[3 of 8] Compiling Data.IP.Range    ( Data/IP/Range.hs, .stack-work/dist/x86_64-linux/Cabal-1.22.5.0/build/Data/IP/Range.o )
-[4 of 8] Compiling Data.IP.Op       ( Data/IP/Op.hs, .stack-work/dist/x86_64-linux/Cabal-1.22.5.0/build/Data/IP/Op.o )
-[5 of 8] Compiling Data.IP.Internal ( Data/IP/Internal.hs, .stack-work/dist/x86_64-linux/Cabal-1.22.5.0/build/Data/IP/Internal.o )
-[6 of 8] Compiling Data.IP.RouteTable.Internal ( Data/IP/RouteTable/Internal.hs, .stack-work/dist/x86_64-linux/Cabal-1.22.5.0/build/Data/IP/RouteTable/Internal.o )
-[7 of 8] Compiling Data.IP.RouteTable ( Data/IP/RouteTable.hs, .stack-work/dist/x86_64-linux/Cabal-1.22.5.0/build/Data/IP/RouteTable.o )
-[8 of 8] Compiling Data.IP          ( Data/IP.hs, .stack-work/dist/x86_64-linux/Cabal-1.22.5.0/build/Data/IP.o )
-In-place registering iproute-1.7.0...
-Running Haddock for iproute-1.7.0...
-Running hscolour for iproute-1.7.0...
-Preprocessing library iproute-1.7.0...
-Preprocessing library iproute-1.7.0...
-Haddock coverage:
-  35% ( 17 / 49) in 'Data.IP.Addr'
-  Missing documentation for:
-    Module header
-     (Data/IP/Addr.hs:63)
-     (Data/IP/Addr.hs:69)
-    IPv4Addr (Data/IP/Addr.hs:76)
-    IPv6Addr (Data/IP/Addr.hs:77)
-     (Data/IP/Addr.hs:117)
-     (Data/IP/Addr.hs:121)
-     (Data/IP/Addr.hs:162)
-    ip6ToInteger (Data/IP/Addr.hs:190)
-    integerToIP6 (Data/IP/Addr.hs:200)
-     (Data/IP/Addr.hs:215)
-     (Data/IP/Addr.hs:218)
-     (Data/IP/Addr.hs:344)
-     (Data/IP/Addr.hs:347)
-     (Data/IP/Addr.hs:350)
-    parseIP (Data/IP/Addr.hs:353)
-    parseIPv4 (Data/IP/Addr.hs:360)
-    parseIPv6 (Data/IP/Addr.hs:365)
-     (Data/IP/Addr.hs:375)
-     (Data/IP/Addr.hs:378)
-     (Data/IP/Addr.hs:381)
-    dig (Data/IP/Addr.hs:389)
-    ip4 (Data/IP/Addr.hs:395)
-    ip4' (Data/IP/Addr.hs:398)
-    skipSpaces (Data/IP/Addr.hs:410)
-    hex (Data/IP/Addr.hs:418)
-    colon2 (Data/IP/Addr.hs:428)
-    format (Data/IP/Addr.hs:431)
-    ip6 (Data/IP/Addr.hs:442)
-    ip6' (Data/IP/Addr.hs:445)
-    ip4Embedded (Data/IP/Addr.hs:461)
-    fixByteOrder (Data/IP/Addr.hs:509)
-   0% (  0 /  6) in 'Data.IP.Mask'
-  Missing documentation for:
-    Module header
-    maskIPv4 (Data/IP/Mask.hs:10)
-    maskIPv6 (Data/IP/Mask.hs:13)
-    masksWord32 (Data/IP/Mask.hs:16)
-    masksIPv4 (Data/IP/Mask.hs:19)
-    masksIPv6 (Data/IP/Mask.hs:22)
-  11% (  2 / 18) in 'Data.IP.Range'
-  Missing documentation for:
-    Module header
-     (Data/IP/Range.hs:67)
-     (Data/IP/Range.hs:70)
-     (Data/IP/Range.hs:79)
-    parseIPRange (Data/IP/Range.hs:82)
-     (Data/IP/Range.hs:89)
-     (Data/IP/Range.hs:92)
-    parseIPv4Range (Data/IP/Range.hs:95)
-    parseIPv6Range (Data/IP/Range.hs:100)
-    ip4range (Data/IP/Range.hs:105)
-    maskedIPv4 (Data/IP/Range.hs:116)
-    ip6range (Data/IP/Range.hs:119)
-    maskedIPv6 (Data/IP/Range.hs:130)
-     (Data/IP/Range.hs:140)
-     (Data/IP/Range.hs:143)
-     (Data/IP/Range.hs:146)
-  67% (  6 /  9) in 'Data.IP.Op'
-  Missing documentation for:
-    Module header
-     (Data/IP/Op.hs:27)
-     (Data/IP/Op.hs:31)
-  75% (  3 /  4) in 'Data.IP.Internal'
-  Missing documentation for:
-    Module header
-  37% ( 10 / 27) in 'Data.IP.RouteTable.Internal'
-  Missing documentation for:
-     (Data/IP/RouteTable/Internal.hs:46)
-     (Data/IP/RouteTable/Internal.hs:50)
-    intToTBitIPv4 (Data/IP/RouteTable/Internal.hs:59)
-    intToTBitIPv6 (Data/IP/RouteTable/Internal.hs:62)
-    intToTBitsWord32 (Data/IP/RouteTable/Internal.hs:65)
-    intToTBitsIPv4 (Data/IP/RouteTable/Internal.hs:68)
-    intToTBitsIPv6 (Data/IP/RouteTable/Internal.hs:71)
-     (Data/IP/RouteTable/Internal.hs:106)
-     (Data/IP/RouteTable/Internal.hs:110)
-     (Data/IP/RouteTable/Internal.hs:114)
-    link (Data/IP/RouteTable/Internal.hs:146)
-    glue (Data/IP/RouteTable/Internal.hs:155)
-    keyToTestBit (Data/IP/RouteTable/Internal.hs:162)
-    isLeft (Data/IP/RouteTable/Internal.hs:165)
-    node (Data/IP/RouteTable/Internal.hs:187)
-    search (Data/IP/RouteTable/Internal.hs:217)
-    foldt (Data/IP/RouteTable/Internal.hs:280)
- 100% ( 14 / 14) in 'Data.IP.RouteTable'
- 100% ( 27 / 27) in 'Data.IP'
-Warning: Data.IP.Internal: could not find link destinations for:
-    IPv4Addr IPv6Addr
-Documentation created:
-.stack-work/dist/x86_64-linux/Cabal-1.22.5.0/doc/html/iproute/index.html,
-.stack-work/dist/x86_64-linux/Cabal-1.22.5.0/doc/html/iproute/iproute.txt
+[1 of 8] Compiling Data.IP.Addr     ( Data/IP/Addr.hs, .stack-work/dist/x86_64-linux/Cabal-1.24.0.0/build/Data/IP/Addr.o )
+[2 of 8] Compiling Data.IP.Mask     ( Data/IP/Mask.hs, .stack-work/dist/x86_64-linux/Cabal-1.24.0.0/build/Data/IP/Mask.o )
+[3 of 8] Compiling Data.IP.Range    ( Data/IP/Range.hs, .stack-work/dist/x86_64-linux/Cabal-1.24.0.0/build/Data/IP/Range.o )
+[4 of 8] Compiling Data.IP.Op       ( Data/IP/Op.hs, .stack-work/dist/x86_64-linux/Cabal-1.24.0.0/build/Data/IP/Op.o )
+[5 of 8] Compiling Data.IP.Internal ( Data/IP/Internal.hs, .stack-work/dist/x86_64-linux/Cabal-1.24.0.0/build/Data/IP/Internal.o )
+[6 of 8] Compiling Data.IP.RouteTable.Internal ( Data/IP/RouteTable/Internal.hs, .stack-work/dist/x86_64-linux/Cabal-1.24.0.0/build/Data/IP/RouteTable/Internal.o )
+[7 of 8] Compiling Data.IP.RouteTable ( Data/IP/RouteTable.hs, .stack-work/dist/x86_64-linux/Cabal-1.24.0.0/build/Data/IP/RouteTable.o )
+[8 of 8] Compiling Data.IP          ( Data/IP.hs, .stack-work/dist/x86_64-linux/Cabal-1.24.0.0/build/Data/IP.o )
 Installing library in
-/home/d/.stack/snapshots/x86_64-linux/lts-6.0/7.10.3/lib/x86_64-linux-ghc-7.10.3/iproute-1.7.0-51qGM7UdLbAGjwdVd1zynT
+/home/d/.stack/snapshots/x86_64-linux/lts-6.2/7.10.3/lib/x86_64-linux-ghc-7.10.3/iproute-1.7.0-7ggl0DhnT72Li0lbYCzyws
 Registering iproute-1.7.0...

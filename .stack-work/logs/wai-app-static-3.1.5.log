@@ -41,7 +41,7 @@ Preprocessing executable 'warp' for wai-app-static-3.1.5...
 [1 of 1] Compiling Main             ( app/warp-static.hs, .stack-work/dist/x86_64-linux/Cabal-1.24.0.0/build/warp/warp-tmp/Main.o )
 Linking .stack-work/dist/x86_64-linux/Cabal-1.24.0.0/build/warp/warp ...
 Installing library in
-/media/C/StackZone/JS-monads-stable/.stack-work/install/x86_64-linux/lts-6.0/7.10.3/lib/x86_64-linux-ghc-7.10.3/wai-app-static-3.1.5-H4Tlb2wbLXRFoFpbWR2vhw
+/home/d/.stack/snapshots/x86_64-linux/lts-6.2/7.10.3/lib/x86_64-linux-ghc-7.10.3/wai-app-static-3.1.5-4IGz5iuDSci97rQjWDRp3w
 Installing executable(s) in
-/media/C/StackZone/JS-monads-stable/.stack-work/install/x86_64-linux/lts-6.0/7.10.3/bin
+/home/d/.stack/snapshots/x86_64-linux/lts-6.2/7.10.3/bin
 Registering wai-app-static-3.1.5...

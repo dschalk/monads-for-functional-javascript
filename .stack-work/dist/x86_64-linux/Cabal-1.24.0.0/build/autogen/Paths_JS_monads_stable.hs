@@ -29,11 +29,11 @@ version :: Version
 version = Version [0,7,0,0] []
 bindir, libdir, datadir, libexecdir, sysconfdir :: FilePath
 
-bindir     = "/media/C/StackZone/JS-monads-stable/.stack-work/install/x86_64-linux/lts-6.0/7.10.3/bin"
-libdir     = "/media/C/StackZone/JS-monads-stable/.stack-work/install/x86_64-linux/lts-6.0/7.10.3/lib/x86_64-linux-ghc-7.10.3/JS-monads-stable-0.7.0.0"
-datadir    = "/media/C/StackZone/JS-monads-stable/.stack-work/install/x86_64-linux/lts-6.0/7.10.3/share/x86_64-linux-ghc-7.10.3/JS-monads-stable-0.7.0.0"
-libexecdir = "/media/C/StackZone/JS-monads-stable/.stack-work/install/x86_64-linux/lts-6.0/7.10.3/libexec"
-sysconfdir = "/media/C/StackZone/JS-monads-stable/.stack-work/install/x86_64-linux/lts-6.0/7.10.3/etc"
+bindir     = "/media/C/StackZone/JS-monads-stable/.stack-work/install/x86_64-linux/lts-6.2/7.10.3/bin"
+libdir     = "/media/C/StackZone/JS-monads-stable/.stack-work/install/x86_64-linux/lts-6.2/7.10.3/lib/x86_64-linux-ghc-7.10.3/JS-monads-stable-0.7.0.0"
+datadir    = "/media/C/StackZone/JS-monads-stable/.stack-work/install/x86_64-linux/lts-6.2/7.10.3/share/x86_64-linux-ghc-7.10.3/JS-monads-stable-0.7.0.0"
+libexecdir = "/media/C/StackZone/JS-monads-stable/.stack-work/install/x86_64-linux/lts-6.2/7.10.3/libexec"
+sysconfdir = "/media/C/StackZone/JS-monads-stable/.stack-work/install/x86_64-linux/lts-6.2/7.10.3/etc"
 
 getBinDir, getLibDir, getDataDir, getLibexecDir, getSysconfDir :: IO FilePath
 getBinDir = catchIO (getEnv "JS_monads_stable_bindir") (\_ -> return bindir)

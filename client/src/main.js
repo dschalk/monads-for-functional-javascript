@@ -577,37 +577,39 @@ function main(sources) {
   });
 
   const spread1Press$ = sources.DOM
-    .select('#spread1').events('keypress');
+    .select('#spread1').events('change');
 
   const spread1PressAction$ = spread1Press$.map(e => {
-    if( e.keyCode == 13 ) {
-      mMcount.ret(e.target.value)
-      calcFunc();
-    }
-  });
-
-  const spread2Press$ = sources.DOM
-    .select('#spread2').events('keypress');
-
-  const spread2PressAction$ = spread2Press$.map(e => {
-    if( e.keyCode == 13 ) {
-      mMcount2.ret(e.target.value)
-      calcFunc();
-    }
-  });
-
- var calcFunc = function calcFunc() {
-   let A = O.mMcount.x;
-   let B = O.mMcount2.x;
-   mMspreadsheet.ret(
+    O.mMcount.ret(e.target.value)
+    var A = e.target.value;
+    var B = O.mMcount2.x;
+    mMspreadsheet.ret(
    [A + ' + ' + B + ' = ' + (A*1 + B*1),  
     A + ' - ' + B + ' = ' + (A - B),  
     A + ' * ' + B + ' = ' + (A * B),  
-    A + ' / ' + B + ' = ' + (A / B)])};
+    A + ' / ' + B + ' = ' + (A / B)])
+    .bnd(log);
 
- autorun(() => {O.mMspreadsheet.x}); 
+  });
 
+  const spread2Press$ = sources.DOM
+    .select('#spread2').events('change');
 
+  const spread2PressAction$ = spread2Press$.map(e => {
+    O.mMcount2.ret(e.target.value)
+    var A = O.mMcount.x;
+    var B = e.target.value;
+    mMspreadsheet.ret(
+   [A + ' + ' + B + ' = ' + (A*1 + B*1),  
+    A + ' - ' + B + ' = ' + (A - B),  
+    A + ' * ' + B + ' = ' + (A * B),  
+    A + ' / ' + B + ' = ' + (A / B)])
+    .bnd(log);
+  });
+  
+
+autorun(() => {console.log(O.mMspreadsheet.x)}); 
+ 
   const newFibpress$ = sources.DOM
     .select('input#fibF').events('keypress');
 
@@ -861,7 +863,11 @@ function main(sources) {
         h('p', ' I made the global object "O" observable with the following two lines of code: ' ),
         h('pre', `    import {observable, autorun} from 'mobx'
     monadState = observable(O);    ` ),
-        h('p', ' So now, whenever an instance of Monad, say m, calls its ret() method, O gets mutated and any expression containing O.m can be made to automatically update by a MobX observer. Here is the code for a spreadsheet-like calculator: '  ), 
+        h('p', ' So now, whenever an instance of Monad, say m, calls its ret() method, O gets mutated and any expression containing O.m can be made to automatically update. In release v1.0 of this project, the dice game display updated every time mM$1.ret() was called. mM$1 is an instance of MonadStream, so calling mM$1.ret(v) for any value v put v in mM$1.stream. mM$1.stream mapped its latest value into the update function. Now, updates occur whenever mMcurrentRoll.ret() is called. That is because calling mMcurrentRoll.ret() swaps out O.mMcurrentRoll, and this mutation of "O" in combination with the MobX autorun function (shown below) causes all expressions involving O.mMcurrentRoll to execute or update. O.mMcurrentRoll.x is a permanent fixture of the DOM object returned by main. The Motorcycle diff and render execute whenever O.mMcurrentRoll.x changes. Users see the browser display change each time they click on a number because clicking a number causes mMcurrentRoll.ret() to execute. Here is line of code that makes this happen: '  ), 
+        h('pre', `    autorun(() => {O.mMcurrentRoll.x}); ` ), 
+
+        /*
+        h('p', ' To illustrate the way monads on "O" can be used in combination with the MobX autorun function, here is a spreadsheet-like calculator: '  ),
         code.spreadsheet2,
         h('p', ' And here is where you can enter numbers: ' ),
         h('span', 'Enter Numbers: ' ), 
@@ -871,10 +877,12 @@ function main(sources) {
         h('p#spreadsheet6',   O.mMspreadsheet.x[1] ), 
         h('p#spreadsheet7',   O.mMspreadsheet.x[2] ), 
         h('p#spreadsheet8',   O.mMspreadsheet.x[3] ), 
-        h('p', ' This could have been done just as well by merging a stream into the main stream that feed the virtual DOM. But updating the game display with MobX is simpler than updating with a stream, as was the case in the first release of JS-monads-stable. '  ),
+        h('p', ' This could have been done just as well by merging a stream into the main stream that feed the virtual DOM. But updating the game display with MobX is simpler than updating with a stream. '  ),
         h('p', ' The first Github release of JS-monads-stable, release v1.0, an instance of MonadStream was responsible for updating the virtual DOM.  In this release, version v1.1, the MobX "autorun()" function is responsible for updates. The observable monad state object "O" really shines here.  Calling mMcurrentRoll.ret() on new or modified arrays of numbers prompts autorun to update the number display. The code is a simple one liner. Here it is:  '   ),
         h('pre', `    autorun(() => {O.mMcurrentRoll.x}); ` ), 
         h('p', ' It doesn\'t get much easier than that. O.mMcurrentRoll.x is a permanent feature of the virtual DOM, and when it changes, Motorcycle re-renders the affected part of the DOM.  There is more about updating the number display in the following section. '  ),
+       */
+
         h('h2', 'Updating the DOM'  ),
         h('h3', 'Todo List DOM Updates' ),
         h('p', ' When users do anything to the todo list, MonadStream instance mM$taskList runs its ret() method on the modified String representation of the list, causing the string to be added to mM$taskList.stream. mM$taskList.stream has only one subscriber, taskAction$, whose only purpose it to send the string representation of the todo list to the server. The server updates its persistent file and distributes a text representation of the updated todo list to all group members. Each group member receives the todo list as a string and parses it into a DOM node tree that is merged into the stream that updates the virtual DOM. All Todo List side effects can be traced to:' ),
@@ -971,7 +979,7 @@ function main(sources) {
         h('br'),  
         h('hr'),  
         h('p' ),  
-        h('p' ),  
+        h('bubbon#dummy', 'dummy' ),  
         h('p' ),  
         h('p' ),  
         h('p' )  

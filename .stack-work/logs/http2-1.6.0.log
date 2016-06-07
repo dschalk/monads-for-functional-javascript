@@ -1,277 +1,35 @@
 Configuring http2-1.6.0...
 Building http2-1.6.0...
 Preprocessing library http2-1.6.0...
-[ 1 of 29] Compiling Network.HTTP2.Priority.PSQ ( Network/HTTP2/Priority/PSQ.hs, .stack-work/dist/x86_64-linux/Cabal-1.22.5.0/build/Network/HTTP2/Priority/PSQ.o )
-[ 2 of 29] Compiling Network.HPACK.Huffman.Params ( Network/HPACK/Huffman/Params.hs, .stack-work/dist/x86_64-linux/Cabal-1.22.5.0/build/Network/HPACK/Huffman/Params.o )
-[ 3 of 29] Compiling Network.HPACK.Huffman.ByteString ( Network/HPACK/Huffman/ByteString.hs, .stack-work/dist/x86_64-linux/Cabal-1.22.5.0/build/Network/HPACK/Huffman/ByteString.o )
-[ 4 of 29] Compiling Network.HPACK.Huffman.Bit ( Network/HPACK/Huffman/Bit.hs, .stack-work/dist/x86_64-linux/Cabal-1.22.5.0/build/Network/HPACK/Huffman/Bit.o )
-[ 5 of 29] Compiling Network.HPACK.Huffman.Table ( Network/HPACK/Huffman/Table.hs, .stack-work/dist/x86_64-linux/Cabal-1.22.5.0/build/Network/HPACK/Huffman/Table.o )
-[ 6 of 29] Compiling Network.HPACK.Huffman.Tree ( Network/HPACK/Huffman/Tree.hs, .stack-work/dist/x86_64-linux/Cabal-1.22.5.0/build/Network/HPACK/Huffman/Tree.o )
-[ 7 of 29] Compiling Network.HPACK.Builder ( Network/HPACK/Builder.hs, .stack-work/dist/x86_64-linux/Cabal-1.22.5.0/build/Network/HPACK/Builder.o )
-[ 8 of 29] Compiling Network.HTTP2.Priority.Queue ( Network/HTTP2/Priority/Queue.hs, .stack-work/dist/x86_64-linux/Cabal-1.22.5.0/build/Network/HTTP2/Priority/Queue.o )
-[ 9 of 29] Compiling Network.HTTP2.Types ( Network/HTTP2/Types.hs, .stack-work/dist/x86_64-linux/Cabal-1.22.5.0/build/Network/HTTP2/Types.o )
-[10 of 29] Compiling Network.HTTP2.Priority ( Network/HTTP2/Priority.hs, .stack-work/dist/x86_64-linux/Cabal-1.22.5.0/build/Network/HTTP2/Priority.o )
-[11 of 29] Compiling Network.HTTP2.Encode ( Network/HTTP2/Encode.hs, .stack-work/dist/x86_64-linux/Cabal-1.22.5.0/build/Network/HTTP2/Encode.o )
-[12 of 29] Compiling Network.HTTP2.Decode ( Network/HTTP2/Decode.hs, .stack-work/dist/x86_64-linux/Cabal-1.22.5.0/build/Network/HTTP2/Decode.o )
-[13 of 29] Compiling Network.HTTP2    ( Network/HTTP2.hs, .stack-work/dist/x86_64-linux/Cabal-1.22.5.0/build/Network/HTTP2.o )
-[14 of 29] Compiling Network.HPACK.Token ( Network/HPACK/Token.hs, .stack-work/dist/x86_64-linux/Cabal-1.22.5.0/build/Network/HPACK/Token.o )
-[15 of 29] Compiling Network.HPACK.Types ( Network/HPACK/Types.hs, .stack-work/dist/x86_64-linux/Cabal-1.22.5.0/build/Network/HPACK/Types.o )
-[16 of 29] Compiling Network.HPACK.Buffer ( Network/HPACK/Buffer.hs, .stack-work/dist/x86_64-linux/Cabal-1.22.5.0/build/Network/HPACK/Buffer.o )
-[17 of 29] Compiling Network.HPACK.Huffman.Encode ( Network/HPACK/Huffman/Encode.hs, .stack-work/dist/x86_64-linux/Cabal-1.22.5.0/build/Network/HPACK/Huffman/Encode.o )
-[18 of 29] Compiling Network.HPACK.HeaderBlock.Integer ( Network/HPACK/HeaderBlock/Integer.hs, .stack-work/dist/x86_64-linux/Cabal-1.22.5.0/build/Network/HPACK/HeaderBlock/Integer.o )
-[19 of 29] Compiling Network.HPACK.Huffman.Decode ( Network/HPACK/Huffman/Decode.hs, .stack-work/dist/x86_64-linux/Cabal-1.22.5.0/build/Network/HPACK/Huffman/Decode.o )
-[20 of 29] Compiling Network.HPACK.Huffman ( Network/HPACK/Huffman.hs, .stack-work/dist/x86_64-linux/Cabal-1.22.5.0/build/Network/HPACK/Huffman.o )
-[21 of 29] Compiling Network.HPACK.Table.Entry ( Network/HPACK/Table/Entry.hs, .stack-work/dist/x86_64-linux/Cabal-1.22.5.0/build/Network/HPACK/Table/Entry.o )
-[22 of 29] Compiling Network.HPACK.Table.Static ( Network/HPACK/Table/Static.hs, .stack-work/dist/x86_64-linux/Cabal-1.22.5.0/build/Network/HPACK/Table/Static.o )
-[23 of 29] Compiling Network.HPACK.Table.RevIndex ( Network/HPACK/Table/RevIndex.hs, .stack-work/dist/x86_64-linux/Cabal-1.22.5.0/build/Network/HPACK/Table/RevIndex.o )
-[24 of 29] Compiling Network.HPACK.Table.Dynamic ( Network/HPACK/Table/Dynamic.hs, .stack-work/dist/x86_64-linux/Cabal-1.22.5.0/build/Network/HPACK/Table/Dynamic.o )
-[25 of 29] Compiling Network.HPACK.Table ( Network/HPACK/Table.hs, .stack-work/dist/x86_64-linux/Cabal-1.22.5.0/build/Network/HPACK/Table.o )
-[26 of 29] Compiling Network.HPACK.HeaderBlock.Decode ( Network/HPACK/HeaderBlock/Decode.hs, .stack-work/dist/x86_64-linux/Cabal-1.22.5.0/build/Network/HPACK/HeaderBlock/Decode.o )
-[27 of 29] Compiling Network.HPACK.HeaderBlock.Encode ( Network/HPACK/HeaderBlock/Encode.hs, .stack-work/dist/x86_64-linux/Cabal-1.22.5.0/build/Network/HPACK/HeaderBlock/Encode.o )
-[28 of 29] Compiling Network.HPACK.HeaderBlock ( Network/HPACK/HeaderBlock.hs, .stack-work/dist/x86_64-linux/Cabal-1.22.5.0/build/Network/HPACK/HeaderBlock.o )
-[29 of 29] Compiling Network.HPACK    ( Network/HPACK.hs, .stack-work/dist/x86_64-linux/Cabal-1.22.5.0/build/Network/HPACK.o )
-In-place registering http2-1.6.0...
-Running Haddock for http2-1.6.0...
-Running hscolour for http2-1.6.0...
-Preprocessing library http2-1.6.0...
-Preprocessing library http2-1.6.0...
-Warning: The documentation for the following packages are not installed. No
-links will be generated to these packages: bytestring-builder-0.10.6.0.0
-Haddock coverage:
-  20% (  2 / 10) in 'Network.HTTP2.Priority.PSQ'
-  Missing documentation for:
-    Module header
-    Key (Network/HTTP2/Priority/PSQ.hs:27)
-    PriorityQueue (Network/HTTP2/Priority/PSQ.hs:55)
-    empty (Network/HTTP2/Priority/PSQ.hs:82)
-    isEmpty (Network/HTTP2/Priority/PSQ.hs:85)
-    enqueue (Network/HTTP2/Priority/PSQ.hs:88)
-    dequeue (Network/HTTP2/Priority/PSQ.hs:98)
-    delete (Network/HTTP2/Priority/PSQ.hs:104)
-   0% (  0 /  2) in 'Network.HPACK.Huffman.Params'
-  Missing documentation for:
-    Module header
-    idxEos (Network/HPACK/Huffman/Params.hs:3)
-  33% (  1 /  3) in 'Network.HPACK.Huffman.ByteString'
-  Missing documentation for:
-    Module header
-    copy (Network/HPACK/Huffman/ByteString.hs:45)
-  80% (  4 /  5) in 'Network.HPACK.Huffman.Bit'
-  Missing documentation for:
-    Module header
-   0% (  0 /  2) in 'Network.HPACK.Huffman.Table'
-  Missing documentation for:
-    Module header
-    huffmanTable (Network/HPACK/Huffman/Table.hs:5)
-  38% (  3 /  8) in 'Network.HPACK.Huffman.Tree'
-  Missing documentation for:
-    Module header
-    eosInfo (Network/HPACK/Huffman/Tree.hs:33)
-    showTree (Network/HPACK/Huffman/Tree.hs:39)
-    printTree (Network/HPACK/Huffman/Tree.hs:50)
-    flatten (Network/HPACK/Huffman/Tree.hs:80)
-   0% (  0 /  6) in 'Network.HPACK.Builder'
-  Missing documentation for:
-    Module header
-    Builder (Network/HPACK/Builder.hs:3)
-    << (Network/HPACK/Builder.hs:5)
-    empty (Network/HPACK/Builder.hs:8)
-    singleton (Network/HPACK/Builder.hs:11)
-    run (Network/HPACK/Builder.hs:14)
-  12% (  1 /  8) in 'Network.HTTP2.Priority.Queue'
-  Missing documentation for:
-    Module header
-    TPriorityQueue (Network/HTTP2/Priority/Queue.hs:22)
-    new (Network/HTTP2/Priority/Queue.hs:24)
-    isEmpty (Network/HTTP2/Priority/Queue.hs:27)
-    enqueue (Network/HTTP2/Priority/Queue.hs:30)
-    dequeue (Network/HTTP2/Priority/Queue.hs:33)
-    delete (Network/HTTP2/Priority/Queue.hs:42)
-  96% ( 68 / 71) in 'Network.HTTP2.Types'
-  Missing documentation for:
-    Module header
-    minFrameType (Network/HTTP2/Types.hs:356)
-    maxFrameType (Network/HTTP2/Types.hs:359)
- 100% ( 16 / 16) in 'Network.HTTP2.Priority'
-  88% (  7 /  8) in 'Network.HTTP2.Encode'
-  Missing documentation for:
-    Module header
-  94% ( 17 / 18) in 'Network.HTTP2.Decode'
-  Missing documentation for:
-    Module header
- 100% ( 97 / 97) in 'Network.HTTP2'
-  27% ( 20 / 73) in 'Network.HPACK.Token'
-  Missing documentation for:
-    Module header
-    tokenAuthority (Network/HPACK/Token.hs:111)
-    tokenMethod (Network/HPACK/Token.hs:112)
-    tokenPath (Network/HPACK/Token.hs:113)
-    tokenScheme (Network/HPACK/Token.hs:114)
-    tokenStatus (Network/HPACK/Token.hs:115)
-    tokenAcceptCharset (Network/HPACK/Token.hs:116)
-    tokenAcceptEncoding (Network/HPACK/Token.hs:117)
-    tokenAcceptLanguage (Network/HPACK/Token.hs:118)
-    tokenAcceptRanges (Network/HPACK/Token.hs:119)
-    tokenAccept (Network/HPACK/Token.hs:120)
-    tokenAccessControlAllowOrigin (Network/HPACK/Token.hs:121)
-    tokenAge (Network/HPACK/Token.hs:122)
-    tokenAllow (Network/HPACK/Token.hs:123)
-    tokenAuthorization (Network/HPACK/Token.hs:124)
-    tokenCacheControl (Network/HPACK/Token.hs:125)
-    tokenContentDisposition (Network/HPACK/Token.hs:126)
-    tokenContentEncoding (Network/HPACK/Token.hs:127)
-    tokenContentLanguage (Network/HPACK/Token.hs:128)
-    tokenContentLength (Network/HPACK/Token.hs:129)
-    tokenContentLocation (Network/HPACK/Token.hs:130)
-    tokenContentRange (Network/HPACK/Token.hs:131)
-    tokenContentType (Network/HPACK/Token.hs:132)
-    tokenCookie (Network/HPACK/Token.hs:133)
-    tokenDate (Network/HPACK/Token.hs:134)
-    tokenEtag (Network/HPACK/Token.hs:135)
-    tokenExpect (Network/HPACK/Token.hs:136)
-    tokenExpires (Network/HPACK/Token.hs:137)
-    tokenFrom (Network/HPACK/Token.hs:138)
-    tokenHost (Network/HPACK/Token.hs:139)
-    tokenIfMatch (Network/HPACK/Token.hs:140)
-    tokenIfModifiedSince (Network/HPACK/Token.hs:141)
-    tokenIfNoneMatch (Network/HPACK/Token.hs:142)
-    tokenIfRange (Network/HPACK/Token.hs:143)
-    tokenIfUnmodifiedSince (Network/HPACK/Token.hs:144)
-    tokenLastModified (Network/HPACK/Token.hs:145)
-    tokenLink (Network/HPACK/Token.hs:146)
-    tokenLocation (Network/HPACK/Token.hs:147)
-    tokenMaxForwards (Network/HPACK/Token.hs:148)
-    tokenProxyAuthenticate (Network/HPACK/Token.hs:149)
-    tokenProxyAuthorization (Network/HPACK/Token.hs:150)
-    tokenRange (Network/HPACK/Token.hs:151)
-    tokenReferer (Network/HPACK/Token.hs:152)
-    tokenRefresh (Network/HPACK/Token.hs:153)
-    tokenRetryAfter (Network/HPACK/Token.hs:154)
-    tokenServer (Network/HPACK/Token.hs:155)
-    tokenSetCookie (Network/HPACK/Token.hs:156)
-    tokenStrictTransportSecurity (Network/HPACK/Token.hs:157)
-    tokenTransferEncoding (Network/HPACK/Token.hs:158)
-    tokenUserAgent (Network/HPACK/Token.hs:159)
-    tokenVary (Network/HPACK/Token.hs:160)
-    tokenVia (Network/HPACK/Token.hs:161)
-    tokenWwwAuthenticate (Network/HPACK/Token.hs:162)
-  76% ( 16 / 21) in 'Network.HPACK.Types'
-  Missing documentation for:
-    Module header
-    TokenHeader (Network/HPACK/Types.hs:50)
-    TokenHeaderList (Network/HPACK/Types.hs:52)
-    HIndex (Network/HPACK/Types.hs:59)
-    BufferOverrun (Network/HPACK/Types.hs:112)
-  10% (  2 / 21) in 'Network.HPACK.Buffer'
-  Missing documentation for:
-    Module header
-    WorkingBuffer (Network/HPACK/Buffer.hs:41)
-    newWorkingBuffer (Network/HPACK/Buffer.hs:47)
-    wind (Network/HPACK/Buffer.hs:51)
-    readWord8 (Network/HPACK/Buffer.hs:58)
-    writeWord8 (Network/HPACK/Buffer.hs:62)
-    shiftLastN (Network/HPACK/Buffer.hs:73)
-    returnLength (Network/HPACK/Buffer.hs:122)
-    toByteString (Network/HPACK/Buffer.hs:115)
-    copyByteString (Network/HPACK/Buffer.hs:104)
-    withTemporaryBuffer (Network/HPACK/Buffer.hs:129)
-    currentOffset (Network/HPACK/Buffer.hs:135)
-    ReadBuffer (Network/HPACK/Buffer.hs:140)
-    withReadBuffer (Network/HPACK/Buffer.hs:146)
-    hasOneByte (Network/HPACK/Buffer.hs:154)
-    hasMoreBytes (Network/HPACK/Buffer.hs:160)
-    rewindOneByte (Network/HPACK/Buffer.hs:166)
-    getByte (Network/HPACK/Buffer.hs:170)
-    extractByteString (Network/HPACK/Buffer.hs:177)
-  60% (  3 /  5) in 'Network.HPACK.Huffman.Encode'
-  Missing documentation for:
-    Module header
-    encodeHuffman (Network/HPACK/Huffman/Encode.hs:98)
-  40% (  2 /  5) in 'Network.HPACK.HeaderBlock.Integer'
-  Missing documentation for:
-    Module header
-    encode (Network/HPACK/HeaderBlock/Integer.hs:42)
-    encodeInteger (Network/HPACK/HeaderBlock/Integer.hs:38)
-  60% (  3 /  5) in 'Network.HPACK.Huffman.Decode'
-  Missing documentation for:
-    Module header
-    decodeHuffman (Network/HPACK/Huffman/Decode.hs:76)
-  67% (  6 /  9) in 'Network.HPACK.Huffman'
-  Missing documentation for:
-    Module header
-    encodeHuffman (Network/HPACK/Huffman/Encode.hs:98)
-    decodeHuffman (Network/HPACK/Huffman/Decode.hs:76)
-  90% ( 18 / 20) in 'Network.HPACK.Table.Entry'
-  Missing documentation for:
-    Module header
-    toEntryToken (Network/HPACK/Table/Entry.hs:61)
-  50% (  2 /  4) in 'Network.HPACK.Table.Static'
-  Missing documentation for:
-    Module header
-    staticTableList (Network/HPACK/Table/Static.hs:36)
-   0% (  0 /  8) in 'Network.HPACK.Table.RevIndex'
-  Missing documentation for:
-    Module header
-    RevIndex (Network/HPACK/Table/RevIndex.hs:31)
-    newRevIndex (Network/HPACK/Table/RevIndex.hs:146)
-    renewRevIndex (Network/HPACK/Table/RevIndex.hs:149)
-    lookupRevIndex (Network/HPACK/Table/RevIndex.hs:155)
-    lookupRevIndex' (Network/HPACK/Table/RevIndex.hs:177)
-    insertRevIndex (Network/HPACK/Table/RevIndex.hs:195)
-    deleteRevIndexList (Network/HPACK/Table/RevIndex.hs:207)
-  45% ( 10 / 22) in 'Network.HPACK.Table.Dynamic'
-  Missing documentation for:
-    Module header
-    huffmanDecoder (Network/HPACK/Table/Dynamic.hs:120)
-    isDynamicTableEmpty (Network/HPACK/Table/Dynamic.hs:156)
-    isSuitableSize (Network/HPACK/Table/Dynamic.hs:161)
-    TableSizeAction (Network/HPACK/Table/Dynamic.hs:167)
-    needChangeTableSize (Network/HPACK/Table/Dynamic.hs:169)
-    resetLimitForEncoding (Network/HPACK/Table/Dynamic.hs:187)
-    toDynamicEntry (Network/HPACK/Table/Dynamic.hs:383)
-    CodeInfo (Network/HPACK/Table/Dynamic.hs:85)
-    toIndexedEntry (Network/HPACK/Table/Dynamic.hs:47)
-    fromHIndexToIndex (Network/HPACK/Table/Dynamic.hs:55)
-    getRevIndex (Network/HPACK/Table/Dynamic.hs:394)
-  65% ( 33 / 51) in 'Network.HPACK.Table'
-  Missing documentation for:
-    Module header
-    huffmanDecoder (Network/HPACK/Table/Dynamic.hs:120)
-    isDynamicTableEmpty (Network/HPACK/Table/Dynamic.hs:156)
-    isSuitableSize (Network/HPACK/Table/Dynamic.hs:161)
-    TableSizeAction (Network/HPACK/Table/Dynamic.hs:167)
-    needChangeTableSize (Network/HPACK/Table/Dynamic.hs:169)
-    resetLimitForEncoding (Network/HPACK/Table/Dynamic.hs:187)
-    toEntryToken (Network/HPACK/Table/Entry.hs:61)
-    getRevIndex (Network/HPACK/Table/Dynamic.hs:394)
-    RevIndex (Network/HPACK/Table/RevIndex.hs:31)
-    newRevIndex (Network/HPACK/Table/RevIndex.hs:146)
-    renewRevIndex (Network/HPACK/Table/RevIndex.hs:149)
-    lookupRevIndex (Network/HPACK/Table/RevIndex.hs:155)
-    lookupRevIndex' (Network/HPACK/Table/RevIndex.hs:177)
-    insertRevIndex (Network/HPACK/Table/RevIndex.hs:195)
-    deleteRevIndexList (Network/HPACK/Table/RevIndex.hs:207)
-    toIndexedEntry (Network/HPACK/Table/Dynamic.hs:47)
-    fromHIndexToIndex (Network/HPACK/Table/Dynamic.hs:55)
-  83% (  5 /  6) in 'Network.HPACK.HeaderBlock.Decode'
-  Missing documentation for:
-    Module header
-  67% (  2 /  3) in 'Network.HPACK.HeaderBlock.Encode'
-  Missing documentation for:
-    Module header
-  88% (  7 /  8) in 'Network.HPACK.HeaderBlock'
-  Missing documentation for:
-    Module header
-  92% ( 36 / 39) in 'Network.HPACK'
-  Missing documentation for:
-    BufferOverrun (Network/HPACK/Types.hs:112)
-    TokenHeaderList (Network/HPACK/Types.hs:52)
-    TokenHeader (Network/HPACK/Types.hs:50)
-Warning: Network.HTTP2.Priority: could not find link destinations for:
-    enqueue
-Documentation created:
-.stack-work/dist/x86_64-linux/Cabal-1.22.5.0/doc/html/http2/index.html,
-.stack-work/dist/x86_64-linux/Cabal-1.22.5.0/doc/html/http2/http2.txt
+[ 1 of 29] Compiling Network.HTTP2.Priority.PSQ ( Network/HTTP2/Priority/PSQ.hs, .stack-work/dist/x86_64-linux/Cabal-1.24.0.0/build/Network/HTTP2/Priority/PSQ.o )
+[ 2 of 29] Compiling Network.HPACK.Huffman.Params ( Network/HPACK/Huffman/Params.hs, .stack-work/dist/x86_64-linux/Cabal-1.24.0.0/build/Network/HPACK/Huffman/Params.o )
+[ 3 of 29] Compiling Network.HPACK.Huffman.ByteString ( Network/HPACK/Huffman/ByteString.hs, .stack-work/dist/x86_64-linux/Cabal-1.24.0.0/build/Network/HPACK/Huffman/ByteString.o )
+[ 4 of 29] Compiling Network.HPACK.Huffman.Bit ( Network/HPACK/Huffman/Bit.hs, .stack-work/dist/x86_64-linux/Cabal-1.24.0.0/build/Network/HPACK/Huffman/Bit.o )
+[ 5 of 29] Compiling Network.HPACK.Huffman.Table ( Network/HPACK/Huffman/Table.hs, .stack-work/dist/x86_64-linux/Cabal-1.24.0.0/build/Network/HPACK/Huffman/Table.o )
+[ 6 of 29] Compiling Network.HPACK.Huffman.Tree ( Network/HPACK/Huffman/Tree.hs, .stack-work/dist/x86_64-linux/Cabal-1.24.0.0/build/Network/HPACK/Huffman/Tree.o )
+[ 7 of 29] Compiling Network.HPACK.Builder ( Network/HPACK/Builder.hs, .stack-work/dist/x86_64-linux/Cabal-1.24.0.0/build/Network/HPACK/Builder.o )
+[ 8 of 29] Compiling Network.HTTP2.Priority.Queue ( Network/HTTP2/Priority/Queue.hs, .stack-work/dist/x86_64-linux/Cabal-1.24.0.0/build/Network/HTTP2/Priority/Queue.o )
+[ 9 of 29] Compiling Network.HTTP2.Types ( Network/HTTP2/Types.hs, .stack-work/dist/x86_64-linux/Cabal-1.24.0.0/build/Network/HTTP2/Types.o )
+[10 of 29] Compiling Network.HTTP2.Priority ( Network/HTTP2/Priority.hs, .stack-work/dist/x86_64-linux/Cabal-1.24.0.0/build/Network/HTTP2/Priority.o )
+[11 of 29] Compiling Network.HTTP2.Encode ( Network/HTTP2/Encode.hs, .stack-work/dist/x86_64-linux/Cabal-1.24.0.0/build/Network/HTTP2/Encode.o )
+[12 of 29] Compiling Network.HTTP2.Decode ( Network/HTTP2/Decode.hs, .stack-work/dist/x86_64-linux/Cabal-1.24.0.0/build/Network/HTTP2/Decode.o )
+[13 of 29] Compiling Network.HTTP2    ( Network/HTTP2.hs, .stack-work/dist/x86_64-linux/Cabal-1.24.0.0/build/Network/HTTP2.o )
+[14 of 29] Compiling Network.HPACK.Token ( Network/HPACK/Token.hs, .stack-work/dist/x86_64-linux/Cabal-1.24.0.0/build/Network/HPACK/Token.o )
+[15 of 29] Compiling Network.HPACK.Types ( Network/HPACK/Types.hs, .stack-work/dist/x86_64-linux/Cabal-1.24.0.0/build/Network/HPACK/Types.o )
+[16 of 29] Compiling Network.HPACK.Buffer ( Network/HPACK/Buffer.hs, .stack-work/dist/x86_64-linux/Cabal-1.24.0.0/build/Network/HPACK/Buffer.o )
+[17 of 29] Compiling Network.HPACK.Huffman.Encode ( Network/HPACK/Huffman/Encode.hs, .stack-work/dist/x86_64-linux/Cabal-1.24.0.0/build/Network/HPACK/Huffman/Encode.o )
+[18 of 29] Compiling Network.HPACK.HeaderBlock.Integer ( Network/HPACK/HeaderBlock/Integer.hs, .stack-work/dist/x86_64-linux/Cabal-1.24.0.0/build/Network/HPACK/HeaderBlock/Integer.o )
+[19 of 29] Compiling Network.HPACK.Huffman.Decode ( Network/HPACK/Huffman/Decode.hs, .stack-work/dist/x86_64-linux/Cabal-1.24.0.0/build/Network/HPACK/Huffman/Decode.o )
+[20 of 29] Compiling Network.HPACK.Huffman ( Network/HPACK/Huffman.hs, .stack-work/dist/x86_64-linux/Cabal-1.24.0.0/build/Network/HPACK/Huffman.o )
+[21 of 29] Compiling Network.HPACK.Table.Entry ( Network/HPACK/Table/Entry.hs, .stack-work/dist/x86_64-linux/Cabal-1.24.0.0/build/Network/HPACK/Table/Entry.o )
+[22 of 29] Compiling Network.HPACK.Table.Static ( Network/HPACK/Table/Static.hs, .stack-work/dist/x86_64-linux/Cabal-1.24.0.0/build/Network/HPACK/Table/Static.o )
+[23 of 29] Compiling Network.HPACK.Table.RevIndex ( Network/HPACK/Table/RevIndex.hs, .stack-work/dist/x86_64-linux/Cabal-1.24.0.0/build/Network/HPACK/Table/RevIndex.o )
+[24 of 29] Compiling Network.HPACK.Table.Dynamic ( Network/HPACK/Table/Dynamic.hs, .stack-work/dist/x86_64-linux/Cabal-1.24.0.0/build/Network/HPACK/Table/Dynamic.o )
+[25 of 29] Compiling Network.HPACK.Table ( Network/HPACK/Table.hs, .stack-work/dist/x86_64-linux/Cabal-1.24.0.0/build/Network/HPACK/Table.o )
+[26 of 29] Compiling Network.HPACK.HeaderBlock.Decode ( Network/HPACK/HeaderBlock/Decode.hs, .stack-work/dist/x86_64-linux/Cabal-1.24.0.0/build/Network/HPACK/HeaderBlock/Decode.o )
+[27 of 29] Compiling Network.HPACK.HeaderBlock.Encode ( Network/HPACK/HeaderBlock/Encode.hs, .stack-work/dist/x86_64-linux/Cabal-1.24.0.0/build/Network/HPACK/HeaderBlock/Encode.o )
+[28 of 29] Compiling Network.HPACK.HeaderBlock ( Network/HPACK/HeaderBlock.hs, .stack-work/dist/x86_64-linux/Cabal-1.24.0.0/build/Network/HPACK/HeaderBlock.o )
+[29 of 29] Compiling Network.HPACK    ( Network/HPACK.hs, .stack-work/dist/x86_64-linux/Cabal-1.24.0.0/build/Network/HPACK.o )
 Installing library in
-/home/d/.stack/snapshots/x86_64-linux/lts-6.0/7.10.3/lib/x86_64-linux-ghc-7.10.3/http2-1.6.0-CJl5mFd2zgXBeJcLxNwDSH
+/home/d/.stack/snapshots/x86_64-linux/lts-6.2/7.10.3/lib/x86_64-linux-ghc-7.10.3/http2-1.6.0-GFz0LoJs0u7J6v3cKqAoaR
 Registering http2-1.6.0...

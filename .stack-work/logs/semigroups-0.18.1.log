@@ -1,39 +1,9 @@
 Configuring semigroups-0.18.1...
 Building semigroups-0.18.1...
 Preprocessing library semigroups-0.18.1...
-[1 of 3] Compiling Data.List.NonEmpty ( src-ghc7/Data/List/NonEmpty.hs, .stack-work/dist/x86_64-linux/Cabal-1.22.5.0/build/Data/List/NonEmpty.o )
-[2 of 3] Compiling Data.Semigroup   ( src-ghc7/Data/Semigroup.hs, .stack-work/dist/x86_64-linux/Cabal-1.22.5.0/build/Data/Semigroup.o )
-[3 of 3] Compiling Data.Semigroup.Generic ( src/Data/Semigroup/Generic.hs, .stack-work/dist/x86_64-linux/Cabal-1.22.5.0/build/Data/Semigroup/Generic.o )
-In-place registering semigroups-0.18.1...
-Running Haddock for semigroups-0.18.1...
-Running hscolour for semigroups-0.18.1...
-Preprocessing library semigroups-0.18.1...
-Preprocessing library semigroups-0.18.1...
-Haddock coverage:
-  94% ( 64 / 68) in 'Data.List.NonEmpty'
-  Missing documentation for:
-    NonEmpty (src-ghc7/Data/List/NonEmpty.hs:172)
-    length (src-ghc7/Data/List/NonEmpty.hs:217)
-    unfoldr (src-ghc7/Data/List/NonEmpty.hs:248)
-    xor (src-ghc7/Data/List/NonEmpty.hs:221)
-  83% ( 25 / 30) in 'Data.Semigroup'
-  Missing documentation for:
-    Semigroup (src-ghc7/Data/Semigroup.hs:189)
-    Min (src-ghc7/Data/Semigroup.hs:427)
-    Max (src-ghc7/Data/Semigroup.hs:512)
-    ArgMin (src-ghc7/Data/Semigroup.hs:613)
-    ArgMax (src-ghc7/Data/Semigroup.hs:614)
-  60% (  3 /  5) in 'Data.Semigroup.Generic'
-  Missing documentation for:
-    GSemigroup (src/Data/Semigroup/Generic.hs:39)
-    GMonoid (src/Data/Semigroup/Generic.hs:69)
-Warning: Data.Semigroup: could not find link destinations for:
-    Max Min D1Dual C1_0Dual S1_0_0Dual D1Endo C1_0Endo S1_0_0Endo D1All C1_0All S1_0_0All D1Any C1_0Any S1_0_0Any D1Sum C1_0Sum S1_0_0Sum D1Product C1_0Product S1_0_0Product
-Warning: Data.Semigroup.Generic: could not find link destinations for:
-    gmappend' gmempty'
-Documentation created:
-.stack-work/dist/x86_64-linux/Cabal-1.22.5.0/doc/html/semigroups/index.html,
-.stack-work/dist/x86_64-linux/Cabal-1.22.5.0/doc/html/semigroups/semigroups.txt
+[1 of 3] Compiling Data.List.NonEmpty ( src-ghc7/Data/List/NonEmpty.hs, .stack-work/dist/x86_64-linux/Cabal-1.24.0.0/build/Data/List/NonEmpty.o )
+[2 of 3] Compiling Data.Semigroup   ( src-ghc7/Data/Semigroup.hs, .stack-work/dist/x86_64-linux/Cabal-1.24.0.0/build/Data/Semigroup.o )
+[3 of 3] Compiling Data.Semigroup.Generic ( src/Data/Semigroup/Generic.hs, .stack-work/dist/x86_64-linux/Cabal-1.24.0.0/build/Data/Semigroup/Generic.o )
 Installing library in
-/home/d/.stack/snapshots/x86_64-linux/lts-6.0/7.10.3/lib/x86_64-linux-ghc-7.10.3/semigroups-0.18.1-Iivsiy35cmk8ISqG11MEap
+/home/d/.stack/snapshots/x86_64-linux/lts-6.2/7.10.3/lib/x86_64-linux-ghc-7.10.3/semigroups-0.18.1-7VT8ZAKlsYV3aU7mp3qrJ2
 Registering semigroups-0.18.1...

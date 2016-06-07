@@ -1,36 +1,10 @@
 Configuring wai-logger-2.2.7...
 Building wai-logger-2.2.7...
 Preprocessing library wai-logger-2.2.7...
-[1 of 4] Compiling Network.Wai.Logger.IORef ( Network/Wai/Logger/IORef.hs, .stack-work/dist/x86_64-linux/Cabal-1.22.5.0/build/Network/Wai/Logger/IORef.o )
-[2 of 4] Compiling Network.Wai.Logger.IP ( Network/Wai/Logger/IP.hs, .stack-work/dist/x86_64-linux/Cabal-1.22.5.0/build/Network/Wai/Logger/IP.o )
-[3 of 4] Compiling Network.Wai.Logger.Apache ( Network/Wai/Logger/Apache.hs, .stack-work/dist/x86_64-linux/Cabal-1.22.5.0/build/Network/Wai/Logger/Apache.o )
-[4 of 4] Compiling Network.Wai.Logger ( Network/Wai/Logger.hs, .stack-work/dist/x86_64-linux/Cabal-1.22.5.0/build/Network/Wai/Logger.o )
-In-place registering wai-logger-2.2.7...
-Running Haddock for wai-logger-2.2.7...
-Running hscolour for wai-logger-2.2.7...
-Preprocessing library wai-logger-2.2.7...
-Preprocessing library wai-logger-2.2.7...
-Warning: The documentation for the following packages are not installed. No
-links will be generated to these packages: bytestring-builder-0.10.6.0.0
-Haddock coverage:
-  83% (  5 /  6) in 'Network.Wai.Logger.IORef'
-  Missing documentation for:
-    Module header
-  67% (  2 /  3) in 'Network.Wai.Logger.IP'
-  Missing documentation for:
-    Module header
-  67% (  2 /  3) in 'Network.Wai.Logger.Apache'
-  Missing documentation for:
-    Module header
-  89% ( 17 / 19) in 'Network.Wai.Logger'
-  Missing documentation for:
-    ApacheLoggerActions (Network/Wai/Logger.hs:88)
-    logCheck (Network/Wai/Logger.hs:108)
-Warning: Network.Wai.Logger: could not find link destinations for:
-    NumericAddress
-Documentation created:
-.stack-work/dist/x86_64-linux/Cabal-1.22.5.0/doc/html/wai-logger/index.html,
-.stack-work/dist/x86_64-linux/Cabal-1.22.5.0/doc/html/wai-logger/wai-logger.txt
+[1 of 4] Compiling Network.Wai.Logger.IORef ( Network/Wai/Logger/IORef.hs, .stack-work/dist/x86_64-linux/Cabal-1.24.0.0/build/Network/Wai/Logger/IORef.o )
+[2 of 4] Compiling Network.Wai.Logger.IP ( Network/Wai/Logger/IP.hs, .stack-work/dist/x86_64-linux/Cabal-1.24.0.0/build/Network/Wai/Logger/IP.o )
+[3 of 4] Compiling Network.Wai.Logger.Apache ( Network/Wai/Logger/Apache.hs, .stack-work/dist/x86_64-linux/Cabal-1.24.0.0/build/Network/Wai/Logger/Apache.o )
+[4 of 4] Compiling Network.Wai.Logger ( Network/Wai/Logger.hs, .stack-work/dist/x86_64-linux/Cabal-1.24.0.0/build/Network/Wai/Logger.o )
 Installing library in
-/home/d/.stack/snapshots/x86_64-linux/lts-6.0/7.10.3/lib/x86_64-linux-ghc-7.10.3/wai-logger-2.2.7-FpRPhbaTZq4AID8KZz3Y94
+/home/d/.stack/snapshots/x86_64-linux/lts-6.2/7.10.3/lib/x86_64-linux-ghc-7.10.3/wai-logger-2.2.7-92WukIqAiPhFUlFOVXMxDS
 Registering wai-logger-2.2.7...

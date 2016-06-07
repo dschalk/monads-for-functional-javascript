@@ -1,83 +1,22 @@
 Configuring aeson-0.11.2.0...
 Building aeson-0.11.2.0...
 Preprocessing library aeson-0.11.2.0...
-[ 1 of 16] Compiling Data.Aeson.Functions ( Data/Aeson/Functions.hs, .stack-work/dist/x86_64-linux/Cabal-1.22.5.0/build/Data/Aeson/Functions.o )
-[ 2 of 16] Compiling Data.Aeson.Internal.Time ( Data/Aeson/Internal/Time.hs, .stack-work/dist/x86_64-linux/Cabal-1.22.5.0/build/Data/Aeson/Internal/Time.o )
-[ 3 of 16] Compiling Data.Aeson.Types.Internal ( Data/Aeson/Types/Internal.hs, .stack-work/dist/x86_64-linux/Cabal-1.22.5.0/build/Data/Aeson/Types/Internal.o )
-[ 4 of 16] Compiling Data.Aeson.Encode.Builder ( Data/Aeson/Encode/Builder.hs, .stack-work/dist/x86_64-linux/Cabal-1.22.5.0/build/Data/Aeson/Encode/Builder.o )
-[ 5 of 16] Compiling Data.Aeson.Types.Class ( Data/Aeson/Types/Class.hs, .stack-work/dist/x86_64-linux/Cabal-1.22.5.0/build/Data/Aeson/Types/Class.o )
-[ 6 of 16] Compiling Data.Aeson.Encode.Functions ( Data/Aeson/Encode/Functions.hs, .stack-work/dist/x86_64-linux/Cabal-1.22.5.0/build/Data/Aeson/Encode/Functions.o )
-[ 7 of 16] Compiling Data.Aeson.Parser.Time ( Data/Aeson/Parser/Time.hs, .stack-work/dist/x86_64-linux/Cabal-1.22.5.0/build/Data/Aeson/Parser/Time.o )
-[ 8 of 16] Compiling Data.Aeson.Types.Instances ( Data/Aeson/Types/Instances.hs, .stack-work/dist/x86_64-linux/Cabal-1.22.5.0/build/Data/Aeson/Types/Instances.o )
-[ 9 of 16] Compiling Data.Aeson.Internal ( Data/Aeson/Internal.hs, .stack-work/dist/x86_64-linux/Cabal-1.22.5.0/build/Data/Aeson/Internal.o )
-[10 of 16] Compiling Data.Aeson.Types.Generic ( Data/Aeson/Types/Generic.hs, .stack-work/dist/x86_64-linux/Cabal-1.22.5.0/build/Data/Aeson/Types/Generic.o )
-[11 of 16] Compiling Data.Aeson.Types ( Data/Aeson/Types.hs, .stack-work/dist/x86_64-linux/Cabal-1.22.5.0/build/Data/Aeson/Types.o )
-[12 of 16] Compiling Data.Aeson.Parser.Internal ( Data/Aeson/Parser/Internal.hs, .stack-work/dist/x86_64-linux/Cabal-1.22.5.0/build/Data/Aeson/Parser/Internal.o )
-[13 of 16] Compiling Data.Aeson.Parser ( Data/Aeson/Parser.hs, .stack-work/dist/x86_64-linux/Cabal-1.22.5.0/build/Data/Aeson/Parser.o )
-[14 of 16] Compiling Data.Aeson.Encode ( Data/Aeson/Encode.hs, .stack-work/dist/x86_64-linux/Cabal-1.22.5.0/build/Data/Aeson/Encode.o )
-[15 of 16] Compiling Data.Aeson       ( Data/Aeson.hs, .stack-work/dist/x86_64-linux/Cabal-1.22.5.0/build/Data/Aeson.o )
-[16 of 16] Compiling Data.Aeson.TH    ( Data/Aeson/TH.hs, .stack-work/dist/x86_64-linux/Cabal-1.22.5.0/build/Data/Aeson/TH.o )
-In-place registering aeson-0.11.2.0...
-Running Haddock for aeson-0.11.2.0...
-Running hscolour for aeson-0.11.2.0...
-Preprocessing library aeson-0.11.2.0...
-Preprocessing library aeson-0.11.2.0...
-Haddock coverage:
- 100% (  5 /  5) in 'Data.Aeson.Functions'
-  33% (  2 /  6) in 'Data.Aeson.Internal.Time'
-  Missing documentation for:
-    fromPico (Data/Aeson/Internal/Time.hs:32)
-    toPico (Data/Aeson/Internal/Time.hs:29)
-    diffTimeOfDay64 (Data/Aeson/Internal/Time.hs:50)
-    toTimeOfDay64 (Data/Aeson/Internal/Time.hs:56)
-  97% ( 36 / 37) in 'Data.Aeson.Types.Internal'
-  Missing documentation for:
-    JSONPath (Data/Aeson/Types/Internal.hs:108)
-  48% ( 10 / 21) in 'Data.Aeson.Encode.Builder'
-  Missing documentation for:
-    emptyArray_ (Data/Aeson/Encode/Builder.hs:138)
-    emptyObject_ (Data/Aeson/Encode/Builder.hs:144)
-    object (Data/Aeson/Encode/Builder.hs:87)
-    day (Data/Aeson/Encode/Builder.hs:176)
-    localTime (Data/Aeson/Encode/Builder.hs:244)
-    utcTime (Data/Aeson/Encode/Builder.hs:240)
-    timeOfDay (Data/Aeson/Encode/Builder.hs:192)
-    zonedTime (Data/Aeson/Encode/Builder.hs:248)
-    ascii2 (Data/Aeson/Encode/Builder.hs:150)
-    ascii4 (Data/Aeson/Encode/Builder.hs:154)
-    ascii5 (Data/Aeson/Encode/Builder.hs:159)
- 100% ( 15 / 15) in 'Data.Aeson.Types.Class'
-  50% (  4 /  8) in 'Data.Aeson.Encode.Functions'
-  Missing documentation for:
-    Module header
-    brackets (Data/Aeson/Encode/Functions.hs:51)
-    builder (Data/Aeson/Encode/Functions.hs:28)
-    list (Data/Aeson/Encode/Functions.hs:44)
- 100% (  8 /  8) in 'Data.Aeson.Parser.Time'
-  94% ( 30 / 32) in 'Data.Aeson.Types.Instances'
-  Missing documentation for:
-    tuple (Data/Aeson/Types/Instances.hs:849)
-    >*< (Data/Aeson/Types/Instances.hs:853)
-  88% (  7 /  8) in 'Data.Aeson.Internal'
-  Missing documentation for:
-    JSONPath (Data/Aeson/Types/Internal.hs:108)
- 100% (  1 /  1) in 'Data.Aeson.Types.Generic'
- 100% ( 54 / 54) in 'Data.Aeson.Types'
-  73% ( 11 / 15) in 'Data.Aeson.Parser.Internal'
-  Missing documentation for:
-    decodeWith (Data/Aeson/Parser/Internal.hs:313)
-    decodeStrictWith (Data/Aeson/Parser/Internal.hs:322)
-    eitherDecodeWith (Data/Aeson/Parser/Internal.hs:330)
-    eitherDecodeStrictWith (Data/Aeson/Parser/Internal.hs:340)
- 100% ( 10 / 10) in 'Data.Aeson.Parser'
-  86% (  6 /  7) in 'Data.Aeson.Encode'
-  Missing documentation for:
-    fromValue (Data/Aeson/Encode.hs:71)
- 100% ( 66 / 66) in 'Data.Aeson'
- 100% ( 13 / 13) in 'Data.Aeson.TH'
-Documentation created:
-.stack-work/dist/x86_64-linux/Cabal-1.22.5.0/doc/html/aeson/index.html,
-.stack-work/dist/x86_64-linux/Cabal-1.22.5.0/doc/html/aeson/aeson.txt
+[ 1 of 16] Compiling Data.Aeson.Functions ( Data/Aeson/Functions.hs, .stack-work/dist/x86_64-linux/Cabal-1.24.0.0/build/Data/Aeson/Functions.o )
+[ 2 of 16] Compiling Data.Aeson.Internal.Time ( Data/Aeson/Internal/Time.hs, .stack-work/dist/x86_64-linux/Cabal-1.24.0.0/build/Data/Aeson/Internal/Time.o )
+[ 3 of 16] Compiling Data.Aeson.Types.Internal ( Data/Aeson/Types/Internal.hs, .stack-work/dist/x86_64-linux/Cabal-1.24.0.0/build/Data/Aeson/Types/Internal.o )
+[ 4 of 16] Compiling Data.Aeson.Encode.Builder ( Data/Aeson/Encode/Builder.hs, .stack-work/dist/x86_64-linux/Cabal-1.24.0.0/build/Data/Aeson/Encode/Builder.o )
+[ 5 of 16] Compiling Data.Aeson.Types.Class ( Data/Aeson/Types/Class.hs, .stack-work/dist/x86_64-linux/Cabal-1.24.0.0/build/Data/Aeson/Types/Class.o )
+[ 6 of 16] Compiling Data.Aeson.Encode.Functions ( Data/Aeson/Encode/Functions.hs, .stack-work/dist/x86_64-linux/Cabal-1.24.0.0/build/Data/Aeson/Encode/Functions.o )
+[ 7 of 16] Compiling Data.Aeson.Parser.Time ( Data/Aeson/Parser/Time.hs, .stack-work/dist/x86_64-linux/Cabal-1.24.0.0/build/Data/Aeson/Parser/Time.o )
+[ 8 of 16] Compiling Data.Aeson.Types.Instances ( Data/Aeson/Types/Instances.hs, .stack-work/dist/x86_64-linux/Cabal-1.24.0.0/build/Data/Aeson/Types/Instances.o )
+[ 9 of 16] Compiling Data.Aeson.Internal ( Data/Aeson/Internal.hs, .stack-work/dist/x86_64-linux/Cabal-1.24.0.0/build/Data/Aeson/Internal.o )
+[10 of 16] Compiling Data.Aeson.Types.Generic ( Data/Aeson/Types/Generic.hs, .stack-work/dist/x86_64-linux/Cabal-1.24.0.0/build/Data/Aeson/Types/Generic.o )
+[11 of 16] Compiling Data.Aeson.Types ( Data/Aeson/Types.hs, .stack-work/dist/x86_64-linux/Cabal-1.24.0.0/build/Data/Aeson/Types.o )
+[12 of 16] Compiling Data.Aeson.Parser.Internal ( Data/Aeson/Parser/Internal.hs, .stack-work/dist/x86_64-linux/Cabal-1.24.0.0/build/Data/Aeson/Parser/Internal.o )
+[13 of 16] Compiling Data.Aeson.Parser ( Data/Aeson/Parser.hs, .stack-work/dist/x86_64-linux/Cabal-1.24.0.0/build/Data/Aeson/Parser.o )
+[14 of 16] Compiling Data.Aeson.Encode ( Data/Aeson/Encode.hs, .stack-work/dist/x86_64-linux/Cabal-1.24.0.0/build/Data/Aeson/Encode.o )
+[15 of 16] Compiling Data.Aeson       ( Data/Aeson.hs, .stack-work/dist/x86_64-linux/Cabal-1.24.0.0/build/Data/Aeson.o )
+[16 of 16] Compiling Data.Aeson.TH    ( Data/Aeson/TH.hs, .stack-work/dist/x86_64-linux/Cabal-1.24.0.0/build/Data/Aeson/TH.o )
 Installing library in
-/home/d/.stack/snapshots/x86_64-linux/lts-6.0/7.10.3/lib/x86_64-linux-ghc-7.10.3/aeson-0.11.2.0-33XPr26G7eRCQzR9rt6W5q
+/home/d/.stack/snapshots/x86_64-linux/lts-6.2/7.10.3/lib/x86_64-linux-ghc-7.10.3/aeson-0.11.2.0-7vDmOApkVwZ6X3RsoSwqUy
 Registering aeson-0.11.2.0...

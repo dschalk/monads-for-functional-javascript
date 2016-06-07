@@ -1,11 +1,11 @@
 
 ==================== FINAL INTERFACE ====================
-2016-06-06 02:49:04.963764 UTC
+2016-06-07 03:33:53.514197 UTC
 
 interface main@main:Main 7103
-  interface hash: 795fb639b066e9187df380e2a7f51fcc
-  ABI hash: b42b1b0b756167d454042987f8e647c7
-  export-list hash: 472ddfc42c1d1a17eb93193fa3ec8d58
+  interface hash: 74471087ca70910d364a53417df50205
+  ABI hash: 746c8c7497bfdaf094ec410256010bc4
+  export-list hash: e1b2b510b95f940fb5d5cd6bd6e3c4ea
   orphan hash: 276323d23bdb3224e26fb4d203ffca48
   flag hash: 6e7446232bb4abafa5455a993552407a
   sig of: Nothing
@@ -14,78 +14,90 @@ interface main@main:Main 7103
 exports:
   Main.main
 module dependencies: Fm Impossibles Tasks
-package dependencies: websockets-0.9.6.1@Cy1K8PYBonRGzYdOiS9xOh
-                      wai-websockets-3.0.0.9@Jo4FgG9C4xo4RxCBR1Hza0
-                      SHA-1.6.4.2@SHA_0ooW8jYoKWjDUFkZlEvhJX
-                      appar-0.1.4@appar_0ov5bpGH3STIB4U7WU8MFi
-                      array-0.5.1.0@array_67iodizgJQIIxYVTp4emlA
-                      async-2.1.0@async_KuqnF1GrhHK5nNp6Zzm3jy
-                      attoparsec-0.13.0.2@attop_41FU8li3hiTHrQHazQNzh3
-                      auto-update-0.1.4@autou_Fnqbq5K41573zil7J3s62I base-4.8.2.0
-                      base64-bytestring-1.0.0.1@base6_AkCk8zInckjJsyQ4AIFHPN
+package dependencies: warp-3.2.6@19XUWvmdnlMC8SiCqS0u4f
+                      tagged-0.8.4@28HmaFSnOtH5DSZERr9hcG
+                      vault-0.3.0.6@2dX69cRkvg5KIW2DB5npd0
+                      attoparsec-0.13.0.2@3JwmqglgJgZ6ltzenwDdlY
+                      word8-0.1.2@3qI6QzIWxFb2YcTJQBzflW
+                      wai-3.2.1.1@4Cyt81ivEpGHwY33UbgSVs
+                      wai-app-static-3.1.5@4IGz5iuDSci97rQjWDRp3w
+                      wai-websockets-3.0.0.9@4Sq3jaRGvlKIDOCdGYRAZ1
+                      hashable-1.2.4.0@50LmOn224Q3EgeXPvSuHXW
+                      zlib-0.6.1.1@5nOrdEme2Bq73rxP5cTQSc
+                      websockets-0.9.6.2@6r9QYSe8NQG2ji4wmnjOsR
+                      async-2.1.0@6wPRDqM1deEKbon3IkWZVK
+                      semigroups-0.18.1@7VT8ZAKlsYV3aU7mp3qrJ2
+                      case-insensitive-1.2.0.6@7fwUlJegww3JY2aYKI3LJl
+                      iproute-1.7.0@7ggl0DhnT72Li0lbYCzyws
+                      streaming-commons-0.1.15.5@7wCUuFaHcIi9mdU106WgKF
+                      vector-0.11.0.0@8BOf6P5Y1bBGpVDENdSiRj
+                      blaze-builder-0.4.0.2@8x4yGwdhd9wGNliUhrBDpp
+                      auto-update-0.1.4@91zDkroHiPw1ylliDIHI4j
+                      text-1.2.2.1@9F5mLsHkcGR4mhHX8IJT6y
+                      unix-compat-0.4.1.4@A4PPoyoXwZm4StdfHuGOpy
+                      primitive-0.6.1.0@AeufGSuwHUhGYOXWgTmkfr
+                      http-date-0.0.6.1@B2AIKycaXPZXoL7qiy1aP
+                      simple-sendfile-0.2.24@Bxiv0mN5fKV6M0VybRaDIg
+                      stm-2.4.4.1@ChXYRyvniZhC9Q8D3M7IoM
+                      appar-0.1.4@CjOdDPbL8HOBopkwDPwewc
+                      mime-types-0.1.0.7@D3hig7I4afAL8QwiM8Q85z
+                      base64-bytestring-1.0.0.1@DCio5lH4kLDHwqQPpZBGv9
+                      network-2.6.2.1@DYXjhFMfGanFXQWmn9DCeK
+                      blaze-markup-0.7.0.3@DyP2LsD2O7HGMF6UqZzgeS
+                      unordered-containers-0.2.7.0@E9Wk4Fx2a6xFK8M98CMMj1
+                      cryptonite-0.15@EevFYwqXnPrImiIQfxLDjM
+                      random-1.1@FDxw8MeZdq3EsvcqVWcvl2
+                      SHA-1.6.4.2@FJawqdG27A6Lj7pCTcrhRK
+                      http2-1.6.0@GFz0LoJs0u7J6v3cKqAoaR
+                      entropy-0.3.7@GLlwNkzRGe2AaQkWCvG9BR
+                      blaze-html-0.8.1.1@GVg4nTz5jQTQgMdNyHKLO
+                      file-embed-0.0.10@Hshq16e2wRYK4MooDluqc0
+                      memory-0.13@IKbXJYNgdlV6Jzb6lkLbv0
+                      scientific-0.3.4.6@IvefHWDpvxSK4F2ihvCF3D
+                      byteorder-1.0.4@JIpxiXkdG12GVdUUFx87Wq
+                      psqueues-0.2.2.1@JmuiRHYwvoCH8GR8SeE2Ot
+                      split-0.2.3.1@KYq0115aN3g2OJsj1eljjs
+                      http-types-0.9.1@KeURUs7Ddq24HEIU8CY0lZ
+                      array-0.5.1.0@array_67iodizgJQIIxYVTp4emlA base-4.8.2.0
                       binary-0.7.5.0@binar_3uXFWMoAGBg0xKP9MHKRwi
-                      blaze-html-0.8.1.1@blaze_1fCoF4onMJE2jDLBViwynk
-                      blaze-builder-0.4.0.2@blaze_5LQurmvTy7l9rPlWgPlNE4
-                      blaze-markup-0.7.0.3@blaze_JGtgJgx8yqB3DdKuU3sbgD
-                      byteorder-1.0.4@byteo_6yQGE3rJo3bBqr3CFoBQ27
                       bytestring-0.10.6.0@bytes_6VWy06pWzJq9evDvK2d4w6
-                      case-insensitive-1.2.0.6@casei_KREfefAtA7j6zRZtlU9vZn
                       containers-0.5.6.2@conta_2C3ZI8RgPO2LBMidXKTvIU
-                      cryptonite-0.15@crypt_F8W9M5THBW4FIZAr1UOHUh
                       deepseq-1.4.1.1@deeps_6vMKxt5sPFR0XsbRWvvq59
                       directory-1.2.2.0@direc_0hFG6ZxK1nk4zsyOqbNHfm
-                      entropy-0.3.7@entro_7gYJ61Ci0NNBp8LB4CGmrG
-                      file-embed-0.0.10@filee_BNyHeBYneTRAp0kIbc1T1P
                       filepath-1.4.0.0@filep_Ey7a1in9roBAE8bUFJ5R9m ghc-prim-0.4.0.0
-                      hashable-1.2.4.0@hasha_EalUWgp8NarBYWPbvYAD8I
-                      http2-1.6.0@http2_CJl5mFd2zgXBeJcLxNwDSH
-                      http-date-0.0.6.1@httpd_5DCnWjYhsQa9SYTqbDecLX
-                      http-types-0.9@httpt_3XWhJOowRHmDxzVltu1srY integer-gmp-1.0.0.0
-                      iproute-1.7.0@iprou_51qGM7UdLbAGjwdVd1zynT
-                      memory-0.13@memor_AtLbf837cOS9kNhIuRhbe8
-                      mime-types-0.1.0.7@mimet_EkzgPOw2pX43Kgu0zxtOKD
-                      network-2.6.2.1@netwo_A6pE0dLgMEk2GtUa1JtTJQ
-                      pretty-1.1.2.0@prett_JItwetRppk1H5Uq3xbjDGC
-                      primitive-0.6.1.0@primi_EphY2c7CCxSCBKjAN0YTR3
-                      psqueues-0.2.2.1@psque_AvLcbKUIB1yCm8wZoS0YR7
-                      random-1.1@rando_9Kgekc9yEaLHLNUuw6paWL
-                      scientific-0.3.4.6@scien_5s26qRhE5w04kI4pP1Rtwm
-                      semigroups-0.18.1@semig_Iivsiy35cmk8ISqG11MEap
-                      simple-sendfile-0.2.24@simpl_5F5mRzZSnjf3UA3gyfuuXK
-                      split-0.2.3.1@split_2IxbOPGrTSq7kFrJA7odmE
-                      stm-2.4.4.1@stm_EyxFXFfnfY05IrjGaqCxeD
-                      streaming-commons-0.1.15.5@strea_EmmPiWycOZRDBDTh9xaABj
-                      tagged-0.8.4@tagge_LPeicl3HxVfGUMMwMEsAE6 template-haskell-2.10.0.0
-                      text-1.2.2.1@text_HmqVQnZSpjaC156ABqPhne
-                      time-1.5.0.1@time_FTheb6LSxyX1UABIbBXRfn
+                      integer-gmp-1.0.0.0 pretty-1.1.2.0@prett_JItwetRppk1H5Uq3xbjDGC
+                      template-haskell-2.10.0.0 time-1.5.0.1@time_FTheb6LSxyX1UABIbBXRfn
                       transformers-0.4.2.0@trans_GZTjP9K5WFq01xC9BAGQpF
                       unix-2.7.1.0@unix_KZL8h98IqDM57kQSPo1mKx
-                      unix-compat-0.4.1.4@unixc_Km8uiabmElX5mrb8D4Fywe
-                      unordered-containers-0.2.7.0@unord_2BLx4faR35mFWLJj5xiBgm
-                      vault-0.3.0.6@vault_Ds02DFWDupK8kyaJ6uM5fA
-                      vector-0.11.0.0@vecto_LmZ3LQW4ivu8MsQuVgukln
-                      wai-3.2.1.1@wai_CDzNYJ9pntE9IdZyLm6PM7
-                      wai-app-static-3.1.5@waiap_3tJ0cthN8wULFzqQUQgXn8
-                      warp-3.2.6@warp_GsjOSxzmSIa6O4nQwRYv0B
-                      word8-0.1.2@word8_6yKBsGbmsbLB2UCORShr75
-                      zlib-0.6.1.1@zlib_7LjT7TSHX8U3VTy3t378Vu
-orphans: attoparsec-0.13.0.2@attop_41FU8li3hiTHrQHazQNzh3:Data.Attoparsec.ByteString.Char8
+orphans: attoparsec-0.13.0.2@3JwmqglgJgZ6ltzenwDdlY:Data.Attoparsec.ByteString.Char8
+         hashable-1.2.4.0@50LmOn224Q3EgeXPvSuHXW:Data.Hashable.Generic
+         vector-0.11.0.0@8BOf6P5Y1bBGpVDENdSiRj:Data.Vector.Fusion.Bundle
+         text-1.2.2.1@9F5mLsHkcGR4mhHX8IJT6y:Data.Text
+         text-1.2.2.1@9F5mLsHkcGR4mhHX8IJT6y:Data.Text.Lazy
+         text-1.2.2.1@9F5mLsHkcGR4mhHX8IJT6y:Data.Text.Show
+         stm-2.4.4.1@ChXYRyvniZhC9Q8D3M7IoM:Control.Monad.STM
+         network-2.6.2.1@DYXjhFMfGanFXQWmn9DCeK:Network.Socket
+         network-2.6.2.1@DYXjhFMfGanFXQWmn9DCeK:Network.Socket.Types
          base-4.8.2.0:GHC.Base base-4.8.2.0:GHC.Float
          binary-0.7.5.0@binar_3uXFWMoAGBg0xKP9MHKRwi:Data.Binary.Generic
          bytestring-0.10.6.0@bytes_6VWy06pWzJq9evDvK2d4w6:Data.ByteString.Builder
-         hashable-1.2.4.0@hasha_EalUWgp8NarBYWPbvYAD8I:Data.Hashable.Generic
-         network-2.6.2.1@netwo_A6pE0dLgMEk2GtUa1JtTJQ:Network.Socket
-         network-2.6.2.1@netwo_A6pE0dLgMEk2GtUa1JtTJQ:Network.Socket.Types
-         stm-2.4.4.1@stm_EyxFXFfnfY05IrjGaqCxeD:Control.Monad.STM
-         text-1.2.2.1@text_HmqVQnZSpjaC156ABqPhne:Data.Text
-         text-1.2.2.1@text_HmqVQnZSpjaC156ABqPhne:Data.Text.Lazy
-         text-1.2.2.1@text_HmqVQnZSpjaC156ABqPhne:Data.Text.Show
          time-1.5.0.1@time_FTheb6LSxyX1UABIbBXRfn:Data.Time.Calendar.Gregorian
          time-1.5.0.1@time_FTheb6LSxyX1UABIbBXRfn:Data.Time.Format.Parse
          time-1.5.0.1@time_FTheb6LSxyX1UABIbBXRfn:Data.Time.LocalTime.LocalTime
          transformers-0.4.2.0@trans_GZTjP9K5WFq01xC9BAGQpF:Control.Monad.Trans.Error
-         vector-0.11.0.0@vecto_LmZ3LQW4ivu8MsQuVgukln:Data.Vector.Fusion.Bundle
-family instance modules: attoparsec-0.13.0.2@attop_41FU8li3hiTHrQHazQNzh3:Data.Attoparsec.Internal.Types
+family instance modules: tagged-0.8.4@28HmaFSnOtH5DSZERr9hcG:Data.Tagged
+                         attoparsec-0.13.0.2@3JwmqglgJgZ6ltzenwDdlY:Data.Attoparsec.Internal.Types
+                         zlib-0.6.1.1@5nOrdEme2Bq73rxP5cTQSc:Codec.Compression.Zlib.Stream
+                         semigroups-0.18.1@7VT8ZAKlsYV3aU7mp3qrJ2:Data.List.NonEmpty
+                         semigroups-0.18.1@7VT8ZAKlsYV3aU7mp3qrJ2:Data.Semigroup
+                         iproute-1.7.0@7ggl0DhnT72Li0lbYCzyws:Data.IP.Addr
+                         iproute-1.7.0@7ggl0DhnT72Li0lbYCzyws:Data.IP.Range
+                         vector-0.11.0.0@8BOf6P5Y1bBGpVDENdSiRj:Data.Vector
+                         text-1.2.2.1@9F5mLsHkcGR4mhHX8IJT6y:Data.Text
+                         text-1.2.2.1@9F5mLsHkcGR4mhHX8IJT6y:Data.Text.Lazy
+                         primitive-0.6.1.0@AeufGSuwHUhGYOXWgTmkfr:Control.Monad.Primitive
+                         unordered-containers-0.2.7.0@E9Wk4Fx2a6xFK8M98CMMj1:Data.HashMap.Base
+                         unordered-containers-0.2.7.0@E9Wk4Fx2a6xFK8M98CMMj1:Data.HashSet
                          base-4.8.2.0:Control.Applicative base-4.8.2.0:Data.Either
                          base-4.8.2.0:Data.Functor.Identity base-4.8.2.0:Data.Monoid
                          base-4.8.2.0:Data.Type.Equality base-4.8.2.0:Data.Void
@@ -95,25 +107,28 @@ family instance modules: attoparsec-0.13.0.2@attop_41FU8li3hiTHrQHazQNzh3:Data.A
                          containers-0.5.6.2@conta_2C3ZI8RgPO2LBMidXKTvIU:Data.Map.Base
                          containers-0.5.6.2@conta_2C3ZI8RgPO2LBMidXKTvIU:Data.Sequence
                          containers-0.5.6.2@conta_2C3ZI8RgPO2LBMidXKTvIU:Data.Set.Base
-                         iproute-1.7.0@iprou_51qGM7UdLbAGjwdVd1zynT:Data.IP.Addr
-                         iproute-1.7.0@iprou_51qGM7UdLbAGjwdVd1zynT:Data.IP.Range
                          pretty-1.1.2.0@prett_JItwetRppk1H5Uq3xbjDGC:Text.PrettyPrint.HughesPJ
-                         primitive-0.6.1.0@primi_EphY2c7CCxSCBKjAN0YTR3:Control.Monad.Primitive
-                         semigroups-0.18.1@semig_Iivsiy35cmk8ISqG11MEap:Data.List.NonEmpty
-                         semigroups-0.18.1@semig_Iivsiy35cmk8ISqG11MEap:Data.Semigroup
-                         tagged-0.8.4@tagge_LPeicl3HxVfGUMMwMEsAE6:Data.Tagged
                          template-haskell-2.10.0.0:Language.Haskell.TH.Syntax
-                         text-1.2.2.1@text_HmqVQnZSpjaC156ABqPhne:Data.Text
-                         text-1.2.2.1@text_HmqVQnZSpjaC156ABqPhne:Data.Text.Lazy
-                         unordered-containers-0.2.7.0@unord_2BLx4faR35mFWLJj5xiBgm:Data.HashMap.Base
-                         unordered-containers-0.2.7.0@unord_2BLx4faR35mFWLJj5xiBgm:Data.HashSet
-                         vector-0.11.0.0@vecto_LmZ3LQW4ivu8MsQuVgukln:Data.Vector
-                         zlib-0.6.1.1@zlib_7LjT7TSHX8U3VTy3t378Vu:Codec.Compression.Zlib.Stream
-import  -/  websockets-0.9.6.1@Cy1K8PYBonRGzYdOiS9xOh:Network.WebSockets fcb2e2769219dee696cc85aa2bf7fe78
-import  -/  websockets-0.9.6.1@Cy1K8PYBonRGzYdOiS9xOh:Network.WebSockets.Connection 9734a0added352ca3d36ab313861d707
-import  -/  websockets-0.9.6.1@Cy1K8PYBonRGzYdOiS9xOh:Network.WebSockets.Server 61a3f8de18220ef6d7e0149e5d3c2488
-import  -/  websockets-0.9.6.1@Cy1K8PYBonRGzYdOiS9xOh:Network.WebSockets.Types 2a17fa614fb74d2d70707ba88e8e608c
-import  -/  wai-websockets-3.0.0.9@Jo4FgG9C4xo4RxCBR1Hza0:Network.Wai.Handler.WebSockets 4d5b8a2cae2f07d2b7294e0154c6b692
+import  -/  warp-3.2.6@19XUWvmdnlMC8SiCqS0u4f:Network.Wai.Handler.Warp ee56c8968d3ec18d15fbd02083d65f93
+import  -/  warp-3.2.6@19XUWvmdnlMC8SiCqS0u4f:Network.Wai.Handler.Warp.Run 4f5f8e2668fb258f20a2f5188aa51fc4
+import  -/  warp-3.2.6@19XUWvmdnlMC8SiCqS0u4f:Network.Wai.Handler.Warp.Settings b85c5bf9ebd8f10d90d82e4d6e6aa332
+import  -/  wai-3.2.1.1@4Cyt81ivEpGHwY33UbgSVs:Network.Wai 7095a70a4a7ea0dd36ff0404923d389d
+import  -/  wai-app-static-3.1.5@4IGz5iuDSci97rQjWDRp3w:Network.Wai.Application.Static f9f6f719ed95ef66bb2a4857ea563459
+import  -/  wai-app-static-3.1.5@4IGz5iuDSci97rQjWDRp3w:WaiAppStatic.Storage.Embedded.Runtime 05dda9b665f89c56672d82f3e9acab37
+import  -/  wai-websockets-3.0.0.9@4Sq3jaRGvlKIDOCdGYRAZ1:Network.Wai.Handler.WebSockets 9958a6b27034b34a29a739a3c8e84e21
+import  -/  websockets-0.9.6.2@6r9QYSe8NQG2ji4wmnjOsR:Network.WebSockets f5ff0753ab474d096142902b1e658db8
+import  -/  websockets-0.9.6.2@6r9QYSe8NQG2ji4wmnjOsR:Network.WebSockets.Connection cde1d64e7b1ff6dee7d713688f60c1c7
+import  -/  websockets-0.9.6.2@6r9QYSe8NQG2ji4wmnjOsR:Network.WebSockets.Server c99b97597222c1b0bf1daabb77473f94
+import  -/  websockets-0.9.6.2@6r9QYSe8NQG2ji4wmnjOsR:Network.WebSockets.Types 913f1f1c4bf3010e729e02e2a557321e
+import  -/  text-1.2.2.1@9F5mLsHkcGR4mhHX8IJT6y:Data.Text 3bd7e9b9ba7de40f7e45cbe8df87dbd5
+import  -/  text-1.2.2.1@9F5mLsHkcGR4mhHX8IJT6y:Data.Text.IO 688f5e0c899ec9f9132a3e408f79f7af
+import  -/  text-1.2.2.1@9F5mLsHkcGR4mhHX8IJT6y:Data.Text.Internal 081e778a3027adc733fe07a701a42beb
+import  -/  text-1.2.2.1@9F5mLsHkcGR4mhHX8IJT6y:Data.Text.Show 7e3006828689c24ac9ee901239f50de3
+import  -/  stm-2.4.4.1@ChXYRyvniZhC9Q8D3M7IoM:Control.Concurrent.STM 5d2d8dcce8a00ec76364b1c7ef8488db
+import  -/  stm-2.4.4.1@ChXYRyvniZhC9Q8D3M7IoM:Control.Concurrent.STM.TMVar 7c4776d5a98dbeefa71296b5b74f6c79
+import  -/  file-embed-0.0.10@Hshq16e2wRYK4MooDluqc0:Data.FileEmbed f8b783013610c134f0d2537826e68a3d
+import  -/  split-0.2.3.1@KYq0115aN3g2OJsj1eljjs:Data.List.Split 1b4363a7c3aefb84937a5ef10996ae2b
+import  -/  split-0.2.3.1@KYq0115aN3g2OJsj1eljjs:Data.List.Split.Internals f7f61076d9d4210fc14485c2de15cbf5
 import  -/  base-4.8.2.0:Control.Concurrent 1268fba2c60b0505ec9e8731d08a8e75
 import  -/  base-4.8.2.0:Control.Exception e9090e246fba030faecf7b81b3e8e320
 import  -/  base-4.8.2.0:Control.Exception.Base b99410eaf0cc6bb119b1d45a497c1b10
@@ -134,34 +149,19 @@ import  -/  base-4.8.2.0:Text.Read ef0ef92fb7358ae94bab089940adfd2a
 import  -/  bytestring-0.10.6.0@bytes_6VWy06pWzJq9evDvK2d4w6:Data.ByteString.Internal dfa34e211eb5d18268ce7a397234e851
 import  -/  bytestring-0.10.6.0@bytes_6VWy06pWzJq9evDvK2d4w6:Data.ByteString.Unsafe 741899719f39bacc24bec8eb3dd612dd
 import  -/  directory-1.2.2.0@direc_0hFG6ZxK1nk4zsyOqbNHfm:System.Directory a1cb5f7691abbe7dfb17405086904f1c
-import  -/  file-embed-0.0.10@filee_BNyHeBYneTRAp0kIbc1T1P:Data.FileEmbed 1b7416e900a24303a6f76149b2ca18e6
 import  -/  ghc-prim-0.4.0.0:GHC.Classes e1f4ff80f7b5262008a595d29986fb18
 import  -/  ghc-prim-0.4.0.0:GHC.Types 6b27fb3fdbd0e3f0925a4496c66513bb
-import  -/  Fm b85eef470154a5eeb66bc4e63dc73dd1
-  exports: eb318082bdf3ad21691902240fd4e31e
-  rText 6b932ac63f68bfc12b8f94658a82b0d2
+import  -/  Fm d73c722a199c38c94b1d8ceafd09fd33
+  exports: a77c7b61a27ff96bd75f7ab387ad62a8
+  rText 840ee9f2eb57f7b874d3d08162a5abca
   truck 9109abc39634877024ec43edca5f7572
 import  -/  Impossibles 0af01533e0e3b77c03c51dc332042324
   exports: 82e201a1754cffbd9ed38387ad4d4db5
-import  -/  Tasks aaecbba411bb74a268b107561753c46c
-  exports: 9aba2e6b8bb7d346aeb354a5d62552b2
-  read2 b737822b5734b05faacb713d5d210339
-  save 99d8c72d4e2705fc4b743e57d0d2e1dd
-import  -/  split-0.2.3.1@split_2IxbOPGrTSq7kFrJA7odmE:Data.List.Split 487cc1966f0f25916f1ba58bdff4b0ee
-import  -/  split-0.2.3.1@split_2IxbOPGrTSq7kFrJA7odmE:Data.List.Split.Internals ec8cf5264ec78ab060cadb7ee5b994f0
-import  -/  stm-2.4.4.1@stm_EyxFXFfnfY05IrjGaqCxeD:Control.Concurrent.STM 94fd33d8f93fbb7122113ac894592f2a
-import  -/  stm-2.4.4.1@stm_EyxFXFfnfY05IrjGaqCxeD:Control.Concurrent.STM.TMVar 4e0cacf863e7f152b6338e24ddbab04d
-import  -/  text-1.2.2.1@text_HmqVQnZSpjaC156ABqPhne:Data.Text 677c532e2dd56476a11a0a8a53880ce7
-import  -/  text-1.2.2.1@text_HmqVQnZSpjaC156ABqPhne:Data.Text.IO 4cee1d85a3c7d8e2e10b21ed89777999
-import  -/  text-1.2.2.1@text_HmqVQnZSpjaC156ABqPhne:Data.Text.Internal d9b6b9a9dd535595b612aea5738b7466
-import  -/  text-1.2.2.1@text_HmqVQnZSpjaC156ABqPhne:Data.Text.Show 081cc243e944015e37c793c3b0ebfefd
+import  -/  Tasks 021b527ac3897c6aefb557b6c3305620
+  exports: 500cd602fd26326e7ee4d185522a5914
+  read2 af5ae884827ce8cc1b03637a25cf1392
+  save 6230a9def98f12a3595edeb5a58dd916
 import  -/  transformers-0.4.2.0@trans_GZTjP9K5WFq01xC9BAGQpF:Control.Monad.IO.Class 37487179a2f5eb2ea7922b911abcae56
-import  -/  wai-3.2.1.1@wai_CDzNYJ9pntE9IdZyLm6PM7:Network.Wai d80eacf230eb96fbb1cae2246c414676
-import  -/  wai-app-static-3.1.5@waiap_3tJ0cthN8wULFzqQUQgXn8:Network.Wai.Application.Static 2f0166a717232bcffdef1ef76edbb243
-import  -/  wai-app-static-3.1.5@waiap_3tJ0cthN8wULFzqQUQgXn8:WaiAppStatic.Storage.Embedded.Runtime 24f298a555258c36fb6e3ee4e56ef8b5
-import  -/  warp-3.2.6@warp_GsjOSxzmSIa6O4nQwRYv0B:Network.Wai.Handler.Warp 58a53b752ca716caac3eea376fc1a17f
-import  -/  warp-3.2.6@warp_GsjOSxzmSIa6O4nQwRYv0B:Network.Wai.Handler.Warp.Run 83677117e7f1876ee7e5ed620f43d7e7
-import  -/  warp-3.2.6@warp_GsjOSxzmSIa6O4nQwRYv0B:Network.Wai.Handler.Warp.Settings 95902a9d8ca4b4d701d0f1dba1203f8f
 addDependentFile "client/bower_components/mocha/media/logo.svg"
 addDependentFile "client/bower_components/mocha/Readme.md"
 addDependentFile "client/bower_components/mocha/bower.json"
@@ -244,12 +244,7 @@ addDependentFile "client/src/monad.js~"
 addDependentFile "client/src/code.js"
 addDependentFile "client/src/edit.js"
 addDependentFile "client/src/main.js"
-addDependentFile "client/src/store.js"
-addDependentFile "client/src/cow.js"
-addDependentFile "client/src/cow.js~"
 addDependentFile "client/src/monad.js"
-addDependentFile "client/src/save.js"
-addDependentFile "client/src/save.js~"
 addDependentFile "client/src/main.js~"
 addDependentFile "client/src/index.js"
 addDependentFile "client/src/most-subject.js"
@@ -286,7 +281,7 @@ addDependentFile "client/glackage.json"
                         s of wild {
                    Data.Either.Left x -> GHC.Err.error @ GHC.Types.Double x
                    Data.Either.Right y -> y }) -}
-6add8b64a8ca61a520d878c5e5c57dea
+c95ab8e9ad9eb57f362f437509142838
   type Client =
     (Main.Name,
      Main.Score,
@@ -295,13 +290,13 @@ addDependentFile "client/glackage.json"
      Network.WebSockets.Connection.Connection)
 e23b1dbb60d1b7841a59cd7d35a85b3d
   type Goal = GHC.Types.Int
-016883a86d17ba7a557b65c0de800041
+91aba73f2c764ca2c46ce6ac1e636f16
   type Group = Data.Text.Internal.Text
-de1821f6f83706c69955f92f0a5fa441
+766a4976decc7ed3a5011906138409f0
   type Name = Data.Text.Internal.Text
 2708c8f61b5e86fc460031522a88bbb2
   type Score = GHC.Types.Int
-601cba0e2b05163c840bd1254b38f263
+6424200eb2b1b4a9e249df4c02a3c611
   type ServerState = [Main.Client]
 ee6590a2ab0ffaa5074d93f2d3fc4c03
   main :: GHC.Types.IO ()
