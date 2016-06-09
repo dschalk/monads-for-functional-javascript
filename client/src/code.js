@@ -117,18 +117,25 @@ var driver = h('pre', `  var websocketsDriver = function () {
 
 var messages = h('pre', `  const messages$ = (sources.WS).map(e => 
     mMtem.ret(e.data.split(',')).bnd(v => {
-    mMZ10.bnd(() => mM$1
-      .ret([v[3], v[4], v[5], v[6]])
-      .bnd(() => mM$2.ret([])))
+    mMZ10.bnd(() => {
+      mM$2.ret([])
+      mMcurrentRoll.ret([v[3], v[4], v[5], v[6]]).bnd(mM$1.ret) }) 
     mMZ11.bnd(() => updateScoreboard(v[3]));
     mMZ12.bnd(() => mM6
       .ret(v[2] + ' successfully logged in.'))
     mMZ13.bnd(() => updateMessages(v))
-    mMZ14.bnd(() => mMgoals2.ret('The winner is ' + v.x ))
+    mMZ14.bnd(() => mMgoals2.ret('The winner is ' + v[2] ))
     mMZ15.bnd(() => mMgoals2.ret('A player named ' + 
       O.mMname.x + 'is currently logged in. Page will refresh in 4 seconds.')
       .bnd(refresh))
-    mMZ16.bnd(() => process(e.data))
+    mMZ16.bnd(() => {
+      if (v[3] == 'no file') {
+        mMtaskList.ret([])
+      } 
+      else {
+        process(e.data)
+      }
+    })
     mMtemp.ret(e.data.split(',')[0])
       .bnd(next, 'CA#$42', mMZ10)
       .bnd(next, 'CB#$42', mMZ11)
@@ -138,7 +145,7 @@ var messages = h('pre', `  const messages$ = (sources.WS).map(e =>
       .bnd(next, 'EE#$42', mMZ15)
       .bnd(next, 'DD#$42', mMZ16)
     }) 
-  );
+  });
              
   var next = function next(x, y, mon2) {
     if (x === y) {
@@ -861,6 +868,24 @@ var seed4 = h('pre',  `
              `  )
 
 var seed5 = h('pre',  ` 
+             `  )
+
+var seed6 = h('pre',  ` 
+             `  )
+
+var seed7 = h('pre',  ` 
+             `  )
+
+var seed8 = h('pre',  ` 
+             `  )
+
+var seed9 = h('pre',  ` 
+             `  )
+
+var seed1 = h('pre',  ` 
+             `  )
+
+var seed2 = h('pre',  ` 
              `  )
 
 

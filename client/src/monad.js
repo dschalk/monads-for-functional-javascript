@@ -1,12 +1,9 @@
 'use strict';
 
-var xs = xstream.Stream;
+var O = {};
 
-var O2;
 var count = 0;
 var state, monadState, total;
-
-var O = {};
 
 var MonadStream = function MonadStream(g) {
   var _this = this;
@@ -155,7 +152,7 @@ var mM20 = M(0,'mM20');
 var mM21 = M('waiting','mM21');
 var mM22 = M(0,'mM22');
 mM22.ret(mM22.x);
-var mM23 = M(0,'mM23');
+var mM23 = M([0,1,1],'mM23');
 mM23.ret(mM23.x);
 var mM24 = M(0,'mM24');
 var mM25 = M(0,'mM25');
@@ -308,6 +305,9 @@ mMspreadsheet.ret(mMspreadsheet.x)
 
 var mMspreadsheet2 = new Monad([0,0,0,0], 'mMspreadsheet2');
 mMspreadsheet2.ret(mMspreadsheet2.x)
+
+var mMdummy = new Monad(0, 'mMdummy');
+mMdummy.ret(mMdummy.x);
 
 var RESULT =[0,0,0,0];
 
@@ -592,8 +592,11 @@ var splice = function splice(x, start, n, mon) {
 
 var concat = function concat(x, v, mon) {
   if (Array.isArray(v)) {
-    mon.ret(x.concat(v));
+    let ar = x.slice();
+    let ar2 = ar.concat(v);
+    mon.ret(ar2);
   }
+  console.log('In concat. x and v are: ',x, v);
   mon.ret(x + v)
 }
 
@@ -736,4 +739,7 @@ var delay = function delay(x, mon) {
   });
 };
 */
+
+
+
 

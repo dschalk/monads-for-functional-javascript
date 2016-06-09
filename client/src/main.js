@@ -2,39 +2,6 @@ import Cycle from '@motorcycle/core';
 import {h, p, span, h1, h2, h3, br, div, label, input, hr, makeDOMDriver} from '@motorcycle/dom';
 import {just, create, merge, combine, fromEvent, periodic, observe, delay, filter, of} from 'most';
 import code from './code.js';
-import {observable, when, computed, autorun, asReference} from 'mobx'
-monadState = observable(O);
-
-
-const person = observable({
-    firstName: "Maarten",
-    lastName: "Luther"
-});
-person.$mobx.observe(v => console.log(v));
-person.firstName = "Andy";
-person.firstName = "Jill";
-
-/*
-var arTest = computed(() => {
-  setInterval(function() {
-    mM23.ret([O.mM23.x[1], O.mM23.x[0] + O.mM23.x[1]]);
-  },2000  )
-});
-
-arTest.observe(v => console.log('computed mM23', v));
-mM23.ret([0,1]);
-*/
-
-
-var sumTest = computed(() => O.mM22.x + O.mM23.x);
-sumTest.observe(v => console.log('computed ', v));
-
-autorun(() => console.log(' O.mM27.x ', O.mM27.x));
-mM24.ret(5);
-mM25.ret(10);
-mM27.ret(O.mM24.x + O.mM25.x);
-autorun(() => console.log('O.mM24 + O.mM25: ', O.mM24.x + O.mM25.x));
-mM24.ret(10);
 
 function createWebSocket(path) {
     let host = window.location.hostname;
@@ -52,15 +19,15 @@ const websocketsDriver = function () {
     })
 }
 
-window.onload = function (event) {
-  console.log('onopen event: ', event);
+function main(sources) {
+
+  window.onload = function (event) {
+    console.log('onopen event: ', event);
     document.querySelector('input#login').focus();
     mM$fib5.ret( [ 0, 1, 1 ] );
     mM$prime5.ret([[2], 3, 3]);
     mM$primeFibs.ret([[2], 3, 3, [2,3]]); 
-};
-
-function main(sources) {
+  };
 
   mMZ1.bnd(v => O.mMt1.bnd(add,v,mMt1)
   .bnd(cube,mMt2)
@@ -69,11 +36,10 @@ function main(sources) {
   mMZ2.bnd(v => cube(v).bnd(w => mMt3.ret(v + ' cubed is ' + w)))
   
   const messages$ = (sources.WS).map(e => {
-    console.log('******____&&&&&&&&&&&&&&&&&&&____**************_In messages$  e.data is: ', e.data)
     mMtem.ret(e.data.split(',')).bnd(v => {
     mMZ10.bnd(() => {
       mM$2.ret([])
-      mMcurrentRoll.ret([v[3], v[4], v[5], v[6]]) }) 
+      mMcurrentRoll.ret([v[3], v[4], v[5], v[6]]).bnd(mM$1.ret) }) 
     mMZ11.bnd(() => updateScoreboard(v[3]));
     mMZ12.bnd(() => mM6
       .ret(v[2] + ' successfully logged in.'))
@@ -377,6 +343,7 @@ function main(sources) {
     if (O.mM3.x.length < 2) {
       O.mM3.bnd(push, e.target.innerHTML, O.mM3)
       O.mMcurrentRoll.bnd(splice, e.target.id, 1, mMcurrentRoll)
+        .bnd(mM$1.ret);
       if (O.mM3.x.length === 2 && O.mM8.x !== 0) {
         updateCalc();
       }
@@ -447,7 +414,7 @@ function main(sources) {
   mM$fib5.stream.observe(v => {
     var x = v.splice(0, v.length);
       if (x[1] < x[2]) {
-          monadState.mMfibs8.bnd(push, x[0] + x[1], mMfibs8);
+          O.mMfibs8.bnd(push, x[0] + x[1], mMfibs8);
           mM$fib5.ret([x[1], x[0] + x[1], x[2]]);
       }
       else {
@@ -529,7 +496,21 @@ function main(sources) {
         ',' + O.mMname.x.trim() + ',' + '@' + str);
   });
 
-  autorun(() => {O.mMcurrentRoll.x}); 
+
+
+    const mM$1Action$ = mM$1.stream.observe(v => {
+      console.log('<><><><><><><><><><><><><><><<><><><><><><><><><> In mM$Action$ v is ', v);
+      if (Array.isArray(v)) {
+        document.getElementById('0').innerHTML = O.mMcurrentRoll.x[0]; 
+        document.getElementById('1').innerHTML = O.mMcurrentRoll.x[1]; 
+        document.getElementById('2').innerHTML = O.mMcurrentRoll.x[2]; 
+        document.getElementById('3').innerHTML = O.mMcurrentRoll.x[3]; 
+        cleanup()
+      }
+      else {
+        console.log('O.mM$1.stream is providing defective data to O.mM$1Action');
+      }
+    });
 
   const testZ = sources.DOM
     .select('#testZ').events('click')
@@ -576,10 +557,24 @@ function main(sources) {
     }
   });
 
-  const spread1Press$ = sources.DOM
-    .select('#spread1').events('change');
+  const dummyClick$ = sources.DOM
+    .select('#dummy').events('click');
 
-  const spread1PressAction$ = spread1Press$.map(e => {
+  const dummyAction$ = dummyClick$.map(e => {
+    O.mMdummy.bnd(add, 1, mMdummy);
+    console.log('<><><><><><><><><> In dummyAction$ e is: ', e);
+    console.log(document.getElementById('dummy').click);
+    console.log('<><><><><><><><><>');
+
+    var next = O.mM23.x[O.mM23.x.length - 1]*1 +  O.mM23.x[O.mM23.x.length - 2]*1 
+    O.mM23.bnd(push, next , mM23);
+    document.getElementById('dummy2').innerHTML = O.mM23.x;
+  });
+
+
+  /*
+
+  const spread1Action$ = spread1Change$.map(e => {
     O.mMcount.ret(e.target.value)
     var A = e.target.value;
     var B = O.mMcount2.x;
@@ -589,26 +584,10 @@ function main(sources) {
     A + ' * ' + B + ' = ' + (A * B),  
     A + ' / ' + B + ' = ' + (A / B)])
     .bnd(log);
-
+    document.getElementById('dummy').click();
   });
+ */
 
-  const spread2Press$ = sources.DOM
-    .select('#spread2').events('change');
-
-  const spread2PressAction$ = spread2Press$.map(e => {
-    O.mMcount2.ret(e.target.value)
-    var A = O.mMcount.x;
-    var B = e.target.value;
-    mMspreadsheet.ret(
-   [A + ' + ' + B + ' = ' + (A*1 + B*1),  
-    A + ' - ' + B + ' = ' + (A - B),  
-    A + ' * ' + B + ' = ' + (A * B),  
-    A + ' / ' + B + ' = ' + (A / B)])
-    .bnd(log);
-  });
-  
-
-autorun(() => {console.log(O.mMspreadsheet.x)}); 
  
   const newFibpress$ = sources.DOM
     .select('input#fibF').events('keypress');
@@ -634,7 +613,7 @@ autorun(() => {console.log(O.mMspreadsheet.x)});
     }
   });
 
-  const calcStream$ = merge( newFibAction$, spread1PressAction$, spread2PressAction$, fibKeyPressAction5$, primeKeyPressAction5$, fibPressAction$, runTestAction$, quadAction$, testWAction$, testZAction$, testQAction$, edit1Action$, edit2Action$, colorAction$, deleteAction$, newTaskAction$, chatClickAction$, gameClickAction$, todoClickAction$, captionClickAction$, groupPressAction$, rollClickAction$, messagePressAction$, loginPressAction$, messages$, numClickAction$, opClickAction$ );
+  const calcStream$ = merge( dummyAction$, newFibAction$, fibKeyPressAction5$, primeKeyPressAction5$, fibPressAction$, runTestAction$, quadAction$, testWAction$, testZAction$, testQAction$, edit1Action$, edit2Action$, colorAction$, deleteAction$, newTaskAction$, chatClickAction$, gameClickAction$, todoClickAction$, captionClickAction$, groupPressAction$, rollClickAction$, messagePressAction$, loginPressAction$, messages$, numClickAction$, opClickAction$ );
   
     return {
       DOM: 
@@ -716,10 +695,10 @@ autorun(() => {console.log(O.mMspreadsheet.x)});
         h('br'),
         h('span', ' Here are the basic rules:' ), 
         h('p', 'RULES: If clicking two numbers and an operator (in any order) results in 20 or 18, the score increases by 1 or 3, respectively. If the score becomes 0 mod 5, 5 points are added. A score of 25 results in one goal. That can only be achieved by arriving at a score of 20, which jumps the score to 25. Directly computing 25 results in a score of 30, and no goal. Each time ROLL is clicked, one point is deducted. Three goals wins the game. '    ),
-        h('button#0.num',  O.mMcurrentRoll.x[0]  ),
-        h('button#1.num',  O.mMcurrentRoll.x[1]  ),
-        h('button#2.num',  O.mMcurrentRoll.x[2]  ),
-        h('button#3.num',  O.mMcurrentRoll.x[3]  ),
+        h('button#0.num',   ),
+        h('button#1.num',   ),
+        h('button#2.num',   ),
+        h('button#3.num',   ),
         h('br'),
         h('button#4.op', 'add'  ),
         h('button#5.op', 'subtract' ),
@@ -857,32 +836,6 @@ autorun(() => {console.log(O.mMspreadsheet.x)});
         h('pre', `    mM$fib5.ret( [ 0, 1, 1 ] );
     mM$prime5.ret( [ [2], 3, 3 ] );
 `    ),
-
-
-        h('h2', 'Hot Monad State'   ),
-        h('p', ' I made the global object "O" observable with the following two lines of code: ' ),
-        h('pre', `    import {observable, autorun} from 'mobx'
-    monadState = observable(O);    ` ),
-        h('p', ' So now, whenever an instance of Monad, say m, calls its ret() method, O gets mutated and any expression containing O.m can be made to automatically update. In release v1.0 of this project, the dice game display updated every time mM$1.ret() was called. mM$1 is an instance of MonadStream, so calling mM$1.ret(v) for any value v put v in mM$1.stream. mM$1.stream mapped its latest value into the update function. Now, updates occur whenever mMcurrentRoll.ret() is called. That is because calling mMcurrentRoll.ret() swaps out O.mMcurrentRoll, and this mutation of "O" in combination with the MobX autorun function (shown below) causes all expressions involving O.mMcurrentRoll to execute or update. O.mMcurrentRoll.x is a permanent fixture of the DOM object returned by main. The Motorcycle diff and render execute whenever O.mMcurrentRoll.x changes. Users see the browser display change each time they click on a number because clicking a number causes mMcurrentRoll.ret() to execute. Here is line of code that makes this happen: '  ), 
-        h('pre', `    autorun(() => {O.mMcurrentRoll.x}); ` ), 
-
-        /*
-        h('p', ' To illustrate the way monads on "O" can be used in combination with the MobX autorun function, here is a spreadsheet-like calculator: '  ),
-        code.spreadsheet2,
-        h('p', ' And here is where you can enter numbers: ' ),
-        h('span', 'Enter Numbers: ' ), 
-        h('input#spread1', ), 
-        h('input#spread2', ), 
-        h('p#spreadsheet5',   O.mMspreadsheet.x[0] ), 
-        h('p#spreadsheet6',   O.mMspreadsheet.x[1] ), 
-        h('p#spreadsheet7',   O.mMspreadsheet.x[2] ), 
-        h('p#spreadsheet8',   O.mMspreadsheet.x[3] ), 
-        h('p', ' This could have been done just as well by merging a stream into the main stream that feed the virtual DOM. But updating the game display with MobX is simpler than updating with a stream. '  ),
-        h('p', ' The first Github release of JS-monads-stable, release v1.0, an instance of MonadStream was responsible for updating the virtual DOM.  In this release, version v1.1, the MobX "autorun()" function is responsible for updates. The observable monad state object "O" really shines here.  Calling mMcurrentRoll.ret() on new or modified arrays of numbers prompts autorun to update the number display. The code is a simple one liner. Here it is:  '   ),
-        h('pre', `    autorun(() => {O.mMcurrentRoll.x}); ` ), 
-        h('p', ' It doesn\'t get much easier than that. O.mMcurrentRoll.x is a permanent feature of the virtual DOM, and when it changes, Motorcycle re-renders the affected part of the DOM.  There is more about updating the number display in the following section. '  ),
-       */
-
         h('h2', 'Updating the DOM'  ),
         h('h3', 'Todo List DOM Updates' ),
         h('p', ' When users do anything to the todo list, MonadStream instance mM$taskList runs its ret() method on the modified String representation of the list, causing the string to be added to mM$taskList.stream. mM$taskList.stream has only one subscriber, taskAction$, whose only purpose it to send the string representation of the todo list to the server. The server updates its persistent file and distributes a text representation of the updated todo list to all group members. Each group member receives the todo list as a string and parses it into a DOM node tree that is merged into the stream that updates the virtual DOM. All Todo List side effects can be traced to:' ),
@@ -891,8 +844,6 @@ autorun(() => {console.log(O.mMspreadsheet.x)});
         h('a', {props: {href: '#tdList2'}}, 'Detailed Todo List Explanation'   ),  
         h('br' ),
         h('h3', 'Dice Game DOM updates' ),
-        h('p', ' As mentioned above, because "O" is reactive, the following code is all that is needed to make virtual DOM updates occur automatically. This is much simpler than using streams, callbacks, or anything else. The overhead involved in uploading and using the MobX library doesn\'t seem to affect performance. A cdn version of the MobX library can be accessed by the browser, making uploading unnecessary. Maybe I\ll perform some benchmark tests one of these days.  ' ),
-        h('pre', `    autorun(() => {O.mMcurrentRoll.x}); ` ), 
         h('p', ' mMcurrentRoll.ret() is called only when (1) a new dice roll comes in from the server, (2) when a player clicks a number, and (3) when clicking a number or operator results in a computation being performed. These are the three things that require a DOM update. When a player clicks a number, it disappears from number display. When a computation is performed, the result is added to the number display, unless the result is 18 or 20. A result of 18 or 20 results in a new roll coming in from the server ' ),
         h('p', '    ' ),
         h('hr' ),  
@@ -978,8 +929,18 @@ autorun(() => {console.log(O.mMspreadsheet.x)});
         h('br'),  
         h('br'),  
         h('hr'),  
+        h('span#dummy2.red3' ),  
+        h('hr'),  
+        h('button#dummy', O.mMdummy.x ),  
         h('p' ),  
-        h('bubbon#dummy', 'dummy' ),  
+        h('p' ),  
+        h('p', '.' ),  
+        h('p', '.' ),  
+        h('p', '.' ),  
+        h('p', '.' ),  
+        h('p', '.' ),  
+        h('p' ),  
+        h('p' ),  
         h('p' ),  
         h('p' ),  
         h('p' )  
@@ -1009,7 +970,8 @@ autorun(() => {console.log(O.mMspreadsheet.x)});
     .ret(calc(x[0], O.mM8.x, x[1]))
     .bnd(result => {if (result == 20) {score(O.mM13.x, 1)}; return O.mM7}) 
     .bnd(result => {if (result == 18) {score(O.mM13.x, 3)}; return O.mMcurrentRoll}) 
-    .bnd(push, O.mM7.x, mMcurrentRoll))
+    .bnd(push, O.mM7.x, mMcurrentRoll)
+    .bnd(mM$1.ret));
     reset();
   };
 

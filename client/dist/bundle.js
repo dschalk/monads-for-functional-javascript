@@ -39,7 +39,7 @@
 /******/ 	// __webpack_public_path__
 /******/ 	__webpack_require__.p = "";
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 103);
+/******/ 	return __webpack_require__(__webpack_require__.s = 102);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -102,8 +102,8 @@
 	/** @author Brian Cavalier */
 	/** @author John Hann */
 
-	var Disposable = __webpack_require__(73);
-	var SettableDisposable = __webpack_require__(74);
+	var Disposable = __webpack_require__(72);
+	var SettableDisposable = __webpack_require__(73);
 	var isPromise = __webpack_require__(11).isPromise;
 	var base = __webpack_require__(3);
 
@@ -523,8 +523,8 @@
 	var Stream = __webpack_require__(0);
 	var base = __webpack_require__(3);
 	var core = __webpack_require__(7);
-	var from = __webpack_require__(85).from;
-	var periodic = __webpack_require__(91).periodic;
+	var from = __webpack_require__(84).from;
+	var periodic = __webpack_require__(90).periodic;
 
 	/**
 	 * Core stream type
@@ -543,7 +543,7 @@
 	//-----------------------------------------------------------------------
 	// Creating
 
-	var create = __webpack_require__(84);
+	var create = __webpack_require__(83);
 
 	/**
 	 * Create a stream by imperatively pushing events.
@@ -558,7 +558,7 @@
 	//-----------------------------------------------------------------------
 	// Adapting other sources
 
-	var events = __webpack_require__(87);
+	var events = __webpack_require__(86);
 
 	/**
 	 * Create a stream of events from the supplied EventTarget or EventEmitter
@@ -574,7 +574,7 @@
 	//-----------------------------------------------------------------------
 	// Observing
 
-	var observe = __webpack_require__(64);
+	var observe = __webpack_require__(63);
 
 	exports.observe = observe.observe;
 	exports.forEach = observe.observe;
@@ -603,7 +603,7 @@
 
 	//-------------------------------------------------------
 
-	var loop = __webpack_require__(62).loop;
+	var loop = __webpack_require__(61).loop;
 
 	exports.loop = loop;
 
@@ -623,7 +623,7 @@
 
 	//-------------------------------------------------------
 
-	var accumulate = __webpack_require__(55);
+	var accumulate = __webpack_require__(54);
 
 	exports.scan = accumulate.scan;
 	exports.reduce = accumulate.reduce;
@@ -654,9 +654,9 @@
 	//-----------------------------------------------------------------------
 	// Building and extending
 
-	var unfold = __webpack_require__(92);
-	var iterate = __webpack_require__(90);
-	var generate = __webpack_require__(89);
+	var unfold = __webpack_require__(91);
+	var iterate = __webpack_require__(89);
+	var generate = __webpack_require__(88);
 	var build = __webpack_require__(23);
 
 	exports.unfold = unfold.unfold;
@@ -696,7 +696,7 @@
 	// Transforming
 
 	var transform = __webpack_require__(12);
-	var applicative = __webpack_require__(56);
+	var applicative = __webpack_require__(55);
 
 	exports.map = transform.map;
 	exports.constant = transform.constant;
@@ -744,7 +744,7 @@
 	//-----------------------------------------------------------------------
 	// Transducer support
 
-	var transduce = __webpack_require__(71);
+	var transduce = __webpack_require__(70);
 
 	exports.transduce = transduce.transduce;
 
@@ -800,7 +800,7 @@
 	  return continueWith(f, this);
 	};
 
-	var concatMap = __webpack_require__(57).concatMap;
+	var concatMap = __webpack_require__(56).concatMap;
 
 	exports.concatMap = concatMap;
 
@@ -831,7 +831,7 @@
 	//-----------------------------------------------------------------------
 	// Merging
 
-	var merge = __webpack_require__(63);
+	var merge = __webpack_require__(62);
 
 	exports.merge = merge.merge;
 	exports.mergeArray = merge.mergeArray;
@@ -867,7 +867,7 @@
 	//-----------------------------------------------------------------------
 	// Sampling
 
-	var sample = __webpack_require__(66);
+	var sample = __webpack_require__(65);
 
 	exports.sample = sample.sample;
 	exports.sampleWith = sample.sampleWith;
@@ -895,7 +895,7 @@
 	//-----------------------------------------------------------------------
 	// Zipping
 
-	var zip = __webpack_require__(72);
+	var zip = __webpack_require__(71);
 
 	exports.zip = zip.zip;
 
@@ -913,7 +913,7 @@
 	//-----------------------------------------------------------------------
 	// Switching
 
-	var switchLatest = __webpack_require__(68).switch;
+	var switchLatest = __webpack_require__(67).switch;
 
 	exports.switch = switchLatest;
 	exports.switchLatest = switchLatest;
@@ -930,7 +930,7 @@
 	//-----------------------------------------------------------------------
 	// Filtering
 
-	var filter = __webpack_require__(60);
+	var filter = __webpack_require__(59);
 
 	exports.filter = filter.filter;
 	exports.skipRepeats = exports.distinct = filter.skipRepeats;
@@ -969,7 +969,7 @@
 	//-----------------------------------------------------------------------
 	// Slicing
 
-	var slice = __webpack_require__(67);
+	var slice = __webpack_require__(66);
 
 	exports.take = slice.take;
 	exports.skip = slice.skip;
@@ -1034,7 +1034,7 @@
 	//-----------------------------------------------------------------------
 	// Time slicing
 
-	var timeslice = __webpack_require__(69);
+	var timeslice = __webpack_require__(68);
 
 	exports.until = exports.takeUntil = timeslice.takeUntil;
 	exports.since = exports.skipUntil = timeslice.skipUntil;
@@ -1083,7 +1083,7 @@
 	//-----------------------------------------------------------------------
 	// Delaying
 
-	var delay = __webpack_require__(58).delay;
+	var delay = __webpack_require__(57).delay;
 
 	exports.delay = delay;
 
@@ -1098,7 +1098,7 @@
 	//-----------------------------------------------------------------------
 	// Getting event timestamp
 
-	var timestamp = __webpack_require__(70).timestamp;
+	var timestamp = __webpack_require__(69).timestamp;
 
 	exports.timestamp = timestamp;
 
@@ -1114,7 +1114,7 @@
 	//-----------------------------------------------------------------------
 	// Rate limiting
 
-	var limit = __webpack_require__(61);
+	var limit = __webpack_require__(60);
 
 	exports.throttle = limit.throttle;
 	exports.debounce = limit.debounce;
@@ -1145,7 +1145,7 @@
 	//-----------------------------------------------------------------------
 	// Awaiting Promises
 
-	var promises = __webpack_require__(65);
+	var promises = __webpack_require__(64);
 
 	exports.fromPromise = promises.fromPromise;
 	exports.await = promises.awaitPromises;
@@ -1162,7 +1162,7 @@
 	//-----------------------------------------------------------------------
 	// Error handling
 
-	var errors = __webpack_require__(59);
+	var errors = __webpack_require__(58);
 
 	exports.recoverWith = errors.flatMapError;
 	exports.flatMapError = errors.flatMapError;
@@ -1525,7 +1525,7 @@
 
 	var Stream = __webpack_require__(0);
 	var dispose = __webpack_require__(2);
-	var LinkedList = __webpack_require__(53);
+	var LinkedList = __webpack_require__(52);
 	var identity = __webpack_require__(3).id;
 
 	exports.mergeConcurrently = mergeConcurrently;
@@ -1855,7 +1855,7 @@
 	});
 	exports.mockDOMSource = exports.makeDOMDriver = exports.video = exports.ul = exports.u = exports.tr = exports.title = exports.thead = exports.th = exports.tfoot = exports.textarea = exports.td = exports.tbody = exports.table = exports.sup = exports.sub = exports.style = exports.strong = exports.span = exports.source = exports.small = exports.select = exports.section = exports.script = exports.samp = exports.s = exports.ruby = exports.rt = exports.rp = exports.q = exports.pre = exports.param = exports.p = exports.option = exports.optgroup = exports.ol = exports.object = exports.noscript = exports.nav = exports.meta = exports.menu = exports.mark = exports.map = exports.main = exports.link = exports.li = exports.legend = exports.label = exports.keygen = exports.kbd = exports.ins = exports.input = exports.img = exports.iframe = exports.i = exports.html = exports.hr = exports.hgroup = exports.header = exports.head = exports.h6 = exports.h5 = exports.h4 = exports.h3 = exports.h2 = exports.h1 = exports.form = exports.footer = exports.figure = exports.figcaption = exports.fieldset = exports.embed = exports.em = exports.dt = exports.dl = exports.div = exports.dir = exports.dfn = exports.del = exports.dd = exports.colgroup = exports.col = exports.code = exports.cite = exports.caption = exports.canvas = exports.button = exports.br = exports.body = exports.blockquote = exports.bdo = exports.bdi = exports.base = exports.b = exports.audio = exports.aside = exports.article = exports.area = exports.address = exports.abbr = exports.a = exports.h = exports.thunk = exports.modules = undefined;
 
-	var _makeDOMDriver = __webpack_require__(43);
+	var _makeDOMDriver = __webpack_require__(42);
 
 	Object.defineProperty(exports, 'makeDOMDriver', {
 	  enumerable: true,
@@ -1864,7 +1864,7 @@
 	  }
 	});
 
-	var _mockDOMSource = __webpack_require__(44);
+	var _mockDOMSource = __webpack_require__(43);
 
 	Object.defineProperty(exports, 'mockDOMSource', {
 	  enumerable: true,
@@ -1877,15 +1877,15 @@
 
 	var modules = _interopRequireWildcard(_modules);
 
-	var _thunk = __webpack_require__(102);
+	var _thunk = __webpack_require__(101);
 
 	var _thunk2 = _interopRequireDefault(_thunk);
 
-	var _hyperscript = __webpack_require__(42);
+	var _hyperscript = __webpack_require__(41);
 
 	var _hyperscript2 = _interopRequireDefault(_hyperscript);
 
-	var _hyperscriptHelpers = __webpack_require__(48);
+	var _hyperscriptHelpers = __webpack_require__(47);
 
 	var _hyperscriptHelpers2 = _interopRequireDefault(_hyperscriptHelpers);
 
@@ -2226,13 +2226,13 @@
 	});
 	exports.makeEventsSelector = undefined;
 
-	var _domEvent = __webpack_require__(40);
+	var _domEvent = __webpack_require__(39);
 
 	var _makeIsStrictlyInRootScope = __webpack_require__(20);
 
 	var matchesSelector = void 0;
 	try {
-	  matchesSelector = __webpack_require__(49);
+	  matchesSelector = __webpack_require__(48);
 	} catch (e) {
 	  matchesSelector = function matchesSelector() {};
 	}
@@ -2409,27 +2409,27 @@
 	});
 	exports.EventsModule = exports.HeroModule = exports.AttrsModule = exports.PropsModule = exports.ClassModule = exports.StyleModule = undefined;
 
-	var _class = __webpack_require__(96);
+	var _class = __webpack_require__(95);
 
 	var _class2 = _interopRequireDefault(_class);
 
-	var _props = __webpack_require__(99);
+	var _props = __webpack_require__(98);
 
 	var _props2 = _interopRequireDefault(_props);
 
-	var _attributes = __webpack_require__(95);
+	var _attributes = __webpack_require__(94);
 
 	var _attributes2 = _interopRequireDefault(_attributes);
 
-	var _eventlisteners = __webpack_require__(97);
+	var _eventlisteners = __webpack_require__(96);
 
 	var _eventlisteners2 = _interopRequireDefault(_eventlisteners);
 
-	var _style = __webpack_require__(100);
+	var _style = __webpack_require__(99);
 
 	var _style2 = _interopRequireDefault(_style);
 
-	var _hero = __webpack_require__(98);
+	var _hero = __webpack_require__(97);
 
 	var _hero2 = _interopRequireDefault(_hero);
 
@@ -2852,7 +2852,7 @@
 
 	var Pipe = __webpack_require__(1);
 	var Filter = __webpack_require__(29);
-	var FilterMap = __webpack_require__(75);
+	var FilterMap = __webpack_require__(74);
 	var base = __webpack_require__(3);
 
 	module.exports = Map;
@@ -2949,9 +2949,9 @@
 	/** @author Brian Cavalier */
 	/** @author John Hann */
 
-	var Observer = __webpack_require__(80);
+	var Observer = __webpack_require__(79);
 	var dispose = __webpack_require__(2);
-	var defaultScheduler = __webpack_require__(77);
+	var defaultScheduler = __webpack_require__(76);
 
 	exports.withDefaultScheduler = withDefaultScheduler;
 	exports.withScheduler = withScheduler;
@@ -3109,7 +3109,7 @@
 	});
 	exports.default = selectorParser;
 
-	var _browserSplit = __webpack_require__(47);
+	var _browserSplit = __webpack_require__(46);
 
 	var _browserSplit2 = _interopRequireDefault(_browserSplit);
 
@@ -3225,7 +3225,7 @@
 	});
 	exports.run = undefined;
 
-	var _mostSubject = __webpack_require__(52);
+	var _mostSubject = __webpack_require__(51);
 
 	function makeSinkProxies(drivers) {
 	  var sinkProxies = {};
@@ -3339,2079 +3339,6 @@
 
 /***/ },
 /* 38 */
-/***/ function(module, exports) {
-
-	/* WEBPACK VAR INJECTION */(function(global) {"use strict";
-
-	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
-
-	var __extends = undefined && undefined.__extends || function (d, b) {
-	    for (var p in b) {
-	        if (b.hasOwnProperty(p)) d[p] = b[p];
-	    }function __() {
-	        this.constructor = d;
-	    }
-	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-	};
-	registerGlobals();
-	exports.extras = {
-	    allowStateChanges: allowStateChanges,
-	    getAtom: getAtom,
-	    getDebugName: getDebugName,
-	    getDependencyTree: getDependencyTree,
-	    getObserverTree: getObserverTree,
-	    isComputingDerivation: isComputingDerivation,
-	    isSpyEnabled: isSpyEnabled,
-	    resetGlobalState: resetGlobalState,
-	    spyReport: spyReport,
-	    spyReportEnd: spyReportEnd,
-	    spyReportStart: spyReportStart,
-	    trackTransitions: trackTransitions
-	};
-	exports._ = {
-	    getAdministration: getAdministration,
-	    quickDiff: quickDiff,
-	    resetGlobalState: resetGlobalState
-	};
-	function autorun(view, scope) {
-	    assertUnwrapped(view, "autorun methods cannot have modifiers");
-	    invariant(typeof view === "function", "autorun expects a function");
-	    invariant(view.length === 0, "autorun expects a function without arguments");
-	    if (scope) view = view.bind(scope);
-	    var reaction = new Reaction(view.name || "Autorun@" + getNextId(), function () {
-	        this.track(view);
-	    });
-	    reaction.schedule();
-	    return reaction.getDisposer();
-	}
-	exports.autorun = autorun;
-	function when(predicate, effect, scope) {
-	    var disposeImmediately = false;
-	    var disposer = autorun(function () {
-	        if (predicate.call(scope)) {
-	            if (disposer) disposer();else disposeImmediately = true;
-	            untracked(function () {
-	                return effect.call(scope);
-	            });
-	        }
-	    });
-	    if (disposeImmediately) disposer();
-	    return disposer;
-	}
-	exports.when = when;
-	function autorunUntil(predicate, effect, scope) {
-	    deprecated("`autorunUntil` is deprecated, please use `when`.");
-	    return when.apply(null, arguments);
-	}
-	exports.autorunUntil = autorunUntil;
-	function autorunAsync(func, delay, scope) {
-	    if (delay === void 0) {
-	        delay = 1;
-	    }
-	    if (scope) func = func.bind(scope);
-	    var isScheduled = false;
-	    var r = new Reaction(func.name || "AutorunAsync@" + getNextId(), function () {
-	        if (!isScheduled) {
-	            isScheduled = true;
-	            setTimeout(function () {
-	                isScheduled = false;
-	                if (!r.isDisposed) r.track(func);
-	            }, delay);
-	        }
-	    });
-	    r.schedule();
-	    return r.getDisposer();
-	}
-	exports.autorunAsync = autorunAsync;
-	function reaction(expression, effect, fireImmediately, delay, scope) {
-	    if (fireImmediately === void 0) {
-	        fireImmediately = false;
-	    }
-	    if (delay === void 0) {
-	        delay = 0;
-	    }
-	    var name = expression.name || effect.name || "Reaction@" + getNextId();
-	    if (scope) {
-	        expression = expression.bind(scope);
-	        effect = action(name, effect.bind(scope));
-	    }
-	    var firstTime = true;
-	    var isScheduled = false;
-	    function reactionRunner() {
-	        if (r.isDisposed) return;
-	        var nextValue;
-	        r.track(function () {
-	            return nextValue = expression();
-	        });
-	        if (!firstTime || fireImmediately) effect(nextValue);
-	        if (firstTime) firstTime = false;
-	    }
-	    var r = new Reaction(name, function () {
-	        if (delay < 1) {
-	            reactionRunner();
-	        } else if (!isScheduled) {
-	            isScheduled = true;
-	            setTimeout(function () {
-	                isScheduled = false;
-	                reactionRunner();
-	            }, delay);
-	        }
-	    });
-	    r.schedule();
-	    return r.getDisposer();
-	}
-	exports.reaction = reaction;
-	function computed(targetOrExpr, keyOrScope, baseDescriptor, options) {
-	    if (arguments.length < 3 && typeof targetOrExpr === "function") return computedExpr(targetOrExpr, keyOrScope);
-	    return computedDecorator.apply(null, arguments);
-	}
-	exports.computed = computed;
-	function computedExpr(expr, scope) {
-	    var _a = getValueModeFromValue(expr, ValueMode.Recursive),
-	        mode = _a[0],
-	        value = _a[1];
-	    return new ComputedValue(value, scope, mode === ValueMode.Structure, value.name);
-	}
-	function computedDecorator(target, key, baseDescriptor, options) {
-	    if (arguments.length === 1) {
-	        var options_1 = target;
-	        return function (target, key, baseDescriptor) {
-	            return computedDecorator.call(null, target, key, baseDescriptor, options_1);
-	        };
-	    }
-	    invariant(baseDescriptor && baseDescriptor.hasOwnProperty("get"), "@computed can only be used on getter functions, like: '@computed get myProps() { return ...; }'");
-	    assertPropertyConfigurable(target, key);
-	    var descriptor = {};
-	    var getter = baseDescriptor.get;
-	    invariant((typeof target === "undefined" ? "undefined" : _typeof(target)) === "object", "The @observable decorator can only be used on objects", key);
-	    invariant(typeof getter === "function", "@observable expects a getter function if used on a property.", key);
-	    invariant(!baseDescriptor.set, "@observable properties cannot have a setter.", key);
-	    invariant(getter.length === 0, "@observable getter functions should not take arguments.", key);
-	    descriptor.configurable = true;
-	    descriptor.enumerable = false;
-	    descriptor.get = function () {
-	        setObservableObjectProperty(asObservableObject(this, undefined, ValueMode.Recursive), key, options && options.asStructure === true ? asStructure(getter) : getter);
-	        return this[key];
-	    };
-	    descriptor.set = throwingComputedValueSetter;
-	    if (!baseDescriptor) {
-	        Object.defineProperty(target, key, descriptor);
-	    } else {
-	        return descriptor;
-	    }
-	}
-	function throwingComputedValueSetter() {
-	    throw new Error("[ComputedValue] It is not allowed to assign new values to computed properties.");
-	}
-	function createTransformer(transformer, onCleanup) {
-	    invariant(typeof transformer === "function" && transformer.length === 1, "createTransformer expects a function that accepts one argument");
-	    var objectCache = {};
-	    var resetId = globalState.resetId;
-	    var Transformer = function (_super) {
-	        __extends(Transformer, _super);
-	        function Transformer(sourceIdentifier, sourceObject) {
-	            _super.call(this, function () {
-	                return transformer(sourceObject);
-	            }, null, false, "Transformer-" + transformer.name + "-" + sourceIdentifier);
-	            this.sourceIdentifier = sourceIdentifier;
-	            this.sourceObject = sourceObject;
-	        }
-	        Transformer.prototype.onBecomeUnobserved = function () {
-	            var lastValue = this.value;
-	            _super.prototype.onBecomeUnobserved.call(this);
-	            delete objectCache[this.sourceIdentifier];
-	            if (onCleanup) onCleanup(lastValue, this.sourceObject);
-	        };
-	        return Transformer;
-	    }(ComputedValue);
-	    return function (object) {
-	        if (resetId !== globalState.resetId) {
-	            objectCache = {};
-	            resetId = globalState.resetId;
-	        }
-	        var identifier = getMemoizationId(object);
-	        var reactiveTransformer = objectCache[identifier];
-	        if (reactiveTransformer) return reactiveTransformer.get();
-	        reactiveTransformer = objectCache[identifier] = new Transformer(identifier, object);
-	        return reactiveTransformer.get();
-	    };
-	}
-	exports.createTransformer = createTransformer;
-	function getMemoizationId(object) {
-	    if (object === null || (typeof object === "undefined" ? "undefined" : _typeof(object)) !== "object") throw new Error("[mobx] transform expected some kind of object, got: " + object);
-	    var tid = object.$transformId;
-	    if (tid === undefined) {
-	        tid = getNextId();
-	        Object.defineProperty(object, "$transformId", {
-	            configurable: true,
-	            writable: true,
-	            enumerable: false,
-	            value: tid
-	        });
-	    }
-	    return tid;
-	}
-	function expr(expr, scope) {
-	    if (!isComputingDerivation()) console.warn("[mobx.expr] 'expr' should only be used inside other reactive functions.");
-	    return computed(expr, scope).get();
-	}
-	exports.expr = expr;
-	function extendObservable(target) {
-	    var properties = [];
-	    for (var _i = 1; _i < arguments.length; _i++) {
-	        properties[_i - 1] = arguments[_i];
-	    }
-	    invariant(arguments.length >= 2, "extendObservable expected 2 or more arguments");
-	    invariant((typeof target === "undefined" ? "undefined" : _typeof(target)) === "object", "extendObservable expects an object as first argument");
-	    invariant(!(target instanceof ObservableMap), "extendObservable should not be used on maps, use map.merge instead");
-	    properties.forEach(function (propSet) {
-	        invariant((typeof propSet === "undefined" ? "undefined" : _typeof(propSet)) === "object", "all arguments of extendObservable should be objects");
-	        extendObservableHelper(target, propSet, ValueMode.Recursive, null);
-	    });
-	    return target;
-	}
-	exports.extendObservable = extendObservable;
-	function extendObservableHelper(target, properties, mode, name) {
-	    var adm = asObservableObject(target, name, mode);
-	    for (var key in properties) {
-	        if (properties.hasOwnProperty(key)) {
-	            if (target === properties && !isPropertyConfigurable(target, key)) continue;
-	            setObservableObjectProperty(adm, key, properties[key]);
-	        }
-	    }return target;
-	}
-	function getDependencyTree(thing, property) {
-	    return nodeToDependencyTree(getAtom(thing, property));
-	}
-	function nodeToDependencyTree(node) {
-	    var result = {
-	        name: node.name
-	    };
-	    if (node.observing && node.observing.length) result.dependencies = unique(node.observing).map(nodeToDependencyTree);
-	    return result;
-	}
-	function getObserverTree(thing, property) {
-	    return nodeToObserverTree(getAtom(thing, property));
-	}
-	function nodeToObserverTree(node) {
-	    var result = {
-	        name: node.name
-	    };
-	    if (node.observers && node.observers.length) result.observers = unique(node.observers).map(nodeToObserverTree);
-	    return result;
-	}
-	function intercept(thing, propOrHandler, handler) {
-	    if (typeof handler === "function") return interceptProperty(thing, propOrHandler, handler);else return interceptInterceptable(thing, propOrHandler);
-	}
-	exports.intercept = intercept;
-	function interceptInterceptable(thing, handler) {
-	    if (isPlainObject(thing) && !isObservableObject(thing)) {
-	        deprecated("Passing plain objects to intercept / observe is deprecated and will be removed in 3.0");
-	        return getAdministration(observable(thing)).intercept(handler);
-	    }
-	    return getAdministration(thing).intercept(handler);
-	}
-	function interceptProperty(thing, property, handler) {
-	    if (isPlainObject(thing) && !isObservableObject(thing)) {
-	        deprecated("Passing plain objects to intercept / observe is deprecated and will be removed in 3.0");
-	        extendObservable(thing, {
-	            property: thing[property]
-	        });
-	        return interceptProperty(thing, property, handler);
-	    }
-	    return getAdministration(thing, property).intercept(handler);
-	}
-	function isObservable(value, property) {
-	    if (value === null || value === undefined) return false;
-	    if (property !== undefined) {
-	        if (value instanceof ObservableMap || value instanceof ObservableArray) throw new Error("[mobx.isObservable] isObservable(object, propertyName) is not supported for arrays and maps. Use map.has or array.length instead.");else if (isObservableObject(value)) {
-	            var o = value.$mobx;
-	            return o.values && !!o.values[property];
-	        }
-	        return false;
-	    }
-	    return !!value.$mobx || value instanceof Atom || value instanceof Reaction || value instanceof ComputedValue;
-	}
-	exports.isObservable = isObservable;
-	function observableDecorator(target, key, baseDescriptor) {
-	    invariant(arguments.length >= 2 && arguments.length <= 3, "Illegal decorator config", key);
-	    assertPropertyConfigurable(target, key);
-	    if (baseDescriptor && baseDescriptor.hasOwnProperty("get")) {
-	        deprecated("Using @observable on computed values is deprecated. Use @computed instead.");
-	        return computed.apply(null, arguments);
-	    }
-	    var descriptor = {};
-	    invariant((typeof target === "undefined" ? "undefined" : _typeof(target)) === "object", "The @observable decorator can only be used on objects", key);
-	    descriptor.configurable = true;
-	    descriptor.enumerable = true;
-	    descriptor.get = function () {
-	        var _this = this;
-	        var baseValue = undefined;
-	        if (baseDescriptor && baseDescriptor.initializer) {
-	            baseValue = baseDescriptor.initializer();
-	            if (typeof baseValue === "function") baseValue = asReference(baseValue);
-	        }
-	        allowStateChanges(true, function () {
-	            setObservableObjectProperty(asObservableObject(_this, undefined, ValueMode.Recursive), key, baseValue);
-	        });
-	        return this[key];
-	    };
-	    descriptor.set = function (value) {
-	        setObservableObjectProperty(asObservableObject(this, undefined, ValueMode.Recursive), key, typeof value === "function" ? asReference(value) : value);
-	    };
-	    if (!baseDescriptor) {
-	        Object.defineProperty(target, key, descriptor);
-	    } else {
-	        return descriptor;
-	    }
-	}
-	function observable(v, keyOrScope) {
-	    if (v === void 0) {
-	        v = undefined;
-	    }
-	    if (typeof arguments[1] === "string") return observableDecorator.apply(null, arguments);
-	    invariant(arguments.length < 3, "observable expects zero, one or two arguments");
-	    if (isObservable(v)) return v;
-	    var _a = getValueModeFromValue(v, ValueMode.Recursive),
-	        mode = _a[0],
-	        value = _a[1];
-	    var sourceType = mode === ValueMode.Reference ? ValueType.Reference : getTypeOfValue(value);
-	    switch (sourceType) {
-	        case ValueType.Array:
-	        case ValueType.PlainObject:
-	            return makeChildObservable(value, mode);
-	        case ValueType.Reference:
-	        case ValueType.ComplexObject:
-	            return new ObservableValue(value, mode);
-	        case ValueType.ComplexFunction:
-	            throw new Error("[mobx.observable] To be able to make a function reactive it should not have arguments. If you need an observable reference to a function, use `observable(asReference(f))`");
-	        case ValueType.ViewFunction:
-	            deprecated("Use `computed(expr)` instead of `observable(expr)`");
-	            return computed(v, keyOrScope);
-	    }
-	    invariant(false, "Illegal State");
-	}
-	exports.observable = observable;
-	var ValueType;
-	(function (ValueType) {
-	    ValueType[ValueType["Reference"] = 0] = "Reference";
-	    ValueType[ValueType["PlainObject"] = 1] = "PlainObject";
-	    ValueType[ValueType["ComplexObject"] = 2] = "ComplexObject";
-	    ValueType[ValueType["Array"] = 3] = "Array";
-	    ValueType[ValueType["ViewFunction"] = 4] = "ViewFunction";
-	    ValueType[ValueType["ComplexFunction"] = 5] = "ComplexFunction";
-	})(ValueType || (ValueType = {}));
-	function getTypeOfValue(value) {
-	    if (value === null || value === undefined) return ValueType.Reference;
-	    if (typeof value === "function") return value.length ? ValueType.ComplexFunction : ValueType.ViewFunction;
-	    if (Array.isArray(value) || value instanceof ObservableArray) return ValueType.Array;
-	    if ((typeof value === "undefined" ? "undefined" : _typeof(value)) === "object") return isPlainObject(value) ? ValueType.PlainObject : ValueType.ComplexObject;
-	    return ValueType.Reference;
-	}
-	function observe(thing, propOrCb, cbOrFire, fireImmediately) {
-	    if (typeof cbOrFire === "function") return observeObservableProperty(thing, propOrCb, cbOrFire, fireImmediately);else return observeObservable(thing, propOrCb, cbOrFire);
-	}
-	exports.observe = observe;
-	function observeObservable(thing, listener, fireImmediately) {
-	    if (isPlainObject(thing) && !isObservableObject(thing)) {
-	        deprecated("Passing plain objects to intercept / observe is deprecated and will be removed in 3.0");
-	        return getAdministration(observable(thing)).observe(listener, fireImmediately);
-	    }
-	    return getAdministration(thing).observe(listener, fireImmediately);
-	}
-	function observeObservableProperty(thing, property, listener, fireImmediately) {
-	    if (isPlainObject(thing) && !isObservableObject(thing)) {
-	        deprecated("Passing plain objects to intercept / observe is deprecated and will be removed in 3.0");
-	        extendObservable(thing, {
-	            property: thing[property]
-	        });
-	        return observeObservableProperty(thing, property, listener, fireImmediately);
-	    }
-	    return getAdministration(thing, property).observe(listener, fireImmediately);
-	}
-	function toJS(source, detectCycles, __alreadySeen) {
-	    if (detectCycles === void 0) {
-	        detectCycles = true;
-	    }
-	    if (__alreadySeen === void 0) {
-	        __alreadySeen = null;
-	    }
-	    function cache(value) {
-	        if (detectCycles) __alreadySeen.push([source, value]);
-	        return value;
-	    }
-	    if (detectCycles && __alreadySeen === null) __alreadySeen = [];
-	    if (detectCycles && source !== null && (typeof source === "undefined" ? "undefined" : _typeof(source)) === "object") {
-	        for (var i = 0, l = __alreadySeen.length; i < l; i++) {
-	            if (__alreadySeen[i][0] === source) return __alreadySeen[i][1];
-	        }
-	    }
-	    if (!source) return source;
-	    if (Array.isArray(source) || source instanceof ObservableArray) {
-	        var res = cache([]);
-	        var toAdd = source.map(function (value) {
-	            return toJS(value, detectCycles, __alreadySeen);
-	        });
-	        res.length = toAdd.length;
-	        for (var i = 0, l = toAdd.length; i < l; i++) {
-	            res[i] = toAdd[i];
-	        }return res;
-	    }
-	    if (source instanceof ObservableMap) {
-	        var res_1 = cache({});
-	        source.forEach(function (value, key) {
-	            return res_1[key] = toJS(value, detectCycles, __alreadySeen);
-	        });
-	        return res_1;
-	    }
-	    if ((typeof source === "undefined" ? "undefined" : _typeof(source)) === "object" && isPlainObject(source)) {
-	        var res = cache({});
-	        for (var key in source) {
-	            if (source.hasOwnProperty(key)) res[key] = toJS(source[key], detectCycles, __alreadySeen);
-	        }return res;
-	    }
-	    if (isObservable(source) && source.$mobx instanceof ObservableValue) return toJS(source(), detectCycles, __alreadySeen);
-	    return source;
-	}
-	exports.toJS = toJS;
-	function toJSON(source, detectCycles, __alreadySeen) {
-	    if (detectCycles === void 0) {
-	        detectCycles = true;
-	    }
-	    if (__alreadySeen === void 0) {
-	        __alreadySeen = null;
-	    }
-	    deprecated("toJSON is deprecated. Use toJS instead");
-	    return toJS.apply(null, arguments);
-	}
-	exports.toJSON = toJSON;
-	function action(arg1, arg2, arg3, arg4) {
-	    switch (arguments.length) {
-	        case 1:
-	            if (typeof arg1 === "function") return actionImplementation(arg1.name || "<unnamed action>", arg1);else return function (target, key, descriptor) {
-	                return actionDecorator(arg1, target, key, descriptor);
-	            };
-	        case 2:
-	            if (typeof arg2 === "function") return actionImplementation(arg1, arg2);else return actionDecorator(arg2, arg1, arg2, undefined);
-	        case 3:
-	            return actionDecorator(arg2, arg1, arg2, arg3);
-	        default:
-	            invariant(false, "Invalid arguments for (@)action, please provide a function, name and function or use it as decorator on a class instance method");
-	    }
-	}
-	exports.action = action;
-	function actionDecorator(name, target, key, descriptor) {
-	    if (descriptor === undefined) {
-	        typescriptActionValueDecorator(name, target, key);
-	        return;
-	    }
-	    if (descriptor.value === undefined && typeof descriptor.initializer === "function") {
-	        return babelActionValueDecorator(name, target, key, descriptor);
-	    }
-	    var base = descriptor.value;
-	    descriptor.value = actionImplementation(name, base);
-	}
-	function babelActionValueDecorator(name, target, prop, descriptor) {
-	    return {
-	        configurable: true,
-	        enumerable: false,
-	        get: function get() {
-	            var v = descriptor.initializer.call(this);
-	            invariant(typeof v === "function", "Babel @action decorator expects the field '" + prop + " to be initialized with a function");
-	            var implementation = action(name, v);
-	            addBoundAction(this, prop, implementation);
-	            return implementation;
-	        },
-	        set: function set() {
-	            invariant(false, "Babel @action decorator: field '" + prop + "' not initialized");
-	        }
-	    };
-	}
-	function typescriptActionValueDecorator(name, target, prop) {
-	    Object.defineProperty(target, prop, {
-	        configurable: true,
-	        enumerable: false,
-	        get: function get() {
-	            invariant(false, "TypeScript @action decorator: field '" + prop + "' not initialized");
-	        },
-	        set: function set(v) {
-	            invariant(typeof v === "function", "TypeScript @action decorator expects the field '" + prop + " to be initialized with a function");
-	            addBoundAction(this, prop, action(name, v));
-	        }
-	    });
-	}
-	function addBoundAction(target, prop, implementation) {
-	    Object.defineProperty(target, prop, {
-	        enumerable: false,
-	        writable: false,
-	        value: implementation
-	    });
-	}
-	function actionImplementation(actionName, fn) {
-	    invariant(typeof fn === "function", "`action` can only be invoked on functions");
-	    invariant(typeof actionName === "string" && actionName.length > 0, "actions should have valid names, got: '" + actionName + "'");
-	    return function () {
-	        return executeWrapped(actionName, fn, this, arguments);
-	    };
-	}
-	function executeWrapped(actionName, fn, scope, args) {
-	    var ds = globalState.derivationStack;
-	    invariant(!(ds[ds.length - 1] instanceof ComputedValue), "Computed values or transformers should not invoke actions or trigger other side effects");
-	    var notifySpy = isSpyEnabled();
-	    var startTime;
-	    if (notifySpy) {
-	        startTime = Date.now();
-	        var flattendArgs = [];
-	        for (var i = 0, l = args.length; i < l; i++) {
-	            flattendArgs.push(args[i]);
-	        }spyReportStart({
-	            type: "action",
-	            name: actionName,
-	            fn: fn,
-	            target: scope,
-	            arguments: flattendArgs
-	        });
-	    }
-	    var res = untracked(function () {
-	        return transaction(function () {
-	            return allowStateChanges(true, function () {
-	                return fn.apply(scope, args);
-	            });
-	        }, undefined, false);
-	    });
-	    if (notifySpy) spyReportEnd({ time: Date.now() - startTime });
-	    return res;
-	}
-	function useStrict(strict) {
-	    invariant(globalState.derivationStack.length === 0, "It is not allowed to set `useStrict` when a derivation is running");
-	    globalState.strictMode = strict;
-	    globalState.allowStateChanges = !strict;
-	}
-	exports.useStrict = useStrict;
-	function allowStateChanges(allowStateChanges, func) {
-	    var prev = globalState.allowStateChanges;
-	    globalState.allowStateChanges = allowStateChanges;
-	    var res = func();
-	    globalState.allowStateChanges = prev;
-	    return res;
-	}
-	function propagateAtomReady(atom) {
-	    invariant(atom.isDirty, "atom not dirty");
-	    atom.isDirty = false;
-	    propagateReadiness(atom, true);
-	}
-	var Atom = function () {
-	    function Atom(name, onBecomeObserved, onBecomeUnobserved) {
-	        if (name === void 0) {
-	            name = "Atom@" + getNextId();
-	        }
-	        if (onBecomeObserved === void 0) {
-	            onBecomeObserved = noop;
-	        }
-	        if (onBecomeUnobserved === void 0) {
-	            onBecomeUnobserved = noop;
-	        }
-	        this.name = name;
-	        this.onBecomeObserved = onBecomeObserved;
-	        this.onBecomeUnobserved = onBecomeUnobserved;
-	        this.isDirty = false;
-	        this.staleObservers = [];
-	        this.observers = [];
-	    }
-	    Atom.prototype.reportObserved = function () {
-	        reportObserved(this);
-	    };
-	    Atom.prototype.reportChanged = function () {
-	        if (!this.isDirty) {
-	            this.reportStale();
-	            this.reportReady();
-	        }
-	    };
-	    Atom.prototype.reportStale = function () {
-	        if (!this.isDirty) {
-	            this.isDirty = true;
-	            propagateStaleness(this);
-	        }
-	    };
-	    Atom.prototype.reportReady = function () {
-	        invariant(this.isDirty, "atom not dirty");
-	        if (globalState.inTransaction > 0) globalState.changedAtoms.push(this);else {
-	            propagateAtomReady(this);
-	            runReactions();
-	        }
-	    };
-	    Atom.prototype.toString = function () {
-	        return this.name;
-	    };
-	    return Atom;
-	}();
-	exports.Atom = Atom;
-	var ComputedValue = function () {
-	    function ComputedValue(derivation, scope, compareStructural, name) {
-	        this.derivation = derivation;
-	        this.scope = scope;
-	        this.compareStructural = compareStructural;
-	        this.isLazy = true;
-	        this.isComputing = false;
-	        this.staleObservers = [];
-	        this.observers = [];
-	        this.observing = [];
-	        this.dependencyChangeCount = 0;
-	        this.dependencyStaleCount = 0;
-	        this.value = undefined;
-	        this.name = name || "ComputedValue@" + getNextId();
-	    }
-	    ComputedValue.prototype.peek = function () {
-	        this.isComputing = true;
-	        var prevAllowStateChanges = globalState.allowStateChanges;
-	        globalState.allowStateChanges = false;
-	        var res = this.derivation.call(this.scope);
-	        globalState.allowStateChanges = prevAllowStateChanges;
-	        this.isComputing = false;
-	        return res;
-	    };
-	    ;
-	    ComputedValue.prototype.onBecomeObserved = function () {};
-	    ComputedValue.prototype.onBecomeUnobserved = function () {
-	        for (var i = 0, l = this.observing.length; i < l; i++) {
-	            removeObserver(this.observing[i], this);
-	        }this.observing = [];
-	        this.isLazy = true;
-	        this.value = undefined;
-	    };
-	    ComputedValue.prototype.onDependenciesReady = function () {
-	        var changed = this.trackAndCompute();
-	        return changed;
-	    };
-	    ComputedValue.prototype.get = function () {
-	        invariant(!this.isComputing, "Cycle detected", this.derivation);
-	        reportObserved(this);
-	        if (this.dependencyStaleCount > 0) {
-	            return this.peek();
-	        }
-	        if (this.isLazy) {
-	            if (isComputingDerivation()) {
-	                this.isLazy = false;
-	                this.trackAndCompute();
-	            } else {
-	                return this.peek();
-	            }
-	        }
-	        return this.value;
-	    };
-	    ComputedValue.prototype.set = function (_) {
-	        throw new Error("[ComputedValue '" + name + "'] It is not possible to assign a new value to a computed value.");
-	    };
-	    ComputedValue.prototype.trackAndCompute = function () {
-	        if (isSpyEnabled()) {
-	            spyReport({
-	                object: this,
-	                type: "compute",
-	                fn: this.derivation,
-	                target: this.scope
-	            });
-	        }
-	        var oldValue = this.value;
-	        var newValue = this.value = trackDerivedFunction(this, this.peek);
-	        return valueDidChange(this.compareStructural, newValue, oldValue);
-	    };
-	    ComputedValue.prototype.observe = function (listener, fireImmediately) {
-	        var _this = this;
-	        var firstTime = true;
-	        var prevValue = undefined;
-	        return autorun(function () {
-	            var newValue = _this.get();
-	            if (!firstTime || fireImmediately) {
-	                untracked(function () {
-	                    listener(newValue, prevValue);
-	                });
-	            }
-	            firstTime = false;
-	            prevValue = newValue;
-	        });
-	    };
-	    ComputedValue.prototype.toJSON = function () {
-	        return this.get();
-	    };
-	    ComputedValue.prototype.toString = function () {
-	        return this.name + "[" + this.derivation.toString() + "]";
-	    };
-	    return ComputedValue;
-	}();
-	function isComputingDerivation() {
-	    return globalState.derivationStack.length > 0;
-	}
-	function checkIfStateModificationsAreAllowed() {
-	    if (!globalState.allowStateChanges) {
-	        invariant(false, globalState.strictMode ? "It is not allowed to create or change state outside an `action` when MobX is in strict mode. Wrap the current method in `action` if this state change is intended" : "It is not allowed to change the state when a computed value or transformer is being evaluated. Use 'autorun' to create reactive functions with side-effects.");
-	    }
-	}
-	function notifyDependencyStale(derivation) {
-	    if (++derivation.dependencyStaleCount === 1) {
-	        propagateStaleness(derivation);
-	    }
-	}
-	function notifyDependencyReady(derivation, dependencyDidChange) {
-	    invariant(derivation.dependencyStaleCount > 0, "unexpected ready notification");
-	    if (dependencyDidChange) derivation.dependencyChangeCount += 1;
-	    if (--derivation.dependencyStaleCount === 0) {
-	        if (derivation.dependencyChangeCount > 0) {
-	            derivation.dependencyChangeCount = 0;
-	            var changed = derivation.onDependenciesReady();
-	            propagateReadiness(derivation, changed);
-	        } else {
-	            propagateReadiness(derivation, false);
-	        }
-	    }
-	}
-	function trackDerivedFunction(derivation, f) {
-	    var hasException = true;
-	    var prevObserving = derivation.observing;
-	    derivation.observing = [];
-	    globalState.derivationStack.push(derivation);
-	    var prevTracking = globalState.isTracking;
-	    globalState.isTracking = true;
-	    try {
-	        var result = f.call(derivation);
-	        hasException = false;
-	        bindDependencies(derivation, prevObserving);
-	        globalState.isTracking = prevTracking;
-	        return result;
-	    } finally {
-	        if (hasException) {
-	            var message = "[mobx] An uncaught exception occurred while calculating your computed value, autorun or transformer. Or inside the render() method of an observer based React component. " + "These methods should never throw exceptions as MobX will usually not be able to recover from them. " + ("Please enable 'Pause on (caught) exceptions' in your debugger to find the root cause. In: '" + derivation.name + "'");
-	            if (isSpyEnabled()) {
-	                spyReport({
-	                    type: "error",
-	                    object: this,
-	                    message: message
-	                });
-	            }
-	            console.error(message);
-	            resetGlobalState();
-	        }
-	    }
-	}
-	function bindDependencies(derivation, prevObserving) {
-	    globalState.derivationStack.length -= 1;
-	    var _a = quickDiff(derivation.observing, prevObserving),
-	        added = _a[0],
-	        removed = _a[1];
-	    for (var i = 0, l = added.length; i < l; i++) {
-	        var dependency = added[i];
-	        invariant(!findCycle(derivation, dependency), "Cycle detected", derivation);
-	        addObserver(added[i], derivation);
-	    }
-	    for (var i = 0, l = removed.length; i < l; i++) {
-	        removeObserver(removed[i], derivation);
-	    }
-	}
-	function findCycle(needle, node) {
-	    if (needle === node) return true;
-	    var obs = node.observing;
-	    if (obs === undefined) return false;
-	    for (var l = obs.length, i = 0; i < l; i++) {
-	        if (findCycle(needle, obs[i])) return true;
-	    }return false;
-	}
-	function untracked(action) {
-	    var prevTracking = globalState.isTracking;
-	    globalState.isTracking = false;
-	    var res = action();
-	    globalState.isTracking = prevTracking;
-	    return res;
-	}
-	exports.untracked = untracked;
-	var persistentKeys = ["mobxGuid", "resetId", "spyListeners", "strictMode"];
-	var MobXGlobals = function () {
-	    function MobXGlobals() {
-	        this.version = 2;
-	        this.derivationStack = [];
-	        this.mobxGuid = 0;
-	        this.inTransaction = 0;
-	        this.isTracking = false;
-	        this.isRunningReactions = false;
-	        this.changedAtoms = [];
-	        this.pendingReactions = [];
-	        this.allowStateChanges = true;
-	        this.strictMode = false;
-	        this.resetId = 0;
-	        this.spyListeners = [];
-	    }
-	    return MobXGlobals;
-	}();
-	var globalState = function () {
-	    var res = new MobXGlobals();
-	    if (global.__mobservableTrackingStack || global.__mobservableViewStack) throw new Error("[mobx] An incompatible version of mobservable is already loaded.");
-	    if (global.__mobxGlobal && global.__mobxGlobal.version !== res.version) throw new Error("[mobx] An incompatible version of mobx is already loaded.");
-	    if (global.__mobxGlobal) return global.__mobxGlobal;
-	    return global.__mobxGlobal = res;
-	}();
-	function registerGlobals() {}
-	function resetGlobalState() {
-	    globalState.resetId++;
-	    var defaultGlobals = new MobXGlobals();
-	    for (var key in defaultGlobals) {
-	        if (persistentKeys.indexOf(key) === -1) globalState[key] = defaultGlobals[key];
-	    }globalState.allowStateChanges = !globalState.strictMode;
-	}
-	function addObserver(observable, node) {
-	    var obs = observable.observers,
-	        l = obs.length;
-	    obs[l] = node;
-	    if (l === 0) observable.onBecomeObserved();
-	}
-	function removeObserver(observable, node) {
-	    var obs = observable.observers,
-	        idx = obs.indexOf(node);
-	    if (idx !== -1) obs.splice(idx, 1);
-	    if (obs.length === 0) observable.onBecomeUnobserved();
-	}
-	function reportObserved(observable) {
-	    if (globalState.isTracking === false) return;
-	    var derivationStack = globalState.derivationStack;
-	    var deps = derivationStack[derivationStack.length - 1].observing;
-	    var depslength = deps.length;
-	    if (deps[depslength - 1] !== observable && deps[depslength - 2] !== observable) deps[depslength] = observable;
-	}
-	function propagateStaleness(observable) {
-	    var os = observable.observers.slice();
-	    os.forEach(notifyDependencyStale);
-	    observable.staleObservers = observable.staleObservers.concat(os);
-	}
-	function propagateReadiness(observable, valueDidActuallyChange) {
-	    observable.staleObservers.splice(0).forEach(function (o) {
-	        return notifyDependencyReady(o, valueDidActuallyChange);
-	    });
-	}
-	var Reaction = function () {
-	    function Reaction(name, onInvalidate) {
-	        if (name === void 0) {
-	            name = "Reaction@" + getNextId();
-	        }
-	        this.name = name;
-	        this.onInvalidate = onInvalidate;
-	        this.staleObservers = EMPTY_ARRAY;
-	        this.observers = EMPTY_ARRAY;
-	        this.observing = [];
-	        this.dependencyChangeCount = 0;
-	        this.dependencyStaleCount = 0;
-	        this.isDisposed = false;
-	        this._isScheduled = false;
-	        this._isTrackPending = false;
-	    }
-	    Reaction.prototype.onBecomeObserved = function () {};
-	    Reaction.prototype.onBecomeUnobserved = function () {};
-	    Reaction.prototype.onDependenciesReady = function () {
-	        this.schedule();
-	        return false;
-	    };
-	    Reaction.prototype.schedule = function () {
-	        if (!this._isScheduled) {
-	            this._isScheduled = true;
-	            globalState.pendingReactions.push(this);
-	            runReactions();
-	        }
-	    };
-	    Reaction.prototype.isScheduled = function () {
-	        return this.dependencyStaleCount > 0 || this._isScheduled;
-	    };
-	    Reaction.prototype.runReaction = function () {
-	        if (!this.isDisposed) {
-	            this._isScheduled = false;
-	            this._isTrackPending = true;
-	            this.onInvalidate();
-	            if (this._isTrackPending && isSpyEnabled()) {
-	                spyReport({
-	                    object: this,
-	                    type: "scheduled-reaction"
-	                });
-	            }
-	        }
-	    };
-	    Reaction.prototype.track = function (fn) {
-	        var notify = isSpyEnabled();
-	        var startTime;
-	        if (notify) {
-	            startTime = Date.now();
-	            spyReportStart({
-	                object: this,
-	                type: "reaction",
-	                fn: fn
-	            });
-	        }
-	        trackDerivedFunction(this, fn);
-	        this._isTrackPending = false;
-	        if (notify) {
-	            spyReportEnd({
-	                time: Date.now() - startTime
-	            });
-	        }
-	    };
-	    Reaction.prototype.dispose = function () {
-	        if (!this.isDisposed) {
-	            this.isDisposed = true;
-	            var deps = this.observing.splice(0);
-	            for (var i = 0, l = deps.length; i < l; i++) {
-	                removeObserver(deps[i], this);
-	            }
-	        }
-	    };
-	    Reaction.prototype.getDisposer = function () {
-	        var r = this.dispose.bind(this);
-	        r.$mobx = this;
-	        return r;
-	    };
-	    Reaction.prototype.toString = function () {
-	        return "Reaction[" + this.name + "]";
-	    };
-	    return Reaction;
-	}();
-	exports.Reaction = Reaction;
-	var MAX_REACTION_ITERATIONS = 100;
-	function runReactions() {
-	    if (globalState.isRunningReactions === true || globalState.inTransaction > 0) return;
-	    globalState.isRunningReactions = true;
-	    var allReactions = globalState.pendingReactions;
-	    var iterations = 0;
-	    while (allReactions.length > 0) {
-	        if (++iterations === MAX_REACTION_ITERATIONS) throw new Error("Reaction doesn't converge to a stable state. Probably there is a cycle in the reactive function: " + allReactions[0].toString());
-	        var remainingReactions = allReactions.splice(0);
-	        for (var i = 0, l = remainingReactions.length; i < l; i++) {
-	            remainingReactions[i].runReaction();
-	        }
-	    }
-	    globalState.isRunningReactions = false;
-	}
-	var spyEnabled = false;
-	function isSpyEnabled() {
-	    return spyEnabled;
-	}
-	function spyReport(event) {
-	    if (!spyEnabled) return false;
-	    var listeners = globalState.spyListeners;
-	    for (var i = 0, l = listeners.length; i < l; i++) {
-	        listeners[i](event);
-	    }
-	}
-	function spyReportStart(event) {
-	    var change = objectAssign({}, event, { spyReportStart: true });
-	    spyReport(change);
-	}
-	var END_EVENT = { spyReportEnd: true };
-	function spyReportEnd(change) {
-	    if (change) spyReport(objectAssign({}, change, END_EVENT));else spyReport(END_EVENT);
-	}
-	function spy(listener) {
-	    globalState.spyListeners.push(listener);
-	    spyEnabled = globalState.spyListeners.length > 0;
-	    return once(function () {
-	        var idx = globalState.spyListeners.indexOf(listener);
-	        if (idx !== -1) globalState.spyListeners.splice(idx, 1);
-	        spyEnabled = globalState.spyListeners.length > 0;
-	    });
-	}
-	exports.spy = spy;
-	function trackTransitions(onReport) {
-	    deprecated("trackTransitions is deprecated. Use mobx.spy instead");
-	    if (typeof onReport === "boolean") {
-	        deprecated("trackTransitions only takes a single callback function. If you are using the mobx-react-devtools, please update them first");
-	        onReport = arguments[1];
-	    }
-	    if (!onReport) {
-	        deprecated("trackTransitions without callback has been deprecated and is a no-op now. If you are using the mobx-react-devtools, please update them first");
-	        return function () {};
-	    }
-	    return spy(onReport);
-	}
-	function transaction(action, thisArg, report) {
-	    if (thisArg === void 0) {
-	        thisArg = undefined;
-	    }
-	    if (report === void 0) {
-	        report = true;
-	    }
-	    globalState.inTransaction += 1;
-	    if (report && isSpyEnabled()) {
-	        spyReportStart({
-	            type: "transaction",
-	            target: thisArg,
-	            name: action.name || "anonymous transaction"
-	        });
-	    }
-	    var res = action.call(thisArg);
-	    if (--globalState.inTransaction === 0) {
-	        var values = globalState.changedAtoms.splice(0);
-	        for (var i = 0, l = values.length; i < l; i++) {
-	            propagateAtomReady(values[i]);
-	        }runReactions();
-	    }
-	    if (report && isSpyEnabled()) spyReportEnd();
-	    return res;
-	}
-	exports.transaction = transaction;
-	function hasInterceptors(interceptable) {
-	    return interceptable.interceptors && interceptable.interceptors.length > 0;
-	}
-	function registerInterceptor(interceptable, handler) {
-	    var interceptors = interceptable.interceptors || (interceptable.interceptors = []);
-	    interceptors.push(handler);
-	    return once(function () {
-	        var idx = interceptors.indexOf(handler);
-	        if (idx !== -1) interceptors.splice(idx, 1);
-	    });
-	}
-	function interceptChange(interceptable, change) {
-	    return untracked(function () {
-	        var interceptors = interceptable.interceptors;
-	        for (var i = 0, l = interceptors.length; i < l; i++) {
-	            change = interceptors[i](change);
-	            invariant(!change || change.type, "Intercept handlers should return nothing or a change object");
-	            if (!change) return null;
-	        }
-	        return change;
-	    });
-	}
-	function hasListeners(listenable) {
-	    return listenable.changeListeners && listenable.changeListeners.length > 0;
-	}
-	function registerListener(listenable, handler) {
-	    var listeners = listenable.changeListeners || (listenable.changeListeners = []);
-	    listeners.push(handler);
-	    return once(function () {
-	        var idx = listeners.indexOf(handler);
-	        if (idx !== -1) listeners.splice(idx, 1);
-	    });
-	}
-	function notifyListeners(listenable, change) {
-	    untracked(function () {
-	        var listeners = listenable.changeListeners;
-	        if (!listeners) return;
-	        listeners = listeners.slice();
-	        if (Array.isArray(change)) {
-	            for (var i = 0, l = listeners.length; i < l; i++) {
-	                listeners[i].apply(null, change);
-	            }
-	        } else {
-	            for (var i = 0, l = listeners.length; i < l; i++) {
-	                listeners[i](change);
-	            }
-	        }
-	    });
-	}
-	var ValueMode;
-	(function (ValueMode) {
-	    ValueMode[ValueMode["Recursive"] = 0] = "Recursive";
-	    ValueMode[ValueMode["Reference"] = 1] = "Reference";
-	    ValueMode[ValueMode["Structure"] = 2] = "Structure";
-	    ValueMode[ValueMode["Flat"] = 3] = "Flat";
-	})(ValueMode || (ValueMode = {}));
-	function asReference(value) {
-	    return new AsReference(value);
-	}
-	exports.asReference = asReference;
-	function asStructure(value) {
-	    return new AsStructure(value);
-	}
-	exports.asStructure = asStructure;
-	function asFlat(value) {
-	    return new AsFlat(value);
-	}
-	exports.asFlat = asFlat;
-	var AsReference = function () {
-	    function AsReference(value) {
-	        this.value = value;
-	        assertUnwrapped(value, "Modifiers are not allowed to be nested");
-	    }
-	    return AsReference;
-	}();
-	var AsStructure = function () {
-	    function AsStructure(value) {
-	        this.value = value;
-	        assertUnwrapped(value, "Modifiers are not allowed to be nested");
-	    }
-	    return AsStructure;
-	}();
-	var AsFlat = function () {
-	    function AsFlat(value) {
-	        this.value = value;
-	        assertUnwrapped(value, "Modifiers are not allowed to be nested");
-	    }
-	    return AsFlat;
-	}();
-	function asMap(data, modifierFunc) {
-	    return map(data, modifierFunc);
-	}
-	exports.asMap = asMap;
-	function getValueModeFromValue(value, defaultMode) {
-	    if (value instanceof AsReference) return [ValueMode.Reference, value.value];
-	    if (value instanceof AsStructure) return [ValueMode.Structure, value.value];
-	    if (value instanceof AsFlat) return [ValueMode.Flat, value.value];
-	    return [defaultMode, value];
-	}
-	function getValueModeFromModifierFunc(func) {
-	    if (func === asReference) return ValueMode.Reference;else if (func === asStructure) return ValueMode.Structure;else if (func === asFlat) return ValueMode.Flat;
-	    invariant(func === undefined, "Cannot determine value mode from function. Please pass in one of these: mobx.asReference, mobx.asStructure or mobx.asFlat, got: " + func);
-	    return ValueMode.Recursive;
-	}
-	function makeChildObservable(value, parentMode, name) {
-	    var childMode;
-	    if (isObservable(value)) return value;
-	    switch (parentMode) {
-	        case ValueMode.Reference:
-	            return value;
-	        case ValueMode.Flat:
-	            assertUnwrapped(value, "Items inside 'asFlat' cannot have modifiers");
-	            childMode = ValueMode.Reference;
-	            break;
-	        case ValueMode.Structure:
-	            assertUnwrapped(value, "Items inside 'asStructure' cannot have modifiers");
-	            childMode = ValueMode.Structure;
-	            break;
-	        case ValueMode.Recursive:
-	            _a = getValueModeFromValue(value, ValueMode.Recursive), childMode = _a[0], value = _a[1];
-	            break;
-	        default:
-	            invariant(false, "Illegal State");
-	    }
-	    if (Array.isArray(value)) return createObservableArray(value, childMode, name);
-	    if (isPlainObject(value) && Object.isExtensible(value)) return extendObservableHelper(value, value, childMode, name);
-	    return value;
-	    var _a;
-	}
-	function assertUnwrapped(value, message) {
-	    if (value instanceof AsReference || value instanceof AsStructure || value instanceof AsFlat) throw new Error("[mobx] asStructure / asReference / asFlat cannot be used here. " + message);
-	}
-	var OBSERVABLE_ARRAY_BUFFER_SIZE = 0;
-	var StubArray = function () {
-	    function StubArray() {}
-	    return StubArray;
-	}();
-	StubArray.prototype = [];
-	var ObservableArrayAdministration = function () {
-	    function ObservableArrayAdministration(name, mode, array, owned) {
-	        this.mode = mode;
-	        this.array = array;
-	        this.owned = owned;
-	        this.lastKnownLength = 0;
-	        this.interceptors = null;
-	        this.changeListeners = null;
-	        this.atom = new Atom(name || "ObservableArray@" + getNextId());
-	    }
-	    ObservableArrayAdministration.prototype.makeReactiveArrayItem = function (value) {
-	        assertUnwrapped(value, "Array values cannot have modifiers");
-	        if (this.mode === ValueMode.Flat || this.mode === ValueMode.Reference) return value;
-	        return makeChildObservable(value, this.mode, this.atom.name + "[..]");
-	    };
-	    ObservableArrayAdministration.prototype.intercept = function (handler) {
-	        return registerInterceptor(this, handler);
-	    };
-	    ObservableArrayAdministration.prototype.observe = function (listener, fireImmediately) {
-	        if (fireImmediately === void 0) {
-	            fireImmediately = false;
-	        }
-	        if (fireImmediately) {
-	            listener({
-	                object: this.array,
-	                type: "splice",
-	                index: 0,
-	                added: this.values.slice(),
-	                addedCount: this.values.length,
-	                removed: [],
-	                removedCount: 0
-	            });
-	        }
-	        return registerListener(this, listener);
-	    };
-	    ObservableArrayAdministration.prototype.getArrayLength = function () {
-	        this.atom.reportObserved();
-	        return this.values.length;
-	    };
-	    ObservableArrayAdministration.prototype.setArrayLength = function (newLength) {
-	        if (typeof newLength !== "number" || newLength < 0) throw new Error("[mobx.array] Out of range: " + newLength);
-	        var currentLength = this.values.length;
-	        if (newLength === currentLength) return;else if (newLength > currentLength) this.spliceWithArray(currentLength, 0, new Array(newLength - currentLength));else this.spliceWithArray(newLength, currentLength - newLength);
-	    };
-	    ObservableArrayAdministration.prototype.updateArrayLength = function (oldLength, delta) {
-	        if (oldLength !== this.lastKnownLength) throw new Error("[mobx] Modification exception: the internal structure of an observable array was changed. Did you use peek() to change it?");
-	        this.lastKnownLength += delta;
-	        if (delta > 0 && oldLength + delta > OBSERVABLE_ARRAY_BUFFER_SIZE) reserveArrayBuffer(oldLength + delta);
-	    };
-	    ObservableArrayAdministration.prototype.spliceWithArray = function (index, deleteCount, newItems) {
-	        checkIfStateModificationsAreAllowed();
-	        var length = this.values.length;
-	        if (index === undefined) index = 0;else if (index > length) index = length;else if (index < 0) index = Math.max(0, length + index);
-	        if (arguments.length === 1) deleteCount = length - index;else if (deleteCount === undefined || deleteCount === null) deleteCount = 0;else deleteCount = Math.max(0, Math.min(deleteCount, length - index));
-	        if (newItems === undefined) newItems = [];
-	        if (hasInterceptors(this)) {
-	            var change = interceptChange(this, {
-	                object: this.array,
-	                type: "splice",
-	                index: index,
-	                removedCount: deleteCount,
-	                added: newItems
-	            });
-	            if (!change) return EMPTY_ARRAY;
-	            deleteCount = change.removedCount;
-	            newItems = change.added;
-	        }
-	        newItems = newItems.map(this.makeReactiveArrayItem, this);
-	        var lengthDelta = newItems.length - deleteCount;
-	        this.updateArrayLength(length, lengthDelta);
-	        var res = (_a = this.values).splice.apply(_a, [index, deleteCount].concat(newItems));
-	        if (deleteCount !== 0 || newItems.length !== 0) this.notifyArraySplice(index, newItems, res);
-	        return res;
-	        var _a;
-	    };
-	    ObservableArrayAdministration.prototype.notifyArrayChildUpdate = function (index, newValue, oldValue) {
-	        var notifySpy = !this.owned && isSpyEnabled();
-	        var notify = hasListeners(this);
-	        var change = notify || notifySpy ? {
-	            object: this.array,
-	            type: "update",
-	            index: index, newValue: newValue, oldValue: oldValue
-	        } : null;
-	        if (notifySpy) spyReportStart(change);
-	        this.atom.reportChanged();
-	        if (notify) notifyListeners(this, change);
-	        if (notifySpy) spyReportEnd();
-	    };
-	    ObservableArrayAdministration.prototype.notifyArraySplice = function (index, added, removed) {
-	        var notifySpy = !this.owned && isSpyEnabled();
-	        var notify = hasListeners(this);
-	        var change = notify || notifySpy ? {
-	            object: this.array,
-	            type: "splice",
-	            index: index, removed: removed, added: added,
-	            removedCount: removed.length,
-	            addedCount: added.length
-	        } : null;
-	        if (notifySpy) spyReportStart(change);
-	        this.atom.reportChanged();
-	        if (notify) notifyListeners(this, change);
-	        if (notifySpy) spyReportEnd();
-	    };
-	    return ObservableArrayAdministration;
-	}();
-	var ObservableArray = function (_super) {
-	    __extends(ObservableArray, _super);
-	    function ObservableArray(initialValues, mode, name, owned) {
-	        if (owned === void 0) {
-	            owned = false;
-	        }
-	        _super.call(this);
-	        var adm = new ObservableArrayAdministration(name, mode, this, owned);
-	        Object.defineProperty(this, "$mobx", {
-	            enumerable: false,
-	            configurable: false,
-	            writable: false,
-	            value: adm
-	        });
-	        if (initialValues && initialValues.length) {
-	            adm.updateArrayLength(0, initialValues.length);
-	            adm.values = initialValues.map(adm.makeReactiveArrayItem, adm);
-	            adm.notifyArraySplice(0, adm.values.slice(), EMPTY_ARRAY);
-	        } else {
-	            adm.values = [];
-	        }
-	    }
-	    ObservableArray.prototype.intercept = function (handler) {
-	        return this.$mobx.intercept(handler);
-	    };
-	    ObservableArray.prototype.observe = function (listener, fireImmediately) {
-	        if (fireImmediately === void 0) {
-	            fireImmediately = false;
-	        }
-	        return this.$mobx.observe(listener, fireImmediately);
-	    };
-	    ObservableArray.prototype.clear = function () {
-	        return this.splice(0);
-	    };
-	    ObservableArray.prototype.replace = function (newItems) {
-	        return this.$mobx.spliceWithArray(0, this.$mobx.values.length, newItems);
-	    };
-	    ObservableArray.prototype.toJS = function () {
-	        return this.slice();
-	    };
-	    ObservableArray.prototype.toJSON = function () {
-	        return this.toJS();
-	    };
-	    ObservableArray.prototype.peek = function () {
-	        return this.$mobx.values;
-	    };
-	    ObservableArray.prototype.find = function (predicate, thisArg, fromIndex) {
-	        if (fromIndex === void 0) {
-	            fromIndex = 0;
-	        }
-	        this.$mobx.atom.reportObserved();
-	        var items = this.$mobx.values,
-	            l = items.length;
-	        for (var i = fromIndex; i < l; i++) {
-	            if (predicate.call(thisArg, items[i], i, this)) return items[i];
-	        }return null;
-	    };
-	    ObservableArray.prototype.splice = function (index, deleteCount) {
-	        var newItems = [];
-	        for (var _i = 2; _i < arguments.length; _i++) {
-	            newItems[_i - 2] = arguments[_i];
-	        }
-	        switch (arguments.length) {
-	            case 0:
-	                return [];
-	            case 1:
-	                return this.$mobx.spliceWithArray(index);
-	            case 2:
-	                return this.$mobx.spliceWithArray(index, deleteCount);
-	        }
-	        return this.$mobx.spliceWithArray(index, deleteCount, newItems);
-	    };
-	    ObservableArray.prototype.push = function () {
-	        var items = [];
-	        for (var _i = 0; _i < arguments.length; _i++) {
-	            items[_i - 0] = arguments[_i];
-	        }
-	        var adm = this.$mobx;
-	        adm.spliceWithArray(adm.values.length, 0, items);
-	        return adm.values.length;
-	    };
-	    ObservableArray.prototype.pop = function () {
-	        return this.splice(Math.max(this.$mobx.values.length - 1, 0), 1)[0];
-	    };
-	    ObservableArray.prototype.shift = function () {
-	        return this.splice(0, 1)[0];
-	    };
-	    ObservableArray.prototype.unshift = function () {
-	        var items = [];
-	        for (var _i = 0; _i < arguments.length; _i++) {
-	            items[_i - 0] = arguments[_i];
-	        }
-	        var adm = this.$mobx;
-	        adm.spliceWithArray(0, 0, items);
-	        return adm.values.length;
-	    };
-	    ObservableArray.prototype.reverse = function () {
-	        this.$mobx.atom.reportObserved();
-	        var clone = this.slice();
-	        return clone.reverse.apply(clone, arguments);
-	    };
-	    ObservableArray.prototype.sort = function (compareFn) {
-	        this.$mobx.atom.reportObserved();
-	        var clone = this.slice();
-	        return clone.sort.apply(clone, arguments);
-	    };
-	    ObservableArray.prototype.remove = function (value) {
-	        var idx = this.$mobx.values.indexOf(value);
-	        if (idx > -1) {
-	            this.splice(idx, 1);
-	            return true;
-	        }
-	        return false;
-	    };
-	    ObservableArray.prototype.toString = function () {
-	        return "[mobx.array] " + Array.prototype.toString.apply(this.$mobx.values, arguments);
-	    };
-	    ObservableArray.prototype.toLocaleString = function () {
-	        return "[mobx.array] " + Array.prototype.toLocaleString.apply(this.$mobx.values, arguments);
-	    };
-	    return ObservableArray;
-	}(StubArray);
-	makeNonEnumerable(ObservableArray.prototype, ["constructor", "observe", "clear", "replace", "toJSON", "peek", "find", "splice", "push", "pop", "shift", "unshift", "reverse", "sort", "remove", "toString", "toLocaleString"]);
-	Object.defineProperty(ObservableArray.prototype, "length", {
-	    enumerable: false,
-	    configurable: true,
-	    get: function get() {
-	        return this.$mobx.getArrayLength();
-	    },
-	    set: function set(newLength) {
-	        this.$mobx.setArrayLength(newLength);
-	    }
-	});
-	["concat", "every", "filter", "forEach", "indexOf", "join", "lastIndexOf", "map", "reduce", "reduceRight", "slice", "some"].forEach(function (funcName) {
-	    var baseFunc = Array.prototype[funcName];
-	    Object.defineProperty(ObservableArray.prototype, funcName, {
-	        configurable: false,
-	        writable: true,
-	        enumerable: false,
-	        value: function value() {
-	            this.$mobx.atom.reportObserved();
-	            return baseFunc.apply(this.$mobx.values, arguments);
-	        }
-	    });
-	});
-	function createArrayBufferItem(index) {
-	    Object.defineProperty(ObservableArray.prototype, "" + index, {
-	        enumerable: false,
-	        configurable: false,
-	        set: createArraySetter(index),
-	        get: createArrayGetter(index)
-	    });
-	}
-	function createArraySetter(index) {
-	    return function (newValue) {
-	        var adm = this.$mobx;
-	        var values = adm.values;
-	        assertUnwrapped(newValue, "Modifiers cannot be used on array values. For non-reactive array values use makeReactive(asFlat(array)).");
-	        if (index < values.length) {
-	            checkIfStateModificationsAreAllowed();
-	            var oldValue = values[index];
-	            if (hasInterceptors(adm)) {
-	                var change = interceptChange(adm, {
-	                    type: "update",
-	                    object: adm.array,
-	                    index: index, newValue: newValue
-	                });
-	                if (!change) return;
-	                newValue = change.newValue;
-	            }
-	            newValue = adm.makeReactiveArrayItem(newValue);
-	            var changed = adm.mode === ValueMode.Structure ? !deepEquals(oldValue, newValue) : oldValue !== newValue;
-	            if (changed) {
-	                values[index] = newValue;
-	                adm.notifyArrayChildUpdate(index, newValue, oldValue);
-	            }
-	        } else if (index === values.length) {
-	            adm.spliceWithArray(index, 0, [newValue]);
-	        } else throw new Error("[mobx.array] Index out of bounds, " + index + " is larger than " + values.length);
-	    };
-	}
-	function createArrayGetter(index) {
-	    return function () {
-	        var impl = this.$mobx;
-	        if (impl && index < impl.values.length) {
-	            impl.atom.reportObserved();
-	            return impl.values[index];
-	        }
-	        return undefined;
-	    };
-	}
-	function reserveArrayBuffer(max) {
-	    for (var index = OBSERVABLE_ARRAY_BUFFER_SIZE; index < max; index++) {
-	        createArrayBufferItem(index);
-	    }OBSERVABLE_ARRAY_BUFFER_SIZE = max;
-	}
-	reserveArrayBuffer(1000);
-	function createObservableArray(initialValues, mode, name) {
-	    return new ObservableArray(initialValues, mode, name);
-	}
-	function fastArray(initialValues) {
-	    deprecated("fastArray is deprecated. Please use `observable(asFlat([]))`");
-	    return createObservableArray(initialValues, ValueMode.Flat, null);
-	}
-	exports.fastArray = fastArray;
-	function isObservableArray(thing) {
-	    return thing instanceof ObservableArray;
-	}
-	exports.isObservableArray = isObservableArray;
-	var ObservableMapMarker = {};
-	var ObservableMap = function () {
-	    function ObservableMap(initialData, valueModeFunc) {
-	        var _this = this;
-	        this.$mobx = ObservableMapMarker;
-	        this._data = {};
-	        this._hasMap = {};
-	        this.name = "ObservableMap@" + getNextId();
-	        this._keys = new ObservableArray(null, ValueMode.Reference, this.name + ".keys()", true);
-	        this.interceptors = null;
-	        this.changeListeners = null;
-	        this._valueMode = getValueModeFromModifierFunc(valueModeFunc);
-	        if (this._valueMode === ValueMode.Flat) this._valueMode = ValueMode.Reference;
-	        allowStateChanges(true, function () {
-	            if (isPlainObject(initialData)) _this.merge(initialData);else if (Array.isArray(initialData)) initialData.forEach(function (_a) {
-	                var key = _a[0],
-	                    value = _a[1];
-	                return _this.set(key, value);
-	            });
-	        });
-	    }
-	    ObservableMap.prototype._has = function (key) {
-	        return typeof this._data[key] !== "undefined";
-	    };
-	    ObservableMap.prototype.has = function (key) {
-	        if (!this.isValidKey(key)) return false;
-	        if (this._hasMap[key]) return this._hasMap[key].get();
-	        return this._updateHasMapEntry(key, false).get();
-	    };
-	    ObservableMap.prototype.set = function (key, value) {
-	        this.assertValidKey(key);
-	        var hasKey = this._has(key);
-	        assertUnwrapped(value, "[mobx.map.set] Expected unwrapped value to be inserted to key '" + key + "'. If you need to use modifiers pass them as second argument to the constructor");
-	        if (hasInterceptors(this)) {
-	            var change = interceptChange(this, {
-	                type: hasKey ? "update" : "add",
-	                object: this,
-	                newValue: value,
-	                name: key
-	            });
-	            if (!change) return;
-	            value = change.newValue;
-	        }
-	        if (hasKey) {
-	            this._updateValue(key, value);
-	        } else {
-	            this._addValue(key, value);
-	        }
-	    };
-	    ObservableMap.prototype.delete = function (key) {
-	        var _this = this;
-	        if (hasInterceptors(this)) {
-	            var change = interceptChange(this, {
-	                type: "delete",
-	                object: this,
-	                name: key
-	            });
-	            if (!change) return;
-	        }
-	        if (this._has(key)) {
-	            var notifySpy = isSpyEnabled();
-	            var notify = hasListeners(this);
-	            var change = notify || notifySpy ? {
-	                type: "delete",
-	                object: this,
-	                oldValue: this._data[key].value,
-	                name: key
-	            } : null;
-	            if (notifySpy) spyReportStart(change);
-	            transaction(function () {
-	                _this._keys.remove(key);
-	                _this._updateHasMapEntry(key, false);
-	                var observable = _this._data[key];
-	                observable.setNewValue(undefined);
-	                _this._data[key] = undefined;
-	            }, undefined, false);
-	            if (notify) notifyListeners(this, change);
-	            if (notifySpy) spyReportEnd();
-	        }
-	    };
-	    ObservableMap.prototype._updateHasMapEntry = function (key, value) {
-	        var entry = this._hasMap[key];
-	        if (entry) {
-	            entry.setNewValue(value);
-	        } else {
-	            entry = this._hasMap[key] = new ObservableValue(value, ValueMode.Reference, this.name + "." + key + "?", false);
-	        }
-	        return entry;
-	    };
-	    ObservableMap.prototype._updateValue = function (name, newValue) {
-	        var observable = this._data[name];
-	        newValue = observable.prepareNewValue(newValue);
-	        if (newValue !== UNCHANGED) {
-	            var notifySpy = isSpyEnabled();
-	            var notify = hasListeners(this);
-	            var change = notify || notifySpy ? {
-	                type: "update",
-	                object: this,
-	                oldValue: observable.value,
-	                name: name, newValue: newValue
-	            } : null;
-	            if (notifySpy) spyReportStart(change);
-	            observable.setNewValue(newValue);
-	            if (notify) notifyListeners(this, change);
-	            if (notifySpy) spyReportEnd();
-	        }
-	    };
-	    ObservableMap.prototype._addValue = function (name, newValue) {
-	        var _this = this;
-	        transaction(function () {
-	            var observable = _this._data[name] = new ObservableValue(newValue, _this._valueMode, _this.name + "." + name, false);
-	            newValue = observable.value;
-	            _this._updateHasMapEntry(name, true);
-	            _this._keys.push(name);
-	        }, undefined, false);
-	        var notifySpy = isSpyEnabled();
-	        var notify = hasListeners(this);
-	        var change = notify || notifySpy ? {
-	            type: "add",
-	            object: this,
-	            name: name, newValue: newValue
-	        } : null;
-	        if (notifySpy) spyReportStart(change);
-	        if (notify) notifyListeners(this, change);
-	        if (notifySpy) spyReportEnd();
-	    };
-	    ObservableMap.prototype.get = function (key) {
-	        if (this.has(key)) return this._data[key].get();
-	        return undefined;
-	    };
-	    ObservableMap.prototype.keys = function () {
-	        return this._keys.slice();
-	    };
-	    ObservableMap.prototype.values = function () {
-	        return this.keys().map(this.get, this);
-	    };
-	    ObservableMap.prototype.entries = function () {
-	        var _this = this;
-	        return this.keys().map(function (key) {
-	            return [key, _this.get(key)];
-	        });
-	    };
-	    ObservableMap.prototype.forEach = function (callback, thisArg) {
-	        var _this = this;
-	        this.keys().forEach(function (key) {
-	            return callback.call(thisArg, _this.get(key), key);
-	        });
-	    };
-	    ObservableMap.prototype.merge = function (other) {
-	        var _this = this;
-	        transaction(function () {
-	            if (other instanceof ObservableMap) other.keys().forEach(function (key) {
-	                return _this.set(key, other.get(key));
-	            });else Object.keys(other).forEach(function (key) {
-	                return _this.set(key, other[key]);
-	            });
-	        }, undefined, false);
-	        return this;
-	    };
-	    ObservableMap.prototype.clear = function () {
-	        var _this = this;
-	        transaction(function () {
-	            untracked(function () {
-	                _this.keys().forEach(_this.delete, _this);
-	            });
-	        }, undefined, false);
-	    };
-	    Object.defineProperty(ObservableMap.prototype, "size", {
-	        get: function get() {
-	            return this._keys.length;
-	        },
-	        enumerable: true,
-	        configurable: true
-	    });
-	    ObservableMap.prototype.toJS = function () {
-	        var _this = this;
-	        var res = {};
-	        this.keys().forEach(function (key) {
-	            return res[key] = _this.get(key);
-	        });
-	        return res;
-	    };
-	    ObservableMap.prototype.toJs = function () {
-	        deprecated("toJs is deprecated, use toJS instead");
-	        return this.toJS();
-	    };
-	    ObservableMap.prototype.toJSON = function () {
-	        return this.toJS();
-	    };
-	    ObservableMap.prototype.isValidKey = function (key) {
-	        if (key === null || key === undefined) return false;
-	        if (typeof key !== "string" && typeof key !== "number") return false;
-	        return true;
-	    };
-	    ObservableMap.prototype.assertValidKey = function (key) {
-	        if (!this.isValidKey(key)) throw new Error("[mobx.map] Invalid key: '" + key + "'");
-	    };
-	    ObservableMap.prototype.toString = function () {
-	        var _this = this;
-	        return this.name + "[{ " + this.keys().map(function (key) {
-	            return key + ": " + ("" + _this.get(key));
-	        }).join(", ") + " }]";
-	    };
-	    ObservableMap.prototype.observe = function (listener, fireImmediately) {
-	        invariant(fireImmediately !== true, "`observe` doesn't support the fire immediately property for observable maps.");
-	        return registerListener(this, listener);
-	    };
-	    ObservableMap.prototype.intercept = function (handler) {
-	        return registerInterceptor(this, handler);
-	    };
-	    return ObservableMap;
-	}();
-	exports.ObservableMap = ObservableMap;
-	function map(initialValues, valueModifier) {
-	    return new ObservableMap(initialValues, valueModifier);
-	}
-	exports.map = map;
-	function isObservableMap(thing) {
-	    return thing instanceof ObservableMap;
-	}
-	exports.isObservableMap = isObservableMap;
-	var ObservableObjectAdministration = function () {
-	    function ObservableObjectAdministration(target, name, mode) {
-	        this.target = target;
-	        this.name = name;
-	        this.mode = mode;
-	        this.values = {};
-	        this.changeListeners = null;
-	        this.interceptors = null;
-	    }
-	    ObservableObjectAdministration.prototype.observe = function (callback, fireImmediately) {
-	        invariant(fireImmediately !== true, "`observe` doesn't support the fire immediately property for observable objects.");
-	        return registerListener(this, callback);
-	    };
-	    ObservableObjectAdministration.prototype.intercept = function (handler) {
-	        return registerInterceptor(this, handler);
-	    };
-	    return ObservableObjectAdministration;
-	}();
-	function asObservableObject(target, name, mode) {
-	    if (mode === void 0) {
-	        mode = ValueMode.Recursive;
-	    }
-	    if (isObservableObject(target)) return target.$mobx;
-	    if (!isPlainObject(target)) name = target.constructor.name + "@" + getNextId();
-	    if (!name) name = "ObservableObject@" + getNextId();
-	    var adm = new ObservableObjectAdministration(target, name, mode);
-	    Object.defineProperty(target, "$mobx", {
-	        enumerable: false,
-	        configurable: false,
-	        writable: false,
-	        value: adm
-	    });
-	    return adm;
-	}
-	function setObservableObjectProperty(adm, propName, value) {
-	    if (adm.values[propName]) adm.target[propName] = value;else defineObservableProperty(adm, propName, value);
-	}
-	function defineObservableProperty(adm, propName, newValue) {
-	    assertPropertyConfigurable(adm.target, propName);
-	    var observable;
-	    var name = adm.name + "." + propName;
-	    var isComputed = true;
-	    if (typeof newValue === "function" && newValue.length === 0) observable = new ComputedValue(newValue, adm.target, false, name);else if (newValue instanceof AsStructure && typeof newValue.value === "function" && newValue.value.length === 0) observable = new ComputedValue(newValue.value, adm.target, true, name);else {
-	        isComputed = false;
-	        if (hasInterceptors(adm)) {
-	            var change = interceptChange(adm, {
-	                object: adm.target,
-	                name: propName,
-	                type: "add",
-	                newValue: newValue
-	            });
-	            if (!change) return;
-	            newValue = change.newValue;
-	        }
-	        observable = new ObservableValue(newValue, adm.mode, name, false);
-	        newValue = observable.value;
-	    }
-	    adm.values[propName] = observable;
-	    Object.defineProperty(adm.target, propName, {
-	        configurable: true,
-	        enumerable: !isComputed,
-	        get: function get() {
-	            return observable.get();
-	        },
-	        set: isComputed ? throwingComputedValueSetter : createSetter(adm, observable, propName)
-	    });
-	    if (!isComputed) notifyPropertyAddition(adm, adm.target, propName, newValue);
-	}
-	function createSetter(adm, observable, name) {
-	    return function (newValue) {
-	        if (hasInterceptors(adm)) {
-	            var change = interceptChange(adm, {
-	                type: "update",
-	                object: this,
-	                name: name, newValue: newValue
-	            });
-	            if (!change) return;
-	            newValue = change.newValue;
-	        }
-	        newValue = observable.prepareNewValue(newValue);
-	        if (newValue !== UNCHANGED) {
-	            var notify = hasListeners(adm);
-	            var notifySpy = isSpyEnabled();
-	            var change = notifyListeners || hasListeners ? {
-	                type: "update",
-	                object: this,
-	                oldValue: observable.value,
-	                name: name, newValue: newValue
-	            } : null;
-	            if (notifySpy) spyReportStart(change);
-	            observable.setNewValue(newValue);
-	            if (notify) notifyListeners(adm, change);
-	            if (notifySpy) spyReportEnd();
-	        }
-	    };
-	}
-	function notifyPropertyAddition(adm, object, name, newValue) {
-	    var notify = hasListeners(adm);
-	    var notifySpy = isSpyEnabled();
-	    var change = notify || notifySpy ? {
-	        type: "add",
-	        object: object, name: name, newValue: newValue
-	    } : null;
-	    if (notifySpy) spyReportStart(change);
-	    if (notify) notifyListeners(adm, change);
-	    if (notifySpy) spyReportEnd();
-	}
-	function isObservableObject(thing) {
-	    return thing && thing.$mobx instanceof ObservableObjectAdministration;
-	}
-	exports.isObservableObject = isObservableObject;
-	var UNCHANGED = {};
-	var ObservableValue = function (_super) {
-	    __extends(ObservableValue, _super);
-	    function ObservableValue(value, mode, name, notifySpy) {
-	        if (name === void 0) {
-	            name = "ObservableValue@" + getNextId();
-	        }
-	        if (notifySpy === void 0) {
-	            notifySpy = true;
-	        }
-	        _super.call(this, name);
-	        this.mode = mode;
-	        this.hasUnreportedChange = false;
-	        this.value = undefined;
-	        var _a = getValueModeFromValue(value, ValueMode.Recursive),
-	            childmode = _a[0],
-	            unwrappedValue = _a[1];
-	        if (this.mode === ValueMode.Recursive) this.mode = childmode;
-	        this.value = makeChildObservable(unwrappedValue, this.mode, this.name);
-	        if (notifySpy && isSpyEnabled()) {
-	            spyReport({ type: "create", object: this, newValue: this.value });
-	        }
-	    }
-	    ObservableValue.prototype.set = function (newValue) {
-	        var oldValue = this.value;
-	        newValue = this.prepareNewValue(newValue);
-	        if (newValue !== UNCHANGED) {
-	            var notifySpy = isSpyEnabled();
-	            if (notifySpy) {
-	                spyReportStart({
-	                    type: "update",
-	                    object: this,
-	                    newValue: newValue, oldValue: oldValue
-	                });
-	            }
-	            this.setNewValue(newValue);
-	            if (notifySpy) spyReportEnd();
-	        }
-	    };
-	    ObservableValue.prototype.prepareNewValue = function (newValue) {
-	        assertUnwrapped(newValue, "Modifiers cannot be used on non-initial values.");
-	        checkIfStateModificationsAreAllowed();
-	        if (hasInterceptors(this)) {
-	            var change = interceptChange(this, { object: this, type: "update", newValue: newValue });
-	            if (!change) return UNCHANGED;
-	            newValue = change.newValue;
-	        }
-	        var changed = valueDidChange(this.mode === ValueMode.Structure, this.value, newValue);
-	        if (changed) return makeChildObservable(newValue, this.mode, this.name);
-	        return UNCHANGED;
-	    };
-	    ObservableValue.prototype.setNewValue = function (newValue) {
-	        var oldValue = this.value;
-	        this.value = newValue;
-	        this.reportChanged();
-	        if (hasListeners(this)) notifyListeners(this, [newValue, oldValue]);
-	    };
-	    ObservableValue.prototype.get = function () {
-	        this.reportObserved();
-	        return this.value;
-	    };
-	    ObservableValue.prototype.intercept = function (handler) {
-	        return registerInterceptor(this, handler);
-	    };
-	    ObservableValue.prototype.observe = function (listener, fireImmediately) {
-	        if (fireImmediately) listener(this.value, undefined);
-	        return registerListener(this, listener);
-	    };
-	    ObservableValue.prototype.toJSON = function () {
-	        return this.get();
-	    };
-	    ObservableValue.prototype.toString = function () {
-	        return this.name + "[" + this.value + "]";
-	    };
-	    return ObservableValue;
-	}(Atom);
-	function getAtom(thing, property) {
-	    if ((typeof thing === "undefined" ? "undefined" : _typeof(thing)) === "object" && thing !== null) {
-	        if (isObservableArray(thing)) {
-	            invariant(property === undefined, "It is not possible to get index atoms from arrays");
-	            return thing.$mobx.atom;
-	        } else if (isObservableMap(thing)) {
-	            if (property === undefined) return getAtom(thing._keys);
-	            var observable_1 = thing._data[property] || thing._hasMap[property];
-	            invariant(!!observable_1, "the entry '" + property + "' does not exist in the observable map '" + getDebugName(thing) + "'");
-	            return observable_1;
-	        } else if (isObservableObject(thing)) {
-	            invariant(!!property, "please specify a property");
-	            var observable_2 = thing.$mobx.values[property];
-	            invariant(!!observable_2, "no observable property '" + property + "' found on the observable object '" + getDebugName(thing) + "'");
-	            return observable_2;
-	        } else if (thing instanceof Atom || thing instanceof ComputedValue || thing instanceof Reaction) {
-	            return thing;
-	        }
-	    } else if (typeof thing === "function") {
-	        if (thing.$mobx instanceof Reaction) {
-	            return thing.$mobx;
-	        }
-	    }
-	    invariant(false, "Cannot obtain atom from " + thing);
-	}
-	function getAdministration(thing, property) {
-	    invariant(thing, "Expection some object");
-	    if (property !== undefined) return getAdministration(getAtom(thing, property));
-	    if (thing instanceof Atom || thing instanceof ComputedValue || thing instanceof Reaction) return thing;
-	    if (isObservableMap(thing)) return thing;
-	    if (thing.$mobx) return thing.$mobx;
-	    invariant(false, "Cannot obtain administration from " + thing);
-	}
-	function getDebugName(thing, property) {
-	    var named;
-	    if (property !== undefined) named = getAtom(thing, property);else if (isObservableObject(thing) || isObservableMap(thing)) named = getAdministration(thing);else named = getAtom(thing);
-	    return named.name;
-	}
-	var SimpleEventEmitter = function () {
-	    function SimpleEventEmitter() {
-	        this.listeners = [];
-	        deprecated("extras.SimpleEventEmitter is deprecated and will be removed in the next major release");
-	    }
-	    SimpleEventEmitter.prototype.emit = function () {
-	        var listeners = this.listeners.slice();
-	        for (var i = 0, l = listeners.length; i < l; i++) {
-	            listeners[i].apply(null, arguments);
-	        }
-	    };
-	    SimpleEventEmitter.prototype.on = function (listener) {
-	        var _this = this;
-	        this.listeners.push(listener);
-	        return once(function () {
-	            var idx = _this.listeners.indexOf(listener);
-	            if (idx !== -1) _this.listeners.splice(idx, 1);
-	        });
-	    };
-	    SimpleEventEmitter.prototype.once = function (listener) {
-	        var subscription = this.on(function () {
-	            subscription();
-	            listener.apply(this, arguments);
-	        });
-	        return subscription;
-	    };
-	    return SimpleEventEmitter;
-	}();
-	exports.SimpleEventEmitter = SimpleEventEmitter;
-	var EMPTY_ARRAY = [];
-	Object.freeze(EMPTY_ARRAY);
-	function getNextId() {
-	    return ++globalState.mobxGuid;
-	}
-	function invariant(check, message, thing) {
-	    if (!check) throw new Error("[mobx] Invariant failed: " + message + (thing ? " in '" + thing + "'" : ""));
-	}
-	var deprecatedMessages = [];
-	function deprecated(msg) {
-	    if (deprecatedMessages.indexOf(msg) !== -1) return;
-	    deprecatedMessages.push(msg);
-	    console.error("[mobx] Deprecated: " + msg);
-	}
-	function once(func) {
-	    var invoked = false;
-	    return function () {
-	        if (invoked) return;
-	        invoked = true;
-	        return func.apply(this, arguments);
-	    };
-	}
-	var noop = function noop() {};
-	function unique(list) {
-	    var res = [];
-	    list.forEach(function (item) {
-	        if (res.indexOf(item) === -1) res.push(item);
-	    });
-	    return res;
-	}
-	function isPlainObject(value) {
-	    return value !== null && (typeof value === "undefined" ? "undefined" : _typeof(value)) === "object" && Object.getPrototypeOf(value) === Object.prototype;
-	}
-	function objectAssign() {
-	    var res = arguments[0];
-	    for (var i = 1, l = arguments.length; i < l; i++) {
-	        var source = arguments[i];
-	        for (var key in source) {
-	            if (source.hasOwnProperty(key)) {
-	                res[key] = source[key];
-	            }
-	        }
-	    }
-	    return res;
-	}
-	function valueDidChange(compareStructural, oldValue, newValue) {
-	    return compareStructural ? !deepEquals(oldValue, newValue) : oldValue !== newValue;
-	}
-	function makeNonEnumerable(object, props) {
-	    for (var i = 0; i < props.length; i++) {
-	        Object.defineProperty(object, props[i], {
-	            configurable: true,
-	            writable: true,
-	            enumerable: false,
-	            value: object[props[i]]
-	        });
-	    }
-	}
-	function isPropertyConfigurable(object, prop) {
-	    var descriptor = Object.getOwnPropertyDescriptor(object, prop);
-	    return !descriptor || descriptor.configurable !== false && descriptor.writable !== false;
-	}
-	function assertPropertyConfigurable(object, prop) {
-	    invariant(isPropertyConfigurable(object, prop), "Cannot make property '" + prop + "' observable, it is not configurable and writable in the target object");
-	}
-	function deepEquals(a, b) {
-	    if (a === null && b === null) return true;
-	    if (a === undefined && b === undefined) return true;
-	    var aIsArray = Array.isArray(a) || isObservableArray(a);
-	    if (aIsArray !== (Array.isArray(b) || isObservableArray(b))) {
-	        return false;
-	    } else if (aIsArray) {
-	        if (a.length !== b.length) return false;
-	        for (var i = a.length; i >= 0; i--) {
-	            if (!deepEquals(a[i], b[i])) return false;
-	        }return true;
-	    } else if ((typeof a === "undefined" ? "undefined" : _typeof(a)) === "object" && (typeof b === "undefined" ? "undefined" : _typeof(b)) === "object") {
-	        if (a === null || b === null) return false;
-	        if (Object.keys(a).length !== Object.keys(b).length) return false;
-	        for (var prop in a) {
-	            if (!b.hasOwnProperty(prop)) return false;
-	            if (!deepEquals(a[prop], b[prop])) return false;
-	        }
-	        return true;
-	    }
-	    return a === b;
-	}
-	function quickDiff(current, base) {
-	    if (!base || !base.length) return [current, []];
-	    if (!current || !current.length) return [[], base];
-	    var added = [];
-	    var removed = [];
-	    var currentIndex = 0,
-	        currentSearch = 0,
-	        currentLength = current.length,
-	        currentExhausted = false,
-	        baseIndex = 0,
-	        baseSearch = 0,
-	        baseLength = base.length,
-	        isSearching = false,
-	        baseExhausted = false;
-	    while (!baseExhausted && !currentExhausted) {
-	        if (!isSearching) {
-	            if (currentIndex < currentLength && baseIndex < baseLength && current[currentIndex] === base[baseIndex]) {
-	                currentIndex++;
-	                baseIndex++;
-	                if (currentIndex === currentLength && baseIndex === baseLength) return [added, removed];
-	                continue;
-	            }
-	            currentSearch = currentIndex;
-	            baseSearch = baseIndex;
-	            isSearching = true;
-	        }
-	        baseSearch += 1;
-	        currentSearch += 1;
-	        if (baseSearch >= baseLength) baseExhausted = true;
-	        if (currentSearch >= currentLength) currentExhausted = true;
-	        if (!currentExhausted && current[currentSearch] === base[baseIndex]) {
-	            added = added.concat(current.slice(currentIndex, currentSearch));
-	            currentIndex = currentSearch + 1;
-	            baseIndex++;
-	            isSearching = false;
-	        } else if (!baseExhausted && base[baseSearch] === current[currentIndex]) {
-	            removed = removed.concat(base.slice(baseIndex, baseSearch));
-	            baseIndex = baseSearch + 1;
-	            currentIndex++;
-	            isSearching = false;
-	        }
-	    }
-	    return [added.concat(current.slice(currentIndex)), removed.concat(base.slice(baseIndex))];
-	}
-	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }())))
-
-/***/ },
-/* 39 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -5465,7 +3392,7 @@
 
 	var driver = (0, _dom.h)('pre', '  var websocketsDriver = function () {\n      return create((add) => {\n        socket.onmessage = msg => add(msg)\n      })\n  };\n');
 
-	var messages = (0, _dom.h)('pre', '  const messages$ = (sources.WS).map(e => \n    mMtem.ret(e.data.split(\',\')).bnd(v => {\n    mMZ10.bnd(() => mM$1\n      .ret([v[3], v[4], v[5], v[6]])\n      .bnd(() => mM$2.ret([])))\n    mMZ11.bnd(() => updateScoreboard(v[3]));\n    mMZ12.bnd(() => mM6\n      .ret(v[2] + \' successfully logged in.\'))\n    mMZ13.bnd(() => updateMessages(v))\n    mMZ14.bnd(() => mMgoals2.ret(\'The winner is \' + v.x ))\n    mMZ15.bnd(() => mMgoals2.ret(\'A player named \' + \n      O.mMname.x + \'is currently logged in. Page will refresh in 4 seconds.\')\n      .bnd(refresh))\n    mMZ16.bnd(() => process(e.data))\n    mMtemp.ret(e.data.split(\',\')[0])\n      .bnd(next, \'CA#$42\', mMZ10)\n      .bnd(next, \'CB#$42\', mMZ11)\n      .bnd(next, \'CC#$42\', mMZ12)\n      .bnd(next, \'CD#$42\', mMZ13)\n      .bnd(next, \'CE#$42\', mMZ14)\n      .bnd(next, \'EE#$42\', mMZ15)\n      .bnd(next, \'DD#$42\', mMZ16)\n    }) \n  );\n             \n  var next = function next(x, y, mon2) {\n    if (x === y) {\n      mon2.release();\n    }\n    return ret(x);\n  }');
+	var messages = (0, _dom.h)('pre', '  const messages$ = (sources.WS).map(e => \n    mMtem.ret(e.data.split(\',\')).bnd(v => {\n    mMZ10.bnd(() => {\n      mM$2.ret([])\n      mMcurrentRoll.ret([v[3], v[4], v[5], v[6]]).bnd(mM$1.ret) }) \n    mMZ11.bnd(() => updateScoreboard(v[3]));\n    mMZ12.bnd(() => mM6\n      .ret(v[2] + \' successfully logged in.\'))\n    mMZ13.bnd(() => updateMessages(v))\n    mMZ14.bnd(() => mMgoals2.ret(\'The winner is \' + v[2] ))\n    mMZ15.bnd(() => mMgoals2.ret(\'A player named \' + \n      O.mMname.x + \'is currently logged in. Page will refresh in 4 seconds.\')\n      .bnd(refresh))\n    mMZ16.bnd(() => {\n      if (v[3] == \'no file\') {\n        mMtaskList.ret([])\n      } \n      else {\n        process(e.data)\n      }\n    })\n    mMtemp.ret(e.data.split(\',\')[0])\n      .bnd(next, \'CA#$42\', mMZ10)\n      .bnd(next, \'CB#$42\', mMZ11)\n      .bnd(next, \'CC#$42\', mMZ12)\n      .bnd(next, \'CD#$42\', mMZ13)\n      .bnd(next, \'CE#$42\', mMZ14)\n      .bnd(next, \'EE#$42\', mMZ15)\n      .bnd(next, \'DD#$42\', mMZ16)\n    }) \n  });\n             \n  var next = function next(x, y, mon2) {\n    if (x === y) {\n      mon2.release();\n    }\n    return ret(x);\n  }');
 
 	var next = (0, _dom.h)('pre', '  \n  ');
 
@@ -5539,10 +3466,22 @@
 
 	var seed5 = (0, _dom.h)('pre', ' \n             ');
 
+	var seed6 = (0, _dom.h)('pre', ' \n             ');
+
+	var seed7 = (0, _dom.h)('pre', ' \n             ');
+
+	var seed8 = (0, _dom.h)('pre', ' \n             ');
+
+	var seed9 = (0, _dom.h)('pre', ' \n             ');
+
+	var seed1 = (0, _dom.h)('pre', ' \n             ');
+
+	var seed2 = (0, _dom.h)('pre', ' \n             ');
+
 	exports.default = { monad: monad, monadStr: monadStr, monadIt: monadIt, fib: fib, driver: driver, messages: messages, next: next, Monad$: Monad$, updateCalc: updateCalc, arrayFuncs: arrayFuncs, travel: travel, nums: nums, cleanup: cleanup, ret: ret, C42: C42, taskStream: taskStream, newTask: newTask, process: process, mM$task: mM$task, addString: addString, colorClick: colorClick, edit: edit, testZ: testZ, quad: quad, mdem1: mdem1, runTest: runTest, todoStream: todoStream, gameStream: gameStream, inc: inc, ret_add_cube: ret_add_cube, primes: primes, seed: seed, primeFib4: primeFib4, primeFib3: primeFib3, spreadsheet: spreadsheet, spreadsheet2: spreadsheet2, add: add, reactiveFib: reactiveFib };
 
 /***/ },
-/* 40 */
+/* 39 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
@@ -5874,7 +3813,7 @@
 	});
 
 /***/ },
-/* 41 */
+/* 40 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
@@ -5978,7 +3917,7 @@
 	});
 
 /***/ },
-/* 42 */
+/* 41 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -6059,7 +3998,7 @@
 	exports.default = h;
 
 /***/ },
-/* 43 */
+/* 42 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -6071,17 +4010,17 @@
 
 	var _most = __webpack_require__(4);
 
-	var _hold = __webpack_require__(41);
+	var _hold = __webpack_require__(40);
 
 	var _hold2 = _interopRequireDefault(_hold);
 
-	var _snabbdom = __webpack_require__(101);
+	var _snabbdom = __webpack_require__(100);
 
 	var _h = __webpack_require__(36);
 
 	var _h2 = _interopRequireDefault(_h);
 
-	var _classNameFromVNode = __webpack_require__(93);
+	var _classNameFromVNode = __webpack_require__(92);
 
 	var _classNameFromVNode2 = _interopRequireDefault(_classNameFromVNode);
 
@@ -6095,11 +4034,11 @@
 
 	var _modules2 = _interopRequireDefault(_modules);
 
-	var _transposition = __webpack_require__(46);
+	var _transposition = __webpack_require__(45);
 
 	var _isolate = __webpack_require__(19);
 
-	var _select = __webpack_require__(45);
+	var _select = __webpack_require__(44);
 
 	var _events = __webpack_require__(18);
 
@@ -6205,7 +4144,7 @@
 	exports.makeDOMDriver = makeDOMDriver;
 
 /***/ },
-/* 44 */
+/* 43 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -6276,7 +4215,7 @@
 	exports.mockDOMSource = mockDOMSource;
 
 /***/ },
-/* 45 */
+/* 44 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -6373,7 +4312,7 @@
 	exports.makeIsStrictlyInRootScope = _makeIsStrictlyInRootScope.makeIsStrictlyInRootScope;
 
 /***/ },
-/* 46 */
+/* 45 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -6435,7 +4374,7 @@
 	exports.transposeVTree = transposeVTree;
 
 /***/ },
-/* 47 */
+/* 46 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -6554,7 +4493,7 @@
 	}();
 
 /***/ },
-/* 48 */
+/* 47 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -6604,7 +4543,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 49 */
+/* 48 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -6633,7 +4572,7 @@
 	}
 
 /***/ },
-/* 50 */
+/* 49 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -6738,7 +4677,7 @@
 	exports.Observer = Observer;
 
 /***/ },
-/* 51 */
+/* 50 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -6833,7 +4772,7 @@
 	exports.replay = replay;
 
 /***/ },
-/* 52 */
+/* 51 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -6847,9 +4786,9 @@
 
 	var _multicast = __webpack_require__(5);
 
-	var _Observer = __webpack_require__(50);
+	var _Observer = __webpack_require__(49);
 
-	var _Replay = __webpack_require__(51);
+	var _Replay = __webpack_require__(50);
 
 	function create(hold, bufferSize, initialValue) {
 	  var observer = new _Observer.Observer();
@@ -6882,7 +4821,7 @@
 	exports.holdSubject = holdSubject;
 
 /***/ },
-/* 53 */
+/* 52 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -6965,7 +4904,7 @@
 	};
 
 /***/ },
-/* 54 */
+/* 53 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -7036,7 +4975,7 @@
 	}
 
 /***/ },
-/* 55 */
+/* 54 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -7125,7 +5064,7 @@
 	function noop() {}
 
 /***/ },
-/* 56 */
+/* 55 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -7154,7 +5093,7 @@
 	}
 
 /***/ },
-/* 57 */
+/* 56 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -7183,7 +5122,7 @@
 	}
 
 /***/ },
-/* 58 */
+/* 57 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -7242,7 +5181,7 @@
 	DelaySink.prototype.error = Sink.prototype.error;
 
 /***/ },
-/* 59 */
+/* 58 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -7253,7 +5192,7 @@
 
 	var Stream = __webpack_require__(0);
 	var ValueSource = __webpack_require__(34);
-	var SafeSink = __webpack_require__(81);
+	var SafeSink = __webpack_require__(80);
 	var Pipe = __webpack_require__(1);
 	var dispose = __webpack_require__(2);
 	var tryEvent = __webpack_require__(9);
@@ -7334,7 +5273,7 @@
 	};
 
 /***/ },
-/* 60 */
+/* 59 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -7415,7 +5354,7 @@
 	}
 
 /***/ },
-/* 61 */
+/* 60 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -7532,7 +5471,7 @@
 	};
 
 /***/ },
-/* 62 */
+/* 61 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -7590,7 +5529,7 @@
 	};
 
 /***/ },
-/* 63 */
+/* 62 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -7689,7 +5628,7 @@
 	};
 
 /***/ },
-/* 64 */
+/* 63 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -7727,7 +5666,7 @@
 	function noop() {}
 
 /***/ },
-/* 65 */
+/* 64 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -7824,7 +5763,7 @@
 	};
 
 /***/ },
-/* 66 */
+/* 65 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -7942,7 +5881,7 @@
 	}
 
 /***/ },
-/* 67 */
+/* 66 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -8125,7 +6064,7 @@
 	};
 
 /***/ },
-/* 68 */
+/* 67 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -8242,7 +6181,7 @@
 	};
 
 /***/ },
-/* 69 */
+/* 68 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -8365,7 +6304,7 @@
 	function noop() {}
 
 /***/ },
-/* 70 */
+/* 69 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -8403,7 +6342,7 @@
 	};
 
 /***/ },
-/* 71 */
+/* 70 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -8529,7 +6468,7 @@
 	};
 
 /***/ },
-/* 72 */
+/* 71 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -8546,7 +6485,7 @@
 	var dispose = __webpack_require__(2);
 	var base = __webpack_require__(3);
 	var invoke = __webpack_require__(13);
-	var Queue = __webpack_require__(54);
+	var Queue = __webpack_require__(53);
 
 	var map = base.map;
 	var tail = base.tail;
@@ -8667,7 +6606,7 @@
 	}
 
 /***/ },
-/* 73 */
+/* 72 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -8694,7 +6633,7 @@
 	};
 
 /***/ },
-/* 74 */
+/* 73 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -8743,7 +6682,7 @@
 	};
 
 /***/ },
-/* 75 */
+/* 74 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -8782,7 +6721,7 @@
 	FilterMapSink.prototype.error = Pipe.prototype.error;
 
 /***/ },
-/* 76 */
+/* 75 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -9010,7 +6949,7 @@
 	}
 
 /***/ },
-/* 77 */
+/* 76 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {'use strict';
@@ -9021,9 +6960,9 @@
 	/** @author Brian Cavalier */
 	/** @author John Hann */
 
-	var Scheduler = __webpack_require__(76);
-	var setTimeoutTimer = __webpack_require__(79);
-	var nodeTimer = __webpack_require__(78);
+	var Scheduler = __webpack_require__(75);
+	var setTimeoutTimer = __webpack_require__(78);
+	var nodeTimer = __webpack_require__(77);
 
 	var isNode = (typeof process === 'undefined' ? 'undefined' : _typeof(process)) === 'object' && typeof process.nextTick === 'function';
 
@@ -9031,7 +6970,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(17)))
 
 /***/ },
-/* 78 */
+/* 77 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -9082,7 +7021,7 @@
 	};
 
 /***/ },
-/* 79 */
+/* 78 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -9104,7 +7043,7 @@
 	};
 
 /***/ },
-/* 80 */
+/* 79 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -9155,7 +7094,7 @@
 	}
 
 /***/ },
-/* 81 */
+/* 80 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -9197,7 +7136,7 @@
 	};
 
 /***/ },
-/* 82 */
+/* 81 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -9249,7 +7188,7 @@
 	}
 
 /***/ },
-/* 83 */
+/* 82 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -9285,7 +7224,7 @@
 	}
 
 /***/ },
-/* 84 */
+/* 83 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -9368,7 +7307,7 @@
 	};
 
 /***/ },
-/* 85 */
+/* 84 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -9377,9 +7316,9 @@
 	/** @author Brian Cavalier */
 	/** @author John Hann */
 
-	var fromArray = __webpack_require__(86).fromArray;
+	var fromArray = __webpack_require__(85).fromArray;
 	var isIterable = __webpack_require__(31).isIterable;
-	var fromIterable = __webpack_require__(88).fromIterable;
+	var fromIterable = __webpack_require__(87).fromIterable;
 	var isArrayLike = __webpack_require__(3).isArrayLike;
 
 	exports.from = from;
@@ -9397,7 +7336,7 @@
 	}
 
 /***/ },
-/* 86 */
+/* 85 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -9450,7 +7389,7 @@
 	}
 
 /***/ },
-/* 87 */
+/* 86 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -9461,8 +7400,8 @@
 
 	var Stream = __webpack_require__(0);
 	var MulticastSource = __webpack_require__(5).MulticastSource;
-	var EventTargetSource = __webpack_require__(83);
-	var EventEmitterSource = __webpack_require__(82);
+	var EventTargetSource = __webpack_require__(82);
+	var EventEmitterSource = __webpack_require__(81);
 
 	exports.fromEvent = fromEvent;
 
@@ -9491,7 +7430,7 @@
 	}
 
 /***/ },
-/* 88 */
+/* 87 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -9541,7 +7480,7 @@
 	}
 
 /***/ },
-/* 89 */
+/* 88 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -9618,7 +7557,7 @@
 	};
 
 /***/ },
-/* 90 */
+/* 89 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -9693,7 +7632,7 @@
 	}
 
 /***/ },
-/* 91 */
+/* 90 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -9738,7 +7677,7 @@
 	}
 
 /***/ },
-/* 92 */
+/* 91 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -9818,7 +7757,7 @@
 	}
 
 /***/ },
-/* 93 */
+/* 92 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -9864,7 +7803,7 @@
 	}
 
 /***/ },
-/* 94 */
+/* 93 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -9923,7 +7862,7 @@
 	};
 
 /***/ },
-/* 95 */
+/* 94 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -9965,7 +7904,7 @@
 	module.exports = { create: updateAttrs, update: updateAttrs };
 
 /***/ },
-/* 96 */
+/* 95 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -9992,7 +7931,7 @@
 	module.exports = { create: updateClass, update: updateClass };
 
 /***/ },
-/* 97 */
+/* 96 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -10047,7 +7986,7 @@
 	module.exports = { create: updateEventListeners, update: updateEventListeners };
 
 /***/ },
-/* 98 */
+/* 97 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -10208,7 +8147,7 @@
 	module.exports = { pre: pre, create: create, destroy: destroy, post: post };
 
 /***/ },
-/* 99 */
+/* 98 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -10237,7 +8176,7 @@
 	module.exports = { create: updateProps, update: updateProps };
 
 /***/ },
-/* 100 */
+/* 99 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -10326,7 +8265,7 @@
 	module.exports = { create: updateStyle, update: updateStyle, destroy: applyDestroyStyle, remove: applyRemoveStyle };
 
 /***/ },
-/* 101 */
+/* 100 */
 /***/ function(module, exports, __webpack_require__) {
 
 	// jshint newcap: false
@@ -10335,7 +8274,7 @@
 
 	var VNode = __webpack_require__(15);
 	var is = __webpack_require__(10);
-	var domApi = __webpack_require__(94);
+	var domApi = __webpack_require__(93);
 
 	function isUndef(s) {
 	  return s === undefined;
@@ -10626,7 +8565,7 @@
 	module.exports = { init: init };
 
 /***/ },
-/* 102 */
+/* 101 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -10671,7 +8610,7 @@
 	};
 
 /***/ },
-/* 103 */
+/* 102 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {'use strict';
@@ -10684,54 +8623,11 @@
 
 	var _most = __webpack_require__(4);
 
-	var _code = __webpack_require__(39);
+	var _code = __webpack_require__(38);
 
 	var _code2 = _interopRequireDefault(_code);
 
-	var _mobx = __webpack_require__(38);
-
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	monadState = (0, _mobx.observable)(O);
-
-	var person = (0, _mobx.observable)({
-	  firstName: "Maarten",
-	  lastName: "Luther"
-	});
-	person.$mobx.observe(function (v) {
-	  return console.log(v);
-	});
-	person.firstName = "Andy";
-	person.firstName = "Jill";
-
-	/*
-	var arTest = computed(() => {
-	  setInterval(function() {
-	    mM23.ret([O.mM23.x[1], O.mM23.x[0] + O.mM23.x[1]]);
-	  },2000  )
-	});
-
-	arTest.observe(v => console.log('computed mM23', v));
-	mM23.ret([0,1]);
-	*/
-
-	var sumTest = (0, _mobx.computed)(function () {
-	  return O.mM22.x + O.mM23.x;
-	});
-	sumTest.observe(function (v) {
-	  return console.log('computed ', v);
-	});
-
-	(0, _mobx.autorun)(function () {
-	  return console.log(' O.mM27.x ', O.mM27.x);
-	});
-	mM24.ret(5);
-	mM25.ret(10);
-	mM27.ret(O.mM24.x + O.mM25.x);
-	(0, _mobx.autorun)(function () {
-	  return console.log('O.mM24 + O.mM25: ', O.mM24.x + O.mM25.x);
-	});
-	mM24.ret(10);
 
 	function createWebSocket(path) {
 	  var host = window.location.hostname;
@@ -10751,15 +8647,15 @@
 	  });
 	};
 
-	window.onload = function (event) {
-	  console.log('onopen event: ', event);
-	  document.querySelector('input#login').focus();
-	  mM$fib5.ret([0, 1, 1]);
-	  mM$prime5.ret([[2], 3, 3]);
-	  mM$primeFibs.ret([[2], 3, 3, [2, 3]]);
-	};
-
 	function main(sources) {
+
+	  window.onload = function (event) {
+	    console.log('onopen event: ', event);
+	    document.querySelector('input#login').focus();
+	    mM$fib5.ret([0, 1, 1]);
+	    mM$prime5.ret([[2], 3, 3]);
+	    mM$primeFibs.ret([[2], 3, 3, [2, 3]]);
+	  };
 
 	  mMZ1.bnd(function (v) {
 	    return O.mMt1.bnd(add, v, mMt1).bnd(cube, mMt2).bnd(function () {
@@ -10774,11 +8670,10 @@
 	  });
 
 	  var messages$ = sources.WS.map(function (e) {
-	    console.log('******____&&&&&&&&&&&&&&&&&&&____**************_In messages$  e.data is: ', e.data);
 	    mMtem.ret(e.data.split(',')).bnd(function (v) {
 	      mMZ10.bnd(function () {
 	        mM$2.ret([]);
-	        mMcurrentRoll.ret([v[3], v[4], v[5], v[6]]);
+	        mMcurrentRoll.ret([v[3], v[4], v[5], v[6]]).bnd(mM$1.ret);
 	      });
 	      mMZ11.bnd(function () {
 	        return updateScoreboard(v[3]);
@@ -11056,7 +8951,7 @@
 	    console.log('In numClickAction$ O.mM3.x and e are: ', O.mM3.x, e);
 	    if (O.mM3.x.length < 2) {
 	      O.mM3.bnd(push, e.target.innerHTML, O.mM3);
-	      O.mMcurrentRoll.bnd(splice, e.target.id, 1, mMcurrentRoll);
+	      O.mMcurrentRoll.bnd(splice, e.target.id, 1, mMcurrentRoll).bnd(mM$1.ret);
 	      if (O.mM3.x.length === 2 && O.mM8.x !== 0) {
 	        updateCalc();
 	      }
@@ -11127,7 +9022,7 @@
 	  mM$fib5.stream.observe(function (v) {
 	    var x = v.splice(0, v.length);
 	    if (x[1] < x[2]) {
-	      monadState.mMfibs8.bnd(push, x[0] + x[1], mMfibs8);
+	      O.mMfibs8.bnd(push, x[0] + x[1], mMfibs8);
 	      mM$fib5.ret([x[1], x[0] + x[1], x[2]]);
 	    } else {
 	      var ar = O.mMfibs8.x.slice(0, O.mMfibs8.x.length - 1);
@@ -11216,8 +9111,17 @@
 	    socket.send('TD#$42' + ',' + O.mMgroup.x.trim() + ',' + O.mMname.x.trim() + ',' + '@' + str);
 	  });
 
-	  (0, _mobx.autorun)(function () {
-	    O.mMcurrentRoll.x;
+	  var mM$1Action$ = mM$1.stream.observe(function (v) {
+	    console.log('<><><><><><><><><><><><><><><<><><><><><><><><><> In mM$Action$ v is ', v);
+	    if (Array.isArray(v)) {
+	      document.getElementById('0').innerHTML = O.mMcurrentRoll.x[0];
+	      document.getElementById('1').innerHTML = O.mMcurrentRoll.x[1];
+	      document.getElementById('2').innerHTML = O.mMcurrentRoll.x[2];
+	      document.getElementById('3').innerHTML = O.mMcurrentRoll.x[3];
+	      cleanup();
+	    } else {
+	      console.log('O.mM$1.stream is providing defective data to O.mM$1Action');
+	    }
 	  });
 
 	  var testZ = sources.DOM.select('#testZ').events('click');
@@ -11270,33 +9174,39 @@
 	    }
 	  });
 
-	  var spread1Press$ = sources.DOM.select('#spread1').events('change');
+	  var dummyClick$ = sources.DOM.select('#dummy').events('click');
 
-	  var spread1PressAction$ = spread1Press$.map(function (e) {
-	    O.mMcount.ret(e.target.value);
+	  var dummyAction$ = dummyClick$.map(function (e) {
+	    O.mMdummy.bnd(add, 1, mMdummy);
+	    console.log('<><><><><><><><><> In dummyAction$ e is: ', e);
+	    console.log(document.getElementById('dummy').click);
+	    console.log('<><><><><><><><><>');
+
+	    var next = O.mM23.x[O.mM23.x.length - 1] * 1 + O.mM23.x[O.mM23.x.length - 2] * 1;
+	    O.mM23.bnd(push, next, mM23);
+	    document.getElementById('dummy2').innerHTML = O.mM23.x;
+	  });
+
+	  /*
+	   const spread1Action$ = spread1Change$.map(e => {
+	    O.mMcount.ret(e.target.value)
 	    var A = e.target.value;
 	    var B = O.mMcount2.x;
-	    mMspreadsheet.ret([A + ' + ' + B + ' = ' + (A * 1 + B * 1), A + ' - ' + B + ' = ' + (A - B), A + ' * ' + B + ' = ' + A * B, A + ' / ' + B + ' = ' + A / B]).bnd(log);
+	    mMspreadsheet.ret(
+	   [A + ' + ' + B + ' = ' + (A*1 + B*1),  
+	    A + ' - ' + B + ' = ' + (A - B),  
+	    A + ' * ' + B + ' = ' + (A * B),  
+	    A + ' / ' + B + ' = ' + (A / B)])
+	    .bnd(log);
+	    document.getElementById('dummy').click();
 	  });
-
-	  var spread2Press$ = sources.DOM.select('#spread2').events('change');
-
-	  var spread2PressAction$ = spread2Press$.map(function (e) {
-	    O.mMcount2.ret(e.target.value);
-	    var A = O.mMcount.x;
-	    var B = e.target.value;
-	    mMspreadsheet.ret([A + ' + ' + B + ' = ' + (A * 1 + B * 1), A + ' - ' + B + ' = ' + (A - B), A + ' * ' + B + ' = ' + A * B, A + ' / ' + B + ' = ' + A / B]).bnd(log);
-	  });
-
-	  (0, _mobx.autorun)(function () {
-	    console.log(O.mMspreadsheet.x);
-	  });
+	  */
 
 	  var newFibpress$ = sources.DOM.select('input#fibF').events('keypress');
 
 	  var newFibAction$ = newFibpress$.map(function (e) {
 	    if (e.keyCode == 13) {
-	      var a = (0, _mobx.observable)(1);
+	      var a = observable(1);
 	      var ar = ['0, 1'];
 	      var k = 0;
 	      a.observe(function (b, c) {
@@ -11314,30 +9224,11 @@
 	    }
 	  });
 
-	  var calcStream$ = (0, _most.merge)(newFibAction$, spread1PressAction$, spread2PressAction$, fibKeyPressAction5$, primeKeyPressAction5$, fibPressAction$, runTestAction$, quadAction$, testWAction$, testZAction$, testQAction$, edit1Action$, edit2Action$, colorAction$, deleteAction$, newTaskAction$, chatClickAction$, gameClickAction$, todoClickAction$, captionClickAction$, groupPressAction$, rollClickAction$, messagePressAction$, loginPressAction$, messages$, numClickAction$, opClickAction$);
+	  var calcStream$ = (0, _most.merge)(dummyAction$, newFibAction$, fibKeyPressAction5$, primeKeyPressAction5$, fibPressAction$, runTestAction$, quadAction$, testWAction$, testZAction$, testQAction$, edit1Action$, edit2Action$, colorAction$, deleteAction$, newTaskAction$, chatClickAction$, gameClickAction$, todoClickAction$, captionClickAction$, groupPressAction$, rollClickAction$, messagePressAction$, loginPressAction$, messages$, numClickAction$, opClickAction$);
 
 	  return {
 	    DOM: calcStream$.map(function () {
-	      return (0, _dom.h)('div.content', [(0, _dom.h)('div#rightPanel', { style: { display: 'none' } }, [(0, _dom.h)('span#tog', [(0, _dom.h)('button#game', { style: { fontSize: '16px' } }, 'TOGGLE GAME'), (0, _dom.h)('span.tao', ' '), (0, _dom.h)('button#todoButton', { style: { fontSize: '16px' } }, 'TOGGLE TODO LIST'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('button#chat2', { style: { fontSize: '16px' } }, 'TOGGLE CHAT'), (0, _dom.h)('span.tao', ' '), (0, _dom.h)('button#caption', { style: { fontSize: '16px' } }, 'TOGGLE CAPTION')]), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('div#gameDiv', [(0, _dom.h)('span', 'Group: ' + O.mMgroup.x), (0, _dom.h)('br'), (0, _dom.h)('span', 'Goals: ' + O.mMgoals.x), (0, _dom.h)('br'), (0, _dom.h)('span', 'Name: ' + O.mMname.x), (0, _dom.h)('br'), (0, _dom.h)('span', 'player[score][goals]'), (0, _dom.h)('div', O.mMscoreboard.x)]), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('div#todoDiv', [(0, _dom.h)('div#taskList', O.mMtaskList.x), (0, _dom.h)('span', 'Author, Responsible Person, Task: '), (0, _dom.h)('input.newTask')]), (0, _dom.h)('br'), (0, _dom.h)('span#alert'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('div#chatDiv', [(0, _dom.h)('div#messages', [(0, _dom.h)('span', 'Message: '), (0, _dom.h)('input.inputMessage'), (0, _dom.h)('div', O.mMmsg.x)])])]), (0, _dom.h)('div.leftPanel', { style: { width: '60%' } }, [(0, _dom.h)('br'), (0, _dom.h)('a.tao', { props: { href: '#common' } }, 'Common Patterns'), (0, _dom.h)('a.tao', { props: { href: '#tdList' } }, 'Todo List Explanation'), (0, _dom.h)('a.tao', { props: { href: '#monads' } }, 'Why Call Them Monads'), (0, _dom.h)('div#captionDiv', [(0, _dom.h)('h1', 'Motorcycle.js With JS-monads'), (0, _dom.h)('span.tao1', ' A shared, persistent todo list, '), (0, _dom.h)('br'), (0, _dom.h)('span.tao1', ' A websockets simulated dice game, '), (0, _dom.h)('br'), (0, _dom.h)('span.tao1', ' Group chat rooms and more demonstrations of efficient, '), (0, _dom.h)('br'), (0, _dom.h)('span.tao2', ' maintainable code using Motorcycle.js and JS-monads.  ')]), (0, _dom.h)('br'), (0, _dom.h)('span.tao', 'This is a '), (0, _dom.h)('a', { props: { href: "https://github.com/motorcyclejs", target: "_blank" } }, 'Motorcycle.js'), (0, _dom.h)('span', ' application. Motorcycle.js is '), (0, _dom.h)('a', { props: { href: "https://github.com/cyclejs/core", target: "_blank" } }, 'Cycle.js'), (0, _dom.h)('span', ' using '), (0, _dom.h)('a', { props: { href: "https://github.com/cujojs/most", target: "_blank" } }, 'Most'), (0, _dom.h)('span', ' , '), (0, _dom.h)('a', { props: { href: "https://github.com/TylorS/most-subject", target: "_blank" } }, 'Most-subject'), (0, _dom.h)('span', ' and '), (0, _dom.h)('a', { props: { href: "https://github.com/paldepind/snabbdom", target: "_blank" } }, 'Snabbdom'), (0, _dom.h)('span', ' instead of RxJS and virtual-dom. Reactive evaluation of expression is made possible by '), (0, _dom.h)('a', { props: { href: "https://github.com/mobxjs/mobx", target: "_blank" } }, 'MobX'), (0, _dom.h)('span', ' . The code for this repository is at '), (0, _dom.h)('a', { props: { href: "https://github.com/dschalk/JS-monads-stable", target: "_blank" } }, 'JS-monads-stable'), (0, _dom.h)('div#gameDiv2', { style: { display: 'none' } }, [(0, _dom.h)('br'), (0, _dom.h)('span', ' Here are the basic rules:'), (0, _dom.h)('p', 'RULES: If clicking two numbers and an operator (in any order) results in 20 or 18, the score increases by 1 or 3, respectively. If the score becomes 0 mod 5, 5 points are added. A score of 25 results in one goal. That can only be achieved by arriving at a score of 20, which jumps the score to 25. Directly computing 25 results in a score of 30, and no goal. Each time ROLL is clicked, one point is deducted. Three goals wins the game. '), (0, _dom.h)('button#0.num', O.mMcurrentRoll.x[0]), (0, _dom.h)('button#1.num', O.mMcurrentRoll.x[1]), (0, _dom.h)('button#2.num', O.mMcurrentRoll.x[2]), (0, _dom.h)('button#3.num', O.mMcurrentRoll.x[3]), (0, _dom.h)('br'), (0, _dom.h)('button#4.op', 'add'), (0, _dom.h)('button#5.op', 'subtract'), (0, _dom.h)('button#5.op', 'mult'), (0, _dom.h)('button#5.op', 'div'), (0, _dom.h)('button#5.op', 'concat'), (0, _dom.h)('br'), (0, _dom.h)('div#dice', { style: { display: 'none' } }, [(0, _dom.h)('button.roll', 'ROLL')])]), (0, _dom.h)('div.winner', O.mMgoals2.x + ''), (0, _dom.h)('div#log1', [(0, _dom.h)('p', 'IN ORDER TO SEE THE DEMONSTRATIONS, YOU MUST ENTER SOMETHING BELOW.'), (0, _dom.h)('span', 'Name: '), (0, _dom.h)('input#login', { props: { placeholder: "focus on; start typing" } })]), (0, _dom.h)('p', O.mM6.x.toString()), (0, _dom.h)('div#log2', { style: { display: 'none' } }, [(0, _dom.h)('span', 'Change group: '), (0, _dom.h)('input#group')]), (0, _dom.h)('p', O.mMsoloAlert.x), (0, _dom.h)('p', 'People who are in the same group, other than solo, share the same todo list, messages, and simulated dice game. In order to see any of these, you must establish an identity on the server by logging in. The websockets connection would terminate if the first message the server receives does not succefully participate in the login handshake. '), (0, _dom.h)('hr'), (0, _dom.h)('h1', 'The Monads'), (0, _dom.h)('p', ' There are three basic types of monads: Monad, MonadIter, and MonadStream. Instances of Monad have a method called "bnd" which takes a function and possibly other values as arguments. I have not created a comprehensive library of functions for bnd(), but most of the functions used in this demonstration are in the NPM package "js-monads", and all of them are in the Github repository. I create functions to suit specific purposes and I assume that anyone who uses these monads, or their own variations on the theme, will likewise want to create functions to suit their specific purposes. '), (0, _dom.h)('p', ' There is a basic pattern that I have found useful for computations and manipulating objects, including arrays. add() and cube() are examples of the pattern. They will be defined and used in the examples below. '), (0, _dom.h)('h2', 'Monad'), _code2.default.monad, (0, _dom.h)('p', 'The following statements create instances of Monad named "m" with initial values of "some value": var m = new Monad("some value", "m") and ret("some value", "m"). Monad instances maintain state in the unique, mutable, global object named "O". Where there is changing state, it is not practical to avoid mutating something. My choices narrowed down to the window object or an attribute of window like O. O seemed like the better choice. It is a place to keep the most recent versions of named monads. Earlier versions of named monads can persist elsewhere, or be left for the gargage collector.   '), (0, _dom.h)('p', ' In the examples shown on this page, the initial values of instances of Monad remain unchaged. The ret() method places updated instances on O. The instances on O are never mutated. For any instance of Monad named m with id "m" and value v (i.e., m.x == v is true), m.ret(v2) creates a new attribute of O with key "m" or, if O.m already exists, m.ret(v2) mutates O by replacing its m attribute\'s value. The monad O.m is not mutated, so any O.m that is replaced will persist if there is a reference to it, or will be subject to garbage collection if there is not. '), (0, _dom.h)('h3', 'Examples'), (0, _dom.h)('p', ' Here are the definitions of ret(), add(), and cube(): '), _code2.default.ret_add_cube, (0, _dom.h)('p', ' calling ret() with only one argument creates an anonymous global monad. There is no reference to it, so when a computation sequence using it terminates, it becomes eligeble for garbage collection. Although the monad\'s scope is global, it can\'t be clobbered because it has no name (no variable referring to it). '), (0, _dom.h)('p', ' As you see, cube() and ret() are overloaded functions. Here are some examples of various ways of using them: '), (0, _dom.h)('span.red3', 'cube(3)'), (0, _dom.h)('span.td2', ' creates a useless anonymous monad with x == 27 and id == "anonymous". '), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('span.red3', 'cube(3).bnd(m.ret)'), (0, _dom.h)('span.td2', ' O.m.x == 27 and O.m.id == "m". '), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('span.red3', 'cube(5, m)'), (0, _dom.h)('span.td2', ' where m is a monad leaves m unchanged, O.m.x == 125, and O.m.id == "m". '), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('span.red3', 'cube(5).bnd(m.ret)'), (0, _dom.h)('span.td2', ' is equivalent to the previous example. m is unchanged and O.m.x == 125. '), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('span.red3', 'ret(5).bnd(cube).bnd(m.ret)'), (0, _dom.h)('span.td2', ' is equivalent to the previous two examples. O.m.x == 125. '), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('span.red3', 'm.ret(4).bnd(cube)'), (0, _dom.h)('span.td2', 'causes O.m.x == 4, and creates an anonymous monad with x == 64. '), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('span.red3', 'm.ret(4).bnd(cube, m)'), (0, _dom.h)('span.td2', ' leaves m unchanged, O.m.x == 64, and O.m.id == "m". '), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('span.tao', ' The convention "a == b" in this presentation signifies that a == b is true. By the way, if you want to change the value of m, all you have to do is call '), (0, _dom.h)('span.red3', 'ret(v, "m")'), (0, _dom.h)('span', ' to cause m.x == v and m.id = "m". This is the definition of add(): '), _code2.default.add, (0, _dom.h)('span.red3', 'add(3, 4)'), (0, _dom.h)('span.td2', ' creates a useless anonymous monad with x == 7 and id == "anonymous". '), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('span.red3', 'add(3, 4).bnd(m.ret)'), (0, _dom.h)('span.td2', ' causes O.m.x == 7 and O.m.id == "m". '), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('span.red3', 'add(3, 4, m)'), (0, _dom.h)('span.td2', ' is equivalent to the prior example. The result is O.m.x == 7, and O.m.id == "m". '), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('span.red3', 'm.ret(0).bnd(add, 3).bnd(cube)'), (0, _dom.h)('span.td2', 'leaves m unchanged, O.m.x == 0, and creates an anonymous monad with x == 27. '), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('span.red3', 'ret(0).bnd(add, 3).bnd(cube).bnd(m.ret)'), (0, _dom.h)('span.td2', 'causes O.m.x == 27, and O.m.id = "m". '), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('span.red3', 'ret(0).bnd(add, 2, m).bnd(cube, m2)'), (0, _dom.h)('span.td2', ' where m, and m2 are monads causes O.m.x == 2, and O.m2.x == 8. '), (0, _dom.h)('br'), (0, _dom.h)('p#iterLink', ' O holds the current state of the monads. This is convenient. For example, mMcurrentList.ret() is seen in the application code whereever a todo list is created, removed, or altered. O.mMcurrentList.x sits in the virtual DOM, making sure that the todo list display is is always current. '), (0, _dom.h)('h2', 'MonadIter'), (0, _dom.h)('p', 'For any instance of MonadIter, say "m", the statement "m.bnd(func)" causes m.p == func to be true. The statement "m.release(...args) causes p(...args) to execute. Here is the definition: '), _code2.default.monadIt, (0, _dom.h)('p', 'As shown later on this page, MonadIter instances control the routing of incoming websockets messages and the flow of action in the simulated dice game. '), (0, _dom.h)('p', 'The following example illustrates the use of release() with an argument. It also shows lambda expressions being provided as arguments for bnd(). The initial values of mMt1, mMt2, and mMt3 are 0, 0, and "" respectively. When this page loads, the following code runs: '), _code2.default.testZ, (0, _dom.h)('p', ' add() and cube() are defined in the Monad section (above). If you click "mMZ1.release(1)" several times, the code (above) beginning with "mMZ1" will run several times, each time with v == 1. The result, O.mMt3.x, is shown below the button. mMZ1.p (bnd()\'s argument) remains constant while mMZ1.release(1) is repeatedly called. '), (0, _dom.h)('button#testZ', 'mMZ1.release(1)'), (0, _dom.h)('p.code2', O.mMt3.x), (0, _dom.h)('span', 'Refresh button: '), (0, _dom.h)('button#testQ', 'mMt1.ret(0).bnd(mMt2.ret)'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('span.tao', '  You can call '), (0, _dom.h)('span.green', 'mMZ2.release(v)'), (0, _dom.h)('span', ' by entering a value for v below: '), (0, _dom.h)('br'), (0, _dom.h)('span', 'Please enter an integer here: '), (0, _dom.h)('input#testW'), (0, _dom.h)('p', ' Here is another example. It demonstrates lambda expressions passing values to a remote location for use in a computation. If you enter three numbers consecutively below, I\'ll call them a, b, and c, then the quadratic equation will be used to find solutions for a*x**2 + b*x + c = 0. The a, b, and c you select might not have a solution. If a and b are positive numbers, you are likely to see solutions if c is a negative number. For example, 12, 12, and -24 yields the solutions 1 and -2. '), (0, _dom.h)('p.code2#quad4', O.mMquad1.x), (0, _dom.h)('span.red2', O.mMquad2.x), (0, _dom.h)('span.red2', O.mMquad3.x), (0, _dom.h)('br'), (0, _dom.h)('span.tao', 'Run mMZ3.release(v) three times for three numbers. The numbers are a, b, and c in ax*x + b*x + c = 0: '), (0, _dom.h)('input#quad'), (0, _dom.h)('p', 'Here is the code:'), _code2.default.quad, (0, _dom.h)('span#tdList'), (0, _dom.h)('h2', 'MonadStream'), _code2.default.monadStr, (0, _dom.h)('span.tao', ' MonadStream instances acquire values with the "ret()" method, placing them in the "stream" attribute. The stream depends on the '), (0, _dom.h)('a', { props: { href: "https://github.com/TylorS/most-subject/", target: "_blank" } }, 'most-subject'), (0, _dom.h)('p', ' The next example uses MonadStream instances to display an array of Fibonacci numbers, an array of Prime numbers, and an array of prime Fibonacci numbers. The number entered into the box below puts an upper bound on the arrays. '), (0, _dom.h)('p', ' Enter an integer below to run the code. '), (0, _dom.h)('input#fib3335'), (0, _dom.h)('p#fib5.red4'), (0, _dom.h)('p#prime5.red4'), (0, _dom.h)('p#primeFibs.red4'), (0, _dom.h)('p', ' Here is the code for the memoizing Fibonacci number generator:   '), _code2.default.primeFib3, (0, _dom.h)('p', ' As you see, the mM$fib5 observer receives data when mMitterFib5 is released. Entering a number in the box (above) releases mMitterFib5 with the number that was entered. When a number is received, I called it "x", a test determines if the largest number in O.mMfibs8.x is smaller than x. If it is, mM$fib5 is called to run computations until the largest number in O.mMfibs8.x exceeds x. '), (0, _dom.h)('p', ' mM$fib5 releases mMitterPrime5, which is the entry point for the prime number generator. An array containing a Fibonacci number and an array of Fibonacci numbers is included in mMitterPrime5.release([num, array]). The array of Fibonacci numbers is used in the final calculation which determines which of the Fibonacci numbers are prime. Here is the code that receives that information and causes the array of prime numbers and the array of prime Fibonacci numbers to be displayed: '), _code2.default.primeFib4, (0, _dom.h)('p', ' When the web page loads, the mM$fib5 and mM$prime5 observers are initiated with the following expressions: '), (0, _dom.h)('pre', '    mM$fib5.ret( [ 0, 1, 1 ] );\n    mM$prime5.ret( [ [2], 3, 3 ] );\n'), (0, _dom.h)('h2', 'Hot Monad State'), (0, _dom.h)('p', ' I made the global object "O" observable with the following two lines of code: '), (0, _dom.h)('pre', '    import {observable, autorun} from \'mobx\'\n    monadState = observable(O);    '), (0, _dom.h)('p', ' So now, whenever an instance of Monad, say m, calls its ret() method, O gets mutated and any expression containing O.m can be made to automatically update. In release v1.0 of this project, the dice game display updated every time mM$1.ret() was called. mM$1 is an instance of MonadStream, so calling mM$1.ret(v) for any value v put v in mM$1.stream. mM$1.stream mapped its latest value into the update function. Now, updates occur whenever mMcurrentRoll.ret() is called. That is because calling mMcurrentRoll.ret() swaps out O.mMcurrentRoll, and this mutation of "O" in combination with the MobX autorun function (shown below) causes all expressions involving O.mMcurrentRoll to execute or update. O.mMcurrentRoll.x is a permanent fixture of the DOM object returned by main. The Motorcycle diff and render execute whenever O.mMcurrentRoll.x changes. Users see the browser display change each time they click on a number because clicking a number causes mMcurrentRoll.ret() to execute. Here is line of code that makes this happen: '), (0, _dom.h)('pre', '    autorun(() => {O.mMcurrentRoll.x}); '),
-
-	      /*
-	      h('p', ' To illustrate the way monads on "O" can be used in combination with the MobX autorun function, here is a spreadsheet-like calculator: '  ),
-	      code.spreadsheet2,
-	      h('p', ' And here is where you can enter numbers: ' ),
-	      h('span', 'Enter Numbers: ' ), 
-	      h('input#spread1', ), 
-	      h('input#spread2', ), 
-	      h('p#spreadsheet5',   O.mMspreadsheet.x[0] ), 
-	      h('p#spreadsheet6',   O.mMspreadsheet.x[1] ), 
-	      h('p#spreadsheet7',   O.mMspreadsheet.x[2] ), 
-	      h('p#spreadsheet8',   O.mMspreadsheet.x[3] ), 
-	      h('p', ' This could have been done just as well by merging a stream into the main stream that feed the virtual DOM. But updating the game display with MobX is simpler than updating with a stream. '  ),
-	      h('p', ' The first Github release of JS-monads-stable, release v1.0, an instance of MonadStream was responsible for updating the virtual DOM.  In this release, version v1.1, the MobX "autorun()" function is responsible for updates. The observable monad state object "O" really shines here.  Calling mMcurrentRoll.ret() on new or modified arrays of numbers prompts autorun to update the number display. The code is a simple one liner. Here it is:  '   ),
-	      h('pre', `    autorun(() => {O.mMcurrentRoll.x}); ` ), 
-	      h('p', ' It doesn\'t get much easier than that. O.mMcurrentRoll.x is a permanent feature of the virtual DOM, and when it changes, Motorcycle re-renders the affected part of the DOM.  There is more about updating the number display in the following section. '  ),
-	      */
-
-	      (0, _dom.h)('h2', 'Updating the DOM'), (0, _dom.h)('h3', 'Todo List DOM Updates'), (0, _dom.h)('p', ' When users do anything to the todo list, MonadStream instance mM$taskList runs its ret() method on the modified String representation of the list, causing the string to be added to mM$taskList.stream. mM$taskList.stream has only one subscriber, taskAction$, whose only purpose it to send the string representation of the todo list to the server. The server updates its persistent file and distributes a text representation of the updated todo list to all group members. Each group member receives the todo list as a string and parses it into a DOM node tree that is merged into the stream that updates the virtual DOM. All Todo List side effects can be traced to:'), _code2.default.todoStream, (0, _dom.h)('span', ' Just search for "mM$taskList.ret" to find where all todo list changes were initiated. The following link takes you to a more detailed explanation of the todo list. '), (0, _dom.h)('a', { props: { href: '#tdList2' } }, 'Detailed Todo List Explanation'), (0, _dom.h)('br'), (0, _dom.h)('h3', 'Dice Game DOM updates'), (0, _dom.h)('p', ' As mentioned above, because "O" is reactive, the following code is all that is needed to make virtual DOM updates occur automatically. This is much simpler than using streams, callbacks, or anything else. The overhead involved in uploading and using the MobX library doesn\'t seem to affect performance. A cdn version of the MobX library can be accessed by the browser, making uploading unnecessary. Maybe I\ll perform some benchmark tests one of these days.  '), (0, _dom.h)('pre', '    autorun(() => {O.mMcurrentRoll.x}); '), (0, _dom.h)('p', ' mMcurrentRoll.ret() is called only when (1) a new dice roll comes in from the server, (2) when a player clicks a number, and (3) when clicking a number or operator results in a computation being performed. These are the three things that require a DOM update. When a player clicks a number, it disappears from number display. When a computation is performed, the result is added to the number display, unless the result is 18 or 20. A result of 18 or 20 results in a new roll coming in from the server '), (0, _dom.h)('p', '    '), (0, _dom.h)('hr'), (0, _dom.h)('h2', 'Concise Code Blocks For Information Control'), (0, _dom.h)('p', ' Incoming websockets messages trigger updates to the game display, the chat display, and the todo list display. The members of a group see what other members are doing; and in the case of the todo list, they see the current list when they sign in to the group. When any member of a group adds a task, crosses it out as completed, edits its description, or removes it, the server updates the persistent file and all members of the group immediately see the revised list.  '), (0, _dom.h)('p', 'The code below shows how incoming websockets messages are routed. For example, mMZ10.release() is called when a new dice roll (prefixed by CA#$42) comes in.   '), _code2.default.messages, (0, _dom.h)('p', ' The "mMZ" prefix designates instances of MonadIter. The bnd() method assigns its argument to the "p" attribute. "p" runs if and when the release() method is called. The next() function releases a specified MonadIter instance when the calling monad\'s value matches the specified value. next2() releases the specified monad when the specified condition returns true. The release method in next() has no argument, but next does take arguments, as illustrated below.'), (0, _dom.h)('span.tao', ' The incoming messages block is just a syntactic variation of a switch block, but that isn\'t all that MonadIter instances can do. They can provide fine-grained control over the lazy evaluation of blocks of code. Calling release() after a function completes some task provides Promise-like behavior. Error handling is optional. The MonadInter release(...args) method facilitates sequential evaluation of code blocks, remeniscent of video and blog explanations of ES6 iterators and generators. I prefer doing it with MonadIter over "yield" and "next". For one thing, ES6 generator "yield" blocks must be evaluated in a predetermined order. This link takes you back to the MonadIter section with interactive examples of the use of release() with arguments.  '), (0, _dom.h)('a#tdList2', { props: { href: '#iterLink' } }, 'release() with arguments'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('a', { props: { href: '#top' } }, 'Back To The Top'), (0, _dom.h)('br'), (0, _dom.h)('h3', 'The Todo List'), (0, _dom.h)('p', ' Next, I\'ll go over some features of the todo list application. This will show how Motorcycle.js and the monads work together.'), (0, _dom.h)('p', 'Creation Of A Task: If you enter something like Susan, Fred, Pay the water bill, the editable task will appear in your browser and in the browsers of any members a group you might have created or joined. If you have loaded this page in another tab and changed to the same group in both, you will see the task in both tabs, barring some malfunction. The task has a delete button, an edit button, and a "Completed" checkbox. It shows that Susan authorized the task and Fred is responsible for making sure it gets done. Instead of entering an authority and responsible person, you can just enter two commas before the task description. Without two commas, a message appears requesting more information. This is how Motorcycle.js handles the creation of a new task: '), _code2.default.newTask, (0, _dom.h)('p', ' mM$taskList is the todo application\'s worker function. Every time it executes its ret() method, the argument to ret() is added to its stream, causing the following code to run: '), _code2.default.mM$task, (0, _dom.h)('p', 'mM$taskList caries a string representing the task list. mMtaskList.x.split(",") produces an array whose length is a multiple of six. Commas in the task description are replaced by "$*$*$" so split(",") will put the entire task description in a single element. Commas are re-inserted when the list arrives from the server for rendering. Although a task list is a nested virtual DOM object (Snabbdom vnode), it can be conveniently passed back and forth to the server as a string without resorting to JSON.stringify. Its type is Text on the server and String in the front end, becomming a virtual DOM node only once, when it arrives from the server prefixed by "DD#$42" causing "process(e.data) to execute. Here is process(): '), _code2.default.process, (0, _dom.h)('span.tao', 'As you see, the string becomes a list of six-element objects, then those objects are used to create a Snabbdom vnode which is handed to mM$taskList.ret() leading to the update of O.mMtaskList. O.mMtaskList.x sits permanently in the main virtual DOM description. When its value gets refreshed, the DOM re-renders because taskStream$ is merged into the stream that is mapped into the virtural DOM description inside the object returned by "main". "main" and "sources" are the arguments provided to Cycle.run(). "sources" is the argument provided to "main". It is an array of drivers. The code is at '), (0, _dom.h)('a', { props: { href: "https://github.com/dschalk/JS-monads-stable" } }, 'https://github.com/dschalk/JS-monads-stable'), (0, _dom.h)('br'), (0, _dom.h)('p', ' Clicking "Completed": When the "Completed" button is clicked, the following code runs:         '), _code2.default.colorClick, (0, _dom.h)('p', 'O.mMtaskList is split into an array. Every sixth element is the start of a new task. colorAction$ toggles the second, third, and fourth element in the task pinpointed by "index" * 6. getIndex finds the index of the first and only the element whose task description matches the one that is being marked "Completed". I say "only" because users are prevented from adding duplicate tasks. After the changes are made, the array of strings is reduced to one string and sent to the server when mM$taskList.ret() updates mM$taskList.stream triggering . '), (0, _dom.h)('p', ' This is the code involved in editing a task description: '), _code2.default.edit, (0, _dom.h)('p', 'Clicking "Edit" causes a text box to be displayed. Pressing <ENTER> causes it to diappear. edit2Action$ obtains the edited description of the task and the index of the task iten and provides them as arguments to process. Process exchanges $*$*$ for any commas in the edited version and assigns the amended task description to the variable "task". O.mMtaskList.x is copied and split into an array. "index * 6" is replaced with "task" and the list of strings is reduced back to a single string and sent to the server for distribution. This pattern, - (1) split the string representation of the todo list into an array of strings, (2) do something, (3) reduce the list of strings back to a single string - is repeated when the "Delete" button is clicked. If the last item gets deleted, the server is instructed to delete the persistent file bearing the name of the group whose member deleted the last task. '), (0, _dom.h)('p#common', 'Cycle.js has been criticized for not keeping state in a single location, the way React.js does. Motorcycle.js didn\'t do it for me, or try to force me to do it, but it so happens that the current state of all active monads is in the object "O". I have written applications in Node.js and React.js, and I can say without a doubt that Motorcycle.js provides the best reactive interface for my purposes.  '), (0, _dom.h)('hr'), (0, _dom.h)('a', { props: { href: '#top' } }, 'Back To The Top'), (0, _dom.h)('h2', 'Common Patterns'), (0, _dom.h)('p', 'Anyone not yet familiar with functional programming can learn by studying the definition of the Monad bnd() method and considering the common patterns presented below. Often, we want to give a named monad the value of an anonymous monad returned by a monadic computation. Here are some ways to accomplish that: '), (0, _dom.h)('p', 'For any monads m1 and m2 with values a and b respectively (in other words, m1.x == a and m2.x == b return true), m1.bnd(m2.ret) provides m1\'s value to m2.ret() causing O.m2 to have m1\'s value. So, after m1.bnd(m2.ret), m1.x == a, m2.x == b, O.m2.x == a all return true. The definition of Monad\s bnd() method shows that the function m2.ret() operates on m1.x. m1.bnd(m2.ret) is equivalent to m2.ret(m1.x). The stand-alone ret() function can be used to alter the current value of m2, rather than altering the value of O.m2. Here is one way of accomplishing this: m1.bnd(x => ret(x,"m2"). These relationships are demonstrated in the following tests: '), (0, _dom.h)('pre', '             ret(\'m1Val\',\'m1\')\n             m1.x === \'m1Val\'   // true\n             ret(\'m2Val\', \'m2\')\n             m2.x === \'m2Val\'   // true\n\n             m1.bnd(m2.ret)\n             O.m2.x === \'m1Val\' // true\n             m2.x === \'m2Val\'   // still true\n\n             m1.ret(\'newVal\')\n             O.m1.bnd(v => ret(v, \'m2\'))\n             m2.x === \'newVal\'  // true\n             O.m2.x === \'m1Val\' // true   still the same  '), (0, _dom.h)('p', ' Here are two basic ways to create a monad named "m" with id = "m" and value v: '), (0, _dom.h)('pre', '  var m = new Monad(v, "m");\n  ret(v, "m");  '), (0, _dom.h)('p', 'Let m be a monad with id == "m" and value v. Its bnd() method can return an anonymous monad, a new named monad, or a previously existing monad containing the computation result. To illustrate, here is the definition of "add" along with five uses of it: '), _code2.default.add, (0, _dom.h)('p'), (0, _dom.h)('hr'), (0, _dom.h)('h3', 'Immutable Data And The State Object "O" '), (0, _dom.h)('p', 'The server updates scores in response to messages prefixed by "CG#$42". Each such message carries an integer specifying the amount of the change. The ServerState list of Client tupples is pulled from the game state TMVar and replaced by a new tupple whose Score field differs from the previous one.'), (0, _dom.h)('p', 'In front end code, mutating variables which are defined inside of functions often seems inocuous in applications written in an object oriented programming style. This is not the case in a Motorcycle.js application, where functions culminate in streams that merge into the stream that feeds the object returned by the main function, called "main" in this application. "sources" is an array of drivers. It is main\'s only argument, "sources" and "main" are Cycle.run()\'s arguments.'), (0, _dom.h)('p', '"main" and "Cycle.run" are called only once. In the cyclic steady state that results, a reference should say what it means and mean what it says. If it suddenly refers to something other than what the other half of the cycle thinks it is, there will be a temporary disconnect. This will promptly staighten out, but having temporary disconnects shakes confidence in the consistency and reliability of the program. I don\'t have an example of mutating an object causing an unexpected result or crash. I would appreciate it if someone would give me such an example. '), (0, _dom.h)('p', ' In this environment, avoiding mutations is recommended and I generally follow that recommendation. Mutations in this application are confined to the global state object "O" and MonadIter instances. In the examples above, the release() method moves the process forward to the next occurance of the MonadIter instance where the bnd() method provides a new function to the "p" attribute. The progressive morphing of "p" in MonadIter instances is desirable behavior, and I think that creating a clone each time it occurs would be a senseless waste of resources. Unless and until release() is called, the program is not affected by "p". If release() is called, the return value of p(...args) is returned, but "p" itself remains tucked away, never mixing with the flow of information through the program. The bnd() method is pure. Given the same argument, it will always do the same thing. It doesn\'t even return anything. It just updates the internal "p" attribute. This insulation of internal operations from the outer program is remeniscent of an important purpose of the Haskell IO monad. These are just hand-waving arguments for the harmlessness of letting the bnd() method mutate MonadIter instances, but I wanted to explain why I feel comfortable with letting the definition of MonadIter stand as it is.  '), (0, _dom.h)('p', 'All monad updates caused by the monad ret() method are stored in the object "O". When a monad m executes m.ret(v) for some value "v", m remains unchanged and the O attribute O.m is created or, if it already exists, is replaced by the update; i.e., O.m.x == v becomes true. Older versions of m are subject to garbage collection unless there is a reference to them or to an object (arrays are objects) containing m.  This is illustrated in the score-keeping code below.  All score changes are captured by mM13.ret(). Therefore, O.mM13.x is always the current score. Replacing monad attributes in O is vaguely analogous to swapping out ServerState in the Haskell server\'s state TMVar. Older versions of ServerState can be preserved in the server just as prior versions of O.mM13 can be preserved in the front end. '), _code2.default.updateCalc, (0, _dom.h)('p', 'The socket messages prompt the server to update its application state and to broadcast messages to all members of the group whose member sent the message to the server. Let\'s take another look at the way incoming messages are handled.'), _code2.default.messages, (0, _dom.h)('p#monads', ' Messages prefixed by CB#$42 are broadcast in response to CG#$42-prefixed messages from a browser. CB#$42 prefixes release mMZ11, causing the scoreboard to update. CA#$42-prefixed messages to the server result in CA#$42-prefixed messages carrying the next dice roll to be broadcast to the sender\'s group.  CE#$42 prefixed messages cause the release of mMZ14 which causes O.mMgoals2.x to change from an empty string to an anouncement of the name of the winner. '), (0, _dom.h)('hr'), (0, _dom.h)('a', { props: { href: '#top' } }, 'Back To The Top'), (0, _dom.h)('h3', 'Why Call Them Monads?'), (0, _dom.h)('p', 'For any monad m and function f mapping values to monads, inside the O object the bnd() method behaves like the Haskell >>= operator(pronounce "bind"). Sequences of calls to bnd() are associative; i,e, how computations are grouped does not matter. And the ret() method and ret() function provide a kind of left and right identity similar to the specification in the Haskell monad laws. Here are three functions we will use to illustrate this:'), _code2.default.mdem1, (0, _dom.h)('span.tao', ' The relationships being demonstrated here are readily derivable from the definition of Monads; but just for illustration, here are some examples tested with Mocha: '), (0, _dom.h)('a', { props: { href: "http://schalk.net:3056", target: "_blank" } }, 'Mocha Tests.'), (0, _dom.h)('p', ' That\'s about it. That\'s why I call them "monads". But JS-monads can do much more than vaguely mirror Haskell monad functionality. There is no attempt to constrain JS-monads with type classes, or with restrictions on the types of functions the bnd() method can accept. m.bnd(x => x**3) returns a number, not a JS-monad. It would be the end of the line for a chained sequence of computations; but that might be exactly what you want: a monadic chain of computations that spits out a number when it is done. '), (0, _dom.h)('a', { props: { href: '#top' } }, 'Back To The Top'), (0, _dom.h)('p'), (0, _dom.h)('p'), (0, _dom.h)('p'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('hr'), (0, _dom.h)('p'), (0, _dom.h)('bubbon#dummy', 'dummy'), (0, _dom.h)('p'), (0, _dom.h)('p'), (0, _dom.h)('p')])]);
+	      return (0, _dom.h)('div.content', [(0, _dom.h)('div#rightPanel', { style: { display: 'none' } }, [(0, _dom.h)('span#tog', [(0, _dom.h)('button#game', { style: { fontSize: '16px' } }, 'TOGGLE GAME'), (0, _dom.h)('span.tao', ' '), (0, _dom.h)('button#todoButton', { style: { fontSize: '16px' } }, 'TOGGLE TODO LIST'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('button#chat2', { style: { fontSize: '16px' } }, 'TOGGLE CHAT'), (0, _dom.h)('span.tao', ' '), (0, _dom.h)('button#caption', { style: { fontSize: '16px' } }, 'TOGGLE CAPTION')]), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('div#gameDiv', [(0, _dom.h)('span', 'Group: ' + O.mMgroup.x), (0, _dom.h)('br'), (0, _dom.h)('span', 'Goals: ' + O.mMgoals.x), (0, _dom.h)('br'), (0, _dom.h)('span', 'Name: ' + O.mMname.x), (0, _dom.h)('br'), (0, _dom.h)('span', 'player[score][goals]'), (0, _dom.h)('div', O.mMscoreboard.x)]), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('div#todoDiv', [(0, _dom.h)('div#taskList', O.mMtaskList.x), (0, _dom.h)('span', 'Author, Responsible Person, Task: '), (0, _dom.h)('input.newTask')]), (0, _dom.h)('br'), (0, _dom.h)('span#alert'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('div#chatDiv', [(0, _dom.h)('div#messages', [(0, _dom.h)('span', 'Message: '), (0, _dom.h)('input.inputMessage'), (0, _dom.h)('div', O.mMmsg.x)])])]), (0, _dom.h)('div.leftPanel', { style: { width: '60%' } }, [(0, _dom.h)('br'), (0, _dom.h)('a.tao', { props: { href: '#common' } }, 'Common Patterns'), (0, _dom.h)('a.tao', { props: { href: '#tdList' } }, 'Todo List Explanation'), (0, _dom.h)('a.tao', { props: { href: '#monads' } }, 'Why Call Them Monads'), (0, _dom.h)('div#captionDiv', [(0, _dom.h)('h1', 'Motorcycle.js With JS-monads'), (0, _dom.h)('span.tao1', ' A shared, persistent todo list, '), (0, _dom.h)('br'), (0, _dom.h)('span.tao1', ' A websockets simulated dice game, '), (0, _dom.h)('br'), (0, _dom.h)('span.tao1', ' Group chat rooms and more demonstrations of efficient, '), (0, _dom.h)('br'), (0, _dom.h)('span.tao2', ' maintainable code using Motorcycle.js and JS-monads.  ')]), (0, _dom.h)('br'), (0, _dom.h)('span.tao', 'This is a '), (0, _dom.h)('a', { props: { href: "https://github.com/motorcyclejs", target: "_blank" } }, 'Motorcycle.js'), (0, _dom.h)('span', ' application. Motorcycle.js is '), (0, _dom.h)('a', { props: { href: "https://github.com/cyclejs/core", target: "_blank" } }, 'Cycle.js'), (0, _dom.h)('span', ' using '), (0, _dom.h)('a', { props: { href: "https://github.com/cujojs/most", target: "_blank" } }, 'Most'), (0, _dom.h)('span', ' , '), (0, _dom.h)('a', { props: { href: "https://github.com/TylorS/most-subject", target: "_blank" } }, 'Most-subject'), (0, _dom.h)('span', ' and '), (0, _dom.h)('a', { props: { href: "https://github.com/paldepind/snabbdom", target: "_blank" } }, 'Snabbdom'), (0, _dom.h)('span', ' instead of RxJS and virtual-dom. Reactive evaluation of expression is made possible by '), (0, _dom.h)('a', { props: { href: "https://github.com/mobxjs/mobx", target: "_blank" } }, 'MobX'), (0, _dom.h)('span', ' . The code for this repository is at '), (0, _dom.h)('a', { props: { href: "https://github.com/dschalk/JS-monads-stable", target: "_blank" } }, 'JS-monads-stable'), (0, _dom.h)('div#gameDiv2', { style: { display: 'none' } }, [(0, _dom.h)('br'), (0, _dom.h)('span', ' Here are the basic rules:'), (0, _dom.h)('p', 'RULES: If clicking two numbers and an operator (in any order) results in 20 or 18, the score increases by 1 or 3, respectively. If the score becomes 0 mod 5, 5 points are added. A score of 25 results in one goal. That can only be achieved by arriving at a score of 20, which jumps the score to 25. Directly computing 25 results in a score of 30, and no goal. Each time ROLL is clicked, one point is deducted. Three goals wins the game. '), (0, _dom.h)('button#0.num'), (0, _dom.h)('button#1.num'), (0, _dom.h)('button#2.num'), (0, _dom.h)('button#3.num'), (0, _dom.h)('br'), (0, _dom.h)('button#4.op', 'add'), (0, _dom.h)('button#5.op', 'subtract'), (0, _dom.h)('button#5.op', 'mult'), (0, _dom.h)('button#5.op', 'div'), (0, _dom.h)('button#5.op', 'concat'), (0, _dom.h)('br'), (0, _dom.h)('div#dice', { style: { display: 'none' } }, [(0, _dom.h)('button.roll', 'ROLL')])]), (0, _dom.h)('div.winner', O.mMgoals2.x + ''), (0, _dom.h)('div#log1', [(0, _dom.h)('p', 'IN ORDER TO SEE THE DEMONSTRATIONS, YOU MUST ENTER SOMETHING BELOW.'), (0, _dom.h)('span', 'Name: '), (0, _dom.h)('input#login', { props: { placeholder: "focus on; start typing" } })]), (0, _dom.h)('p', O.mM6.x.toString()), (0, _dom.h)('div#log2', { style: { display: 'none' } }, [(0, _dom.h)('span', 'Change group: '), (0, _dom.h)('input#group')]), (0, _dom.h)('p', O.mMsoloAlert.x), (0, _dom.h)('p', 'People who are in the same group, other than solo, share the same todo list, messages, and simulated dice game. In order to see any of these, you must establish an identity on the server by logging in. The websockets connection would terminate if the first message the server receives does not succefully participate in the login handshake. '), (0, _dom.h)('hr'), (0, _dom.h)('h1', 'The Monads'), (0, _dom.h)('p', ' There are three basic types of monads: Monad, MonadIter, and MonadStream. Instances of Monad have a method called "bnd" which takes a function and possibly other values as arguments. I have not created a comprehensive library of functions for bnd(), but most of the functions used in this demonstration are in the NPM package "js-monads", and all of them are in the Github repository. I create functions to suit specific purposes and I assume that anyone who uses these monads, or their own variations on the theme, will likewise want to create functions to suit their specific purposes. '), (0, _dom.h)('p', ' There is a basic pattern that I have found useful for computations and manipulating objects, including arrays. add() and cube() are examples of the pattern. They will be defined and used in the examples below. '), (0, _dom.h)('h2', 'Monad'), _code2.default.monad, (0, _dom.h)('p', 'The following statements create instances of Monad named "m" with initial values of "some value": var m = new Monad("some value", "m") and ret("some value", "m"). Monad instances maintain state in the unique, mutable, global object named "O". Where there is changing state, it is not practical to avoid mutating something. My choices narrowed down to the window object or an attribute of window like O. O seemed like the better choice. It is a place to keep the most recent versions of named monads. Earlier versions of named monads can persist elsewhere, or be left for the gargage collector.   '), (0, _dom.h)('p', ' In the examples shown on this page, the initial values of instances of Monad remain unchaged. The ret() method places updated instances on O. The instances on O are never mutated. For any instance of Monad named m with id "m" and value v (i.e., m.x == v is true), m.ret(v2) creates a new attribute of O with key "m" or, if O.m already exists, m.ret(v2) mutates O by replacing its m attribute\'s value. The monad O.m is not mutated, so any O.m that is replaced will persist if there is a reference to it, or will be subject to garbage collection if there is not. '), (0, _dom.h)('h3', 'Examples'), (0, _dom.h)('p', ' Here are the definitions of ret(), add(), and cube(): '), _code2.default.ret_add_cube, (0, _dom.h)('p', ' calling ret() with only one argument creates an anonymous global monad. There is no reference to it, so when a computation sequence using it terminates, it becomes eligeble for garbage collection. Although the monad\'s scope is global, it can\'t be clobbered because it has no name (no variable referring to it). '), (0, _dom.h)('p', ' As you see, cube() and ret() are overloaded functions. Here are some examples of various ways of using them: '), (0, _dom.h)('span.red3', 'cube(3)'), (0, _dom.h)('span.td2', ' creates a useless anonymous monad with x == 27 and id == "anonymous". '), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('span.red3', 'cube(3).bnd(m.ret)'), (0, _dom.h)('span.td2', ' O.m.x == 27 and O.m.id == "m". '), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('span.red3', 'cube(5, m)'), (0, _dom.h)('span.td2', ' where m is a monad leaves m unchanged, O.m.x == 125, and O.m.id == "m". '), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('span.red3', 'cube(5).bnd(m.ret)'), (0, _dom.h)('span.td2', ' is equivalent to the previous example. m is unchanged and O.m.x == 125. '), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('span.red3', 'ret(5).bnd(cube).bnd(m.ret)'), (0, _dom.h)('span.td2', ' is equivalent to the previous two examples. O.m.x == 125. '), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('span.red3', 'm.ret(4).bnd(cube)'), (0, _dom.h)('span.td2', 'causes O.m.x == 4, and creates an anonymous monad with x == 64. '), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('span.red3', 'm.ret(4).bnd(cube, m)'), (0, _dom.h)('span.td2', ' leaves m unchanged, O.m.x == 64, and O.m.id == "m". '), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('span.tao', ' The convention "a == b" in this presentation signifies that a == b is true. By the way, if you want to change the value of m, all you have to do is call '), (0, _dom.h)('span.red3', 'ret(v, "m")'), (0, _dom.h)('span', ' to cause m.x == v and m.id = "m". This is the definition of add(): '), _code2.default.add, (0, _dom.h)('span.red3', 'add(3, 4)'), (0, _dom.h)('span.td2', ' creates a useless anonymous monad with x == 7 and id == "anonymous". '), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('span.red3', 'add(3, 4).bnd(m.ret)'), (0, _dom.h)('span.td2', ' causes O.m.x == 7 and O.m.id == "m". '), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('span.red3', 'add(3, 4, m)'), (0, _dom.h)('span.td2', ' is equivalent to the prior example. The result is O.m.x == 7, and O.m.id == "m". '), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('span.red3', 'm.ret(0).bnd(add, 3).bnd(cube)'), (0, _dom.h)('span.td2', 'leaves m unchanged, O.m.x == 0, and creates an anonymous monad with x == 27. '), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('span.red3', 'ret(0).bnd(add, 3).bnd(cube).bnd(m.ret)'), (0, _dom.h)('span.td2', 'causes O.m.x == 27, and O.m.id = "m". '), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('span.red3', 'ret(0).bnd(add, 2, m).bnd(cube, m2)'), (0, _dom.h)('span.td2', ' where m, and m2 are monads causes O.m.x == 2, and O.m2.x == 8. '), (0, _dom.h)('br'), (0, _dom.h)('p#iterLink', ' O holds the current state of the monads. This is convenient. For example, mMcurrentList.ret() is seen in the application code whereever a todo list is created, removed, or altered. O.mMcurrentList.x sits in the virtual DOM, making sure that the todo list display is is always current. '), (0, _dom.h)('h2', 'MonadIter'), (0, _dom.h)('p', 'For any instance of MonadIter, say "m", the statement "m.bnd(func)" causes m.p == func to be true. The statement "m.release(...args) causes p(...args) to execute. Here is the definition: '), _code2.default.monadIt, (0, _dom.h)('p', 'As shown later on this page, MonadIter instances control the routing of incoming websockets messages and the flow of action in the simulated dice game. '), (0, _dom.h)('p', 'The following example illustrates the use of release() with an argument. It also shows lambda expressions being provided as arguments for bnd(). The initial values of mMt1, mMt2, and mMt3 are 0, 0, and "" respectively. When this page loads, the following code runs: '), _code2.default.testZ, (0, _dom.h)('p', ' add() and cube() are defined in the Monad section (above). If you click "mMZ1.release(1)" several times, the code (above) beginning with "mMZ1" will run several times, each time with v == 1. The result, O.mMt3.x, is shown below the button. mMZ1.p (bnd()\'s argument) remains constant while mMZ1.release(1) is repeatedly called. '), (0, _dom.h)('button#testZ', 'mMZ1.release(1)'), (0, _dom.h)('p.code2', O.mMt3.x), (0, _dom.h)('span', 'Refresh button: '), (0, _dom.h)('button#testQ', 'mMt1.ret(0).bnd(mMt2.ret)'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('span.tao', '  You can call '), (0, _dom.h)('span.green', 'mMZ2.release(v)'), (0, _dom.h)('span', ' by entering a value for v below: '), (0, _dom.h)('br'), (0, _dom.h)('span', 'Please enter an integer here: '), (0, _dom.h)('input#testW'), (0, _dom.h)('p', ' Here is another example. It demonstrates lambda expressions passing values to a remote location for use in a computation. If you enter three numbers consecutively below, I\'ll call them a, b, and c, then the quadratic equation will be used to find solutions for a*x**2 + b*x + c = 0. The a, b, and c you select might not have a solution. If a and b are positive numbers, you are likely to see solutions if c is a negative number. For example, 12, 12, and -24 yields the solutions 1 and -2. '), (0, _dom.h)('p.code2#quad4', O.mMquad1.x), (0, _dom.h)('span.red2', O.mMquad2.x), (0, _dom.h)('span.red2', O.mMquad3.x), (0, _dom.h)('br'), (0, _dom.h)('span.tao', 'Run mMZ3.release(v) three times for three numbers. The numbers are a, b, and c in ax*x + b*x + c = 0: '), (0, _dom.h)('input#quad'), (0, _dom.h)('p', 'Here is the code:'), _code2.default.quad, (0, _dom.h)('span#tdList'), (0, _dom.h)('h2', 'MonadStream'), _code2.default.monadStr, (0, _dom.h)('span.tao', ' MonadStream instances acquire values with the "ret()" method, placing them in the "stream" attribute. The stream depends on the '), (0, _dom.h)('a', { props: { href: "https://github.com/TylorS/most-subject/", target: "_blank" } }, 'most-subject'), (0, _dom.h)('p', ' The next example uses MonadStream instances to display an array of Fibonacci numbers, an array of Prime numbers, and an array of prime Fibonacci numbers. The number entered into the box below puts an upper bound on the arrays. '), (0, _dom.h)('p', ' Enter an integer below to run the code. '), (0, _dom.h)('input#fib3335'), (0, _dom.h)('p#fib5.red4'), (0, _dom.h)('p#prime5.red4'), (0, _dom.h)('p#primeFibs.red4'), (0, _dom.h)('p', ' Here is the code for the memoizing Fibonacci number generator:   '), _code2.default.primeFib3, (0, _dom.h)('p', ' As you see, the mM$fib5 observer receives data when mMitterFib5 is released. Entering a number in the box (above) releases mMitterFib5 with the number that was entered. When a number is received, I called it "x", a test determines if the largest number in O.mMfibs8.x is smaller than x. If it is, mM$fib5 is called to run computations until the largest number in O.mMfibs8.x exceeds x. '), (0, _dom.h)('p', ' mM$fib5 releases mMitterPrime5, which is the entry point for the prime number generator. An array containing a Fibonacci number and an array of Fibonacci numbers is included in mMitterPrime5.release([num, array]). The array of Fibonacci numbers is used in the final calculation which determines which of the Fibonacci numbers are prime. Here is the code that receives that information and causes the array of prime numbers and the array of prime Fibonacci numbers to be displayed: '), _code2.default.primeFib4, (0, _dom.h)('p', ' When the web page loads, the mM$fib5 and mM$prime5 observers are initiated with the following expressions: '), (0, _dom.h)('pre', '    mM$fib5.ret( [ 0, 1, 1 ] );\n    mM$prime5.ret( [ [2], 3, 3 ] );\n'), (0, _dom.h)('h2', 'Updating the DOM'), (0, _dom.h)('h3', 'Todo List DOM Updates'), (0, _dom.h)('p', ' When users do anything to the todo list, MonadStream instance mM$taskList runs its ret() method on the modified String representation of the list, causing the string to be added to mM$taskList.stream. mM$taskList.stream has only one subscriber, taskAction$, whose only purpose it to send the string representation of the todo list to the server. The server updates its persistent file and distributes a text representation of the updated todo list to all group members. Each group member receives the todo list as a string and parses it into a DOM node tree that is merged into the stream that updates the virtual DOM. All Todo List side effects can be traced to:'), _code2.default.todoStream, (0, _dom.h)('span', ' Just search for "mM$taskList.ret" to find where all todo list changes were initiated. The following link takes you to a more detailed explanation of the todo list. '), (0, _dom.h)('a', { props: { href: '#tdList2' } }, 'Detailed Todo List Explanation'), (0, _dom.h)('br'), (0, _dom.h)('h3', 'Dice Game DOM updates'), (0, _dom.h)('p', ' mMcurrentRoll.ret() is called only when (1) a new dice roll comes in from the server, (2) when a player clicks a number, and (3) when clicking a number or operator results in a computation being performed. These are the three things that require a DOM update. When a player clicks a number, it disappears from number display. When a computation is performed, the result is added to the number display, unless the result is 18 or 20. A result of 18 or 20 results in a new roll coming in from the server '), (0, _dom.h)('p', '    '), (0, _dom.h)('hr'), (0, _dom.h)('h2', 'Concise Code Blocks For Information Control'), (0, _dom.h)('p', ' Incoming websockets messages trigger updates to the game display, the chat display, and the todo list display. The members of a group see what other members are doing; and in the case of the todo list, they see the current list when they sign in to the group. When any member of a group adds a task, crosses it out as completed, edits its description, or removes it, the server updates the persistent file and all members of the group immediately see the revised list.  '), (0, _dom.h)('p', 'The code below shows how incoming websockets messages are routed. For example, mMZ10.release() is called when a new dice roll (prefixed by CA#$42) comes in.   '), _code2.default.messages, (0, _dom.h)('p', ' The "mMZ" prefix designates instances of MonadIter. The bnd() method assigns its argument to the "p" attribute. "p" runs if and when the release() method is called. The next() function releases a specified MonadIter instance when the calling monad\'s value matches the specified value. next2() releases the specified monad when the specified condition returns true. The release method in next() has no argument, but next does take arguments, as illustrated below.'), (0, _dom.h)('span.tao', ' The incoming messages block is just a syntactic variation of a switch block, but that isn\'t all that MonadIter instances can do. They can provide fine-grained control over the lazy evaluation of blocks of code. Calling release() after a function completes some task provides Promise-like behavior. Error handling is optional. The MonadInter release(...args) method facilitates sequential evaluation of code blocks, remeniscent of video and blog explanations of ES6 iterators and generators. I prefer doing it with MonadIter over "yield" and "next". For one thing, ES6 generator "yield" blocks must be evaluated in a predetermined order. This link takes you back to the MonadIter section with interactive examples of the use of release() with arguments.  '), (0, _dom.h)('a#tdList2', { props: { href: '#iterLink' } }, 'release() with arguments'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('a', { props: { href: '#top' } }, 'Back To The Top'), (0, _dom.h)('br'), (0, _dom.h)('h3', 'The Todo List'), (0, _dom.h)('p', ' Next, I\'ll go over some features of the todo list application. This will show how Motorcycle.js and the monads work together.'), (0, _dom.h)('p', 'Creation Of A Task: If you enter something like Susan, Fred, Pay the water bill, the editable task will appear in your browser and in the browsers of any members a group you might have created or joined. If you have loaded this page in another tab and changed to the same group in both, you will see the task in both tabs, barring some malfunction. The task has a delete button, an edit button, and a "Completed" checkbox. It shows that Susan authorized the task and Fred is responsible for making sure it gets done. Instead of entering an authority and responsible person, you can just enter two commas before the task description. Without two commas, a message appears requesting more information. This is how Motorcycle.js handles the creation of a new task: '), _code2.default.newTask, (0, _dom.h)('p', ' mM$taskList is the todo application\'s worker function. Every time it executes its ret() method, the argument to ret() is added to its stream, causing the following code to run: '), _code2.default.mM$task, (0, _dom.h)('p', 'mM$taskList caries a string representing the task list. mMtaskList.x.split(",") produces an array whose length is a multiple of six. Commas in the task description are replaced by "$*$*$" so split(",") will put the entire task description in a single element. Commas are re-inserted when the list arrives from the server for rendering. Although a task list is a nested virtual DOM object (Snabbdom vnode), it can be conveniently passed back and forth to the server as a string without resorting to JSON.stringify. Its type is Text on the server and String in the front end, becomming a virtual DOM node only once, when it arrives from the server prefixed by "DD#$42" causing "process(e.data) to execute. Here is process(): '), _code2.default.process, (0, _dom.h)('span.tao', 'As you see, the string becomes a list of six-element objects, then those objects are used to create a Snabbdom vnode which is handed to mM$taskList.ret() leading to the update of O.mMtaskList. O.mMtaskList.x sits permanently in the main virtual DOM description. When its value gets refreshed, the DOM re-renders because taskStream$ is merged into the stream that is mapped into the virtural DOM description inside the object returned by "main". "main" and "sources" are the arguments provided to Cycle.run(). "sources" is the argument provided to "main". It is an array of drivers. The code is at '), (0, _dom.h)('a', { props: { href: "https://github.com/dschalk/JS-monads-stable" } }, 'https://github.com/dschalk/JS-monads-stable'), (0, _dom.h)('br'), (0, _dom.h)('p', ' Clicking "Completed": When the "Completed" button is clicked, the following code runs:         '), _code2.default.colorClick, (0, _dom.h)('p', 'O.mMtaskList is split into an array. Every sixth element is the start of a new task. colorAction$ toggles the second, third, and fourth element in the task pinpointed by "index" * 6. getIndex finds the index of the first and only the element whose task description matches the one that is being marked "Completed". I say "only" because users are prevented from adding duplicate tasks. After the changes are made, the array of strings is reduced to one string and sent to the server when mM$taskList.ret() updates mM$taskList.stream triggering . '), (0, _dom.h)('p', ' This is the code involved in editing a task description: '), _code2.default.edit, (0, _dom.h)('p', 'Clicking "Edit" causes a text box to be displayed. Pressing <ENTER> causes it to diappear. edit2Action$ obtains the edited description of the task and the index of the task iten and provides them as arguments to process. Process exchanges $*$*$ for any commas in the edited version and assigns the amended task description to the variable "task". O.mMtaskList.x is copied and split into an array. "index * 6" is replaced with "task" and the list of strings is reduced back to a single string and sent to the server for distribution. This pattern, - (1) split the string representation of the todo list into an array of strings, (2) do something, (3) reduce the list of strings back to a single string - is repeated when the "Delete" button is clicked. If the last item gets deleted, the server is instructed to delete the persistent file bearing the name of the group whose member deleted the last task. '), (0, _dom.h)('p#common', 'Cycle.js has been criticized for not keeping state in a single location, the way React.js does. Motorcycle.js didn\'t do it for me, or try to force me to do it, but it so happens that the current state of all active monads is in the object "O". I have written applications in Node.js and React.js, and I can say without a doubt that Motorcycle.js provides the best reactive interface for my purposes.  '), (0, _dom.h)('hr'), (0, _dom.h)('a', { props: { href: '#top' } }, 'Back To The Top'), (0, _dom.h)('h2', 'Common Patterns'), (0, _dom.h)('p', 'Anyone not yet familiar with functional programming can learn by studying the definition of the Monad bnd() method and considering the common patterns presented below. Often, we want to give a named monad the value of an anonymous monad returned by a monadic computation. Here are some ways to accomplish that: '), (0, _dom.h)('p', 'For any monads m1 and m2 with values a and b respectively (in other words, m1.x == a and m2.x == b return true), m1.bnd(m2.ret) provides m1\'s value to m2.ret() causing O.m2 to have m1\'s value. So, after m1.bnd(m2.ret), m1.x == a, m2.x == b, O.m2.x == a all return true. The definition of Monad\s bnd() method shows that the function m2.ret() operates on m1.x. m1.bnd(m2.ret) is equivalent to m2.ret(m1.x). The stand-alone ret() function can be used to alter the current value of m2, rather than altering the value of O.m2. Here is one way of accomplishing this: m1.bnd(x => ret(x,"m2"). These relationships are demonstrated in the following tests: '), (0, _dom.h)('pre', '             ret(\'m1Val\',\'m1\')\n             m1.x === \'m1Val\'   // true\n             ret(\'m2Val\', \'m2\')\n             m2.x === \'m2Val\'   // true\n\n             m1.bnd(m2.ret)\n             O.m2.x === \'m1Val\' // true\n             m2.x === \'m2Val\'   // still true\n\n             m1.ret(\'newVal\')\n             O.m1.bnd(v => ret(v, \'m2\'))\n             m2.x === \'newVal\'  // true\n             O.m2.x === \'m1Val\' // true   still the same  '), (0, _dom.h)('p', ' Here are two basic ways to create a monad named "m" with id = "m" and value v: '), (0, _dom.h)('pre', '  var m = new Monad(v, "m");\n  ret(v, "m");  '), (0, _dom.h)('p', 'Let m be a monad with id == "m" and value v. Its bnd() method can return an anonymous monad, a new named monad, or a previously existing monad containing the computation result. To illustrate, here is the definition of "add" along with five uses of it: '), _code2.default.add, (0, _dom.h)('p'), (0, _dom.h)('hr'), (0, _dom.h)('h3', 'Immutable Data And The State Object "O" '), (0, _dom.h)('p', 'The server updates scores in response to messages prefixed by "CG#$42". Each such message carries an integer specifying the amount of the change. The ServerState list of Client tupples is pulled from the game state TMVar and replaced by a new tupple whose Score field differs from the previous one.'), (0, _dom.h)('p', 'In front end code, mutating variables which are defined inside of functions often seems inocuous in applications written in an object oriented programming style. This is not the case in a Motorcycle.js application, where functions culminate in streams that merge into the stream that feeds the object returned by the main function, called "main" in this application. "sources" is an array of drivers. It is main\'s only argument, "sources" and "main" are Cycle.run()\'s arguments.'), (0, _dom.h)('p', '"main" and "Cycle.run" are called only once. In the cyclic steady state that results, a reference should say what it means and mean what it says. If it suddenly refers to something other than what the other half of the cycle thinks it is, there will be a temporary disconnect. This will promptly staighten out, but having temporary disconnects shakes confidence in the consistency and reliability of the program. I don\'t have an example of mutating an object causing an unexpected result or crash. I would appreciate it if someone would give me such an example. '), (0, _dom.h)('p', ' In this environment, avoiding mutations is recommended and I generally follow that recommendation. Mutations in this application are confined to the global state object "O" and MonadIter instances. In the examples above, the release() method moves the process forward to the next occurance of the MonadIter instance where the bnd() method provides a new function to the "p" attribute. The progressive morphing of "p" in MonadIter instances is desirable behavior, and I think that creating a clone each time it occurs would be a senseless waste of resources. Unless and until release() is called, the program is not affected by "p". If release() is called, the return value of p(...args) is returned, but "p" itself remains tucked away, never mixing with the flow of information through the program. The bnd() method is pure. Given the same argument, it will always do the same thing. It doesn\'t even return anything. It just updates the internal "p" attribute. This insulation of internal operations from the outer program is remeniscent of an important purpose of the Haskell IO monad. These are just hand-waving arguments for the harmlessness of letting the bnd() method mutate MonadIter instances, but I wanted to explain why I feel comfortable with letting the definition of MonadIter stand as it is.  '), (0, _dom.h)('p', 'All monad updates caused by the monad ret() method are stored in the object "O". When a monad m executes m.ret(v) for some value "v", m remains unchanged and the O attribute O.m is created or, if it already exists, is replaced by the update; i.e., O.m.x == v becomes true. Older versions of m are subject to garbage collection unless there is a reference to them or to an object (arrays are objects) containing m.  This is illustrated in the score-keeping code below.  All score changes are captured by mM13.ret(). Therefore, O.mM13.x is always the current score. Replacing monad attributes in O is vaguely analogous to swapping out ServerState in the Haskell server\'s state TMVar. Older versions of ServerState can be preserved in the server just as prior versions of O.mM13 can be preserved in the front end. '), _code2.default.updateCalc, (0, _dom.h)('p', 'The socket messages prompt the server to update its application state and to broadcast messages to all members of the group whose member sent the message to the server. Let\'s take another look at the way incoming messages are handled.'), _code2.default.messages, (0, _dom.h)('p#monads', ' Messages prefixed by CB#$42 are broadcast in response to CG#$42-prefixed messages from a browser. CB#$42 prefixes release mMZ11, causing the scoreboard to update. CA#$42-prefixed messages to the server result in CA#$42-prefixed messages carrying the next dice roll to be broadcast to the sender\'s group.  CE#$42 prefixed messages cause the release of mMZ14 which causes O.mMgoals2.x to change from an empty string to an anouncement of the name of the winner. '), (0, _dom.h)('hr'), (0, _dom.h)('a', { props: { href: '#top' } }, 'Back To The Top'), (0, _dom.h)('h3', 'Why Call Them Monads?'), (0, _dom.h)('p', 'For any monad m and function f mapping values to monads, inside the O object the bnd() method behaves like the Haskell >>= operator(pronounce "bind"). Sequences of calls to bnd() are associative; i,e, how computations are grouped does not matter. And the ret() method and ret() function provide a kind of left and right identity similar to the specification in the Haskell monad laws. Here are three functions we will use to illustrate this:'), _code2.default.mdem1, (0, _dom.h)('span.tao', ' The relationships being demonstrated here are readily derivable from the definition of Monads; but just for illustration, here are some examples tested with Mocha: '), (0, _dom.h)('a', { props: { href: "http://schalk.net:3056", target: "_blank" } }, 'Mocha Tests.'), (0, _dom.h)('p', ' That\'s about it. That\'s why I call them "monads". But JS-monads can do much more than vaguely mirror Haskell monad functionality. There is no attempt to constrain JS-monads with type classes, or with restrictions on the types of functions the bnd() method can accept. m.bnd(x => x**3) returns a number, not a JS-monad. It would be the end of the line for a chained sequence of computations; but that might be exactly what you want: a monadic chain of computations that spits out a number when it is done. '), (0, _dom.h)('a', { props: { href: '#top' } }, 'Back To The Top'), (0, _dom.h)('p'), (0, _dom.h)('p'), (0, _dom.h)('p'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('hr'), (0, _dom.h)('span#dummy2.red3'), (0, _dom.h)('hr'), (0, _dom.h)('button#dummy', O.mMdummy.x), (0, _dom.h)('p'), (0, _dom.h)('p'), (0, _dom.h)('p', '.'), (0, _dom.h)('p', '.'), (0, _dom.h)('p', '.'), (0, _dom.h)('p', '.'), (0, _dom.h)('p', '.'), (0, _dom.h)('p'), (0, _dom.h)('p'), (0, _dom.h)('p'), (0, _dom.h)('p'), (0, _dom.h)('p')])]);
 	    }) };
 	}
 
@@ -11367,7 +9258,7 @@
 	      if (result == 18) {
 	        score(O.mM13.x, 3);
 	      };return O.mMcurrentRoll;
-	    }).bnd(push, O.mM7.x, mMcurrentRoll);
+	    }).bnd(push, O.mM7.x, mMcurrentRoll).bnd(mM$1.ret);
 	  });
 	  reset();
 	};

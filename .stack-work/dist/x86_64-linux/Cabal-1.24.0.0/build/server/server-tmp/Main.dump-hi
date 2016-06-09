@@ -1,9 +1,9 @@
 
 ==================== FINAL INTERFACE ====================
-2016-06-07 03:33:53.514197 UTC
+2016-06-09 02:37:35.085732 UTC
 
 interface main@main:Main 7103
-  interface hash: 74471087ca70910d364a53417df50205
+  interface hash: ea81f9a70d29395a0778f8489f716e7a
   ABI hash: 746c8c7497bfdaf094ec410256010bc4
   export-list hash: e1b2b510b95f940fb5d5cd6bd6e3c4ea
   orphan hash: 276323d23bdb3224e26fb4d203ffca48
@@ -162,23 +162,6 @@ import  -/  Tasks 021b527ac3897c6aefb557b6c3305620
   read2 af5ae884827ce8cc1b03637a25cf1392
   save 6230a9def98f12a3595edeb5a58dd916
 import  -/  transformers-0.4.2.0@trans_GZTjP9K5WFq01xC9BAGQpF:Control.Monad.IO.Class 37487179a2f5eb2ea7922b911abcae56
-addDependentFile "client/bower_components/mocha/media/logo.svg"
-addDependentFile "client/bower_components/mocha/Readme.md"
-addDependentFile "client/bower_components/mocha/bower.json"
-addDependentFile "client/bower_components/mocha/mocha.css"
-addDependentFile "client/bower_components/mocha/LICENSE"
-addDependentFile "client/bower_components/mocha/mocha.js"
-addDependentFile "client/bower_components/mocha/History.md"
-addDependentFile "client/bower_components/chai/package.json"
-addDependentFile "client/bower_components/chai/chai.js"
-addDependentFile "client/bower_components/chai/bower.json"
-addDependentFile "client/bower_components/chai/sauce.browsers.js"
-addDependentFile "client/bower_components/chai/ReleaseNotes.md"
-addDependentFile "client/bower_components/chai/karma.sauce.js"
-addDependentFile "client/bower_components/chai/CONTRIBUTING.md"
-addDependentFile "client/bower_components/chai/karma.conf.js"
-addDependentFile "client/bower_components/chai/History.md"
-addDependentFile "client/bower_components/chai/README.md"
 addDependentFile "client/bower_components/when/unfold/list.js"
 addDependentFile "client/bower_components/when/es6-shim/Promise.browserify-es6.js"
 addDependentFile "client/bower_components/when/es6-shim/Promise.min.js.map"
@@ -236,15 +219,16 @@ addDependentFile "client/bower_components/most/docs/recipes/README.md"
 addDependentFile "client/bower_components/most/docs/api.md"
 addDependentFile "client/bower_components/most/bower.json"
 addDependentFile "client/bower_components/most/README.md"
-addDependentFile "client/bower_components/xstream.min.js"
-addDependentFile "client/bower_components/most-subject.js"
+addDependentFile "client/bower_components/most-subject.min.js"
 addDependentFile "client/dist/main.js"
 addDependentFile "client/dist/bundle.js"
 addDependentFile "client/src/monad.js~"
 addDependentFile "client/src/code.js"
 addDependentFile "client/src/edit.js"
 addDependentFile "client/src/main.js"
+addDependentFile "client/src/temp.js"
 addDependentFile "client/src/monad.js"
+addDependentFile "client/src/test.js"
 addDependentFile "client/src/main.js~"
 addDependentFile "client/src/index.js"
 addDependentFile "client/src/most-subject.js"
@@ -253,11 +237,13 @@ addDependentFile "client/fetch.js"
 addDependentFile "client/package.json"
 addDependentFile "client/index.html"
 addDependentFile "client/style.css~"
+addDependentFile "client/proxy-observe.js"
 addDependentFile "client/mostSub.js"
 addDependentFile "client/style.css"
 addDependentFile "client/webpack.config.js"
 addDependentFile "client/index.js"
 addDependentFile "client/main.js.map"
+addDependentFile "client/index.html~"
 addDependentFile "client/glackage.json"
 8fbc6c93b882a452d72df59744d3773d
   $sread :: GHC.Base.String -> GHC.Types.Int
