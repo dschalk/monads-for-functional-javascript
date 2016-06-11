@@ -2,9 +2,7 @@
 
 This is the culmination of the experimental JS-monads series. Features are still being added, but the core definitions are stable. It is running online at [JS-monads-stable](http://schalk.net:3055) in a [Motorcycle.js](https://github.com/motorcyclejs) application. Motorcycle.js is [Cycle.js](https://github.com/cyclejs/core) using [Most](https://github.com/cujojs/most) and [Snabbdom](https://github.com/paldepind/snabbdom) instead of RxJS and "virtual-dom". [most-subject](https://github.com/TylorS/most-subject) makes MonadStream work as intended. The application runs online at [http://schalk.net:3055](http://schalk.net:3055).  
 
-The use of the monads is explained at [the online presentation](http://schalk.net:3055), which is the running version of this code. 
-
-A recently added example involves MonadStream streams of prime and Fibonacci numbers. They use a special type of memoization and can be increased at any time with user input. The user input generates three sequinces of numbers: primes, Fibonacci numbers, and prime Fibonacci numbers.
+The use of the monads is explained at [the online presentation](http://schalk.net:3055), which is the running version of this code. There, you can see explanations and demonstrations of a shared, persistent todo list; an interactive simulated dice game with a traversable history number displays, chat rooms for for each group that is formed to play the game or just to chat, and much more.
 
 Here are some definitions, which can also be seen at [the online presentation](http://schalk.net:3055) :
 ## Basic Monad    

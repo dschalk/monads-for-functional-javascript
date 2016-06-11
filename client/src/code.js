@@ -501,18 +501,23 @@ var cleanup = h('pre',  `  function cleanup (x) {
   });  `  )
 
   var updateCalc = h('pre',  `  function updateCalc() { 
-    O.mM3.bnd(x => mM7
-    .ret(calc(x[0], O.mM8.x, x[1]))
-    .bnd(result => {if (result == 20) {score(O.mM13.x, 1)}; return O.mM7}) 
-    .bnd(result => {if (result == 18) {score(O.mM13.x, 3)}; return O.mM$1}) 
-    .bnd(push, O.mM7.x, mM$1)
-    .bnd(reset))
+    O.mM3.bnd(ar => mM7       // O.mM3 contributes O.mM3.x to the computation.
+    .ret(calc(ar[0], O.mM8.x, ar[1]))      // O.mM8.x is the operator string.
+    .bnd(result =>   // The return value of calc(), which is O.mM7.x, is used three times.
+      {  O.mM1.bnd(push, result, mM1).bnd(z =>
+         mM$1.ret(z));                         // Updates the display.             
+        if (result == 20) {score(O.mM13.x, 1)}; 
+         if (result == 18) {score(O.mM13.x, 3)};
+      }
+    )) 
+    reset()
   };
 
   var score = function score(x,j) {
     if ((x + j) == 20) {
       mMgoals.ret(O.mMgoals.x == 2 ? 0 : (O.mMgoals.x + 1)); 
-      mM13.ret(0);
+      mM13.ret(0).bnd(mMindex.ret);
+      mMhistorymM1.ret([[0,0,0,0]]);
       socket.send('CG#$42,' + O.mMgroup.x + ',' + O.mMname.x + ',' + -x + ',' + O.mMgoals.x); 
       if (O.mMgoals.x == 0) {
         socket.send('CE#$42,' + O.mMgroup.x + ',' + O.mMname.x + ',nothing ');
@@ -521,8 +526,7 @@ var cleanup = h('pre',  `  function cleanup (x) {
       return;
     }
     if ((x + j) % 5 == 0) {
-      mMscoreChange.ret(j + 5);  
-      socket.send('CG#$42,' + O.mMgroup.x + ',' + O.mMname.x + ','+(j+5)+',' + O.mMgoals.x); 
+      socket.send('CG#$42,' + O.mMgroup.x + ',' + O.mMname.x + ','+ (j+5)+',' + O.mMgoals.x); 
       mM13.ret(x + j + 5);
       socket.send('CA#$42,' + O.mMgroup.x.trim() + ',' + O.mMname.x.trim() + ',6,6,12,20');
       return;
@@ -530,6 +534,19 @@ var cleanup = h('pre',  `  function cleanup (x) {
     socket.send('CG#$42,' + O.mMgroup.x + ',' + O.mMname.x + ','+j+',' + O.mMgoals.x); 
     mM13.ret(x + j);
     socket.send('CA#$42,' + O.mMgroup.x.trim() + ',' + O.mMname.x.trim() + ',6,6,12,20');
+  }
+
+  var reset = function reset () {
+      mM3.ret([])
+      .bnd(() => mM4.ret(0)
+      .bnd(mM8.ret)
+      .bnd(cleanup))    // Hides 'undefined' values in the display.
+  }
+
+  var updateScoreboard = function updateScoreboard(v) {  // v is received from the server.
+    let ar2 = v.split("<br>");
+    let ar = ar.slice();
+    return mMscoreboard.ret(ar);
   };  `  )
 
 
@@ -809,7 +826,12 @@ var spreadsheet = h('pre',  `  const spread1Press$ = sources.DOM
       mMspreadsheet.ret(c);
   };  `  )
 
-var spreadsheet2 = h('pre',  `  const spread1Press$ = sources.DOM
+var spreadsheet2 = h('pre',  `  
+                     
+                     
+                     
+                     
+                     const spread1Press$ = sources.DOM
     .select('#spread1').events('keypress');
 
   const spread1PressAction$ = spread1Press$.map(e => {
@@ -864,8 +886,46 @@ var reactiveFib = h('pre',  `  const newFibpress$ = sources.DOM
     }
   });  `  )
 
-var seed4 = h('pre',  ` 
-             `  )
+var traverse = h('pre',  ` 
+  const forwardClick$ = sources.DOM
+    .select('#forward').events('click');
+
+  const backClick$ = sources.DOM
+    .select('#back').events('click');
+
+  const forwardAction$ = forwardClick$.map(() => {
+    if (O.mMindex.x < (O.mMhistorymM1.x.length - 1)) {
+      O.mMindex.bnd(add, 1, mMindex)
+      .bnd(mM$3.ret)
+    }
+  });
+
+  const backAction$ = backClick$.map(() => {
+    if (O.mMindex.x > 0) {
+      O.mMindex.bnd(add, -1, mMindex)
+      .bnd(mM$3.ret)
+      socket.send('DE#$42,' + O.mMgroup.x.trim() + ',' + O.mMname.x.trim() + ', clicked the BACK button. ');
+    }
+  });
+
+  const mM$1Action$ = mM$1.stream.observe(v => {
+      mM1.ret(v);
+      O.mMindex.bnd(add, 1, mMindex)
+      .bnd(i => O.mMhistorymM1.bnd(spliceAdd, i, O.mM1, O.mMhistorymM1))
+      document.getElementById('0').innerHTML = O.mM1.x[0];  
+      document.getElementById('1').innerHTML = O.mM1.x[1];  
+      document.getElementById('2').innerHTML = O.mM1.x[2];  
+      document.getElementById('3').innerHTML = O.mM1.x[3];  
+      cleanup()
+  });
+
+  const mM$3Action$ = mM$3.stream.observe(v => {
+    document.getElementById('0').innerHTML = (O.mMhistorymM1.x[v].x)[0]; 
+    document.getElementById('1').innerHTML = (O.mMhistorymM1.x[v].x)[1]; 
+    document.getElementById('2').innerHTML = (O.mMhistorymM1.x[v].x)[2]; 
+    document.getElementById('3').innerHTML = (O.mMhistorymM1.x[v].x)[3]; 
+    cleanup();
+  })  `  )
 
 var seed5 = h('pre',  ` 
              `  )
@@ -892,6 +952,6 @@ var seed2 = h('pre',  `
 
 
 
-  export default {monad, monadStr, monadIt, fib, driver, messages, next, Monad$, updateCalc, arrayFuncs, travel, nums, cleanup, ret, C42, taskStream, newTask, process, mM$task, addString, colorClick, edit, testZ, quad, mdem1, runTest, todoStream, gameStream, inc, ret_add_cube, primes, seed, primeFib4, primeFib3, spreadsheet, spreadsheet2, add, reactiveFib}
+  export default {monad, monadStr, monadIt, fib, driver, messages, next, Monad$, updateCalc, arrayFuncs, travel, nums, cleanup, ret, C42, taskStream, newTask, process, mM$task, addString, colorClick, edit, testZ, quad, mdem1, runTest, todoStream, gameStream, inc, ret_add_cube, primes, seed, primeFib4, primeFib3, spreadsheet, spreadsheet2, add, reactiveFib, traverse}
 
 

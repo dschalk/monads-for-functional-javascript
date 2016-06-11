@@ -218,7 +218,7 @@ talk conn state (_, _, _, _, _) = forever $ do
 
     else if "CC#$42" `T.isPrefixOf` msg || "CE#$42" `T.isPrefixOf` msg ||
         "CH#$42" `T.isPrefixOf` msg || "CK#$42" `T.isPrefixOf` msg || "XY#$42" `T.isPrefixOf` msg ||
-        "CQ#$42" `T.isPrefixOf` msg || "DI#$42" `T.isPrefixOf` msg || "EQ#$42" `T.isPrefixOf` msg || 
+        "CQ#$42" `T.isPrefixOf` msg || "DE#$42" `T.isPrefixOf` msg || "EQ#$42" `T.isPrefixOf` msg || 
         "GQ#$42" `T.isPrefixOf` msg || "CF#$42" `T.isPrefixOf` msg ||
         "CY#$42" `T.isPrefixOf` msg || "CR#$42" `T.isPrefixOf` msg || "CD#$42" `T.isPrefixOf` msg ||
         "IA#$42" `T.isPrefixOf` msg || "DY#$42" `T.isPrefixOf` msg 

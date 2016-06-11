@@ -20,6 +20,7 @@ const websocketsDriver = function () {
 }
 
 function main(sources) {
+  mMindex.ret(0);
 
   window.onload = function (event) {
     console.log('onopen event: ', event);
@@ -36,10 +37,10 @@ function main(sources) {
   mMZ2.bnd(v => cube(v).bnd(w => mMt3.ret(v + ' cubed is ' + w)))
   
   const messages$ = (sources.WS).map(e => {
+    console.log('******************<><><><><><><> incoming message: ', e)
     mMtem.ret(e.data.split(',')).bnd(v => {
-    mMZ10.bnd(() => {
-      mM$2.ret([])
-      mMcurrentRoll.ret([v[3], v[4], v[5], v[6]]).bnd(mM$1.ret) }) 
+    mMZ10.bnd(() => 
+    mM$1.ret([v[3], v[4], v[5], v[6]]))
     mMZ11.bnd(() => updateScoreboard(v[3]));
     mMZ12.bnd(() => mM6
       .ret(v[2] + ' successfully logged in.'))
@@ -48,7 +49,8 @@ function main(sources) {
     mMZ15.bnd(() => mMgoals2.ret('A player named ' + 
       O.mMname.x + 'is currently logged in. Page will refresh in 4 seconds.')
       .bnd(refresh))
-    mMZ16.bnd(() => {
+    mMZ16.bnd(() => {if (O.mMname.x != v[2]) {mMgoals2.ret(v[2] + v[3])}})
+    mMZ17.bnd(() => {
       if (v[3] == 'no file') {
         mMtaskList.ret([])
       } 
@@ -63,7 +65,8 @@ function main(sources) {
       .bnd(next, 'CD#$42', mMZ13)
       .bnd(next, 'CE#$42', mMZ14)
       .bnd(next, 'EE#$42', mMZ15)
-      .bnd(next, 'DD#$42', mMZ16)
+      .bnd(next, 'DE#$42', mMZ16)
+      .bnd(next, 'DD#$42', mMZ17)
     }) 
   });
   
@@ -104,6 +107,7 @@ function main(sources) {
     if( e.keyCode == 13 ) {
       mMgroup.ret(v);
       socket.send(`CO#$42,${v},${O.mMname.x.trim()},${v}`);
+      mMgoals.ret(0);
     }
   });
 
@@ -184,7 +188,7 @@ function main(sources) {
           responsible: a.shift()
         }
       )
-    })
+   })
     mMar2.ret(ar5);
     process4(ar5);
   };
@@ -335,30 +339,11 @@ function main(sources) {
     el.style.display = 'none' 
 });
 
-  const numClick$ = sources.DOM
-    .select('.num').events('click');
-     
-  const numClickAction$ = numClick$.map(e => {
-    console.log('In numClickAction$ O.mM3.x and e are: ', O.mM3.x, e);
-    if (O.mM3.x.length < 2) {
-      O.mM3.bnd(push, e.target.innerHTML, O.mM3)
-      O.mMcurrentRoll.bnd(splice, e.target.id, 1, mMcurrentRoll)
-        .bnd(mM$1.ret);
-      if (O.mM3.x.length === 2 && O.mM8.x !== 0) {
-        updateCalc();
-      }
-    };
-  }).startWith([0,0,0,0]);
-    
-  const opClick$ = sources.DOM
-    .select('.op').events('click');
-
-  const opClickAction$ = opClick$.map(e => {
-    mM8.ret(e.target.textContent);
-    if (O.mM3.x.length === 2) {
-      updateCalc();
-    }
-  })
+  const taskAction$ = mM$taskList.stream.observe(str => {
+    console.log('In taskAction$. str is: ', str)
+    socket.send('TD#$42' + ',' + O.mMgroup.x.trim() + 
+        ',' + O.mMname.x.trim() + ',' + '@' + str);
+  });
 
   const rollClick$ = sources.DOM
     .select('.roll').events('click');
@@ -490,27 +475,75 @@ function main(sources) {
 
 // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> END basic prime END
 
-  const taskAction$ = mM$taskList.stream.observe(str => {
-    console.log('In taskAction$. str is: ', str)
-    socket.send('TD#$42' + ',' + O.mMgroup.x.trim() + 
-        ',' + O.mMname.x.trim() + ',' + '@' + str);
-  });
+// <>>><>><><><><>>>><><><  traversal  ><><><><><><>>><><><><><><><><><><><>< START traversal  
 
 
 
-    const mM$1Action$ = mM$1.stream.observe(v => {
-      console.log('<><><><><><><><><><><><><><><<><><><><><><><><><> In mM$Action$ v is ', v);
-      if (Array.isArray(v)) {
-        document.getElementById('0').innerHTML = O.mMcurrentRoll.x[0]; 
-        document.getElementById('1').innerHTML = O.mMcurrentRoll.x[1]; 
-        document.getElementById('2').innerHTML = O.mMcurrentRoll.x[2]; 
-        document.getElementById('3').innerHTML = O.mMcurrentRoll.x[3]; 
-        cleanup()
-      }
-      else {
-        console.log('O.mM$1.stream is providing defective data to O.mM$1Action');
+    const forwardClick$ = sources.DOM
+      .select('#forward').events('click');
+
+    const backClick$ = sources.DOM
+      .select('#back').events('click');
+
+    const forwardAction$ = forwardClick$.map(() => {
+      if (O.mMindex.x < (O.mMhistorymM1.x.length - 1)) {
+        O.mMindex.bnd(add, 1, mMindex)
+        .bnd(mM$3.ret)
       }
     });
+
+    const backAction$ = backClick$.map(() => {
+      if (O.mMindex.x > 0) {
+        O.mMindex.bnd(add, -1, mMindex)
+        .bnd(mM$3.ret)
+        socket.send('DE#$42,' + O.mMgroup.x.trim() + ',' + O.mMname.x.trim() + ', clicked the BACK button. ');
+      }
+    });
+
+    const numClick$ = sources.DOM
+      .select('.num').events('click');
+       
+    const numClickAction$ = numClick$.map(e => {
+      console.log(e);
+      if (O.mM3.x.length < 2) {
+        O.mM3.bnd(push, e.target.innerHTML, O.mM3)
+        mMtemp.ret(O.mMhistorymM1.x[O.mMindex.x].x)
+        .bnd(splice, e.target.id, 1, mM$1)
+      };
+      if (O.mM3.x.length === 2 && O.mM8.x !== 0) {
+        updateCalc();
+      };
+    }).startWith([0,0,0,0]);
+      
+    const opClick$ = sources.DOM
+      .select('.op').events('click');
+
+    const opClickAction$ = opClick$.map(e => {
+      mM8.ret(e.target.textContent);
+      if (O.mM3.x.length === 2) {
+        updateCalc();
+      }
+    })
+    const mM$1Action$ = mM$1.stream.observe(v => {
+        mM1.ret(v);
+        O.mMindex.bnd(add, 1, mMindex)
+        .bnd(i => O.mMhistorymM1.bnd(spliceAdd, i, O.mM1, O.mMhistorymM1))
+        document.getElementById('0').innerHTML = O.mM1.x[0];  
+        document.getElementById('1').innerHTML = O.mM1.x[1];  
+        document.getElementById('2').innerHTML = O.mM1.x[2];  
+        document.getElementById('3').innerHTML = O.mM1.x[3];  
+        cleanup()
+    });
+
+    const mM$3Action$ = mM$3.stream.observe(v => {
+      document.getElementById('0').innerHTML = (O.mMhistorymM1.x[v].x)[0]; 
+      document.getElementById('1').innerHTML = (O.mMhistorymM1.x[v].x)[1]; 
+      document.getElementById('2').innerHTML = (O.mMhistorymM1.x[v].x)[2]; 
+      document.getElementById('3').innerHTML = (O.mMhistorymM1.x[v].x)[3]; 
+      cleanup();
+    })
+
+// <>>><>><><><><>>>><><><  traversal  ><><><><><><>>><><><><><><><><><><><>< END traversal  
 
   const testZ = sources.DOM
     .select('#testZ').events('click')
@@ -565,30 +598,11 @@ function main(sources) {
     console.log('<><><><><><><><><> In dummyAction$ e is: ', e);
     console.log(document.getElementById('dummy').click);
     console.log('<><><><><><><><><>');
-
     var next = O.mM23.x[O.mM23.x.length - 1]*1 +  O.mM23.x[O.mM23.x.length - 2]*1 
     O.mM23.bnd(push, next , mM23);
     document.getElementById('dummy2').innerHTML = O.mM23.x;
   });
 
-
-  /*
-
-  const spread1Action$ = spread1Change$.map(e => {
-    O.mMcount.ret(e.target.value)
-    var A = e.target.value;
-    var B = O.mMcount2.x;
-    mMspreadsheet.ret(
-   [A + ' + ' + B + ' = ' + (A*1 + B*1),  
-    A + ' - ' + B + ' = ' + (A - B),  
-    A + ' * ' + B + ' = ' + (A * B),  
-    A + ' / ' + B + ' = ' + (A / B)])
-    .bnd(log);
-    document.getElementById('dummy').click();
-  });
- */
-
- 
   const newFibpress$ = sources.DOM
     .select('input#fibF').events('keypress');
 
@@ -613,7 +627,7 @@ function main(sources) {
     }
   });
 
-  const calcStream$ = merge( dummyAction$, newFibAction$, fibKeyPressAction5$, primeKeyPressAction5$, fibPressAction$, runTestAction$, quadAction$, testWAction$, testZAction$, testQAction$, edit1Action$, edit2Action$, colorAction$, deleteAction$, newTaskAction$, chatClickAction$, gameClickAction$, todoClickAction$, captionClickAction$, groupPressAction$, rollClickAction$, messagePressAction$, loginPressAction$, messages$, numClickAction$, opClickAction$ );
+  const calcStream$ = merge( forwardAction$, backAction$, dummyAction$, newFibAction$, fibKeyPressAction5$, primeKeyPressAction5$, fibPressAction$, runTestAction$, quadAction$, testWAction$, testZAction$, testQAction$, edit1Action$, edit2Action$, colorAction$, deleteAction$, newTaskAction$, chatClickAction$, gameClickAction$, todoClickAction$, captionClickAction$, groupPressAction$, rollClickAction$, messagePressAction$, loginPressAction$, messages$, numClickAction$, opClickAction$ );
   
     return {
       DOM: 
@@ -707,7 +721,10 @@ function main(sources) {
         h('button#5.op', 'concat' ),
         h('br'),
         h('div#dice', {style: {display: 'none'}}, [ 
-        h('button.roll', 'ROLL' ) ]) ]),
+        h('button.roll', 'ROLL' ), 
+        h('br'),
+        h('button#back', 'BACK' ), 
+        h('button#forward', 'FORWARD' ), ]) ]),
         h('div.winner', O.mMgoals2.x+''  ),
         h('div#log1', [
         h('p', 'IN ORDER TO SEE THE DEMONSTRATIONS, YOU MUST ENTER SOMETHING BELOW.'  ),
@@ -816,7 +833,25 @@ function main(sources) {
         h('input#quad' ),  
         h('p', 'Here is the code:' ),
         code.quad,
+
+
+
+
         h('span#tdList' ),
+        h('h2', 'Immutable Data And The State Object "O" ' ),
+       h('p', ' Mutations in this application are confined to the global state object "O" and MonadIter instances. In the examples above, the release() method moves the process forward to the next occurance of the MonadIter instance where the bnd() method provides a new function to the "p" attribute. The progressive morphing of "p" in MonadIter instances is desirable behavior, and I think that creating a clone each time it occurs would be a senseless waste of resources. Unless and until release() is called, the program is not affected by "p". If release() is called, the return value of p(...args) is returned, but "p" itself remains tucked away, never mixing with the flow of information through the program. The bnd() method is pure. Given the same argument, it will always do the same thing. It doesn\'t even return anything. It just updates the internal "p" attribute. This insulation of internal operations from the outer program is remeniscent of an important purpose of the Haskell IO monad. These are just hand-waving arguments for the harmlessness of letting the bnd() method mutate MonadIter instances, but I wanted to explain why I feel comfortable with letting the definition of MonadIter stand as it is.  ' ),           
+       h('p', 'All monad updates caused by the monad ret() method are stored in the object "O". When a monad m executes m.ret(v) for some value "v", m remains unchanged and the O attribute O.m is created or, if it already exists, is replaced by the update; i.e., O.m.x == v becomes true. Older versions of m are subject to garbage collection unless there is a reference to them or to an object (arrays are objects) containing m.  This is illustrated in the score-keeping code below.  All score changes are captured by mM13.ret(). Therefore, O.mM13.x is always the current score. Replacing monad attributes in O is vaguely analogous to swapping out ServerState in the Haskell server\'s state TMVar. Older versions of ServerState can be preserved in the server just as prior versions of O.mM13 can be preserved in the front end. ' ),     
+       h('h3', 'Storing Monads That Have Been Replaced In O'  ),
+       h('p', ' The history of the number display in the game can be traversed in either direction until a player achieves a goal. After that, the traversable history builds up until another goal is achieves. Players can use historical displays, so to keep competition fair, group members are notified when another member clicks the BACK button. '  ),
+       h('p', ' Every time mM$1Action$ is updated by "mM$1.stream.observe(v =>", mM1.ret(v) executes causing O.mM1 to be replaced. "O.mMhistorymM1.bnd(spliceAdd, i, O.mM1, O.mMhistorymM1)" executes next. O.mMhistorymM1 maintains the history of game displays up to the scoring of a goal, at which point the monads are discarded and the process of saving monads begins again. The BACK and FORWARD buttons change the index number. mM$3.ret() takes the index number and mM$3.stream provides it to mM$3Action$. Here is the code: '  ),
+       code.traverse,  
+       h('p', ' It would have been more efficient to just save the arrays rather than the monads that hold them. But this isn\t about recommended practices right now. It is a demonstration of a use of the not-mutated monads on the mutable global object "O". I write "un-mutated" because the monads can be clobbered anytime you want. But if values are replaced using the Monad ret() method, as is the case in this demonstration, monads on "O" are replaced, not mutated. '  ),
+ 
+
+
+
+
+
         h('h2', 'MonadStream'  ),
         code.monadStr,
         h('span.tao', ' MonadStream instances acquire values with the "ret()" method, placing them in the "stream" attribute. The stream depends on the ' ),
@@ -903,16 +938,6 @@ function main(sources) {
         code.add,  
         h('p'  ), 
         h('hr'),
-        h('h3', 'Immutable Data And The State Object "O" ' ),
-        h('p',  'The server updates scores in response to messages prefixed by "CG#$42". Each such message carries an integer specifying the amount of the change. The ServerState list of Client tupples is pulled from the game state TMVar and replaced by a new tupple whose Score field differs from the previous one.' ),
-        h('p', 'In front end code, mutating variables which are defined inside of functions often seems inocuous in applications written in an object oriented programming style. This is not the case in a Motorcycle.js application, where functions culminate in streams that merge into the stream that feeds the object returned by the main function, called "main" in this application. "sources" is an array of drivers. It is main\'s only argument, "sources" and "main" are Cycle.run()\'s arguments.' ), 
-        h('p', '"main" and "Cycle.run" are called only once. In the cyclic steady state that results, a reference should say what it means and mean what it says. If it suddenly refers to something other than what the other half of the cycle thinks it is, there will be a temporary disconnect. This will promptly staighten out, but having temporary disconnects shakes confidence in the consistency and reliability of the program. I don\'t have an example of mutating an object causing an unexpected result or crash. I would appreciate it if someone would give me such an example. ' ),
-       h('p', ' In this environment, avoiding mutations is recommended and I generally follow that recommendation. Mutations in this application are confined to the global state object "O" and MonadIter instances. In the examples above, the release() method moves the process forward to the next occurance of the MonadIter instance where the bnd() method provides a new function to the "p" attribute. The progressive morphing of "p" in MonadIter instances is desirable behavior, and I think that creating a clone each time it occurs would be a senseless waste of resources. Unless and until release() is called, the program is not affected by "p". If release() is called, the return value of p(...args) is returned, but "p" itself remains tucked away, never mixing with the flow of information through the program. The bnd() method is pure. Given the same argument, it will always do the same thing. It doesn\'t even return anything. It just updates the internal "p" attribute. This insulation of internal operations from the outer program is remeniscent of an important purpose of the Haskell IO monad. These are just hand-waving arguments for the harmlessness of letting the bnd() method mutate MonadIter instances, but I wanted to explain why I feel comfortable with letting the definition of MonadIter stand as it is.  ' ),           
-       h('p', 'All monad updates caused by the monad ret() method are stored in the object "O". When a monad m executes m.ret(v) for some value "v", m remains unchanged and the O attribute O.m is created or, if it already exists, is replaced by the update; i.e., O.m.x == v becomes true. Older versions of m are subject to garbage collection unless there is a reference to them or to an object (arrays are objects) containing m.  This is illustrated in the score-keeping code below.  All score changes are captured by mM13.ret(). Therefore, O.mM13.x is always the current score. Replacing monad attributes in O is vaguely analogous to swapping out ServerState in the Haskell server\'s state TMVar. Older versions of ServerState can be preserved in the server just as prior versions of O.mM13 can be preserved in the front end. ' ),     
-        code.updateCalc,
-        h('p', 'The socket messages prompt the server to update its application state and to broadcast messages to all members of the group whose member sent the message to the server. Let\'s take another look at the way incoming messages are handled.'  ),  
-        code.messages,
-        h('p#monads', ' Messages prefixed by CB#$42 are broadcast in response to CG#$42-prefixed messages from a browser. CB#$42 prefixes release mMZ11, causing the scoreboard to update. CA#$42-prefixed messages to the server result in CA#$42-prefixed messages carrying the next dice roll to be broadcast to the sender\'s group.  CE#$42 prefixed messages cause the release of mMZ14 which causes O.mMgoals2.x to change from an empty string to an anouncement of the name of the winner. ' ),  
         h('hr' ),  
         h('a', {props: {href: '#top'}}, 'Back To The Top'   ),  
         h('h3', 'Why Call Them Monads?' ),  
@@ -968,17 +993,21 @@ function main(sources) {
   function updateCalc() { 
     O.mM3.bnd(x => mM7
     .ret(calc(x[0], O.mM8.x, x[1]))
-    .bnd(result => {if (result == 20) {score(O.mM13.x, 1)}; return O.mM7}) 
-    .bnd(result => {if (result == 18) {score(O.mM13.x, 3)}; return O.mMcurrentRoll}) 
-    .bnd(push, O.mM7.x, mMcurrentRoll)
-    .bnd(mM$1.ret));
-    reset();
+    .bnd(result => 
+      {  O.mM1.bnd(push, result, mM1).bnd(z =>
+         mM$1.ret(z));                                      
+        if (result == 20) {score(O.mM13.x, 1)}; 
+         if (result == 18) {score(O.mM13.x, 3)};
+      }
+    )) 
+    reset()
   };
 
   var score = function score(x,j) {
     if ((x + j) == 20) {
       mMgoals.ret(O.mMgoals.x == 2 ? 0 : (O.mMgoals.x + 1)); 
-      mM13.ret(0);
+      mM13.ret(0).bnd(mMindex.ret);
+      mMhistorymM1.ret([ret([0,0,0,0])]);   
       socket.send('CG#$42,' + O.mMgroup.x + ',' + O.mMname.x + ',' + -x + ',' + O.mMgoals.x); 
       if (O.mMgoals.x == 0) {
         socket.send('CE#$42,' + O.mMgroup.x + ',' + O.mMname.x + ',nothing ');

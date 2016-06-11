@@ -10,6 +10,7 @@ var MonadStream = function MonadStream(g) {
   this.id = g;
   this.stream = mostSubject.subject()
   this.ret = function (a) {
+    console.log('From ', _this.id, 'a is ', a);
     _this.stream.next(a);
     return _this;
   };
@@ -129,7 +130,8 @@ var MI = function MI(x) {
 };
 
 var count = 0;
-// var mM1 = M([],'mM1');
+var mM1 = M([],'mM1');
+mM1.ret(mM1.x);
 var mM2 = M(0,'mM2');
 var mM3 = M([],'mM3');
 var mM4 = M([],'mM4');
@@ -190,7 +192,6 @@ var mMtem2 = new Monad(0, 'mMtem2');
 var mMt = new Monad(0, 'mMt');
 var mMtest = new Monad(0, 'mMtest');
 var mMhistory = new Monad(0, 'mMhistory');
-var mMindex = new Monad(0, 'mMindex');
 var mMcursor = new Monad(0, 'mMcursor');
 var mMgroup = new Monad('solo', 'mMgroup');
 var mMgoals = new Monad(0, 'mMgoals');
@@ -202,10 +203,9 @@ var mMextra2 = new Monad('nothing', 'mMextra2');
 var mMsave = new Monad({x: 'start'}, 'mMsave');
 var mMsavear = new Monad([ret([0,0,0,0])], 'mMsavear');
 var mMindex = new Monad(0, 'mMindex');
-var mMindex2 = new Monad(-1, 'mMindex2');
-var mMindex3 = new Monad(0, 'mMindex3');
+mMindex.ret(mMindex.x)
 var mMhistory = new Monad([], 'mMhistory');
-var mMhistorymM1 = new Monad([[0,0,0,0]], 'mMhistorymM1');
+var mMhistorymM1 = new Monad([ret([0,0,0,0],'start')], 'mMhistorymM1');
 var mMhistorymM3 = new Monad([], 'mMhistorymM3');
 var mMhistorymMtask = new Monad([], 'mMhistorymMtask');
 var mMtemp = new Monad('temp', 'mMtemp');
@@ -342,7 +342,6 @@ mM19.ret(mM19.x)
 mMhistorymM1.ret(mMhistorymM1.x)
 mMhistorymM3.ret(mMhistorymM3.x)
 mMhistory.ret(mMhistory.x)
-mMindex2.ret(mMindex2.x);
 mMhelper.ret(mMhelper.x);
 mMtasks.ret(mMtasks.x);
 mMalert.ret(mMalert.x);
@@ -548,13 +547,7 @@ var clean = function clean(x, mon) {
 var push = function push(y,v,mon) {
   console.log('In push. y, v, mon are: ', y, v, mon);
     let ar = [];
-    if (y.length == 0) {
-      ar = [v];
-    }
-    else {
-      let keys = Object.keys(y);
-      for (let k in keys) {ar[k] = y[k]};
-      ar.push(v);
+    if (y.length == 0) { ar = [v]; } else { let keys = Object.keys(y); for (let k in keys) {ar[k] = y[k]}; ar.push(v);
     }
     return mon.ret(ar);
 };
@@ -562,9 +555,10 @@ var push = function push(y,v,mon) {
 var spliceRemove = function spliceRemove(x, index, location, mon) {
   if (Array.isArray(x)) {
     let ar = x[index].slice();
+    console.log('In spliceRemove. ar is: ', ar )
     ar.splice(location,1);
-    return mon.ret(ar);  
-  }
+    return mon.ret(ar); 
+  } 
   console.log('Major malfunction in spliceRemove. x, index, location, mon: ', x, index, location, mon);
 };
 
