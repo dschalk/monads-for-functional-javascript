@@ -685,7 +685,7 @@ function main(sources) {
         h('h1', 'Motorcycle.js With JS-monads' ),
         h('span.tao1', ' A shared, persistent todo list, ' ),
         h('br'),
-        h('span.tao1', ' A websockets simulated dice game, ' ),
+        h('span.tao1', ' A websockets simulated dice game with a traversable history, ' ),
         h('br'),
         h('span.tao1', ' Group chat rooms and more demonstrations of efficient, ' ),
         h('br'),
