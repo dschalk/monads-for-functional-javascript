@@ -117,9 +117,7 @@ var driver = h('pre', `  var websocketsDriver = function () {
 
 var messages = h('pre', `  const messages$ = (sources.WS).map(e => 
     mMtem.ret(e.data.split(',')).bnd(v => {
-    mMZ10.bnd(() => {
-      mM$2.ret([])
-      mMcurrentRoll.ret([v[3], v[4], v[5], v[6]]).bnd(mM$1.ret) }) 
+    mMZ10.bnd(() => mM$1.ret([v[3], v[4], v[5], v[6]]))
     mMZ11.bnd(() => updateScoreboard(v[3]));
     mMZ12.bnd(() => mM6
       .ret(v[2] + ' successfully logged in.'))
@@ -128,7 +126,8 @@ var messages = h('pre', `  const messages$ = (sources.WS).map(e =>
     mMZ15.bnd(() => mMgoals2.ret('A player named ' + 
       O.mMname.x + 'is currently logged in. Page will refresh in 4 seconds.')
       .bnd(refresh))
-    mMZ16.bnd(() => {
+    mMZ16.bnd(() => {if (O.mMname.x != v[2]) {mMgoals2.ret(v[2] + v[3])}})
+    mMZ17.bnd(() => {
       if (v[3] == 'no file') {
         mMtaskList.ret([])
       } 
@@ -143,20 +142,17 @@ var messages = h('pre', `  const messages$ = (sources.WS).map(e =>
       .bnd(next, 'CD#$42', mMZ13)
       .bnd(next, 'CE#$42', mMZ14)
       .bnd(next, 'EE#$42', mMZ15)
-      .bnd(next, 'DD#$42', mMZ16)
+      .bnd(next, 'DE#$42', mMZ16)
+      .bnd(next, 'DD#$42', mMZ17)
     }) 
   });
-             
+              
   var next = function next(x, y, mon2) {
     if (x === y) {
       mon2.release();
     }
     return ret(x);
   }`  )
-
-var next = h('pre',  `  
-  `  )
-
 
 var Monad$ = h('pre',  `  var Monad$ = function Monad$(z, g) {
       var _this = this;

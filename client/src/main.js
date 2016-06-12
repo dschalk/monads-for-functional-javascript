@@ -37,10 +37,8 @@ function main(sources) {
   mMZ2.bnd(v => cube(v).bnd(w => mMt3.ret(v + ' cubed is ' + w)))
   
   const messages$ = (sources.WS).map(e => {
-    console.log('******************<><><><><><><> incoming message: ', e)
     mMtem.ret(e.data.split(',')).bnd(v => {
-    mMZ10.bnd(() => 
-    mM$1.ret([v[3], v[4], v[5], v[6]]))
+    mMZ10.bnd(() => mM$1.ret([v[3], v[4], v[5], v[6]]))
     mMZ11.bnd(() => updateScoreboard(v[3]));
     mMZ12.bnd(() => mM6
       .ret(v[2] + ' successfully logged in.'))
@@ -810,6 +808,7 @@ function main(sources) {
         h('span.red3', 'ret(0).bnd(add, 3).bnd(cube).bnd(m.ret)' ), 
         h('span.td2', 'causes O.m.x == 27, and O.m.id = "m". ' ),
         h('br' ),  
+        h('br#iterLink', ),
         h('br' ),  
         h('span.red3', 'ret(0).bnd(add, 2, m).bnd(cube, m2)' ), 
         h('span.td2', ' causes O.m.x == 2, and O.m2.x == 8. ' ),
