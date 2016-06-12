@@ -396,17 +396,14 @@ function main(sources) {
     }
   });
 
-  mM$fib5.stream.observe(v => {
-    var x = v.splice(0, v.length);
-      if (x[1] < x[2]) {
-          O.mMfibs8.bnd(push, x[0] + x[1], mMfibs8);
-          mM$fib5.ret([x[1], x[0] + x[1], x[2]]);
+  mM$fib5.stream.observe(x => {
+      while (x[1] < x[2]) {
+          x = [x[1], x[0] + x[1], x[2]];
+          O.mMfibs8.bnd(push, x[1], mMfibs8)
       }
-      else {
-        let ar = O.mMfibs8.x.slice(0, O.mMfibs8.x.length - 1);
-        document.getElementById('fib5').innerHTML = ar;
-        mMitterPrime5.release([x[0], ar]);
-      } 
+      var ar = O.mMfibs8.x.slice(0, O.mMfibs8.x.length - 1);
+      document.getElementById('fib5').innerHTML = ar;
+      mMitterPrime5.release([x[0], ar]);
       mMitterFib5.bnd(
         x => {
           let ar = O.mMfibs8.x.slice();
@@ -442,35 +439,39 @@ function main(sources) {
   });
 
   mM$prime5.stream.observe(v => {
-      while ((v[0][v[0].length - 1]) < v[2]) {
+    f(v[2]);
+    function f(x) {
+      while ((v[0][v[0].length - 1]) < x) {
         for (let i in v[0]) {
           if ((v[1] % v[0][i]) == 0) {
-            mM$prime5.ret([v[0], v[1] + 1, v[2]]);
+            v[1]+=1;
+            f(v[2]);
           }
           if (i == (v[0].length - 1)) {
             v[0].push(v[1]);
+            f(v[2]);
           }
         }
       }
-      let ar = v[0].slice()
-      document.getElementById('prime5').innerHTML = ar;
-      var prFibs = ar.filter(v => O.mMfibs8.x.includes(v));
-      document.getElementById('primeFibs').innerHTML = prFibs;
-      mMitterPrime5.bnd(arr => {
-        var x = arr[0];
-        var fibs = arr[1];
-        if (x > (v[0][v[0].length - 1])) {
-          mM$prime5.ret([v[0], v[1] + 1, x]);
-        }
-        else {
-          let trunc = ar.filter(a => a < x);
-          let ar2 = ar.slice(0, trunc.length + 1);
-          document.getElementById('prime5').innerHTML = ar2;
-          var primeFibs = fibs.filter(v => ar2.includes(v)); 
-          document.getElementById('primeFibs').innerHTML = primeFibs;
-           
-        }
-      })
+    }
+    document.getElementById('prime5').innerHTML = v[0];
+    var prFibs = v[0].filter(v => O.mMfibs8.x.includes(v));
+    document.getElementById('primeFibs').innerHTML = prFibs;
+    mMitterPrime5.bnd(arr => {
+      var x = arr[0];
+      var fibs = arr[1];
+      if (x > (v[0][v[0].length - 1])) {
+        mM$prime5.ret([v[0], v[1] + 1, x]);
+      }
+      else {
+        let trunc = v[0].filter(a => a < x);
+        let ar2 = v[0].slice(0, trunc.length + 1);
+        document.getElementById('prime5').innerHTML = ar2;
+        var primeFibs = fibs.filter(v => ar2.includes(v)); 
+        document.getElementById('primeFibs').innerHTML = primeFibs;
+         
+      }
+    })
   });
 
 // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> END basic prime END
@@ -811,7 +812,7 @@ function main(sources) {
         h('br' ),  
         h('br' ),  
         h('span.red3', 'ret(0).bnd(add, 2, m).bnd(cube, m2)' ), 
-        h('span.td2', ' where m, and m2 are monads causes O.m.x == 2, and O.m2.x == 8. ' ),
+        h('span.td2', ' causes O.m.x == 2, and O.m2.x == 8. ' ),
         h('br' ),  
         h('h2', 'MonadIter' ),
         h('p', 'For any instance of MonadIter, say "m", the statement "m.bnd(func)" causes m.p == func to be true. The statement "m.release(...args) causes p(...args) to execute. Here is the definition: ' ), 
