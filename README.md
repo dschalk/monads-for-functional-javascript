@@ -184,9 +184,82 @@ The code above passes a Fibonacci number and an array of Fibonacci numbers to th
       })
   });
 ```
-Other ways of generating the three arrays might be more efficient; but when you are familiar with the monads, the above code is easy to read and understand. User data -> mMitterFib5.release(num) -> test -> (A) generate a longer array and display or (B) truncate and display -> mMitterPrime5.release -> test -> (A) generate a longer array and display or (B) truncate and display -> generate the prime Fibonacci numbers and display them.
+There are more efficient ways of generating the three arrays; but when you are familiar with the monads, the above code is easy to read and understand. User data -> mMitterFib5.release(num) -> test -> (A) generate a longer array and display or (B) truncate and display -> mMitterPrime5.release -> test -> (A) generate a longer array and display or (B) truncate and display -> generate the prime Fibonacci numbers and display them.
+Here is an efficient way of computing prime Fibonacci numbers. It uses two instances of MonadState along with some auxiliary functions. Here is the function that generates an array of Fibonacci numbers and an array of prime Fibonacci numbers:
 
+## primeFib
+```javascript
+  function primeFib (x) {
+    var ar = [];
+    var ar2 = [];
+    var fibs = fibMonad.run([0, 1, x, []]).a
+    var l = fibs.length - 3;
+    var primes = primesMonad
+    .run([Math.round(Math.sqrt([fibMonad.a[fibMonad
+    .a.length - 1]])), 6, 0, [2,3,5]]).a
+    fibs.map(f => {
+      ar.length = 0;
+      primes.map(p => {
+        if (f == p || f % p != 0 && f > 1) {
+          ar.push(f);
+        }
+        if (ar.length == primes.length) {
+          ar2.push(ar.pop());
+        }
+      })
+    })
+    return [ar2, fibs];
+```
+And here are the definitions of the monads and the functions they use to define the "process()" method:
+```javascript
+  function primes_state(v) {
+    while ((v[3][v[3].length - 1]) < v[0]) {
+      for (let i in v[3]) {
+        if ((v[1] % v[3][i]) == 0) {
+          v[1]+=1;
+          primes_state(v);
+        }
+        else if (i == (v[3].length - 1)) {
+          v[3].push(v[1]);
+          primes_state(v);
+        }
+      }
+    }
+    return v;
+  }
+  
+  function prS (v) {                 // Re-uses previously calculated values
+    var x = primesMonad.a[primesMonad.a.length - 1]
+    if (x < v[0]) {
+      let arr = primesMonad.a;
+      console.log('>>>>>>>>>>>> v[0], x+1, 0, arr ', v[0], x+1, 0, arr);
+      let w = [v[0], x+1, "anything", arr];    // In the else block, the third element is "whatever"
+      return primes_state(w);    // primes_state calculates new values and returns the result
+    }
+    else {
+      let trunc = primesMonad.a.filter(a => a < v[0]);
+      let res = primesMonad.a.slice(0, trunc.length + 1);  // The prime numbers
+      return [v[0], (res[res.length - 1] + 1), "whatever", res];
+    }
+  }
+  
+  var primesMonad = new MonadState('primesMonad', 2, [2],  prS)    // Creates primeMonad 
 
+  ********************************************************************* fibMonad:
+
+  var mMsT = new Monad([], 'mMsT');
+  mMsT.ret([]);
+  
+  var fibs_state = function fibs_state(ar) { 
+    mMsT.ret(ar.slice());
+    while (O.mMsT.x[3].length < O.mMsT.x[2]) { 
+      mMsT.ret([O.mMsT.x[1], (O.mMsT.x[0]*1 + O.mMsT.x[1]), O.mMsT.x[2], O.mMsT.x[3].concat(O.mMsT.x[0])])
+    }
+    return O.mMsT.x;
+  }
+  
+  var fibMonad = new MonadState('fibMonad', O.mMsT.x, [0],  fibs_state)  
+```
  
 .
 .
