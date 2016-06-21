@@ -1,4 +1,6 @@
 node_modules
+.stack-work
+stack-work
 *~
 .cow*
 .monad*
@@ -7,4 +9,3 @@ node_modules
 .Mai*
 .REA*
 space.js
-.stack-work
