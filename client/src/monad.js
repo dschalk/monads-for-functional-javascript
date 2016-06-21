@@ -58,7 +58,7 @@ function primeFib (x) {
       }
     })
   })
-  return ar2;
+  return [ar2, fibs];
 }
 
 var MonadState = function MonadState (g, state, value, p) {

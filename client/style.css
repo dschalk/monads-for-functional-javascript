@@ -75,6 +75,19 @@ input {
   color: #ff9a20;
   font-size: 23px;
 }
+
+.red6 {
+  margin: 1%;
+  color: #ff9a20;
+  font-size: 21px;
+}
+
+.red7 {
+  margin: 1%;
+  color: #ff0000;
+  font-size: 23px;
+}
+
 .content {
   font-size: 22px;
 } 
