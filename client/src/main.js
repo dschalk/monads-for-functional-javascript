@@ -457,7 +457,6 @@ function main(sources) {
     document.getElementById('primeFibs').innerHTML = prFibs;
     mMitterPrime5.bnd(arr => {
       var x = arr[0];
-      var fibs = arr[1];
       if (x > (v[0][v[0].length - 1])) {
         mM$prime5.ret([v[0], v[1] + 1, x]);
       }
@@ -465,7 +464,7 @@ function main(sources) {
         let trunc = v[0].filter(a => a < x);
         let ar2 = v[0].slice(0, trunc.length + 1);
         document.getElementById('prime5').innerHTML = ar2;
-        var primeFibs = fibs.filter(v => ar2.includes(v)); 
+        var primeFibs = arr[1].filter(v => ar2.includes(v)); 
         document.getElementById('primeFibs').innerHTML = primeFibs;
          
       }
@@ -852,6 +851,19 @@ function main(sources) {
        code.traverse,  
        h('p', ' It would have been more efficient to just save the arrays rather than the monads that hold them. But this isn\'t about recommended practices right now. It is a demonstration of a use of the not-mutated monads on the mutable global object "O". I write "not-mutated" because the monads can be clobbered anytime you want. But if values are replaced using the Monad ret() method, as is the case in this demonstration, monads on "O" are replaced, not mutated. '  ),
  
+        h('h2', 'The State Monad: MonadState' ),  
+        h('p', ' An instance of MonadState can hold the current state of a computation. MonadState supplements the global object "O" where the current states of instances of Monad can be found, privided that updates are accomplished only with the Monad ret() method. '   ),  
+        code.MonadState,
+        h('p', ' MonadState reproduces some of the functionality found in the Haskel Module "Control.Monad.State.Lazy", inspired by the paper "Functional Programming with Overloading and Higher-Order Polymorphism", Mark P Jones (http://web.cecs.pdx.edu/~mpj/) Advanced School of Functional Programming, 1995. The following demonstrations use the MonadState instances fibMonad and primesMonad to create and store arrays of fibonacci numbers, arrays of prime numbers, and arrays of prime fibonacci numbers. Here is the definition of primesMonad, along with the functions it uses. ' ), 
+       code.primesMonad, 
+        h('p', ' The function prS() is the monad\'s process attribute. It checks to see what prime numbers have already been calculated. If no more are needed, it returns the (possibly truncated) pre-existing array. If more numbers are needed, it calls primes_state() with an argumant that causes it to pick up where it left off the last time it ran, adding more prime numbers as required. The value returned by the method run() of any instance of MonadPrimes must be an array, let\'s call it arr, whose fourth element (arr[3]) is the value that will be the monad\'s "a" attribute. The third element (arr[2]) is not used by primesMonad, but it is not entirely useless. During development, things like "console.log(arr[2] == "whatever")" verified that previously calculated numbers were being used, while "console.log(arr[2] == "anything")" verified that primes_state() had been called. ' ),  
+        h('p', ' The definition of fibsMonad requires all four elements of the array returned by the process() method. Here it is: ' ),
+      code.fibsMonad,  
+        h('p', ' fibsMonad.process(), a/k/a fibs_state(), is so fast that that I didn\'t bother to memoize calculated fibonacci numbers the way I did with prS and primes_state. Not only is it fast, but as the numbers get larger there are far more prime numbers than fibonacci numbers. The bottleneck is calculating the array of primes, so memoizing makes a big difference there. In the Chrome browser, fibsMonad almost instantaneouly computes a list showing Fibonacci number 1475 is 1.3069892237633987e+308 and Fibonacci number 1476 is Infinity.' ),  
+        h('p', ' primeFib() is a function that uses fibsMonad and primesMonad to compute arrays of prime fibonacci numbers. The argument specifies how many fibonacci numbers will be generated. The sceenshot of my Chrome browser console log shows its limitations. Any initial primeFib() argument greater than 39 results in "RangeError: Maximum call stack size exceeded". Because of memoization, incremental increases up to 46 are possible. Going from 46 to 47 results in the "RangeError" message. The 46\th Fibonacci number is 1836311903, and the largest prime Fibonacci number in the list of the first 46 Fibonacci numbers is 433484437, according to my calculations. Here is the function I used to compute prime Fibonacci numbers: ' ),           
+        code.primeFib,
+        h('p',  ),  
+        h('p',  ),  
 
 
 
@@ -952,13 +964,26 @@ function main(sources) {
         h('a', {props: {href: "http://schalk.net:3056", target: "_blank" }}, 'Mocha Tests.' ),
         h('p', ' That\'s about it. That\'s why I call them "monads". But JS-monads can do much more than vaguely mirror Haskell monad functionality. There is no attempt to constrain JS-monads with type classes, or with restrictions on the types of functions the bnd() method can accept. m.bnd(x => x**3) returns a number, not a JS-monad. It would be the end of the line for a chained sequence of computations; but that might be exactly what you want: a monadic chain of computations that spits out a number when it is done. '  ),  
         h('a', {props: {href: '#top'}}, 'Back To The Top'   ),  
-        h('p' ),  
-        h('p' ),  
-        h('p' ),  
+
+
+        h('p',  ),  
+        h('p',  ),  
+        h('p',  ),  
         h('br'),  
         h('br'),  
         h('br'),  
-        h('hr'),  
+        h('br'),  
+        h('br'),  
+        h('br'),  
+        h('br'),  
+        h('br'),  
+        h('br'),  
+        h('br'),  
+        h('br'),  
+        h('br'),  
+        h('br'),  
+        h('br'),  
+        h('br'),  
         h('span#dummy2.red3' ),  
         h('hr'),  
         h('button#dummy', O.mMdummy.x ),  

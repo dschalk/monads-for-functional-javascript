@@ -1,9 +1,9 @@
 
 ==================== FINAL INTERFACE ====================
-2016-06-12 21:58:33.921578 UTC
+2016-06-21 18:24:39.842898 UTC
 
 interface main@main:Main 7103
-  interface hash: 25aa0b6b35f03e0d7a1f27fa563cfe35
+  interface hash: 2efdc2c6391fcbf0615597cf015a386d
   ABI hash: 746c8c7497bfdaf094ec410256010bc4
   export-list hash: e1b2b510b95f940fb5d5cd6bd6e3c4ea
   orphan hash: 276323d23bdb3224e26fb4d203ffca48
@@ -221,7 +221,6 @@ addDependentFile "client/bower_components/most/bower.json"
 addDependentFile "client/bower_components/most/README.md"
 addDependentFile "client/bower_components/most-subject.min.js"
 addDependentFile "client/bower_components/METRO_FAX_Lawrence_Rink.png"
-addDependentFile "client/dist/main.js"
 addDependentFile "client/dist/bundle.js"
 addDependentFile "client/src/monad.js~"
 addDependentFile "client/src/code.js"
@@ -237,14 +236,13 @@ addDependentFile "client/src/code.js~"
 addDependentFile "client/fetch.js"
 addDependentFile "client/package.json"
 addDependentFile "client/index.html"
-addDependentFile "client/style.css~"
 addDependentFile "client/proxy-observe.js"
 addDependentFile "client/mostSub.js"
+addDependentFile "client/run"
 addDependentFile "client/style.css"
 addDependentFile "client/webpack.config.js"
 addDependentFile "client/index.js"
 addDependentFile "client/main.js.map"
-addDependentFile "client/index.html~"
 addDependentFile "client/glackage.json"
 8fbc6c93b882a452d72df59744d3773d
   $sread :: GHC.Base.String -> GHC.Types.Int

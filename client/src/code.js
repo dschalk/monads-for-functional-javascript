@@ -924,20 +924,91 @@ var traverse = h('pre',  `
     cleanup();
   })  `  )
 
-var seed5 = h('pre',  ` 
-             `  )
+var MonadState = h('pre',  `  var MonadState = function MonadState (g, state, value, p) {
+    var _this = this;
+    this.id = g;
+    this.s = state;
+    this.a = value;
+    this.put = function put(w) { _this.s = w };
+    this.get = function get() { return _this.s };
+    this.process = p;
+    this.bnd = function (func, ...args) {
+       return func(_this.a, ...args);
+    };
+    this.run = function(st) { 
+      _this.s = _this.process(st); 
+      _this.a = _this.s[3];
+      return (new MonadState(_this.id, _this.s, _this.a, _this.process));
+    }
+  }  `  )
 
-var seed6 = h('pre',  ` 
-             `  )
+var primesMonad = h('pre',  `  function primes_state(v) {
+    while ((v[3][v[3].length - 1]) < v[0]) {
+      for (let i in v[3]) {
+        if ((v[1] % v[3][i]) == 0) {
+          v[1]+=1;
+          primes_state(v);
+        }
+        else if (i == (v[3].length - 1)) {
+          v[3].push(v[1]);
+          primes_state(v);
+        }
+      }
+    }
+    return v;
+  }
+  
+  function prS (v) {                 // Re-uses previously calculated values
+    var x = primesMonad.a[primesMonad.a.length - 1]
+    if (x < v[0]) {
+      let arr = primesMonad.a;
+      console.log('>>>>>>>>>>>> v[0], x+1, 0, arr ', v[0], x+1, 0, arr);
+      let w = [v[0], x+1, "anything", arr];    // In the else block, the third element is "whatever"
+      return primes_state(w);    // primes_state calculates new values and returns the result
+    }
+    else {
+      let trunc = primesMonad.a.filter(a => a < v[0]);
+      let res = primesMonad.a.slice(0, trunc.length + 1);  // The prime numbers
+      return [v[0], (res[res.length - 1] + 1), "whatever", res];
+    }
+  }
+  
+  var primesMonad = new MonadState('primesMonad', 2, [2],  prS)  `  )
 
-var seed7 = h('pre',  ` 
-             `  )
+var fibsMonad = h('pre',  `  var mMsT = new Monad([], 'mMsT');
+  mMsT.ret([]);
+  
+  var fibs_state = function fibs_state(ar) { 
+    mMsT.ret(ar.slice());
+    while (O.mMsT.x[3].length < O.mMsT.x[2]) { 
+      mMsT.ret([O.mMsT.x[1], (O.mMsT.x[0]*1 + O.mMsT.x[1]), O.mMsT.x[2], O.mMsT.x[3].concat(O.mMsT.x[0])])
+    }
+    return O.mMsT.x;
+  }
+  
+  var fibMonad = new MonadState('fibMonad', O.mMsT.x, [0],  fibs_state)  `  )
 
-var seed8 = h('pre',  ` 
-             `  )
-
-var seed9 = h('pre',  ` 
-             `  )
+var primeFib = h('pre',  `  function primeFib (x) {
+    var ar = [];
+    var ar2 = [];
+    var fibs = fibMonad.run([0, 1, x, []]).a
+    var l = fibs.length - 3;
+    var primes = primesMonad
+    .run([Math.round(Math.sqrt([fibMonad.a[fibMonad
+    .a.length - 1]])), 6, 0, [2,3,5]]).a
+    fibs.map(f => {
+      ar.length = 0;
+      primes.map(p => {
+        if (f == p || f % p != 0 && f > 1) {
+          ar.push(f);
+        }
+        if (ar.length == primes.length) {
+          ar2.push(ar.pop());
+        }
+      })
+    })
+    return ar2;
+}  `  )
 
 var seed1 = h('pre',  ` 
              `  )
@@ -949,6 +1020,6 @@ var seed2 = h('pre',  `
 
 
 
-  export default {monad, monadStr, monadIt, fib, driver, messages, next, Monad$, updateCalc, arrayFuncs, travel, nums, cleanup, ret, C42, taskStream, newTask, process, mM$task, addString, colorClick, edit, testZ, quad, mdem1, runTest, todoStream, gameStream, inc, ret_add_cube, primes, seed, primeFib4, primeFib3, spreadsheet, spreadsheet2, add, reactiveFib, traverse}
+  export default {monad, monadStr, monadIt, fib, driver, messages, next, Monad$, updateCalc, arrayFuncs, travel, nums, cleanup, ret, C42, taskStream, newTask, process, mM$task, addString, colorClick, edit, testZ, quad, mdem1, runTest, todoStream, gameStream, inc, ret_add_cube, primes, seed, primeFib4, primeFib3, spreadsheet, spreadsheet2, add, reactiveFib, traverse, MonadState, primesMonad, fibsMonad, primeFib}
 
 

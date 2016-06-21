@@ -16,6 +16,121 @@ var MonadStream = function MonadStream(g) {
   };
 };
 
+var Monad = function Monad(z, g) {
+  var _this = this;
+
+  this.x = z;
+  if (arguments.length === 1) {
+    this.id = 'anonymous';
+  } else {
+    this.id = g;
+  }
+
+  this.bnd = function (func) {
+    for (var _len = arguments.length, args = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
+      args[_key - 1] = arguments[_key];
+    }
+    return func.apply(undefined, [_this.x].concat(args));
+  };
+
+  this.ret = function (a) {
+    O[_this.id] = new Monad(a,_this.id);
+    return O[_this.id];
+  };
+};
+
+function primeFib (x) {
+  var ar = [];
+  var ar2 = [];
+  var fibs = fibMonad.run([0, 1, x, []]).a
+  var l = fibs.length - 3;
+  var primes = primesMonad
+  .run([Math.round(Math.sqrt([fibMonad
+  .a[fibMonad.a.length - 1]])), 6, 0, [2,3,5]]).a
+  fibs.map(f => {
+    ar.length = 0;
+    primes.map(p => {
+      if (f == p || f % p != 0 && f > 1) {
+        ar.push(f);
+      }
+      if (ar.length == primes.length) {
+        ar2.push(ar.pop());
+      }
+    })
+  })
+  return ar2;
+}
+
+var MonadState = function MonadState (g, state, value, p) {
+  var _this = this;
+  this.id = g;
+  this.s = state;
+  this.a = value;
+  this.put = function put(w) { _this.s = w };
+  this.get = function get() { return _this.s };
+  this.process = p;
+  this.bnd = function (func) {
+    for (var _len = arguments.length, args = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
+      args[_key - 1] = arguments[_key];
+    }
+    return func.apply(undefined, [_this.a].concat(args));
+  };
+  this.run = function(st) { 
+    _this.s = _this.process(st); 
+    _this.a = _this.s[3];
+    return (new MonadState(_this.id, _this.s, _this.a, _this.process));
+  }
+}
+
+var mMsT = new Monad([], 'mMsT');
+mMsT.ret([]);
+
+var fibs_state = function fibs_state(ar) { 
+  mMsT.ret(ar.slice());
+  while (O.mMsT.x[3].length < O.mMsT.x[2]) { 
+    mMsT.ret([O.mMsT.x[1], (O.mMsT.x[0]*1 + O.mMsT.x[1]), O.mMsT.x[2], O.mMsT.x[3].concat(O.mMsT.x[0])])
+  }
+  return O.mMsT.x;
+}
+
+var fibMonad = new MonadState('fibMonad', O.mMsT.x, [0],  fibs_state) 
+
+function primes_state(v) {
+  while ((v[3][v[3].length - 1]) < v[0]) {
+    for (let i in v[3]) {
+      if ((v[1] % v[3][i]) == 0) {
+        v[1]+=1;
+        primes_state(v);
+      }
+      else if (i == (v[3].length - 1)) {
+        v[3].push(v[1]);
+        primes_state(v);
+      }
+    }
+  }
+  return v;
+}
+
+function prS (v) {
+  var x = primesMonad.a[primesMonad.a.length - 1]
+  if (x < v[0]) {
+    let arr = primesMonad.a;
+    let w = [v[0], x+1, "anything", arr];
+    return primes_state(w);
+  }
+  else {
+    let trunc = primesMonad.a.filter(a => a < v[0]);
+    let res = primesMonad.a.slice(0, trunc.length + 1);  // The prime numbers
+    return [v[0], (res[res.length - 1] + 1), 'whatever', res];
+  }
+}
+
+var primesMonad = new MonadState('primesMonad', 2, [2],  prS) 
+
+primesMonad.run([4, 3, 0, [2]])
+
+
+
 var CURRENT_ROLL = [];
 var mM$1 = new MonadStream('mM$1');
 var mM$taskList = new MonadStream('mM$taskList');
@@ -43,29 +158,6 @@ var mM$PF = new MonadStream('mM#PF');
 
 var emitevent;
 var data$;
-
-var Monad = function Monad(z, g) {
-  var _this = this;
-
-  this.x = z;
-  if (arguments.length === 1) {
-    this.id = 'anonymous';
-  } else {
-    this.id = g;
-  }
-
-  this.bnd = function (func) {
-    for (var _len = arguments.length, args = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
-      args[_key - 1] = arguments[_key];
-    }
-    return func.apply(undefined, [_this.x].concat(args));
-  };
-
-  this.ret = function (a) {
-    O[_this.id] = new Monad(a,_this.id);
-    return O[_this.id];
-  };
-};
 
 var MonadItter = function MonadItter() {
   var _this = this;
@@ -612,11 +704,8 @@ var dec = function dec(x, mon) {
 }
 
 var filter = function filter(x, condition) {
-  if (Array.isArray(x)) {
-    let ar = ret(x);
-    return ret(ar.x.filter(v => condition))
-  }
-  return ret(x);
+    let ar = x.slice();
+    return ret(ar.filter(v => condition))
 }
 
 var map = function map(x, f, mon) {
