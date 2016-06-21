@@ -185,7 +185,8 @@ The code above passes a Fibonacci number and an array of Fibonacci numbers to th
   });
 ```
 There are more efficient ways of generating the three arrays; but when you are familiar with the monads, the above code is easy to read and understand. User data -> mMitterFib5.release(num) -> test -> (A) generate a longer array and display or (B) truncate and display -> mMitterPrime5.release -> test -> (A) generate a longer array and display or (B) truncate and display -> generate the prime Fibonacci numbers and display them.
-Here is an efficient way of computing prime Fibonacci numbers. It uses two instances of MonadState along with some auxiliary functions. Here is the function that generates an array of Fibonacci numbers and an array of prime Fibonacci numbers:
+
+The "primeFib()" function demonstrates an efficient way to compute prime Fibonacci numbers. It uses two instances of MonadState along with some auxiliary functions. Here is the definition of primeFib:
 
 ## primeFib
 ```javascript
@@ -243,10 +244,10 @@ And here are the definitions of the monads and the functions they use to define 
     }
   }
   
-  var primesMonad = new MonadState('primesMonad', 2, [2],  prS)    // Creates primeMonad 
-
-  ********************************************************************* fibMonad:
-
+  var primesMonad = new MonadState('primesMonad', 2, [2],  prS)    // Creates primesMonad 
+```
+### fibMonad
+```javascript
   var mMsT = new Monad([], 'mMsT');
   mMsT.ret([]);
   
@@ -258,7 +259,7 @@ And here are the definitions of the monads and the functions they use to define 
     return O.mMsT.x;
   }
   
-  var fibMonad = new MonadState('fibMonad', O.mMsT.x, [0],  fibs_state)  
+  var fibMonad = new MonadState('fibMonad', O.mMsT.x, [0],  fibs_state)   // creates fibMonad  
 ```
  
 .
