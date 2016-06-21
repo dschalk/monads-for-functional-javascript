@@ -41,8 +41,8 @@ Here are some definitions, which can also be seen at [the online presentation](h
       _this.p = func;
     };
   }; `
-## MonadState
 ```
+## MonadState
 ```javascript
   var MonadState = function MonadState (g, state, value, p) {
     var _this = this;
