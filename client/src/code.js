@@ -936,9 +936,9 @@ var MonadState = h('pre',  `  var MonadState = function MonadState (g, state, va
        return func(_this.a, ...args);
     };
     this.run = function(st) { 
-      _this.s = _this.process(st); 
-      _this.a = _this.s[3];
-      return (new MonadState(_this.id, _this.s, _this.a, _this.process));
+      let s = _this.process(st); 
+      let a = s[3];
+      return (new MonadState(_this.id, s, a, _this.process));
     }
   }  `  )
 
