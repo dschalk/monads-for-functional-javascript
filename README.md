@@ -212,6 +212,8 @@ The "primeFib()" function demonstrates an efficient way to compute prime Fibonac
     return [ar2, fibs];
 ```
 And here are the definitions of the monads and the functions they use to define the "process()" method:
+
+### primesMonad
 ```javascript
   function primes_state(v) {
     while ((v[3][v[3].length - 1]) < v[0]) {
