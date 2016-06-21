@@ -119,7 +119,7 @@ The online demonstration features a game with a traversible dice-roll history; g
 
 With Motorcycle.js, the application runs smoothly and is easy to understand and maintain. I say "easy to understand", but some effort must first be invested into getting used to functions that take functions as arguments, and the Cycle.js / Motorcycle.js API. After that, seeing how the monads work is a matter of contemplating their definitions and experimenting a little. Most of the monads and the functions they use in this demonstration are immediately available in the browser console. Just load [http://schalk.net:3055](http://schalk.net:3055) and press F12 to explore and experiment.
 
-### Example
+### Examples
 One of the examples in the online demonstration uses MonadStream and MonadIter to produce an array of Fibonacci numbers, an array of prime numbers, and an array of prime Fibonacci numbers whenever a user enter an upper bound. The stream listeners are accessed through MonadItter's bnd() method. User data enters mM$fib5, then mM$fib5 calls mMitterPrime5.release([number, array]) sending a Fibonacci number and an array of Fibonacci numbers to mM$prime5. Fibonacci numbers and prime numbers are calculated only once. If an array shorter than one already computed is requested, a truncated version of the older list is displayed. Further explanation and an interactive demonstration are at [http://schalk.net:3055](http://schalk.net:3055).
 
 ```javascript
@@ -263,7 +263,7 @@ And here are the definitions of the monads and the functions they use to define 
   
   var fibMonad = new MonadState('fibMonad', O.mMsT.x, [0],  fibs_state)   // creates fibMonad  
 ```
- 
+There is an interactive demonstration of primesFib in the online application at http://schalk.net:3055 
 .
 .
 
