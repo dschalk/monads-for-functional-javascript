@@ -40,7 +40,30 @@ Here are some definitions, which can also be seen at [the online presentation](h
     this.bnd = function (func) {
       _this.p = func;
     };
-  }; ` 
+  }; `
+## MonadState
+```
+```javascript
+  var MonadState = function MonadState (g, state, value, p) {
+    var _this = this;
+    this.id = g;
+    this.s = state;
+    this.a = value;
+    this.put = function put(w) { _this.s = w };
+    this.get = function get() { return _this.s };
+    this.process = p;
+    this.bnd = function (func) {
+      for (var _len = arguments.length, args = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
+        args[_key - 1] = arguments[_key];
+      }
+      return func.apply(undefined, [_this.a].concat(args));
+    };
+    this.run = function(st) { 
+      _this.s = _this.process(st); 
+      _this.a = _this.s[3];
+      return (new MonadState(_this.id, _this.s, _this.a, _this.process));
+    }
+  }
 ```
 ## MonadStream
 ```javascript

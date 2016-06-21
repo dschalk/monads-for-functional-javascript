@@ -3468,7 +3468,7 @@
 
 	var fibsMonad = (0, _dom.h)('pre', '  var mMsT = new Monad([], \'mMsT\');\n  mMsT.ret([]);\n  \n  var fibs_state = function fibs_state(ar) { \n    mMsT.ret(ar.slice());\n    while (O.mMsT.x[3].length < O.mMsT.x[2]) { \n      mMsT.ret([O.mMsT.x[1], (O.mMsT.x[0]*1 + O.mMsT.x[1]), O.mMsT.x[2], O.mMsT.x[3].concat(O.mMsT.x[0])])\n    }\n    return O.mMsT.x;\n  }\n  \n  var fibMonad = new MonadState(\'fibMonad\', O.mMsT.x, [0],  fibs_state)  ');
 
-	var primeFib = (0, _dom.h)('pre', '  function primeFib (x) {\n    var ar = [];\n    var ar2 = [];\n    var fibs = fibMonad.run([0, 1, x, []]).a\n    var l = fibs.length - 3;\n    var primes = primesMonad\n    .run([Math.round(Math.sqrt([fibMonad.a[fibMonad\n    .a.length - 1]])), 6, 0, [2,3,5]]).a\n    fibs.map(f => {\n      ar.length = 0;\n      primes.map(p => {\n        if (f == p || f % p != 0 && f > 1) {\n          ar.push(f);\n        }\n        if (ar.length == primes.length) {\n          ar2.push(ar.pop());\n        }\n      })\n    })\n    return ar2;\n}  ');
+	var primeFib = (0, _dom.h)('pre', '  function primeFib (x) {\n    var ar = [];\n    var ar2 = [];\n    var fibs = fibMonad.run([0, 1, x, []]).a\n    var l = fibs.length - 3;\n    var primes = primesMonad\n    .run([Math.round(Math.sqrt([fibMonad.a[fibMonad\n    .a.length - 1]])), 6, 0, [2,3,5]]).a\n    fibs.map(f => {\n      ar.length = 0;\n      primes.map(p => {\n        if (f == p || f % p != 0 && f > 1) {\n          ar.push(f);\n        }\n        if (ar.length == primes.length) {\n          ar2.push(ar.pop());\n        }\n      })\n    })\n    return [ar2, fibs];\n}  ');
 
 	var seed1 = (0, _dom.h)('pre', ' \n             ');
 

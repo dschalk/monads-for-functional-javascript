@@ -1007,7 +1007,7 @@ var primeFib = h('pre',  `  function primeFib (x) {
         }
       })
     })
-    return ar2;
+    return [ar2, fibs];
 }  `  )
 
 var seed1 = h('pre',  ` 
