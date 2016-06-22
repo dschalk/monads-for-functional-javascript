@@ -196,20 +196,23 @@ The "primeFib()" function demonstrates an efficient way to compute prime Fibonac
     var fibs = fibMonad.run([0, 1, x, []]).a
     var l = fibs.length - 3;
     var primes = primesMonad
-    .run([Math.round(Math.sqrt([fibMonad.a[fibMonad
-    .a.length - 1]])), 6, 0, [2,3,5]]).a
+    .run([Math.round(Math.sqrt([fibs[fibs.length - 1]])), 6, 0, [2,3,5]]).a
     fibs.map(f => {
-      ar.length = 0;
+      ar = [];
       primes.map(p => {
         if (f == p || f % p != 0 && f > 1) {
+          ar = ar.slice();     // Avoids mutation   
           ar.push(f);
         }
         if (ar.length == primes.length) {
+          ar = ar.slice();
+          ar2 = ar2.slice();
           ar2.push(ar.pop());
         }
       })
     })
     return [ar2, fibs];
+  }
 ```
 And here are the definitions of the monads and the functions they use to define the "process()" method:
 
@@ -219,10 +222,12 @@ And here are the definitions of the monads and the functions they use to define 
     while ((v[3][v[3].length - 1]) < v[0]) {
       for (let i in v[3]) {
         if ((v[1] % v[3][i]) == 0) {
+          v = v.slice();   // Avoids mutating v
           v[1]+=1;
           primes_state(v);
         }
         else if (i == (v[3].length - 1)) {
+          v = v.slice();          
           v[3].push(v[1]);
           primes_state(v);
         }
@@ -235,7 +240,6 @@ And here are the definitions of the monads and the functions they use to define 
     var x = primesMonad.a[primesMonad.a.length - 1]
     if (x < v[0]) {
       let arr = primesMonad.a;
-      console.log('>>>>>>>>>>>> v[0], x+1, 0, arr ', v[0], x+1, 0, arr);
       let w = [v[0], x+1, "anything", arr];    // In the else block, the third element is "whatever"
       return primes_state(w);    // primes_state calculates new values and returns the result
     }

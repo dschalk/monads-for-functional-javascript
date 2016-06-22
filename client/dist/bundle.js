@@ -3446,13 +3446,11 @@
 
 	var ret_add_cube = (0, _dom.h)('pre', '  var ret = function ret(v, id) {\n    if (arguments.length === 1) {\n      return (new Monad(v, \'anonymous\'));\n    }\n    window[id] = new Monad(v, id);\n    return window[id];\n  }  \n\n  var add = function(x,b,mon) {\n    if (arguments.length === 3) {\n      return mon.ret(x + b);\n    }\n    return ret(x+b);\n  };\n\n  var cube = function(v,mon) {\n    if (arguments.length === 2) {\n      return mon.ret(v*v*v);\n    }\n    return ret(v*v*v);\n}  ');
 
-	var primes = (0, _dom.h)('pre', '  mM$prime.stream.addListener({\n    next: v => {\n      for (let i in v[0]) {\n        if ((v[1] % v[0][i]) == 0) {\n          mM$prime.ret([v[0], v[1] + 1, v[2]])\n          return;\n        }\n        if (i == (v[0].length - 1)) {\n          v[0].push(v[1]);\n          document.getElementById(\'prime\').innerHTML = v[0];\n          mMitterPrime.bnd(() =>  mM$prime.ret([v[0], v[1] + 1])) \n        }\n      }\n    },\n    error: err => console.error(err),\n    complete: () => console.log(\'completed\')\n  });\n\n  const primeClick$ = sources.DOM\n    .select(\'#prime\').events(\'click\');\n\n  const primeClickAction$ = primeClick$.map(() => {\n    mMitterPrime.release()\n  });  ');
-
 	var seed = (0, _dom.h)('pre', '  mM$prime.ret([[2],3])  ');
 
-	var primeFib4 = (0, _dom.h)('pre', '  mM$prime5.stream.observe(v => {\n    f(v[2]);\n    function f(x) {\n      while ((v[0][v[0].length - 1]) < x) {\n        for (let i in v[0]) {\n          if ((v[1] % v[0][i]) == 0) {\n            v[1]+=1;\n            f(v[2]);\n          }\n          if (i == (v[0].length - 1)) {\n            v[0].push(v[1]);\n            f(v[2]);\n          }\n        }\n      }\n    }\n    document.getElementById(\'prime5\').innerHTML = v[0];\n    var prFibs = v[0].filter(v => O.mMfibs8.x.includes(v));\n    document.getElementById(\'primeFibs\').innerHTML = prFibs;\n    mMitterPrime5.bnd(arr => {\n      var x = arr[0];\n      var fibs = arr[1];\n      if (x > (v[0][v[0].length - 1])) {\n        mM$prime5.ret([v[0], v[1] + 1, x]);    // Puts the array in mM$prime5.stream.\n      }\n      else {\n        let trunc = v[0].filter(a => a < x);\n        let ar2 = v[0].slice(0, trunc.length + 1);\n        document.getElementById(\'prime5\').innerHTML = ar2;\n        var primeFibs = fibs.filter(v => ar2.includes(v)); \n        document.getElementById(\'primeFibs\').innerHTML = primeFibs;\n         \n      }\n    })\n  });  ');
+	var primeFib4 = (0, _dom.h)('pre', '  mM$prime5.stream.observe(v => {\n    f(v[2]);\n    function f(x) {\n      while ((v[0][v[0].length - 1]) < x) {\n        for (let i in v[0]) {\n          if ((v[1] % v[0][i]) == 0) {\n            v = v.slice();  // Avoids mutating v\n            v[1]+=1;\n            f(v[2]);\n          }\n          if (i == (v[0].length - 1)) {\n            v[0].push(v[1]);\n            f(v[2]);\n          }\n        }\n      }\n    }\n    document.getElementById(\'prime5\').innerHTML = v[0];\n    var prFibs = v[0].filter(v => O.mMfibs8.x.includes(v));\n    document.getElementById(\'primeFibs\').innerHTML = prFibs;\n    mMitterPrime5.bnd(arr => {\n      var x = arr[0];\n      var fibs = arr[1];\n      if (x > (v[0][v[0].length - 1])) {\n        mM$prime5.ret([v[0], v[1] + 1, x]);    // Puts the array in mM$prime5.stream.\n      }\n      else {\n        let trunc = v[0].filter(a => a < x);\n        let ar2 = v[0].slice(0, trunc.length + 1);\n        document.getElementById(\'prime5\').innerHTML = ar2;\n        var primeFibs = fibs.filter(v => ar2.includes(v)); \n        document.getElementById(\'primeFibs\').innerHTML = primeFibs;\n         \n      }\n    })\n  });  ');
 
-	var primeFib3 = (0, _dom.h)('pre', '  mM$fib5.stream.observe(x => {\n      while (x[1] < x[2]) {\n          x = [x[1], x[0] + x[1], x[2]];\n          O.mMfibs8.bnd(push, x[1], mMfibs8)\n      }\n      var ar = O.mMfibs8.x.slice(0, O.mMfibs8.x.length - 1);\n      document.getElementById(\'fib5\').innerHTML = ar;\n      mMitterPrime5.release([x[0], ar]);\n      mMitterFib5.bnd(\n        x => {\n          let ar = O.mMfibs8.x.slice();\n          if (x > ar[ar.length - 1]) {\n            let a = ar.pop();\n            let b = ar.pop();\n            mM$fib5.ret([b, a, x]);\n          }\n          else {\n            let ar2 = ar.filter(v => v <= x);\n            document.getElementById(\'fib5\').innerHTML = ar2;\n            mMitterPrime5.release(([ar2[ar2.length-1], ar2]));\n          }\n      })\n  });  ');
+	var primeFib3 = (0, _dom.h)('pre', '  mM$fib5.stream.observe(x => {\n      while (x[1] < x[2]) {\n        x = x.slice();  //  Avoids mutating x\n        x = [x[1], x[0] + x[1], x[2]];\n        O.mMfibs8.bnd(push, x[1], mMfibs8)\n      }\n      var ar = O.mMfibs8.x.slice(0, O.mMfibs8.x.length - 1);\n      document.getElementById(\'fib5\').innerHTML = ar;\n      mMitterPrime5.release([x[0], ar]);\n      mMitterFib5.bnd(\n        x => {\n          let ar = O.mMfibs8.x.slice();\n          let a = ar[ar.length - 1];\n          if (x > a) {\n            let b = ar[ar.length - 2];\n            mM$fib5.ret([b, a, x]);\n          }\n          else {\n            let ar2 = ar.filter(v => v <= x);\n            document.getElementById(\'fib5\').innerHTML = ar2;\n            mMitterPrime5.release(([ar2[ar2.length-1], ar2]));\n          }\n      })\n  });  ');
 
 	var spreadsheet = (0, _dom.h)('pre', '  const spread1Press$ = sources.DOM\n    .select(\'#spread1\').events(\'keypress\');\n\n  const spread1PressAction$ = spread1Press$.map(e => {\n    console.log(\'Hello from spread1\');\n    let v = e.target.value;\n    if( e.keyCode == 13 ) {\n      mMcount.ret(e.target.value)\n      .bnd(() => calculate());\n    }\n  });\n\n  const spread2Press$ = sources.DOM\n    .select(\'#spread2\').events(\'keypress\');\n\n  const spread2PressAction$ = spread2Press$.map(e => {\n    console.log(\'Hello from spread2\');\n    let v = e.target.value;\n    if( e.keyCode == 13 ) {\n      mMcount2.ret(e.target.value)\n      .bnd(() => calculate());\n    }\n  });\n\n  var calculate = function calculate() {\n      let a = O.mMcount.x;\n      let b = O.mMcount2.x\n      let c = [ a + \' + \' + b + \' = \' + (a*1 + b*1),  \n      a + \' - \' + b + \' = \' + (a - b),  \n      a + \' * \' + b + \' = \' + (a * b),  \n      a + \' / \' + b + \' = \' + (a / b) ];\n      mMspreadsheet.ret(c);\n  };  ');
 
@@ -3464,17 +3462,17 @@
 
 	var MonadState = (0, _dom.h)('pre', '  var MonadState = function MonadState (g, state, value, p) {\n    var _this = this;\n    this.id = g;\n    this.s = state;\n    this.a = value;\n    this.put = function put(w) { _this.s = w };\n    this.get = function get() { return _this.s };\n    this.process = p;\n    this.bnd = function (func, ...args) {\n       return func(_this.a, ...args);\n    };\n    this.run = function(st) { \n      let s = _this.process(st); \n      let a = s[3];\n      return (new MonadState(_this.id, s, a, _this.process));\n    }\n  }  ');
 
-	var primesMonad = (0, _dom.h)('pre', '  function primes_state(v) {\n    while ((v[3][v[3].length - 1]) < v[0]) {\n      for (let i in v[3]) {\n        if ((v[1] % v[3][i]) == 0) {\n          v[1]+=1;\n          primes_state(v);\n        }\n        else if (i == (v[3].length - 1)) {\n          v[3].push(v[1]);\n          primes_state(v);\n        }\n      }\n    }\n    return v;\n  }\n  \n  function prS (v) {                 // Re-uses previously calculated values\n    var x = primesMonad.a[primesMonad.a.length - 1]\n    if (x < v[0]) {\n      let arr = primesMonad.a;\n      console.log(\'>>>>>>>>>>>> v[0], x+1, 0, arr \', v[0], x+1, 0, arr);\n      let w = [v[0], x+1, "anything", arr];    // In the else block, the third element is "whatever"\n      return primes_state(w);    // primes_state calculates new values and returns the result\n    }\n    else {\n      let trunc = primesMonad.a.filter(a => a < v[0]);\n      let res = primesMonad.a.slice(0, trunc.length + 1);  // The prime numbers\n      return [v[0], (res[res.length - 1] + 1), "whatever", res];\n    }\n  }\n  \n  var primesMonad = new MonadState(\'primesMonad\', 2, [2],  prS)  ');
+	var primesMonad = (0, _dom.h)('pre', '  function primes_state(v) {\n    while ((v[3][v[3].length - 1]) < v[0]) {\n      for (let i in v[3]) {\n        if ((v[1] % v[3][i]) == 0) {\n          v.slice();\n          v[1]+=1;\n          primes_state(v);  // Avoids mutating v\n        }\n        else if (i == (v[3].length - 1)) {\n          v.slice();\n          v[3].push(v[1]);\n          primes_state(v);\n        }\n      }\n    }\n    return v;\n  }\n  \n  function prS (v) {                 // Re-uses previously calculated values\n    var x = primesMonad.a[primesMonad.a.length - 1]\n    if (x < v[0]) {\n      let arr = primesMonad.a;\n      console.log(\'>>>>>>>>>>>> v[0], x+1, 0, arr \', v[0], x+1, 0, arr);\n      let w = [v[0], x+1, "anything", arr];    // In the else block, the third element is "whatever"\n      return primes_state(w);    // primes_state calculates new values and returns the result\n    }\n    else {\n      let trunc = primesMonad.a.filter(a => a < v[0]);\n      let res = primesMonad.a.slice(0, trunc.length + 1);  // The prime numbers\n      return [v[0], (res[res.length - 1] + 1), "whatever", res];\n    }\n  }\n  \n  var primesMonad = new MonadState(\'primesMonad\', 2, [2],  prS)  ');
 
 	var fibsMonad = (0, _dom.h)('pre', '  var mMsT = new Monad([], \'mMsT\');\n  mMsT.ret([]);\n  \n  var fibs_state = function fibs_state(ar) { \n    mMsT.ret(ar.slice());\n    while (O.mMsT.x[3].length < O.mMsT.x[2]) { \n      mMsT.ret([O.mMsT.x[1], (O.mMsT.x[0]*1 + O.mMsT.x[1]), O.mMsT.x[2], O.mMsT.x[3].concat(O.mMsT.x[0])])\n    }\n    return O.mMsT.x;\n  }\n  \n  var fibMonad = new MonadState(\'fibMonad\', O.mMsT.x, [0],  fibs_state)  ');
 
-	var primeFib = (0, _dom.h)('pre', '  function primeFib (x) {\n    var ar = [];\n    var ar2 = [];\n    var fibs = fibMonad.run([0, 1, x, []]).a\n    var l = fibs.length - 3;\n    var primes = primesMonad\n    .run([Math.round(Math.sqrt([fibMonad.a[fibMonad\n    .a.length - 1]])), 6, 0, [2,3,5]]).a\n    fibs.map(f => {\n      ar.length = 0;\n      primes.map(p => {\n        if (f == p || f % p != 0 && f > 1) {\n          ar.push(f);\n        }\n        if (ar.length == primes.length) {\n          ar2.push(ar.pop());\n        }\n      })\n    })\n    return [ar2, fibs];\n}  ');
+	var primeFib = (0, _dom.h)('pre', '  function primeFib (x) {\n    var ar = [];\n    var ar2 = [];\n    var fibs = fibMonad.run([0, 1, x, []]).a\n    var l = fibs.length - 3;\n    var primes = primesMonad\n    .run([Math.round(Math.sqrt([fibs[fibs.length - 1]])), 6, 0, [2,3,5]]).a\n    fibs.map(f => {\n      ar = [];\n      primes.map(p => {\n        if (f == p || f % p != 0 && f > 1) {\n          ar = ar.slice();     // Avoids mutation   \n          ar.push(f);\n        }\n        if (ar.length == primes.length) {\n          ar = ar.slice();\n          ar2 = ar2.slice();\n          ar2.push(ar.pop());\n        }\n      })\n    })\n  }  ');
 
 	var seed1 = (0, _dom.h)('pre', ' \n             ');
 
 	var seed2 = (0, _dom.h)('pre', ' \n             ');
 
-	exports.default = { monad: monad, monadStr: monadStr, monadIt: monadIt, fib: fib, driver: driver, messages: messages, next: next, Monad$: Monad$, updateCalc: updateCalc, arrayFuncs: arrayFuncs, travel: travel, nums: nums, cleanup: cleanup, ret: ret, C42: C42, taskStream: taskStream, newTask: newTask, process: process, mM$task: mM$task, addString: addString, colorClick: colorClick, edit: edit, testZ: testZ, quad: quad, mdem1: mdem1, runTest: runTest, todoStream: todoStream, gameStream: gameStream, inc: inc, ret_add_cube: ret_add_cube, primes: primes, seed: seed, primeFib4: primeFib4, primeFib3: primeFib3, spreadsheet: spreadsheet, spreadsheet2: spreadsheet2, add: add, reactiveFib: reactiveFib, traverse: traverse, MonadState: MonadState, primesMonad: primesMonad, fibsMonad: fibsMonad, primeFib: primeFib };
+	exports.default = { monad: monad, monadStr: monadStr, monadIt: monadIt, fib: fib, driver: driver, messages: messages, next: next, Monad$: Monad$, updateCalc: updateCalc, arrayFuncs: arrayFuncs, travel: travel, nums: nums, cleanup: cleanup, ret: ret, C42: C42, taskStream: taskStream, newTask: newTask, process: process, mM$task: mM$task, addString: addString, colorClick: colorClick, edit: edit, testZ: testZ, quad: quad, mdem1: mdem1, runTest: runTest, todoStream: todoStream, gameStream: gameStream, inc: inc, ret_add_cube: ret_add_cube, seed: seed, primeFib4: primeFib4, primeFib3: primeFib3, spreadsheet: spreadsheet, spreadsheet2: spreadsheet2, add: add, reactiveFib: reactiveFib, traverse: traverse, MonadState: MonadState, primesMonad: primesMonad, fibsMonad: fibsMonad, primeFib: primeFib };
 
 /***/ },
 /* 39 */
@@ -9019,6 +9017,7 @@
 
 	  mM$fib5.stream.observe(function (x) {
 	    while (x[1] < x[2]) {
+	      x = x.slice(); //  Avoids mutating x
 	      x = [x[1], x[0] + x[1], x[2]];
 	      O.mMfibs8.bnd(push, x[1], mMfibs8);
 	    }
@@ -9027,9 +9026,9 @@
 	    mMitterPrime5.release([x[0], ar]);
 	    mMitterFib5.bnd(function (x) {
 	      var ar = O.mMfibs8.x.slice();
-	      if (x > ar[ar.length - 1]) {
-	        var a = ar.pop();
-	        var b = ar.pop();
+	      var a = ar[ar.length - 1];
+	      if (x > a) {
+	        var b = ar[ar.length - 2];
 	        mM$fib5.ret([b, a, x]);
 	      } else {
 	        var ar2 = ar.filter(function (v) {
@@ -9065,10 +9064,12 @@
 	      while (v[0][v[0].length - 1] < x) {
 	        for (var i in v[0]) {
 	          if (v[1] % v[0][i] == 0) {
+	            v = v.slice(); // Avoids mutating v
 	            v[1] += 1;
 	            f(v[2]);
 	          }
 	          if (i == v[0].length - 1) {
+	            v = v.slice();
 	            v[0].push(v[1]);
 	            f(v[2]);
 	          }
@@ -9229,29 +9230,7 @@
 	    document.getElementById('dummy2').innerHTML = O.mM23.x;
 	  });
 
-	  var newFibpress$ = sources.DOM.select('input#fibF').events('keypress');
-
-	  var newFibAction$ = newFibpress$.map(function (e) {
-	    if (e.keyCode == 13) {
-	      var a = observable(1);
-	      var ar = ['0, 1'];
-	      var k = 0;
-	      a.observe(function (b, c) {
-	        k += 1;
-	        ar.push(', ' + c);
-	        if (k < e.target.value - 2) {
-	          a.set(b + c);
-	        }
-	        mMfib2.ret(ar).bnd(function (v) {
-	          console.log(v);
-	        });
-	      });
-	      a.set(1);
-	      a.set(2);
-	    }
-	  });
-
-	  var calcStream$ = (0, _most.merge)(PFAction$, forwardAction$, backAction$, dummyAction$, newFibAction$, fibKeyPressAction5$, primeKeyPressAction5$, fibPressAction$, runTestAction$, quadAction$, testWAction$, testZAction$, testQAction$, edit1Action$, edit2Action$, colorAction$, deleteAction$, newTaskAction$, chatClickAction$, gameClickAction$, todoClickAction$, captionClickAction$, groupPressAction$, rollClickAction$, messagePressAction$, loginPressAction$, messages$, numClickAction$, opClickAction$);
+	  var calcStream$ = (0, _most.merge)(PFAction$, forwardAction$, backAction$, dummyAction$, fibKeyPressAction5$, primeKeyPressAction5$, fibPressAction$, runTestAction$, quadAction$, testWAction$, testZAction$, testQAction$, edit1Action$, edit2Action$, colorAction$, deleteAction$, newTaskAction$, chatClickAction$, gameClickAction$, todoClickAction$, captionClickAction$, groupPressAction$, rollClickAction$, messagePressAction$, loginPressAction$, messages$, numClickAction$, opClickAction$);
 
 	  return {
 	    DOM: calcStream$.map(function () {

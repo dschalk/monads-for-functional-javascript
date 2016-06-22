@@ -702,31 +702,6 @@ var ret_add_cube = h('pre',  `  var ret = function ret(v, id) {
     return ret(v*v*v);
 }  `  )
 
-var primes = h('pre',  `  mM$prime.stream.addListener({
-    next: v => {
-      for (let i in v[0]) {
-        if ((v[1] % v[0][i]) == 0) {
-          mM$prime.ret([v[0], v[1] + 1, v[2]])
-          return;
-        }
-        if (i == (v[0].length - 1)) {
-          v[0].push(v[1]);
-          document.getElementById('prime').innerHTML = v[0];
-          mMitterPrime.bnd(() =>  mM$prime.ret([v[0], v[1] + 1])) 
-        }
-      }
-    },
-    error: err => console.error(err),
-    complete: () => console.log('completed')
-  });
-
-  const primeClick$ = sources.DOM
-    .select('#prime').events('click');
-
-  const primeClickAction$ = primeClick$.map(() => {
-    mMitterPrime.release()
-  });  `  )
-
 var seed = h('pre',  `  mM$prime.ret([[2],3])  `  )
 
 var primeFib4 = h('pre',  `  mM$prime5.stream.observe(v => {
@@ -735,6 +710,7 @@ var primeFib4 = h('pre',  `  mM$prime5.stream.observe(v => {
       while ((v[0][v[0].length - 1]) < x) {
         for (let i in v[0]) {
           if ((v[1] % v[0][i]) == 0) {
+            v = v.slice();  // Avoids mutating v
             v[1]+=1;
             f(v[2]);
           }
@@ -767,8 +743,9 @@ var primeFib4 = h('pre',  `  mM$prime5.stream.observe(v => {
 
 var primeFib3 = h('pre',  `  mM$fib5.stream.observe(x => {
       while (x[1] < x[2]) {
-          x = [x[1], x[0] + x[1], x[2]];
-          O.mMfibs8.bnd(push, x[1], mMfibs8)
+        x = x.slice();  //  Avoids mutating x
+        x = [x[1], x[0] + x[1], x[2]];
+        O.mMfibs8.bnd(push, x[1], mMfibs8)
       }
       var ar = O.mMfibs8.x.slice(0, O.mMfibs8.x.length - 1);
       document.getElementById('fib5').innerHTML = ar;
@@ -776,9 +753,9 @@ var primeFib3 = h('pre',  `  mM$fib5.stream.observe(x => {
       mMitterFib5.bnd(
         x => {
           let ar = O.mMfibs8.x.slice();
-          if (x > ar[ar.length - 1]) {
-            let a = ar.pop();
-            let b = ar.pop();
+          let a = ar[ar.length - 1];
+          if (x > a) {
+            let b = ar[ar.length - 2];
             mM$fib5.ret([b, a, x]);
           }
           else {
@@ -946,10 +923,12 @@ var primesMonad = h('pre',  `  function primes_state(v) {
     while ((v[3][v[3].length - 1]) < v[0]) {
       for (let i in v[3]) {
         if ((v[1] % v[3][i]) == 0) {
+          v.slice();
           v[1]+=1;
-          primes_state(v);
+          primes_state(v);  // Avoids mutating v
         }
         else if (i == (v[3].length - 1)) {
+          v.slice();
           v[3].push(v[1]);
           primes_state(v);
         }
@@ -994,21 +973,22 @@ var primeFib = h('pre',  `  function primeFib (x) {
     var fibs = fibMonad.run([0, 1, x, []]).a
     var l = fibs.length - 3;
     var primes = primesMonad
-    .run([Math.round(Math.sqrt([fibMonad.a[fibMonad
-    .a.length - 1]])), 6, 0, [2,3,5]]).a
+    .run([Math.round(Math.sqrt([fibs[fibs.length - 1]])), 6, 0, [2,3,5]]).a
     fibs.map(f => {
-      ar.length = 0;
+      ar = [];
       primes.map(p => {
         if (f == p || f % p != 0 && f > 1) {
+          ar = ar.slice();     // Avoids mutation   
           ar.push(f);
         }
         if (ar.length == primes.length) {
+          ar = ar.slice();
+          ar2 = ar2.slice();
           ar2.push(ar.pop());
         }
       })
     })
-    return [ar2, fibs];
-}  `  )
+  }  `  )
 
 var seed1 = h('pre',  ` 
              `  )
@@ -1020,6 +1000,6 @@ var seed2 = h('pre',  `
 
 
 
-  export default {monad, monadStr, monadIt, fib, driver, messages, next, Monad$, updateCalc, arrayFuncs, travel, nums, cleanup, ret, C42, taskStream, newTask, process, mM$task, addString, colorClick, edit, testZ, quad, mdem1, runTest, todoStream, gameStream, inc, ret_add_cube, primes, seed, primeFib4, primeFib3, spreadsheet, spreadsheet2, add, reactiveFib, traverse, MonadState, primesMonad, fibsMonad, primeFib}
+  export default {monad, monadStr, monadIt, fib, driver, messages, next, Monad$, updateCalc, arrayFuncs, travel, nums, cleanup, ret, C42, taskStream, newTask, process, mM$task, addString, colorClick, edit, testZ, quad, mdem1, runTest, todoStream, gameStream, inc, ret_add_cube, seed, primeFib4, primeFib3, spreadsheet, spreadsheet2, add, reactiveFib, traverse, MonadState, primesMonad, fibsMonad, primeFib}
 
 

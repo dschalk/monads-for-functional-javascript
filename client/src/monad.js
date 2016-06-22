@@ -45,15 +45,17 @@ function primeFib (x) {
   var fibs = fibMonad.run([0, 1, x, []]).a
   var l = fibs.length - 3;
   var primes = primesMonad
-  .run([Math.round(Math.sqrt([fibMonad
-  .a[fibMonad.a.length - 1]])), 6, 0, [2,3,5]]).a
+  .run([Math.round(Math.sqrt([fibs[fibs.length - 1]])), 6, 0, [2,3,5]]).a
   fibs.map(f => {
-    ar.length = 0;
+    ar = [];
     primes.map(p => {
       if (f == p || f % p != 0 && f > 1) {
+        ar = ar.slice();     // Avoids mutation   
         ar.push(f);
       }
       if (ar.length == primes.length) {
+        ar = ar.slice();
+        ar2 = ar2.slice();
         ar2.push(ar.pop());
       }
     })
@@ -99,10 +101,12 @@ function primes_state(v) {
   while ((v[3][v[3].length - 1]) < v[0]) {
     for (let i in v[3]) {
       if ((v[1] % v[3][i]) == 0) {
+        v.slice();
         v[1]+=1;
         primes_state(v);
       }
       else if (i == (v[3].length - 1)) {
+        v.slice();
         v[3].push(v[1]);
         primes_state(v);
       }

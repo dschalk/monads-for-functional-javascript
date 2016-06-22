@@ -410,8 +410,9 @@ function main(sources) {
 
   mM$fib5.stream.observe(x => {
       while (x[1] < x[2]) {
-          x = [x[1], x[0] + x[1], x[2]];
-          O.mMfibs8.bnd(push, x[1], mMfibs8)
+        x = x.slice();  //  Avoids mutating x
+        x = [x[1], x[0] + x[1], x[2]];
+        O.mMfibs8.bnd(push, x[1], mMfibs8)
       }
       var ar = O.mMfibs8.x.slice(0, O.mMfibs8.x.length - 1);
       document.getElementById('fib5').innerHTML = ar;
@@ -419,9 +420,9 @@ function main(sources) {
       mMitterFib5.bnd(
         x => {
           let ar = O.mMfibs8.x.slice();
-          if (x > ar[ar.length - 1]) {
-            let a = ar.pop();
-            let b = ar.pop();
+          let a = ar[ar.length - 1];
+          if (x > a) {
+            let b = ar[ar.length - 2];
             mM$fib5.ret([b, a, x]);
           }
           else {
@@ -456,10 +457,12 @@ function main(sources) {
       while ((v[0][v[0].length - 1]) < x) {
         for (let i in v[0]) {
           if ((v[1] % v[0][i]) == 0) {
+            v = v.slice();  // Avoids mutating v
             v[1]+=1;
             f(v[2]);
           }
           if (i == (v[0].length - 1)) {
+            v = v.slice();
             v[0].push(v[1]);
             f(v[2]);
           }
@@ -581,15 +584,15 @@ function main(sources) {
     .bnd(a => mMquad1.ret(a + 'x**2')
     .bnd(() => mMquad2.ret('').bnd(mMquad3.ret) // Clear the display.
     .bnd(() => 
-    mMZ3
-    .bnd(b => mMquad1.ret(a + 'x**2 ' + ' + ' + b + 'x')
-    .bnd(() =>  
-    mMZ3
-    .bnd(c => mMquad1
-    .ret('Solutions for ' + a + 'x**2 ' + ' + ' + b + 'x' + ' + ' + c + ' = 0:')
-    .bnd(() => mMquad2.bnd(sol1,a,b,c,mMquad2)
-    .bnd(() => mMquad3.bnd(sol2,a,b,c,mMquad3) 
-    .bnd(() => solve()    
+      mMZ3
+      .bnd(b => mMquad1.ret(a + 'x**2 ' + ' + ' + b + 'x')
+      .bnd(() =>  
+        mMZ3
+        .bnd(c => mMquad1
+        .ret('Solutions for ' + a + 'x**2 ' + ' + ' + b + 'x' + ' + ' + c + ' = 0:')
+        .bnd(() => mMquad2.bnd(sol1,a,b,c,mMquad2)
+        .bnd(() => mMquad3.bnd(sol2,a,b,c,mMquad3) 
+        .bnd(() => solve()    
         )))))))))
   })();
 
@@ -615,31 +618,7 @@ function main(sources) {
     document.getElementById('dummy2').innerHTML = O.mM23.x;
   });
 
-  const newFibpress$ = sources.DOM
-    .select('input#fibF').events('keypress');
-
-  const newFibAction$ = newFibpress$.map(e => {
-    if( e.keyCode == 13 ) {
-      var a = observable(1);
-      var ar = ['0, 1'];
-      var k = 0;
-      a.observe(function(b, c) {
-          k+=1;
-          ar.push(', '+c);
-          if (k < (e.target.value - 2)) {
-              a.set(b + c);
-          }
-          mMfib2.ret(ar)
-          .bnd(v => {
-            console.log(v);
-          })
-      })
-      a.set(1);
-      a.set(2);
-    }
-  });
-
-  const calcStream$ = merge( PFAction$, forwardAction$, backAction$, dummyAction$, newFibAction$, fibKeyPressAction5$, primeKeyPressAction5$, fibPressAction$, runTestAction$, quadAction$, testWAction$, testZAction$, testQAction$, edit1Action$, edit2Action$, colorAction$, deleteAction$, newTaskAction$, chatClickAction$, gameClickAction$, todoClickAction$, captionClickAction$, groupPressAction$, rollClickAction$, messagePressAction$, loginPressAction$, messages$, numClickAction$, opClickAction$ );
+  const calcStream$ = merge( PFAction$, forwardAction$, backAction$, dummyAction$, fibKeyPressAction5$, primeKeyPressAction5$, fibPressAction$, runTestAction$, quadAction$, testWAction$, testZAction$, testQAction$, edit1Action$, edit2Action$, colorAction$, deleteAction$, newTaskAction$, chatClickAction$, gameClickAction$, todoClickAction$, captionClickAction$, groupPressAction$, rollClickAction$, messagePressAction$, loginPressAction$, messages$, numClickAction$, opClickAction$ );
   
     return {
       DOM: 
