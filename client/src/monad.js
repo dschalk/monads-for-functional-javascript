@@ -252,7 +252,7 @@ var mM22 = M(0,'mM22');
 mM22.ret(mM22.x);
 var mM23 = M([0,1,1],'mM23');
 mM23.ret(mM23.x);
-var mM24 = M(0,'mM24');
+var mM24 = M([[2,3],4,9],'mM24');
 var mM25 = M(0,'mM25');
 var mM26 = M(0,'mM26');
 var mM27 = M(0,'mM27');
@@ -404,6 +404,9 @@ mMspreadsheet2.ret(mMspreadsheet2.x)
 
 var mMdummy = new Monad(0, 'mMdummy');
 mMdummy.ret(mMdummy.x);
+
+var mMpf = new Monad(0, 'mMpf');
+mMpf.ret(mMpf.x);
 
 var RESULT =[0,0,0,0];
 

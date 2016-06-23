@@ -22,14 +22,6 @@ const websocketsDriver = function () {
 function main(sources) {
   mMindex.ret(0);
 
-  window.onload = function (event) {
-    console.log('onopen event: ', event);
-    document.querySelector('input#login').focus();
-    mM$fib5.ret( [ 0, 1, 1 ] );
-    mM$prime5.ret([[2], 3, 3]);
-    mM$primeFibs.ret([[2], 3, 3, [2,3]]); 
-  };
-
   mMZ1.bnd(v => O.mMt1.bnd(add,v,mMt1)
   .bnd(cube,mMt2)
   .bnd(() => mMt3.ret(O.mMt1.x + ' cubed is ' + O.mMt2.x)))
@@ -395,6 +387,24 @@ function main(sources) {
 
 // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> START fib  
   
+  mMitterPrime5.bnd(arr => {
+    var fibs = arr[1];
+    var x = Math.round(Math.sqrt(arr[0]));
+    var v = O.mM24.x;
+    if (x > (v[0][v[0].length - 1])) {
+      mM$prime5.ret([v[0], v[1] + 1, x]);
+    }
+    else {
+      let trunc = v[0].filter(a => a < x);
+      let ar2 = v[0].slice(0, trunc.length + 1);
+      let primeF = O.mMpf.x[0];
+      let primeFibs = primeF.filter(g => g < (arr[0] + 1));
+      document.getElementById('PF_8').innerHTML = "Prime Fibonacci Numbers:" ;
+      document.getElementById('primeFibs').innerHTML = primeFibs;
+       
+    }
+  })
+
   const fibKeyPress5$ = sources.DOM
     .select('input#fib3335').events('keydown');
 
@@ -408,6 +418,22 @@ function main(sources) {
     }
   });
 
+  mMitterFib5.bnd(
+    x => {
+      let ar = O.mMfibs8.x.slice();
+      let a = ar[ar.length - 1];
+      if (x > a) {
+        let b = ar[ar.length - 2];
+        mM$fib5.ret([b, a, x]);
+      }
+      else {
+        let ar2 = ar.filter(v => v <= x);
+        document.getElementById('PF_7').innerHTML = "Fibonacci Numbers:" ;
+        document.getElementById('fib5').innerHTML = ar2;
+        mMitterPrime5.release(([ar2[ar2.length-1], ar2]));
+      }
+  })
+
   mM$fib5.stream.observe(x => {
       while (x[1] < x[2]) {
         x = x.slice();  //  Avoids mutating x
@@ -415,43 +441,40 @@ function main(sources) {
         O.mMfibs8.bnd(push, x[1], mMfibs8)
       }
       var ar = O.mMfibs8.x.slice(0, O.mMfibs8.x.length - 1);
+      document.getElementById('PF_7').innerHTML = "Fibonacci Numbers:" ;
       document.getElementById('fib5').innerHTML = ar;
       mMitterPrime5.release([x[0], ar]);
-      mMitterFib5.bnd(
-        x => {
-          let ar = O.mMfibs8.x.slice();
-          let a = ar[ar.length - 1];
-          if (x > a) {
-            let b = ar[ar.length - 2];
-            mM$fib5.ret([b, a, x]);
-          }
-          else {
-            let ar2 = ar.filter(v => v <= x);
-            document.getElementById('fib5').innerHTML = ar2;
-            mMitterPrime5.release(([ar2[ar2.length-1], ar2]));
-          }
-      })
   });
 
 
 // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> END fib END 
 
 // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> basic prime
-  const primeKeyPress5$ = sources.DOM
-    .select('input#prime3336').events('keydown');
 
-  const primeKeyPressAction5$ = primeKeyPress5$.map(e => {
-    if (e.target.value == '') {return};
-    if( e.keyCode == 13 && Number.isInteger(e.target.value*1) ) {
-      console.log('In primeKeyPressAction5');
-      mMitterPrime5.release(e.target.value);
-    }
-    if( e.keyCode == 13 && !Number.isInteger(e.target.value*1 )) {
-        document.getElementById('prime5').innerHTML = "You didn't provide an integer";
-    }
-  });
+
+  function pFib (fibs, primes) {
+    var ar = [];
+    var ar2 = [];
+    fibs.map(f => {
+      ar = [];
+      primes.map(p => {
+        if (f == p || f % p != 0 && f > 1) {
+          ar = ar.slice();     // Avoids mutation   
+          ar.push(f);
+        }
+        if (ar.length == primes.length) {
+          ar = ar.slice();
+          ar2 = ar2.slice();
+          ar2.push(ar.pop());
+        }
+      })
+    })
+    return [ar2];
+  }
 
   mM$prime5.stream.observe(v => {
+    var fibs = O.mMfibs8.x.slice(0, O.mMfibs8.x.length - 1);
+    mM24.ret(v);
     f(v[2]);
     function f(x) {
       while ((v[0][v[0].length - 1]) < x) {
@@ -469,24 +492,18 @@ function main(sources) {
         }
       }
     }
-    document.getElementById('prime5').innerHTML = v[0];
-    var prFibs = v[0].filter(v => O.mMfibs8.x.includes(v));
+    var prFibs = pFib(fibs, v[0]);
+    mMpf.ret(prFibs);
+    document.getElementById('PF_8').innerHTML = "Prime Fibonacci Numbers:" ;
     document.getElementById('primeFibs').innerHTML = prFibs;
-    mMitterPrime5.bnd(arr => {
-      var x = arr[0];
-      if (x > (v[0][v[0].length - 1])) {
-        mM$prime5.ret([v[0], v[1] + 1, x]);
-      }
-      else {
-        let trunc = v[0].filter(a => a < x);
-        let ar2 = v[0].slice(0, trunc.length + 1);
-        document.getElementById('prime5').innerHTML = ar2;
-        var primeFibs = arr[1].filter(v => ar2.includes(v)); 
-        document.getElementById('primeFibs').innerHTML = primeFibs;
-         
-      }
-    })
   });
+
+  window.onload = function (event) {
+    console.log('onopen event: ', event);
+    document.querySelector('input#login').focus();
+    mMitterFib5.release(200);
+    // mM$prime5.ret([[2], 3, 3]);
+  };
 
 // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> END basic prime END
 
@@ -618,7 +635,7 @@ function main(sources) {
     document.getElementById('dummy2').innerHTML = O.mM23.x;
   });
 
-  const calcStream$ = merge( PFAction$, forwardAction$, backAction$, dummyAction$, fibKeyPressAction5$, primeKeyPressAction5$, fibPressAction$, runTestAction$, quadAction$, testWAction$, testZAction$, testQAction$, edit1Action$, edit2Action$, colorAction$, deleteAction$, newTaskAction$, chatClickAction$, gameClickAction$, todoClickAction$, captionClickAction$, groupPressAction$, rollClickAction$, messagePressAction$, loginPressAction$, messages$, numClickAction$, opClickAction$ );
+  const calcStream$ = merge( PFAction$, forwardAction$, backAction$, dummyAction$, fibKeyPressAction5$, fibPressAction$, runTestAction$, quadAction$, testWAction$, testZAction$, testQAction$, edit1Action$, edit2Action$, colorAction$, deleteAction$, newTaskAction$, chatClickAction$, gameClickAction$, todoClickAction$, captionClickAction$, groupPressAction$, rollClickAction$, messagePressAction$, loginPressAction$, messages$, numClickAction$, opClickAction$ );
   
     return {
       DOM: 
@@ -836,7 +853,7 @@ function main(sources) {
         code.quad,
         h('span#tdList' ),
         h('h2', 'Immutable Data And The State Object "O" ' ),
-       h('p', ' Mutations in this application are confined to the global state object "O" and MonadIter instances. In the examples above, the release() method moves the process forward to the next occurance of the MonadIter instance where the bnd() method provides a new function to the "p" attribute. The progressive morphing of "p" in MonadIter instances is desirable behavior, and I think that creating a clone each time it occurs would be a senseless waste of resources. Unless and until release() is called, the program is not affected by "p". If release() is called, the return value of p(...args) is returned, but "p" itself remains tucked away, never mixing with the flow of information through the program. The bnd() method is pure. Given the same argument, it will always do the same thing. It doesn\'t even return anything. It just updates the internal "p" attribute. This insulation of internal operations from the outer program is remeniscent of an important purpose of the Haskell IO monad. These are just hand-waving arguments for the harmlessness of letting the bnd() method mutate MonadIter instances, but I wanted to explain why I feel comfortable with letting the definition of MonadIter stand as it is.  ' ),           
+       h('p', ' Mutations in this application are confined to the global state object "O" and MonadIter instances. <UPDATE: The MonadState and MonadStream prime Fibonacci demonstrations have mutations which are confined to function scope. I\'ll probably refactor those out when I have the time.> In the examples above, the release() method moves the process forward to the next occurance of the MonadIter instance where the bnd() method provides a new function to the "p" attribute. The progressive morphing of "p" in MonadIter instances is desirable behavior, and I think that creating a clone each time it occurs would be a senseless waste of resources. Unless and until release() is called, the program is not affected by "p". If release() is called, the return value of p(...args) is returned, but "p" itself remains tucked away, never mixing with the flow of information through the program. The bnd() method is pure. Given the same argument, it will always do the same thing. It doesn\'t even return anything. It just updates the internal "p" attribute. This insulation of internal operations from the outer program is remeniscent of an important purpose of the Haskell IO monad. These are just hand-waving arguments for the harmlessness of letting the bnd() method mutate MonadIter instances, but I wanted to explain why I feel comfortable with letting the definition of MonadIter stand as it is.  ' ),           
        h('p', 'All monad updates caused by the monad ret() method are stored in the object "O". When a monad m executes m.ret(v) for some value "v", m remains unchanged and the O attribute O.m is created or, if it already exists, is replaced by the update; i.e., O.m.x == v becomes true. Older versions of m are subject to garbage collection unless there is a reference to them or to an object (arrays are objects) containing m.  This is illustrated in the score-keeping code below.  All score changes are captured by mM13.ret(). Therefore, O.mM13.x is always the current score. Replacing monad attributes in O is vaguely analogous to swapping out ServerState in the Haskell server\'s state TMVar. Older versions of ServerState can be preserved in the server just as prior versions of O.mM13 can be preserved in the front end. ' ),     
        h('h3', 'Storing Monads That Have Been Replaced In O'  ),
        h('p', ' The history of the number display in the game can be traversed in either direction until a player achieves a goal. After that, the traversable history builds up until another goal is achieves. Players can use historical displays, so to keep competition fair, group members are notified when another member clicks the BACK button. '  ),
@@ -844,11 +861,15 @@ function main(sources) {
        code.traverse,  
        h('p', ' It would have been more efficient to just save the arrays rather than the monads that hold them. But this isn\'t about recommended practices right now. It is a demonstration of a use of the not-mutated monads on the mutable global object "O". I write "not-mutated" because the monads can be clobbered anytime you want. But if values are replaced using the Monad ret() method, as is the case in this demonstration, monads on "O" are replaced, not mutated. '  ),
  
+
+
+
+
+
+
+
         h('h2', 'The State Monad: MonadState' ),  
         h('p', ' An instance of MonadState can hold the current state of a computation. MonadState supplements the global object "O" where the current states of instances of Monad can be found, privided that updates are accomplished only with the Monad ret() method. '   ),  
-
-
-
         code.MonadState,
         h('p', ' MonadState reproduces some of the functionality found in the Haskel Module "Control.Monad.State.Lazy", inspired by the paper "Functional Programming with Overloading and Higher-Order Polymorphism", Mark P Jones (http://web.cecs.pdx.edu/~mpj/) Advanced School of Functional Programming, 1995. The following demonstrations use the MonadState instances fibMonad and primesMonad to create and store arrays of fibonacci numbers, arrays of prime numbers, and arrays of prime fibonacci numbers. Here is the definition of primesMonad, along with the functions it uses. ' ), 
        code.primesMonad, 
@@ -875,25 +896,41 @@ function main(sources) {
 
 
 
+
+
+
         h('h2', 'MonadStream'  ),
         code.monadStr,
         h('span.tao', ' MonadStream instances acquire values with the "ret()" method, placing them in the "stream" attribute. The stream depends on the ' ),
         h('a', {props: {href: "https://github.com/TylorS/most-subject/", target: "_blank" }}, 'most-subject' ),
-        h('p', ' The next example uses MonadStream instances to display an array of Fibonacci numbers, an array of Prime numbers, and an array of prime Fibonacci numbers. The number entered into the box below puts an upper bound on the arrays. '  ),
+        h('p', ' The next example uses MonadStream instances to display an array of Fibonacci numbers, an array of Prime numbers, and an array of prime Fibonacci numbers. The number entered into the box below puts an upper bound on the arrays. One million ran, but a subsequent entry of ten million resulted in the "RangeError: Maximum call stack size exceeded" error message. '  ),
         h('p', ' Enter an integer below to run the code. '  ), 
         h('input#fib3335',  ),
-        h('p#fib5.red4',  ),  
-        h('p#prime5.red4',  ),  
-        h('p#primeFibs.red4',  ),  
+        h('br' ),
+        h('span#PF_7.red6',  ),
+        h('br' ),
+        h('span#fib5.red7',  ),  
+        h('br' ),
+        h('br' ),
+        h('span#PF_8.red6',  ),
+        h('br' ),
+        h('span#primeFibs.red7',  ),  
         h('p', ' Here is the code for the memoizing Fibonacci number generator:   '  ),
         code.primeFib3,
         h('p', ' As you see, the mM$fib5 observer receives data when mMitterFib5 is released. Entering a number in the box (above) releases mMitterFib5 with the number that was entered. When a number is received, I called it "x", a test determines if the largest number in O.mMfibs8.x is smaller than x. If it is, mM$fib5 is called to run computations until the largest number in O.mMfibs8.x exceeds x. '  ),
-        h('p', ' mM$fib5 releases mMitterPrime5, which is the entry point for the prime number generator. An array containing a Fibonacci number and an array of Fibonacci numbers is included in mMitterPrime5.release([num, array]). The array of Fibonacci numbers is used in the final calculation which determines which of the Fibonacci numbers are prime. Here is the code that receives that information and causes the array of prime numbers and the array of prime Fibonacci numbers to be displayed: '  ),
+        h('p', ' mM$fib5 releases mMitterPrime5, which is the entry point for the prime number generator. An array containing a Fibonacci number and an array of Fibonacci numbers is included in mMitterPrime5.release([num, array]). The array of Fibonacci numbers is used in the final calculation which determines which of the Fibonacci numbers are prime. Here is the code involved in computing and displaying the prime Fibonacci numbers: '  ),
         code.primeFib4,
         h('p', ' When the web page loads, the mM$fib5 and mM$prime5 observers are initiated with the following expressions: '  ),
         h('pre', `    mM$fib5.ret( [ 0, 1, 1 ] );
     mM$prime5.ret( [ [2], 3, 3 ] );
 `    ),
+
+
+
+
+
+
+
         h('h2', 'Updating the DOM'  ),
         h('h3', 'Todo List DOM Updates' ),
         h('p', ' When users do anything to the todo list, MonadStream instance mM$taskList runs its ret() method on the modified String representation of the list, causing the string to be added to mM$taskList.stream. mM$taskList.stream has only one subscriber, taskAction$, whose only purpose it to send the string representation of the todo list to the server. The server updates its persistent file and distributes a text representation of the updated todo list to all group members. Each group member receives the todo list as a string and parses it into a DOM node tree that is merged into the stream that updates the virtual DOM. All Todo List side effects can be traced to:' ),

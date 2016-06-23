@@ -704,7 +704,47 @@ var ret_add_cube = h('pre',  `  var ret = function ret(v, id) {
 
 var seed = h('pre',  `  mM$prime.ret([[2],3])  `  )
 
-var primeFib4 = h('pre',  `  mM$prime5.stream.observe(v => {
+var primeFib4 = h('pre',  `  function pFib (fibs, primes) {
+    var ar = [];
+    var ar2 = [];
+    fibs.map(f => {
+      ar = [];
+      primes.map(p => {
+        if (f == p || f % p != 0 && f > 1) {
+          ar = ar.slice();     // Avoids mutation   
+          ar.push(f);
+        }
+        if (ar.length == primes.length) {
+          ar = ar.slice();
+          ar2 = ar2.slice();
+          ar2.push(ar.pop());
+        }
+      })
+    })
+    return [ar2];
+  }
+
+  mMitterPrime5.bnd(arr => {
+    var fibs = arr[1];
+    var x = Math.round(Math.sqrt(arr[0]));
+    var v = O.mM24.x;
+    if (x > (v[0][v[0].length - 1])) {
+      mM$prime5.ret([v[0], v[1] + 1, x]);
+    }
+    else {
+      let trunc = v[0].filter(a => a < x);
+      let ar2 = v[0].slice(0, trunc.length + 1);
+      let primeF = O.mMpf.x[0];
+      let primeFibs = primeF.filter(g => g < (arr[0] + 1));
+      document.getElementById('PF_8').innerHTML = "Prime Fibonacci Numbers:" ;
+      document.getElementById('primeFibs').innerHTML = primeFibs;
+       
+    }
+  })
+
+  mM$prime5.stream.observe(v => {
+    var fibs = O.mMfibs8.x.slice(0, O.mMfibs8.x.length - 1);
+    mM24.ret(v);
     f(v[2]);
     function f(x) {
       while ((v[0][v[0].length - 1]) < x) {
@@ -715,30 +755,17 @@ var primeFib4 = h('pre',  `  mM$prime5.stream.observe(v => {
             f(v[2]);
           }
           if (i == (v[0].length - 1)) {
+            v = v.slice();
             v[0].push(v[1]);
             f(v[2]);
           }
         }
       }
     }
-    document.getElementById('prime5').innerHTML = v[0];
-    var prFibs = v[0].filter(v => O.mMfibs8.x.includes(v));
+    var prFibs = pFib(fibs, v[0]);
+    mMpf.ret(prFibs);
+    document.getElementById('PF_8').innerHTML = "Prime Fibonacci Numbers:" ;
     document.getElementById('primeFibs').innerHTML = prFibs;
-    mMitterPrime5.bnd(arr => {
-      var x = arr[0];
-      var fibs = arr[1];
-      if (x > (v[0][v[0].length - 1])) {
-        mM$prime5.ret([v[0], v[1] + 1, x]);    // Puts the array in mM$prime5.stream.
-      }
-      else {
-        let trunc = v[0].filter(a => a < x);
-        let ar2 = v[0].slice(0, trunc.length + 1);
-        document.getElementById('prime5').innerHTML = ar2;
-        var primeFibs = fibs.filter(v => ar2.includes(v)); 
-        document.getElementById('primeFibs').innerHTML = primeFibs;
-         
-      }
-    })
   });  `  )
 
 var primeFib3 = h('pre',  `  mM$fib5.stream.observe(x => {
