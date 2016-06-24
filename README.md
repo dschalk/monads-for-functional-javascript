@@ -379,7 +379,7 @@ And here are the definitions of primesMonad and its helper functions:
 
 
 
-There are interactive demonstrations of the two ways of computing prime Fibonacci numbers at http://schalk.net:3055. Of course, these are examples are contrived, presented solely to show how instances of MonadState, MonadItter, and MonadStream can be used. Number theorists looking for patterns would probably use a language less abstract than Javascript, and would want to crunch numbers on a super-computer.  
+There are interactive demonstrations of the two ways of computing prime Fibonacci numbers at http://schalk.net:3055. Of course, these examples are contrived, presented solely to show how instances of MonadState, MonadItter, and MonadStream can be used. Number theorists looking for patterns would probably use a language less abstract than Javascript, and would want to crunch numbers on a super-computer.  
 .
 .
 
