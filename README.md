@@ -120,76 +120,119 @@ The online demonstration features a game with a traversible dice-roll history; g
 With Motorcycle.js, the application runs smoothly and is easy to understand and maintain. I say "easy to understand", but some effort must first be invested into getting used to functions that take functions as arguments, and the Cycle.js / Motorcycle.js API. After that, seeing how the monads work is a matter of contemplating their definitions and experimenting a little. Most of the monads and the functions they use in this demonstration are immediately available in the browser console. Just load [http://schalk.net:3055](http://schalk.net:3055) and press F12 to explore and experiment.
 
 ### Examples
-One of the examples in the online demonstration uses MonadStream and MonadIter to produce an array of Fibonacci numbers, an array of prime numbers, and an array of prime Fibonacci numbers whenever a user enter an upper bound. The stream listeners are accessed through MonadItter's bnd() method. User data enters mM$fib5, then mM$fib5 calls mMitterPrime5.release([number, array]) sending a Fibonacci number and an array of Fibonacci numbers to mM$prime5. Fibonacci numbers and prime numbers are calculated only once. If an array shorter than one already computed is requested, a truncated version of the older list is displayed. Further explanation and an interactive demonstration are at [http://schalk.net:3055](http://schalk.net:3055).
+One of the examples in the online demonstration uses MonadStream and MonadIter to produce an array of Fibonacci numbers and an array of prime numbers whenever a user enters an upper bound on the computations. The stream listeners are accessed through MonadItter's bnd() and release() methods. User data enters mM$fib5, then mM$fib5 calls mMitterPrime5.release([number, array]) sending a Fibonacci number (used to determine the upper bound in the primes computation) and an array of Fibonacci numbers to mM$prime5. Fibonacci numbers and prime numbers are calculated only once. If an array shorter than one that hasalready beem computed is requested, a truncated version of the older array is displayed. Further explanation and an interactive demonstration are at [http://schalk.net:3055](http://schalk.net:3055).
 
 ```javascript
-  mM$fib5.stream.observe(v => {
-    var x = v.splice(0, v.length);
-      if (x[1] < x[2]) {
-          monadState.mMfibs8.bnd(push, x[0] + x[1], mMfibs8);
-          mM$fib5.ret([x[1], x[0] + x[1], x[2]]);
+  mMitterFib5.bnd(                      // Receives a number from user input
+    x => {
+      let ar = O.mMfibs8.x.slice();
+      let a = ar[ar.length - 1];
+      if (x > a) {
+        let b = ar[ar.length - 2];
+        mM$fib5.ret([b, a, x]);        // Puts data in the mM$fib5.stream observer (below)
       }
       else {
-        let ar = O.mMfibs8.x.slice(0, O.mMfibs8.x.length - 1);
-        document.getElementById('fib5').innerHTML = ar;
-        mMitterPrime5.release([x[0], ar]);
-      } 
-      mMitterFib5.bnd(
-        x => {
-          let ar = O.mMfibs8.x.slice(0, O.mMfibs8.x.length);
-          if (x > ar[ar.length - 1]) {
-            let a = ar.pop();
-            let b = ar.pop();
-            mM$fib5.ret([b, a, x]);
-          }
-          else {
-            let ar2 = ar.filter(v => v <= x);
-            document.getElementById('fib5').innerHTML = ar2;
-            mMitterPrime5.release(([ar2[ar2.length-1], ar2]));
-          }
-      })
-  });
+        let ar2 = ar.filter(v => v <= x);
+        document.getElementById('fib5').innerHTML = ar2;
+        mMitterPrime5.release(([ar2[ar2.length-1], ar2]));  // Releases mMitterPrime5 (below)
+      }
+  })
+
+  mM$fib5.stream.observe(x => {  
+      while (x[1] < x[2]) {
+        x = x.slice();                 //  Avoids mutating x
+        x = [x[1], x[0] + x[1], x[2]];
+        O.mMfibs8.bnd(push, x[1], mMfibs8)
+      }
+      var ar = O.mMfibs8.x.slice(0, O.mMfibs8.x.length - 1);
+      document.getElementById('fib5').innerHTML = ar;
+      mMitterPrime5.release([x[0], ar]);                   // Releases mMitterPrime5 (below)
+  });  
 ```
 The code above passes a Fibonacci number and an array of Fibonacci numbers to the code below.
 ```javascript
+  mMitterPrime5.bnd(arr => {
+    var fibs = arr[1];
+    var x = Math.round(Math.sqrt(arr[0]));
+    var v = O.mM24.x;
+    if (x > (v[0][v[0].length - 1])) {
+      mM$prime5.ret([v[0], v[1] + 1, x]);                 // Puts data in the mM$prime5.stream observer (below)
+    }
+    else {
+      let trunc = v[0].filter(a => a < x);
+      let ar2 = v[0].slice(0, trunc.length + 1);
+      let primeF = O.mMpf.x[0];                           // Populated in the mM$prime5.stream observer (below)
+      let primeFibs = primeF.filter(g => g < (arr[0] + 1));
+      document.getElementById('PF_8').innerHTML = "Prime Fibonacci Numbers:" ;
+      document.getElementById('primeFibs').innerHTML = primeFibs;
+       
+    }
+  })
+
   mM$prime5.stream.observe(v => {
-      while ((v[0][v[0].length - 1]) < v[2]) {
+    var fibs = O.mMfibs8.x.slice(0, O.mMfibs8.x.length - 1);
+    mM24.ret(v);
+    f(v[2]);
+    function f(x) {
+      while ((v[0][v[0].length - 1]) < x) {
         for (let i in v[0]) {
           if ((v[1] % v[0][i]) == 0) {
-            mM$prime5.ret([v[0], v[1] + 1, v[2]]);
+            v = v.slice();  // Avoids mutating v
+            v[1]+=1;
+            f(v[2]);
           }
           if (i == (v[0].length - 1)) {
+            v = v.slice();
             v[0].push(v[1]);
+            f(v[2]);
           }
         }
       }
-      let ar = v[0].slice(0, v[0].length)
-      document.getElementById('prime5').innerHTML = ar;
-      var prFibs = ar.filter(v => O.mMfibs8.x.includes(v));
-      document.getElementById('primeFibs').innerHTML = prFibs;
-      mMitterPrime5.bnd(arr => {
-        var x = arr[0];
-        var fibs = arr[1];
-        if (x > (v[0][v[0].length - 1])) {
-          mM$prime5.ret([v[0], v[1] + 1, x]);
+    }
+    var prFibs = pFib(fibs, v[0]);                       // pFib is defined below
+    mMpf.ret(prFibs);
+    document.getElementById('PF_8').innerHTML = "Prime Fibonacci Numbers:" ;
+    document.getElementById('primeFibs').innerHTML = prFibs;
+  });  
+
+  function pFib (fibs, primes) {
+    var ar = [];
+    var ar2 = [];
+    fibs.map(f => {
+      ar = [];
+      primes.map(p => {
+        if (f == p || f % p != 0 && f > 1) {
+          ar = ar.slice();                         // Avoids mutation   
+          ar.push(f);
         }
-        else {
-          let trunc = ar.filter(a => a < x);
-          let ar2 = ar.slice(0, trunc.length + 1);
-          document.getElementById('prime5').innerHTML = ar2;
-          var primeFibs = fibs.filter(v => ar2.includes(v)); 
-          document.getElementById('primeFibs').innerHTML = primeFibs;
-           
+        if (ar.length == primes.length) {
+          ar = ar.slice();
+          ar2 = ar2.slice();
+          ar2.push(ar.pop());
         }
       })
-  });
+    })
+    return [ar2];
 ```
-There are more efficient ways of generating the three arrays; but when you are familiar with the monads, the above code is easy to read and understand. User data -> mMitterFib5.release(num) -> test -> (A) generate a longer array and display or (B) truncate and display -> mMitterPrime5.release -> test -> (A) generate a longer array and display or (B) truncate and display -> generate the prime Fibonacci numbers and display them.
 
-The "primeFib()" function demonstrates an efficient way to compute prime Fibonacci numbers. It uses two instances of MonadState along with some auxiliary functions. Here is the definition of primeFib:
+An alternative algorithm uses two instances of MonadState, along with some auxiliary functions. The code, like the code above, still needs to be refactored to eliminate function scope mutations.  Here are the definitions of fibMonad and its helper functions:
 
 ## primeFib
 ```javascript
+  var fibMonad = new MonadState('fibMonad', O.mMsT.x, [0],  fibs_state)   // creates fibMonad  
+
+  var mMsT = new Monad([], 'mMsT');              // Used below.
+  mMsT.ret([]);                                  // Creates O.mMst
+  
+  var fibs_state = function fibs_state(ar) { 
+    mMsT.ret(ar.slice());
+    while (O.mMsT.x[3].length < O.mMsT.x[2]) { 
+      let ar = O.mMst.x[3].slice();
+      mMsT.ret([O.mMsT.x[1], (O.mMsT.x[0]*1 + O.mMsT.x[1]), O.mMsT.x[2], ar.concat(O.mMsT.x[0])])
+    }
+    return O.mMsT.x;
+  }
+  
   function primeFib (x) {
     var ar = [];
     var ar2 = [];
@@ -214,10 +257,12 @@ The "primeFib()" function demonstrates an efficient way to compute prime Fibonac
     return [ar2, fibs];
   }
 ```
-And here are the definitions of the monads and the functions they use to define the "process()" method:
+And here are the definitions of primesMonad and its helper functions:
 
 ### primesMonad
 ```javascript
+  var primesMonad = new MonadState('primesMonad', 2, [2],  prS)    // Creates primesMonad 
+
   function primes_state(v) {
     while ((v[3][v[3].length - 1]) < v[0]) {
       for (let i in v[3]) {
@@ -249,25 +294,9 @@ And here are the definitions of the monads and the functions they use to define 
       return [v[0], (res[res.length - 1] + 1), "whatever", res];
     }
   }
-  
-  var primesMonad = new MonadState('primesMonad', 2, [2],  prS)    // Creates primesMonad 
 ```
-### fibMonad
-```javascript
-  var mMsT = new Monad([], 'mMsT');
-  mMsT.ret([]);
-  
-  var fibs_state = function fibs_state(ar) { 
-    mMsT.ret(ar.slice());
-    while (O.mMsT.x[3].length < O.mMsT.x[2]) { 
-      mMsT.ret([O.mMsT.x[1], (O.mMsT.x[0]*1 + O.mMsT.x[1]), O.mMsT.x[2], O.mMsT.x[3].concat(O.mMsT.x[0])])
-    }
-    return O.mMsT.x;
-  }
-  
-  var fibMonad = new MonadState('fibMonad', O.mMsT.x, [0],  fibs_state)   // creates fibMonad  
-```
-There is an interactive demonstration of primesFib in the online application at http://schalk.net:3055 
+
+There are interactive demonstrations of the two ways of computing prime Fibonacci numbers at http://schalk.net:3055. Of course, these are examples are contrived, presented solely to show how instances of MonadState, MonadItter, and MonadStream can be used. Number theorists looking for patterns would probably use a language less abstract than Javascript, and would want to crunch numbers on a super-computer.  
 .
 .
 
