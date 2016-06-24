@@ -263,6 +263,20 @@ And here are the definitions of primesMonad and its helper functions:
 ```javascript
   var primesMonad = new MonadState('primesMonad', 2, [2],  prS)    // Creates primesMonad 
 
+  function prS (v) {                
+    var x = primesMonad.a[primesMonad.a.length - 1]
+    if (x < v[0]) {
+      let arr = primesMonad.a;
+      let w = [v[0], x+1, "anything", arr];    // In the else block, the third element is "whatever"
+      return primes_state(w);   // primes_state (below) computes a new value for primesMonad.s
+    }
+    else {
+      let trunc = primesMonad.a.filter(a => a < v[0]);   // Re-using previously computed prime numbers
+      let res = primesMonad.a.slice(0, trunc.length + 1);  // The prime numbers
+      return [v[0], (res[res.length - 1] + 1), "whatever", res];   // Updates primesMonad.s
+    }
+  }
+
   function primes_state(v) {
     while ((v[3][v[3].length - 1]) < v[0]) {
       for (let i in v[3]) {
@@ -279,20 +293,6 @@ And here are the definitions of primesMonad and its helper functions:
       }
     }
     return v;
-  }
-  
-  function prS (v) {                 // Re-uses previously calculated values
-    var x = primesMonad.a[primesMonad.a.length - 1]
-    if (x < v[0]) {
-      let arr = primesMonad.a;
-      let w = [v[0], x+1, "anything", arr];    // In the else block, the third element is "whatever"
-      return primes_state(w);    // primes_state calculates new values and returns the result
-    }
-    else {
-      let trunc = primesMonad.a.filter(a => a < v[0]);
-      let res = primesMonad.a.slice(0, trunc.length + 1);  // The prime numbers
-      return [v[0], (res[res.length - 1] + 1), "whatever", res];
-    }
   }
 ```
 
