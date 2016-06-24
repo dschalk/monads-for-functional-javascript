@@ -230,31 +230,7 @@ An alternative algorithm uses two instances of MonadState, along with some auxil
       let ar = O.mMst.x[3].slice();
       mMsT.ret([O.mMsT.x[1], (O.mMsT.x[0]*1 + O.mMsT.x[1]), O.mMsT.x[2], ar.concat(O.mMsT.x[0])])
     }
-    return O.mMsT.x;
-  }
-  
-  function primeFib (x) {
-    var ar = [];
-    var ar2 = [];
-    var fibs = fibMonad.run([0, 1, x, []]).a
-    var l = fibs.length - 3;
-    var primes = primesMonad
-    .run([Math.round(Math.sqrt([fibs[fibs.length - 1]])), 6, 0, [2,3,5]]).a
-    fibs.map(f => {
-      ar = [];
-      primes.map(p => {
-        if (f == p || f % p != 0 && f > 1) {
-          ar = ar.slice();     // Avoids mutation   
-          ar.push(f);
-        }
-        if (ar.length == primes.length) {
-          ar = ar.slice();
-          ar2 = ar2.slice();
-          ar2.push(ar.pop());
-        }
-      })
-    })
-    return [ar2, fibs];
+    return O.mMsT.x;       
   }
 ```
 And here are the definitions of primesMonad and its helper functions:

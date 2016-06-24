@@ -452,25 +452,6 @@ function main(sources) {
 // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> basic prime
 
 
-  function pFib (fibs, primes) {
-    var ar = [];
-    var ar2 = [];
-    fibs.map(f => {
-      ar = [];
-      primes.map(p => {
-        if (f == p || f % p != 0 && f > 1) {
-          ar = ar.slice();     // Avoids mutation   
-          ar.push(f);
-        }
-        if (ar.length == primes.length) {
-          ar = ar.slice();
-          ar2 = ar2.slice();
-          ar2.push(ar.pop());
-        }
-      })
-    })
-    return [ar2];
-  }
 
   mM$prime5.stream.observe(v => {
     var fibs = O.mMfibs8.x.slice(0, O.mMfibs8.x.length - 1);
