@@ -217,7 +217,7 @@ The code above passes a Fibonacci number and an array of Fibonacci numbers to th
 
 An alternative algorithm uses two instances of MonadState, along with some auxiliary functions. The code, like the code above, still needs to be refactored to eliminate function scope mutations.  Here are the definitions of fibMonad and its helper functions:
 
-## primeFib
+### fibMonad
 ```javascript
   var fibMonad = new MonadState('fibMonad', O.mMsT.x, [0],  fibs_state)   // creates fibMonad  
 
