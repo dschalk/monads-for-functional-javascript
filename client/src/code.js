@@ -704,7 +704,8 @@ var ret_add_cube = h('pre',  `  var ret = function ret(v, id) {
 
 var seed = h('pre',  `  mM$prime.ret([[2],3])  `  )
 
-var primeFib4 = h('pre',  `  function pFib (fibs, primes) {
+var primeFib4 = h('pre',  `  
+  function pFib (fibs, primes) {
     var ar = [];
     var ar2 = [];
     fibs.map(f => {
@@ -729,7 +730,7 @@ var primeFib4 = h('pre',  `  function pFib (fibs, primes) {
     var x = Math.round(Math.sqrt(arr[0]));
     var v = O.mM24.x;
     if (x > (v[0][v[0].length - 1])) {
-      mM$prime5.ret([v[0], v[1] + 1, x]);
+      mM$prime5.ret([v[0], v[1] + 1, x]);    // Puts data in mM$prime5.stream (below)
     }
     else {
       let trunc = v[0].filter(a => a < x);
@@ -766,9 +767,11 @@ var primeFib4 = h('pre',  `  function pFib (fibs, primes) {
     mMpf.ret(prFibs);
     document.getElementById('PF_8').innerHTML = "Prime Fibonacci Numbers:" ;
     document.getElementById('primeFibs').innerHTML = prFibs;
-  });  `  )
+  });  
+                  `  )
 
-var primeFib3 = h('pre',  `  mM$fib5.stream.observe(x => {
+var primeFib3 = h('pre',  `  
+  mM$fib5.stream.observe(x => {
       while (x[1] < x[2]) {
         x = x.slice();  //  Avoids mutating x
         x = [x[1], x[0] + x[1], x[2]];
@@ -791,7 +794,8 @@ var primeFib3 = h('pre',  `  mM$fib5.stream.observe(x => {
             mMitterPrime5.release(([ar2[ar2.length-1], ar2]));
           }
       })
-  });  `  )
+  });  
+                  `  )
 
 var spreadsheet = h('pre',  `  const spread1Press$ = sources.DOM
     .select('#spread1').events('keypress');

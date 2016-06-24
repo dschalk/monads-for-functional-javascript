@@ -500,6 +500,33 @@ var mMitterPrimeFibs = MI();
 var mMitterPF = MI();
 var mMitterPF2 = MI();
 
+
+
+function pFib (fibs, primes) {
+  var ar = [];
+  var ar2 = [];
+  fibs.map(f => {
+    ar = [];
+    primes.map(p => {
+      if (f == p || f % p != 0 && f > 1) {
+        ar = ar.slice();     // Avoids mutation   
+        ar.push(f);
+      }
+      if (ar.length == primes.length) {
+        ar = ar.slice();
+        ar2 = ar2.slice();
+        ar2.push(ar.pop());
+      }
+    })
+  })
+  return [ar2];
+}
+
+
+
+
+
+
 var sol1 = function sol1 (x,a,b,c,mon) {
   let n = (b*(-1)) + (Math.sqrt(b*b - 4*a*c));
   if (n != n) {

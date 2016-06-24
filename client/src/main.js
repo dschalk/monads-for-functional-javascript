@@ -461,14 +461,12 @@ function main(sources) {
       while ((v[0][v[0].length - 1]) < x) {
         for (let i in v[0]) {
           if ((v[1] % v[0][i]) == 0) {
-            v = v.slice();  // Avoids mutating v
             v[1]+=1;
-            f(v[2]);
+            f(x);
           }
           if (i == (v[0].length - 1)) {
-            v = v.slice();
-            v[0].push(v[1]);
-            f(v[2]);
+            v[0] = v[0].concat(v[1]);
+            f(x);
           }
         }
       }
