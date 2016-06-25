@@ -49,8 +49,6 @@ Here are some definitions, which can also be seen at [the online presentation](h
     this.id = g;
     this.s = state;
     this.a = value;
-    this.put = function put(w) { _this.s = w };
-    this.get = function get() { return _this.s };
     this.process = p;
     this.bnd = function (func, ...args) {
        return func(_this.a, ...args);
