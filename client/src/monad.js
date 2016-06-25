@@ -360,6 +360,12 @@ mMt3.ret(mMt3.x)
 var mMa = new Monad('waiting','mMa')
 mMa.ret(mMa.x)
 
+var mMx = new Monad([],'mMx')
+mMx.ret(mMx.x)
+
+var mMy = new Monad('waiting','mMy')
+mMy.ret(mMy.x)
+
 var mMb = new Monad('waiting','mMb')
 mMb.ret(mMb.x)
 
@@ -393,8 +399,8 @@ mMprime.ret(mMprime.x)
 var mMprime2 = new Monad([2],'mMprime2')
 mMprime2.ret(mMprime2.x)
 
-var mMprime = new Monad([2],'mMprime3')
-mMprime.ret(mMprime.x)
+var mMprimes = new Monad([2],'mMprimes')
+mMprimes.ret(mMprimes.x)
 
 var mMspreadsheet = new Monad([0,0,0,0], 'mMspreadsheet');
 mMspreadsheet.ret(mMspreadsheet.x)
@@ -407,6 +413,9 @@ mMdummy.ret(mMdummy.x);
 
 var mMpf = new Monad(0, 'mMpf');
 mMpf.ret(mMpf.x);
+
+var mMpFib = new Monad([], 'mMpFib');
+mMpFib.ret(mMpFib.x);
 
 var RESULT =[0,0,0,0];
 
@@ -509,19 +518,47 @@ function pFib (fibs, primes) {
     ar = [];
     primes.map(p => {
       if (f == p || f % p != 0 && f > 1) {
-        ar = ar.slice();     // Avoids mutation   
         ar.push(f);
       }
       if (ar.length == primes.length) {
-        ar = ar.slice();
-        ar2 = ar2.slice();
         ar2.push(ar.pop());
       }
     })
   })
-  return [ar2];
+  return ar2;
 }
 
+function Fib6(ar) {
+  while (ar[0] < ar[3]+1) {
+    ar[2] = ar[2].concat(ar[0]);
+    ar = [ar[1], ar[0] + ar[1], ar[2], ar[3]];
+  }
+  return ar[2].slice(0, ar[2].length - 5);
+}
+
+function Prime5(ar, n, m) {
+  var result;
+  mMx.ret([ar]);
+  mMy.ret(n);
+  result = f(m);
+  function f(x) {
+    if ((ar[ar.length - 1]) < x) {
+      for (let i in ar) {
+        if ((n % ar[i]) == 0) {
+          n+=1;
+          f(x)
+        }
+        if (i == (ar.length - 1)) {
+          ar = ar.concat(n);
+          f(x)
+        }
+      }
+    }
+    return ar
+  }
+  mMprimes.ret(result);
+  return result;
+};
 
 
 
@@ -670,13 +707,18 @@ var clean = function clean(x, mon) {
   return mon.ret(ar.x.filter(v => v !== "" && v!== undefined));
 }
 
-var push = function push(y,v,mon) {
+/*var push = function push(y,v,mon) {
   console.log('In push. y, v, mon are: ', y, v, mon);
     let ar = [];
     if (y.length == 0) { ar = [v]; } else { let keys = Object.keys(y); for (let k in keys) {ar[k] = y[k]}; ar.push(v);
     }
     return mon.ret(ar);
-};
+};*/
+
+var push = function push(y, v, mon) {
+  let ar = y.slice().concat(v);
+  return mon.ret(ar);
+}
 
 var spliceRemove = function spliceRemove(x, index, location, mon) {
   if (Array.isArray(x)) {
