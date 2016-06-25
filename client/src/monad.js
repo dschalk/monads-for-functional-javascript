@@ -42,7 +42,7 @@ var Monad = function Monad(z, g) {
 function primeFib (x) {
   var ar = [];
   var ar2 = [];
-  var fibs = fibMonad.run([0, 1, x, []]).a
+  var fibs = fibsMonad.run([0, 1, x, []]).a
   var l = fibs.length - 3;
   var primes = primesMonad
   .run([Math.round(Math.sqrt([fibs[fibs.length - 1]])), 6, 0, [2,3,5]]).a
@@ -80,7 +80,8 @@ var MonadState = function MonadState (g, state, value, p) {
   this.run = function(st) { 
     let s = _this.process(st); 
     let a = s[3];
-    return (new MonadState(_this.id, s, a, _this.process));
+    window[_this.id] = new MonadState(_this.id, s, a, _this.process);
+    return window[_this.id];
   }
 }
 
@@ -95,9 +96,19 @@ var fibs_state = function fibs_state(ar) {
   return O.mMsT.x;
 }
 
-var fibMonad = new MonadState('fibMonad', O.mMsT.x, [0],  fibs_state) 
+// fibsMonad([0,1,1478,[]) gets all that Javascript can handle.  
+
+var fibsMonad = new MonadState('fibsMonad',  [0, 1, 2, [0, 1]], [],  fibs_state);
+
+var primesMonad = new MonadState('primesMonad', [2, 3, 'primesMonad', [2]], [2],  prS) 
+
+var runFib = function runPrime (x) {
+  fibsMonad.run([fibsMonad.s[0], fibsMonad.s[1], x, fibsMonad.a]);
+  return fibsMonad.a;
+}
 
 function primes_state(v) {
+  console.log('<><><><><><><><><><> IN primes_state <><><><><><><><><>><> v is ', v );
   while ((v[3][v[3].length - 1]) < v[0]) {
     for (let i in v[3]) {
       if ((v[1] % v[3][i]) == 0) {
@@ -116,11 +127,10 @@ function primes_state(v) {
 }
 
 function prS (v) {
+    console.log('************************************** In prs. v is ', v );
   var x = primesMonad.a[primesMonad.a.length - 1]
   if (x < v[0]) {
-    let arr = primesMonad.a;
-    let w = [v[0], x+1, "anything", arr];
-    return primes_state(w);
+    return primes_state(v);
   }
   else {
     let trunc = primesMonad.a.filter(a => a < v[0]);
@@ -129,9 +139,13 @@ function prS (v) {
   }
 }
 
-var primesMonad = new MonadState('primesMonad', 2, [2],  prS) 
 
-primesMonad.run([4, 3, 0, [2]])
+var runPrime = function runPrime (x) {
+  primesMonad.run([x, primesMonad.s[0], "from runPrime", primesMonad.a]);
+  return primesMonad.a;
+}
+
+primesMonad.run([3, 2, 0, [2]])
 
 
 

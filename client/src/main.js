@@ -385,7 +385,31 @@ function main(sources) {
   });
 // ************************************************************************* END Original Fibonacci END
 
-// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> START fib  
+// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> START PRIME FIB  
+function primeFib (x) {
+  var ar = [];
+  var ar2 = [];
+  var fibs = fibsMonad.run([0, 1, x, []]).a
+  var l = fibs.length - 3;
+  var primes = primesMonad
+  .run([Math.round(Math.sqrt([fibs[fibs.length - 1]])), 6, 0, [2,3,5]]).a
+  fibs.map(f => {
+    ar = [];
+    primes.map(p => {
+      if (f == p || f % p != 0 && f > 1) {
+        ar = ar.slice();     // Avoids mutation   
+        ar.push(f);
+      }
+      if (ar.length == primes.length) {
+        ar = ar.slice();
+        ar2 = ar2.slice();
+        ar2.push(ar.pop());
+      }
+    })
+  })
+  return [ar2, fibs];
+}
+
   
   const fibKeyPress5$ = sources.DOM
     .select('input#fib3335').events('keydown');
@@ -393,26 +417,17 @@ function main(sources) {
   const fibKeyPressAction5$ = fibKeyPress5$.map(e => {
     if (e.target.value == '') {return};
     if( e.keyCode == 13 && Number.isInteger(e.target.value*1) ) {
-      Fib5(e.target.value);
+      fib5(e.target.value);
     }
     if( e.keyCode == 13 && !Number.isInteger(e.target.value*1 )) {
         document.getElementById('fib5').innerHTML = "You didn't provide an integer";
     }
   });
 
-  function Fib5(x) {
-      var fibs = O.mMfibs8.x.slice();
-      var primes = O.mMprimes.x.slice();
-      var a = fibs[fibs.length - 1];
-      if (x > a) {
-        let b = fibs[fibs.length - 2];
-        fibs = Fib6([b, a, fibs, x+1]);
-        primes = Prime5(primes, primes[primes.length - 1] + 1, x)
-      }
-      else {
-        fibs = fibs.filter(v => v <= x);
-        primes = prims.filter(v => v <= x);
-      }
+  function fib5(x) {
+      var fibs = runFib(x);
+      var y = Math.round(Math.sqrt(x));
+      var primes = runPrime(y);
       var primeFibs = pFib(fibs, primes);
       document.getElementById('PF_7').innerHTML = "Fibonacci Numbers:" ;
       document.getElementById('fib5').innerHTML = fibs;
@@ -423,7 +438,7 @@ function main(sources) {
   window.onload = function (event) {
     console.log('onopen event: ', event);
     document.querySelector('input#login').focus();
-    mMitterFib5.release(200);
+    mMitterfib5.release(200);
     // mM$prime5.ret([[2], 3, 3]);
   };
 
@@ -793,16 +808,17 @@ function main(sources) {
         h('h2', 'The State Monad: MonadState' ),  
         h('p', ' An instance of MonadState can hold the current state of a computation. MonadState supplements the global object "O" where the current states of instances of Monad can be found, privided that updates are accomplished only with the Monad ret() method. '   ),  
         code.MonadState,
-        h('p', ' MonadState reproduces some of the functionality found in the Haskel Module "Control.Monad.State.Lazy", inspired by the paper "Functional Programming with Overloading and Higher-Order Polymorphism", Mark P Jones (http://web.cecs.pdx.edu/~mpj/) Advanced School of Functional Programming, 1995. The following demonstrations use the MonadState instances fibMonad and primesMonad to create and store arrays of fibonacci numbers, arrays of prime numbers, and arrays of prime fibonacci numbers. Here is the definition of primesMonad, along with the functions it uses. ' ), 
-       code.primesMonad, 
-        h('p', ' The function prS() is the monad\'s process attribute. It checks to see what prime numbers have already been calculated. If no more are needed, it returns the (possibly truncated) pre-existing array. If more numbers are needed, it calls primes_state() with an argumant that causes it to pick up where it left off the last time it ran, adding more prime numbers as required. The value returned by the method run() of any instance of MonadPrimes must be an array, let\'s call it arr, whose fourth element (arr[3]) is the value that will be the monad\'s "a" attribute. The third element (arr[2]) is not used by primesMonad, but it is not entirely useless. During development, things like "console.log(arr[2] == "whatever")" verified that previously calculated numbers were being used, while "console.log(arr[2] == "anything")" verified that primes_state() had been called. ' ),  
-        h('p', ' The definition of fibsMonad requires all four elements of the array returned by the process() method. The third element is the upper bound on the computation. Here it is: ' ),
-      code.fibsMonad,  
-        h('p', ' fibsMonad.process(), a/k/a fibs_state(), is so fast that that I didn\'t bother to memoize calculated fibonacci numbers the way I did with prS and primes_state. Not only is it fast, but as the numbers get larger there are far more prime numbers than fibonacci numbers. The bottleneck in computing the prime Fibonacci numbers is calculating the array of primes, so memoizing can make a big difference there. I also ameliorated the bottleneck by checking for divisibility by primes rather than checking whether a Fibonacci number is in a list of primes. Checking for divisibility allowed me to generate primes up to the square root of the largest Fibonacci number, rather than all the way up to the largest Fibonacci number. ' ), 
-        h('p', 'In the Chrome browser, fibsMonad almost instantaneouly computes a list showing Fibonacci number 1475 is 1.3069892237633987e+308 and Fibonacci number 1476 is Infinity. The largest Javascript integer is 1.79E+308, so the computation shows only that Fibonacci number 1476 is larger than 1.79E+308.' ),  
-        
-        h('p', ' primeFib() is a function that uses fibsMonad and primesMonad to compute arrays of prime fibonacci numbers. The argument specifies how many fibonacci numbers will be generated. The sceenshot of my Chrome browser console log shows its limitations. Any initial primeFib() argument greater than 39 results in "RangeError: Maximum call stack size exceeded". Because of memoization, incremental increases up to 46 are possible. Going from 46 to 47 results in the "RangeError" message. The 46\th Fibonacci number is 1836311903, and the largest prime Fibonacci number in the list of the first 46 Fibonacci numbers is 433484437, according to my calculations. Here is the definition of primeFib(): ' ),           
+        h('p', ' MonadState reproduces some of the functionality found in the Haskel Module "Control.Monad.State.Lazy", inspired by the paper "Functional Programming with Overloading and Higher-Order Polymorphism", Mark P Jones (http://web.cecs.pdx.edu/~mpj/) Advanced School of Functional Programming, 1995. The following demonstrations use the MonadState instances fibsMonad and primesMonad to create and store arrays of fibonacci numbers, arrays of prime numbers, and arrays of prime fibonacci numbers. Here is the definition of fibsMonad, along with the function it uses. ' ), 
+       code.fibsMonad, 
+        h('p', 'In the Chrome browser, fibsMonad almost instantaneouly computes a list showing Fibonacci number 1475 is 1.3069892237633987e+308 and Fibonacci number 1476 is Infinity. The table at https://oeis.org/A000045/b000045.txt shows that the number is accurate up to 15 digits. The final "87" should be "92". The largest Javascript integer is 1.79E+308, so the final computation shows only that Fibonacci number 1476 is larger than 1.79E+308.' ),  
+        h('p', ' fibsMonad.process(), a/k/a fibs_state(), is so fast that that I didn\'t bother to memoize calculated fibonacci numbers the way I did with prS and primes_state. Not only is it fast, but as the numbers get larger there are far more prime numbers than fibonacci numbers. The bottleneck in computing the prime Fibonacci numbers is calculating the array of primes, so memoizing can make a big difference there. I also ameliorated the bottleneck by checking for divisibility by primes rather than checking whether a Fibonacci number is in a list of primes. Checking for divisibility allowed me to generate primes up to the square root of the largest Fibonacci number, rather than all the way up to the largest Fibonacci number. Here is the function that takes an array of Fibonacci numbers and an array of prime numbers and returns an array of prime Fibonacci numbers; ' ), 
         code.primeFib,
+        h('p', ' The other MonadState instance used in this demonstration is primesMonad. The function prS() is primesMonad\'s process attribute. It checks to see what prime numbers have already been calculated. If no more are needed, it returns the (possibly truncated) pre-existing array. If more numbers are needed, it calls primes_state() with an argumant that causes it to pick up where it left off the last time it ran, adding more prime numbers as required. The value returned by the method run() of any instance of MonadPrimes must be an array, let\'s call it arr, whose fourth element (arr[3]) is the value that will be the monad\'s "a" attribute. The third element (arr[2]) is not used by primesMonad. Here is the definition of primesMonad and its auxiliary functions:  ' ),  
+        code.primesMonad,
+        h('p', ' Two helper functions assure that propper boilerplate is supplied to the StateMonad instances. This makes adding newly computed numbers to pre-existing lists is done correctly. Here are the helper functions: ' ),
+        code.helperFunctions,
+        h('p', ' With these support functions in place, the user interface is very simple. Here it is: ' ),
+        code.primeFibInterface,
         h('p', ' The number you enter below is the length of the list of Fibonacci numbers you want to generate. Remember, 39 was the largest number I was able to use initially without getting a RangeError message. ' ),  
         h('p',  ),  
         h('input#PF_1',  ),

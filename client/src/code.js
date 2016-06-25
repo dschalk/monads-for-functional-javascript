@@ -780,7 +780,7 @@ var primeFib3 = h('pre',  `
       var ar = O.mMfibs8.x.slice(0, O.mMfibs8.x.length - 1);
       document.getElementById('fib5').innerHTML = ar;
       mMitterPrime5.release([x[0], ar]);
-      mMitterFib5.bnd(
+      mMitterfib5.bnd(
         x => {
           let ar = O.mMfibs8.x.slice();
           let a = ar[ar.length - 1];
@@ -937,8 +937,6 @@ var MonadState = h('pre',  `  var MonadState = function MonadState (g, state, va
     this.id = g;
     this.s = state;
     this.a = value;
-    this.put = function put(w) { _this.s = w };
-    this.get = function get() { return _this.s };
     this.process = p;
     this.bnd = function (func, ...args) {
        return func(_this.a, ...args);
@@ -954,12 +952,10 @@ var primesMonad = h('pre',  `  function primes_state(v) {
     while ((v[3][v[3].length - 1]) < v[0]) {
       for (let i in v[3]) {
         if ((v[1] % v[3][i]) == 0) {
-          v.slice();
           v[1]+=1;
           primes_state(v);  // Avoids mutating v
         }
         else if (i == (v[3].length - 1)) {
-          v.slice();
           v[3].push(v[1]);
           primes_state(v);
         }
@@ -968,58 +964,87 @@ var primesMonad = h('pre',  `  function primes_state(v) {
     return v;
   }
   
-  function prS (v) {                 // Re-uses previously calculated values
+  function prS (v) {
     var x = primesMonad.a[primesMonad.a.length - 1]
     if (x < v[0]) {
-      let arr = primesMonad.a;
-      console.log('>>>>>>>>>>>> v[0], x+1, 0, arr ', v[0], x+1, 0, arr);
-      let w = [v[0], x+1, "anything", arr];    // In the else block, the third element is "whatever"
-      return primes_state(w);    // primes_state calculates new values and returns the result
+      return primes_state(v);
     }
     else {
       let trunc = primesMonad.a.filter(a => a < v[0]);
       let res = primesMonad.a.slice(0, trunc.length + 1);  // The prime numbers
-      return [v[0], (res[res.length - 1] + 1), "whatever", res];
+      return [v[0], (res[res.length - 1] + 1), 'whatever', res];
     }
   }
   
-  var primesMonad = new MonadState('primesMonad', 2, [2],  prS)  `  )
+  var primesMonad = new MonadState('primesMonad', [2, 3, 'primesMonad', [2]], [2],  prS)  `  )
 
-var fibsMonad = h('pre',  `  var mMsT = new Monad([], 'mMsT');
-  mMsT.ret([]);
-  
-  var fibs_state = function fibs_state(ar) { 
+var fibsMonad = h('pre',  `  var fibs_state = function fibs_state(ar) { 
     mMsT.ret(ar.slice());
     while (O.mMsT.x[3].length < O.mMsT.x[2]) { 
       mMsT.ret([O.mMsT.x[1], (O.mMsT.x[0]*1 + O.mMsT.x[1]), O.mMsT.x[2], O.mMsT.x[3].concat(O.mMsT.x[0])])
     }
-    return O.mMsT.x;
+    return O.mMsT.x;  // Using mMsT avoids mutation; but mutating "ar.slice()" seems pretty harmless.
   }
   
-  var fibMonad = new MonadState('fibMonad', O.mMsT.x, [0],  fibs_state)  `  )
+  var fibsMonad = new MonadState('fibsMonad', O.mMsT.x, [0],  fibs_state)  `  )
 
-var primeFib = h('pre',  `  function primeFib (x) {
+var primeFib = h('pre',  `  function pFib (fibs, primes) {
     var ar = [];
     var ar2 = [];
-    var fibs = fibMonad.run([0, 1, x, []]).a
-    var l = fibs.length - 3;
-    var primes = primesMonad
-    .run([Math.round(Math.sqrt([fibs[fibs.length - 1]])), 6, 0, [2,3,5]]).a
     fibs.map(f => {
       ar = [];
       primes.map(p => {
         if (f == p || f % p != 0 && f > 1) {
-          ar = ar.slice();     // Avoids mutation   
           ar.push(f);
         }
         if (ar.length == primes.length) {
-          ar = ar.slice();
-          ar2 = ar2.slice();
           ar2.push(ar.pop());
         }
       })
     })
+    return ar2;
   }  `  )
+
+var helperFunctions = h('pre',  `  var runFib = function runPrime (x) {
+    fibsMonad.run([fibsMonad.s[0], fibsMonad.s[1], x, fibsMonad.a]);
+    return fibsMonad.a;
+  }
+
+  var runPrime = function runPrime (x) {
+    primesMonad.run([x, primesMonad.s[0], "from runPrime", primesMonad.a]);
+    return primesMonad.a;
+  }  `  )
+
+var primeFibInterface = h('pre',  ` 
+  const fibKeyPress5$ = sources.DOM
+    .select('input#fib3335').events('keydown');
+
+  const fibKeyPressAction5$ = fibKeyPress5$.map(e => {
+    if (e.target.value == '') {return};
+    if( e.keyCode == 13 && Number.isInteger(e.target.value*1) ) {
+      fib5(e.target.value);
+    }
+    if( e.keyCode == 13 && !Number.isInteger(e.target.value*1 )) {
+        document.getElementById('fib5').innerHTML = "You didn't provide an integer";
+    }
+  });
+
+  function fib5(x) {
+      var fibs = runFib(x);
+      var y = Math.round(Math.sqrt(x));
+      var primes = runPrime(y);
+      var primeFibs = pFib(fibs, primes);
+      document.getElementById('PF_7').innerHTML = "Fibonacci Numbers:" ;
+      document.getElementById('fib5').innerHTML = fibs;
+      document.getElementById('PF_8').innerHTML = "Prime Fibonacci Numbers:" ;
+      document.getElementById('primeFibs').innerHTML = primeFibs;
+  }  `  )
+
+var seed1 = h('pre',  ` 
+             `  )
+
+var seed2 = h('pre',  ` 
+             `  )
 
 var seed1 = h('pre',  ` 
              `  )
@@ -1031,6 +1056,6 @@ var seed2 = h('pre',  `
 
 
 
-  export default {monad, monadStr, monadIt, fib, driver, messages, next, Monad$, updateCalc, arrayFuncs, travel, nums, cleanup, ret, C42, taskStream, newTask, process, mM$task, addString, colorClick, edit, testZ, quad, mdem1, runTest, todoStream, gameStream, inc, ret_add_cube, seed, primeFib4, primeFib3, spreadsheet, spreadsheet2, add, reactiveFib, traverse, MonadState, primesMonad, fibsMonad, primeFib}
+  export default {monad, monadStr, monadIt, fib, driver, messages, next, Monad$, updateCalc, arrayFuncs, travel, nums, cleanup, ret, C42, taskStream, newTask, process, mM$task, addString, colorClick, edit, testZ, quad, mdem1, runTest, todoStream, gameStream, inc, ret_add_cube, seed, primeFib4, primeFib3, spreadsheet, spreadsheet2, add, reactiveFib, traverse, MonadState, primesMonad, fibsMonad, primeFib, primeFibInterface, helperFunctions}
 
 
