@@ -30,7 +30,7 @@ function main(sources) {
   
   const messages$ = (sources.WS).map(e => {
     mMtem.ret(e.data.split(',')).bnd(v => {
-    mMZ10.bnd(() => mM$1.ret([v[3], v[4], v[5], v[6]]))
+    mMZ10.bnd(() => game([v[3], v[4], v[5], v[6]]))
     mMZ11.bnd(() => updateScoreboard(v[3]));
     mMZ12.bnd(() => mM6
       .ret(v[2] + ' successfully logged in.'))
@@ -125,6 +125,12 @@ function main(sources) {
     }
   });
 
+  var task2 = function task (str) { 
+    console.log('In taskAction$. str is: ', str)
+    socket.send('TD#$42' + ',' + O.mMgroup.x.trim() + 
+        ',' + O.mMname.x.trim() + ',' + '@' + str);
+  };
+
   const newTask$ = sources.DOM
     .select('input.newTask').events('keydown');
 
@@ -150,7 +156,8 @@ function main(sources) {
           document.getElementById('alert').innerHTML = task + " is already listed.";
         }
         else if ( ar.length > 2 ) {
-          O.mMcurrentList.bnd(addString, task + ',yellow, none, false,' +  ar[0] + ',' + ar[1], mM$taskList)
+          O.mMcurrentList.bnd(addString, task + ',yellow, none, false,' +  ar[0] + ',' + ar[1], mMtemp)
+          .bnd(v => task2(v));
           e.target.value = '';
           document.getElementById('alert').innerHTML = '';
         } 
@@ -242,7 +249,7 @@ function main(sources) {
       ar[k] = 'lightGreen'; 
       ar[j] = 'line-through'; 
     }
-    mM$taskList.ret( ar.reduce((a,b) => a + ',' + b) )
+    task2( ar.reduce((a,b) => a + ',' + b) )
   });
 
   const edit1$ = sources.DOM
@@ -271,7 +278,7 @@ function main(sources) {
     let task = str.split(',').reduce((a,b) => ar + '$*$*$' + b)
     ar[index * 6] = task;
     let s = ar.reduce((a,b) => a + ',' + b);
-    mM$taskList.ret(s);
+    task2(s);
   };
 
   const deleteClick$ = sources.DOM
@@ -284,7 +291,7 @@ function main(sources) {
     let str = '';
     ar.splice(index*6, 6);
     if (ar.length > 0) {
-      mM$taskList.ret(ar.reduce((a,b) => a + ',' + b));
+      task2(ar.reduce((a,b) => a + ',' + b));
     } else {
       socket.send('TX#$42' + ',' + O.mMgroup.x.trim() + ',' + O.mMname.x.trim() ); 
       mMtaskList.ret('');
@@ -343,12 +350,6 @@ function main(sources) {
     el.style.display = 'none' 
 });
 
-  const taskAction$ = mM$taskList.stream.observe(str => {
-    console.log('In taskAction$. str is: ', str)
-    socket.send('TD#$42' + ',' + O.mMgroup.x.trim() + 
-        ',' + O.mMname.x.trim() + ',' + '@' + str);
-  });
-
   const rollClick$ = sources.DOM
     .select('.roll').events('click');
 
@@ -362,13 +363,13 @@ function main(sources) {
   });
 
   // ************************************************************************* Original Fibonacci enter
-  mM$fib.stream.observe(v => {
+  var fib2 = function fib2 (v) {
       if (v[2] > 1) {mM$fib.ret([v[1], v[0] + v[1], v[2] -1])}
       else {
         console.log(v[0]);
         mM19.ret(v[0]);
       }
-  });
+  };
 
   const fibPress$ = sources.DOM
     .select('input#code').events('keydown');
@@ -377,7 +378,7 @@ function main(sources) {
     if (e.target.value == '') {return};
     if( e.keyCode == 13 && Number.isInteger(e.target.value*1) ) {
       mM21.ret(e.target.value);
-      mM$fib.ret([0, 1, e.target.value]);
+      fib2([0, 1, e.target.value]);
     }
     if( e.keyCode == 13 && !Number.isInteger(e.target.value*1 )) {
       mM19.ret("You didn't provide an integer");
@@ -454,14 +455,14 @@ function primeFib (x) {
     const forwardAction$ = forwardClick$.map(() => {
       if (O.mMindex.x < (O.mMhistorymM1.x.length - 1)) {
         O.mMindex.bnd(add, 1, mMindex)
-        .bnd(mM$3.ret)
+        .bnd(v => trav(v))
       }
     });
 
     const backAction$ = backClick$.map(() => {
       if (O.mMindex.x > 0) {
         O.mMindex.bnd(add, -1, mMindex)
-        .bnd(mM$3.ret)
+        .bnd(v => trav(v))
         socket.send('DE#$42,' + O.mMgroup.x.trim() + ',' + O.mMname.x.trim() + ', clicked the BACK button. ');
       }
     });
@@ -474,7 +475,8 @@ function primeFib (x) {
       if (O.mM3.x.length < 2) {
         O.mM3.bnd(push, e.target.innerHTML, O.mM3)
         mMtemp.ret(O.mMhistorymM1.x[O.mMindex.x].x)
-        .bnd(splice, e.target.id, 1, mM$1)
+        .bnd(splice, e.target.id, 1, mMtemp)
+        .bnd(v => game(v));
       };
       if (O.mM3.x.length === 2 && O.mM8.x !== 0) {
         updateCalc();
@@ -490,7 +492,8 @@ function primeFib (x) {
         updateCalc();
       }
     })
-    const mM$1Action$ = mM$1.stream.observe(v => {
+
+    var game = function game (v) {
         mM1.ret(v);
         O.mMindex.bnd(add, 1, mMindex)
         .bnd(i => O.mMhistorymM1.bnd(spliceAdd, i, O.mM1, O.mMhistorymM1))
@@ -499,15 +502,28 @@ function primeFib (x) {
         document.getElementById('2').innerHTML = O.mM1.x[2];  
         document.getElementById('3').innerHTML = O.mM1.x[3];  
         cleanup()
-    });
+    };
 
-    const mM$3Action$ = mM$3.stream.observe(v => {
+    var trav = function trav (v) {
       document.getElementById('0').innerHTML = (O.mMhistorymM1.x[v].x)[0]; 
       document.getElementById('1').innerHTML = (O.mMhistorymM1.x[v].x)[1]; 
       document.getElementById('2').innerHTML = (O.mMhistorymM1.x[v].x)[2]; 
       document.getElementById('3').innerHTML = (O.mMhistorymM1.x[v].x)[3]; 
       cleanup();
-    })
+    };
+
+  function updateCalc() { 
+    O.mM3.bnd(x => mM7
+    .ret(calc(x[0], O.mM8.x, x[1]))
+    .bnd(result => 
+      {  O.mM1.bnd(push, result, mM1).bnd(z =>
+         game(z));                                      
+        if (result == 20) {score(O.mM13.x, 1)}; 
+         if (result == 18) {score(O.mM13.x, 3)};
+      }
+    )) 
+    reset()
+  };
 
 // <>>><>><><><><>>>><><><  traversal  ><><><><><><>>><><><><><><><><><><><>< END traversal  
 
@@ -640,11 +656,9 @@ function primeFib (x) {
         h('span', ' using ' ),
         h('a', {props: {href: "https://github.com/cujojs/most", target: "_blank" }}, 'Most' ),
         h('span', ' , ' ),
-        h('a', {props: {href: "https://github.com/TylorS/most-subject", target: "_blank" }}, 'Most-subject' ),
         h('span', ' and '  ), 
         h('a', {props: {href: "https://github.com/paldepind/snabbdom", target: "_blank" }}, 'Snabbdom' ),
         h('span', ' instead of RxJS and virtual-dom.  The code for this repository is at ' ),
-        h('a', {props: {href: "https://github.com/dschalk/JS-monads-stable", target: "_blank" }}, 'JS-monads-stable' ),
         h('div#gameDiv2',  {style: {display: 'none'}}, [
         h('br'),
         h('span', ' Here are the basic rules:' ), 
@@ -812,17 +826,12 @@ function primeFib (x) {
         h('br' ),
         h('span#PF_5.red7',  ),  
         h('h2', 'MonadStream'  ),
-        code.monadStr,
-        h('span.tao', ' MonadStream instances acquire values with the "ret()" method, placing them in the "stream" attribute. The stream depends on the ' ),
-        h('a', {props: {href: "https://github.com/TylorS/most-subject/", target: "_blank" }}, 'most-subject' ),
-        h('p', ' MonadStream instances act as helpers in the dice game and todo list demonstrations, triggering DOM updates in response to various kinds of user input. This is done by performing operations on the stream and then merging it into the main stream that feeds data to the virtual DOM. A simpler alternative would be to forget about MonadStream and use simple function calls, as I did in the MonadState example. I can\'t think of any possible practical use for a MonadStream instance in a real world application so I will probably drop it from the next version of JS-monads-stable. The repository is not quite as stable as I thought when I named it. ' ), 
 //************************************************************************************************************* END MonadState
         h('h2', 'Immutable Data And The State Object "O" ' ),
        h('p', ' Mutations in this application are confined to the global state object "O" and MonadIter instances. <UPDATE: The MonadState and MonadStream prime Fibonacci demonstrations have mutations which are confined to function scope. I\'ll probably refactor those out when I have the time.> In the examples above, the release() method moves the process forward to the next occurance of the MonadIter instance where the bnd() method provides a new function to the "p" attribute. The progressive morphing of "p" in MonadIter instances is desirable behavior, and I think that creating a clone each time it occurs would be a senseless waste of resources. Unless and until release() is called, the program is not affected by "p". If release() is called, the return value of p(...args) is returned, but "p" itself remains tucked away, never mixing with the flow of information through the program. The bnd() method is pure. Given the same argument, it will always do the same thing. It doesn\'t even return anything. It just updates the internal "p" attribute. This insulation of internal operations from the outer program is remeniscent of an important purpose of the Haskell IO monad. These are just hand-waving arguments for the harmlessness of letting the bnd() method mutate MonadIter instances, but I wanted to explain why I feel comfortable with letting the definition of MonadIter stand as it is.  ' ),           
        h('p', 'All monad updates caused by the monad ret() method are stored in the object "O". When a monad m executes m.ret(v) for some value "v", m remains unchanged and the O attribute O.m is created or, if it already exists, is replaced by the update; i.e., O.m.x == v becomes true. Older versions of m are subject to garbage collection unless there is a reference to them or to an object (arrays are objects) containing m.  This is illustrated in the score-keeping code below.  All score changes are captured by mM13.ret(). Therefore, O.mM13.x is always the current score. Replacing monad attributes in O is vaguely analogous to swapping out ServerState in the Haskell server\'s state TMVar. Older versions of ServerState can be preserved in the server just as prior versions of O.mM13 can be preserved in the front end. ' ),     
        h('h3', 'Storing Monads That Have Been Replaced In O'  ),
        h('p', ' The history of the number display in the game can be traversed in either direction until a player achieves a goal. After that, the traversable history builds up until another goal is achieves. Players can use historical displays, so to keep competition fair, group members are notified when another member clicks the BACK button. '  ),
-       h('p', ' Every time mM$1Action$ is updated by "mM$1.stream.observe(v =>", mM1.ret(v) executes causing O.mM1 to be replaced. "O.mMhistorymM1.bnd(spliceAdd, i, O.mM1, O.mMhistorymM1)" executes next. O.mMhistorymM1 maintains the history of game displays up to the scoring of a goal, at which point the monads are discarded and the process of saving monads begins again. The BACK and FORWARD buttons change the index number. mM$3.ret() takes the index number and mM$3.stream provides it to mM$3Action$. Here is the code: '  ),
        code.traverse,  
        h('p', ' It would have been more efficient to just save the arrays rather than the monads that hold them. But this isn\'t about recommended practices right now. It is a demonstration of a use of the not-mutated monads on the mutable global object "O". I write "not-mutated" because the monads can be clobbered anytime you want. But if values are replaced using the Monad ret() method, as is the case in this demonstration, monads on "O" are replaced, not mutated. '  ),
  
@@ -830,9 +839,6 @@ function primeFib (x) {
 
         h('h2', 'Updating the DOM'  ),
         h('h3', 'Todo List DOM Updates' ),
-        h('p', ' When users do anything to the todo list, MonadStream instance mM$taskList runs its ret() method on the modified String representation of the list, causing the string to be added to mM$taskList.stream. mM$taskList.stream has only one subscriber, taskAction$, whose only purpose it to send the string representation of the todo list to the server. The server updates its persistent file and distributes a text representation of the updated todo list to all group members. Each group member receives the todo list as a string and parses it into a DOM node tree that is merged into the stream that updates the virtual DOM. All Todo List side effects can be traced to:' ),
-        code.todoStream,
-        h('span', ' Just search for "mM$taskList.ret" to find where all todo list changes were initiated. The following link takes you to a more detailed explanation of the todo list. ' ),
         h('a', {props: {href: '#tdList2'}}, 'Detailed Todo List Explanation'   ),  
         h('br' ),
         h('h3', 'Dice Game DOM updates' ),
@@ -852,18 +858,17 @@ function primeFib (x) {
         h('br' ),
         h('h3', 'The Todo List' ),
         h('p', ' Next, I\'ll go over some features of the todo list application. This will show how Motorcycle.js and the monads work together.' ),
-        h('p', 'Creation Of A Task: If you enter something like Susan, Fred, Pay the water bill, the editable task will appear in your browser and in the browsers of any members a group you might have created or joined. If you have loaded this page in another tab and changed to the same group in both, you will see the task in both tabs, barring some malfunction. The task has a delete button, an edit button, and a "Completed" checkbox. It shows that Susan authorized the task and Fred is responsible for making sure it gets done. Instead of entering an authority and responsible person, you can just enter two commas before the task description. Without two commas, a message appears requesting more information. This is how Motorcycle.js handles the creation of a new task: ' ),
+        h('p', 'Creation Of A Task: If you enter something like Susan, Fred, Pay the water bill, the editable task will appear in your browser and in the browsers of any members a group you might have created or joined. If you have loaded this page in another tab and changed to the same group in both, you will see the task in both tabs, barring some malfunction. The task has a delete button, an edit button, and a "Completed" checkbox. It shows that Susan authorized the task and Fred is responsible for making sure it gets done. Instead of entering an authority and responsible person, you can just enter two commas before the task description. Without two commas, a message appears requesting more information. ' ),
         code.newTask,
-        h('p', ' mM$taskList is the todo application\'s worker function. Every time it executes its ret() method, the argument to ret() is added to its stream, causing the following code to run: ' ),
-        code.mM$task,
         h('p', 'mM$taskList caries a string representing the task list. mMtaskList.x.split(",") produces an array whose length is a multiple of six. Commas in the task description are replaced by "$*$*$" so split(",") will put the entire task description in a single element. Commas are re-inserted when the list arrives from the server for rendering. Although a task list is a nested virtual DOM object (Snabbdom vnode), it can be conveniently passed back and forth to the server as a string without resorting to JSON.stringify. Its type is Text on the server and String in the front end, becomming a virtual DOM node only once, when it arrives from the server prefixed by "DD#$42" causing "process(e.data) to execute. Here is process(): ' ),
         code.process,
-        h('span.tao', 'As you see, the string becomes a list of six-element objects, then those objects are used to create a Snabbdom vnode which is handed to mM$taskList.ret() leading to the update of O.mMtaskList. O.mMtaskList.x sits permanently in the main virtual DOM description. When its value gets refreshed, the DOM re-renders because taskStream$ is merged into the stream that is mapped into the virtural DOM description inside the object returned by "main". "main" and "sources" are the arguments provided to Cycle.run(). "sources" is the argument provided to "main". It is an array of drivers. The code is at '  ),
+        h('span.tao', 'As you see, the string becomes a list of six-element objects, then those objects are used to create a Snabbdom vnode which is handed to mM$taskList.ret() leading to the update of O.mMtaskList. O.mMtaskList.x sits permanently in the main virtual DOM description. '  ),
         h('a', {props: {href: "https://github.com/dschalk/JS-monads-stable"}}, 'https://github.com/dschalk/JS-monads-stable' ),
         h('br'),
         h('p', ' Clicking "Completed": When the "Completed" button is clicked, the following code runs:         '  ),
         code.colorClick,
-        h('p', 'O.mMtaskList is split into an array. Every sixth element is the start of a new task. colorAction$ toggles the second, third, and fourth element in the task pinpointed by "index" * 6. getIndex finds the index of the first and only the element whose task description matches the one that is being marked "Completed". I say "only" because users are prevented from adding duplicate tasks. After the changes are made, the array of strings is reduced to one string and sent to the server when mM$taskList.ret() updates mM$taskList.stream triggering . '  ),  
+        h('p', 'O.mMtaskList is split into an array. Every sixth element is the start of a new task. colorAction$ toggles the second, third, and fourth element in the task pinpointed by "index" * 6. getIndex finds the index of the first and only the element whose task description matches the one that is being marked "Completed". I say "only" because users are prevented from adding duplicate tasks. After the changes are made, the array of strings is reduced to one string and sent to the server by task2(). '  ),  
+        
         h('p', ' This is the code involved in editing a task description: '  ),
         code.edit,
         h('p', 'Clicking "Edit" causes a text box to be displayed. Pressing <ENTER> causes it to diappear. edit2Action$ obtains the edited description of the task and the index of the task iten and provides them as arguments to process. Process exchanges $*$*$ for any commas in the edited version and assigns the amended task description to the variable "task". O.mMtaskList.x is copied and split into an array. "index * 6" is replaced with "task" and the list of strings is reduced back to a single string and sent to the server for distribution. This pattern, - (1) split the string representation of the todo list into an array of strings, (2) do something, (3) reduce the list of strings back to a single string - is repeated when the "Delete" button is clicked. If the last item gets deleted, the server is instructed to delete the persistent file bearing the name of the group whose member deleted the last task. ' ), 
@@ -958,19 +963,6 @@ function primeFib (x) {
         }
       });
       return ret(x);
-  };
-
-  function updateCalc() { 
-    O.mM3.bnd(x => mM7
-    .ret(calc(x[0], O.mM8.x, x[1]))
-    .bnd(result => 
-      {  O.mM1.bnd(push, result, mM1).bnd(z =>
-         mM$1.ret(z));                                      
-        if (result == 20) {score(O.mM13.x, 1)}; 
-         if (result == 18) {score(O.mM13.x, 3)};
-      }
-    )) 
-    reset()
   };
 
   var score = function score(x,j) {

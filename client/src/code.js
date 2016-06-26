@@ -51,16 +51,6 @@ const monad = h('pre', {style: {color: '#AFEEEE' }}, `  var Monad = function Mon
     };
   }; ` )
 
-const monadStr = h('pre', {style: {color: '#AFEEEE' }}, `  var MonadStream = function MonadStream(g) {
-        var _this = this;
-        this.id = g;
-        this.stream = mostSubject.subject()
-        this.ret = function (a) {
-          _this.stream.next(a);
-          return _this;
-        };
-  }; ` )
-
 const monadIt = h('pre', {style: {color: '#AFEEEE' }}, `  var MonadItter = function MonadItter() {
     var _this = this;
     this.p = function () {};
@@ -117,7 +107,7 @@ var driver = h('pre', `  var websocketsDriver = function () {
 
 var messages = h('pre', `  const messages$ = (sources.WS).map(e => 
     mMtem.ret(e.data.split(',')).bnd(v => {
-    mMZ10.bnd(() => mM$1.ret([v[3], v[4], v[5], v[6]]))
+    mMZ10.bnd(() => game([v[3], v[4], v[5], v[6]]))
     mMZ11.bnd(() => updateScoreboard(v[3]));
     mMZ12.bnd(() => mM6
       .ret(v[2] + ' successfully logged in.'))
@@ -183,8 +173,8 @@ var nums = h('pre',  `
       if (O.mM3.x.length < 2) {
         O.mM3.bnd(push, e.target.innerHTML, O.mM3)
         mM28.ret(O.mMhistorymM1.x[O.mMindex2.x])
-        .bnd(spliceRemove, e.target.id, O.mM$1)
-        .bnd(mM$1.ret);
+        .bnd(spliceRemove, e.target.id, mMtemp)
+        .bnd(v => game(v));
         if (O.mM3.x.length === 2 && O.mM8.x !== 0) {
           updateCalc();
         }
@@ -201,18 +191,16 @@ var nums = h('pre',  `
       }
     })
 
-    const mM$1Action$ = mM$1.stream.map(v => {
-      if (Array.isArray(v)) {
-        O.mMhistorymM1.bnd(spliceAdd, O.mMindex2.x, v, O.mMhistorymM1);
-        document.getElementById('0').innerHTML = (O.mMhistorymM1.x[O.mMindex2.x])[0]; 
-        document.getElementById('1').innerHTML = (O.mMhistorymM1.x[O.mMindex2.x])[1]; 
-        document.getElementById('2').innerHTML = (O.mMhistorymM1.x[O.mMindex2.x])[2]; 
-        document.getElementById('3').innerHTML = (O.mMhistorymM1.x[O.mMindex2.x])[3]; 
+    var game = function game (v) {
+        mM1.ret(v);
+        O.mMindex.bnd(add, 1, mMindex)
+        .bnd(i => O.mMhistorymM1.bnd(spliceAdd, i, O.mM1, O.mMhistorymM1))
+        document.getElementById('0').innerHTML = O.mM1.x[0];  
+        document.getElementById('1').innerHTML = O.mM1.x[1];  
+        document.getElementById('2').innerHTML = O.mM1.x[2];  
+        document.getElementById('3').innerHTML = O.mM1.x[3];  
         cleanup()
-      }
-      else {
-        console.log('O.mM$1.stream is providing defective data to O.mM$1Action');
-      }
+    };
   });  `  )
 
   const arrayFuncs = h('pre',  `  var push = function push(y,v,mon) {
@@ -626,16 +614,6 @@ var cleanup = h('pre',  `  function cleanup (x) {
   }  `  )
 
   
-  var gameStream = h('pre',  `  const mM$1Action$ = mM$1.stream.map(v => {
-      O.mMindex2.bnd(inc, mMindex2);
-      O.mMallRolls.bnd(spliceAdd, O.mMindex2.x, v, mMallRolls);
-      document.getElementById('0').innerHTML = (O.mMallRolls.x[O.mMindex2.x])[0]; 
-      document.getElementById('1').innerHTML = (O.mMallRolls.x[O.mMindex2.x])[1]; 
-      document.getElementById('2').innerHTML = (O.mMallRolls.x[O.mMindex2.x])[2]; 
-      document.getElementById('3').innerHTML = (O.mMallRolls.x[O.mMindex2.x])[3]; 
-      cleanup(7)
-  });  `  )
-
   var inc = h('pre',  `  var inc = function inc(x, mon) {
       return mon.ret(x + 1);
   };
@@ -1057,6 +1035,6 @@ var seed2 = h('pre',  `
 
 
 
-  export default {monad, monadStr, monadIt, fib, driver, messages, next, Monad$, updateCalc, arrayFuncs, travel, nums, cleanup, ret, C42, taskStream, newTask, process, mM$task, addString, colorClick, edit, testZ, quad, mdem1, runTest, todoStream, gameStream, inc, ret_add_cube, seed, primeFib4, primeFib3, spreadsheet, spreadsheet2, add, reactiveFib, traverse, MonadState, primesMonad, fibsMonad, primeFib, primeFibInterface, helperFunctions}
+  export default {monad, monadIt, fib, driver, messages, next, Monad$, updateCalc, arrayFuncs, travel, nums, cleanup, ret, C42, taskStream, newTask, process, mM$task, addString, colorClick, edit, testZ, quad, mdem1, runTest, todoStream, inc, ret_add_cube, seed, primeFib4, primeFib3, spreadsheet, spreadsheet2, add, reactiveFib, traverse, MonadState, primesMonad, fibsMonad, primeFib, primeFibInterface, helperFunctions}
 
 

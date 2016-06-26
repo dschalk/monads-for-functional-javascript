@@ -5,17 +5,6 @@ var O = {};
 var count = 0;
 var state, monadState, total;
 
-var MonadStream = function MonadStream(g) {
-  var _this = this;
-  this.id = g;
-  this.stream = mostSubject.subject()
-  this.ret = function (a) {
-    console.log('From ', _this.id, 'a is ', a);
-    _this.stream.next(a);
-    return _this;
-  };
-};
-
 var Monad = function Monad(z, g) {
   var _this = this;
 
@@ -145,32 +134,7 @@ var runPrime = function runPrime (x) {
 
 primesMonad.run([3, 2, 0, [2]])
 
-
-
 var CURRENT_ROLL = [];
-var mM$1 = new MonadStream('mM$1');
-var mM$taskList = new MonadStream('mM$taskList');
-var mM$3 = new MonadStream('mM$3');
-var mM$2 = new MonadStream('mM$2');
-var mM$todo = new MonadStream('mM$todo');
-var mM$task = new MonadStream('mM$task');
-var mM$todo2 = new MonadStream('mM$todo2');
-var mM$todo3 = new MonadStream('mM$todo3');
-var mM$prime = new MonadStream('mM$prime');
-var mM$primeFibs = new MonadStream('mM$primeFibs');
-var mM$prime2 = new MonadStream('mM$prime2');
-var mM$prime3 = new MonadStream('mM$prime3');
-var mM$prime33 = new MonadStream('mM$prime33');
-var mM$prime333 = new MonadStream('mM$prime333');
-var mM$prime4 = new MonadStream('mM$prime4');
-var mM$prime5 = new MonadStream('mM$prime5');
-
-var mM$fib = new MonadStream('mM$fib');
-var mM$fib2 = new MonadStream('mM$fib2');
-var mM$fib3 = new MonadStream('mM$fib3');
-var mM$fib4 = new MonadStream('mM$fib4');
-var mM$fib5 = new MonadStream('mM$fib5');
-var mM$PF = new MonadStream('mM#PF');
 
 var emitevent;
 var data$;
@@ -354,8 +318,6 @@ mMsoloAlert.ret(mMsoloAlert.x);
 
 var mMe = new Monad('', 'mMe');
 mMe.ret(mMe.x);
-
-var mMtaskList2 = new MonadStream('mMtaskList2');
 
 var mMgoals = M(0,'mMgoals');
 mMgoals.ret(mMgoals.x);

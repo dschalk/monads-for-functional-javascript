@@ -1,6 +1,8 @@
-#JS-monads-stable -v1.1
+#JS-monads-stable -v1.2
 
-This is the culmination of the experimental JS-monads series. Features are still being added, but the core definitions are stable. It is running online at [JS-monads-stable](http://schalk.net:3055) in a [Motorcycle.js](https://github.com/motorcyclejs) application. Motorcycle.js is [Cycle.js](https://github.com/cyclejs/core) using [Most](https://github.com/cujojs/most) and [Snabbdom](https://github.com/paldepind/snabbdom) instead of RxJS and "virtual-dom". [most-subject](https://github.com/TylorS/most-subject) makes MonadStream work as intended. The application runs online at [http://schalk.net:3055](http://schalk.net:3055).  
+In this version, MonadStream has been dropped. It was dead weight. Simple function calls are now doing what MonadStream instances were doing in the simulated dice game and persistent, shared todo list.
+
+This repository contains the code that is running online at [JS-monads-stable](http://schalk.net:3055) in a [Motorcycle.js](https://github.com/motorcyclejs) application. Motorcycle.js is [Cycle.js](https://github.com/cyclejs/core) using [Most](https://github.com/cujojs/most) and [Snabbdom](https://github.com/paldepind/snabbdom) instead of RxJS and "virtual-dom".  
 
 The use of the monads is explained at [the online presentation](http://schalk.net:3055), which is the running version of this code. There, you can see explanations and demonstrations of a shared, persistent todo list; an interactive simulated dice game with a traversable history number displays, chat rooms for for each group that is formed to play the game or just to chat, and much more.
 
@@ -61,18 +63,6 @@ Here are some definitions, which can also be seen at [the online presentation](h
     }
   }
 ```
-## MonadStream
-```javascript
-  var MonadStream = function MonadStream(g) {
-    var _this = this;
-    this.id = g;
-    this.stream = mostSubject.subject()
-    this.ret = function (a) {
-      _this.stream.next(a);
-      return _this;
-    };
-  };
-```
 ## Stand alone ret()
 ```javascript
   var ret = function ret(v, id) {
@@ -127,7 +117,7 @@ I can't think of a good reason for doing it, but if you want to change the value
 
 If you want to go a step further and mutate m, nothing prevents you from calling "m.x = 8888", O.m.x = "WTF", and such. If I ever recruit people to help develop an application, I might ask them to update Monad instances only by using the ret() method so everyone could confidently look to the "O" object for changes in Monad instances' state. 
 
-Other than O, MonatIter instances are the only objects that mutate in this presentation. Mutation sometimes occurs inside of functions, but functions do not have side effects. That doesn't mean they are pure, since they might depend on attributes of "O" or changing streams of data. If some array "ar" come in as an argument, I often clone it by calling ar = ar.slice() to make sure that nothing outside of the function is arrected by mutating ar. 
+Other than O, MonatIter instances are the only objects that mutate in this presentation. Mutation sometimes occurs inside of functions, but functions do not have side effects. That doesn't mean they are pure, since they might depend on attributes of "O". If some array "ar" come in as an argument, I often clone it by calling ar = ar.slice() to make sure that nothing outside of the function is arrected by mutating ar. 
 
 MonadIter instances are useful only when their bnd() method is used; and when bnd() is used, the "p" attribute becomes the argument to bnd(). I think this is a situation in which it is wise to take advantage of the fact that Javascript allows p to morph into the bnd() argument. Words like "dogmatic", "religous", and "obsessive" come to mind when I think of imposing consistency on this project by eliminating the only exception (other than "O") to the general no-mutations policy. If I find that it interferes with JavaScript engine optimization, I will reconsider.
  
@@ -238,7 +228,7 @@ var runPrime = function runPrime (x) {
 ```
 The function that takes an array of Fibonacci numbers and an array of prime numbers, and returns an array of prime Fibonacci numbers is named "pFib and is defined as follows:
 ```javascript
-  function pFib (fibs, primes) {   // Used in the mM$prime5.stream listener (below)
+  function pFib (fibs, primes) {  
     var ar = [];
     var ar2 = [];
     fibs.map(f => {
