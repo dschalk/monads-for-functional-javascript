@@ -812,7 +812,7 @@ function primeFib (x) {
         code.primeFib,
         h('p', ' The other MonadState instance used in this demonstration is primesMonad. The function prS() is primesMonad\'s process attribute. It checks to see what prime numbers have already been calculated. If no more are needed, it returns the (possibly truncated) pre-existing array. If more numbers are needed, it calls primes_state() with an argumant that causes it to pick up where it left off the last time it ran, adding more prime numbers as required. The value returned by the method run() of any instance of MonadPrimes must be an array, let\'s call it arr, whose fourth element (arr[3]) is the value that will be the monad\'s "a" attribute. The third element (arr[2]) is not used by primesMonad. Here is the definition of primesMonad and its auxiliary functions:  ' ),  
         code.primesMonad,
-        h('p', ' Two helper functions assure that propper boilerplate is supplied to the StateMonad instances. This makes adding newly computed numbers to pre-existing lists is done correctly. Here are the helper functions: ' ),
+        h('p', ' Two helper functions assure that propper boilerplate is supplied to the StateMonad instances. This makes sure that adding newly computed numbers to pre-existing lists is done correctly. Here are the helper functions: ' ),
         code.helperFunctions,
         h('p', ' With these support functions in place, the user interface is very simple. Here it is: ' ),
         code.primeFibInterface,
