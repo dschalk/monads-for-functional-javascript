@@ -196,7 +196,19 @@ And here are the definitions of primesMonad and its helper functions:
     return v;
   }
 ```
+In both instances of MonadState, the run() method takes an array of four elements. The following functions are abstractions over run that take one argumant and make sure that all four of the elements in the array presented to run() are correct. The arguments provided to runFib and runPrime determine the lengths of the arrays referenced by the "a" attributes of both MonadState instances. Here they are:
+### Abstractions Over The "run()" Method
+```javascript
+var runFib = function runPrime (x) {
+  fibsMonad.run([fibsMonad.s[0], fibsMonad.s[1], x, fibsMonad.a]);
+  return fibsMonad.a;
+}
 
+var runPrime = function runPrime (x) {
+  primesMonad.run([x, primesMonad.s[0], "from runPrime", primesMonad.a]);
+  return primesMonad.a;
+}
+```
 ### User Interface 
 ```javascript
   const fibKeyPress5$ = sources.DOM
