@@ -102,17 +102,17 @@ state <- atomically $ newTMVar newServerState
 ```
 When the server is notified of a score change in the simulated dice game, this code executes:
 ```haskell
-    else if "CG#$42" `T.isPrefixOf` msg
-        then
-            mask_ $ do
-                -- let extraNum = read (fyy msgArray) :: Int
-                old <- atomically $ takeTMVar state
-                let new = changeScore sender extraNum extraNum2 old
-                atomically $ putTMVar state new
-                let subSt = subState sender group new
-                broadcast msg subSt
-                broadcast ("CB#$42," `mappend` group `mappend` ","
-                    `mappend` sender `mappend` "," `mappend` T.concat (intersperse "<br>" (textState subSt))) subSt
+  else if "CG#$42" `T.isPrefixOf` msg
+    then
+      mask_ $ do
+        -- let extraNum = read (fyy msgArray) :: Int
+        old <- atomically $ takeTMVar state
+        let new = changeScore sender extraNum extraNum2 old
+        atomically $ putTMVar state new
+        let subSt = subState sender group new
+        broadcast msg subSt
+        broadcast ("CB#$42," `mappend` group `mappend` ","
+            `mappend` sender `mappend` "," `mappend` T.concat (intersperse "<br>" (textState subSt))) subSt
 ```
 You don't need to be a Haskell programmer to see that state is pulled out of the TMVar and given the name "old". "new" is the state after changeScore sender extraNum extraNum2 old executes. "atomically $ putTMVar state new" replaces "old" in the TMVar with "new".
 
