@@ -68,8 +68,6 @@ var MonadState = function MonadState (g, state, value, p) {
   this.id = g;
   this.s = state;
   this.a = value;
-  this.put = function put(w) { _this.s = w };
-  this.get = function get() { return _this.s };
   this.process = p;
   this.bnd = function (func) {
     for (var _len = arguments.length, args = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {

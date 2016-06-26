@@ -53,10 +53,11 @@ Here are some definitions, which can also be seen at [the online presentation](h
     this.bnd = function (func, ...args) {
        return func(_this.a, ...args);
     };
-    this.run = function(st) {  
-      let s = _this.process(st);         // Similar to the Haskell State monad. 
-      let a = _this.s[3];
-      return (new MonadState(_this.id, s, a, _this.process));
+    this.run = function(st) { 
+      let s = _this.process(st); 
+      let a = s[3];
+      window[_this.id] = new MonadState(_this.id, s, a, _this.process);
+      return window[_this.id];
     }
   }
 ```
