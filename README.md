@@ -232,12 +232,9 @@ The function that takes an array of Fibonacci numbers and an array of prime numb
       ar = [];
       primes.map(p => {
         if (f == p || f % p != 0 && f > 1) {
-          ar = ar.slice();     // Avoids mutation   
           ar.push(f);
         }
         if (ar.length == primes.length) {
-          ar = ar.slice();
-          ar2 = ar2.slice();
           ar2.push(ar.pop());
         }
       })
