@@ -100,14 +100,36 @@ When the server loads, the line of code
 ```haskell
 state <- atomically $ newTMVar newServerState
 ```
- executes. The type of state is TMVar ServerState. ServerState is never mutated; that would be impossible in Haskell since ServerState was defined in the main program. But state is in the IO monad, so the fact that the it refers to the ServerState list pulled from the TMVar before and after one ServerState list is replaced by another ServerState list is not a problem.
+When the server is notified of a score change in the simulated dice game, this code executes:
+```haskell
+    else if "CG#$42" `T.isPrefixOf` msg
+        then
+            mask_ $ do
+                -- let extraNum = read (fyy msgArray) :: Int
+                old <- atomically $ takeTMVar state
+                let new = changeScore sender extraNum extraNum2 old
+                atomically $ putTMVar state new
+                let subSt = subState sender group new
+                broadcast msg subSt
+                broadcast ("CB#$42," `mappend` group `mappend` ","
+                    `mappend` sender `mappend` "," `mappend` T.concat (intersperse "<br>" (textState subSt))) subSt
+```
+You don't need to be a Haskell programmer to see that state is pulled out of the TMVar and given the name "old". "new" is the state after changeScore sender extraNum extraNum2 old executes. "atomically $ putTMVar state new" replaces "old" in the TMVar with "new".
+
+In the browser, when an instance of Monad, say "m" with m.x == oldValue, executes its ret() method on some reference to a value, let's call it "newValue", O's m attribute points to a fresh Monad instance. O.m.x == oldValue becomes false and O.m.x == newValue becomes true. The Monad instance with m.x == oldValue still exists, and if there is a reference to it, it won't be destroyed by the garbage collector.
+
+In the server, replacing state in the TMVar takes place inside the IO monad, which scupulously protects the application from side effects. But the fact remains that the TMVar ServerState list of clients is not what it used to be after a score change. Some client in the ServerState list has been replaced by a client with the same name, goal, group, and websockets connection but a different score.
 
 ###The Motorcycle.js Front-End
-In the front-end application, state is held in the global object named "O". When a monad, say "m", executes m.ret(newValue), m does not mutate. Instead, a new monad named "m" with id "m" and value "newValue" becomes an attribute of O. After that, O.m.x == newValue is true, but m remains unchanged. If O.m previously existed, it is not mutated by this process. If there is no reference to it, it will be subject to obliteration by the garbage collector.
+In the front-end application, state is held in the global object named "O". As mentioned above, when a monad, say "m", executes m.ret(newValue), m does not mutate. Instead, a new monad named "m" with id "m" and value "newValue" becomes an attribute of O. After that, O.m.x == newValue is true, but m remains unchanged. If O.m previously existed, it is not mutated by this process. If there is no reference to it, it will be subject to obliteration by the garbage collector.
 
-In earlier experiments, I sort of side-stepped mutation by creating new monads with same names as the monads they superceded. Stand-alone "ret()" can still do this. Creating a new global entity with a name that already exists in the global space mutates the global object, which is window in this web application. So, I ask, what's the difference? Why not keep O around and mutate it instead instead of window? Doing it that way has some advantages. Say I run "var m = new Monad(0,'m'), creating a new monad named m with value 0. Then I run m.bnd(add,1,m) causing O.m.x == 1 to be true but leaving m.x still equal to 0. m can carry the same value forever, donating it wherever needed, while updates created by m.ret() are readily available in O.m. If the value is less trivial than 0, this could be pretty useful. I can't think of a good reason for doing it, but if you want to change the value of m, something like ret(42,'m') will do the job. ret(42,'m') creates a new monad named "m" with value 42. After that, O.m.x == 1 would still true but m.x == 0 returns false. m.x == 42 returns true. 
+I can't think of a good reason for doing it, but if you want to change the value of m, something like ret(42,'m') will do the job. Suppose m.x == 0 and O.m.x == 0. ret(42,'m') creates a new monad named "m" with m.x == 42. After that, O.m.x == 0 would still be true but m.x == 0 returns false. m.x == 42 returns true. If, after that, you update O.m only by using m's ret() and refrain from using the value m.x, the application will proceed as though nothing happened.
 
-Other than O, MonatIter instances are the only objects that mutate in this presentation. MonadIter instances are useful only when their bnd() method is used; and when bnd() is used, the "p" attribute becomes the argument to bnd(). I think this is a situation in which it is wise to take advantage of the fact that Javascript allows p to morph into the bnd() argument. Words like "dogmatic", "religous", and "obsessive" come to mind when I think of imposing consistency on this project by eliminating the only exception (other than "O") to the general no-mutations policy. If I find that it interferes significantly with browser optimization, I will reconsider.
+If you want to go a step further and mutate m, nothing prevents you from calling "m.x = 8888", O.m.x = "WTF", and such. If I ever recruit people to help develop an application, I might ask them to update Monad instances only by using the ret() method so everyone could confidently look to the "O" object for changes in Monad instances' state. 
+
+Other than O, MonatIter instances are the only objects that mutate in this presentation. Mutation sometimes occurs inside of functions, but functions do not have side effects. That doesn't mean they are pure, since they might depend on attributes of "O" or changing streams of data. If some array "ar" come in as an argument, I often clone it by calling ar = ar.slice() to make sure that nothing outside of the function is arrected by mutating ar. 
+
+MonadIter instances are useful only when their bnd() method is used; and when bnd() is used, the "p" attribute becomes the argument to bnd(). I think this is a situation in which it is wise to take advantage of the fact that Javascript allows p to morph into the bnd() argument. Words like "dogmatic", "religous", and "obsessive" come to mind when I think of imposing consistency on this project by eliminating the only exception (other than "O") to the general no-mutations policy. If I find that it interferes with JavaScript engine optimization, I will reconsider.
  
 ### Implications of "O" for Cycle.js and Motorcycle.js
 [Cycle.js](https://github.com/cyclejs/core) has been criticized for not keeping state in a central location. Well, there it is, in O. I have created applications using Node.js and React.js. [Motorcycle.js](https://github.com/motorcyclejs) is such a relief. It and the monads presented here work well together. As previously mentioned, Motorcycle.js is Cycle.js, only using [Most](https://github.com/cujojs/most) and [Snabbdom](https://github.com/paldepind/snabbdom) instead of RxJS and "virtual-dom").
@@ -115,14 +137,14 @@ Other than O, MonatIter instances are the only objects that mutate in this prese
 ##[The Online Demonstration](http://schalk.net:3055)
 The online demonstration features a game with a traversible dice-roll history; group chat rooms; and a persistent, multi-user todo list. People in the same group share the game, chat messages, and whatever todo list they might have. Updating, adding, removing, or checking "Complete" by any member causes every member 's todo list to update. The Haskell websockets server preserves a unique text file for each group's todo list. Restarting the server does not affect the lists. Restarting or refreshing the browser window causes the list display to disappear, but signing in and re-joining the old group brings it back. If the final task is removed, the server deletes the group's todo text file. 
 
-With Motorcycle.js, the application runs smoothly and is easy to understand and maintain. I say "easy to understand", but some effort must first be invested into getting used to functions that take functions as arguments, and the Cycle.js / Motorcycle.js API. After that, seeing how the monads work is a matter of contemplating their definitions and experimenting a little. Most of the monads and the functions they use in this demonstration are immediately available in the browser console. Just load [http://schalk.net:3055](http://schalk.net:3055) and press F12 to explore and experiment.
+With Motorcycle.js, the application runs smoothly and is easy to understand and maintain. I say "easy to understand", but some effort must first be invested into getting used to functions that take functions as arguments, and the Cycle.js / Motorcycle.js API has a learning curve. After that, seeing how the monads work is a matter of contemplating their definitions and experimenting a little. Most of the monads and the functions they use in this demonstration are immediately available in the browser console. Just load [http://schalk.net:3055](http://schalk.net:3055) and press F12 and Ctrl-R to explore and experiment. Try mM25.bnd(mM25.ret).x == mM25.x and see that it returns true.
 
 ### Example
-MonadState instances show a great deal of potential. Here are the definitions of fibMonad and its helper functions:
+MonadState instances show a great deal of potential. Here are the definitions of fibsMonad and its helper functions:
 
-### fibMonad
+### fibsMonad
 ```javascript
-  var fibMonad = new MonadState('fibMonad', O.mMsT.x, [0],  fibs_state)   // creates fibMonad  
+  var fibsMonad = new MonadState('fibsMonad', O.mMsT.x, [0],  fibs_state)   // creates fibsMonad  
 
   var mMsT = new Monad([], 'mMsT');              // Used below.
   mMsT.ret([]);                                  // Creates O.mMst
@@ -175,7 +197,7 @@ And here are the definitions of primesMonad and its helper functions:
   }
 ```
 
-### Prime Fibonacci Numbers
+### User Interface 
 ```javascript
   const fibKeyPress5$ = sources.DOM
     .select('input#fib3335').events('keydown');
@@ -183,41 +205,27 @@ And here are the definitions of primesMonad and its helper functions:
   const fibKeyPressAction5$ = fibKeyPress5$.map(e => {
     if (e.target.value == '') {return};
     if( e.keyCode == 13 && Number.isInteger(e.target.value*1) ) {
-      mMitterFib5.release(e.target.value);   // Sends user input to mMitterFib.bnd() (below)
+      fib5(e.target.value);
     }
     if( e.keyCode == 13 && !Number.isInteger(e.target.value*1 )) {
         document.getElementById('fib5').innerHTML = "You didn't provide an integer";
     }
   });
 
-  mMitterFib5.bnd(
-    x => {
-      let ar = O.mMfibs8.x.slice();
-      let a = ar[ar.length - 1];
-      if (x > a) {
-        let b = ar[ar.length - 2];
-        mM$fib5.ret([b, a, x]);             // Sends data to the mM$fib5.stream listener (below)
-      }
-      else {
-        let ar2 = ar.filter(v => v <= x);                    // Uses previously computed numbers
-        document.getElementById('PF_7').innerHTML = "Fibonacci Numbers:" ;
-        document.getElementById('fib5').innerHTML = ar2;
-        mMitterPrime5.release(([ar2[ar2.length-1], ar2]));
-      }
-  })
-
-  mM$fib5.stream.observe(x => {
-      while (x[1] < x[2]) {
-        x = x.slice();  //  Avoids mutating x
-        x = [x[1], x[0] + x[1], x[2]];
-        O.mMfibs8.bnd(push, x[1], mMfibs8)
-      }
-      var ar = O.mMfibs8.x.slice(0, O.mMfibs8.x.length - 1);
+  function fib5(x) {
+      var fibs = runFib(x);
+      var y = Math.round(Math.sqrt(x));
+      var primes = runPrime(y);
+      var primeFibs = pFib(fibs, primes);                                // pFib is defined below
       document.getElementById('PF_7').innerHTML = "Fibonacci Numbers:" ;
-      document.getElementById('fib5').innerHTML = ar;
-      mMitterPrime5.release([x[0], ar]);
-  });
-
+      document.getElementById('fib5').innerHTML = fibs;
+      document.getElementById('PF_8').innerHTML = "Prime Fibonacci Numbers:" ;
+      document.getElementById('primeFibs').innerHTML = primeFibs;
+  const fibKeyPress5$ = sources.DOM
+    .select('input#fib3335').events('keydown');
+```
+The function that takes an array of Fibonacci numbers and an array of prime numbers, and returns an array of prime Fibonacci numbers is named "pFib and is defined as follows:
+```javascript
   function pFib (fibs, primes) {   // Used in the mM$prime5.stream listener (below)
     var ar = [];
     var ar2 = [];
@@ -238,46 +246,6 @@ And here are the definitions of primesMonad and its helper functions:
     return [ar2];
   }
 
-  mMitterPrime5.bnd(arr => {
-    var fibs = arr[1];
-    var x = Math.round(Math.sqrt(arr[0]));
-    var v = O.mM24.x;
-    if (x > (v[0][v[0].length - 1])) {
-      mM$prime5.ret([v[0], v[1] + 1, x]);    // Puts data in mM$prime5.stream (below)
-    }
-    else {
-      let trunc = v[0].filter(a => a < x);
-      let ar2 = v[0].slice(0, trunc.length + 1);
-      let primeF = O.mMpf.x[0];
-      let primeFibs = primeF.filter(g => g < (arr[0] + 1));
-      document.getElementById('PF_8').innerHTML = "Prime Fibonacci Numbers:" ;
-      document.getElementById('primeFibs').innerHTML = primeFibs;
-       
-    }
-  })
-
-  mM$prime5.stream.observe(v => {
-    var fibs = O.mMfibs8.x.slice(0, O.mMfibs8.x.length - 1);
-    mM24.ret(v);
-    f(v[2]);
-    function f(x) {
-      while ((v[0][v[0].length - 1]) < x) {
-        for (let i in v[0]) {
-          if ((v[1] % v[0][i]) == 0) {
-            v[1]+=1;
-            f(x);
-          }
-          if (i == (v[0].length - 1)) {
-            v[0] = v[0].concat(v[1]);
-            f(x);
-          }
-        }
-      }
-    }
-    var prFibs = pFib(fibs, v[0]);
-    mMpf.ret(prFibs);
-    document.getElementById('PF_8').innerHTML = "Prime Fibonacci Numbers:" ;
-    document.getElementById('primeFibs').innerHTML = prFibs;
   });  
 ```
 
