@@ -105,7 +105,6 @@ When the server is notified of a score change in the simulated dice game, this c
 else if "CG#$42" `T.isPrefixOf` msg
   then
     mask_ $ do
-      -- let extraNum = read (fyy msgArray) :: Int
       old <- atomically $ takeTMVar state
       let new = changeScore sender extraNum extraNum2 old
       atomically $ putTMVar state new
