@@ -682,99 +682,6 @@ var ret_add_cube = h('pre',  `  var ret = function ret(v, id) {
 
 var seed = h('pre',  `  mM$prime.ret([[2],3])  `  )
 
-var primeFib4 = h('pre',  `  
-  function pFib (fibs, primes) {
-    var ar = [];
-    var ar2 = [];
-    fibs.map(f => {
-      ar = [];
-      primes.map(p => {
-        if (f == p || f % p != 0 && f > 1) {
-          ar = ar.slice();     // Avoids mutation   
-          ar.push(f);
-        }
-        if (ar.length == primes.length) {
-          ar = ar.slice();
-          ar2 = ar2.slice();
-          ar2.push(ar.pop());
-        }
-      })
-    })
-    return [ar2];
-  }
-
-  mMitterPrime5.bnd(arr => {
-    var fibs = arr[1];
-    var x = Math.round(Math.sqrt(arr[0]));
-    var v = O.mM24.x;
-    if (x > (v[0][v[0].length - 1])) {
-      mM$prime5.ret([v[0], v[1] + 1, x]);    // Puts data in mM$prime5.stream (below)
-    }
-    else {
-      let trunc = v[0].filter(a => a < x);
-      let ar2 = v[0].slice(0, trunc.length + 1);
-      let primeF = O.mMpf.x[0];
-      let primeFibs = primeF.filter(g => g < (arr[0] + 1));
-      document.getElementById('PF_8').innerHTML = "Prime Fibonacci Numbers:" ;
-      document.getElementById('primeFibs').innerHTML = primeFibs;
-       
-    }
-  })
-
-  mM$prime5.stream.observe(v => {
-    var fibs = O.mMfibs8.x.slice(0, O.mMfibs8.x.length - 1);
-    mM24.ret(v);
-    f(v[2]);
-    function f(x) {
-      while ((v[0][v[0].length - 1]) < x) {
-        for (let i in v[0]) {
-          if ((v[1] % v[0][i]) == 0) {
-            v = v.slice();  // Avoids mutating v
-            v[1]+=1;
-            f(v[2]);
-          }
-          if (i == (v[0].length - 1)) {
-            v = v.slice();
-            v[0].push(v[1]);
-            f(v[2]);
-          }
-        }
-      }
-    }
-    var prFibs = pFib(fibs, v[0]);
-    mMpf.ret(prFibs);
-    document.getElementById('PF_8').innerHTML = "Prime Fibonacci Numbers:" ;
-    document.getElementById('primeFibs').innerHTML = prFibs;
-  });  
-                  `  )
-
-var primeFib3 = h('pre',  `  
-  mM$fib5.stream.observe(x => {
-      while (x[1] < x[2]) {
-        x = x.slice();  //  Avoids mutating x
-        x = [x[1], x[0] + x[1], x[2]];
-        O.mMfibs8.bnd(push, x[1], mMfibs8)
-      }
-      var ar = O.mMfibs8.x.slice(0, O.mMfibs8.x.length - 1);
-      document.getElementById('fib5').innerHTML = ar;
-      mMitterPrime5.release([x[0], ar]);
-      mMitterfib5.bnd(
-        x => {
-          let ar = O.mMfibs8.x.slice();
-          let a = ar[ar.length - 1];
-          if (x > a) {
-            let b = ar[ar.length - 2];
-            mM$fib5.ret([b, a, x]);
-          }
-          else {
-            let ar2 = ar.filter(v => v <= x);
-            document.getElementById('fib5').innerHTML = ar2;
-            mMitterPrime5.release(([ar2[ar2.length-1], ar2]));
-          }
-      })
-  });  
-                  `  )
-
 var spreadsheet = h('pre',  `  const spread1Press$ = sources.DOM
     .select('#spread1').events('keypress');
 
@@ -891,7 +798,7 @@ var traverse = h('pre',  `
     }
   });
 
-  const mM$1Action$ = mM$1.stream.observe(v => {
+  var game = function game (v) {
       mM1.ret(v);
       O.mMindex.bnd(add, 1, mMindex)
       .bnd(i => O.mMhistorymM1.bnd(spliceAdd, i, O.mM1, O.mMhistorymM1))
@@ -900,15 +807,15 @@ var traverse = h('pre',  `
       document.getElementById('2').innerHTML = O.mM1.x[2];  
       document.getElementById('3').innerHTML = O.mM1.x[3];  
       cleanup()
-  });
+  };
 
-  const mM$3Action$ = mM$3.stream.observe(v => {
+  var trav = function trav (v) {
     document.getElementById('0').innerHTML = (O.mMhistorymM1.x[v].x)[0]; 
     document.getElementById('1').innerHTML = (O.mMhistorymM1.x[v].x)[1]; 
     document.getElementById('2').innerHTML = (O.mMhistorymM1.x[v].x)[2]; 
     document.getElementById('3').innerHTML = (O.mMhistorymM1.x[v].x)[3]; 
     cleanup();
-  })  `  )
+  }  `  )
 
 var MonadState = h('pre',  `  var MonadState = function MonadState (g, state, value, p) {
     var _this = this;
@@ -1035,6 +942,6 @@ var seed2 = h('pre',  `
 
 
 
-  export default {monad, monadIt, fib, driver, messages, next, Monad$, updateCalc, arrayFuncs, travel, nums, cleanup, ret, C42, taskStream, newTask, process, mM$task, addString, colorClick, edit, testZ, quad, mdem1, runTest, todoStream, inc, ret_add_cube, seed, primeFib4, primeFib3, spreadsheet, spreadsheet2, add, reactiveFib, traverse, MonadState, primesMonad, fibsMonad, primeFib, primeFibInterface, helperFunctions}
+  export default {monad, monadIt, fib, driver, messages, next, Monad$, updateCalc, arrayFuncs, travel, nums, cleanup, ret, C42, taskStream, newTask, process, mM$task, addString, colorClick, edit, testZ, quad, mdem1, runTest, todoStream, inc, ret_add_cube, seed, spreadsheet, spreadsheet2, add, reactiveFib, traverse, MonadState, primesMonad, fibsMonad, primeFib, primeFibInterface, helperFunctions}
 
 

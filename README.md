@@ -117,7 +117,6 @@ I can't think of a good reason for doing it, but if you want to change the value
 
 If you want to go a step further and mutate m, nothing prevents you from calling "m.x = 8888", O.m.x = "WTF", and such. If I ever recruit people to help develop an application, I might ask them to update Monad instances only by using the ret() method so everyone could confidently look to the "O" object for changes in Monad instances' state. 
 
-Other than O, MonatIter instances are the only objects that mutate in this presentation. Mutation sometimes occurs inside of functions, but functions do not have side effects. That doesn't mean they are pure, since they might depend on attributes of "O". If some array "ar" come in as an argument, I often clone it by calling ar = ar.slice() to make sure that nothing outside of the function is arrected by mutating ar. 
 
 MonadIter instances are useful only when their bnd() method is used; and when bnd() is used, the "p" attribute becomes the argument to bnd(). I think this is a situation in which it is wise to take advantage of the fact that Javascript allows p to morph into the bnd() argument. Words like "dogmatic", "religous", and "obsessive" come to mind when I think of imposing consistency on this project by eliminating the only exception (other than "O") to the general no-mutations policy. If I find that it interferes with JavaScript engine optimization, I will reconsider.
  
