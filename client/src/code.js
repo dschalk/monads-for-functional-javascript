@@ -834,7 +834,9 @@ var MonadState = h('pre',  `  var MonadState = function MonadState (g, state, va
     }
   }  `  )
 
-var primesMonad = h('pre',  `  function primes_state(v) {
+var primesMonad = h('pre',  `  var primesMonad = new MonadState('primesMonad', [2, 3, 'primesMonad', [2]], [2],  primes_state)  
+                    
+  function primes_state(v) {
     while ((v[3][v[3].length - 1]) < v[0]) {
       for (let i in v[3]) {
         if ((v[1] % v[3][i]) == 0) {
@@ -848,33 +850,19 @@ var primesMonad = h('pre',  `  function primes_state(v) {
       }
     }
     return v;
-  }
-  
-  function prS (v) {
-    var x = primesMonad.a[primesMonad.a.length - 1]
-    if (x < v[0]) {
-      return primes_state(v);
-    }
-    else {
-      let trunc = primesMonad.a.filter(a => a < v[0]);
-      let res = primesMonad.a.slice(0, trunc.length + 1);  // The prime numbers
-      return [v[0], (res[res.length - 1] + 1), 'whatever', res];
-    }
-  }
-  
-  var primesMonad = new MonadState('primesMonad', [2, 3, 'primesMonad', [2]], [2],  prS)  `  )
+  }  `  )
 
-var fibsMonad = h('pre',  `  var fibs_state = function fibs_state(ar) { 
+var fibsMonad = h('pre',  `  var fibsMonad = new MonadState('fibsMonad', O.mMsT.x, [0],  fibs_state) 
+                  
+  var fibs_state = function fibs_state(ar) { 
     mMsT.ret(ar.slice());
     while (O.mMsT.x[3].length < O.mMsT.x[2]) { 
       mMsT.ret([O.mMsT.x[1], (O.mMsT.x[0]*1 + O.mMsT.x[1]), O.mMsT.x[2], O.mMsT.x[3].concat(O.mMsT.x[0])])
     }
     return O.mMsT.x;  // Using mMsT avoids mutation; but mutating "ar.slice()" seems pretty harmless.
-  }
-  
-  var fibsMonad = new MonadState('fibsMonad', O.mMsT.x, [0],  fibs_state)  `  )
+  }  `  )
 
-var primeFib = h('pre',  `  function pFib (fibs, primes) {
+var pFib = h('pre',  `  function pFib (fibs, primes) {
     var ar = [];
     var ar2 = [];
     fibs.map(f => {
@@ -891,12 +879,22 @@ var primeFib = h('pre',  `  function pFib (fibs, primes) {
     return ar2;
   }  `  )
 
-var helperFunctions = h('pre',  `  var runFib = function runPrime (x) {
+var helperFunctions = h('pre',  `  var runFib = function runFib (x) {
+    if (fibsMonad.a.length >= x) { 
+      let ar = fibsMonad.a.slice();
+      ar.length = x;
+      return ar;
+    }
     fibsMonad.run([fibsMonad.s[0], fibsMonad.s[1], x, fibsMonad.a]);
     return fibsMonad.a;
   }
 
   var runPrime = function runPrime (x) {
+    if (primesMonad.a >= x) {
+    let ar = fibsMonad.a.slice();
+    ar.length = x;
+    return(ar);
+    }
     primesMonad.run([x, primesMonad.s[0], "from runPrime", primesMonad.a]);
     return primesMonad.a;
   }  `  )
@@ -926,8 +924,37 @@ var primeFibInterface = h('pre',  `
       document.getElementById('primeFibs').innerHTML = primeFibs;
   }  `  )
 
-var seed1 = h('pre',  ` 
-             `  )
+var primeFib = h('pre',  `  var primesMonad = new MonadState('primesMonad', [2, 3, 'primesMonad', [2]], [2],  prS) 
+  
+  function prS (v) {
+    var x = primesMonad.a[primesMonad.a.length - 1]
+    if (x < v[0]) {
+      return primes_state(v);
+    }
+    else {
+      let trunc = primesMonad.a.filter(a => a < v[0]);
+      let res = primesMonad.a.slice(0, trunc.length + 1);  // The prime numbers
+      return [v[0], (res[res.length - 1] + 1), 'whatever', res];
+    }
+  }
+
+  function primes_state(v) {
+    while ((v[3][v[3].length - 1]) < v[0]) {
+      for (let i in v[3]) {
+        if ((v[1] % v[3][i]) == 0) {
+          v.slice();
+          v[1]+=1;
+          primes_state(v);
+        }
+        else if (i == (v[3].length - 1)) {
+          v.slice();
+          v[3].push(v[1]);
+          primes_state(v);
+        }
+      }
+    }
+    return v;
+}  `  )
 
 var seed2 = h('pre',  ` 
              `  )
@@ -942,6 +969,6 @@ var seed2 = h('pre',  `
 
 
 
-  export default {monad, monadIt, fib, driver, messages, next, Monad$, updateCalc, arrayFuncs, travel, nums, cleanup, ret, C42, taskStream, newTask, process, mM$task, addString, colorClick, edit, testZ, quad, mdem1, runTest, todoStream, inc, ret_add_cube, seed, spreadsheet, spreadsheet2, add, reactiveFib, traverse, MonadState, primesMonad, fibsMonad, primeFib, primeFibInterface, helperFunctions}
+  export default {monad, monadIt, fib, driver, messages, next, Monad$, updateCalc, arrayFuncs, travel, nums, cleanup, ret, C42, taskStream, newTask, process, mM$task, addString, colorClick, edit, testZ, quad, mdem1, runTest, todoStream, inc, ret_add_cube, seed, spreadsheet, spreadsheet2, add, reactiveFib, traverse, MonadState, primesMonad, fibsMonad, primeFib, primeFibInterface, pFib, helperFunctions}
 
 

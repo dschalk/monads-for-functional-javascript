@@ -101,20 +101,6 @@ function main(sources) {
     }
   });
 
-  const PFPress$ = sources.DOM
-    .select('input#PF_1').events('keypress');
-
-  const PFAction$ = PFPress$.map(e => {
-    let v = e.target.value;
-    if( e.keyCode == 13 ) {
-      var ar = primeFib(e.target.value);
-      document.getElementById('PF_2').innerHTML = "Prime Fibonacci Numbers:" ;
-      document.getElementById('PF_3').innerHTML = ar[0];
-      document.getElementById('PF_4').innerHTML = "The first " + e.target.value + " Fibonacci Numbers:" ;
-      document.getElementById('PF_5').innerHTML = ar[1];
-    }
-  });
-
   const messagePress$ = sources.DOM
     .select('input.inputMessage').events('keydown');
 
@@ -387,28 +373,6 @@ function main(sources) {
 // ************************************************************************* END Original Fibonacci END
 
 // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> START PRIME FIB  
-function primeFib (x) {
-  var ar = [];
-  var ar2 = [];
-  var fibs = fibsMonad.run([0, 1, x, []]).a
-  var l = fibs.length - 3;
-  var primes = primesMonad
-  .run([Math.round(Math.sqrt([fibs[fibs.length - 1]])), 6, 0, [2,3,5]]).a
-  fibs.map(f => {
-    ar = [];
-    primes.map(p => {
-      if (f == p || f % p != 0 && f > 1) {
-        ar.push(f);
-      }
-      if (ar.length == primes.length) {
-        ar2.push(ar.pop());
-      }
-    })
-  })
-  return [ar2, fibs];
-}
-
-  
   const fibKeyPress5$ = sources.DOM
     .select('input#fib3335').events('keydown');
 
@@ -424,11 +388,11 @@ function primeFib (x) {
 
   function fib5(x) {
       var fibs = runFib(x);
-      var y = Math.round(Math.sqrt(x));
-      var primes = runPrime(y);
+      var y = Math.round(Math.sqrt(fibs.length));
+      var primes = runPrime(fibs[y + 3]);
       var primeFibs = pFib(fibs, primes);
       document.getElementById('PF_7').innerHTML = "Fibonacci Numbers:" ;
-      document.getElementById('fib5').innerHTML = fibs;
+      document.getElementById('PF_5').innerHTML = fibs;
       document.getElementById('PF_8').innerHTML = "Prime Fibonacci Numbers:" ;
       document.getElementById('primeFibs').innerHTML = primeFibs;
   }
@@ -585,7 +549,7 @@ function primeFib (x) {
     document.getElementById('dummy2').innerHTML = O.mM23.x;
   });
 
-  const calcStream$ = merge( PFAction$, forwardAction$, backAction$, dummyAction$, fibKeyPressAction5$, fibPressAction$, runTestAction$, quadAction$, testWAction$, testZAction$, testQAction$, edit1Action$, edit2Action$, colorAction$, deleteAction$, newTaskAction$, chatClickAction$, gameClickAction$, todoClickAction$, captionClickAction$, groupPressAction$, rollClickAction$, messagePressAction$, loginPressAction$, messages$, numClickAction$, opClickAction$ );
+  const calcStream$ = merge( forwardAction$, backAction$, dummyAction$, fibKeyPressAction5$, fibPressAction$, runTestAction$, quadAction$, testWAction$, testZAction$, testQAction$, edit1Action$, edit2Action$, colorAction$, deleteAction$, newTaskAction$, chatClickAction$, gameClickAction$, todoClickAction$, captionClickAction$, groupPressAction$, rollClickAction$, messagePressAction$, loginPressAction$, messages$, numClickAction$, opClickAction$ );
   
     return {
       DOM: 
@@ -691,18 +655,23 @@ function primeFib (x) {
         h('p',  O.mMsoloAlert.x  ),
         h('p', 'People who are in the same group, other than solo, share the same todo list, messages, and simulated dice game. In order to see any of these, you must establish an identity on the server by logging in. The websockets connection terminates if the first message the server receives does not come from the sign in form. You can enter any random numbers or letters you like. The only check is to make sure someone hasn\t already signed in with whatever you have selected. '  ),
         h('hr' ),
-        h('h1', 'The Monads'  ),
-        h('p', ' The monads used in this demonstration inherit from either Monad, MonadIter, and MonadStream. Instances of Monad have a method called "bnd" which takes a function and possibly other values as arguments. I have not created a comprehensive library of functions for bnd(), but most of the functions used in this demonstration are in the NPM package "js-monads", and all of them are in the Github repository\'s /client/src directory. I create functions to suit specific purposes and I assume that anyone who uses these monads, or their own variations on the theme, will likewise want to create functions to suit their specific purposes. Let\'s begin with a discussion of Monad: ' ),
-        h('h2', 'Monad' ),
+        h('h1', 'The Monads'  ),     
+        h('p', ' I call instances of the Monad and MonadState constructors "monads". Instances of Monad can probably be shown to be category theory monads in a restricted space where the bnd() method takes only a single argument, and that argument is a function mapping any Javascript value to some instance of Monad. But bnd() can take multiple arguments, and the return value doesn\'t have to be an instance of Monad. As you will see, I impose some restrictions on what I do with Monad instances for the sake of maintainability, predictability, and organization. If I had helpers on a project, I would ask them to do the same. I wouldn\'t modify the code to make it throw whenever someone attempted to deviate from the restrictions. Some would say that such a modification would be helpful, catching potential bugs before things went too far. I think it would be insulting; and who knows, there might be occasions when deviating would be the sensible thing to do. Anyway, here is Monad:  '  ),
+        h('h2', ' Monad ' ),
         code.monad,
-       h('p', ' If the values of Monad instances are updated only through the use of the Monad ret() method, then the current state of the Monad instances exists in the mutable, global object named "O". I think it would be a mistake to mutate a Monad instance, or to replace it entirely with a new Monad instance having the same name. Keeping changing monad state in one place (on the object "O") makes applications easier to reason about and easier to maintain. I treat Monad instances as though they were immutable.   ' ),
-        h('p', ' In the examples shown on this page, the initial values of instances of Monad remain unchaged. The ret() method places updated instances of the monad calling ret() on O. From the definition of ret() we know that for any monad m and value v, m.ret(v) updates O.m such that O.m.x = v. The ret() method does not mutate the instances on O. For any instance of Monad named "m" with id "m" and value v (i.e., m.x == v is true), m.ret(v2) creates a new attribute of O with key "m" or, if O.m already exists. m.ret(v2) mutates O by replacing its m attribute with a new monad whose x attribute is "v2". Before the change, O.m.x == v; after calling m.ret(v2), O.m.x == v2. Nothing else changes. Replaced instances of O,m can be left for the garbage collector or saved. The traversable game display keeps replaced instances of O.mM1 in an array named "O.mMhistorymM1".  ' ),
-        h('p', ' There is a basic pattern that I have found useful for trivial computations and modifying objects, including arrays. The functions add() and cube() are examples of the pattern. They will be defined and then used in the examples below.  ' ),
-        h('h3', 'Examples' ),
-        h('p', ' Here are the definitions of ret(), add(), and cube(): '  ),
+        h('p', ' Monad\'s bnd() and ret() methods provide functionality similar to the Haskell ">>=" (pronounced "bind") operator and the Haskell "return" function. They even conform to the optional Haskell monad laws. The following equality expressions demonstrate how the monads work. For any instance of Monad, say "m", and any Javascript value v, the following expressions return true: '),
+        h('pre', `    m.ret(v).x = m.ret(v).bnd(m.ret).x   // m.ret(v) re-sets m.x to v
+    m.ret(v).x == m.ret(v).ret(m.x).x
+    mm.ret(v).bnd(add, 3).bnd(cube).x. == ret(v).bnd(v => add(v, 3).bnd(cube)).x  // Associativity
+    ret(v).x == ret(v).bnd(ret).x
+    ret(v).x == ret(ret(v)).x  ` ),
+        h('p', ' where '  ),
         code.ret_add_cube,
+       h('p', ' If the values of Monad instances are updated only through the use of the Monad ret() method, then the current state of the Monad instances exists in the mutable, global object named "O". Keeping changing monad state in one place (on the object "O") makes applications easier to reason about and easier to maintain. I treat Monad instances as though they were immutable, updating them only through the use of their ret() methods.   ' ),
+        h('p', ' In the examples shown on this page, the initial values of instances of Monad remain unchaged. The ret() method places updated instances of the monad calling ret() on O. From the definition of ret() we know that for any monad m and value v, m.ret(v) updates O.m such that O.m.x = v. The ret() method does not mutate the instances of Monad referenced by the attributes of O. For any instance of Monad named "m" with id "m" and value v (i.e., m.x == v is true), m.ret(v2) creates a new attribute of O with key "m" or, if O.m already exists. m.ret(v2) mutates O by changing the value to which O.m refers. Before the change, O.m.x == v. After m.ret(v2), O.m.x == v2. For most practical purposes, it is as if O.m.x is the only thing that changed. But O.m is not mutated. If there is a reference to the original O.m, it will be preserved and calls to m.ret() will not affect it. Every time m.ret() is called, O.m refers to a newly created semi-clone of m with m.x referring to a (usually) different value. The traversable game display keeps replaced monads named "O.mM1" in an array named "O.mMhistorymM1".  ' ),
+        h('h3', 'Examples' ),
         h('p', ' The convention "a == b" in this presentation signifies that a == b is true.' ), 
-        h('p', ' From the definition of Monad, you can see that m1.bnd(m2.ret) results in m2.ret(m1.x) being called. After that operation, O.m2.x == v where m1.x == v. And if O.m1.x == v2, O.m1.bnd(m2.ret) results in O.m2.x == v2. Here are some examples of the use of the Monad methods bnd() and ret(): '  ),
+        h('p', ' From the definition of Monad, you can see that m1.bnd(m2.ret) results in m2.ret(m1.x) being called. After that operation, O.m2.x == v where m1.x == v. And if O.m1.x == v2, O.m1.bnd(m2.ret) results in O.m2.x == v2. If these assertions are perplexing, just take another look at the definition of Monad and work through the transformations one step at a time. Here are some examples of the use of the Monad methods bnd() and ret(): '  ),
         h('span.red3', 'cube(3)' ),
         h('span.td2', ' creates an anonymous monad with x == 27 and id == "anonymous". ' ),
         h('br' ),  
@@ -771,13 +740,14 @@ function primeFib (x) {
         h('span.red3', 'ret(0).bnd(add, 2, m).bnd(cube, m2)' ), 
         h('span.td2', ' causes O.m.x == 2, and O.m2.x == 8. ' ),
         h('br' ),  
-        h('h2', 'MonadIter' ),
+        h('h2', 'MonadItter' ),
+        h('p', ' MonadItter instances do not have monadic properties. I will eventually change the name to "Itter". ' ), 
         h('p', 'For any instance of MonadIter, say "m", the statement "m.bnd(func)" causes m.p == func to be true. The statement "m.release(...args) causes p(...args) to execute. Here is the definition: ' ), 
         code.monadIt,
-        h('p', 'As shown later on this page, MonadIter instances control the routing of incoming websockets messages and the flow of action in the simulated dice game. '  ), 
-        h('p', 'The following example illustrates the use of release() with an argument. It also shows lambda expressions being provided as arguments for bnd(). The initial values of mMt1, mMt2, and mMt3 are 0, 0, and "" respectively. When this page loads, the following code runs: ' ),
+        h('p', ' As shown later on this page, MonadIter instances control the routing of incoming websockets messages and the flow of action in the simulated dice game. In the demonstrations below, they behave much like ES2016 itterators. I prefer them over ES2016 itterators. '  ), 
+        h('p', 'The following example illustrates the use of release() with an argument. It also shows lambda expressions being provided as arguments for bnd() and the release() method providing arguments to the expressions captured by bnd(). The initial values of mMt1, mMt2, and mMt3 are 0, 0, and "" respectively. When this page loads, the following code runs: ' ),
         code.testZ,
-        h('p', ' add() and cube() are defined in the Monad section (above). If you click "mMZ1.release(1)" several times, the code (above) beginning with "mMZ1" will run several times, each time with v == 1. The result, O.mMt3.x, is shown below the button. mMZ1.p (bnd()\'s argument) remains constant while mMZ1.release(1) is repeatedly called. ' ),
+        h('p', ' add() and cube() are defined in the Monad section (above). If you click "mMZ1.release(1)" several times, the code (above) beginning with "mMZ1" will run several times, each time with v == 1. The result, O.mMt3.x, is shown below the button. mMZ1.p (bnd()\'s argument) remains constant while mMZ1.release(1) is repeatedly called, yielding a different result each time. ' ),
         h('button#testZ', 'mMZ1.release(1)'  ),
         h('p.code2', O.mMt3.x ),
         h('span', 'Refresh button: '  ),
@@ -802,33 +772,41 @@ function primeFib (x) {
         h('span#tdList' ),
 // ***************************************************************************************************** START MonadState
         h('h2', 'The State Monad: MonadState' ),  
-        h('p', ' An instance of MonadState can hold the current state of a computation. MonadState supplements the global object "O" where the current states of instances of Monad can be found, privided that updates are accomplished only with the Monad ret() method. '   ),  
+        h('p', ' An instance of MonadState holds the current state and value of a computation. For any instance of MonadState, say m, these can be accessed through m.s and m.a, respectively.  '   ),  
         code.MonadState,
-        h('p', ' MonadState reproduces some of the functionality found in the Haskel Module "Control.Monad.State.Lazy", inspired by the paper "Functional Programming with Overloading and Higher-Order Polymorphism", Mark P Jones (http://web.cecs.pdx.edu/~mpj/) Advanced School of Functional Programming, 1995. The following demonstrations use the MonadState instances fibsMonad and primesMonad to create and store arrays of fibonacci numbers, arrays of prime numbers, and arrays of prime fibonacci numbers. Here is the definition of fibsMonad, along with the function it uses. ' ), 
+        h('p', ' MonadState reproduces some of the functionality found in the Haskel Module "Control.Monad.State.Lazy", inspired by the paper "Functional Programming with Overloading and Higher-Order Polymorphism", Mark P Jones (http://web.cecs.pdx.edu/~mpj/) Advanced School of Functional Programming, 1995. The following demonstrations use the MonadState instances fibsMonad and primesMonad to create and store arrays of fibonacci numbers and arrays of prime numbers, respectively. fibsMonad and primesMonad provide a simple way to compute lists of prime fibonacci numbers.  Because of the memoization inherent in instances of MonadState, it was easy to make sure that no number is ever computed twice. Here is the definition of fibsMonad, along with the function it uses. ' ), 
        code.fibsMonad, 
-        h('p', 'In the Chrome browser, fibsMonad almost instantaneouly computes a list showing Fibonacci number 1475 is 1.3069892237633987e+308 and Fibonacci number 1476 is Infinity. The table at https://oeis.org/A000045/b000045.txt shows that the number is accurate up to 15 digits. The final "87" should be "92". The largest Javascript integer is 1.79E+308, so the final computation shows only that Fibonacci number 1476 is larger than 1.79E+308.' ),  
-        h('p', ' fibsMonad.process(), a/k/a fibs_state(), is so fast that that I didn\'t bother to memoize calculated fibonacci numbers the way I did with prS and primes_state. Not only is it fast, but as the numbers get larger there are far more prime numbers than fibonacci numbers. The bottleneck in computing the prime Fibonacci numbers is calculating the array of primes, so memoizing can make a big difference there. I also ameliorated the bottleneck by checking for divisibility by primes rather than checking whether a Fibonacci number is in a list of primes. Checking for divisibility allowed me to generate primes up to the square root of the largest Fibonacci number, rather than all the way up to the largest Fibonacci number. Here is the function that takes an array of Fibonacci numbers and an array of prime numbers and returns an array of prime Fibonacci numbers; ' ), 
-        code.primeFib,
-        h('p', ' The other MonadState instance used in this demonstration is primesMonad. The function prS() is primesMonad\'s process attribute. It checks to see what prime numbers have already been calculated. If no more are needed, it returns the (possibly truncated) pre-existing array. If more numbers are needed, it calls primes_state() with an argumant that causes it to pick up where it left off the last time it ran, adding more prime numbers as required. The value returned by the method run() of any instance of MonadPrimes must be an array, let\'s call it arr, whose fourth element (arr[3]) is the value that will be the monad\'s "a" attribute. The third element (arr[2]) is not used by primesMonad. Here is the definition of primesMonad and its auxiliary functions:  ' ),  
+        h('p', ' The other MonadState instance used in this demonstration is primesMonad. The function primes_state is primesMonad\'s process attribute. The value returned by the method run() of any instance of MonadPrimes must be an array, let\'s call it arr, whose fourth element (arr[3]) is the value that will be the monad\'s "a" attribute. The third element (arr[2]) is not used by primesMonad, but might be used for diagnostic purposes. For example, the function calling primesMonad.run() could identify itself in arr[2]. Here is the definition of primesMonad along with its auxiliary function:  ' ),  
         code.primesMonad,
-        h('p', ' Two helper functions assure that propper boilerplate is supplied to the StateMonad instances. This makes sure that adding newly computed numbers to pre-existing lists is done correctly. Here are the helper functions: ' ),
+        h('p', ' pFib takes an array of Fibonacci numbers and an array of prime number, returning an array of prime Fibonacci number. Here is the definition of pFib: ' ),
+        code.pFib,
+        h('p', ' Two abstractions over fibsState.run and primesState.run provide convenience, assure that no number is computed more than once, and assure that propper boilerplate is supplied to the StateMonad instances. Here are the definitions of runFib and runPrime: ' ),
         code.helperFunctions,
         h('p', ' With these support functions in place, the user interface is very simple. Here it is: ' ),
         code.primeFibInterface,
-        h('p', ' The number you enter below is the length of the list of Fibonacci numbers you want to generate. Remember, 39 was the largest number I was able to use initially without getting a RangeError message. ' ),  
+        h('p', 'In the Chrome browser, entering 1478 in the box below takes you one step past the largest number Javascript can handle. almost instantaneouly computes a list showing Fibonacci number 1477 is 1.3069892237633987e+308 and Fibonacci number 1478 is Infinity. The table at https://oeis.org/A000045/b000045.txt shows that the number is accurate up to 15 digits. The final "87" should be "92". The largest Javascript integer is 1.79E+308, so the final computation shows only that Fibonacci number 1478 is larger than 1.79E+308.' ),  
+        h('p', ' After the largest Fibonacci number generated crosses over to Infinity, the list of prime Fibonacci numbers is: ' ),
+        h('pre', `2,3,5,13,89,
+233,1597,28657,514229,433494437,
+2971215073 ` ),
+        h('p', ' I searched the Internet. There seems to be universal agreement that the list of prime Fibonacci numbers discovered by the MonadState algorithm is correct. I also discovered that the larges proven prime Fibonacci number is 2971215073. Too bad I couldn\'t find the next one using Javascript, assuming it exists. No one has proven that the set of all prime Fibonacci number is, or is not, infinite '  ),
+        h('p', ' The number you enter below is the length of the list of Fibonacci numbers you want to generate. After 1477, the numbers are all Infinity. ' ),  
         h('p',  ),  
-        h('input#PF_1',  ),
+        h('input#fib3335',  ),
         h('br' ),
-        h('span#PF_2.red6',  ),  
-        h('span#PF_3.red7',  ),  
-        h('br' ),
-        h('span#PF_4.red6',  ),  
-        h('br' ),
+        h('span#PF_7.red6',  ),  
         h('span#PF_5.red7',  ),  
-        h('h2', 'MonadStream'  ),
+        h('br' ),
+        h('span#PF_8.red6',  ),  
+        h('br' ),
+        h('span#primeFibs.red7',  ),  
 //************************************************************************************************************* END MonadState
         h('h2', 'Immutable Data And The State Object "O" ' ),
-       h('p', ' Mutations in this application are confined to the global state object "O" and MonadIter instances. <UPDATE: The MonadState and MonadStream prime Fibonacci demonstrations have mutations which are confined to function scope. I\'ll probably refactor those out when I have the time.> In the examples above, the release() method moves the process forward to the next occurance of the MonadIter instance where the bnd() method provides a new function to the "p" attribute. The progressive morphing of "p" in MonadIter instances is desirable behavior, and I think that creating a clone each time it occurs would be a senseless waste of resources. Unless and until release() is called, the program is not affected by "p". If release() is called, the return value of p(...args) is returned, but "p" itself remains tucked away, never mixing with the flow of information through the program. The bnd() method is pure. Given the same argument, it will always do the same thing. It doesn\'t even return anything. It just updates the internal "p" attribute. This insulation of internal operations from the outer program is remeniscent of an important purpose of the Haskell IO monad. These are just hand-waving arguments for the harmlessness of letting the bnd() method mutate MonadIter instances, but I wanted to explain why I feel comfortable with letting the definition of MonadIter stand as it is.  ' ),           
+        h('h3', ' Mutations   ' ),
+       h('p', ' Mutations in this application are confined to the global state object "O", MonadIter instances, and within function scopte. Functions in this application do not have side effects. If a function argument is an array, say "ar", I make a clone by calling "ar = ar.slice()" before mutating ar. That way, the original ar is uneffected by whatever happens inside the function. ' ),
+       h('p', ' Regarding mutations of MonadItter instances: In the MonadItter examples (above), bnd() is called only once on each instance of MonadItter. Essentially, the bnd() method defines the MonadItter instances. The definitions of MonadItter instances create generic templates waiting for their bnd() methods to give them meaning. The p attribute of a MonadItter instance starts out referencing "f () {}" and refers to something useful when an argument is provided to its bnd() method. In this case, mutation can\'t possibly cause any mischief. ' ),
+         h('h3', ' Monad Updates ' ),
+         
        h('p', 'All monad updates caused by the monad ret() method are stored in the object "O". When a monad m executes m.ret(v) for some value "v", m remains unchanged and the O attribute O.m is created or, if it already exists, is replaced by the update; i.e., O.m.x == v becomes true. Older versions of m are subject to garbage collection unless there is a reference to them or to an object (arrays are objects) containing m.  This is illustrated in the score-keeping code below.  All score changes are captured by mM13.ret(). Therefore, O.mM13.x is always the current score. Replacing monad attributes in O is vaguely analogous to swapping out ServerState in the Haskell server\'s state TMVar. Older versions of ServerState can be preserved in the server just as prior versions of O.mM13 can be preserved in the front end. ' ),     
        h('h3', 'Storing Monads That Have Been Replaced In O'  ),
        h('p', ' The history of the number display in the game can be traversed in either direction until a player achieves a goal. After that, the traversable history builds up until another goal is achieves. Players can use historical displays, so to keep competition fair, group members are notified when another member clicks the BACK button. '  ),
@@ -839,11 +817,10 @@ function primeFib (x) {
 
         h('h2', 'Updating the DOM'  ),
         h('h3', 'Todo List DOM Updates' ),
-        h('a', {props: {href: '#tdList2'}}, 'Detailed Todo List Explanation'   ),  
         h('br' ),
         h('h3', 'Dice Game DOM updates' ),
         h('p', ' mMcurrentRoll.ret() is called only when (1) a new dice roll comes in from the server, (2) when a player clicks a number, and (3) when clicking a number or operator results in a computation being performed. These are the three things that require a DOM update. When a player clicks a number, it disappears from number display. When a computation is performed, the result is added to the number display, unless the result is 18 or 20. A result of 18 or 20 results in a new roll coming in from the server ' ),
-        h('p', '    ' ),
+        h('p', ' I like the way Cycle.js and Motorcycle.js are unopinionated. DOM updates can be accomplished by permanently placing a mutating list of strings in the virtual DOM description, or by calling element.innerHTML = newValue. Either way, the actual DOM gets mutatated immediately, and mutating the DOM is what interactive applications are all about. Well, unless you load fresh pages every time something changes. I guess some people are still doing that.  ' ),
         h('hr' ),  
         h('h2', 'Concise Code Blocks For Information Control' ),
         h('p', ' Incoming websockets messages trigger updates to the game display, the chat display, and the todo list display. The members of a group see what other members are doing; and in the case of the todo list, they see the current list when they sign in to the group. When any member of a group adds a task, crosses it out as completed, edits its description, or removes it, the server updates the persistent file and all members of the group immediately see the revised list.  '  ),

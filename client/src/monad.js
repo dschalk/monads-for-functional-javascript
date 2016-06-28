@@ -39,12 +39,9 @@ function primeFib (x) {
     ar = [];
     primes.map(p => {
       if (f == p || f % p != 0 && f > 1) {
-        ar = ar.slice();     // Avoids mutation   
         ar.push(f);
       }
       if (ar.length == primes.length) {
-        ar = ar.slice();
-        ar2 = ar2.slice();
         ar2.push(ar.pop());
       }
     })
@@ -72,8 +69,6 @@ var MonadState = function MonadState (g, state, value, p) {
   }
 }
 
-var mMsT = new Monad([], 'mMsT');
-mMsT.ret([]);
 
 var fibs_state = function fibs_state(ar) { 
   mMsT.ret(ar.slice());
@@ -83,19 +78,17 @@ var fibs_state = function fibs_state(ar) {
   return O.mMsT.x;
 }
 
-// fibsMonad([0,1,1478,[]) gets all that Javascript can handle.  
-
-var fibsMonad = new MonadState('fibsMonad',  [0, 1, 2, [0, 1]], [],  fibs_state);
-
-var primesMonad = new MonadState('primesMonad', [2, 3, 'primesMonad', [2]], [2],  prS) 
-
-var runFib = function runPrime (x) {
+var runFib = function runFib (x) {
+  if (fibsMonad.a.length >= x) { 
+    let ar = fibsMonad.a.slice();
+    ar.length = x;
+    return ar;
+  }
   fibsMonad.run([fibsMonad.s[0], fibsMonad.s[1], x, fibsMonad.a]);
   return fibsMonad.a;
 }
 
 function primes_state(v) {
-  console.log('<><><><><><><><><><> IN primes_state <><><><><><><><><>><> v is ', v );
   while ((v[3][v[3].length - 1]) < v[0]) {
     for (let i in v[3]) {
       if ((v[1] % v[3][i]) == 0) {
@@ -113,24 +106,17 @@ function primes_state(v) {
   return v;
 }
 
-function prS (v) {
-    console.log('************************************** In prs. v is ', v );
-  var x = primesMonad.a[primesMonad.a.length - 1]
-  if (x < v[0]) {
-    return primes_state(v);
-  }
-  else {
-    let trunc = primesMonad.a.filter(a => a < v[0]);
-    let res = primesMonad.a.slice(0, trunc.length + 1);  // The prime numbers
-    return [v[0], (res[res.length - 1] + 1), 'whatever', res];
-  }
-}
-
-
 var runPrime = function runPrime (x) {
+  if (primesMonad.a >= x) {
+    let ar = fibsMonad.a.slice();
+    ar.length = x;
+    return(ar);
+  }
   primesMonad.run([x, primesMonad.s[0], "from runPrime", primesMonad.a]);
   return primesMonad.a;
 }
+
+var primesMonad = new MonadState('primesMonad', [2, 3, 'primesMonad', [2]], [2],  primes_state) 
 
 primesMonad.run([3, 2, 0, [2]])
 
@@ -297,6 +283,13 @@ var mMscoreChange = new Monad(0, 'mMscoreChange');
 mMscoreChange.ret(mMscoreChange.x);
 var mMcurrentRoll = new Monad([0,0,0,0], 'mMcurrentRoll');
 mMcurrentRoll.ret(mMcurrentRoll.x);
+
+var mMsT = new Monad([], 'mMsT');
+mMsT.ret(mMsT.x);
+
+var fibsMonad = new MonadState('fibsMonad', O.mMsT.x, [0],  fibs_state) 
+
+fibsMonad.run([0,1,4,[]])
 
 var mMfibs8 = M([0,1], 'mMfibs8');
 mMfibs8.ret(mMfibs8.x);

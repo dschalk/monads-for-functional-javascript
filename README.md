@@ -27,7 +27,7 @@ Here are some definitions, which can also be seen at [the online presentation](h
       O.[_this.id] = new Monad(a, _this.id);
       return O.[_this.id]
     };
-  }; ` 
+  };  
 ```
 ##MonadItter
 ```javascript
