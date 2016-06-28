@@ -915,11 +915,11 @@ var primeFibInterface = h('pre',  `
 
   function fib5(x) {
       var fibs = runFib(x);
-      var y = Math.round(Math.sqrt(x));
-      var primes = runPrime(y);
+      var y = Math.round(Math.sqrt(fibs.length));
+      var primes = runPrime(fibs[y + 3]);
       var primeFibs = pFib(fibs, primes);
       document.getElementById('PF_7').innerHTML = "Fibonacci Numbers:" ;
-      document.getElementById('fib5').innerHTML = fibs;
+      document.getElementById('PF_5').innerHTML = fibs;
       document.getElementById('PF_8').innerHTML = "Prime Fibonacci Numbers:" ;
       document.getElementById('primeFibs').innerHTML = primeFibs;
   }  `  )
