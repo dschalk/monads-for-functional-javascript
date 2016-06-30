@@ -168,9 +168,7 @@ And here are the definitions of primesMonad and its helper functions:
           if ((v[1] % e) == 0) {
             return;
           }
-          if (e ==  v[3][v[3].length - 1]) {
-             R = true;
-          }
+          R = true;
         })
         return R;
       }
