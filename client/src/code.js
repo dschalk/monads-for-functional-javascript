@@ -835,21 +835,39 @@ var MonadState = h('pre',  `  var MonadState = function MonadState (g, state, va
   }  `  )
 
 var primesMonad = h('pre',  `  var primesMonad = new MonadState('primesMonad', [2, 3, 'primesMonad', [2]], [2],  primes_state)  
-                    
-  function primes_state(v) {
-    while ((v[3][v[3].length - 1]) < v[0]) {
-      for (let i in v[3]) {
-        if ((v[1] % v[3][i]) == 0) {
-          v[1]+=1;
-          primes_state(v);  // Avoids mutating v
+
+  function primes_state(x) {
+    var v = x.slice();
+    var ar = [];
+    var R;
+    var a = v[0];
+    var b = v[1];
+    var c = v[2];
+    var d = v[3];
+      while (b <= a) {
+        if (check(b,d)) {
+          d.push(b);
+          b = b + 2;
         }
-        else if (i == (v[3].length - 1)) {
-          v[3].push(v[1]);
-          primes_state(v);
-        }
+        else {b = b + 2};
       }
-    }
-    return v;
+    return [a,b,c,d];
+
+
+  function check (n, x) {
+    var ar = x.slice();
+    var ar2 = [];
+    var R = false;
+    ar.map(e => {
+      if ((n % e) == 0) {
+        return;
+      }
+      ar2.push(e);
+      if (ar2.length == ar.length) {
+         R = true;
+      }
+    })
+    return R;
   }  `  )
 
 var fibsMonad = h('pre',  `  var fibsMonad = new MonadState('fibsMonad', O.mMsT.x, [0],  fibs_state) 
@@ -895,65 +913,63 @@ var helperFunctions = h('pre',  `  var runFib = function runFib (x) {
     ar.length = x;
     return(ar);
     }
-    primesMonad.run([x, primesMonad.s[0], "from runPrime", primesMonad.a]);
+    primesMonad.run([x, primesMonad.s[1], "from runPrime", primesMonad.a]);
     return primesMonad.a;
   }  `  )
 
-var primeFibInterface = h('pre',  ` 
-  const fibKeyPress5$ = sources.DOM
+var primeFibInterface = h('pre',  `  const fibKeyPress5$ = sources.DOM
     .select('input#fib3335').events('keydown');
 
   const fibKeyPressAction5$ = fibKeyPress5$.map(e => {
     if (e.target.value == '') {return};
-    if( e.keyCode == 13 && Number.isInteger(e.target.value*1) ) {
-      fib5(e.target.value);
-    }
-    if( e.keyCode == 13 && !Number.isInteger(e.target.value*1 )) {
-        document.getElementById('fib5').innerHTML = "You didn't provide an integer";
-    }
-  });
-
-  function fib5(x) {
-      var fibs = runFib(x);
-      var y = Math.round(Math.sqrt(fibs.length));
-      var primes = runPrime(fibs[y + 3]);
+    if( e.keyCode == 13 ) {
+      var fibs = runFib(e.target.value)
+      var fibs2 = fibs.filter(v => v <= Math.round(Math.sqrt(fibs[fibs.length - 1])));
+      var c = fibs[fibs2.length];
+      console.log('>>>>>>>>>>>> fibs2, c ', fibs2, c );
+      var primes = runPrime(c);
       var primeFibs = pFib(fibs, primes);
-      document.getElementById('PF_7').innerHTML = "Fibonacci Numbers:" ;
-      document.getElementById('PF_5').innerHTML = fibs;
-      document.getElementById('PF_8').innerHTML = "Prime Fibonacci Numbers:" ;
+      document.getElementById('PF_9').innerHTML = fibs;
+      document.getElementById('PF_22').innerHTML = primes;
       document.getElementById('primeFibs').innerHTML = primeFibs;
-  }  `  )
-
-var primeFib = h('pre',  `  var primesMonad = new MonadState('primesMonad', [2, 3, 'primesMonad', [2]], [2],  prS) 
-  
-  function prS (v) {
-    var x = primesMonad.a[primesMonad.a.length - 1]
-    if (x < v[0]) {
-      return primes_state(v);
     }
-    else {
-      let trunc = primesMonad.a.filter(a => a < v[0]);
-      let res = primesMonad.a.slice(0, trunc.length + 1);  // The prime numbers
-      return [v[0], (res[res.length - 1] + 1), 'whatever', res];
-    }
-  }
+  });  `  )
 
-  function primes_state(v) {
-    while ((v[3][v[3].length - 1]) < v[0]) {
-      for (let i in v[3]) {
-        if ((v[1] % v[3][i]) == 0) {
-          v.slice();
-          v[1]+=1;
-          primes_state(v);
-        }
-        else if (i == (v[3].length - 1)) {
-          v.slice();
-          v[3].push(v[1]);
-          primes_state(v);
-        }
+var primeFib = h('pre',  `  
+var primesMonad = new MonadState('primesMonad', [3, 2, 'primesMonad', [2]], [2],  primes_state) 
+
+function check (n, x) {
+  var ar = x.slice();
+  var ar2 = [];
+  var R = false;
+  ar.map(e => {
+    if ((n % e) == 0) {
+      return;
+    }
+    ar2.push(e);
+    if (ar2.length == ar.length) {
+       R = true;
+    }
+  })
+  return R;
+}
+
+function primes_state(x) {
+  var v = x.slice();
+  var ar = [];
+  var R;
+  var a = v[0];
+  var b = v[1];
+  var c = v[2];
+  var d = v[3];
+    while (b <= a) {
+      if (check(b,d)) {
+        d.push(b);
+        b = b + 2;
       }
+      else {b = b + 2};
     }
-    return v;
+  return [a,b,c,d];
 }  `  )
 
 var seed2 = h('pre',  ` 

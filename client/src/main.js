@@ -373,29 +373,24 @@ function main(sources) {
 // ************************************************************************* END Original Fibonacci END
 
 // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> START PRIME FIB  
+  
   const fibKeyPress5$ = sources.DOM
     .select('input#fib3335').events('keydown');
 
   const fibKeyPressAction5$ = fibKeyPress5$.map(e => {
     if (e.target.value == '') {return};
-    if( e.keyCode == 13 && Number.isInteger(e.target.value*1) ) {
-      fib5(e.target.value);
-    }
-    if( e.keyCode == 13 && !Number.isInteger(e.target.value*1 )) {
-        document.getElementById('fib5').innerHTML = "You didn't provide an integer";
+    if( e.keyCode == 13 ) {
+      var fibs = runFib(e.target.value)
+      var fibs2 = fibs.filter(v => v <= Math.round(Math.sqrt(fibs[fibs.length - 1])));
+      var c = fibs[fibs2.length];
+      console.log('>>>>>>>>>>>> fibs2, c ', fibs2, c );
+      var primes = runPrime(c);
+      var primeFibs = pFib(fibs, primes);
+      document.getElementById('PF_9').innerHTML = fibs;
+      document.getElementById('PF_22').innerHTML = primes;
+      document.getElementById('primeFibs').innerHTML = primeFibs;
     }
   });
-
-  function fib5(x) {
-      var fibs = runFib(x);
-      var y = Math.round(Math.sqrt(fibs.length));
-      var primes = runPrime(fibs[y + 3]);
-      var primeFibs = pFib(fibs, primes);
-      document.getElementById('PF_7').innerHTML = "Fibonacci Numbers:" ;
-      document.getElementById('PF_5').innerHTML = fibs;
-      document.getElementById('PF_8').innerHTML = "Prime Fibonacci Numbers:" ;
-      document.getElementById('primeFibs').innerHTML = primeFibs;
-  }
 
   window.onload = function (event) {
     console.log('onopen event: ', event);
@@ -789,15 +784,22 @@ function main(sources) {
         h('pre', `2,3,5,13,89,
 233,1597,28657,514229,433494437,
 2971215073 ` ),
-        h('p', ' I searched the Internet. There seems to be universal agreement that the list of prime Fibonacci numbers discovered by the MonadState algorithm is correct. I also discovered that the larges proven prime Fibonacci number is 2971215073. Too bad I couldn\'t find the next one using Javascript, assuming it exists. No one has proven that the set of all prime Fibonacci number is, or is not, infinite '  ),
-        h('p', ' The number you enter below is the length of the list of Fibonacci numbers you want to generate. After 1477, the numbers are all Infinity. ' ),  
+        h('p', ' I searched the Internet. There seems to be universal agreement that the list of prime Fibonacci numbers discovered by the MonadState algorithm is correct. '  ),
+        h('p', ' Because of memoization, it is best to build gradually toward higher numbers. I entered 35, 40, and then 45 to generate the prime Fibonacci number 433,494,437 on my desktop computer running Chrome. ' ),
+        h('p', ' The number you enter below is the length of the list of Fibonacci numbers you want to generate. I suggest that you keep your first entry under 40 in order to avoid long delays. ' ),  
         h('p',  ),  
         h('input#fib3335',  ),
         h('br' ),
-        h('span#PF_7.red6',  ),  
-        h('span#PF_5.red7',  ),  
+        h('span#PF_7.red6', 'Fibonacci Numbers' ),  
         h('br' ),
-        h('span#PF_8.red6',  ),  
+        h('span#PF_9.red7',  ),  
+        h('br' ),
+        h('span#PF_21.red6', 'Prime Numbers' ),  
+        h('br' ),
+        h('span#PF_22.red7',  ),  
+        h('br' ),
+        h('br' ),
+        h('span#PF_8.red6', 'Prime Fibonacci Numbers' ),  
         h('br' ),
         h('span#primeFibs.red7',  ),  
 //************************************************************************************************************* END MonadState

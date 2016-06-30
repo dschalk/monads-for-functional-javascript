@@ -151,39 +151,41 @@ And here are the definitions of primesMonad and its helper functions:
 
 ### primesMonad
 ```javascript
-  var primesMonad = new MonadState('primesMonad', 2, [2],  prS)    // Creates primesMonad 
+  var primesMonad = new MonadState('primesMonad', [2, 3, 'primesMonad', [2]], [2],  primes_state)  
 
-  function prS (v) {                
-    var x = primesMonad.a[primesMonad.a.length - 1]
-    if (x < v[0]) {
-      let arr = primesMonad.a;
-      let w = [v[0], x+1, "anything", arr];    // In the else block, the third element is "whatever"
-      return primes_state(w);   // primes_state (below) computes a new value for primesMonad.s
-    }
-    else {
-      let trunc = primesMonad.a.filter(a => a < v[0]);   // Re-using previously computed prime numbers
-      let res = primesMonad.a.slice(0, trunc.length + 1);  // The prime numbers
-      return [v[0], (res[res.length - 1] + 1), "whatever", res];   // Updates primesMonad.s
-    }
-  }
-
-  function primes_state(v) {
-    while ((v[3][v[3].length - 1]) < v[0]) {
-      for (let i in v[3]) {
-        if ((v[1] % v[3][i]) == 0) {
-          v = v.slice();   // Avoids mutating v
-          v[1]+=1;
-          primes_state(v);
+  function primes_state(x) {
+    var v = x.slice();
+    var ar = [];
+    var R;
+    var a = v[0];
+    var b = v[1];
+    var c = v[2];
+    var d = v[3];
+      while (b <= a) {
+        if (check(b,d)) {
+          d.push(b);
+          b = b + 2;
         }
-        else if (i == (v[3].length - 1)) {
-          v = v.slice();          
-          v[3].push(v[1]);
-          primes_state(v);
-        }
+        else {b = b + 2};
       }
-    }
-    return v;
-  }
+    return [a,b,c,d];
+
+
+  function check (n, x) {
+    var ar = x.slice();
+    var ar2 = [];
+    var R = false;
+    ar.map(e => {
+      if ((n % e) == 0) {
+        return;
+      }
+      ar2.push(e);
+      if (ar2.length == ar.length) {
+         R = true;
+      }
+    })
+    return R;
+  }  
 ```
 ### Abstractions Over The "run()" Method
 In both instances of MonadState, the run() method takes an array of four elements. The following functions are abstractions over run that take one argumant and make sure that all four of the elements in the array presented to run() are correct. The arguments provided to runFib and runPrime determine the lengths of the arrays referenced by the "a" attributes of both MonadState instances. Here they are:
@@ -205,25 +207,18 @@ var runPrime = function runPrime (x) {
 
   const fibKeyPressAction5$ = fibKeyPress5$.map(e => {
     if (e.target.value == '') {return};
-    if( e.keyCode == 13 && Number.isInteger(e.target.value*1) ) {
-      fib5(e.target.value);
-    }
-    if( e.keyCode == 13 && !Number.isInteger(e.target.value*1 )) {
-        document.getElementById('fib5').innerHTML = "You didn't provide an integer";
-    }
-  });
-
-  function fib5(x) {
-      var fibs = runFib(x);
-      var y = Math.round(Math.sqrt(x));
-      var primes = runPrime(y);
-      var primeFibs = pFib(fibs, primes);                                // pFib is defined below
-      document.getElementById('PF_7').innerHTML = "Fibonacci Numbers:" ;
-      document.getElementById('fib5').innerHTML = fibs;
-      document.getElementById('PF_8').innerHTML = "Prime Fibonacci Numbers:" ;
+    if( e.keyCode == 13 ) {
+      var fibs = runFib(e.target.value)
+      var fibs2 = fibs.filter(v => v <= Math.round(Math.sqrt(fibs[fibs.length - 1])));
+      var c = fibs[fibs2.length];
+      console.log('>>>>>>>>>>>> fibs2, c ', fibs2, c );
+      var primes = runPrime(c);
+      var primeFibs = pFib(fibs, primes);
+      document.getElementById('PF_9').innerHTML = fibs;
+      document.getElementById('PF_22').innerHTML = primes;
       document.getElementById('primeFibs').innerHTML = primeFibs;
-  const fibKeyPress5$ = sources.DOM
-    .select('input#fib3335').events('keydown');
+    }
+  });  
 ```
 The function that takes an array of Fibonacci numbers and an array of prime numbers, and returns an array of prime Fibonacci numbers is named "pFib and is defined as follows:
 ```javascript
@@ -243,8 +238,6 @@ The function that takes an array of Fibonacci numbers and an array of prime numb
     })
     return [ar2];
   }
-
-  });  
 ```
 
 
