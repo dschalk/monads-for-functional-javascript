@@ -836,27 +836,27 @@ var MonadState = h('pre',  `  var MonadState = function MonadState (g, state, va
 
 var primesMonad = h('pre',  `  var primesMonad = new MonadState('primesMonad', [2, 3, 'primesMonad', [2]], [2],  primes_state)  
 
-function primes_state(x) {
-  var v = x.slice();
-  var R;
-    while (v[1] <= v[0]) {
-      if (check()) {
-        v[3].push(v[1]);
-      }
-      v[1]+=2;
-    }
-    function check () {
-      var R = false;
-      v[3].map(e => {
-        if ((v[1] % e) == 0) {
-          return;
+  function primes_state(x) {
+    var v = x.slice();
+    var R;
+      while (v[1] <= v[0]) {
+        if (check()) {
+          v[3].push(v[1]);
         }
-        R = true;
-      })
-      return R;
-    }
-  return v;  
-}  `  )
+        v[1]+=2;
+      }
+      function check () {
+        var R = false;
+        v[3].map(e => {
+          if ((v[1] % e) == 0) {
+            return;
+          }
+          R = true;
+        })
+        return R;
+      }
+    return v;  
+  }  `  )
 
 var fibsMonad = h('pre',  `  var fibsMonad = new MonadState('fibsMonad', O.mMsT.x, [0],  fibs_state) 
                   
