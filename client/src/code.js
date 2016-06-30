@@ -935,42 +935,31 @@ var primeFibInterface = h('pre',  `  const fibKeyPress5$ = sources.DOM
     }
   });  `  )
 
-var primeFib = h('pre',  `  
-var primesMonad = new MonadState('primesMonad', [3, 2, 'primesMonad', [2]], [2],  primes_state) 
+var primeFib = h('pre',  `  var primesMonad = new MonadState('primesMonad', [3, 2, 'primesMonad', [2]], [2],  primes_state) 
 
-function check (n, x) {
-  var ar = x.slice();
-  var ar2 = [];
-  var R = false;
-  ar.map(e => {
-    if ((n % e) == 0) {
-      return;
-    }
-    ar2.push(e);
-    if (ar2.length == ar.length) {
-       R = true;
-    }
-  })
-  return R;
-}
-
-function primes_state(x) {
-  var v = x.slice();
-  var ar = [];
-  var R;
-  var a = v[0];
-  var b = v[1];
-  var c = v[2];
-  var d = v[3];
-    while (b <= a) {
-      if (check(b,d)) {
-        d.push(b);
-        b = b + 2;
+  function primes_state(x) {
+    var v = x.slice();
+    var R;
+      while (v[1] <= v[0]) {
+        if (check()) {
+          v[3].push(v[1]);
+        }
+        v[1]+=2;
       }
-      else {b = b + 2};
-    }
-  return [a,b,c,d];
-}  `  )
+      function check () {
+        var R = false;
+        v[3].map(e => {
+          if ((v[1] % e) == 0) {
+            return;
+          }
+          if (e ==  v[3][v[3].length - 1]) {
+             R = true;
+          }
+        })
+        return R;
+      }
+    return v;
+  }  `  )
 
 var seed2 = h('pre',  ` 
              `  )

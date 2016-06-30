@@ -155,37 +155,27 @@ And here are the definitions of primesMonad and its helper functions:
 
   function primes_state(x) {
     var v = x.slice();
-    var ar = [];
     var R;
-    var a = v[0];
-    var b = v[1];
-    var c = v[2];
-    var d = v[3];
-      while (b <= a) {
-        if (check(b,d)) {
-          d.push(b);
-          b = b + 2;
+      while (v[1] <= v[0]) {
+        if (check()) {
+          v[3].push(v[1]);
         }
-        else {b = b + 2};
+        v[1]+=2;
       }
-    return [a,b,c,d];
-
-
-  function check (n, x) {
-    var ar = x.slice();
-    var ar2 = [];
-    var R = false;
-    ar.map(e => {
-      if ((n % e) == 0) {
-        return;
+      function check () {
+        var R = false;
+        v[3].map(e => {
+          if ((v[1] % e) == 0) {
+            return;
+          }
+          if (e ==  v[3][v[3].length - 1]) {
+             R = true;
+          }
+        })
+        return R;
       }
-      ar2.push(e);
-      if (ar2.length == ar.length) {
-         R = true;
-      }
-    })
-    return R;
-  }  
+    return v;
+  }
 ```
 ### Abstractions Over The "run()" Method
 In both instances of MonadState, the run() method takes an array of four elements. The following functions are abstractions over run that take one argumant and make sure that all four of the elements in the array presented to run() are correct. The arguments provided to runFib and runPrime determine the lengths of the arrays referenced by the "a" attributes of both MonadState instances. Here they are:
