@@ -84,33 +84,27 @@ function primeFib (x) {
   return [ar2, fibs];
 }
 
-function primes_state(x) {
-  var v = x.slice();
-  var R;
-    while (v[1] <= v[0]) {
-      if (check()) {
-        v[3].push(v[1]);
+      function check (ar, v) {
+        let x = ar.every(e => (v % e) != 0 );
+        return x;
       }
-      v[1]+=2;
-    }
-    function check () {
-      var R = false;
-      v[3].map(e => {
-        if ((v[1] % e) == 0) {
-          return;
+
+function primes_state(x) {
+    var v = x.slice();
+      while (v[1] <= v[0]) {
+        if (check(v[3], v[1])) {
+          v[3].push(v[1]);
         }
-        R = true;
-      })
-      return R;
-    }
-  return v;
-}
+        v[1]+=2;
+      }
+    return v;
+  }
 
 var runPrime = function runPrime (x) {
-  if (primesMonad.a[primesMonad.a.length - 1] >= x) {
-    let ar = primesMonad.a.slice();
-    ar.length = x;
-    return(ar);
+  let l = primesMonad.a[primesMonad.a.length - 1]
+  if (l >= x) {
+  let ar = primesMonad.a.filter(e => e <= x) ;
+  return(ar);
   }
   primesMonad.run([x, primesMonad.s[1], "from runPrime", primesMonad.a]);
   let prms = primesMonad.a;
@@ -168,7 +162,7 @@ function pFib (fibs, primes) {
   var ar = [];
   fibs.map (f => {
     if (f < 2) return;
-    if ( primes.every(p => (f % p != 0 || f == p))) { ar.push(f) };
+    if ( primes.every(p => (f % p != 0 || f == p))) ar.push(f);
   });
   return ar;
 };

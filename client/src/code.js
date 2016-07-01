@@ -838,24 +838,18 @@ var primesMonad = h('pre',  `  var primesMonad = new MonadState('primesMonad', [
 
   function primes_state(x) {
     var v = x.slice();
-    var R;
       while (v[1] <= v[0]) {
-        if (check()) {
+        if (check(v[3], v[1])) {
           v[3].push(v[1]);
         }
         v[1]+=2;
       }
-      function check () {
-        var R = false;
-        v[3].map(e => {
-          if ((v[1] % e) == 0) {
-            return;
-          }
-          R = true;
-        })
-        return R;
-      }
-    return v;  
+    return v;
+  }
+
+  function check (ar, v) {
+    let x = ar.every(e => (v % e) != 0 );
+    return x;
   }  `  )
 
 var fibsMonad = h('pre',  `  var fibsMonad = new MonadState('fibsMonad', O.mMsT.x, [0],  fibs_state) 
