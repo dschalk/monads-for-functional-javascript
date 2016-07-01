@@ -222,7 +222,7 @@ The function that takes an array of Fibonacci numbers and an array of prime numb
   function pFib (fibs, primes) {
     var ar = [];
     fibs.map (f => {
-      if (f < 2) { return; };
+      if (f < 2) return;
       if ( primes.every(p => (f % p != 0 || f == p))) { ar.push(f) };
     });
     return ar;

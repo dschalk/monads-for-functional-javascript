@@ -3483,7 +3483,7 @@
 
 	var fibsMonad = (0, _dom.h)('pre', '  var fibsMonad = new MonadState(\'fibsMonad\', O.mMsT.x, [0],  fibs_state) \n                  \n  var fibs_state = function fibs_state(ar) { \n    mMsT.ret(ar.slice());\n    while (O.mMsT.x[3].length < O.mMsT.x[2]) { \n      mMsT.ret([O.mMsT.x[1], (O.mMsT.x[0]*1 + O.mMsT.x[1]), O.mMsT.x[2], O.mMsT.x[3].concat(O.mMsT.x[0])])\n    }\n    return O.mMsT.x;  // Using mMsT avoids mutation; but mutating "ar.slice()" seems pretty harmless.\n  }  ');
 
-	var pFib = (0, _dom.h)('pre', '  function pFib (fibs, primes) {\n    var ar = [];\n    fibs.map (f => {\n      if ( primes.every(function(p) {\n        return (f % p != 0 || f == p);\n      }) ) { ar.push(f) }; \n    })\n    return ar;\n  };  ');
+	var pFib = (0, _dom.h)('pre', '  function pFib (fibs, primes) {\n  var ar = [];\n  fibs.map (f => {\n    if (f < 2) { return; };\n    if ( primes.every(p => (f % p != 0 || f == p))) { ar.push(f) };\n  });\n  return ar;\n  };  ');
 
 	var helperFunctions = (0, _dom.h)('pre', '  var runFib = function runFib (x) {\n    if (fibsMonad.a.length >= x) { \n      let ar = fibsMonad.a.slice();\n      ar.length = x;\n      return ar;\n    }\n    fibsMonad.run([fibsMonad.s[0], fibsMonad.s[1], x, fibsMonad.a]);\n    return fibsMonad.a;\n  }\n\n  var runPrime = function runPrime (x) {\n    if (primesMonad.a >= x) {\n    let ar = fibsMonad.a.slice();\n    ar.length = x;\n    return(ar);\n    }\n    primesMonad.run([x, primesMonad.s[1], "from runPrime", primesMonad.a]);\n    return primesMonad.a;\n  }  ');
 
