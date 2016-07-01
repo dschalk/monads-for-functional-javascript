@@ -4,7 +4,7 @@ In this version, MonadStream has been dropped. It was dead weight. Simple functi
 
 This repository contains the code that is running online at [JS-monads-stable](http://schalk.net:3055) in a [Motorcycle.js](https://github.com/motorcyclejs) application. Motorcycle.js is [Cycle.js](https://github.com/cyclejs/core) using [Most](https://github.com/cujojs/most) and [Snabbdom](https://github.com/paldepind/snabbdom) instead of RxJS and "virtual-dom".  
 
-The use of the monads is explained at [the online presentation](http://schalk.net:3055), which is the running version of this code. There, you can see explanations and demonstrations of a shared, persistent todo list; an interactive simulated dice game with a traversable history number displays, chat rooms for for each group that is formed to play the game or just to chat, and much more.
+The use of the monads is explained at [the online presentation](http://schalk.net:3055), which is the running version of this code. There, you can see explanations and demonstrations of a shared, persistent todo list; an interactive simulated dice game with a traversable history of number displays, chat rooms for for each group that is formed to play the game or just to chat, and more.
 
 Here are some definitions, which can also be seen at [the online presentation](http://schalk.net:3055) :
 ## Basic Monad    
@@ -152,7 +152,7 @@ And here are the definitions of primesMonad and its helper functions:
 ### primesMonad
 ```javascript
   var primesMonad = new MonadState('primesMonad', [2, 3, 'primesMonad', [2]], [2],  primes_state)  
-
+p
   function primes_state(x) {
     var v = x.slice();
     var R;
@@ -209,7 +209,6 @@ In both instances of MonadState, the run() method takes an array of four element
       var fibs = runFib(e.target.value)
       var fibs2 = fibs.filter(v => v <= Math.round(Math.sqrt(fibs[fibs.length - 1])));
       var c = fibs[fibs2.length];
-      console.log('>>>>>>>>>>>> fibs2, c ', fibs2, c );
       var primes = runPrime(c);
       var primeFibs = pFib(fibs, primes);
       document.getElementById('PF_9').innerHTML = fibs;
@@ -223,12 +222,11 @@ The function that takes an array of Fibonacci numbers and an array of prime numb
   function pFib (fibs, primes) {
     var ar = [];
     fibs.map (f => {
-      if ( primes.every(function(p) {
-        return (f % p != 0 || f == p);
-      }) ) { ar.push(f) }; 
+      if (f < 2) { return; };
+      if ( primes.every(p => (f % p != 0 || f == p))) { ar.push(f) };
     });
     return ar;
-  }
+  };
 ```
 
 .

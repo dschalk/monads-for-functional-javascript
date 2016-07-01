@@ -84,16 +84,6 @@ function primeFib (x) {
   return [ar2, fibs];
 }
 
-var runFib = function runFib (x) {
-  if (fibsMonad.a.length >= x) { 
-    let ar = fibsMonad.a.slice();
-    ar.length = x;
-    return ar;
-  }
-  fibsMonad.run([fibsMonad.s[0], fibsMonad.s[1], x, fibsMonad.a]);
-  return fibsMonad.a;
-}
-
 function primes_state(x) {
   var v = x.slice();
   var R;
@@ -127,13 +117,36 @@ var runPrime = function runPrime (x) {
   return prms;
 }
 
+var runFib = function runFib (x) {
+  if (fibsMonad.a.length >= x) { 
+    let ar = fibsMonad.a.slice();
+    ar.length = x;
+    return ar;
+  }
+  fibsMonad.run([fibsMonad.s[0], fibsMonad.s[1], x, fibsMonad.a]);
+  return fibsMonad.a;
+}
+
 var primesMonad = new MonadState('primesMonad', [3, 2, 'primesMonad', [2]], [2],  primes_state) 
 
 primesMonad.run([10, 3, "Prime the pump", [2]])
 
-var prFibsMonad = new MonadState('prFibsMonad', [3, "In prFibsMonad constructor", 'prFibsMonad', [2]], [2],  pF) 
+var prFibsMonad = new MonadState('prFibsMonad', [3, "In prFibsMonad constructor", 'prFibsMonad', [2]], [2],  pFF) 
 
 prFibsMonad.run([10, "Hello from prFibsMonad", "Prime the pump", [2]])
+
+function pFF ([a, b, c, d]) {      
+  var fibs = runFib(a)
+  var fibs2 = fibs.filter(v => v <= Math.round(Math.sqrt(fibs[fibs.length - 1])));
+  var c = fibs[fibs2.length];
+  console.log('>>>> In pFF >>>>>>>> fibs2, c ', fibs2, c );
+  var primes = runPrime(c);
+  var primeFibs = pFib(fibs, primes);
+  if (prFibsMonad.a.length >= primeFibs.length) {
+    return([a, b, primeFibs, prFibsMonad.a]);
+  }  
+  return([a, b, primeFibs, primeFibs]);
+}
 
 function pF (x) {
   if (x[0] <= x[3][x[3] - 1]) {
@@ -141,25 +154,21 @@ function pF (x) {
   }
   var v = x.slice();
   var fibs = runFib(v[0]);
+  var fibs2 = fibs.filter(v => v <= Math.round(Math.sqrt(fibs[fibs.length - 1])));
+  var c = fibs[fibs2.length];
+  console.log('>>>>>>>>>>>> fibs2, c ', fibs2, c );
+  var primes = runPrime(c + 100);
+  var primeFibs = pFib(fibs, primes);
   var primes = runPrime(v[0]);
-  fibs.map(f => {
-    primes.map(p => {
-      if ((f % p) == 0 || f < 2) {
-        return;
-      }
-      v[3].push(f);
-      return;
-    })
-  })
+  v[3] = pFib(fibs, primes); 
   return v;
 }
 
 function pFib (fibs, primes) {
   var ar = [];
   fibs.map (f => {
-    if ( primes.every(function(p) {
-      return (f % p != 0 || f == p);
-    }) ) { ar.push(f) };
+    if (f < 2) { return; };
+    if ( primes.every(p => (f % p != 0 || f == p))) { ar.push(f) };
   });
   return ar;
 };

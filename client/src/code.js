@@ -872,11 +872,11 @@ var pFib = h('pre',  `  function pFib (fibs, primes) {
     var ar = [];
     fibs.map (f => {
       if ( primes.every(function(p) {
-      return (f % p != 0 || f == p)
-      }) ) { ar.push(f) } 
+        return (f % p != 0 || f == p);
+      }) ) { ar.push(f) }; 
     })
     return ar;
-  }  `  )
+  };  `  )
 
 var helperFunctions = h('pre',  `  var runFib = function runFib (x) {
     if (fibsMonad.a.length >= x) { 
