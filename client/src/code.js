@@ -870,19 +870,12 @@ var fibsMonad = h('pre',  `  var fibsMonad = new MonadState('fibsMonad', O.mMsT.
 
 var pFib = h('pre',  `  function pFib (fibs, primes) {
     var ar = [];
-    var ar2 = [];
-    fibs.map(f => {
-      ar = [];
-      primes.map(p => {
-        if (f == p || f % p != 0 && f > 1) {
-          ar.push(f);
-        }
-        if (ar.length == primes.length) {
-          ar2.push(ar.pop());
-        }
-      })
+    fibs.map (f => {
+      if ( primes.every(function(p) {
+      return (f % p != 0 || f == p)
+      }) ) { ar.push(f) } 
     })
-    return ar2;
+    return ar;
   }  `  )
 
 var helperFunctions = h('pre',  `  var runFib = function runFib (x) {

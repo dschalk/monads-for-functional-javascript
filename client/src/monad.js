@@ -28,27 +28,6 @@ var Monad = function Monad(z, g) {
   };
 };
 
-function primeFib (x) {
-  var ar = [];
-  var ar2 = [];
-  var fibs = fibsMonad.run([0, 1, x, []]).a
-  var l = fibs.length - 3;
-  var primes = primesMonad
-  .run([Math.round(Math.sqrt([fibs[fibs.length - 1]])), 6, 0, [2,3,5]]).a
-  fibs.map(f => {
-    ar = [];
-    primes.map(p => {
-      if (f == p || f % p != 0 && f > 1) {
-        ar.push(f);
-      }
-      if (ar.length == primes.length) {
-        ar2.push(ar.pop());
-      }
-    })
-  })
-  return [ar2, fibs];
-}
-
 var MonadState = function MonadState (g, state, value, p) {
   var _this = this;
   this.id = g;
@@ -69,12 +48,40 @@ var MonadState = function MonadState (g, state, value, p) {
   }
 }
 
+var mMsT = new Monad([], 'mMsT');
+mMsT.ret(mMsT.x);
+
 var fibs_state = function fibs_state(ar) { 
   mMsT.ret(ar.slice());
   while (O.mMsT.x[3].length < O.mMsT.x[2]) { 
     mMsT.ret([O.mMsT.x[1], (O.mMsT.x[0]*1 + O.mMsT.x[1]), O.mMsT.x[2], O.mMsT.x[3].concat(O.mMsT.x[0])])
   }
   return O.mMsT.x;
+}
+
+var fibsMonad = new MonadState('fibsMonad', O.mMsT.x, [0],  fibs_state) 
+
+fibsMonad.run([0,1,4,[]])
+
+function primeFib (x) {
+  var ar = [];
+  var ar2 = [];
+  var fibs = fibsMonad.run([0, 1, x, []]).a
+  var l = fibs.length - 3;
+  var primes = primesMonad
+  .run([Math.round(Math.sqrt([fibs[fibs.length - 1]])), 6, 0, [2,3,5]]).a
+  fibs.map(f => {
+    ar = [];
+    primes.map(p => {
+      if (f == p || f % p != 0 && f > 1) {
+        ar.push(f);
+      }
+      if (ar.length == primes.length) {
+        ar2.push(ar.pop());
+      }
+    })
+  })
+  return [ar2, fibs];
 }
 
 var runFib = function runFib (x) {
@@ -123,6 +130,39 @@ var runPrime = function runPrime (x) {
 var primesMonad = new MonadState('primesMonad', [3, 2, 'primesMonad', [2]], [2],  primes_state) 
 
 primesMonad.run([10, 3, "Prime the pump", [2]])
+
+var prFibsMonad = new MonadState('prFibsMonad', [3, "In prFibsMonad constructor", 'prFibsMonad', [2]], [2],  pF) 
+
+prFibsMonad.run([10, "Hello from prFibsMonad", "Prime the pump", [2]])
+
+function pF (x) {
+  if (x[0] <= x[3][x[3] - 1]) {
+    return x;
+  }
+  var v = x.slice();
+  var fibs = runFib(v[0]);
+  var primes = runPrime(v[0]);
+  fibs.map(f => {
+    primes.map(p => {
+      if ((f % p) == 0 || f < 2) {
+        return;
+      }
+      v[3].push(f);
+      return;
+    })
+  })
+  return v;
+}
+
+function pFib (fibs, primes) {
+  var ar = [];
+  fibs.map (f => {
+    if ( primes.every(function(p) {
+      return (f % p != 0 || f == p);
+    }) ) { ar.push(f) };
+  });
+  return ar;
+};
 
 var CURRENT_ROLL = [];
 
@@ -287,13 +327,6 @@ var mMscoreChange = new Monad(0, 'mMscoreChange');
 mMscoreChange.ret(mMscoreChange.x);
 var mMcurrentRoll = new Monad([0,0,0,0], 'mMcurrentRoll');
 mMcurrentRoll.ret(mMcurrentRoll.x);
-
-var mMsT = new Monad([], 'mMsT');
-mMsT.ret(mMsT.x);
-
-var fibsMonad = new MonadState('fibsMonad', O.mMsT.x, [0],  fibs_state) 
-
-fibsMonad.run([0,1,4,[]])
 
 var mMfibs8 = M([0,1], 'mMfibs8');
 mMfibs8.ret(mMfibs8.x);
@@ -479,26 +512,6 @@ var mMitterFib9 = MI();
 var mMitterPrimeFibs = MI();
 var mMitterPF = MI();
 var mMitterPF2 = MI();
-
-
-
-function pFib (fibs, primes) {
-  var ar = [];
-  var ar2 = [];
-  fibs.map(f => {
-    ar = [];
-    primes.map(p => {
-      if (f == p || f % p != 0 && f > 1) {
-        ar.push(f);
-      }
-      if (ar.length == primes.length) {
-        ar2.push(ar.pop());
-      }
-    })
-  })
-  return ar2;
-}
-
 function Fib6(ar) {
   while (ar[0] < ar[3]+1) {
     ar[2] = ar[2].concat(ar[0]);

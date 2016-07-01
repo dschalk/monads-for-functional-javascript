@@ -218,31 +218,19 @@ In both instances of MonadState, the run() method takes an array of four element
     }
   });  
 ```
-The function that takes an array of Fibonacci numbers and an array of prime numbers, and returns an array of prime Fibonacci numbers is named "pFib and is defined as follows:
+The function that takes an array of Fibonacci numbers and an array of prime numbers, and returns an array of prime Fibonacci numbers, is named "pFib and is defined as follows:
 ```javascript
-  function pFib (fibs, primes) {  
+  function pFib (fibs, primes) {
     var ar = [];
-    var ar2 = [];
-    fibs.map(f => {
-      ar = [];
-      primes.map(p => {
-        if (f == p || f % p != 0 && f > 1) {
-          ar.push(f);
-        }
-        if (ar.length == primes.length) {
-          ar2.push(ar.pop());
-        }
-      })
-    })
-    return [ar2];
+    fibs.map (f => {
+      if ( primes.every(function(p) {
+        return (f % p != 0 || f == p);
+      }) ) { ar.push(f) }; 
+    });
+    return ar;
   }
 ```
 
-
-
-
-
-There are interactive demonstrations of the two ways of computing prime Fibonacci numbers at http://schalk.net:3055. Of course, these examples are contrived, presented solely to show how instances of MonadState, MonadItter, and MonadStream can be used. Number theorists looking for patterns would probably use a language less abstract than Javascript, and would want to crunch numbers on a super-computer.  
 .
 .
 
