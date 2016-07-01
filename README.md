@@ -190,14 +190,15 @@ In both instances of MonadState, the run() method takes an array of four element
   }
 
   var runPrime = function runPrime (x) {
-    if (primesMonad.a >= x) {
-    let ar = fibsMonad.a.slice();
-    ar.length = x;
-    return(ar);
+    if (primesMonad.a[primesMonad.a.length - 1] >= x) {
+      let ar = primesMonad.a.slice();
+      ar.length = x;
+      return(ar);
     }
     primesMonad.run([x, primesMonad.s[1], "from runPrime", primesMonad.a]);
-    return primesMonad.a;
-  }  
+    let prms = primesMonad.a;
+    return prms;
+  }
 ```
 ### User Interface 
 ```javascript
