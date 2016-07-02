@@ -147,7 +147,7 @@ And here are the definitions of primesMonad and its helper functions:
 
 ### primesMonad
 ```javascript
-  var primesMonad = new MonadState('primesMonad', [2, 3, 'primesMonad', [2]], [2],  primes_state)  
+  var primesMonad = new MonadState('primesMonad', [3, 2, 'primesMonad', [2]], [2],  primes_state)  
 
   function primes_state(x) {
     var v = x.slice();
