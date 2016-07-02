@@ -51,12 +51,22 @@ var MonadState = function MonadState (g, state, value, p) {
 var mMsT = new Monad([], 'mMsT');
 mMsT.ret(mMsT.x);
 
+/*
 var fibs_state = function fibs_state(ar) { 
   mMsT.ret(ar.slice());
   while (O.mMsT.x[3].length < O.mMsT.x[2]) { 
     mMsT.ret([O.mMsT.x[1], (O.mMsT.x[0]*1 + O.mMsT.x[1]), O.mMsT.x[2], O.mMsT.x[3].concat(O.mMsT.x[0])])
   }
   return O.mMsT.x;
+}
+*/
+
+var fibs_state = function fibs_state(ar) {
+  var a = ar.slice();
+  while (a[3].length < a[2]) {
+    a = [a[1], a[0] + a[1], a[2], a[3].concat(a[0])];
+  }
+  return a;
 }
 
 var fibsMonad = new MonadState('fibsMonad', O.mMsT.x, [0],  fibs_state) 
@@ -82,11 +92,6 @@ function primeFib (x) {
     })
   })
   return [ar2, fibs];
-}
-
-function check (ar, v) {
-  let x = ar.every(e => (v % e) != 0 );
-  return x;
 }
 
 function primes_state(x) {

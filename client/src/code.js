@@ -834,22 +834,17 @@ var MonadState = h('pre',  `  var MonadState = function MonadState (g, state, va
     }
   }  `  )
 
-var primesMonad = h('pre',  `  var primesMonad = new MonadState('primesMonad', [2, 3, 'primesMonad', [2]], [2],  primes_state)  
+var primesMonad = h('pre',  `  var primesMonad = new MonadState('primesMonad', [3, 2, 'primesMonad', [2]], [2],  primes_state)  
 
   function primes_state(x) {
     var v = x.slice();
-      while (v[1] <= v[0]) {
-        if (check(v[3], v[1])) {
-          v[3].push(v[1]);
-        }
-        v[1]+=2;
+    while (v[1] <= v[0]) {
+      if (v[3].every(e => (v[1] % e) != 0 )) {
+        v[3].push(v[1]);
       }
+      v[1]+=2;
+    }
     return v;
-  }
-
-  function check (ar, v) {
-    let x = ar.every(e => (v % e) != 0 );
-    return x;
   }  `  )
 
 var fibsMonad = h('pre',  `  var fibsMonad = new MonadState('fibsMonad', O.mMsT.x, [0],  fibs_state) 
@@ -910,9 +905,11 @@ var primeFibInterface = h('pre',  `  const fibKeyPress5$ = sources.DOM
     }
   });  `  )
 
+
+
 var primeFib = h('pre',  `  var primesMonad = new MonadState('primesMonad', [3, 2, 'primesMonad', [2]], [2],  primes_state) 
 
-function primes_state(x) {
+  function primes_state(x) {
     var v = x.slice();
     while (v[1] <= v[0]) {
       if (v[3].every(e => (v[1] % e) != 0 )) {
