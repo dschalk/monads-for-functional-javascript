@@ -881,15 +881,15 @@ var helperFunctions = h('pre',  `  var runFib = function runFib (x) {
     return fibsMonad.a;
   }
 
-var runPrime = function runPrime (x) {
-  let l = primesMonad.a[primesMonad.a.length - 1]
-  if (l >= x) {
-  let ar = primesMonad.a.filter(e => e <= x) ;
-  return(ar);
-  }
-  primesMonad.run([x, primesMonad.s[1], "from runPrime", primesMonad.a]);
-  let prms = primesMonad.a;
-  return prms;
+  var runPrime = function runPrime (x) {
+    let l = primesMonad.a[primesMonad.a.length - 1]
+    if (l >= x) {
+      let ar = primesMonad.a.filter(e => e <= x) ;
+      return(ar);
+    }
+    primesMonad.run([x, primesMonad.s[1], "from runPrime", primesMonad.a]);
+    let prms = primesMonad.a;
+    return prms;
   }  `  )
 
 var primeFibInterface = h('pre',  `  const fibKeyPress5$ = sources.DOM
@@ -912,27 +912,14 @@ var primeFibInterface = h('pre',  `  const fibKeyPress5$ = sources.DOM
 
 var primeFib = h('pre',  `  var primesMonad = new MonadState('primesMonad', [3, 2, 'primesMonad', [2]], [2],  primes_state) 
 
-  function primes_state(x) {
+function primes_state(x) {
     var v = x.slice();
-    var R;
-      while (v[1] <= v[0]) {
-        if (check()) {
-          v[3].push(v[1]);
-        }
-        v[1]+=2;
+    while (v[1] <= v[0]) {
+      if (v[3].every(e => (v[1] % e) != 0 )) {
+        v[3].push(v[1]);
       }
-      function check () {
-        var R = false;
-        v[3].map(e => {
-          if ((v[1] % e) == 0) {
-            return;
-          }
-          if (e ==  v[3][v[3].length - 1]) {
-             R = true;
-          }
-        })
-        return R;
-      }
+      v[1]+=2;
+    }
     return v;
   }  `  )
 

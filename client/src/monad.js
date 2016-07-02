@@ -92,7 +92,7 @@ function check (ar, v) {
 function primes_state(x) {
     var v = x.slice();
       while (v[1] <= v[0]) {
-        if (check(v[3], v[1])) {
+        if (v[3].every(e => (v[1] % e) != 0 )) {
           v[3].push(v[1]);
         }
         v[1]+=2;
