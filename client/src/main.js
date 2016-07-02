@@ -783,7 +783,7 @@ function main(sources) {
         h('pre', `2,3,5,13,89,
 233,1597,28657,514229,433494437,
 2971215073 ` ),
-        h('p', ' I entered 44 in the Firefox browser to generate the prime Fibonacci number 433,494,437. It took only a few seconds. I entered 50 and got all eleven of the numbers shown above. A lower number might have accomplished the same thing. The wait was arround one minute, and the desktop computer cooling fan could be heard spinning a little faster than normal during the process. My Chrome browser is much slower. I reached 44 by entering 40, 41, 42, 43, 44 sequentially, waiting each time for the process to finish. Going from 43 to 44 in Chrome took a while.  ' ),
+        h('p', ' I entered 44 in my desktop Ubuntu Chrome and Firefox browsers and got the first ten prime Fibonacci numbers. I then entered 48 and all eleven prime Fibonacci numbers appeard. I tried creeping up, but I couldn\'t get another number because delays started becoming unacceptable. ' ),
         h('p', ' The number you enter below is the length of the list of Fibonacci numbers you want to generate.  ' ),  
         h('p',  ),  
         h('input#fib3335',  ),
