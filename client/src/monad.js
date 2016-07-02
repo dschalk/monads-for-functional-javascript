@@ -84,10 +84,10 @@ function primeFib (x) {
   return [ar2, fibs];
 }
 
-      function check (ar, v) {
-        let x = ar.every(e => (v % e) != 0 );
-        return x;
-      }
+function check (ar, v) {
+  let x = ar.every(e => (v % e) != 0 );
+  return x;
+}
 
 function primes_state(x) {
     var v = x.slice();

@@ -881,14 +881,15 @@ var helperFunctions = h('pre',  `  var runFib = function runFib (x) {
     return fibsMonad.a;
   }
 
-  var runPrime = function runPrime (x) {
-    if (primesMonad.a >= x) {
-    let ar = fibsMonad.a.slice();
-    ar.length = x;
-    return(ar);
-    }
-    primesMonad.run([x, primesMonad.s[1], "from runPrime", primesMonad.a]);
-    return primesMonad.a;
+var runPrime = function runPrime (x) {
+  let l = primesMonad.a[primesMonad.a.length - 1]
+  if (l >= x) {
+  let ar = primesMonad.a.filter(e => e <= x) ;
+  return(ar);
+  }
+  primesMonad.run([x, primesMonad.s[1], "from runPrime", primesMonad.a]);
+  let prms = primesMonad.a;
+  return prms;
   }  `  )
 
 var primeFibInterface = h('pre',  `  const fibKeyPress5$ = sources.DOM
