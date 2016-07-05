@@ -53,7 +53,7 @@ Here are some definitions, which can also be seen at [the online presentation](h
     this.a = value;
     this.process = p;
     this.bnd = function (func, ...args) {
-       return func(_this.a, ...args);
+       return func(_this.s, ...args);  // func operates on state
     };
     this.run = function(st) { 
       let s = _this.process(st); 
@@ -190,19 +190,43 @@ In both instances of MonadState, the run() method takes an array of four element
   const fibKeyPress5$ = sources.DOM
     .select('input#fib3335').events('keydown');
 
-  const fibKeyPressAction5$ = fibKeyPress5$.map(e => {
+  const primeFib$ = fibKeyPress5$.map(e => {
+    var result;
     if (e.target.value == '') {return};
     if( e.keyCode == 13 ) {
-      var fibs = runFib(e.target.value)
-      var fibs2 = fibs.filter(v => v <= Math.round(Math.sqrt(fibs[fibs.length - 1])));
-      var c = fibs[fibs2.length];
-      var primes = runPrime(c);
-      var primeFibs = pFib(fibs, primes);
-      document.getElementById('PF_9').innerHTML = fibs;
-      document.getElementById('PF_22').innerHTML = primes;
-      document.getElementById('primeFibs').innerHTML = primeFibs;
+      if (e.target.value > fibsMonad.a.length) {
+        result = fibsMonad.run([fibsMonad.s[1], fibsMonad.s[0] + fibsMonad.s[1], e.target.value, fibsMonad.a])
+        .bnd(tr);           // The function tr() is shown below. 
+      }
+      else {
+        let r1 = fibsMonad.a.slice().filter(v => v <= e.target.value);
+        let r2 = r1[r1.length - 1];
+        let r3 = r1[r1.length - 2];
+        result = fibsMonad.run([r2 + r3, r2 + r3 + r2 , e.target.value, r1])
+        .bnd(tr)
+      }
+      document.getElementById('PF_9').innerHTML = result[0];
+      document.getElementById('PF_22').innerHTML = result[1];
+      document.getElementById('primeFibs').innerHTML = result[2];
     }
-  });  
+  });
+```
+The final computation is performed by the function tr(). It takes fibsMonad's state as an argument and returns the Fibonacci numbers array, the prime numbers array, and the prime Fibonacci numbers array that are displayed in the browser. Here is it definition:
+```javascript
+  var tr = function tr (x) {
+    var fibs = x[3].slice();
+    var primes = primesMonad.a;
+    var bound = Math.round(Math.sqrt(x[0]));
+    if (bound < primesMonad.a[primesMonad.a.length - 1]) {
+      let p = primesMonad.a.filter(e => (e <= bound));
+      primes = primesMonad.a.filter(e => e <= primes[p.length]);
+    }
+    else {
+      primes = primesMonad.run([bound, primesMonad.s[1], 'From tr', primesMonad.a]).a;
+    }
+    var r = pFib(fibs, primes)
+    return [fibs, primes, r]
+  }
 ```
 The function that takes an array of Fibonacci numbers and an array of prime numbers, and returns an array of prime Fibonacci numbers, is named "pFib and is defined as follows:
 ```javascript

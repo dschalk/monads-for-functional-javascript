@@ -375,20 +375,26 @@ function main(sources) {
 // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> START PRIME FIB  
   
   const fibKeyPress5$ = sources.DOM
-    .select('input#fib3335').events('keydown');
+    .select('input#fib92').events('keydown');
 
-  const fibKeyPressAction5$ = fibKeyPress5$.map(e => {
+  const primeFib$ = fibKeyPress5$.map(e => {
+    var result;
     if (e.target.value == '') {return};
     if( e.keyCode == 13 ) {
-      var fibs = runFib(e.target.value)
-      var fibs2 = fibs.filter(v => v <= Math.round(Math.sqrt(fibs[fibs.length - 1])));
-      var c = fibs[fibs2.length];
-      console.log('>>>>>>>>>>>> fibs2, c ', fibs2, c );
-      var primes = runPrime(c);
-      var primeFibs = pFib(fibs, primes);
-      document.getElementById('PF_9').innerHTML = fibs;
-      document.getElementById('PF_22').innerHTML = primes;
-      document.getElementById('primeFibs').innerHTML = primeFibs;
+      if (e.target.value > fibsMonad.a.length) {
+        let y = fibsMonad.run([fibsMonad.s[1], fibsMonad.s[0] + fibsMonad.s[1], e.target.value, fibsMonad.a]);
+        result = y.bnd(tr);
+      }
+      else {
+        let r1 = fibsMonad.a.slice().filter(v => v <= e.target.value);
+        let r2 = r1[r1.length - 1];
+        let r3 = r1[r1.length - 2];
+        result = fibsMonad.run([r2 + r3, r2 + r3 + r2 , e.target.value, r1])
+        .bnd(tr)
+      }
+      document.getElementById('PF_9').innerHTML = result[0];
+      document.getElementById('PF_22').innerHTML = result[1];
+      document.getElementById('primeFibs').innerHTML = result[2];
     }
   });
 
@@ -544,7 +550,7 @@ function main(sources) {
     document.getElementById('dummy2').innerHTML = O.mM23.x;
   });
 
-  const calcStream$ = merge( forwardAction$, backAction$, dummyAction$, fibKeyPressAction5$, fibPressAction$, runTestAction$, quadAction$, testWAction$, testZAction$, testQAction$, edit1Action$, edit2Action$, colorAction$, deleteAction$, newTaskAction$, chatClickAction$, gameClickAction$, todoClickAction$, captionClickAction$, groupPressAction$, rollClickAction$, messagePressAction$, loginPressAction$, messages$, numClickAction$, opClickAction$ );
+  const calcStream$ = merge( forwardAction$, backAction$, dummyAction$, primeFib$, fibPressAction$, runTestAction$, quadAction$, testWAction$, testZAction$, testQAction$, edit1Action$, edit2Action$, colorAction$, deleteAction$, newTaskAction$, chatClickAction$, gameClickAction$, todoClickAction$, captionClickAction$, groupPressAction$, rollClickAction$, messagePressAction$, loginPressAction$, messages$, numClickAction$, opClickAction$ );
   
     return {
       DOM: 
@@ -618,6 +624,7 @@ function main(sources) {
         h('span', ' and '  ), 
         h('a', {props: {href: "https://github.com/paldepind/snabbdom", target: "_blank" }}, 'Snabbdom' ),
         h('span', ' instead of RxJS and virtual-dom.  The code for this repository is at ' ),
+        h('a', {props: {href: "https://github.com/dschalk/JS-monads-stable", target: "_blank" }}, 'JS-monads-stable' ),
         h('div#gameDiv2',  {style: {display: 'none'}}, [
         h('br'),
         h('span', ' Here are the basic rules:' ), 
@@ -638,12 +645,11 @@ function main(sources) {
         h('br'),
         h('button#back', 'BACK' ), 
         h('button#forward', 'FORWARD' ), ]) ]),
-        h('div.winner', O.mMgoals2.x+''  ),
         h('div#log1', [
         h('p', 'IN ORDER TO SEE THE GAME, TODO LIST, AND CHAT DEMONSTRATIONS, YOU MUST ENTER SOMETHING BELOW.'  ),
         h('span', 'Name: ' ),
         h('input#login', {props: {placeholder: "focus on; start typing"}} ) ]),
-        h('p', O.mM6.x.toString() ),
+        h('p', O.mM6.x ),
         h('div#log2', {style: {display: 'none'}}, [
         h('span', 'Change group: '  ),
         h('input#group' ) ]),
@@ -775,8 +781,8 @@ function main(sources) {
         code.primesMonad,
         h('p', ' pFib takes an array of Fibonacci numbers and an array of prime number, returning an array of prime Fibonacci number. Here is the definition of pFib: ' ),
         code.pFib,
-        h('p', ' Two abstractions over fibsState.run and primesState.run provide convenience, assure that no number is computed more than once, and assure that propper boilerplate is supplied to the StateMonad instances. Here are the definitions of runFib and runPrime: ' ),
-        code.helperFunctions,
+        h('p', ' The final computation occurs when fibsMonad.bnd(tr) is called. tr() takes fibMonad\'s state as an argument and returns the Fibonacci numbers array, the prime numbers array, and the prime Fibonacci numbers arrays that are displayed in the browser. Here is its definition: ' ),
+        code.tr, 
         h('p', ' With these support functions in place, the user interface is very simple. Here it is: ' ),
         code.primeFibInterface,
         h('p', ' These are the first eleven proven prime Fibonacci numbers: ' ),
@@ -786,7 +792,7 @@ function main(sources) {
         h('p', ' I entered 44 in my desktop Ubuntu Chrome and Firefox browsers and got the first ten prime Fibonacci numbers. I then entered 48 and all eleven prime Fibonacci numbers appeard. I tried creeping up, but I couldn\'t get another number because delays started becoming unacceptable. ' ),
         h('p', ' The number you enter below is the length of the list of Fibonacci numbers you want to generate.  ' ),  
         h('p',  ),  
-        h('input#fib3335',  ),
+        h('input#fib92',  ),
         h('br' ),
         h('span#PF_7.red6', 'Fibonacci Numbers' ),  
         h('br' ),
