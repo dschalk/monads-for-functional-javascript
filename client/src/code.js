@@ -834,16 +834,16 @@ var MonadState = h('pre',  `  var MonadState = function MonadState (g, state, va
     }
   }  `  )
 
-var primesMonad = h('pre',  `  var primesMonad = new MonadState('primesMonad', [3, 2, 'primesMonad', [2]], [2],  primes_state)  
+var primesMonad = h('pre',  `  var primesMonad = new MonadState('primesMonad', [2, '', 3, [2]], [2],  primes_state) 
 
-  function primes_state(x) {
+  var primes_state = function primes_state(x) {
     var v = x.slice();
-    while (v[1] <= v[0]) {
-      if (v[3].every(e => (v[1] % e) != 0 )) {
-        v[3].push(v[1]);
+      while (v[0] <= v[2]) {
+        if (v[3].every(e => ((v[0]/e) != Math.round(v[0]/e)))) {
+          v[3].push(v[0]);
+        }
+        v[0]+=2;
       }
-      v[1]+=2;
-    }
     return v;
   }  `  )
 
@@ -851,11 +851,10 @@ var fibsMonad = h('pre',  `  var fibsMonad = new MonadState('fibsMonad', O.mMsT.
                   
   var fibs_state = function fibs_state(ar) {
     var a = ar.slice();
-    while (a[3].length < a[2]-1) {
+    while (a[3].length < a[2]) {
       a = [a[1], a[0] + a[1], a[2], a[3].concat(a[0])];
       console.log(a);
     }
-    a = [a[0], a[1], a[2], a[3].concat(a[0])];
     return a
   }  `  )
 
@@ -904,17 +903,17 @@ var primeFibInterface = h('pre',  `  const fibKeyPress5$ = sources.DOM
 var tr = h('pre',  `  var tr = function tr (x) {
     var fibs = x[3].slice();
     var primes = primesMonad.a;
-    var bound = Math.round(Math.sqrt(x[0]));
+    var bound = Math.round(Math.sqrt(x[1]));
     if (bound < primesMonad.a[primesMonad.a.length - 1]) {
       let p = primesMonad.a.filter(e => (e <= bound));
       primes = primesMonad.a.filter(e => e <= primes[p.length]);
     }
     else {
-      primes = primesMonad.run([bound, primesMonad.s[1], 'From tr', primesMonad.a]).a;
+      primes = primesMonad.run([primesMonad.s[0], '', bound, primesMonad.a]).a;
     }
     var r = pFib(fibs, primes)
     return [fibs, primes, r]
-}  `  )
+  }  `  )
 
 var seed1 = h('pre',  ` 
              `  )
