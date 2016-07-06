@@ -179,13 +179,13 @@ The final computation (above) is performed by the function tr(). It takes fibsMo
   var tr = function tr (x) {
     var fibs = x[3].slice();
     var primes = primesMonad.a;
-    var bound = Math.round(Math.sqrt(x[0]));
+    var bound = Math.round(Math.sqrt(x[1]));
     if (bound < primesMonad.a[primesMonad.a.length - 1]) {
       let p = primesMonad.a.filter(e => (e <= bound));
       primes = primesMonad.a.filter(e => e <= primes[p.length]);
     }
     else {
-      primes = primesMonad.run([bound, primesMonad.s[1], 'From tr', primesMonad.a]).a;
+      primes = primesMonad.run([primesMonad.s[0], '', bound, primesMonad.a]).a;  // Using previously computed numbers.
     }
     var r = pFib(fibs, primes)
     return [fibs, primes, r]
