@@ -893,20 +893,8 @@ var primeFibInterface = h('pre',  `  const fibKeyPress5$ = sources.DOM
     .select('input#fib92').events('keydown');
 
   const primeFib$ = fibKeyPress5$.map(e => {
-    var result;
-    if (e.target.value == '') {return};
     if( e.keyCode == 13 ) {
-      if (e.target.value > fibsMonad.a.length) {
-        result = fibsMonad.run([fibsMonad.s[1], fibsMonad.s[0] + fibsMonad.s[1], e.target.value, fibsMonad.a])
-        .bnd(tr);
-      }
-      else {
-        let r1 = fibsMonad.a.slice()
-        r1.length = e.target.value;
-        let r2 = r1[r1.length - 1];
-        let r3 = r1[r1.length - 2];
-        result = tr([r2, r2 + r3, e.target.value, r1]);
-      }
+      var result = fibsMonad.run( [0, 1, e.target.value, []] ).bnd(tr); 
       document.getElementById('PF_9').innerHTML = result[0];
       document.getElementById('PF_22').innerHTML = result[1];
       document.getElementById('primeFibs').innerHTML = result[2];

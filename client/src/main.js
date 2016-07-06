@@ -64,7 +64,7 @@ function main(sources) {
     var sender = ar[2];
     mMhelper.ret(ar)
       .bnd(splice, 0, 3, mMhelper)
-      .bnd(reduce, ((a,b) => {return a + ', ' + b}), mMhelper)
+      .bnd(reduce)
       .bnd(v => O.mMmsg.bnd(unshift, h('div', sender + ': ' + v), O.mMmsg));
   }
 
@@ -378,26 +378,17 @@ function main(sources) {
     .select('input#fib92').events('keydown');
 
   const primeFib$ = fibKeyPress5$.map(e => {
-    var result;
-    if (e.target.value == '') {return};
     if( e.keyCode == 13 ) {
-      if (e.target.value > fibsMonad.a.length) {
-        result = fibsMonad.run([fibsMonad.s[1], fibsMonad.s[0] + fibsMonad.s[1], e.target.value, fibsMonad.a])
-        .bnd(tr);
-      }
-      else {
-        let r1 = fibsMonad.a.slice()
-        r1.length = e.target.value;
-        let r2 = r1[r1.length - 1];
-        let r3 = r1[r1.length - 2];
-        console.log('r1, r2, r3 **************************************************>>> r1, r2, r3 ', r1, r2, r3 );
-        result = tr([r2, r2 + r3, e.target.value, r1]);
-      }
+      var result = fibsMonad.run( [0, 1, e.target.value, []] ).bnd(tr); 
       document.getElementById('PF_9').innerHTML = result[0];
       document.getElementById('PF_22').innerHTML = result[1];
       document.getElementById('primeFibs').innerHTML = result[2];
     }
   });
+
+// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> END basic prime END
+
+// <>>><>><><><><>>>><><><  traversal  ><><><><><><>>><><><><><><><><><><><>< START traversal  
 
   window.onload = function (event) {
     console.log('onopen event: ', event);
@@ -405,12 +396,6 @@ function main(sources) {
     mMitterfib5.release(200);
     // mM$prime5.ret([[2], 3, 3]);
   };
-
-// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> END basic prime END
-
-// <>>><>><><><><>>>><><><  traversal  ><><><><><><>>><><><><><><><><><><><>< START traversal  
-
-
 
     const forwardClick$ = sources.DOM
       .select('#forward').events('click');
@@ -776,7 +761,7 @@ function main(sources) {
         h('h2', 'The State Monad: MonadState' ),  
         h('p', ' An instance of MonadState holds the current state and value of a computation. For any instance of MonadState, say m, these can be accessed through m.s and m.a, respectively.  '   ),  
         code.MonadState,
-        h('p', ' MonadState reproduces some of the functionality found in the Haskel Module "Control.Monad.State.Lazy", inspired by the paper "Functional Programming with Overloading and Higher-Order Polymorphism", Mark P Jones (http://web.cecs.pdx.edu/~mpj/) Advanced School of Functional Programming, 1995. The following demonstrations use the MonadState instances fibsMonad and primesMonad to create and store arrays of fibonacci numbers and arrays of prime numbers, respectively. fibsMonad and primesMonad provide a simple way to compute lists of prime fibonacci numbers.  Because of the memoization inherent in instances of MonadState, it was easy to make sure that no number is ever computed twice. Here is the definition of fibsMonad, along with the function it uses. ' ), 
+        h('p', ' MonadState reproduces some of the functionality found in the Haskel Module "Control.Monad.State.Lazy", inspired by the paper "Functional Programming with Overloading and Higher-Order Polymorphism", Mark P Jones (http://web.cecs.pdx.edu/~mpj/) Advanced School of Functional Programming, 1995. The following demonstrations use the MonadState instances fibsMonad and primesMonad to create and store arrays of fibonacci numbers and arrays of prime numbers, respectively. fibsMonad and primesMonad provide a simple way to compute lists of prime fibonacci numbers.  Because the results of computations are stored in the a and s attributes of MonadState instances, it was easy to make sure that no prime number is ever computed twice in the prime Fibonacci demonstration. Only 48 fibonacci numbers need to be generated in order to get the eleventh prime Fibonacci number. Even using an optimized algorithm, 5546 prime number need to be generated and tested for divisibility into 2971215073, which is the eleventh prime Fibonacci number. Many other Fibonacci numbers must be tested. In this context, the time needed to compute 48 Fibonacci numbers is insignificant, so I didn\'t bother to save previously computed Fibonacci number in the prime Fibonacci demonstration. The Fibonacci series is computed from scratch each time a user enter a number in the browser, but no prime number is ever computed twice. Here is the definition of fibsMonad, along with the function it uses. ' ), 
        code.fibsMonad, 
         h('p', ' The other MonadState instance used in this demonstration is primesMonad. The function primes_state is primesMonad\'s process attribute. The value returned by the method run() of any instance of MonadPrimes must be an array, let\'s call it arr, whose fourth element (arr[3]) is the value that will be the monad\'s "a" attribute. The third element (arr[2]) is not used by primesMonad, but might be used for diagnostic purposes. For example, the function calling primesMonad.run() could identify itself in arr[2]. Here is the definition of primesMonad along with its auxiliary function:  ' ),  
         code.primesMonad,
@@ -790,7 +775,7 @@ function main(sources) {
         h('pre', `2,3,5,13,89,
 233,1597,28657,514229,433494437,
 2971215073 ` ),
-        h('p', ' I entered 44 in my desktop Ubuntu Chrome and Firefox browsers and got the first ten prime Fibonacci numbers. I then entered 48 and all eleven prime Fibonacci numbers appeard. I tried creeping up, but I couldn\'t get another number because delays started becoming unacceptable. ' ),
+        h('p', ' I entered 44 in my desktop Ubuntu Chrome and Firefox browsers and got the first ten prime Fibonacci numbers. I then entered 48 and all eleven prime Fibonacci numbers appeared. I tried gradually incrementing upwards, but I couldn\'t get another number because delays became unacceptable. ' ),
         h('p', ' The number you enter below is the length of the list of Fibonacci numbers you want to generate.  ' ),  
         h('p',  ),  
         h('input#fib92',  ),
