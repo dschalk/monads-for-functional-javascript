@@ -196,14 +196,14 @@ In both instances of MonadState, the run() method takes an array of four element
     if( e.keyCode == 13 ) {
       if (e.target.value > fibsMonad.a.length) {
         result = fibsMonad.run([fibsMonad.s[1], fibsMonad.s[0] + fibsMonad.s[1], e.target.value, fibsMonad.a])
-        .bnd(tr);           // The function tr() is shown below. 
+        .bnd(tr);
       }
       else {
-        let r1 = fibsMonad.a.slice().filter(v => v <= e.target.value);
+        let r1 = fibsMonad.a.slice()
+        r1.length = e.target.value;
         let r2 = r1[r1.length - 1];
         let r3 = r1[r1.length - 2];
-        result = fibsMonad.run([r2 + r3, r2 + r3 + r2 , e.target.value, r1])
-        .bnd(tr)
+        result = tr([r2, r2 + r3, e.target.value, r1]);
       }
       document.getElementById('PF_9').innerHTML = result[0];
       document.getElementById('PF_22').innerHTML = result[1];

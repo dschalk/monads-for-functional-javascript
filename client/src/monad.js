@@ -49,6 +49,7 @@ var MonadState = function MonadState (g, state, value, p) {
 }
 
 var tr = function tr (x) {
+  console.log('In tr x is <><><><><><><><><><><><><> In tr. x is ', x );
   var fibs = x[3].slice();
   var primes = primesMonad.a;
   var bound = Math.round(Math.sqrt(x[0]));
@@ -63,42 +64,20 @@ var tr = function tr (x) {
   return [fibs, primes, r]
 }
 
-var tr2 = function tr (x) {
-  console.log('Hello from tr <><> x is ', x );
-  var primes = x.slice();
-  var fibs;
-  var l = Math.round(Math.sqrt(primes[primes.length - 1]));
-  if (l < fibsMonad.s[0]) {
-    console.log('In the tr if block $$$$$$$$$$$$$$$$$');
-    let p = primesMonad.a.filter(e => (e <= l));
-    console.log('Still in the tr if block <><><><><><><><><><><> You bet. ');
-    primes = primesMonad.a.filter(e => e <= primes[p.length - 1]);
-  }
-  else {
-    console.log('In the tr else block @@@@@@@@@@@@@@@@@@ ' );
-    primes = primesMonad.run([l, primesMonad.s[1], 'From tr', primesMonad.a]).a;
-  }
-  var r = pFib(fibs, primes)
-  console.log('At the end of tr *************** At the end of tr  fibs, primes, and r are: ', fibs, primes, r );
-  return [primes, r]
-}
-
 var fibs_state = function fibs_state(ar) {
   console.log('!!!!!!!!!!!!!>>>> In fibs_state. ar is ', ar);
   var a = ar.slice();
-  while (a[3].length < a[2]-1) {
+  while (a[3].length < a[2]) {
     a = [a[1], a[0] + a[1], a[2], a[3].concat(a[0])];
     console.log(a);
   }
-  a = [a[0], a[1], a[2], a[3].concat(a[0])];
-  console.log('Now leaving fibs_state. a is ', a);
   return a
 }
 
 
 var fibsMonad = new MonadState('fibsMonad', [0, 1, 3, [0,1]], [0,1], fibs_state  ) 
 
-fibsMonad.run([0,1,13,[]])
+fibsMonad.run([0,1,15,[]])
 
 function primes_state(x) {
     var v = x.slice();

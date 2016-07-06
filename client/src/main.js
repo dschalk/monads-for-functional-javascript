@@ -382,15 +382,16 @@ function main(sources) {
     if (e.target.value == '') {return};
     if( e.keyCode == 13 ) {
       if (e.target.value > fibsMonad.a.length) {
-        let y = fibsMonad.run([fibsMonad.s[1], fibsMonad.s[0] + fibsMonad.s[1], e.target.value, fibsMonad.a]);
-        result = y.bnd(tr);
+        result = fibsMonad.run([fibsMonad.s[1], fibsMonad.s[0] + fibsMonad.s[1], e.target.value, fibsMonad.a])
+        .bnd(tr);
       }
       else {
-        let r1 = fibsMonad.a.slice().filter(v => v <= e.target.value);
+        let r1 = fibsMonad.a.slice()
+        r1.length = e.target.value;
         let r2 = r1[r1.length - 1];
         let r3 = r1[r1.length - 2];
-        result = fibsMonad.run([r2 + r3, r2 + r3 + r2 , e.target.value, r1])
-        .bnd(tr)
+        console.log('r1, r2, r3 **************************************************>>> r1, r2, r3 ', r1, r2, r3 );
+        result = tr([r2, r2 + r3, e.target.value, r1]);
       }
       document.getElementById('PF_9').innerHTML = result[0];
       document.getElementById('PF_22').innerHTML = result[1];
@@ -779,9 +780,9 @@ function main(sources) {
        code.fibsMonad, 
         h('p', ' The other MonadState instance used in this demonstration is primesMonad. The function primes_state is primesMonad\'s process attribute. The value returned by the method run() of any instance of MonadPrimes must be an array, let\'s call it arr, whose fourth element (arr[3]) is the value that will be the monad\'s "a" attribute. The third element (arr[2]) is not used by primesMonad, but might be used for diagnostic purposes. For example, the function calling primesMonad.run() could identify itself in arr[2]. Here is the definition of primesMonad along with its auxiliary function:  ' ),  
         code.primesMonad,
-        h('p', ' pFib takes an array of Fibonacci numbers and an array of prime number, returning an array of prime Fibonacci number. Here is the definition of pFib: ' ),
+        h('p', ' pFib takes an array of Fibonacci numbers and an array of prime number, returning an array of prime Fibonacci numbers. Here is the definition of pFib: ' ),
         code.pFib,
-        h('p', ' The final computation occurs when fibsMonad.bnd(tr) is called. tr() takes fibMonad\'s state as an argument and returns the Fibonacci numbers array, the prime numbers array, and the prime Fibonacci numbers arrays that are displayed in the browser. Here is its definition: ' ),
+        h('p', ' The final computation occurs when fibsMonad.bnd(tr) is called. tr() takes fibMonad\'s state as an argument and returns the Fibonacci numbers, the prime numbers, and the prime Fibonacci numbers arrays that are displayed in the browser. Here is its definition: ' ),
         code.tr, 
         h('p', ' With these support functions in place, the user interface is very simple. Here it is: ' ),
         code.primeFibInterface,
