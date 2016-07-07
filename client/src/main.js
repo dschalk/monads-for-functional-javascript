@@ -646,12 +646,12 @@ function main(sources) {
         h('p', ' I call instances of the Monad and MonadState constructors "monads". Instances of Monad can probably be shown to be category theory monads in a restricted space where the bnd() method takes only a single argument, and that argument is a function mapping any Javascript value to some instance of Monad. But bnd() can take multiple arguments, and the return value doesn\'t have to be an instance of Monad. As you will see, I impose some restrictions on what I do with Monad instances for the sake of maintainability, predictability, and organization. If I had helpers on a project, I would ask them to do the same. I wouldn\'t modify the code to make it throw whenever someone attempted to deviate from the restrictions. Some would say that such a modification would be helpful, catching potential bugs before things went too far. I think it would be insulting; and who knows, there might be occasions when deviating would be the sensible thing to do. Anyway, here is Monad:  '  ),
         h('h2', ' Monad ' ),
         code.monad,
-        h('p', ' Monad\'s bnd() and ret() methods provide functionality similar to the Haskell ">>=" (pronounced "bind") operator and the Haskell "return" function. They even conform to the optional Haskell monad laws. The following equality expressions demonstrate how the monads work. For any instance of Monad, say "m", and any Javascript value v, the following expressions return true: '),
-        h('pre', `    m.ret(v).x = m.ret(v).bnd(m.ret).x   // m.ret(v) re-sets m.x to v
+        h('p', ' Monad\'s bnd() and ret() methods provide functionality similar to the Haskell ">>=" (pronounced "bind") operator and the Haskell "return" function. They even conform to the optional Haskell monad laws. The following equality expressions demonstrate how the monads work.Note that ret(v) creates a monad with m.id == "Anonymous" and x = v, and for any monad instance m with m.id == "m", and some Javascript value v, m.ret(v) creates or mutates O.m such that O.m.id = "m" and O.m.x == v. The Monad instance m remains unchanged. Let m be an instance of Monad and let v be any Javascript value(number, array, function, monad, ...), then the following expressions return true:  '),
+        h('pre', `    m.ret(v).x == m.ret(v).bnd(m.ret).x   // m.ret(v) re-sets m.x to v so v is the same on both sides.
     m.ret(v).x == m.ret(v).ret(m.x).x
-    mm.ret(v).bnd(add, 3).bnd(cube).x. == ret(v).bnd(v => add(v, 3).bnd(cube)).x  // Associativity
+    m.ret(v).bnd(add, 3).bnd(cube).x == ret(v).bnd(v => add(v, 3).bnd(cube)).x  // Associativity
     ret(v).x == ret(v).bnd(ret).x
-    ret(v).x == ret(ret(v)).x  ` ),
+    ret(v).x == ret(ret(v).x).x  ` ),
         h('p', ' where '  ),
         code.ret_add_cube,
        h('p', ' If the values of Monad instances are updated only through the use of the Monad ret() method, then the current state of the Monad instances exists in the mutable, global object named "O". Keeping changing monad state in one place (on the object "O") makes applications easier to reason about and easier to maintain. I treat Monad instances as though they were immutable, updating them only through the use of their ret() methods.   ' ),

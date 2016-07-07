@@ -34,7 +34,7 @@ var mMname = new Monad('Fred', 'mMname');
 const monad = h('pre', {style: {color: '#AFEEEE' }}, `  var Monad = function Monad(z, g) {
     var _this = this;
 
-    this.a = z;
+    this.x = z;
     if (arguments.length === 1) {
       this.id = 'anonymous';
     } else {
@@ -42,7 +42,7 @@ const monad = h('pre', {style: {color: '#AFEEEE' }}, `  var Monad = function Mon
     };
 
     this.bnd = function (func, ...args) {
-       return func(_this.a, ...args);
+       return func(_this.x, ...args);
     };
 
     this.ret = function (a) {

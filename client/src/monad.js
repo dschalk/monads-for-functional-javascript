@@ -65,7 +65,6 @@ var tr = function tr (x) {
 }
 
 var fibs_state = function fibs_state(ar) {
-  console.log('!!!!!!!!!!!!!>>>> In fibs_state. ar is ', ar);
   var a = ar.slice();
   while (a[3].length < a[2]) {
     a = [a[1], a[0] + a[1], a[2], a[3].concat(a[0])];
@@ -77,7 +76,6 @@ var fibs_state = function fibs_state(ar) {
 var primes_state = function primes_state(x) {
     var v = x.slice();
       while (v[0] <= v[2]) {
-        // if (v[3].every(e => (v[0] % e) != 0 )) {
         if (v[3].every(e => ((v[0]/e) != Math.round(v[0]/e)))) {
           v[3].push(v[0]);
         }
