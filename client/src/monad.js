@@ -49,7 +49,6 @@ var MonadState = function MonadState (g, state, value, p) {
 }
 
 var tr = function tr (x) {
-  console.log('In tr x is <><><><><><><><><><><><><> In tr. x is ', x );
   var fibs = x[3].slice();
   var primes = primesMonad.a;
   var bound = Math.round(Math.sqrt(x[1]));

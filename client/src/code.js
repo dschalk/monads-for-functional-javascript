@@ -572,8 +572,9 @@ var cleanup = h('pre',  `  function cleanup (x) {
                 document.getElementById('quad6').innerHTML = y; 
                 solve();
             })))
-  }
-  var qS1 = function quadSolve1 (a, b, c) {
+  }();
+
+  var qS1 = function qS1 (a, b, c) {
     let n = (b*(-1)) + (Math.sqrt(b*b - 4*a*c));
     if (n != n) {
       return "No solution";
@@ -581,7 +582,7 @@ var cleanup = h('pre',  `  function cleanup (x) {
     return n/(2*a);
   }
 
-  var qS2 = function quadSolve2 (a, b, c) {
+  var qS2 = function qS2 (a, b, c) {
     let n = (b*(-1)) - (Math.sqrt(b*b - 4*a*c));
     if (n != n) {
       return "No solution";
@@ -854,7 +855,7 @@ var primesMonad = h('pre',  `  var primesMonad = new MonadState('primesMonad', [
     return v;
   }  `  )
 
-var fibsMonad = h('pre',  `  var fibsMonad = new MonadState('fibsMonad', O.mMsT.x, [0],  fibs_state) 
+var fibsMonad = h('pre',  `  var fibsMonad = new MonadState('fibsMonad', [0, 1, 3, [0,1]], [0,1], fibs_state  ) 
                   
   var fibs_state = function fibs_state(ar) {
     var a = ar.slice();

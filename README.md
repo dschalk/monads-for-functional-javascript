@@ -77,11 +77,11 @@ Here are some definitions, which can also be seen at [the online presentation](h
 MonadItter instance mMZ3 calls its bnd() method three times. User input releases it three times, each time supplying a number to the quadratic equation `a*x*x + b*x + c = 0 `. When mMZ3 is released the third time, an attempt is made to find solutions using the quadratic formula. Here is the code:
 ```javascript  
   const quad$ = sources.DOM
-    .select('#quad').events('keypress')  // Motorcycle way to get user input.
+    .select('#quad').events('keypress')  // Motorcycle way of getting user input.
   
   const quadAction$ = quad$.map((e) => {
     if( e.keyCode == 13 ) {
-      mMZ3.release(e.target.value)       // Releases mMZ (below).
+      mMZ3.release(e.target.value)       // Releases mMZ3 (below).
       document.getElementById('quad').value = '';
     }
   });
@@ -96,9 +96,9 @@ MonadItter instance mMZ3 calls its bnd() method three times. User input releases
                 document.getElementById('quad6').innerHTML = y; 
                 solve();
             })))
-  }
+  }();
 
-  var qS1 = function quadSolve1 (a, b, c) {
+  var qS1 = function qS1 (a, b, c) {
     let n = (b*(-1)) + (Math.sqrt(b*b - 4*a*c));
     if (n != n) {
       return "No solution";
@@ -106,7 +106,7 @@ MonadItter instance mMZ3 calls its bnd() method three times. User input releases
     return n/(2*a);
   }
 
-  var qS2 = function quadSolve2 (a, b, c) {
+  var qS2 = function qS2 (a, b, c) {
     let n = (b*(-1)) - (Math.sqrt(b*b - 4*a*c));
     if (n != n) {
       return "No solution";
@@ -119,7 +119,7 @@ MonadState instances are used to create a list of prime Fibonacci number. More c
 
 ### fibsMonad
 ```javascript
-  var fibsMonad = new MonadState('fibsMonad', O.mMsT.x, [0],  fibs_state)   
+  var fibsMonad = new MonadState('fibsMonad', [0, 1, 3, [0,1]], [0,1], fibs_state); 
   
   var fibs_state = function fibs_state(ar) {
     var a = ar.slice();
