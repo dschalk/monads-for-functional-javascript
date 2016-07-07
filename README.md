@@ -74,7 +74,7 @@ Here are some definitions, which can also be seen at [the online presentation](h
   }
 ```
 ## MonadItter example
-MonadItter instance mMZ3 calls its bnd() method three times. User input releases it three times, each time supplying a number to the quadratic equation `ax*ax + bx + c = 0 `. When mMZ3 is released the third time, an attempt is made to find solutions using the quadratic formula. Here is the code:
+MonadItter instance mMZ3 calls its bnd() method three times. User input releases it three times, each time supplying a number to the quadratic equation `a*x*x + b*x + c = 0 `. When mMZ3 is released the third time, an attempt is made to find solutions using the quadratic formula. Here is the code:
 ```javascript  
   const quad$ = sources.DOM
     .select('#quad').events('keypress')  // Motorcycle way to get user input.
