@@ -88,6 +88,11 @@ input {
   font-size: 23px;
 }
 
+.red8 {
+  color: #ff0000;
+  font-size: 28px;
+}
+
 .content {
   font-size: 22px;
 } 

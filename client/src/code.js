@@ -540,47 +540,56 @@ var cleanup = h('pre',  `  function cleanup (x) {
   
   mMZ2.bnd(v => cube(v).bnd(w => mMt3.ret(v + ' cubed is ' + w)))  `  )
 
-  var quad = h('pre',  `  var solve = (function solve () {
-    mMZ3
-    .bnd(a => mMquad1.ret(a + 'x**2')
-    .bnd(() => mMquad2.ret('').bnd(mMquad3.ret) // Clear the display.
-    .bnd(() => 
-    mMZ3
-    .bnd(b => mMquad1.ret(a + 'x**x ' + ' + ' + b + 'x')
-    .bnd(() =>  
-    mMZ3
-    .bnd(c => mMquad1
-    .ret('Solutions for ' + a + 'x**x ' + ' + ' + b + 'x' + ' + ' + c + ' = 0:')
-    .bnd(() => mMquad2.bnd(sol1,a,b,c,mMquad2)
-    .bnd(() => mMquad3.bnd(sol2,a,b,c,mMquad3) 
-    .bnd(() => solve()    
-        )))))))))
-  })();
-
+  var quad = h('pre',  `  
   const quad$ = sources.DOM
-    .select('#quad').events('keypress')
+    .select('#quad').events('keypress')  // Motorcycle way to get user input.
+  
   const quadAction$ = quad$.map((e) => {
     if( e.keyCode == 13 ) {
-      mMZ3.release(e.target.value)
+      mMZ3.release(e.target.value)       // Releases mMZ (below).
       document.getElementById('quad').value = '';
     }
   });
 
-  var sol1 = function sol1 (x,a,b,c,mon) {
-    let n = b*(-1) + Math.sqrt(b*b - 4*a*c);
-    if (n != n) {   // Test for NaN
-      return mon.ret("No solution");
-    }
-    return mon.ret(n/2*a);
+  var solve = function solve () {
+    mMZ3.bnd(a => 
+        mMZ3.bnd(b =>  
+            mMZ3.bnd(c => {
+                let x = qS1(a,b,c);
+                let y = qS2(a,b,c);  
+                document.getElementById('quad5').innerHTML = 'The results are: ' + x + ' and';
+                document.getElementById('quad6').innerHTML = y; 
+                solve();
+            })))
   }
-  
-  var sol2 = function sol2 (x,a,b,c,mon) {
-    let n = b*(-1) - Math.sqrt(b*b - 4*a*c)
+
+  var solve = function solve () {
+    mMZ3.bnd(a => 
+        mMZ3.bnd(b =>  
+            mMZ3.bnd(c => {
+                let x = qS1(a,b,c);
+                let y = qS2(a,b,c);  
+                document.getElementById('quad5').innerHTML = 'The results are: ' + x + ' and';
+                document.getElementById('quad6').innerHTML = y; 
+                solve();
+            })))
+  }
+  var qS1 = function quadSolve1 (a, b, c) {
+    let n = (b*(-1)) + (Math.sqrt(b*b - 4*a*c));
     if (n != n) {
-      return mon.ret("No solution");
+      return "No solution";
     }
-    return mon.ret(n/2*a);
-  }  `  )
+    return n/(2*a);
+  }
+
+  var qS2 = function quadSolve2 (a, b, c) {
+    let n = (b*(-1)) - (Math.sqrt(b*b - 4*a*c));
+    if (n != n) {
+      return "No solution";
+    }
+    return n/(2*a);
+  }  
+  `  )
 
   var mdem1 = h('pre',  `  var equals = function equals (x, mon1, mon2, mon3) {
     if (mon1.id === mon2.id && mon1.x === mon2.x) {

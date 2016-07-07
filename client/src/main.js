@@ -497,28 +497,23 @@ function main(sources) {
     }
   });
 
-  var solve = (function solve () {
-    mMZ3
-    .bnd(a => mMquad1.ret(a + 'x**2')
-    .bnd(() => mMquad2.ret('').bnd(mMquad3.ret) // Clear the display.
-    .bnd(() => 
-      mMZ3
-      .bnd(b => mMquad1.ret(a + 'x**2 ' + ' + ' + b + 'x')
-      .bnd(() =>  
-        mMZ3
-        .bnd(c => mMquad1
-        .ret('Solutions for ' + a + 'x**2 ' + ' + ' + b + 'x' + ' + ' + c + ' = 0:')
-        .bnd(() => mMquad2.bnd(sol1,a,b,c,mMquad2)
-        .bnd(() => mMquad3.bnd(sol2,a,b,c,mMquad3) 
-        .bnd(() => solve()    
-        )))))))))
-  })();
+  var solve = function solve () {
+    mMZ3.bnd(a => 
+        mMZ3.bnd(b =>  
+            mMZ3.bnd(c => {
+                let x = qS1(a,b,c);
+                let y = qS2(a,b,c);  
+                document.getElementById('quad5').innerHTML = 'The results are: ' + x + ' and';
+                document.getElementById('quad6').innerHTML = y; 
+                solve();
+            })))
+  }();
 
   const quad$ = sources.DOM
     .select('#quad').events('keypress')
   const quadAction$ = quad$.map((e) => {
     if( e.keyCode == 13 ) {
-      mMZ3.release(e.target.value)
+      mMZ3.release(e.target.value)  // Releases mMZ (below).
       document.getElementById('quad').value = '';
     }
   });
@@ -646,7 +641,7 @@ function main(sources) {
         h('p', ' I call instances of the Monad and MonadState constructors "monads". Instances of Monad can probably be shown to be category theory monads in a restricted space where the bnd() method takes only a single argument, and that argument is a function mapping any Javascript value to some instance of Monad. But bnd() can take multiple arguments, and the return value doesn\'t have to be an instance of Monad. As you will see, I impose some restrictions on what I do with Monad instances for the sake of maintainability, predictability, and organization. If I had helpers on a project, I would ask them to do the same. I wouldn\'t modify the code to make it throw whenever someone attempted to deviate from the restrictions. Some would say that such a modification would be helpful, catching potential bugs before things went too far. I think it would be insulting; and who knows, there might be occasions when deviating would be the sensible thing to do. Anyway, here is Monad:  '  ),
         h('h2', ' Monad ' ),
         code.monad,
-        h('p', ' Monad\'s bnd() and ret() methods provide functionality similar to the Haskell ">>=" (pronounced "bind") operator and the Haskell "return" function. They even conform to the optional Haskell monad laws. The following equality expressions demonstrate how the monads work.Note that ret(v) creates a monad with m.id == "Anonymous" and x = v, and for any monad instance m with m.id == "m", and some Javascript value v, m.ret(v) creates or mutates O.m such that O.m.id = "m" and O.m.x == v. The Monad instance m remains unchanged. Let m be an instance of Monad and let v be any Javascript value(number, array, function, monad, ...), then the following expressions return true:  '),
+        h('p', ' Monad\'s bnd() and ret() methods provide functionality similar to the Haskell ">>=" (pronounced "bind") operator and the Haskell "return" function. They even conform to the optional Haskell monad laws. The following equality expressions demonstrate how the monads work.Note that ret(v) creates a monad with m.id == "Anonymous" and x = v, and for any monad instance m with m.id == "m", and some Javascript value v, m.ret(v) creates or mutates O.m such that O.m.id = "m" and O.m.x == v. The Monad instance m remains unchanged. Let m be an instance of Monad and let v be any Javascript value (number, array, function, monad, ...), then the following expressions return true:  '),
         h('pre', `    m.ret(v).x == m.ret(v).bnd(m.ret).x   // m.ret(v) re-sets m.x to v so v is the same on both sides.
     m.ret(v).x == m.ret(v).ret(m.x).x
     m.ret(v).bnd(add, 3).bnd(cube).x == ret(v).bnd(v => add(v, 3).bnd(cube)).x  // Associativity
@@ -748,9 +743,9 @@ function main(sources) {
         h('span', 'Please enter an integer here: ' ), 
         h('input#testW' ), 
         h('p', ' Here is another example. It demonstrates lambda expressions passing values to a remote location for use in a computation. If you enter three numbers consecutively below, I\'ll call them a, b, and c, then the quadratic equation will be used to find solutions for a*x**2 + b*x + c = 0. The a, b, and c you select might not have a solution. If a and b are positive numbers, you are likely to see solutions if c is a negative number. For example, 12, 12, and -24 yields the solutions 1 and -2. ' ),
-        h('p.code2#quad4', O.mMquad1.x ),
-        h('span.red2', O.mMquad2.x ),
-        h('span.red2', O.mMquad3.x ),
+        h('p.#quad4.code2',  ),
+        h('span#quad5.red2', ),
+        h('span#quad6.red8',  ),
         h('br' ),
         h('span.tao' , 'Run mMZ3.release(v) three times for three numbers. The numbers are a, b, and c in ax*x + b*x + c = 0: ' ),
         h('input#quad' ),  

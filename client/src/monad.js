@@ -505,29 +505,21 @@ function Prime5(ar, n, m) {
   return result;
 };
 
-
-
-
-
-var sol1 = function sol1 (x,a,b,c,mon) {
-  let n = (b*(-1)) + (Math.sqrt(b*b - 4*a*c));
-  if (n != n) {
-    return mon.ret("no solution");
+  var qS1 = function qS1 (a, b, c) {
+    let n = (b*(-1)) + (Math.sqrt(b*b - 4*a*c));
+    if (n != n) {
+      return "No solution";
+    }
+    return n/(2*a);
   }
-  console.log('in sol1. n is: ', n);
-  let solution = n/(2*a);
-  return mon.ret(solution);
-}
 
-var sol2 = function sol2 (x,a,b,c,mon) {
-  let n = (b*(-1)) - (Math.sqrt(b*b - 4*a*c))
-  if (n != n) {
-    return mon.ret("no solution");
+  var qS2 = function qS2 (a, b, c) {
+    let n = (b*(-1)) - (Math.sqrt(b*b - 4*a*c));
+    if (n != n) {
+      return "No solution";
+    }
+    return n/(2*a);
   }
-  console.log('in sol2. n is: ', n);
-  let solution = n/(2*a);
-  return mon.ret(solution);
-}
 
 var trim = function trim(str) {
   return ret(str.trim());
