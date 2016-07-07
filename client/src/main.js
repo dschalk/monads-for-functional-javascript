@@ -747,7 +747,7 @@ function main(sources) {
         h('span#quad5.red2', ),
         h('span#quad6.red8',  ),
         h('br' ),
-        h('span.tao' , 'Run mMZ3.release(v) three times for three numbers. The numbers are a, b, and c in ax*x + b*x + c = 0: ' ),
+        h('p' , 'Run mMZ3.release(v) three times for three numbers. The numbers are a, b, and c in ax*x + b*x + c = 0: ' ),
         h('input#quad' ),  
         h('p', 'Here is the code:' ),
         code.quad,

@@ -540,8 +540,7 @@ var cleanup = h('pre',  `  function cleanup (x) {
   
   mMZ2.bnd(v => cube(v).bnd(w => mMt3.ret(v + ' cubed is ' + w)))  `  )
 
-  var quad = h('pre',  `  
-  const quad$ = sources.DOM
+  var quad = h('pre',  `  const quad$ = sources.DOM
     .select('#quad').events('keypress')  // Motorcycle way to get user input.
   
   const quadAction$ = quad$.map((e) => {
@@ -588,8 +587,7 @@ var cleanup = h('pre',  `  function cleanup (x) {
       return "No solution";
     }
     return n/(2*a);
-  }  
-  `  )
+  }  `  )
 
   var mdem1 = h('pre',  `  var equals = function equals (x, mon1, mon2, mon3) {
     if (mon1.id === mon2.id && mon1.x === mon2.x) {
