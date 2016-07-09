@@ -140,32 +140,21 @@ And here are the definitions of primesMonad and its helper functions:
         if (v[3].every(e => ((v[0]/e) != Math.round(v[0]/e)))) {
           v[3].push(v[0]);
         }
-        if (v[3][v[3].length - 1] > v[2]) { break }; // Not an infinite loop afterall.
+        if (v[3][v[3].length - 1] > v[2]) { break };     // Not an infinite loop afterall.
         v[0]+=2;
       }
     return v;
   }
-
-  function primes_state(x) {
-    var v = x.slice();
-    while (v[1] <= v[0]) {
-      if (v[3].every(e => ((v[0]/e) != Math.round(v[0]/e)))) {
-        v[3].push(v[1]);
-      }
-      v[1]+=2;
-    }
-    return v;
-  }
 ```
 ### MonadState Transformers
-Transformers take instances of MonadState and return different instances of MonadState, possibly in a modified state. The method call "fibsMonad.bnd(transformer, primesMonad)" returns primesMonad. Here is the definition of transformer:
+Transformers take instances of MonadState and return different instances of MonadState, possibly in a modified state. The method call "fibsMonad.bnd(pfTransformer, primesMonad)" returns primesMonad. Here is the definition of pfTransformer:
 ```javascript
-  var transformer = function transformer (s, m) {
+  var pfTransformer = function pfTransformer (s, m) {
     let bound = Math.round(Math.sqrt(s[1]));
     if (bound <= m.a[m.a.length - 1]) {
       return m;
     }
-    return m.run([m.s[0], "From transformer", bound, m.a])
+    return m.run([m.s[0], "From pfTransformer", bound, m.a])
   }
 ``` 
 The final computation occurs when "tr3(fibsState[3],primesState[3]" is called. tr3() takes an array of fibonacci numbers and an array of prime numbers and returns an array containing an array of Fibonacci numbrs, an array of prime numbers, and an array of prime Fibonacci numbers. Here is the definition of tr3:
@@ -199,10 +188,10 @@ The number a user enters, e.target.value, is the length of fibsMonad.a in a fres
         primesMonad.run([primesMonad.s[0], "from the fibKeyPress5$ handler", bound, primesMonad.a])
       }
       var res = fibsMonad
-      .bnd(fibsState => fibsMonad
-      .bnd(transformer, primesMonad)
-      .bnd(primesState => tr3(fibsState[3],primesState[3])))
-      document.getElementById('PF_9').innerHTML = res[0];
+      .bnd(fibsState => fibsMonad                    // Gets the current state of fibsMonad
+      .bnd(fpTransformer, primesMonad)               // Returnes the (possibly modified) state of primesMonad
+      .bnd(primesState => tr3(fibsState[3],primesState[3])))  // Runs tr3 on fibsMonad.s and the new primesMonad.s
+      document.getElementById('PF_9').innerHTML = res[0];     // res is the return value of tr3 (above)
       document.getElementById('PF_22').innerHTML = res[1];
       document.getElementById('primeFibs').innerHTML = res[2];
     }

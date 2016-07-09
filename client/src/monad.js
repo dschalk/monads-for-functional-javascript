@@ -48,7 +48,7 @@ var MonadState = function MonadState (g, state, value, p) {
   }
 }
 
-var transformer = function transformer (s, m) {
+var fpTransformer = function transformer (s, m) {
   let bound = Math.round(Math.sqrt(s[1]));
   if (bound <= m.a[m.a.length - 1]) {
     return m;
