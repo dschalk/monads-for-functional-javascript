@@ -48,40 +48,48 @@ var MonadState = function MonadState (g, state, value, p) {
   }
 }
 
-var tr = function tr (x) {
-  var fibs = x[3].slice();
-  var primes = primesMonad.a;
-  var bound = Math.round(Math.sqrt(x[1]));
-  if (bound < primesMonad.a[primesMonad.a.length - 1]) {
-    let p = primesMonad.a.filter(e => (e <= bound));
-    primes = primesMonad.a.filter(e => e <= primes[p.length]);
+var transformer = function transformer (s, m) {
+  let bound = Math.round(Math.sqrt(s[1]));
+  if (bound <= m.a[m.a.length - 1]) {
+    return m;
   }
-  else {
-    primes = primesMonad.run([primesMonad.s[0], '', bound, primesMonad.a]).a;
+  return m.run([m.s[0], "From transformer", bound, m.a])
+}
+
+var tr3 = function tr (fibsArray, primesArray) {
+  var ar = [];
+  var fibs = fibsArray.slice();
+  var primes = primesArray.slice();
+  var bound = Math.round(Math.sqrt(fibs[fibs.length - 1]));
+  if (bound < primesArray[primesArray.length - 1]) {
+    primes = primes.filter(v => v <= bound);
   }
-  var r = pFib(fibs, primes)
-  return [fibs, primes, r]
+  fibs.map (f => {
+    if ( f < 2 ) return;
+    if ( primes.every(p => (f % p != 0 || f == p))) ar.push(f);
+  })
+  return [fibs, primes, ar]
 }
 
 var fibs_state = function fibs_state(ar) {
   var a = ar.slice();
   while (a[3].length < a[2]) {
     a = [a[1], a[0] + a[1], a[2], a[3].concat(a[0])];
-    console.log(a);
   }
   return a
 }
 
 var primes_state = function primes_state(x) {
-    var v = x.slice();
-      while (v[0] <= v[2]) {
-        if (v[3].every(e => ((v[0]/e) != Math.round(v[0]/e)))) {
-          v[3].push(v[0]);
-        }
-        v[0]+=2;
+  var v = x.slice();
+    while (2 == 2) {
+      if (v[3].every(e => ((v[0]/e) != Math.round(v[0]/e)))) {
+        v[3].push(v[0]);
       }
-    return v;
-  }
+      if (v[3][v[3].length - 1] > v[2]) { break };
+      v[0]+=2;
+    }
+  return v;
+}
 
 var fibsMonad = new MonadState('fibsMonad', [0, 1, 3, [0,1]], [0,1], fibs_state  ) 
 
@@ -108,7 +116,6 @@ var runFib = function runFib (x) {
 }
 
 var primesMonad = new MonadState('primesMonad', [2, '', 3, [2]], [2],  primes_state) 
-
 
 function pFib (fibs, primes) {
   console.log('Hello from pFib fibs, primes: ', fibs, primes );
@@ -194,6 +201,7 @@ var MI = function MI(x) {
 var count = 0;
 var mM1 = M([],'mM1');
 mM1.ret(mM1.x);
+var mMbound = M(0, 'mMbound');
 var mM2 = M(0,'mM2');
 var mM3 = M([],'mM3');
 var mM4 = M([],'mM4');

@@ -114,7 +114,7 @@ MonadItter instance mMZ3 calls its bnd() method three times. User input releases
     return n/(2*a);
   }  
 ```
-### MonadState Example
+## MonadState Transformer Example
 MonadState instances are used to create a list of prime Fibonacci number. More commentary is available at [Demonstration](http://schalk.net:3055). Here are the definitions of fibsMonad and its helper functions:
 
 ### fibsMonad
@@ -134,6 +134,18 @@ And here are the definitions of primesMonad and its helper functions:
 ```javascript
   var primesMonad = new MonadState('primesMonad', [3, 2, 'primesMonad', [2]], [2],  primes_state)  
 
+  var primes_state = function primes_state(x) {
+    var v = x.slice();
+      while (2 == 2) {
+        if (v[3].every(e => ((v[0]/e) != Math.round(v[0]/e)))) {
+          v[3].push(v[0]);
+        }
+        if (v[3][v[3].length - 1] > v[2]) { break }; // Not an infinite loop afterall.
+        v[0]+=2;
+      }
+    return v;
+  }
+
   function primes_state(x) {
     var v = x.slice();
     while (v[1] <= v[0]) {
@@ -145,47 +157,57 @@ And here are the definitions of primesMonad and its helper functions:
     return v;
   }
 ```
-With these functions in place, processing user input is very simple. Here is how it is done in the prime Fibonacci numbers demonstration:
+### MonadState Transformers
+Transformers take instances of MonadState and return different instances of MonadState, possibly in a modified state. The method call "fibsMonad.bnd(transformer, primesMonad)" returns primesMonad. Here is the definition of transformer:
 ```javascript
+  var transformer = function transformer (s, m) {
+    let bound = Math.round(Math.sqrt(s[1]));
+    if (bound <= m.a[m.a.length - 1]) {
+      return m;
+    }
+    return m.run([m.s[0], "From transformer", bound, m.a])
+  }
+``` 
+The final computation occurs when "tr3(fibsState[3],primesState[3]" is called. tr3() takes an array of fibonacci numbers and an array of prime numbers and returns an array containing an array of Fibonacci numbrs, an array of prime numbers, and an array of prime Fibonacci numbers. Here is the definition of tr3:
+```javascript
+  var tr3 = function tr (fibsArray, primesArray) {
+    var ar = [];
+    var fibs = fibsArray.slice();
+    var primes = primesArray.slice();
+    var bound = Math.round(Math.sqrt(fibs[fibs.length - 1]));
+    if (bound < primesArray[primesArray.length - 1]) {
+      primes = primes.filter(v => v <= bound);
+    }
+    fibs.map (f => {
+      if ( f < 2 ) return;
+      if ( primes.every(p => (f % p != 0 || f == p))) ar.push(f);
+    })
+    return [fibs, primes, ar]
+  }
+ ```
+The number a user enters, e.target.value, is the length of fibsMonad.a in a freshly computed fibsMonad. primesMonad is re-computed if the square root of the largest number in fibsMonad.a is larger than the largest number in primesMonad.a. Otherwise, it is not modified. Finally, a procedure involving three linked calls to bnd() returns an array of the lists that are displayed in the browser. Here is the code:
+```javascript  
   const fibKeyPress5$ = sources.DOM
-    .select('input#fib3335').events('keydown');
+    .select('input#fib92').events('keydown');
 
   const primeFib$ = fibKeyPress5$.map(e => {
     if( e.keyCode == 13 ) {
-      var result = fibsMonad.run( [0, 1, e.target.value, []] ).bnd(tr);  // tr() processes fibsMonad state. 
-      document.getElementById('PF_9').innerHTML = result[0];
-      document.getElementById('PF_22').innerHTML = result[1];
-      document.getElementById('primeFibs').innerHTML = result[2];
+      var bound;
+      fibsMonad.run([0, 1, e.target.value, []])
+      .bnd(s => bound = Math.round(Math.sqrt(s[0])));
+      if (bound > primesMonad.a[primesMonad.a.length - 1] ) {
+        primesMonad.run([primesMonad.s[0], "from the fibKeyPress5$ handler", bound, primesMonad.a])
+      }
+      var res = fibsMonad
+      .bnd(fibsState => fibsMonad
+      .bnd(transformer, primesMonad)
+      .bnd(primesState => tr3(fibsState[3],primesState[3])))
+      document.getElementById('PF_9').innerHTML = res[0];
+      document.getElementById('PF_22').innerHTML = res[1];
+      document.getElementById('primeFibs').innerHTML = res[2];
     }
-  });
-```
-The final computation (above) is performed by the function tr(). It takes fibsMonad's state as an argument and returns the Fibonacci numbers array, the prime numbers array, and the prime Fibonacci numbers array that are displayed in the browser. Here is it definition:
-```javascript
-  var tr = function tr (x) {
-    var fibs = x[3].slice();
-    var primes = primesMonad.a;
-    var bound = Math.round(Math.sqrt(x[1]));
-    if (bound < primesMonad.a[primesMonad.a.length - 1]) {
-      let p = primesMonad.a.filter(e => (e <= bound));
-      primes = primesMonad.a.filter(e => e <= primes[p.length]);
-    }
-    else {
-      primes = primesMonad.run([primesMonad.s[0], '', bound, primesMonad.a]).a;  // Using previously computed numbers.
-    }
-    var r = pFib(fibs, primes)
-    return [fibs, primes, r]
-  }
-```
-The function that takes an array of Fibonacci numbers and an array of prime numbers, and returns an array of prime Fibonacci numbers, is named "pFib and is defined as follows:
-```javascript
-  function pFib (fibs, primes) {
-    var ar = [];
-    fibs.map (f => {
-      if (f < 2) return;
-      if ( primes.every(p => (f % p != 0 || f == p))) { ar.push(f) };
-    });
-    return ar;
-  };
+  });  
+
 ```
 ##Immutability And The Global "O" Object
 ###The Haskell Back-End
