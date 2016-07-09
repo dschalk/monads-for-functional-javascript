@@ -1,3 +1,4 @@
+-- This is a Game of Score module that is not currently being used in JS-monads-stable
 {-# LANGUAGE OverloadedStrings #-}
 module Impossibles where
 import Data.List
