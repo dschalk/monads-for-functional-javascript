@@ -9,11 +9,9 @@ var Monad = function Monad(z, g) {
   var _this = this;
 
   this.x = z;
-  if (arguments.length === 1) {
-    this.id = 'anonymous';
-  } else {
-    this.id = g;
-  }
+
+  if (arguments.length === 1) this.id = 'anonymous';
+  else this.id = g;
 
   this.bnd = function (func) {
     for (var _len = arguments.length, args = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
@@ -481,37 +479,6 @@ var mMitterFib9 = MI();
 var mMitterPrimeFibs = MI();
 var mMitterPF = MI();
 var mMitterPF2 = MI();
-function Fib6(ar) {
-  while (ar[0] < ar[3]+1) {
-    ar[2] = ar[2].concat(ar[0]);
-    ar = [ar[1], ar[0] + ar[1], ar[2], ar[3]];
-  }
-  return ar[2].slice(0, ar[2].length - 5);
-}
-
-function Prime5(ar, n, m) {
-  var result;
-  mMx.ret([ar]);
-  mMy.ret(n);
-  result = f(m);
-  function f(x) {
-    if ((ar[ar.length - 1]) < x) {
-      for (let i in ar) {
-        if ((n % ar[i]) == 0) {
-          n+=1;
-          f(x)
-        }
-        if (i == (ar.length - 1)) {
-          ar = ar.concat(n);
-          f(x)
-        }
-      }
-    }
-    return ar
-  }
-  mMprimes.ret(result);
-  return result;
-};
 
   var qS1 = function qS1 (a, b, c) {
     let n = (b*(-1)) + (Math.sqrt(b*b - 4*a*c));

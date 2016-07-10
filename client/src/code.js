@@ -9,12 +9,8 @@ var stream = sub.stream;
 var Monad = function Monad(z, g) {
   var _this = this;
 
-  this.x = z;
-  if (arguments.length === 1) {
-    this.id = 'anonymous';
-  } else {
-    this.id = g;
-  }
+  if (arguments.length === 1) this.id = 'anonymous';
+  else this.id = g;
 
   this.bnd = function (func) {
     for (var _len = arguments.length, args = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {

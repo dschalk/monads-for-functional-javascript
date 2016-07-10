@@ -12,12 +12,17 @@ Here are some definitions, which can also be seen at [the online presentation](h
   var Monad = function Monad(z, g) {
     var _this = this;
 
-    this.x = z;
-    if (arguments.length === 1) {
-      this.id = 'anonymous';
-    } else {
-      this.id = g;
-    };
+  if (arguments.length === 1) this.id = 'anonymous';
+  else this.id = g;
+
+  this.x = z;
+  if (arguments.length === 1) {
+    this.id = 'anonymous';
+  } else {
+    this.id = g;
+  }
+
+
 
     this.bnd = function (func, ...args) {
        return func(_this.x, ...args);
