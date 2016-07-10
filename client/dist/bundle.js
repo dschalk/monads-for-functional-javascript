@@ -3380,15 +3380,12 @@
 	var observer = sub.observer;
 	var stream = sub.stream;
 	*/
-	var Monad = function Monad(z, g) {
+	var Monad = function Monad(value, ID) {
 	  var _this = this;
 
-	  this.x = z;
-	  if (arguments.length === 1) {
-	    this.id = 'anonymous';
-	  } else {
-	    this.id = g;
-	  }
+	  this.x = value;
+
+	  if (arguments.length === 1) this.id = 'anonymous';else this.id = ID;
 
 	  this.bnd = function (func) {
 	    for (var _len = arguments.length, args = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {

@@ -147,7 +147,7 @@ And here are the definitions of primesMonad and its helper functions:
   var primes_state = function primes_state(x) {
     var v = x.slice();
       while (2 == 2) {
-        if (v[3].every(e => ((v[0]/e) != Math.round(v[0]/e)))) {
+        if (v[3].every(e => ((v[0]/e) != Math.floor(v[0]/e)))) {
           v[3].push(v[0]);
         }
         if (v[3][v[3].length - 1] > v[2]) { break };     // Not an infinite loop afterall.
