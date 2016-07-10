@@ -553,7 +553,6 @@ var cleanup = h('pre',  `  function cleanup (x) {
   var solve = function solve () {
     mMZ3.bnd(a => 
     mMtemp.ret(a)           
-    .bnd(innerHTML, '', 'quad5', mMtemp)         
     .bnd(innerHTML, '', 'quad6', mMtemp)         
     .bnd(innerHTML, a + " * x * x ", 'quad5', mMtemp)
     .bnd(a =>
@@ -682,100 +681,6 @@ var ret_add_cube = h('pre',  `  var ret = function ret(v, id) {
 
 var seed = h('pre',  `  mM$prime.ret([[2],3])  `  )
 
-var spreadsheet = h('pre',  `  const spread1Press$ = sources.DOM
-    .select('#spread1').events('keypress');
-
-  const spread1PressAction$ = spread1Press$.map(e => {
-    console.log('Hello from spread1');
-    let v = e.target.value;
-    if( e.keyCode == 13 ) {
-      mMcount.ret(e.target.value)
-      .bnd(() => calculate());
-    }
-  });
-
-  const spread2Press$ = sources.DOM
-    .select('#spread2').events('keypress');
-
-  const spread2PressAction$ = spread2Press$.map(e => {
-    console.log('Hello from spread2');
-    let v = e.target.value;
-    if( e.keyCode == 13 ) {
-      mMcount2.ret(e.target.value)
-      .bnd(() => calculate());
-    }
-  });
-
-  vGar calculate = function calculate() {
-      let a = O.mMcount.x;
-      let b = O.mMcount2.x
-      let c = [ a + ' + ' + b + ' = ' + (a*1 + b*1),  
-      a + ' - ' + b + ' = ' + (a - b),  
-      a + ' * ' + b + ' = ' + (a * b),  
-      a + ' / ' + b + ' = ' + (a / b) ];
-      mMspreadsheet.ret(c);
-  };  `  )
-
-var spreadsheet2 = h('pre',  `  
-                     
-                     
-                     
-                     
-                     const spread1Press$ = sources.DOM
-    .select('#spread1').events('keypress');
-
-  const spread1PressAction$ = spread1Press$.map(e => {
-    if( e.keyCode == 13 ) {
-      mMcount.ret(e.target.value)
-      calcFunc();
-    }
-  });
-
-  const spread2Press$ = sources.DOM
-    .select('#spread2').events('keypress');
-
-  const spread2PressAction$ = spread2Press$.map(e => {
-    if( e.keyCode == 13 ) {
-      mMcount2.ret(e.target.value)
-      calcFunc();
-    }
-  });
-
- var calcFunc = function calcFunc() {
-   let A = O.mMcount.x;
-   let B = O.mMcount2.x;
-   mMspreadsheet.ret(
-   [A + ' + ' + B + ' = ' + (A*1 + B*1),  
-    A + ' - ' + B + ' = ' + (A - B),  
-    A + ' * ' + B + ' = ' + (A * B),  
-    A + ' / ' + B + ' = ' + (A / B)])};  
-
- autorun(() => {O.mMspreadsheet.x});  `  )
-
-var reactiveFib = h('pre',  `  const newFibpress$ = sources.DOM
-    .select('input#fibF').events('keypress');
-
-  const newFibAction$ = newFibpress$.map(e => {
-    if( e.keyCode == 13 ) {
-      var a = observable(1);
-      var ar = ['0, 1'];
-      var k = 0;
-      a.observe(function(b, c) {
-          k+=1;
-          ar.push(', '+c);
-          if (k < (e.target.value - 2)) {
-              a.set(b + c);
-          }
-          mMfib2.ret(ar)
-          .bnd(v => {
-            console.log(v);
-          })
-      })
-      a.set(1);
-      a.set(2);
-    }
-  });  `  )
-
 var traverse = h('pre',  ` 
   const forwardClick$ = sources.DOM
     .select('#forward').events('click');
@@ -887,7 +792,7 @@ var primeFibInterface = h('pre',  `  const fibKeyPress5$ = sources.DOM
       var res = fibsMonad
       .bnd(fibsState => fibsMonad                    // Gets the current state of fibsMonad
       .bnd(fpTransformer, primesMonad)               // Returnes the (possibly modified) state of primesMonad
-      .bnd(primesState => tr3(fibsState[3],primesState[3])))  // Runs tr3 on fibsMonad.s and the new primesMonad.s
+      .bnd(primesState => tr3(fibsState[3],primesState[3])))  // Runs tr3 on fibsMonad.s and the new primesMonad
       document.getElementById('PF_9').innerHTML = res[0];     // res is the return value of tr3 (above)
       document.getElementById('PF_22').innerHTML = res[1];
       document.getElementById('primeFibs').innerHTML = res[2];
@@ -902,8 +807,10 @@ var fpTransformer = h('pre',  `  var fpTransformer = function fpTransformer (s, 
     return m.run([m.s[0], "From fpTransformer", bound, m.a])
   }  `  )
 
-var seed1 = h('pre',  ` 
-             `  )
+var innerHTML = h('pre',  `  var innerHTML = function innerHTML (x, v, u, m) { 
+    document.getElementById(u).innerHTML = v;
+    return m.ret(x);
+  }  `  )
 
 var seed2 = h('pre',  ` 
              `  )
@@ -912,6 +819,6 @@ var seed2 = h('pre',  `
 
 
 
-  export default {monad, monadIt, fib, driver, messages, next, Monad$, updateCalc, arrayFuncs, travel, nums, cleanup, ret, C42, taskStream, newTask, process, mM$task, addString, colorClick, edit, testZ, quad, mdem1, runTest, todoStream, inc, ret_add_cube, seed, spreadsheet, spreadsheet2, add, reactiveFib, traverse, MonadState, primesMonad, fibsMonad, primeFibInterface, tr3, fpTransformer  }
+  export default {monad, monadIt, fib, driver, messages, next, Monad$, updateCalc, arrayFuncs, travel, nums, cleanup, ret, C42, taskStream, newTask, process, mM$task, addString, colorClick, edit, testZ, quad, mdem1, runTest, todoStream, inc, ret_add_cube, seed,  add, traverse, MonadState, primesMonad, fibsMonad, primeFibInterface, tr3, fpTransformer, innerHTML  }
 
 

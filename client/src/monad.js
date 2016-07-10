@@ -53,7 +53,7 @@ var fpTransformer = function transformer (s, m) {
   if (bound <= m.a[m.a.length - 1]) {
     return m;
   }
-  return m.run([m.s[0], "From transformer", bound, m.a])
+  return m.run([m.s[0], "From fpTransformer", bound, m.a])
 }
 
 var tr3 = function tr (fibsArray, primesArray) {

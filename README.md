@@ -89,7 +89,6 @@ MonadItter instance mMZ3 calls its bnd() method three times. User input releases
   var solve = function solve () {
     mMZ3.bnd(a => 
     mMtemp.ret(a)           
-    .bnd(innerHTML, '', 'quad5', mMtemp)         
     .bnd(innerHTML, '', 'quad6', mMtemp)         
     .bnd(innerHTML, a + " * x * x ", 'quad5', mMtemp)
     .bnd(a =>
@@ -161,13 +160,13 @@ And here are the definitions of primesMonad and its helper functions:
 ### MonadState Transformers
 Transformers take instances of MonadState and return different instances of MonadState, possibly in a modified state. The method call "fibsMonad.bnd(pfTransformer, primesMonad)" returns primesMonad. Here is the definition of pfTransformer:
 ```javascript
-  var pfTransformer = function pfTransformer (s, m) {
-    let bound = Math.round(Math.sqrt(s[1]));
-    if (bound <= m.a[m.a.length - 1]) {
-      return m;
-    }
-    return m.run([m.s[0], "From pfTransformer", bound, m.a])
+var fpTransformer = function transformer (s, m) {
+  let bound = Math.round(Math.sqrt(s[1]));
+  if (bound <= m.a[m.a.length - 1]) {
+    return m;
   }
+  return m.run([m.s[0], "From fpTransformer", bound, m.a])
+}
 ``` 
 The final computation occurs when "tr3(fibsState[3],primesState[3]" is called. tr3() takes an array of fibonacci numbers and an array of prime numbers and returns an array containing an array of Fibonacci numbrs, an array of prime numbers, and an array of prime Fibonacci numbers. Here is the definition of tr3:
 ```javascript

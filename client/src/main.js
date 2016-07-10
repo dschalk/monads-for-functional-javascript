@@ -509,7 +509,6 @@ function main(sources) {
   var solve = function solve () {
     mMZ3.bnd(a => 
     mMtemp.ret(a)           
-    .bnd(innerHTML, '', 'quad5', mMtemp)         
     .bnd(innerHTML, '', 'quad6', mMtemp)         
     .bnd(innerHTML, a + " * x * x ", 'quad5', mMtemp)
     .bnd(a =>
@@ -779,7 +778,7 @@ function main(sources) {
         code.quad,
         h('span#tdList' ),
 // ***************************************************************************************************** START MonadState
-        h('h2', 'MonadState and MonadState fpTransformers' ),  
+        h('h2', 'MonadState and MonadState Transformers' ),  
         h('p', ' An instance of MonadState holds the current state and value of a computation. For any instance of MonadState, say m, these can be accessed through m.s and m.a, respectively.  '   ),  
         code.MonadState,
         h('p', ' MonadState reproduces some of the functionality found in the Haskel Module "Control.Monad.State.Lazy", inspired by the paper "Functional Programming with Overloading and Higher-Order Polymorphism", Mark P Jones (http://web.cecs.pdx.edu/~mpj/) Advanced School of Functional Programming, 1995. The following demonstrations use the MonadState instances fibsMonad and primesMonad to create and store arrays of fibonacci numbers and arrays of prime numbers, respectively. fibsMonad and primesMonad provide a simple way to compute lists of prime fibonacci numbers.  Because the results of computations are stored in the a and s attributes of MonadState instances, it was easy to make sure that no prime number is ever computed twice in the prime Fibonacci demonstration. ' ),
@@ -791,9 +790,13 @@ function main(sources) {
         h('p', ' Transformers take instances of MonadState and return different instances of MonadState, possibly in a modified state. The method call "fibsMonad.bnd(fpTransformer, primesMonad)" returns primesMonad. Here is the definition of fpTransformer: ' ),
         code.fpTransformer,  
         h('p', ' If the largest number in primesMonad.a is less than the square root of the largest number in fibsMonad.a, primesMonad is updated so that the largest number in primesMonad.a is greater than the square root of the largest number in fibsMonad.a. Otherwise, primesMonad is returned unchanged.  ' ),
+        h('p', ' The browser display is updated after the first two entries by means of the function innerHTML, which is shown above and is defined as follows: ' ),
+        code.innerHTML,
         h('p', ' The final computation occurs when "tr3(fibsState[3],primesState[3]" is called. tr3() takes an array of fibonacci numbers and an array of prime numbers and returns an array containing an array of Fibonacci numbrs, an array of prime numbers, and an array of prime Fibonacci numbers. Here is the definition of tr3: ' ),
         code.tr3, 
-        h('p', ' With these support functions in place, processing user input is simple. Here it is: ' ),
+        h('p', ' The browser display is updated after the first two entries by means of the function innerHTML, which is shown above and is defined as follows: ' ),
+        code.innerHTML,
+        h('p', ' With these support functions in place, user input is processed by (possibly) updating primesMonad and then calling fibsMonad.bnd() three times; first to extract fibsMonad.s, second to run fpTransformer to modify and then obtain primesMonad, and third to obtain primesMonad.s and run tr3(fibsState[3],primesState[3]). Here is the code: ' ),
         code.primeFibInterface,
         h('p', 'Only 48 fibonacci numbers need to be generated in order to get the eleventh prime Fibonacci number. But 5546 prime numbers need to be generated to test for divisibility into 2971215073. Finding the next Fibonacci number is just a matter of adding the previous two. Getting the next prime number is a more elaborate and time-consuming procedure. In this context, the time needed to compute 48 Fibonacci numbers is insignificant, so I didn\'t bother to save previously computed Fibonacci numbers in the prime Fibonacci demonstration. When a user enters a number smaller than the current length of fibsMonad.a, fibsMonad is modified such that its length becomes exactly what the user entered.' ), 
         h('p', ' I entered 44 in my desktop Ubuntu Chrome and Firefox browsers and got the first ten prime Fibonacci numbers. I then entered 48 and all eleven prime Fibonacci numbers appeared. I tried gradually incrementing upwards, but when I got to 56 I stopped due to impatience with the lag time. The 56th Fibonacci number was computed to be 139583862445. No new prime Fibonacci numbers appeared.' ),
