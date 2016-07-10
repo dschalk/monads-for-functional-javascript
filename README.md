@@ -88,14 +88,21 @@ MonadItter instance mMZ3 calls its bnd() method three times. User input releases
 
   var solve = function solve () {
     mMZ3.bnd(a => 
-        mMZ3.bnd(b =>  
-            mMZ3.bnd(c => {
+    mMtemp.ret(a)           
+    .bnd(innerHTML, '', 'quad5', mMtemp)         
+    .bnd(innerHTML, '', 'quad6', mMtemp)         
+    .bnd(innerHTML, a + " * x * x ", 'quad5', mMtemp)
+    .bnd(a =>
+        mMZ3.bnd(b =>  mMtemp.ret(b)  // After entering the first number, mMZ3 stops here.
+        .bnd(innerHTML, " + " + b + " * x ", 'quad6', mMtemp).bnd(b =>
+            mMZ3.bnd(c => {           // After entering the second number, mMZ3 stops here.
                 let x = qS1(a,b,c);
                 let y = qS2(a,b,c);  
-                document.getElementById('quad5').innerHTML = 'The results are: ' + x + ' and';
+                document.getElementById('quad5').innerHTML = 
+                  'The results are: x = ' + x + ' and x =';
                 document.getElementById('quad6').innerHTML = y; 
                 solve();
-            })))
+            })))))
   }();
 
   var qS1 = function qS1 (a, b, c) {
@@ -113,6 +120,11 @@ MonadItter instance mMZ3 calls its bnd() method three times. User input releases
     }
     return n/(2*a);
   }  
+
+  var innerHTML = function innerHTML (x, v, u, m) {
+    document.getElementById(u).innerHTML = v;
+    return m.ret(x);
+  }
 ```
 ## MonadState Transformer Example
 MonadState instances are used to create a list of prime Fibonacci number. More commentary is available at [Demonstration](http://schalk.net:3055). Here are the definitions of fibsMonad and its helper functions:

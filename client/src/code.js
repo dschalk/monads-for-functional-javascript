@@ -552,14 +552,21 @@ var cleanup = h('pre',  `  function cleanup (x) {
 
   var solve = function solve () {
     mMZ3.bnd(a => 
-        mMZ3.bnd(b =>  
+    mMtemp.ret(a)           
+    .bnd(innerHTML, '', 'quad5', mMtemp)         
+    .bnd(innerHTML, '', 'quad6', mMtemp)         
+    .bnd(innerHTML, a + " * x * x ", 'quad5', mMtemp)
+    .bnd(a =>
+        mMZ3.bnd(b =>  mMtemp.ret(b)
+        .bnd(innerHTML, " + " + b + " * x ", 'quad6', mMtemp).bnd(b =>
             mMZ3.bnd(c => {
                 let x = qS1(a,b,c);
                 let y = qS2(a,b,c);  
-                document.getElementById('quad5').innerHTML = 'The results are: ' + x + ' and';
+                document.getElementById('quad5').innerHTML = 
+                  'The results are: x = ' + x + ' and x =';
                 document.getElementById('quad6').innerHTML = y; 
                 solve();
-            })))
+            })))))
   }();
 
   var qS1 = function qS1 (a, b, c) {
@@ -576,6 +583,10 @@ var cleanup = h('pre',  `  function cleanup (x) {
       return "No solution";
     }
     return n/(2*a);
+  
+  var innerHTML = function innerHTML (x, v, u, m) { 
+    document.getElementById(u).innerHTML = v;
+    return m.ret(x);
   }  `  )
 
   var mdem1 = h('pre',  `  var equals = function equals (x, mon1, mon2, mon3) {
@@ -645,15 +656,8 @@ var add = h('pre',  `  var add = function(x,b,mon) {
       return mon.ret(x + b);
     }
     return ret(x+b);  
-  };
+  }; ` )
   
-  var m = new Monad(5, "m");
-  m.bnd(add, 100)  // Returns an anonymous monad with id == "annonymous" and x == 105
-  m.bnd(add, 100, ret('555', "m2"))  // Returns O.m2 with O.m2 == 105
-  m.bnd(add, 100, m3)  // Returns O.m3 with O.m3.v == 105
-  m.bnd(add, 100, m)   // returns m with m.x == 5 and O.m.x == 105
-  m.bnd(add, 100).bnd(m.ret)  // Same result as above. O.m.x == 105  `  )
-
 var ret_add_cube = h('pre',  `  var ret = function ret(v, id) {
     if (arguments.length === 1) {
       return (new Monad(v, 'anonymous'));
@@ -702,7 +706,7 @@ var spreadsheet = h('pre',  `  const spread1Press$ = sources.DOM
     }
   });
 
-  var calculate = function calculate() {
+  vGar calculate = function calculate() {
       let a = O.mMcount.x;
       let b = O.mMcount2.x
       let c = [ a + ' + ' + b + ' = ' + (a*1 + b*1),  
@@ -881,21 +885,21 @@ var primeFibInterface = h('pre',  `  const fibKeyPress5$ = sources.DOM
         primesMonad.run([primesMonad.s[0], "from the fibKeyPress5$ handler", bound, primesMonad.a])
       }
       var res = fibsMonad
-      .bnd(fibsState => fibsMonad
-      .bnd(transformer, primesMonad)
-      .bnd(primesState => tr3(fibsState[3],primesState[3])))
-      document.getElementById('PF_9').innerHTML = res[0];
+      .bnd(fibsState => fibsMonad                    // Gets the current state of fibsMonad
+      .bnd(fpTransformer, primesMonad)               // Returnes the (possibly modified) state of primesMonad
+      .bnd(primesState => tr3(fibsState[3],primesState[3])))  // Runs tr3 on fibsMonad.s and the new primesMonad.s
+      document.getElementById('PF_9').innerHTML = res[0];     // res is the return value of tr3 (above)
       document.getElementById('PF_22').innerHTML = res[1];
       document.getElementById('primeFibs').innerHTML = res[2];
     }
   });  `  )
 
-var transformer = h('pre',  `  var transformer = function transformer (s, m) {
+var fpTransformer = h('pre',  `  var fpTransformer = function fpTransformer (s, m) {
     let bound = Math.round(Math.sqrt(s[1]));
     if (bound <= m.a[m.a.length - 1]) {
       return m;
     }
-    return m.run([m.s[0], "From transformer", bound, m.a])
+    return m.run([m.s[0], "From fpTransformer", bound, m.a])
   }  `  )
 
 var seed1 = h('pre',  ` 
@@ -908,6 +912,6 @@ var seed2 = h('pre',  `
 
 
 
-  export default {monad, monadIt, fib, driver, messages, next, Monad$, updateCalc, arrayFuncs, travel, nums, cleanup, ret, C42, taskStream, newTask, process, mM$task, addString, colorClick, edit, testZ, quad, mdem1, runTest, todoStream, inc, ret_add_cube, seed, spreadsheet, spreadsheet2, add, reactiveFib, traverse, MonadState, primesMonad, fibsMonad, primeFibInterface, tr3, transformer  }
+  export default {monad, monadIt, fib, driver, messages, next, Monad$, updateCalc, arrayFuncs, travel, nums, cleanup, ret, C42, taskStream, newTask, process, mM$task, addString, colorClick, edit, testZ, quad, mdem1, runTest, todoStream, inc, ret_add_cube, seed, spreadsheet, spreadsheet2, add, reactiveFib, traverse, MonadState, primesMonad, fibsMonad, primeFibInterface, tr3, fpTransformer  }
 
 

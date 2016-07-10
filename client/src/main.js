@@ -387,7 +387,7 @@ function main(sources) {
       }
       var res = fibsMonad
       .bnd(fibsState => fibsMonad
-      .bnd(transformer, primesMonad)
+      .bnd(fpTransformer, primesMonad)
       .bnd(primesState => tr3(fibsState[3],primesState[3])))
       document.getElementById('PF_9').innerHTML = res[0];
       document.getElementById('PF_22').innerHTML = res[1];
@@ -508,24 +508,38 @@ function main(sources) {
 
   var solve = function solve () {
     mMZ3.bnd(a => 
-        mMZ3.bnd(b =>  
+    mMtemp.ret(a)           
+    .bnd(innerHTML, '', 'quad5', mMtemp)         
+    .bnd(innerHTML, '', 'quad6', mMtemp)         
+    .bnd(innerHTML, a + " * x * x ", 'quad5', mMtemp)
+    .bnd(a =>
+        mMZ3.bnd(b =>  mMtemp.ret(b)
+        .bnd(innerHTML, " + " + b + " * x ", 'quad6', mMtemp).bnd(b =>
             mMZ3.bnd(c => {
                 let x = qS1(a,b,c);
                 let y = qS2(a,b,c);  
-                document.getElementById('quad5').innerHTML = 'The results are: ' + x + ' and';
+                document.getElementById('quad5').innerHTML = 
+                  'The results are: x = ' + x + ' and x =';
                 document.getElementById('quad6').innerHTML = y; 
                 solve();
-            })))
+            })))))
   }();
 
   const quad$ = sources.DOM
     .select('#quad').events('keypress')
+
   const quadAction$ = quad$.map((e) => {
     if( e.keyCode == 13 ) {
       mMZ3.release(e.target.value)  // Releases mMZ (below).
       document.getElementById('quad').value = '';
     }
   });
+
+  var innerHTML = function innerHTML (x, v, u, m) {  
+    document.getElementById(u).innerHTML = v;
+    return m.ret(x);
+  }
+
 
   const dummyClick$ = sources.DOM
     .select('#dummy').events('click');
@@ -661,10 +675,14 @@ function main(sources) {
        h('p', ' If the values of Monad instances are updated only through the use of the Monad ret() method, then the current state of the Monad instances exists in the mutable, global object named "O". Keeping changing monad state in one place (on the object "O") makes applications easier to reason about and easier to maintain. I treat Monad instances as though they were immutable, updating them only through the use of their ret() methods.   ' ),
         h('p', ' In the examples shown on this page, the initial values of instances of Monad remain unchaged. The ret() method places updated instances of the monad calling ret() on O. From the definition of ret() we know that for any monad m and value v, m.ret(v) updates O.m such that O.m.x = v. The ret() method does not mutate the instances of Monad referenced by the attributes of O. For any instance of Monad named "m" with id "m" and value v (i.e., m.x == v is true), m.ret(v2) creates a new attribute of O with key "m" or, if O.m already exists. m.ret(v2) mutates O by changing the value to which O.m refers. Before the change, O.m.x == v. After m.ret(v2), O.m.x == v2. For most practical purposes, it is as if O.m.x is the only thing that changed. But O.m is not mutated. If there is a reference to the original O.m, it will be preserved and calls to m.ret() will not affect it. Every time m.ret() is called, O.m refers to a newly created semi-clone of m with m.x referring to a (usually) different value. The traversable game display keeps replaced monads named "O.mM1" in an array named "O.mMhistorymM1".  ' ),
         h('h3', 'Examples' ),
-        h('p', ' The convention "a == b" in this presentation signifies that a == b is true.' ), 
+        h('p', ' The convention "a == b" in this presentation signifies that a == b is true. I press f12 and the press CTRL-R to reboot and then select "console", I can cut and paste the following expressions into the browser console and verify that the are true. I have installed developer tools, so this might not work for you immediately. ' ), 
         h('p', ' From the definition of Monad, you can see that m1.bnd(m2.ret) results in m2.ret(m1.x) being called. After that operation, O.m2.x == v where m1.x == v. And if O.m1.x == v2, O.m1.bnd(m2.ret) results in O.m2.x == v2. If these assertions are perplexing, just take another look at the definition of Monad and work through the transformations one step at a time. Here are some examples of the use of the Monad methods bnd() and ret(): '  ),
         h('span.red3', 'cube(3)' ),
         h('span.td2', ' creates an anonymous monad with x == 27 and id == "anonymous". ' ),
+        h('br' ),  
+        h('br' ),  
+        h('span.red3', 'm.ret(3).bnd(v => m.ret(v*v*v)).bnd(x => console.log(x)) ' ),
+        h('span.td2',  'Returns 27' ),
         h('br' ),  
         h('br' ),  
         h('span.red3', 'cube(3).bnd(m.ret)' ),
@@ -755,14 +773,13 @@ function main(sources) {
         h('p.#quad4.code2',  ),
         h('span#quad5.red2', ),
         h('span#quad6.red8',  ),
-        h('br' ),
         h('p' , 'Run mMZ3.release(v) three times for three numbers. The numbers are a, b, and c in ax*x + b*x + c = 0: ' ),
         h('input#quad' ),  
         h('p', 'Here is the code:' ),
         code.quad,
         h('span#tdList' ),
 // ***************************************************************************************************** START MonadState
-        h('h2', 'MonadState and MonadState transformers' ),  
+        h('h2', 'MonadState and MonadState fpTransformers' ),  
         h('p', ' An instance of MonadState holds the current state and value of a computation. For any instance of MonadState, say m, these can be accessed through m.s and m.a, respectively.  '   ),  
         code.MonadState,
         h('p', ' MonadState reproduces some of the functionality found in the Haskel Module "Control.Monad.State.Lazy", inspired by the paper "Functional Programming with Overloading and Higher-Order Polymorphism", Mark P Jones (http://web.cecs.pdx.edu/~mpj/) Advanced School of Functional Programming, 1995. The following demonstrations use the MonadState instances fibsMonad and primesMonad to create and store arrays of fibonacci numbers and arrays of prime numbers, respectively. fibsMonad and primesMonad provide a simple way to compute lists of prime fibonacci numbers.  Because the results of computations are stored in the a and s attributes of MonadState instances, it was easy to make sure that no prime number is ever computed twice in the prime Fibonacci demonstration. ' ),
@@ -771,8 +788,8 @@ function main(sources) {
         h('p', ' The other MonadState instance used in this demonstration is primesMonad. Here is its definition along with the function that becomes primesMonad.process:  ' ),  
         code.primesMonad,
         h('h3', ' MonadState transformers ' ),
-        h('p', ' Transformers take instances of MonadState and return different instances of MonadState, possibly in a modified state. The method call "fibsMonad.bnd(transformer, primesMonad)" returns primesMonad. Here is the definition of transformer: ' ),
-        code.transformer,  
+        h('p', ' Transformers take instances of MonadState and return different instances of MonadState, possibly in a modified state. The method call "fibsMonad.bnd(fpTransformer, primesMonad)" returns primesMonad. Here is the definition of fpTransformer: ' ),
+        code.fpTransformer,  
         h('p', ' If the largest number in primesMonad.a is less than the square root of the largest number in fibsMonad.a, primesMonad is updated so that the largest number in primesMonad.a is greater than the square root of the largest number in fibsMonad.a. Otherwise, primesMonad is returned unchanged.  ' ),
         h('p', ' The final computation occurs when "tr3(fibsState[3],primesState[3]" is called. tr3() takes an array of fibonacci numbers and an array of prime numbers and returns an array containing an array of Fibonacci numbrs, an array of prime numbers, and an array of prime Fibonacci numbers. Here is the definition of tr3: ' ),
         code.tr3, 
