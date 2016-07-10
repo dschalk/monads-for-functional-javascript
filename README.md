@@ -9,25 +9,18 @@ The use of the monads is explained at [the online presentation](http://schalk.ne
 Here are some definitions, which can also be seen at [the online presentation](http://schalk.net:3055) :
 ## Basic Monad    
 ```javascript                 
-  var Monad = function Monad(z, g) {
+  var Monad = function Monad(value, ID) {
     var _this = this;
 
-  if (arguments.length === 1) this.id = 'anonymous';
-  else this.id = g;
+    this.x = value
 
-  this.x = z;
-  if (arguments.length === 1) {
-    this.id = 'anonymous';
-  } else {
-    this.id = g;
-  }
-
-
-
+    if (arguments.length === 1) this.id = 'anonymous';
+    else this.id = ID;
+  
     this.bnd = function (func, ...args) {
        return func(_this.x, ...args);
     };
-
+  
     this.ret = function (a) {
       O.[_this.id] = new Monad(a, _this.id);
       return O.[_this.id]
