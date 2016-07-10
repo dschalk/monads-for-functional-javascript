@@ -10,6 +10,7 @@ Here are some definitions, which can also be seen at [the online presentation](h
 ## Basic Monad    
 ```javascript                 
   var Monad = function Monad(value, ID) {
+
     var _this = this;
 
     this.x = value
