@@ -3470,11 +3470,11 @@
 
 	var MonadState = (0, _dom.h)('pre', '  var MonadState = function MonadState (g, state, value, p) {\n    var _this = this;\n    this.id = g;\n    this.s = state;\n    this.a = value;\n    this.process = p;\n    this.bnd = function (func, ...args) {\n       return func(_this.s, ...args);   // bnd provides instances\' state to func.\n    };\n    this.run = function(st) { \n      let s = _this.process(st); \n      let a = s[3];\n      window[_this.id] = new MonadState(_this.id, s, a, _this.process);\n      return window[_this.id];\n    }\n  }  ');
 
-	var primesMonad = (0, _dom.h)('pre', '  var primesMonad = new MonadState(\'primesMonad\', [2, \'\', 3, [2]], [2],  primes_state) \n\n  var primes_state = function primes_state(x) {\n    var v = x.slice();\n      while (2 == 2) {\n        if (v[3].every(e => ((v[0]/e) != Math.round(v[0]/e)))) {\n          v[3].push(v[0]);\n        }\n        if (v[3][v[3].length - 1] > v[2]) { break }; // Not an infinite loop afterall\n        v[0]+=2;\n      }\n    return v;\n  }  ');
+	var primesMonad = (0, _dom.h)('pre', '  var primesMonad = new MonadState(\'primesMonad\', [2, \'\', 3, [2]], [2],  primes_state) \n\n  var primes_state = function primes_state(x) {\n    var v = x.slice();\n      while (2 == 2) {\n        if (v[3].every(e => ((v[0]/e) != Math.floor(v[0]/e)))) {\n          v[3].push(v[0]);\n        }\n        if (v[3][v[3].length - 1] > v[2]) { break }; // Not an infinite loop afterall\n        v[0]+=2;\n      }\n    return v;\n  }  ');
 
 	var fibsMonad = (0, _dom.h)('pre', '  var fibsMonad = new MonadState(\'fibsMonad\', [0, 1, 3, [0,1]], [0,1], fibs_state  ) \n\n  var fibs_state = function fibs_state(ar) {\n    var a = ar.slice();\n    while (a[3].length < a[2]) {\n      a = [a[1], a[0] + a[1], a[2], a[3].concat(a[0])];\n    }\n    return a\n  }  ');
 
-	var tr3 = (0, _dom.h)('pre', '  var tr3 = function tr (fibsArray, primesArray) {\n    var ar = [];\n    var fibs = fibsArray.slice();\n    var primes = primesArray.slice();\n    var bound = Math.round(Math.sqrt(fibs[fibs.length - 1]));\n    if (bound < primesArray[primesArray.length - 1]) {\n      primes = primes.filter(v => v <= bound);\n    }\n    fibs.map (f => {\n      if ( f < 2 ) return;\n      if ( primes.every(p => (f % p != 0 || f == p))) ar.push(f);\n    })\n    return [fibs, primes, ar]\n  }  ');
+	var tr3 = (0, _dom.h)('pre', '  var tr3 = function tr (fibsArray, primesArray) {\n    var ar = [];\n    var primes = primesArray.slice();\n    var fibs = fibsArray.slice();\n    var fib = fibsArray.slice(3);\n    var bound = Math.round(Math.sqrt(fibs[fibs.length - 1]));\n    if (bound < primesArray[primesArray.length - 1]) {\n      primes = primes.filter(v => v <= bound);\n    }\n    fib.map (f => {\n      if ( f < 2 ) return;\n      if ( primes.every(p => (f % p != 0 || f == p))) ar.push(f);\n    })\n    return [fibs, primes, ar]\n  }  ');
 
 	var primeFibInterface = (0, _dom.h)('pre', '  const fibKeyPress5$ = sources.DOM\n    .select(\'input#fib92\').events(\'keydown\');\n\n  const primeFib$ = fibKeyPress5$.map(e => {\n    if( e.keyCode == 13 ) {\n      var bound;\n      fibsMonad.run([0, 1, e.target.value, []])\n      .bnd(s => bound = Math.round(Math.sqrt(s[0])));\n      if (bound > primesMonad.a[primesMonad.a.length - 1] ) {\n        primesMonad.run([primesMonad.s[0], "from the fibKeyPress5$ handler", bound, primesMonad.a])\n      }\n      var res = fibsMonad\n      .bnd(fibsState => fibsMonad                    // Gets the current state of fibsMonad\n      .bnd(fpTransformer, primesMonad)               // Returnes the (possibly modified) state of primesMonad\n      .bnd(primesState => tr3(fibsState[3],primesState[3])))  // Runs tr3 on fibsMonad.s and the new primesMonad\n      document.getElementById(\'PF_9\').innerHTML = res[0];     // res is the return value of tr3 (above)\n      document.getElementById(\'PF_22\').innerHTML = res[1];\n      document.getElementById(\'primeFibs\').innerHTML = res[2];\n    }\n  });  ');
 
@@ -8996,14 +8996,14 @@
 
 	  var primeFib$ = fibKeyPress5$.map(function (e) {
 	    if (e.keyCode == 13) {
+	      /*
 	      var bound;
-	      fibsMonad.run([0, 1, e.target.value, []]).bnd(function (s) {
-	        return bound = Math.round(Math.sqrt(s[0]));
-	      });
-	      if (bound > primesMonad.a[primesMonad.a.length - 1]) {
-	        primesMonad.run([primesMonad.s[0], "from the fibKeyPress5$ handler", bound, primesMonad.a]);
+	      fibsMonad.run([0,1,e.target.value,[]]).bnd(s => bound = Math.ceil(Math.sqrt(s[3][s[3].length - 1])));
+	      if (bound > primesMonad.a[primesMonad.a.length - 1] ) {
+	        primesMonad.run([primesMonad.s[0], "from the fibKeyPress5$ handler", bound, primesMonad.a])
 	      }
-	      var res = fibsMonad.bnd(function (fibsState) {
+	      */
+	      var res = fibsMonad.run([0, 1, e.target.value, []]).bnd(function (fibsState) {
 	        return fibsMonad.bnd(fpTransformer, primesMonad).bnd(function (primesState) {
 	          return tr3(fibsState[3], primesState[3]);
 	        });

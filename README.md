@@ -159,54 +159,48 @@ And here are the definitions of primesMonad and its helper functions:
 ### MonadState Transformers
 Transformers take instances of MonadState and return different instances of MonadState, possibly in a modified state. The method call "fibsMonad.bnd(pfTransformer, primesMonad)" returns primesMonad. Here is the definition of pfTransformer:
 ```javascript
-var fpTransformer = function transformer (s, m) {
-  let bound = Math.round(Math.sqrt(s[1]));
-  if (bound <= m.a[m.a.length - 1]) {
+  var fpTransformer = function transformer (s, m) {
+    var bound = Math.ceil(Math.sqrt(s[3][s[3].length - 1]));
+    if (bound > m.a[m.a.length - 1] ) {
+      m.run([m.s[0], "from the fibKeyPress5$ handler", bound, primesMonad.a])
+    }
     return m;
   }
-  return m.run([m.s[0], "From fpTransformer", bound, m.a])
-}
 ``` 
 The final computation occurs when "tr3(fibsState[3],primesState[3]" is called. tr3() takes an array of fibonacci numbers and an array of prime numbers and returns an array containing an array of Fibonacci numbrs, an array of prime numbers, and an array of prime Fibonacci numbers. Here is the definition of tr3:
 ```javascript
   var tr3 = function tr (fibsArray, primesArray) {
+    var bound = Math.ceil(Math.sqrt(fibsArray[fibsArray.length - 1]))
+    var primes;
+    if (primesArray[primesArray.length - 1] >= bound) {
+      primes = primesArray.filter(v => v <= bound);
+    } 
+    else {primes = primesArray.slice()};
     var ar = [];
-    var fibs = fibsArray.slice();
-    var primes = primesArray.slice();
-    var bound = Math.round(Math.sqrt(fibs[fibs.length - 1]));
-    if (bound < primesArray[primesArray.length - 1]) {
-      primes = primes.filter(v => v <= bound);
-    }
+    var fibs = fibsArray.slice(3);
     fibs.map (f => {
-      if ( f < 2 ) return;
-      if ( primes.every(p => (f % p != 0 || f == p))) ar.push(f);
+      if ( primesArray.every(p => (f % p != 0 || f == p))) ar.push(f);
     })
-    return [fibs, primes, ar]
+    return [fibsArray, primes, ar]
   }
  ```
-The number a user enters, e.target.value, is the length of fibsMonad.a in a freshly computed fibsMonad. primesMonad is re-computed if the square root of the largest number in fibsMonad.a is larger than the largest number in primesMonad.a. Otherwise, it is not modified. Finally, a procedure involving three linked calls to bnd() returns an array of the lists that are displayed in the browser. Here is the code:
+And here is how user input is handled:
 ```javascript  
   const fibKeyPress5$ = sources.DOM
     .select('input#fib92').events('keydown');
 
   const primeFib$ = fibKeyPress5$.map(e => {
     if( e.keyCode == 13 ) {
-      var bound;
-      fibsMonad.run([0, 1, e.target.value, []])
-      .bnd(s => bound = Math.round(Math.sqrt(s[0])));
-      if (bound > primesMonad.a[primesMonad.a.length - 1] ) {
-        primesMonad.run([primesMonad.s[0], "from the fibKeyPress5$ handler", bound, primesMonad.a])
-      }
       var res = fibsMonad
-      .bnd(fibsState => fibsMonad                    // Gets the current state of fibsMonad
-      .bnd(fpTransformer, primesMonad)               // Returnes the (possibly modified) state of primesMonad
-      .bnd(primesState => tr3(fibsState[3],primesState[3])))  // Runs tr3 on fibsMonad.s and the new primesMonad.s
-      document.getElementById('PF_9').innerHTML = res[0];     // res is the return value of tr3 (above)
+      .run([0, 1, e.target.value, []])
+      .bnd(fibsState => fibsMonad
+      .bnd(fpTransformer, primesMonad)
+      .bnd(primesState => tr3(fibsState[3],primesState[3])))
+      document.getElementById('PF_9').innerHTML = res[0];
       document.getElementById('PF_22').innerHTML = res[1];
       document.getElementById('primeFibs').innerHTML = res[2];
     }
-  });  
-
+  });
 ```
 ##Immutability And The Global "O" Object
 ###The Haskell Back-End

@@ -47,26 +47,26 @@ var MonadState = function MonadState (g, state, value, p) {
 }
 
 var fpTransformer = function transformer (s, m) {
-  let bound = Math.round(Math.sqrt(s[1]));
-  if (bound <= m.a[m.a.length - 1]) {
-    return m;
+  var bound = Math.ceil(Math.sqrt(s[3][s[3].length - 1]));
+  if (bound > m.a[m.a.length - 1] ) {
+    m.run([m.s[0], "from the fibKeyPress5$ handler", bound, primesMonad.a])
   }
-  return m.run([m.s[0], "From fpTransformer", bound, m.a])
+  return m;
 }
 
 var tr3 = function tr (fibsArray, primesArray) {
+  var bound = Math.ceil(Math.sqrt(fibsArray[fibsArray.length - 1]))
+  var primes;
+  if (primesArray[primesArray.length - 1] >= bound) {
+    primes = primesArray.filter(v => v <= bound);
+  } 
+  else {primes = primesArray.slice()};
   var ar = [];
-  var fibs = fibsArray.slice();
-  var primes = primesArray.slice();
-  var bound = Math.round(Math.sqrt(fibs[fibs.length - 1]));
-  if (bound < primesArray[primesArray.length - 1]) {
-    primes = primes.filter(v => v <= bound);
-  }
+  var fibs = fibsArray.slice(3);
   fibs.map (f => {
-    if ( f < 2 ) return;
-    if ( primes.every(p => (f % p != 0 || f == p))) ar.push(f);
+    if ( primesArray.every(p => (f % p != 0 || f == p))) ar.push(f);
   })
-  return [fibs, primes, ar]
+  return [fibsArray, primes, ar]
 }
 
 var fibs_state = function fibs_state(ar) {
@@ -539,9 +539,15 @@ var intersection = function (a, b, mon) {
   return mon.ret(ar3);
 }
 
-var intArray = function intArray (x, n) {
-  let ar = Array(n).fill().map((_, i) => i + 1);
+var range = function intArray (x, n) {   // Returns [0, ... n-1]
+  let ar = Array(n).fill().map((_, i) => i);
   return ret(ar);
+}
+
+var range2 = function range2 (x, n) {    // Returns [0, ... n]
+    var arr = Array(n+1);
+    for (var ii = 0; ii <= n; ii++) { arr[ii] = ii; };
+    return ret(arr);
 }
 
 var calc = function calc(a,op,b) { 

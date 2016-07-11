@@ -379,13 +379,8 @@ function main(sources) {
 
   const primeFib$ = fibKeyPress5$.map(e => {
     if( e.keyCode == 13 ) {
-      var bound;
-      fibsMonad.run([0, 1, e.target.value, []])
-      .bnd(s => bound = Math.round(Math.sqrt(s[0])));
-      if (bound > primesMonad.a[primesMonad.a.length - 1] ) {
-        primesMonad.run([primesMonad.s[0], "from the fibKeyPress5$ handler", bound, primesMonad.a])
-      }
       var res = fibsMonad
+      .run([0, 1, e.target.value, []])
       .bnd(fibsState => fibsMonad
       .bnd(fpTransformer, primesMonad)
       .bnd(primesState => tr3(fibsState[3],primesState[3])))
