@@ -821,19 +821,19 @@ var factorsInput = h('pre',  `  var prFactTransformer = function prFactTransform
     .select('input#factors_1').events('keydown');
 
   const factorsAction$ = factorsPress$.map(e => {
-    mMfactors.ret(e.target.value);
+    mMfactors.ret(e.target.value);                  // Used in prFactTransformer (above)
     if (e.target.value == '') {return};
     if( e.keyCode == 13 && Number.isInteger(e.target.value*1) ) {
-      var message;
+      var result;
       var factors = primesMonad.run([primesMonad.s[0], [], e.target.value, primesMonad.a])
-      .bnd(prFactTransformer, factorsMonad).s[1];  // prFactTransformer is defined above
+      .bnd(prFactTransformer, factorsMonad).s[1];  // prFactTransformer (defined above) returns factorsMonad
       if (e.target.value == factors.slice().pop()){
-        message = e.target.value + ' is a prime number'
+        result = e.target.value + ' is a prime number'
       }
       else {
-        message = 'The prime factors of ' + e.target.value + ' are ' + factors;
+        result = 'The prime factors of ' + e.target.value + ' are ' + factors;
       }
-      document.getElementById('factors_3').innerHTML = message;
+      document.getElementById('factors_3').innerHTML = result;
     }
   });
              `  )
