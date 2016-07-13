@@ -398,7 +398,7 @@ function main(sources) {
   var mMfactors = new Monad(-1, 'mMfactors');
   mMfactors.ret(-1, 'mMfactors');
   
-  var prFactTransformer = function transformer (s, m) {
+  var prFactTransformer = function prFaceTransformer (s, m) {
     return m.run([s[0], [], O.mMfactors.x, s[3]])
   }
 
@@ -842,7 +842,7 @@ function main(sources) {
         h('span#PF_8.red6', 'Prime Fibonacci Numbers' ),  
         h('br' ),
         h('span#primeFibs.red7',  ),  
-        h('p', ' The next demonstration uses two instances of MonadState to find the prime factors of numbers. Enter a number below to see its prime factors. ' ),
+        h('p', ' The next demonstration uses two instances of MonadState to find the prime factors of numbers. On my desktop computer, it took several seconds to verify that 514229 is a prime number. Due to persistent (until the web page closes) memoization, numbers below 514229 or not too far above it evaluated rapidly. Enter a number below to see its prime factors. ' ),
         h('input#factors_1',  ),
         h('br' ),
         h('span#factors_2.red6',  ),  

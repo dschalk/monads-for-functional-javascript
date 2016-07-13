@@ -813,7 +813,7 @@ var factorsMonad = h('pre',  `  var factorsMonad = new MonadState('factorsMonad'
     return v;
   }  `  )
 
-var factorsInput = h('pre',  `  var prFactTransformer = function transformer (s, m) {
+var factorsInput = h('pre',  `  var prFactTransformer = function prFactTransformer (s, m) {
     return m.run([s[0], [], O.mMfactors.x, s[3]])
   }
 
