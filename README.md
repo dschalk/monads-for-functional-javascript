@@ -171,11 +171,10 @@ The final computation occurs when "tr3(fibsState[3],primesState[3]" is called. t
 ```javascript
   var tr3 = function tr (fibsArray, primesArray) {
     var bound = Math.ceil(Math.sqrt(fibsArray[fibsArray.length - 1]))
-    var primes;
+    var primes = primesArray.slice();
     if (primesArray[primesArray.length - 1] >= bound) {
       primes = primesArray.filter(v => v <= bound);
     } 
-    else {primes = primesArray.slice()};
     var ar = [];
     var fibs = fibsArray.slice(3);
     fibs.map (f => {
@@ -184,7 +183,7 @@ The final computation occurs when "tr3(fibsState[3],primesState[3]" is called. t
     return [fibsArray, primes, ar]
   }
  ```
-And here is how user input is handled:
+This is how user input is handled:
 ```javascript  
   const fibKeyPress5$ = sources.DOM
     .select('input#fib92').events('keydown');
@@ -255,7 +254,7 @@ MonadItter instances are useful only when their bnd() method is used; and when b
 ##[The Online Demonstration](http://schalk.net:3055)
 The online demonstration features a game with a traversible dice-roll history; group chat rooms; and a persistent, multi-user todo list. People in the same group share the game, chat messages, and whatever todo list they might have. Updating, adding, removing, or checking "Complete" by any member causes every member 's todo list to update. The Haskell websockets server preserves a unique text file for each group's todo list. Restarting the server does not affect the lists. Restarting or refreshing the browser window causes the list display to disappear, but signing in and re-joining the old group brings it back. If the final task is removed, the server deletes the group's todo text file. 
 
-With Motorcycle.js, the application runs smoothly and is easy to understand and maintain. I say "easy to understand", but some effort must first be invested into getting used to functions that take functions as arguments, and the Cycle.js / Motorcycle.js API has a learning curve. After that, seeing how the monads work is a matter of contemplating their definitions and experimenting a little. Most of the monads and the functions they use in this demonstration are immediately available in the browser console. Just load [http://schalk.net:3055](http://schalk.net:3055) and press F12 and Ctrl-R to explore and experiment. Try mM25.bnd(mM25.ret).x == mM25.x and see that it returns true.
+With Motorcycle.js, the application runs smoothly and is easy to understand and maintain. I say "easy to understand", but some effort must first be invested into getting used to functions that take functions as arguments, and the Cycle.js / Motorcycle.js API has a learning curve. After that, seeing how the monads work is a matter of contemplating their definitions and experimenting a little. Most of the monads and the functions they use in this demonstration are immediately available in the browser console. If you have the right dev tools in Chrome or Firefox, just load [http://schalk.net:3055](http://schalk.net:3055) and press F12 and then Ctrl-R to re-load with access to the monad.js script. I do this to troubleshoot and experiment. Try mM25.bnd(mM25.ret).x == mM25.x and see that it returns true.
 
 .
 .

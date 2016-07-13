@@ -46,21 +46,31 @@ var MonadState = function MonadState (g, state, value, p) {
   }
 }
 
+var tr4 = function tr4 (state) {
+  return state[1];
+}
+
+function factor_state(v) {
+  v[3].map(p => {
+    if (v[2]/p == Math.floor(v[2]/p)) {v[1].push(p)}
+  })
+  return v;
+}
+          
 var fpTransformer = function transformer (s, m) {
-  var bound = Math.ceil(Math.sqrt(s[3][s[3].length - 1]));
+var bound = Math.ceil(Math.sqrt(s[3][s[3].length - 1]));
   if (bound > m.a[m.a.length - 1] ) {
     m.run([m.s[0], "from the fibKeyPress5$ handler", bound, primesMonad.a])
   }
   return m;
 }
 
-var tr3 = function tr (fibsArray, primesArray) {
+var tr3 = function tr3 (fibsArray, primesArray) {
   var bound = Math.ceil(Math.sqrt(fibsArray[fibsArray.length - 1]))
-  var primes;
+  var primes = primesArray.slice();
   if (primesArray[primesArray.length - 1] >= bound) {
     primes = primesArray.filter(v => v <= bound);
   } 
-  else {primes = primesArray.slice()};
   var ar = [];
   var fibs = fibsArray.slice(3);
   fibs.map (f => {
@@ -90,6 +100,8 @@ var primes_state = function primes_state(x) {
 }
 
 var fibsMonad = new MonadState('fibsMonad', [0, 1, 3, [0,1]], [0,1], fibs_state  ) 
+
+var factorsMonad = new MonadState('factorsMonad', [ 2, [], 4, [] ], [], factor_state); 
 
 var runPrime = function runPrime (x) {
   let l = primesMonad.a[primesMonad.a.length - 1]

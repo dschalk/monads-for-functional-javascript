@@ -391,6 +391,40 @@ function main(sources) {
   });
 
 // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> END basic prime END
+  
+  
+// <>>><>><><><><>>>><><><   prime factors   ><><><><><><>>><<><><><><><><>< START prime factors  
+  
+  var mMfactors = new Monad(-1, 'mMfactors');
+  mMfactors.ret(-1, 'mMfactors');
+  
+  var prFactTransformer = function transformer (s, m) {
+    return m.run([s[0], [], O.mMfactors.x, s[3]])
+  }
+
+  const factorsPress$ = sources.DOM
+    .select('input#factors_1').events('keydown');
+
+  const factorsAction$ = factorsPress$.map(e => {
+    mMfactors.ret(e.target.value);
+    if (e.target.value == '') {return};
+    if( e.keyCode == 13 && Number.isInteger(e.target.value*1) ) {
+      var message;
+      var factors = primesMonad.run([primesMonad.s[0], [], e.target.value, primesMonad.a])
+      .bnd(prFactTransformer, factorsMonad).s[1];
+      if (e.target.value == factors.slice().pop()){
+        message = e.target.value + ' is a prime number'
+      }
+      else {
+        message = 'The prime factors of ' + e.target.value + ' are ' + factors;
+      }
+      document.getElementById('factors_3').innerHTML = message;
+    }
+  });
+
+
+
+// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> END prime factors END
 
 // <>>><>><><><><>>>><><><  traversal  ><><><><><><>>><><><><><><><><><><><>< START traversal  
 
@@ -548,7 +582,7 @@ function main(sources) {
     document.getElementById('dummy2').innerHTML = O.mM23.x;
   });
 
-  const calcStream$ = merge( forwardAction$, backAction$, dummyAction$, primeFib$, fibPressAction$, runTestAction$, quadAction$, testWAction$, testZAction$, testQAction$, edit1Action$, edit2Action$, colorAction$, deleteAction$, newTaskAction$, chatClickAction$, gameClickAction$, todoClickAction$, captionClickAction$, groupPressAction$, rollClickAction$, messagePressAction$, loginPressAction$, messages$, numClickAction$, opClickAction$ );
+  const calcStream$ = merge( factorsAction$, forwardAction$, backAction$, dummyAction$, primeFib$, fibPressAction$, runTestAction$, quadAction$, testWAction$, testZAction$, testQAction$, edit1Action$, edit2Action$, colorAction$, deleteAction$, newTaskAction$, chatClickAction$, gameClickAction$, todoClickAction$, captionClickAction$, groupPressAction$, rollClickAction$, messagePressAction$, loginPressAction$, messages$, numClickAction$, opClickAction$ );
   
     return {
       DOM: 
@@ -787,14 +821,12 @@ function main(sources) {
         h('p', ' If the largest number in primesMonad.a is less than the square root of the largest number in fibsMonad.a, primesMonad is updated so that the largest number in primesMonad.a is greater than the square root of the largest number in fibsMonad.a. Otherwise, primesMonad is returned unchanged.  ' ),
         h('p', ' The final computation in the prime Fibonacci numbers demonstration occurs when "tr3(fibsState[3],primesState[3]" is called. tr3() takes an array of fibonacci numbers and an array of prime numbers and returns an array containing an array of Fibonacci numbrs, an array of prime numbers, and an array of prime Fibonacci numbers. Here is the definition of tr3: ' ),
         code.tr3, 
-        h('p', ' With these support functions in place, user input is processed by (possibly) updating primesMonad and then calling fibsMonad.bnd() three times; first to extract fibsMonad.s, second to run fpTransformer to modify and then obtain primesMonad, and third to obtain primesMonad.s and run tr3(fibsState[3],primesState[3]). Here is the code: ' ),
+        h('p', ' User input is handled by a chain of computations.  first to update fibsMonad, second to extract fibsMonad.s, third to run fpTransformer to modify and then return primesMonad, and fourth to extract primesMonad.s and run tr3(fibsState[3],primesState[3]). Here is the code: ' ),
         code.primeFibInterface,
         h('p', 'Only 48 fibonacci numbers need to be generated in order to get the eleventh prime Fibonacci number. But 5546 prime numbers need to be generated to test for divisibility into 2971215073. Finding the next Fibonacci number is just a matter of adding the previous two. Getting the next prime number is a more elaborate and time-consuming procedure. In this context, the time needed to compute 48 Fibonacci numbers is insignificant, so I didn\'t bother to save previously computed Fibonacci numbers in the prime Fibonacci demonstration. When a user enters a number smaller than the current length of fibsMonad.a, fibsMonad is modified such that its length becomes exactly what the user entered.' ), 
-        h('p', ' I entered 44 in my desktop Ubuntu Chrome and Firefox browsers and got the first ten prime Fibonacci numbers. I then entered 48 and all eleven prime Fibonacci numbers appeared. I tried gradually incrementing upwards, but when I got to 56 I stopped due to impatience with the lag time. The 56th Fibonacci number was computed to be 139583862445. No new prime Fibonacci numbers appeared.' ),
-        h('p', ' These are the first eleven proven prime Fibonacci numbers: ' ),
-        h('pre', `2,3,5,13,89,
-233,1597,28657,514229,433494437,
-2971215073 ` ),
+        h('p', ' Entering 48 in my desktop Ubuntu Chrome and Firefox browsers got the first eleven prime Fibonacci numbers. I tried gradually incrementing upwards from 48, but when I got to 61 I stopped due to impatience with the lag time. The 61st Fibonacci number was computed to be 1,548,008,755,920. 76,940 prime numbers were needed to check the 60th Fibonacci number. 96,043 prime numbers were needed to check the 61st Fibonacci number.  At Fibonacci number 61, no new prime Fibonacci numbers had appeared.' ),
+        h('p', ' According to multiple sources, these are the first eleven proven prime Fibonacci numbers:' ),
+        h('pre', `2, 3, 5, 13, 89, 233, 1597, 28657, 514229, 433494437, and 2971215073 ` ),
         h('p', ' The number you enter below is the length of the list of Fibonacci numbers you want to generate.  ' ),  
         h('p',  ),  
         h('input#fib92',  ),
@@ -810,13 +842,25 @@ function main(sources) {
         h('span#PF_8.red6', 'Prime Fibonacci Numbers' ),  
         h('br' ),
         h('span#primeFibs.red7',  ),  
+        h('p', ' The next demonstration uses two instances of MonadState to find the prime factors of numbers. Enter a number below to see its prime factors. ' ),
+        h('input#factors_1',  ),
+        h('br' ),
+        h('span#factors_2.red6',  ),  
+        h('br' ),
+        h('span#factors_3.red7',  ),  
+        h('br' ),
+        h('p', ' The demonstration uses primesMonad and factorsMonad. Here are the definitions of factosMonad and factor_state, the function that is factorsMonad.process: ' ),
+        code.factorsMonad,
+        h('p', ' And this is how user input is handled: ' ),
+        code.factorsInput,
+        
+
+
 //************************************************************************************************************* END MonadState
         h('h2', 'Immutable Data And The State Object "O" ' ),
         h('h3', ' Mutations   ' ),
-       h('p', ' Mutations in this application are confined to the global state object "O", MonadIter instances, and within function scope. Functions in this application do not have side effects. If a function argument is an array, say "ar", I make a clone by calling "ar = ar.slice()" before mutating ar. That way, the original ar is uneffected by whatever happens inside the function. ' ),
-       h('p', ' Regarding mutations of MonadItter instances: In the MonadItter examples (above), bnd() is called only once on each instance of MonadItter. Essentially, the bnd() method defines the MonadItter instances. The definitions of MonadItter instances create generic templates waiting for their bnd() methods to give them meaning. The p attribute of a MonadItter instance starts out referencing "f () {}" and refers to something useful when an argument is provided to its bnd() method. In this case, mutation can\'t possibly cause any mischief. ' ),
+       h('p', ' Mutations in this application are confined to the global state object "O", MonadIter instances, and within function scope. Functions in this application do not have side effects. If a function argument is an array, say "ar", I make a clone by calling "ar = ar.slice()" before mutating ar. That way, the original ar is uneffected by whatever happens inside the function. MonadItter instances don\'t have monadic properties. When their bnd() method is called, they sit idly until their release() method is called. I don\t see any reason to make a clone each time bnd() is called. ' ),
          h('h3', ' Monad Updates ' ),
-         
        h('p', 'All monad updates caused by the monad ret() method are stored in the object "O". When a monad m executes m.ret(v) for some value "v", m remains unchanged and the O attribute O.m is created or, if it already exists, is replaced by the update; i.e., O.m.x == v becomes true. Older versions of m are subject to garbage collection unless there is a reference to them or to an object (arrays are objects) containing m.  This is illustrated in the score-keeping code below.  All score changes are captured by mM13.ret(). Therefore, O.mM13.x is always the current score. Replacing monad attributes in O is vaguely analogous to swapping out ServerState in the Haskell server\'s state TMVar. Older versions of ServerState can be preserved in the server just as prior versions of O.mM13 can be preserved in the front end. ' ),     
        h('h3', 'Storing Monads That Have Been Replaced In O'  ),
        h('p', ' The history of the number display in the game can be traversed in either direction until a player achieves a goal. After that, the traversable history builds up until another goal is achieves. Players can use historical displays, so to keep competition fair, group members are notified when another member clicks the BACK button. '  ),

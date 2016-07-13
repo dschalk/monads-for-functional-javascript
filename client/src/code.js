@@ -763,11 +763,10 @@ var fibsMonad = h('pre',  `  var fibsMonad = new MonadState('fibsMonad', [0, 1, 
 
 var tr3 = h('pre',  `  var tr3 = function tr (fibsArray, primesArray) {
     var bound = Math.ceil(Math.sqrt(fibsArray[fibsArray.length - 1]))
-    var primes;
+    var primes = primesArray.slice();
     if (primesArray[primesArray.length - 1] >= bound) {
       primes = primesArray.filter(v => v <= bound);
     } 
-    else {primes = primesArray.slice()};
     var ar = [];
     var fibs = fibsArray.slice(3);
     fibs.map (f => {
@@ -805,13 +804,56 @@ var innerHTML = h('pre',  `  var innerHTML = function innerHTML (x, v, u, m) {
     return m.ret(x);
   }  `  )
 
+var factorsMonad = h('pre',  `  var factorsMonad = new MonadState('factorsMonad', [ 2, [], 4, [] ], [], factor_state); 
+
+  function factor_state(v) {
+    v[3].map(p => {
+      if (v[2]/p == Math.floor(v[2]/p)) {v[1].push(p)}
+    })
+    return v;
+  }  `  )
+
+var factorsInput = h('pre',  `  var prFactTransformer = function transformer (s, m) {
+    return m.run([s[0], [], O.mMfactors.x, s[3]])
+  }
+
+  const factorsPress$ = sources.DOM
+    .select('input#factors_1').events('keydown');
+
+  const factorsAction$ = factorsPress$.map(e => {
+    mMfactors.ret(e.target.value);
+    if (e.target.value == '') {return};
+    if( e.keyCode == 13 && Number.isInteger(e.target.value*1) ) {
+      var message;
+      var factors = primesMonad.run([primesMonad.s[0], [], e.target.value, primesMonad.a])
+      .bnd(prFactTransformer, factorsMonad).s[1];  // prFactTransformer is defined above
+      if (e.target.value == factors.slice().pop()){
+        message = e.target.value + ' is a prime number'
+      }
+      else {
+        message = 'The prime factors of ' + e.target.value + ' are ' + factors;
+      }
+      document.getElementById('factors_3').innerHTML = message;
+    }
+  });
+             `  )
+
 var seed2 = h('pre',  ` 
+             `  )
+
+var seed4 = h('pre',  ` 
+             `  )
+
+var seed6 = h('pre',  ` 
+             `  )
+
+var seed8 = h('pre',  ` 
              `  )
 
 
 
 
 
-  export default {monad, monadIt, fib, driver, messages, next, Monad$, updateCalc, arrayFuncs, travel, nums, cleanup, ret, C42, taskStream, newTask, process, mM$task, addString, colorClick, edit, testZ, quad, mdem1, runTest, todoStream, inc, ret_add_cube, seed,  add, traverse, MonadState, primesMonad, fibsMonad, primeFibInterface, tr3, fpTransformer, innerHTML  }
+  export default {monad, monadIt, fib, driver, messages, next, Monad$, updateCalc, arrayFuncs, travel, nums, cleanup, ret, C42, taskStream, newTask, process, mM$task, addString, colorClick, edit, testZ, quad, mdem1, runTest, todoStream, inc, ret_add_cube, seed,  add, traverse, MonadState, primesMonad, fibsMonad, primeFibInterface, tr3, fpTransformer, innerHTML, factorsMonad, factorsInput  }
 
 
