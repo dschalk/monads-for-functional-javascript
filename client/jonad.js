@@ -5,26 +5,13 @@ var O = {};
 var count = 0;
 var state, monadState, total;
 
-var MonadStream = function MonadStream(g) {
-  var _this = this;
-  this.id = g;
-  this.stream = mostSubject.subject()
-  this.ret = function (a) {
-    console.log('From ', _this.id, 'a is ', a);
-    _this.stream.next(a);
-    return _this;
-  };
-};
-
-var Monad = function Monad(z, g) {
+var Monad = function Monad(value, ID) {
   var _this = this;
 
-  this.x = z;
-  if (arguments.length === 1) {
-    this.id = 'anonymous';
-  } else {
-    this.id = g;
-  }
+  this.x = value;
+
+  if (arguments.length === 1) this.id = 'anonymous';
+  else this.id = ID;
 
   this.bnd = function (func) {
     for (var _len = arguments.length, args = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
@@ -34,34 +21,10 @@ var Monad = function Monad(z, g) {
   };
 
   this.ret = function (a) {
-    O[_this.id] = new Monad(a,_this.id);
+    O[_this.id] = new Monad(a, _this.id);
     return O[_this.id];
   };
 };
-
-function primeFib (x) {
-  var ar = [];
-  var ar2 = [];
-  var fibs = fibsMonad.run([0, 1, x, []]).a
-  var l = fibs.length - 3;
-  var primes = primesMonad
-  .run([Math.round(Math.sqrt([fibs[fibs.length - 1]])), 6, 0, [2,3,5]]).a
-  fibs.map(f => {
-    ar = [];
-    primes.map(p => {
-      if (f == p || f % p != 0 && f > 1) {
-        ar = ar.slice();     // Avoids mutation   
-        ar.push(f);
-      }
-      if (ar.length == primes.length) {
-        ar = ar.slice();
-        ar2 = ar2.slice();
-        ar2.push(ar.pop());
-      }
-    })
-  })
-  return [ar2, fibs];
-}
 
 var MonadState = function MonadState (g, state, value, p) {
   var _this = this;
@@ -73,7 +36,7 @@ var MonadState = function MonadState (g, state, value, p) {
     for (var _len = arguments.length, args = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
       args[_key - 1] = arguments[_key];
     }
-    return func.apply(undefined, [_this.a].concat(args));
+    return func.apply(undefined, [_this.s].concat(args));   
   };
   this.run = function(st) { 
     let s = _this.process(st); 
@@ -83,97 +46,102 @@ var MonadState = function MonadState (g, state, value, p) {
   }
 }
 
-var mMsT = new Monad([], 'mMsT');
-mMsT.ret([]);
-
-var fibs_state = function fibs_state(ar) { 
-  mMsT.ret(ar.slice());
-  while (O.mMsT.x[3].length < O.mMsT.x[2]) { 
-    mMsT.ret([O.mMsT.x[1], (O.mMsT.x[0]*1 + O.mMsT.x[1]), O.mMsT.x[2], O.mMsT.x[3].concat(O.mMsT.x[0])])
-  }
-  return O.mMsT.x;
+var tr4 = function tr4 (state) {
+  return state[1];
 }
 
-// fibsMonad([0,1,1478,[]) gets all that Javascript can handle.  
+function factor_state(v) {
+  v[3].map(p => {
+    if (v[2]/p == Math.floor(v[2]/p)) {v[1].push(p)}
+  })
+  return v;
+}
+          
+var fpTransformer = function transformer (s, m) {
+var bound = Math.ceil(Math.sqrt(s[3][s[3].length - 1]));
+  if (bound > m.a[m.a.length - 1] ) {
+    m.run([m.s[0], "from the fibKeyPress5$ handler", bound, primesMonad.a])
+  }
+  return m;
+}
 
-var fibsMonad = new MonadState('fibsMonad',  [0, 1, 2, [0, 1]], [],  fibs_state);
+var tr3 = function tr3 (fibsArray, primesArray) {
+  var bound = Math.ceil(Math.sqrt(fibsArray[fibsArray.length - 1]))
+  var primes = primesArray.slice();
+  if (primesArray[primesArray.length - 1] >= bound) {
+    primes = primesArray.filter(v => v <= bound);
+  } 
+  var ar = [];
+  var fibs = fibsArray.slice(3);
+  fibs.map (f => {
+    if ( primesArray.every(p => (f % p != 0 || f == p))) ar.push(f);
+  })
+  return [fibsArray, primes, ar]
+}
 
-var primesMonad = new MonadState('primesMonad', [3, 2, 'primesMonad', [2]], [2],  prS) 
+var fibs_state = function fibs_state(ar) {
+  var a = ar.slice();
+  while (a[3].length < a[2]) {
+    a = [a[1], a[0] + a[1], a[2], a[3].concat(a[0])];
+  }
+  return a
+}
 
-var runFib = function runPrime (x) {
+var primes_state = function primes_state(x) {
+  var v = x.slice();
+    while (2 == 2) {
+      if (v[3].every(e => ((v[0]/e) != Math.floor(v[0]/e)))) {
+        v[3].push(v[0]);
+      }
+      if (v[3][v[3].length - 1] > v[2]) { break };
+      v[0]+=2;
+    }
+  return v;
+}
+
+var fibsMonad = new MonadState('fibsMonad', [0, 1, 3, [0,1]], [0,1], fibs_state  ) 
+
+var factorsMonad = new MonadState('factorsMonad', [ 2, [], 4, [] ], [], factor_state); 
+
+var runPrime = function runPrime (x) {
+  let l = primesMonad.a[primesMonad.a.length - 1]
+  if (l >= x+1) {
+  let ar = primesMonad.a.filter(e => e <= x+1) ;
+  return(ar);
+  }
+  primesMonad.run([primesMonad.s[0], '', x+1, primesMonad.a]);
+  let prms = primesMonad.a;
+  return prms;
+}
+
+// runPrime([Math.round(Math.sqrt(fibMonad.run([fibMonad.s[0], fibsMonad.s[1], 23, fibsMonad.a]).s[0]))])
+var runFib = function runFib (x) {
+  if (fibsMonad.a.length >= x) { 
+    let ar = fibsMonad.a.slice();
+    ar.length = x;
+    return ar;
+  }
   fibsMonad.run([fibsMonad.s[0], fibsMonad.s[1], x, fibsMonad.a]);
   return fibsMonad.a;
 }
 
-function primes_state(x) {
-  var v = x.slice();
+var primesMonad = new MonadState('primesMonad', [2, '', 3, [2]], [2],  primes_state) 
+
+function pFib (fibs, primes) {
+  console.log('Hello from pFib fibs, primes: ', fibs, primes );
   var ar = [];
-  var a = v[0];
-  var b = v[1];
-  var c = v[2];
-  var d = v[3];
-  while (b < a) {
-    d.map(el => {
-      if (b % el != 0) {
-        ar.push(el);
-      }
-    });
-    if (ar.length == d.length) {
-      d.push(ar.pop);
-    }
-    ar = [];
-    b+=1;
-  }
-  return [a, b, c, d];
-}
+  fibs.map (f => {
+    if (f < 2) return;
+    if ( primes.every(p => (f % p != 0 || f == p))) ar.push(f);
+  });
+  return ar;
+};
 
-function prS (v) {
-    console.log('************************************** In prs. v is ', v );
-  var x = primesMonad.a[primesMonad.a.length - 1]
-  if (x < v[0]) {
-    return primes_state(v);
-  }
-  else {
-    let trunc = primesMonad.a.filter(a => a < v[0]);
-    let res = primesMonad.a.slice(0, trunc.length + 1);  // The prime numbers
-    return [v[0], (res[res.length - 1] + 1), 'whatever', res];
-  }
-}
+fibsMonad.run([0,1,5,[]])
 
-
-var runPrime = function runPrime (x) {
-  primesMonad.run([x, primesMonad.s[0], "from runPrime", primesMonad.a]);
-  return primesMonad.a;
-}
-
-primesMonad.run([3, 2, 0, [2]])
-
-
+primesMonad.run([3, '', 5, [2]])
 
 var CURRENT_ROLL = [];
-var mM$1 = new MonadStream('mM$1');
-var mM$taskList = new MonadStream('mM$taskList');
-var mM$3 = new MonadStream('mM$3');
-var mM$2 = new MonadStream('mM$2');
-var mM$todo = new MonadStream('mM$todo');
-var mM$task = new MonadStream('mM$task');
-var mM$todo2 = new MonadStream('mM$todo2');
-var mM$todo3 = new MonadStream('mM$todo3');
-var mM$prime = new MonadStream('mM$prime');
-var mM$primeFibs = new MonadStream('mM$primeFibs');
-var mM$prime2 = new MonadStream('mM$prime2');
-var mM$prime3 = new MonadStream('mM$prime3');
-var mM$prime33 = new MonadStream('mM$prime33');
-var mM$prime333 = new MonadStream('mM$prime333');
-var mM$prime4 = new MonadStream('mM$prime4');
-var mM$prime5 = new MonadStream('mM$prime5');
-
-var mM$fib = new MonadStream('mM$fib');
-var mM$fib2 = new MonadStream('mM$fib2');
-var mM$fib3 = new MonadStream('mM$fib3');
-var mM$fib4 = new MonadStream('mM$fib4');
-var mM$fib5 = new MonadStream('mM$fib5');
-var mM$PF = new MonadStream('mM#PF');
 
 var emitevent;
 var data$;
@@ -243,6 +211,7 @@ var MI = function MI(x) {
 var count = 0;
 var mM1 = M([],'mM1');
 mM1.ret(mM1.x);
+var mMbound = M(0, 'mMbound');
 var mM2 = M(0,'mM2');
 var mM3 = M([],'mM3');
 var mM4 = M([],'mM4');
@@ -251,7 +220,7 @@ var mM6 = M('','mM6');
 var mM7 = M(0,'mM7');
 var mM8 = M(0,'mM8');
 var mM9 = M(0,'mM9');
-var mM10 = M(0,'mM10');
+var m = M(0,'m');
 var mM11 = M([],'mM11');
 var mM12 = M(0,'mM12');
 var mM13 = M(0,'mM13');
@@ -320,7 +289,8 @@ var mMhistorymM1 = new Monad([ret([0,0,0,0],'start')], 'mMhistorymM1');
 var mMhistorymM3 = new Monad([], 'mMhistorymM3');
 var mMhistorymMtask = new Monad([], 'mMhistorymMtask');
 var mMtemp = new Monad('temp', 'mMtemp');
-var mMtemp2 = new Monad('temp', 'mMtemp2');
+var mMtemp2 = new Monad('temp2', 'mMtemp2');
+var mMtemp3 = new Monad('temp3', 'mMtemp3');
 var mMte = new Monad(0, 'mMte');
 var mMid = new Monad('cow', 'mMid');
 var mMhelper = new Monad('helper', 'mMhelper');
@@ -357,8 +327,6 @@ mMsoloAlert.ret(mMsoloAlert.x);
 
 var mMe = new Monad('', 'mMe');
 mMe.ret(mMe.x);
-
-var mMtaskList2 = new MonadStream('mMtaskList2');
 
 var mMgoals = M(0,'mMgoals');
 mMgoals.ret(mMgoals.x);
@@ -524,80 +492,21 @@ var mMitterPrimeFibs = MI();
 var mMitterPF = MI();
 var mMitterPF2 = MI();
 
-
-
-function pFib (fibs, primes) {
-  var ar = [];
-  var ar2 = [];
-  fibs.map(f => {
-    ar = [];
-    primes.map(p => {
-      if (f == p || f % p != 0 && f > 1) {
-        ar.push(f);
-      }
-      if (ar.length == primes.length) {
-        ar2.push(ar.pop());
-      }
-    })
-  })
-  return ar2;
-}
-
-function Fib6(ar) {
-  while (ar[0] < ar[3]+1) {
-    ar[2] = ar[2].concat(ar[0]);
-    ar = [ar[1], ar[0] + ar[1], ar[2], ar[3]];
-  }
-  return ar[2].slice(0, ar[2].length - 5);
-}
-
-function Prime5(ar, n, m) {
-  var result;
-  mMx.ret([ar]);
-  mMy.ret(n);
-  result = f(m);
-  function f(x) {
-    if ((ar[ar.length - 1]) < x) {
-      for (let i in ar) {
-        if ((n % ar[i]) == 0) {
-          n+=1;
-          f(x)
-        }
-        if (i == (ar.length - 1)) {
-          ar = ar.concat(n);
-          f(x)
-        }
-      }
+  var qS1 = function qS1 (a, b, c) {
+    let n = (b*(-1)) + (Math.sqrt(b*b - 4*a*c));
+    if (n != n) {
+      return "No solution";
     }
-    return ar
+    return n/(2*a);
   }
-  mMprimes.ret(result);
-  return result;
-};
 
-
-
-
-
-var sol1 = function sol1 (x,a,b,c,mon) {
-  let n = (b*(-1)) + (Math.sqrt(b*b - 4*a*c));
-  if (n != n) {
-    return mon.ret("no solution");
+  var qS2 = function qS2 (a, b, c) {
+    let n = (b*(-1)) - (Math.sqrt(b*b - 4*a*c));
+    if (n != n) {
+      return "No solution";
+    }
+    return n/(2*a);
   }
-  console.log('in sol1. n is: ', n);
-  let solution = n/(2*a);
-  return mon.ret(solution);
-}
-
-var sol2 = function sol2 (x,a,b,c,mon) {
-  let n = (b*(-1)) - (Math.sqrt(b*b - 4*a*c))
-  if (n != n) {
-    return mon.ret("no solution");
-  }
-  console.log('in sol2. n is: ', n);
-  let solution = n/(2*a);
-  return mon.ret(solution);
-}
 
 var trim = function trim(str) {
   return ret(str.trim());
@@ -642,9 +551,15 @@ var intersection = function (a, b, mon) {
   return mon.ret(ar3);
 }
 
-var intArray = function intArray (x, n) {
-  let ar = Array(n).fill().map((_, i) => i + 1);
+var range = function intArray (x, n) {   // Returns [0, ... n-1]
+  let ar = Array(n).fill().map((_, i) => i);
   return ret(ar);
+}
+
+var range2 = function range2 (x, n) {    // Returns [0, ... n]
+    var arr = Array(n+1);
+    for (var ii = 0; ii <= n; ii++) { arr[ii] = ii; };
+    return ret(arr);
 }
 
 var calc = function calc(a,op,b) { 
@@ -812,34 +727,27 @@ var map = function map(x, f, mon) {
   return ret(x);
 };
 
-var reduce = function reduce(x, f, mon) {
-  console.log('In reduce.  Array.isArray(x), x.length: ', Array.isArray(x), x.length);
-  if (Array.isArray(x) && x.length > 0) {
-    let ar = [];
-    let keys = Object.keys(x);
-    for (let k in keys) {ar[k] = x[k]};
-    console.log('ar in reduce is ', ar);
-    return mon.ret(ar.reduce(f));  
-  }
-  console.log('The value provided to reduce is not an array or is empty . Value: ', x);
-  return ret(x);
+var reduce = function reduce(x) {
+    let ar = x.slice(); 
+    let ar2 = ar.reduce(function(a,b) {return (a + ', ' + b)});
+    return ret(ar2);  
 };
 
-var next = function next(x, y, mon2, a1, a2) {
+var next = function next(x, y, mon2, a) {
   if (x === y) {
-    mon2.release(a1, a2);
+    mon2.release(a);
   }
   return ret(x);
 }
 
-var next2 = function next(x, condition, mon2) {
+var next2 = function next2(x, condition, mon2) {
   if (condition) {
     mon2.release();
   }
   return ret(x);
 }
 
-var next3 = function next(x, y, z, mon2) {
+var next3 = function next3(x, y, z, mon2) {
   if (x === y) {
     mon2.ret(z);
     mon2.release();

@@ -1,9 +1,12 @@
 'use strict';
 
 var O = {};
-
 var count = 0;
-var state, monadState, total;
+var state, monadState, total; 
+var name = "start"
+var group = "solo"
+var score = 0;
+var goals = 0;
 
 var Monad = function Monad(value, ID) {
   var _this = this;
@@ -21,10 +24,54 @@ var Monad = function Monad(value, ID) {
   };
 
   this.ret = function (a) {
-    O[_this.id] = new Monad(a, _this.id);
+    O[_this.id] = new Monad(a,_this.id);
     return O[_this.id];
   };
 };
+
+var MonadSet = function MonadSet(set, ID) {
+  var _this = this;
+
+  this.s = set;
+
+  if (arguments.length === 1) this.id = 'anonymous';
+  else this.id = ID;
+
+  this.bnd = function (func) {
+    for (var _len = arguments.length, args = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
+      args[_key - 1] = arguments[_key];
+    }
+    return func.apply(undefined, [_this.s].concat(args));
+  };
+
+  this.add = function (a) {
+    var ar = Array.from(_this.s);
+    set = new Set(ar);
+    set.add(a);
+    window[_this.id] = new MonadSet(set, _this.id);
+    return window[_this.id];
+  };
+
+  this.delete = function (a) {
+    var ar = Array.from(_this.s);
+    set = new Set(ar);
+    set.delete(a);
+    window[_this.id] = new MonadSet(set, _this.id);
+    return window[_this.id];
+  };
+
+  this.clear = function () {
+    var ar = Array.from(this.s);
+    set = new Set(ar);
+    set.clear();
+    window[_this.id] = new MonadSet(set, _this.id);
+    return window[_this.id];
+  };
+};
+
+var s = new Set();
+
+var sMplayers = new MonadSet(s, 'sMplayers')
 
 var MonadState = function MonadState (g, state, value, p) {
   var _this = this;
@@ -99,9 +146,40 @@ var primes_state = function primes_state(x) {
   return v;
 }
 
+var mMplayer = new Monad([], 'mMplayer');
+
 var fibsMonad = new MonadState('fibsMonad', [0, 1, 3, [0,1]], [0,1], fibs_state  ) 
 
 var factorsMonad = new MonadState('factorsMonad', [ 2, [], 4, [] ], [], factor_state); 
+
+var pMname = new Monad([], 'pMname');
+pMname.ret(pMname.x);
+var pMgroup = new Monad([], 'pMgroup');
+pMgroup.ret('solo');
+var pMscore = new Monad([], 'pMscore');
+pMscore.ret(pMscore.x);
+var pMgoals = new Monad([], 'pMgoals');
+pMgoals.ret(pMgoals.x);
+
+function player_state (v) {
+  var x = v.slice();
+  pMscore.ret(x[0]);
+  pMgoals.ret(x[1]);
+  pMscore.ret(x[2]);
+  pMgoals.ret(x[3]);
+  return x; 
+};
+
+var playerMonad = new MonadState('playerMonad', [name, group, score, goals], '', player_state);
+
+
+playerMonad.run(['new player', 'solo', 0, 0]);
+
+var mMplayerArchive = new Monad([], 'mMplayerArchive')
+
+var clean = function clean (x, mon) {
+  mon.ret([]);
+}
 
 var runPrime = function runPrime (x) {
   let l = primesMonad.a[primesMonad.a.length - 1]
@@ -173,6 +251,8 @@ var testscore = function testscore (v) {
   };
   return ret(v);
 };
+
+var expand = function expand (a,b) {return a + ', ' + b}
 
 var cube = function(v,mon) {
   if (arguments.length === 2) {
@@ -284,6 +364,8 @@ var mMsave = new Monad({x: 'start'}, 'mMsave');
 var mMsavear = new Monad([ret([0,0,0,0])], 'mMsavear');
 var mMindex = new Monad(0, 'mMindex');
 mMindex.ret(mMindex.x)
+var mMindex3 = new Monad(0, 'mMindex3');
+mMindex3.ret(mMindex3.x)
 var mMhistory = new Monad([], 'mMhistory');
 var mMhistorymM1 = new Monad([ret([0,0,0,0],'start')], 'mMhistorymM1');
 var mMhistorymM3 = new Monad([], 'mMhistorymM3');
@@ -646,7 +728,8 @@ var clean = function clean(x, mon) {
 };*/
 
 var push = function push(y, v, mon) {
-  let ar = y.slice().concat(v);
+  let ar = y.slice();
+  ar.push(v);
   return mon.ret(ar);
 }
 
