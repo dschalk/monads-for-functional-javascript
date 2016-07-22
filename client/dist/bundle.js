@@ -8697,7 +8697,7 @@
 	        });
 	      });
 	      mMZ11.bnd(function () {
-	        return socket.send('GG#$42,' + O.pMgroup.x + ',' + O.pMname.x);
+	        return socket.send('NN#$42,' + O.pMgroup.x + ',' + O.pMname.x);
 	      });
 	      mMZ12.bnd(function () {
 	        return mM6.ret(v[2] + ' successfully logged in.');
@@ -8732,6 +8732,7 @@
 	        names.forEach(function (player) {
 	          return sMplayers.add(player.trim());
 	        });
+	        game2();
 	      });
 	    });
 	    mMtemp.ret(e.data.split(',')[0]).bnd(next, 'CA#$42', mMZ10).bnd(next, 'XX#$42', mMZ11).bnd(next, 'CC#$42', mMZ12).bnd(next, 'CD#$42', mMZ13).bnd(next, 'CE#$42', mMZ14).bnd(next, 'EE#$42', mMZ15).bnd(next, 'DE#$42', mMZ16).bnd(next, 'DD#$42', mMZ17).bnd(next, 'CG#$42', mMZ18).bnd(next, 'NN#$42', mMZ19);
@@ -8786,6 +8787,7 @@
 	      socket.send('CO#$42,' + O.pMgroup.x + ',' + O.pMname.x + ',' + e.target.value);
 	      game2();
 	      console.log('In groupPressAction$ ', socket.readyState);
+	      socket.send('NN#$42,' + O.pMgroup.x + ',' + O.pMname.x + ',' + e.target.value);
 	    }
 	  });
 
@@ -9067,17 +9069,18 @@
 	    document.getElementById('1').innerHTML = x[1];
 	    document.getElementById('2').innerHTML = x[2];
 	    document.getElementById('3').innerHTML = x[3];
-	    game2(Array.from(playerMonad.s));
+	    game2();
 	    cleanup();
 	  };
 
 	  var game2 = function game2() {
+	    var ar = Array.from(sMplayers.s);
 	    document.getElementById('sb1').innerHTML = 'Name: ' + O.pMname.x;
 	    document.getElementById('sb2').innerHTML = 'Group: ' + O.pMgroup.x;
 	    document.getElementById('sb3').innerHTML = 'Score: ' + O.pMscore.x;
 	    document.getElementById('sb4').innerHTML = 'Goals: ' + O.pMgoals.x;
 	    document.getElementById('sb5').innerHTML = 'Currently online: ';
-	    document.getElementById('sb6').innerHTML = Array.from(sMplayers.s);
+	    document.getElementById('sb6').innerHTML = ar.join(', ');
 	    cleanup();
 	  };
 

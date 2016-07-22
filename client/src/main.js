@@ -42,7 +42,7 @@ function main(sources) {
     mMtem.ret(e.data.split(',')).bnd(v => {
     console.log('<><><><><><><><><><><><><><><><>  INCOMING  <><><><><><><> >>> In messages. v is ', v );
     mMZ10.bnd(() => mM1.ret([v[3], v[4], v[5], v[6]]).bnd(ar => game(ar))) 
-    mMZ11.bnd(() => socket.send(`GG#$42,${O.pMgroup.x},${O.pMname.x}`))
+    mMZ11.bnd(() => socket.send(`NN#$42,${O.pMgroup.x},${O.pMname.x}`))
     mMZ12.bnd(() => mM6.ret(v[2] + ' successfully logged in.'))
     mMZ13.bnd(() => updateMessages(v))
     mMZ14.bnd(() => mMgoals2.ret('The winner is ' + v[2] ))
@@ -62,6 +62,7 @@ function main(sources) {
       var names = v.slice(3);
       sMplayers.clear();
       names.forEach(player => sMplayers.add(player.trim()))
+      game2();
     }) })
        mMtemp.ret(e.data.split(',')[0])
       .bnd(next, 'CA#$42', mMZ10)
@@ -126,6 +127,7 @@ function main(sources) {
       socket.send('CO#$42,' + O.pMgroup.x  + ',' + O.pMname.x + ',' + e.target.value); 
       game2();
       console.log('In groupPressAction$ ', socket.readyState);
+      socket.send('NN#$42,' + O.pMgroup.x  + ',' + O.pMname.x + ',' + e.target.value); 
     }
   });
 
@@ -426,17 +428,18 @@ function main(sources) {
       document.getElementById('1').innerHTML = x[1];  
       document.getElementById('2').innerHTML = x[2];  
       document.getElementById('3').innerHTML = x[3]; 
-      game2(Array.from(playerMonad.s));
+      game2();
       cleanup();
   };
 
   var game2 = function game2 () {
+      var ar = Array.from(sMplayers.s);
       document.getElementById('sb1').innerHTML = 'Name: ' +  O.pMname.x;
       document.getElementById('sb2').innerHTML = 'Group: ' + O.pMgroup.x
       document.getElementById('sb3').innerHTML = 'Score: ' + O.pMscore.x
       document.getElementById('sb4').innerHTML = 'Goals: ' + O.pMgoals.x
       document.getElementById('sb5').innerHTML = 'Currently online: ';
-      document.getElementById('sb6').innerHTML =  Array.from(sMplayers.s);
+      document.getElementById('sb6').innerHTML =  ar.join(', ');
       cleanup();
   };
  
