@@ -8692,7 +8692,9 @@
 	    mMtem.ret(e.data.split(',')).bnd(function (v) {
 	      console.log('<><><><><><><><><><><><><><><><>  INCOMING  <><><><><><><> >>> In messages. v is ', v);
 	      mMZ10.bnd(function () {
-	        game([v[3], v[4], v[5], v[6]]);
+	        return mM1.ret([v[3], v[4], v[5], v[6]]).bnd(function (ar) {
+	          return game(ar);
+	        });
 	      });
 	      mMZ11.bnd(function () {
 	        return socket.send('GG#$42,' + O.pMgroup.x + ',' + O.pMname.x);
@@ -8730,7 +8732,6 @@
 	        names.forEach(function (player) {
 	          return sMplayers.add(player.trim());
 	        });
-	        game2(playerMonad.s);
 	      });
 	    });
 	    mMtemp.ret(e.data.split(',')[0]).bnd(next, 'CA#$42', mMZ10).bnd(next, 'XX#$42', mMZ11).bnd(next, 'CC#$42', mMZ12).bnd(next, 'CD#$42', mMZ13).bnd(next, 'CE#$42', mMZ14).bnd(next, 'EE#$42', mMZ15).bnd(next, 'DE#$42', mMZ16).bnd(next, 'DD#$42', mMZ17).bnd(next, 'CG#$42', mMZ18).bnd(next, 'NN#$42', mMZ19);
@@ -8740,18 +8741,18 @@
 	    if (playerMonad.s[0] == v[2]) {
 	      O.mMindex3.bnd(add, 1, mMindex3);
 	      mMplayer.bnd(push, playerMonad.s, mMplayer);
-	      playerMonad.run([playerMonad.s[0], playerMonad.s[1], playerMonad.s[2] * 1 + v[3] * 1, v[4]]).bnd(function (v) {
-	        return game2(v);
-	      });
+	      playerMonad.run([playerMonad.s[0], playerMonad.s[1], playerMonad.s[2] * 1 + v[3] * 1, v[4]]);
+	      game2();
 	    }
 	  };
 
 	  var updateMessages = function updateMessages(ar) {
-	    console.log('In updateMessages ar is >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>', ar);
+	    console.log('In updateMessages ar is >>>>>>>>>>>>>>', ar);
 	    var sender = ar[2];
 	    mMhelper.ret(ar).bnd(splice, 0, 3, mMhelper).bnd(reduce).bnd(function (v) {
 	      return O.mMmsg.bnd(unshift, (0, _dom.h)('div', sender + ': ' + v), mMmsg);
 	    });
+	    console.log('In updateMessages ', socket.readyState);
 	  };
 
 	  var loginPress$ = sources.DOM.select('input#login').events('keypress');
@@ -8762,34 +8763,29 @@
 	      return;
 	    }
 	    if (e.keyCode == 13) {
-	      socket.send("CC#$42" + v);
-	      playerMonad.run([v, 'solo', 0, 0]).bnd(function (v) {
-	        return game2(v);
+	      socket.send("CC#$42" + e.target.value);
+	      playerMonad.run([e.target.value, 'solo', 0, 0]);
+	      pMname.ret(e.target.value).bnd(function () {
+	        return game2();
 	      });
-	      pMname.ret(v.trim());
 	      mM3.ret([]).bnd(mM2.ret);
-	      e.target.value = '';
 	      document.getElementById('dice').style.display = 'block';
 	      document.getElementById('rightPanel').style.display = 'block';
 	      document.getElementById('log1').style.display = 'none';
 	      document.getElementById('log2').style.display = 'block';
 	      document.getElementById('gameDiv2').style.display = 'block';
+	      console.log('In loginPressAction$ ', socket.readyState);
 	    }
 	  });
 
 	  var groupPress$ = sources.DOM.select('input#group').events('keypress');
 
 	  var groupPressAction$ = groupPress$.map(function (e) {
-	    var v = e.target.value;
 	    if (e.keyCode == 13) {
-	      sMplayers.clear();
-	      pMgroup.ret(v);
-	      socket.send('CO#$42,' + v + ',' + O.pMname.x + ',' + v);
-	      mMgoals.ret(0);
-	      playerMonad.run([playerMonad.s[0], v, 0, 0]).bnd(function (v) {
-	        return game2(v);
-	      });
-	      socket.send('GG#$42,' + O.pMgroup.x + ',' + O.pMname.x);
+	      playerMonad.run([playerMonad.s[0], e.target.value, 0, 0]);
+	      socket.send('CO#$42,' + O.pMgroup.x + ',' + O.pMname.x + ',' + e.target.value);
+	      game2();
+	      console.log('In groupPressAction$ ', socket.readyState);
 	    }
 	  });
 
@@ -8799,6 +8795,7 @@
 	    if (e.keyCode == 13) {
 	      socket.send('CD#$42,' + O.pMgroup.x + ',' + O.pMname.x + ',' + e.target.value);
 	      e.target.value = '';
+	      console.log('In messagePressAction$ ', socket.readyState);
 	    }
 	  });
 
@@ -8820,7 +8817,7 @@
 	        document.getElementById('alert').innerHTML = alert;
 	      }
 	      var ar2 = ar.slice(2);
-	      console.log('*************************************$$$$$$$$$$$_ar ', ar);
+	      console.log('*************  newTaskAction$  ************************$$$$$$$$$$$  ar ', ar);
 	      if (ar2.length == 1) {
 	        task = ar[2];
 	      }
@@ -8856,7 +8853,7 @@
 	    var s = ar.reduce(function (a, b) {
 	      return a + ',' + b;
 	    });
-	    console.log('In process. ar and s are: ', ar, s);
+	    // console.log('In process. ar and s are: ', ar, s);
 	    var tempArray = [];
 	    if (ar.length < 6) {
 	      return;
@@ -9007,49 +9004,20 @@
 	    socket.send('CA#$42,' + O.pMgroup.x + ',' + O.pMname.x + ',6,6,12,20');
 	  });
 
-	  var forwardClick$ = sources.DOM.select('#forward').events('click');
-
-	  var backClick$ = sources.DOM.select('#back').events('click');
-
-	  var forwardAction$ = forwardClick$.map(function () {
-	    if (O.mMindex.x < O.mMhistorymM1.x.length - 1) {
-	      O.mMindex.bnd(add, 1, mMindex).bnd(function (v) {
-	        return trav(v);
-	      });
-	    }
-	    if (O.mMindex3.x < O.mMplayer.x.length - 1) {
-	      O.mMindex3.bnd(add, 1, mMindex).bnd(function (v) {
-	        return sbTrav(v);
-	      });
-	    }
-	  });
-
-	  var backAction$ = backClick$.map(function () {
-	    if (O.mMindex.x > 0) {
-	      O.mMindex.bnd(add, -1, mMindex).bnd(function (v) {
-	        return trav(v);
-	      });
-	      socket.send('DE#$42,' + O.pMgroup.x + ',' + O.pMname.x + ', clicked the BACK button. ');
-	    }
-	    if (O.mMindex.x > 0) {
-	      O.mMindex3.bnd(add, -1, mMindex).bnd(function (v) {
-	        return sbTrav(v);
-	      });
-	    }
-	  });
-
 	  var numClick$ = sources.DOM.select('.num').events('click');
 
 	  var numClickAction$ = numClick$.map(function (e) {
 	    if (O.mM3.x.length < 2) {
-	      O.mM3.bnd(push, e.target.innerHTML, O.mM3);
-	      mMtemp.ret(O.mMhistorymM1.x[O.mMindex.x].x).bnd(splice, e.target.id, 1, mMtemp).bnd(function (v) {
-	        return game(v);
-	      });
-	    };
+	      O.mM3.bnd(push, e.target.innerHTML, mM3);
+	      var ar = O.mMhistorymM1.x[O.mMindex.x].slice();
+	      ar.splice(e.target.id, 1);
+	      mM1.ret(ar);
+	      game(ar);
+	    }
 	    if (O.mM3.x.length === 2 && O.mM8.x !== 0) {
+	      console.log('7777777777777777777777777777  In numClickAction$ heading for updateCalc.  O.mM1.x is ', O.mM1.x);
 	      updateCalc();
-	    };
+	    }
 	  }).startWith([0, 0, 0, 0]);
 
 	  var opClick$ = sources.DOM.select('.op').events('click');
@@ -9061,61 +9029,83 @@
 	    }
 	  });
 
-	  var game = function game(v) {
-	    mM1.ret(v);
+	  var forwardClick$ = sources.DOM.select('#forward').events('click');
+
+	  var backClick$ = sources.DOM.select('#back').events('click');
+
+	  var forwardAction$ = forwardClick$.map(function () {
+	    if (O.mMindex.x < O.mMhistorymM1.x.length - 1) {
+	      O.mMindex.bnd(add, 1, mMindex).bnd(function (v) {
+	        return trav(v);
+	      });
+	    }
+	  });
+
+	  var backAction$ = backClick$.map(function () {
+	    if (O.mMindex.x > 0) {
+	      O.mMindex.bnd(add, -1, mMindex).bnd(function (v) {
+	        return trav(v);
+	      });
+	      socket.send('DE#$42,' + O.pMgroup.x + ',' + O.pMname.x + ', clicked the BACK button. ');
+	    }
+	  });
+
+	  var game = function game(z) {
+	    console.log('>>>>>>>>>>>>>>> game has been called. O.mMindex.x and z are ', O.mMindex.x, z);
+	    var x = z.slice();
+	    var onlinePlayers;
 	    O.mMindex.bnd(add, 1, mMindex).bnd(function (i) {
-	      return O.mMhistorymM1.bnd(spliceAdd, i, O.mM1, O.mMhistorymM1);
+	      return O.mMhistorymM1.bnd(spliceAdd, i, x, mMhistorymM1).bnd(function () {
+	        return O.mMplayerArchive.bnd(spliceAdd, i, playerMonad.s, O.mMplayerArchive);
+	      }).bnd(function () {
+	        return O.mMsetArchive.bnd(spliceAdd, i, sMplayers.s, mMsetArchive);
+	      }).bnd(function () {
+	        return console.log('In game. >>>>>>>>>>>>>>>>>>>>>>>>>> i is ', i);
+	      });
 	    });
-	    document.getElementById('0').innerHTML = O.mM1.x[0];
-	    document.getElementById('1').innerHTML = O.mM1.x[1];
-	    document.getElementById('2').innerHTML = O.mM1.x[2];
-	    document.getElementById('3').innerHTML = O.mM1.x[3];
+	    document.getElementById('0').innerHTML = x[0];
+	    document.getElementById('1').innerHTML = x[1];
+	    document.getElementById('2').innerHTML = x[2];
+	    document.getElementById('3').innerHTML = x[3];
+	    game2(Array.from(playerMonad.s));
 	    cleanup();
 	  };
 
-	  var game2 = function game2(v) {
-	    var a = Array.from(sMplayers.s);
-	    var ar = a.map(function (a) {
-	      return ' ' + a;
-	    });
-	    console.log('In game2 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> ar is ', ar);
-	    document.getElementById('sb1').innerHTML = 'Name: ' + v[0];
-	    document.getElementById('sb2').innerHTML = 'Group: ' + v[1];
-	    document.getElementById('sb3').innerHTML = 'Score: ' + v[2];
-	    document.getElementById('sb4').innerHTML = 'Goals: ' + v[3];
+	  var game2 = function game2() {
+	    document.getElementById('sb1').innerHTML = 'Name: ' + O.pMname.x;
+	    document.getElementById('sb2').innerHTML = 'Group: ' + O.pMgroup.x;
+	    document.getElementById('sb3').innerHTML = 'Score: ' + O.pMscore.x;
+	    document.getElementById('sb4').innerHTML = 'Goals: ' + O.pMgoals.x;
 	    document.getElementById('sb5').innerHTML = 'Currently online: ';
-	    document.getElementById('sb6').innerHTML = ar;
+	    document.getElementById('sb6').innerHTML = Array.from(sMplayers.s);
 	    cleanup();
 	  };
 
-	  var trav = function trav(v) {
-	    document.getElementById('0').innerHTML = O.mMhistorymM1.x[v].x[0];
-	    document.getElementById('1').innerHTML = O.mMhistorymM1.x[v].x[1];
-	    document.getElementById('2').innerHTML = O.mMhistorymM1.x[v].x[2];
-	    document.getElementById('3').innerHTML = O.mMhistorymM1.x[v].x[3];
-	    cleanup();
-	  };
-
-	  var sbTrav = function sbTrav(v) {
-	    if (O.mMplayer.x[v] != undefined) {
-	      document.getElementById('3').innerHTML = 'Score: ' + O.mMplayer.x[v][2];
-	      document.getElementById('3').innerHTML = 'Goals: ' + O.mMplayer.x[v][3];
-	    };
+	  var trav = function trav(index) {
+	    // v is the navegation index
+	    document.getElementById('0').innerHTML = O.mMhistorymM1.x[index].x[0];
+	    document.getElementById('1').innerHTML = O.mMhistorymM1.x[index].x[1];
+	    document.getElementById('2').innerHTML = O.mMhistorymM1.x[index].x[2];
+	    document.getElementById('3').innerHTML = O.mMhistorymM1.x[index].x[3];
+	    document.getElementById('sb3').innerHTML = 'Score: ' + O.mMplayerArchive.x[index][2];
+	    document.getElementById('sb4').innerHTML = 'Goals: ' + O.mMplayerArchive.x[index][3];
+	    document.getElementById('sb6').innerHTML = Array.from(O.mMsetArchive.x[index].s);
 	    cleanup();
 	  };
 
 	  function updateCalc() {
 	    O.mM3.bnd(function (x) {
-	      return mM7.ret(calc(x[0], O.mM8.x, x[1])).bnd(function (result) {
-	        O.mM1.bnd(push, result, mM1).bnd(function (z) {
-	          return game(z);
+	      return mM7.ret(calc(x[0], O.mM8.x, x[1])).bnd(function (res) {
+	        return O.mM1.bnd(push, res, mM1).bnd(function (result) {
+	          game(result);
+	          console.log('In updateCalc x, res, O.mM1.x, and result are ', x, res, O.mM1.x, result);
+	          if (res == 20) {
+	            score(O.mM13.x, 1);
+	          }
+	          if (res == 18) {
+	            score(O.mM13.x, 3);
+	          }
 	        });
-	        if (result == 20) {
-	          score(O.mM13.x, 1);
-	        };
-	        if (result == 18) {
-	          score(O.mM13.x, 3);
-	        };
 	      });
 	    });
 	    reset();
@@ -9142,7 +9132,7 @@
 	      if (mMgoals.x = 2) mMplayer.ret([]);
 	      mMgoals.ret(O.mMgoals.x == 2 ? 0 : O.mMgoals.x + 1);
 	      mM13.ret(0).bnd(mMindex.ret);
-	      mMhistorymM1.ret([ret([0, 0, 0, 0])]);
+	      mMhistorymM1.ret([0, 0, 0, 0]);
 	      socket.send('CG#$42,' + O.pMgroup.x + ',' + O.pMname.x + ',' + -x + ',' + O.mMgoals.x);
 	      if (O.mMgoals.x == 0) {
 	        socket.send('CE#$42,' + O.pMgroup.x + ',' + O.pMname.x + ',nothing ');
@@ -9268,7 +9258,7 @@
 
 	  // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> END prime factors END
 
-	  // <>>><>><><><><>>>><><><  traversal  ><><><><><><>>><><><><><><><><><><><>< START traversal  
+	  // ?<>>><>><><><><>>>><><><  traversal  ><><><><><><>>><><><><><><><><><><><>< START traversal  
 
 	  window.onload = function (event) {
 	    console.log('onopen event: ', event);

@@ -71,7 +71,7 @@ var MonadSet = function MonadSet(set, ID) {
 
 var s = new Set();
 
-var sMplayers = new MonadSet(s, 'sMplayers')
+var sMplayers = new MonadSet(s, 'sMplayers')  // holds currently online players
 
 var MonadState = function MonadState (g, state, value, p) {
   var _this = this;
@@ -152,19 +152,19 @@ var fibsMonad = new MonadState('fibsMonad', [0, 1, 3, [0,1]], [0,1], fibs_state 
 
 var factorsMonad = new MonadState('factorsMonad', [ 2, [], 4, [] ], [], factor_state); 
 
-var pMname = new Monad([], 'pMname');
+var pMname = new Monad('new player', 'pMname');
 pMname.ret(pMname.x);
-var pMgroup = new Monad([], 'pMgroup');
+var pMgroup = new Monad('solo', 'pMgroup');
 pMgroup.ret('solo');
-var pMscore = new Monad([], 'pMscore');
-pMscore.ret(pMscore.x);
-var pMgoals = new Monad([], 'pMgoals');
-pMgoals.ret(pMgoals.x);
+var pMscore = new Monad(0, 'pMscore');
+pMscore.ret(0);
+var pMgoals = new Monad(0, 'pMgoals');
+pMgoals.ret(0);
 
 function player_state (v) {
   var x = v.slice();
-  pMscore.ret(x[0]);
-  pMgoals.ret(x[1]);
+  pMname.ret(x[0]);
+  pMgroup.ret(x[1]);
   pMscore.ret(x[2]);
   pMgoals.ret(x[3]);
   return x; 
@@ -176,6 +176,10 @@ var playerMonad = new MonadState('playerMonad', [name, group, score, goals], '',
 playerMonad.run(['new player', 'solo', 0, 0]);
 
 var mMplayerArchive = new Monad([], 'mMplayerArchive')
+mMplayerArchive.ret([]);
+
+var mMsetArchive = new Monad([], 'mMsetArchive');
+mMsetArchive.ret([]);
 
 var clean = function clean (x, mon) {
   mon.ret([]);
@@ -744,21 +748,15 @@ var spliceRemove = function spliceRemove(x, index, location, mon) {
 };
 
 var spliceAdd = function spliceAdd(x, index, value, mon) {
-  if (Array.isArray(x)) {
-    let ar = [];
-    let keys = Object.keys(x);
-    for (let k in keys) {ar[k] = x[k]};
+    let ar = x.slice(); 
     ar.splice(index, 0, value);
     return mon.ret(ar);  
-  }
-  console.log('The value provided to spliceAdd is not an array');
-  return ret(x);
 };
 
-var splice = function splice(x, start, n, mon) {
+var splice = function splice(x, start, howmany, mon) {
   if (Array.isArray(x)) {
     let ar = x.slice();
-    ar.splice(start, n);
+    ar.splice(start, howmany);
     return mon.ret(ar);  
   }
   console.log('The value provided to splice is not an array');
