@@ -175,8 +175,8 @@ var playerMonad = new MonadState('playerMonad', [name, group, score, goals], '',
 
 playerMonad.run(['new player', 'solo', 0, 0]);
 
-var mMplayerArchive = new Monad([], 'mMplayerArchive')
-mMplayerArchive.ret([]);
+var mMplayerArchive = new Monad(['start', 'solo', 0, 0], 'mMplayerArchive')
+mMplayerArchive.ret(mMplayerArchive.x);
 
 var mMsetArchive = new Monad([], 'mMsetArchive');
 mMsetArchive.ret([]);
@@ -371,7 +371,7 @@ mMindex.ret(mMindex.x)
 var mMindex3 = new Monad(0, 'mMindex3');
 mMindex3.ret(mMindex3.x)
 var mMhistory = new Monad([], 'mMhistory');
-var mMhistorymM1 = new Monad([ret([0,0,0,0],'start')], 'mMhistorymM1');
+var mMhistorymM1 = new Monad([0,0,0,0], 'mMhistorymM1');
 var mMhistorymM3 = new Monad([], 'mMhistorymM3');
 var mMhistorymMtask = new Monad([], 'mMhistorymMtask');
 var mMtemp = new Monad('temp', 'mMtemp');

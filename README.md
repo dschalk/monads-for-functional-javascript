@@ -72,6 +72,49 @@ Here are some definitions, which can also be seen at [the online presentation](h
     return window[id];
   }
 ```
+## MonadSet
+```javascript
+  var MonadSet = function MonadSet(set, ID) {
+    var _this = this;
+  
+    this.s = set;
+  
+    if (arguments.length === 1) this.id = 'anonymous';
+    else this.id = ID;
+  
+    this.bnd = function (func, ...args) {
+       return func(_this.x, ...args);
+    };
+  
+    this.add = function (a) {
+      var ar = Array.from(_this.s);
+      set = new Set(ar);
+      set.add(a);
+      window[_this.id] = new MonadSet(set, _this.id);
+      return window[_this.id];
+    };
+  
+    this.delete = function (a) {
+      var ar = Array.from(_this.s);
+      set = new Set(ar);
+      set.delete(a);
+      window[_this.id] = new MonadSet(set, _this.id);
+      return window[_this.id];
+    };
+  
+    this.clear = function () {
+      var ar = Array.from(this.s);
+      set = new Set(ar);
+      set.clear();
+      window[_this.id] = new MonadSet(set, _this.id);
+      return window[_this.id];
+    };
+  };
+
+var s = new Set();
+
+var sMplayers = new MonadSet(s, 'sMplayers')  // holds currently online players
+```
 ## MonadItter example
 MonadItter instance mMZ3 calls its bnd() method three times. User input releases it three times, each time supplying a number to the quadratic equation `a*x*x + b*x + c = 0 `. When mMZ3 is released the third time, an attempt is made to find solutions using the quadratic formula. Here is the code:
 ```javascript  

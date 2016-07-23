@@ -42,7 +42,7 @@ function main(sources) {
     mMtem.ret(e.data.split(',')).bnd(v => {
     console.log('<><><><><><><><><><><><><><><><>  INCOMING  <><><><><><><> >>> In messages. v is ', v );
     mMZ10.bnd(() => mM1.ret([v[3], v[4], v[5], v[6]]).bnd(ar => game(ar))) 
-    mMZ11.bnd(() => socket.send(`NN#$42,${O.pMgroup.x},${O.pMname.x}`))
+    mMZ11.bnd(() => socket.send('NN#$42,' + O.pMgroup.x + ',' + O.pMname.x))
     mMZ12.bnd(() => mM6.ret(v[2] + ' successfully logged in.'))
     mMZ13.bnd(() => updateMessages(v))
     mMZ14.bnd(() => mMgoals2.ret('The winner is ' + v[2] ))
@@ -60,7 +60,6 @@ function main(sources) {
     mMZ18.bnd(() => player(v))
     mMZ19.bnd(() => {
       var names = v.slice(3);
-      sMplayers.clear();
       names.forEach(player => sMplayers.add(player.trim()))
       game2();
     }) })
@@ -420,10 +419,11 @@ function main(sources) {
     console.log('>>>>>>>>>>>>>>> game has been called. O.mMindex.x and z are ', O.mMindex.x, z);
     var x = z.slice();
     var onlinePlayers;
-        O.mMindex.bnd(add, 1, mMindex).bnd(i => O.mMhistorymM1.bnd(spliceAdd, i, x, mMhistorymM1)
-          .bnd(() => O.mMplayerArchive.bnd(spliceAdd, i, playerMonad.s, O.mMplayerArchive)) 
-          .bnd(() => O.mMsetArchive.bnd(spliceAdd, i, sMplayers.s, mMsetArchive) ) 
-          .bnd(() => console.log('In game. >>>>>>>>>>>>>>>>>>>>>>>>>> i is ', i))  )          
+    O.mMindex.bnd(add, 1, mMindex)
+          .bnd(i => O.mMhistorymM1.bnd(spliceAdd, i, x, mMhistorymM1)
+            .bnd(() => O.mMplayerArchive.bnd(spliceAdd, i, playerMonad.s, O.mMplayerArchive)) 
+            .bnd(() => O.mMsetArchive.bnd(spliceAdd, i, sMplayers.s, mMsetArchive) ) 
+            .bnd(() => console.log('In game. >>>>>>>>>>>>>>>>>>>>>>>>>> i is ', i))  )          
       document.getElementById('0').innerHTML = x[0];  
       document.getElementById('1').innerHTML = x[1];  
       document.getElementById('2').innerHTML = x[2];  
@@ -443,14 +443,16 @@ function main(sources) {
       cleanup();
   };
  
-  var trav = function trav (index) {   // v is the navegation index
-    document.getElementById('0').innerHTML = (O.mMhistorymM1.x[index].x)[0]; 
-    document.getElementById('1').innerHTML = (O.mMhistorymM1.x[index].x)[1]; 
-    document.getElementById('2').innerHTML = (O.mMhistorymM1.x[index].x)[2]; 
-    document.getElementById('3').innerHTML = (O.mMhistorymM1.x[index].x)[3];
+  var trav = function trav (index) {       
+    document.getElementById('0').innerHTML = O.mMhistorymM1.x[index][0]; 
+    document.getElementById('1').innerHTML = O.mMhistorymM1.x[index][1]; 
+    document.getElementById('2').innerHTML = O.mMhistorymM1.x[index][2]; 
+    document.getElementById('3').innerHTML = O.mMhistorymM1.x[index][3];
     document.getElementById('sb3').innerHTML = 'Score: ' + O.mMplayerArchive.x[index][2];
     document.getElementById('sb4').innerHTML = 'Goals: ' + O.mMplayerArchive.x[index][3];
-    document.getElementById('sb6').innerHTML =  Array.from(O.mMsetArchive.x[index].s);
+    if (pMgroup.x != 'solo') {
+      document.getElementById('sb6').innerHTML =  Array.from(O.mMsetArchive.x[index].s);
+    }
     cleanup();
   };
 
@@ -807,10 +809,11 @@ function main(sources) {
         h('span', 'Change group: '  ),
         h('input#group' ) ]),
         h('p',  O.mMsoloAlert.x  ),
-        h('p', 'People who are in the same group, other than solo, share the same todo list, messages, and simulated dice game. In order to see any of these, you must establish an identity on the server by logging in. The websockets connection terminates if the first message the server receives does not come from the sign in form. You can enter any random numbers or letters you like. The only check is to make sure someone hasn\t already signed in with whatever you have selected. '  ),
+        h('p', 'People who are in the same group, other than solo, share the same todo list, messages, and simulated dice game. In order to see any of these, you must establish an identity on the server by logging in. The websockets connection terminates if the first message the server receives does not come from the sign in form. You can enter any random numbers or letters you like. The only check is to make sure someone hasn\t already signed in with whatever you have selected. If you log in with a name that is already in use, a message will appear and this page will be re-loaded in the browser after a four-second pause. '  ),
+        h('p', ' Data for the traversable game history accumulates until a player scores. The data array is then re-set to [], the empty array. When a player clicks the BACK button, other group members are notified. It is up to the group to decide whether clicking the BACK button disqualifies a player. ' ),
         h('hr' ),
         h('h1', 'The Monads'  ),     
-        h('p', ' I call instances of the Monad and MonadState constructors "monads". Instances of Monad can probably be shown to be category theory monads in a restricted space where the bnd() method takes only a single argument, and that argument is a function mapping any Javascript value to some instance of Monad. But bnd() can take multiple arguments, and the return value doesn\'t have to be an instance of Monad. As you will see, I impose some restrictions on what I do with Monad instances for the sake of maintainability, predictability, and organization. If I had helpers on a project, I would ask them to do the same. I wouldn\'t modify the code to make it throw whenever someone attempted to deviate from the restrictions. Some would say that such a modification would be helpful, catching potential bugs before things went too far. I think it would be insulting; and who knows, there might be occasions when deviating would be the sensible thing to do. Anyway, here is Monad:  '  ),
+        h('p', ' The term "monad" in this presentation refers to any instance of the Monad, MonadSet, or MonadState constructors. Instances of Monad behave like category theory monads in the restricted space in which the bnd() method takes only a single argument, and that argument is a function mapping any Javascript value to some instance of Monad. But the "monads" described here can do much more than that. bnd() can take multiple arguments, and the return value doesn\'t have to be an instance of Monad. As you will see, I adhere to certain restrictions regarding what I do with Monad instances as this makes the overall application (this web page) more maintainable, predictable, and organized. If I were working on a team effort, I would want everyone to to refrain from straying outside of certain guidelines. For example, the value held by an instance of Monad (defined below), say m, should be changed only by use of the ret() method. m.ret(7) results in O.m.x == 7. m.x = 7 mutates m. O.m.x = 7 mutates O.m. The value of m, rather than O.m, can be changed without mutation by the expression ret(7, "m"), resulting in m.x == 7. But avoiding that, and using only the ret() method, keeps the current states of all instances of Monad in a single location: on the unique globle and mutable object O. Here is the definition of Monad:  '  ),
         h('h2', ' Monad ' ),
         code.monad,
         h('p', ' Monad\'s bnd() and ret() methods provide functionality similar to the Haskell ">>=" (pronounced "bind") operator and the Haskell "return" function. They even conform to the optional Haskell monad laws. The following equality expressions demonstrate how the monads work.Note that ret(v) creates a monad with m.id == "Anonymous" and x = v, and for any monad instance m with m.id == "m", and some Javascript value v, m.ret(v) creates or mutates O.m such that O.m.id = "m" and O.m.x == v. The Monad instance m remains unchanged. Let m be an instance of Monad and let v be any Javascript value (number, array, function, monad, ...), then the following expressions return true:  '),
@@ -824,7 +827,7 @@ function main(sources) {
        h('p', ' If the values of Monad instances are updated only through the use of the Monad ret() method, then the current state of the Monad instances exists in the mutable, global object named "O". Keeping changing monad state in one place (on the object "O") makes applications easier to reason about and easier to maintain. I treat Monad instances as though they were immutable, updating them only through the use of their ret() methods.   ' ),
         h('p', ' In the examples shown on this page, the initial values of instances of Monad remain unchaged. The ret() method places updated instances of the monad calling ret() on O. From the definition of ret() we know that for any monad m and value v, m.ret(v) updates O.m such that O.m.x = v. The ret() method does not mutate the instances of Monad referenced by the attributes of O. For any instance of Monad named "m" with id "m" and value v (i.e., m.x == v is true), m.ret(v2) creates a new attribute of O with key "m" or, if O.m already exists. m.ret(v2) mutates O by changing the value to which O.m refers. Before the change, O.m.x == v. After m.ret(v2), O.m.x == v2. For most practical purposes, it is as if O.m.x is the only thing that changed. But O.m is not mutated. If there is a reference to the original O.m, it will be preserved and calls to m.ret() will not affect it. Every time m.ret() is called, O.m refers to a newly created semi-clone of m with m.x referring to a (usually) different value. The traversable game display keeps replaced monads named "O.mM1" in an array named "O.mMhistorymM1".  ' ),
         h('h3', 'Examples' ),
-        h('p', ' The convention "a == b" in this presentation signifies that a == b is true. I press f12 and the press CTRL-R to reboot and then select "console", I can cut and paste the following expressions into the browser console and verify that the are true. I have installed developer tools, so this might not work for you immediately. ' ), 
+        h('p', ' The convention "a == b" in this presentation signifies that a == b is true. I press f12 and then CTRL-R to reload the browser window with access ot the monad.js script in index.html. I then select "console", where I can cut and paste the following expressions into the browser console and verify that the are true. I have installed developer tools, so this might not work for you immediately. ' ), 
         h('p', ' From the definition of Monad, you can see that m1.bnd(m2.ret) results in m2.ret(m1.x) being called. After that operation, O.m2.x == v where m1.x == v. And if O.m1.x == v2, O.m1.bnd(m2.ret) results in O.m2.x == v2. If these assertions are perplexing, just take another look at the definition of Monad and work through the transformations one step at a time. Here are some examples of the use of the Monad methods bnd() and ret(): '  ),
         h('span.red3', 'cube(3)' ),
         h('span.td2', ' creates an anonymous monad with x == 27 and id == "anonymous". ' ),
@@ -936,6 +939,10 @@ function main(sources) {
        code.fibsMonad, 
         h('p', ' The other MonadState instance used in this demonstration is primesMonad. Here is its definition along with the function that becomes primesMonad.process:  ' ),  
         code.primesMonad,
+
+
+
+
         h('h3', ' MonadState transformers ' ),
         h('p', ' Transformers take instances of MonadState and return different instances of MonadState, possibly in a modified state. The method call "fibsMonad.bnd(fpTransformer, primesMonad)" returns primesMonad. Here is the definition of fpTransformer: ' ),
         code.fpTransformer,  
@@ -963,7 +970,7 @@ function main(sources) {
         h('span#PF_8.red6', 'Prime Fibonacci Numbers' ),  
         h('br' ),
         h('span#primeFibs.red7'  ),  
-        h('p', ' The next demonstration uses two instances of MonadState to find the prime factors of numbers. On my desktop computer, it took several seconds to verify that 514229 is a prime number. Due to persistent (until the web page closes) memoization, numbers below 514229 or not too far above it evaluated rapidly. Enter a number below to see its prime factors. ' ),
+        h('p', ' The next demonstration uses two instances of MonadState to find the prime factors of numbers. Each prime factor is listed once. On my desktop computer, it took several seconds to verify that 514229 is a prime number. After that, due to persistent (until the web page closes) memoization, numbers below 514229 or not too far above it evaluated rapidly. Here\'s where you can enter a number to see its prime factors: ' ),
         h('input#factors_1'  ),
         h('br' ),
         h('span#factors_2.red6'  ),  
@@ -984,9 +991,20 @@ function main(sources) {
          h('h3', ' Monad Updates ' ),
        h('p', 'All monad updates caused by the monad ret() method are stored in the object "O". When a monad m executes m.ret(v) for some value "v", m remains unchanged and the O attribute O.m is created or, if it already exists, is replaced by the update; i.e., O.m.x == v becomes true. Older versions of m are subject to garbage collection unless there is a reference to them or to an object (arrays are objects) containing m.  This is illustrated in the score-keeping code below.  All score changes are captured by mM13.ret(). Therefore, O.mM13.x is always the current score. Replacing monad attributes in O is vaguely analogous to swapping out ServerState in the Haskell server\'s state TMVar. Older versions of ServerState can be preserved in the server just as prior versions of O.mM13 can be preserved in the front end. ' ),     
        h('h3', 'Storing Monads That Have Been Replaced In O'  ),
-       h('p', ' The history of the number display in the game can be traversed in either direction until a player achieves a goal. After that, the traversable history builds up until another goal is achieves. Players can use historical displays, so to keep competition fair, group members are notified when another member clicks the BACK button. '  ),
-       code.traverse,  
-       h('p', ' It would have been more efficient to just save the arrays rather than the monads that hold them. But this isn\'t about recommended practices right now. It is a demonstration of a use of the not-mutated monads on the mutable global object "O". I write "not-mutated" because the monads can be clobbered anytime you want. But if values are replaced using the Monad ret() method, as is the case in this demonstration, monads on "O" are replaced, not mutated. '  ),
+       h('p', ' The history of the number display and scoreboard in the game can be traversed in either direction until a player scores a goal. After that, the traversable history is deleted and then builds up until another goal is achieves. Players can score points using historical displays, so to keep competition fair, group members are notified when another member clicks the BACK button. The code is shown below, in the MonadSet section; but first, here is some backgrould. '  ),
+
+
+
+       h('h3', ' playerMonad ' ), 
+       h('p', ' playerMonad and its process attribute are defined as follows: ' ),
+       code.playerMonad,
+       h('p', ' As you see, playerMonad.run does one simple thing; it updates the four monads in the player_state function. There are various ways of achieving the same result, but MonadState provides a convenient alternative. Next, I will show how the list of currently online group members is maintained through the use of an instance of MonadSet. ' ),
+       h('h2', ' MonadSet ' ),
+       h('p', ' The list of online group members at the bottom of the scoreboard is very responsive to change. When someone joins the group, a message prefixed by NN#$42 prompts the server to send out the current list of group members. When someone closes their browser window, the server is programmed to send out the new list of group members. All updating is done in the websockets messages function. MonadSet\'s add and delete methods provide convenient alternatives to using Monad\'s bnd method with the push and splice functions. Here are the definitions of MonadSet and the MonadSet instance sMplayers ' ),
+       code.MonadSet,
+       h('p', ' Because sMplayer is immutable, its most recent state can be safely stored in the O.mMsetArchive instance of Monad. This is done so the traversable game history shows who was online in each step. Here is the code that keeps the browser window current and, at the same time, maintains a history of the sate of game play. ' ),
+       code.traverse,
+       h('p', ' You must log in and enter something in the "Change group" box in order to see currently online members. You can open this page in more windws and see how promptly additions and exits are shown in the scoreboard. ' ),
  
 
 

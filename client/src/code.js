@@ -105,16 +105,15 @@ var driver = h('pre', `  var websocketsDriver = function () {
 
 var messages = h('pre', `  const messages$ = (sources.WS).map(e => 
     mMtem.ret(e.data.split(',')).bnd(v => {
-    mMZ10.bnd(() => game([v[3], v[4], v[5], v[6]]))
-    mMZ11.bnd(() => updateScoreboard(v[3]));
-    mMZ12.bnd(() => mM6
-      .ret(v[2] + ' successfully logged in.'))
+    console.log('<><><><><><><><><><><><><><><><>  INCOMING  <><><><><><><> >>> In messages. v is ', v );
+    mMZ10.bnd(() => mM1.ret([v[3], v[4], v[5], v[6]]).bnd(ar => game(ar))) 
+    mMZ11.bnd(() => socket.send('NN#$42,' + O.pMgroup.x + ',' + O.pMname.x))
+    mMZ12.bnd(() => mM6.ret(v[2] + ' successfully logged in.'))
     mMZ13.bnd(() => updateMessages(v))
     mMZ14.bnd(() => mMgoals2.ret('The winner is ' + v[2] ))
-    mMZ15.bnd(() => mMgoals2.ret('A player named ' + 
-      O.mMname.x + 'is currently logged in. Page will refresh in 4 seconds.')
-      .bnd(refresh))
-    mMZ16.bnd(() => {if (O.mMname.x != v[2]) {mMgoals2.ret(v[2] + v[3])}})
+    mMZ15.bnd(() => mMgoals2.ret('A player named ' + v[2] + ' is currently logged in. Page will refresh in 4 seconds.')
+    .bnd(refresh))
+    mMZ16.bnd(() => {if (O.pMname.x != v[2]) {mMgoals2.ret(v[2] + v[3])}})
     mMZ17.bnd(() => {
       if (v[3] == 'no file') {
         mMtaskList.ret([])
@@ -123,81 +122,117 @@ var messages = h('pre', `  const messages$ = (sources.WS).map(e =>
         process(e.data)
       }
     })
-    mMtemp.ret(e.data.split(',')[0])
+    mMZ18.bnd(() => player(v))
+    mMZ19.bnd(() => {
+      var names = v.slice(3);
+      names.forEach(player => sMplayers.add(player.trim()))
+      game2();
+    }) })
+       mMtemp.ret(e.data.split(',')[0])
       .bnd(next, 'CA#$42', mMZ10)
-      .bnd(next, 'CB#$42', mMZ11)
+      .bnd(next, 'XX#$42', mMZ11)
       .bnd(next, 'CC#$42', mMZ12)
       .bnd(next, 'CD#$42', mMZ13)
       .bnd(next, 'CE#$42', mMZ14)
       .bnd(next, 'EE#$42', mMZ15)
       .bnd(next, 'DE#$42', mMZ16)
       .bnd(next, 'DD#$42', mMZ17)
-    }) 
-  });
-              
-  var next = function next(x, y, mon2) {
-    if (x === y) {
-      mon2.release();
-    }
-    return ret(x);
-  }`  )
+      .bnd(next, 'CG#$42', mMZ18)
+      .bnd(next, 'NN#$42', mMZ19)
+  });  `  )
 
-var Monad$ = h('pre',  `  var Monad$ = function Monad$(z, g) {
-      var _this = this;
-      this.subject = subject();
-      this.observer = this.subject.observer;
-      this.stream = this.subject.stream;
-      this.x = z;
-      this.id = g;
-
-      this.bnd = function (func, ...args) {
-         return func(_this.x, ...args);
-      };
-
-      this.ret = function (a) {
-        O[_this.id] = new Monad$(a,_this.id);
-        _this.observer.next(a);
-        return O[_this.id];
-      };
+var MonadSet = h('pre',  `  var MonadSet = function MonadSet(set, ID) {
+    var _this = this;
+  
+    this.s = set;
+  
+    if (arguments.length === 1) this.id = 'anonymous';
+    else this.id = ID;
+  
+    this.bnd = function (func) {
+      for (var _len = arguments.length, args = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
+        args[_key - 1] = arguments[_key];
+      }
+      return func.apply(undefined, [_this.s].concat(args));
     };
-  `  )
+  
+    this.add = function (a) {
+      var ar = Array.from(_this.s);
+      set = new Set(ar);
+      set.add(a);
+      window[_this.id] = new MonadSet(set, _this.id);
+      return window[_this.id];
+    };
+  
+    this.delete = function (a) {
+      var ar = Array.from(_this.s);
+      set = new Set(ar);
+      set.delete(a);
+      window[_this.id] = new MonadSet(set, _this.id);
+      return window[_this.id];
+    };
+  
+    this.clear = function () {
+      var ar = Array.from(this.s);
+      set = new Set(ar);
+      set.clear();
+      window[_this.id] = new MonadSet(set, _this.id);
+      return window[_this.id];
+    };
+  };  `  )
 
-var nums = h('pre',  `  
-    const numClick$ = sources.DOM
+var nums = h('pre',  `    const numClick$ = sources.DOM
       .select('.num').events('click');
        
     const numClickAction$ = numClick$.map(e => {
-      console.log(e);
       if (O.mM3.x.length < 2) {
-        O.mM3.bnd(push, e.target.innerHTML, O.mM3)
-        mM28.ret(O.mMhistorymM1.x[O.mMindex2.x])
-        .bnd(spliceRemove, e.target.id, mMtemp)
-        .bnd(v => game(v));
-        if (O.mM3.x.length === 2 && O.mM8.x !== 0) {
-          updateCalc();
-        }
-      };
+        O.mM3.bnd(push, e.target.innerHTML, mM3)
+        var ar = O.mMhistorymM1.x[O.mMindex.x].slice()
+        ar.splice(e.target.id, 1)
+        mM1.ret(ar);
+        game(ar);
+      }
+      if (O.mM3.x.length === 2 && O.mM8.x !== 0) {
+        console.log('7777777777777777777777777777  In numClickAction$ heading for updateCalc.  O.mM1.x is ', O.mM1.x);
+        updateCalc();
+      }
     }).startWith([0,0,0,0]);
-
+      
     const opClick$ = sources.DOM
       .select('.op').events('click');
-  
+   
     const opClickAction$ = opClick$.map(e => {
       mM8.ret(e.target.textContent);
       if (O.mM3.x.length === 2) {
         updateCalc();
       }
     })
-
-    var game = function game (v) {
-        mM1.ret(v);
-        O.mMindex.bnd(add, 1, mMindex)
-        .bnd(i => O.mMhistorymM1.bnd(spliceAdd, i, O.mM1, O.mMhistorymM1))
-        document.getElementById('0').innerHTML = O.mM1.x[0];  
-        document.getElementById('1').innerHTML = O.mM1.x[1];  
-        document.getElementById('2').innerHTML = O.mM1.x[2];  
-        document.getElementById('3').innerHTML = O.mM1.x[3];  
-        cleanup()
+   
+    var game = function game (z) {
+      console.log('>>>>>>>>>>>>>>> game has been called. O.mMindex.x and z are ', O.mMindex.x, z);
+      var x = z.slice();
+      var onlinePlayers;
+          O.mMindex.bnd(add, 1, mMindex).bnd(i => O.mMhistorymM1.bnd(spliceAdd, i, x, mMhistorymM1)
+            .bnd(() => O.mMplayerArchive.bnd(spliceAdd, i, playerMonad.s, O.mMplayerArchive)) 
+            .bnd(() => O.mMsetArchive.bnd(spliceAdd, i, sMplayers.s, mMsetArchive) ) 
+            .bnd(() => console.log('In game. >>>>>>>>>>>>>>>>>>>>>>>>>> i is ', i))  )          
+        document.getElementById('0').innerHTML = x[0];  
+        document.getElementById('1').innerHTML = x[1];  
+        document.getElementById('2').innerHTML = x[2];  
+        document.getElementById('3').innerHTML = x[3]; 
+        game2();
+        cleanup();
+    };
+  
+    var game2 = function game2 () {
+        var ar = Array.from(sMplayers.s);
+        document.getElementById('sb1').innerHTML = 'Name: ' +  O.pMname.x;
+        document.getElementById('sb2').innerHTML = 'Group: ' + O.pMgroup.x
+        document.getElementById('sb3').innerHTML = 'Score: ' + O.pMscore.x
+        document.getElementById('sb4').innerHTML = 'Goals: ' + O.pMgoals.x
+        document.getElementById('sb5').innerHTML = 'Currently online: ';
+        document.getElementById('sb6').innerHTML =  ar.join(', ');
+        cleanup();
     };
   });  `  )
 
@@ -267,33 +302,39 @@ var cleanup = h('pre',  `  function cleanup (x) {
       return ret(x);
   }; `  )
 
-  var travel = h('pre',  `  const forwardClick$ = sources.DOM
-      .select('#forward2').events('click');
-  
-    const backClick$ = sources.DOM
-      .select('#back2').events('click');
-  
-    const forwardClickAction$ = forwardClick$.map(() => {
-      if (O.mMindex2.x < (O.mMhistorymM1.x.length - 1)) {
-        inc(O.mMindex2.x, mMindex2)
-        .bnd(() => mM$3.ret('Hello'))
+  var travel = h('pre',  `    const forwardClick$ = sources.DOM
+      .select('#forward').events('click');
+   
+      const backClick$ = sources.DOM
+        .select('#back').events('click');
+     
+      const forwardAction$ = forwardClick$.map(() => {
+        if (O.mMindex.x < (O.mMhistorymM1.x.length - 1)) {
+          O.mMindex.bnd(add, 1, mMindex)
+          .bnd(v => trav(v))
+        }
+      });
+     
+      const backAction$ = backClick$.map(() => {
+        if (O.mMindex.x > 0) {
+          O.mMindex.bnd(add, -1, mMindex)
+          .bnd(v => trav(v))
+          socket.send('DE#$42,' + O.pMgroup.x + ',' + O.pMname.x + ', clicked the BACK button. ');
+        }
+      });
+    
+    var trav = function trav (index) {       
+      document.getElementById('0').innerHTML = O.mMhistorymM1.x[index][0]; 
+      document.getElementById('1').innerHTML = O.mMhistorymM1.x[index][1]; 
+      document.getElementById('2').innerHTML = O.mMhistorymM1.x[index][2]; 
+      document.getElementById('3').innerHTML = O.mMhistorymM1.x[index][3];
+      document.getElementById('sb3').innerHTML = 'Score: ' + O.mMplayerArchive.x[index][2];
+      document.getElementById('sb4').innerHTML = 'Goals: ' + O.mMplayerArchive.x[index][3];
+      if (pMgroup.x != 'solo') {
+        document.getElementById('sb6').innerHTML =  Array.from(O.mMsetArchive.x[index].s);
       }
-    });
-  
-    const backClickAction$ = backClick$.map(() => {
-      if (O.mMindex2.x > 0) {
-        dec(O.mMindex2.x, mMindex2)
-        .bnd(() => mM$3.ret('You bet!'))
-      }
-    });
-
-    const mM$3Action$ = mM$3.stream.map(v => {
-      document.getElementById('0').innerHTML = (O.mMhistorymM1.x[O.mMindex2.x])[0]; 
-      document.getElementById('1').innerHTML = (O.mMhistorymM1.x[O.mMindex2.x])[1]; 
-      document.getElementById('2').innerHTML = (O.mMhistorymM1.x[O.mMindex2.x])[2]; 
-      document.getElementById('3').innerHTML = (O.mMhistorymM1.x[O.mMindex2.x])[3]; 
       cleanup();
-    })  `  )
+    };    `  )
 
   var C42 = h('pre',  `  mMZ10.bnd(() => mM$1
      .ret([O.mMar.x[3], O.mMar.x[4], O.mMar.x[5], O.mMar.x[6]])
@@ -304,7 +345,7 @@ var cleanup = h('pre',  `  function cleanup (x) {
      .bnd(displayInline,'3'));  `  )
 
   var taskStream = h('pre',  `  
-    });  `  )
+      `  )
 
   var deleteTask2 = h('pre',  `  mMZ19.bnd(() => O.mM$task.bnd(spliceRemove, O.mMar.x[3], mM$task));
   `  )
@@ -679,46 +720,65 @@ var ret_add_cube = h('pre',  `  var ret = function ret(v, id) {
 
 var seed = h('pre',  `  mM$prime.ret([[2],3])  `  )
 
-var traverse = h('pre',  ` 
-  const forwardClick$ = sources.DOM
+var traverse = h('pre',  `  const forwardClick$ = sources.DOM
     .select('#forward').events('click');
-
+ 
   const backClick$ = sources.DOM
     .select('#back').events('click');
-
+ 
   const forwardAction$ = forwardClick$.map(() => {
     if (O.mMindex.x < (O.mMhistorymM1.x.length - 1)) {
       O.mMindex.bnd(add, 1, mMindex)
-      .bnd(mM$3.ret)
+      .bnd(v => trav(v))
     }
   });
-
+ 
   const backAction$ = backClick$.map(() => {
     if (O.mMindex.x > 0) {
       O.mMindex.bnd(add, -1, mMindex)
-      .bnd(mM$3.ret)
-      socket.send('DE#$42,' + O.mMgroup.x.trim() + ',' + O.mMname.x.trim() + ', clicked the BACK button. ');
+      .bnd(v => trav(v))
+      socket.send('DE#$42,' + O.pMgroup.x + ',' + O.pMname.x + ', clicked the BACK button. ');
     }
   });
 
-  var game = function game (v) {
-      mM1.ret(v);
-      O.mMindex.bnd(add, 1, mMindex)
-      .bnd(i => O.mMhistorymM1.bnd(spliceAdd, i, O.mM1, O.mMhistorymM1))
-      document.getElementById('0').innerHTML = O.mM1.x[0];  
-      document.getElementById('1').innerHTML = O.mM1.x[1];  
-      document.getElementById('2').innerHTML = O.mM1.x[2];  
-      document.getElementById('3').innerHTML = O.mM1.x[3];  
-      cleanup()
+  var game = function game (z) {  // Runs each time a number is clicked
+    var x = z.slice();
+        O.mMindex.bnd(add, 1, mMindex)
+          .bnd(i => O.mMhistorymM1.bnd(spliceAdd, i, x, mMhistorymM1)
+            .bnd(() => O.mMplayerArchive.bnd(spliceAdd, i, playerMonad.s, O.mMplayerArchive)) 
+            .bnd(() => O.mMsetArchive.bnd(spliceAdd, i, sMplayers.s, mMsetArchive) ) 
+            .bnd(() => console.log('In game. >>>>>>>>>>>>>>>>>>>>>>>>>> i is ', i))  )          
+      document.getElementById('0').innerHTML = x[0];  
+      document.getElementById('1').innerHTML = x[1];  
+      document.getElementById('2').innerHTML = x[2];  
+      document.getElementById('3').innerHTML = x[3]; 
+      game2();
+      cleanup();
   };
 
-  var trav = function trav (v) {
-    document.getElementById('0').innerHTML = (O.mMhistorymM1.x[v].x)[0]; 
-    document.getElementById('1').innerHTML = (O.mMhistorymM1.x[v].x)[1]; 
-    document.getElementById('2').innerHTML = (O.mMhistorymM1.x[v].x)[2]; 
-    document.getElementById('3').innerHTML = (O.mMhistorymM1.x[v].x)[3]; 
+  var game2 = function game2 () {
+      var ar = Array.from(sMplayers.s);
+      document.getElementById('sb1').innerHTML = 'Name: ' +  O.pMname.x;  // kept current by playerMonad
+      document.getElementById('sb2').innerHTML = 'Group: ' + O.pMgroup.x
+      document.getElementById('sb3').innerHTML = 'Score: ' + O.pMscore.x
+      document.getElementById('sb4').innerHTML = 'Goals: ' + O.pMgoals.x
+      document.getElementById('sb5').innerHTML = 'Currently online: ';
+      document.getElementById('sb6').innerHTML =  ar.join(', ');
+      cleanup();
+  };
+ 
+  var trav = function trav (index) {       
+    document.getElementById('0').innerHTML = O.mMhistorymM1.x[index][0]; 
+    document.getElementById('1').innerHTML = O.mMhistorymM1.x[index][1]; 
+    document.getElementById('2').innerHTML = O.mMhistorymM1.x[index][2]; 
+    document.getElementById('3').innerHTML = O.mMhistorymM1.x[index][3];
+    document.getElementById('sb3').innerHTML = 'Score: ' + O.mMplayerArchive.x[index][2];
+    document.getElementById('sb4').innerHTML = 'Goals: ' + O.mMplayerArchive.x[index][3];
+    if (pMgroup.x != 'solo') {
+      document.getElementById('sb6').innerHTML =  Array.from(O.mMsetArchive.x[index].s);
+    }
     cleanup();
-  }  `  )
+  };  `  )
 
 var MonadState = h('pre',  `  var MonadState = function MonadState (g, state, value, p) {
     var _this = this;
@@ -838,11 +898,57 @@ var factorsInput = h('pre',  `  var prFactTransformer = function prFactTransform
   });
              `  )
 
-var seed2 = h('pre',  ` 
-             `  )
+var playerMonad = h('pre',  `  var playerMonad = new MonadState('playerMonad', [name, group, score, goals], '', player_state);
 
-var seed4 = h('pre',  ` 
-             `  )
+  function player_state (v) {
+    var x = v.slice();
+    pMname.ret(x[0]);
+    pMgroup.ret(x[1]);
+    pMscore.ret(x[2]);
+    pMgoals.ret(x[3]);
+    return x; 
+  };  `  )
+
+var MonadSet = h('pre',  `  var MonadSet = function MonadSet(set, ID) {
+    var _this = this;
+  
+    this.s = set;
+  
+    if (arguments.length === 1) this.id = 'anonymous';
+    else this.id = ID;
+  
+    this.bnd = function (func, ...args) {
+       return func(_this.x, ...args);
+    };
+  
+    this.add = function (a) {
+      var ar = Array.from(_this.s);
+      set = new Set(ar);
+      set.add(a);
+      window[_this.id] = new MonadSet(set, _this.id);
+      return window[_this.id];
+    };
+  
+    this.delete = function (a) {
+      var ar = Array.from(_this.s);
+      set = new Set(ar);
+      set.delete(a);
+      window[_this.id] = new MonadSet(set, _this.id);
+      return window[_this.id];
+    };
+  
+    this.clear = function () {
+      var ar = Array.from(this.s);
+      set = new Set(ar);
+      set.clear();
+      window[_this.id] = new MonadSet(set, _this.id);
+      return window[_this.id];
+    };
+  };
+  
+  var s = new Set();
+  
+  var sMplayers = new MonadSet( s, 'sMplayers' )  `  )
 
 var seed6 = h('pre',  ` 
              `  )
@@ -854,6 +960,6 @@ var seed8 = h('pre',  `
 
 
 
-  export default {monad, monadIt, fib, driver, messages, next, Monad$, updateCalc, arrayFuncs, travel, nums, cleanup, ret, C42, taskStream, newTask, process, mM$task, addString, colorClick, edit, testZ, quad, mdem1, runTest, todoStream, inc, ret_add_cube, seed,  add, traverse, MonadState, primesMonad, fibsMonad, primeFibInterface, tr3, fpTransformer, innerHTML, factorsMonad, factorsInput  }
+  export default {monad, monadIt, fib, driver, messages, next, MonadSet, updateCalc, arrayFuncs, travel, nums, cleanup, ret, C42, taskStream, newTask, process, mM$task, addString, colorClick, edit, testZ, quad, mdem1, runTest, todoStream, inc, ret_add_cube, seed,  add, traverse, MonadState, primesMonad, fibsMonad, primeFibInterface, tr3, fpTransformer, innerHTML, factorsMonad, factorsInput, playerMonad, MonadSet  }
 
 
