@@ -172,7 +172,6 @@ function player_state (v) {
 
 var playerMonad = new MonadState('playerMonad', [name, group, score, goals], '', player_state);
 
-
 playerMonad.run(['new player', 'solo', 0, 0]);
 
 var mMplayerArchive = new Monad(['start', 'solo', 0, 0], 'mMplayerArchive')
@@ -263,6 +262,11 @@ var cube = function(v,mon) {
     return mon.ret(v*v*v);
   }
   return ret(v*v*v);
+}
+
+var p = function p (x) {
+  if (x >= 0) {return ' + ' + x}
+  if (x < 0 ) {return ' - ' + Math.abs(x)}
 }
 
 var double = function(v) {

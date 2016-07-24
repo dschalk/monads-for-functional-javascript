@@ -60,7 +60,6 @@ function main(sources) {
     mMZ18.bnd(() => player(v))
     mMZ19.bnd(() => {
       var names = v.slice(3);
-      sMplayers.clear();
       names.forEach(player => sMplayers.add(player.trim()))
       game2();
     }) })
@@ -144,7 +143,8 @@ function main(sources) {
 
   var task2 = function task (str) { 
     console.log('In taskAction$. str is: ', str)
-    socket.send('TD#$42' + ',' + O.pMgroup.x + ',' + O.pMname.x + ',' + '@' + str);
+    socket.send('TD#$42' + ',' + O.pMgroup.x + 
+        ',' + O.pMname.x + ',' + '@' + str);
   };
 
   const newTask$ = sources.DOM
@@ -654,28 +654,20 @@ function main(sources) {
   });
 
   var solve = function solve () {
-    mMZ3.bnd(a => 
-    mMtemp.ret(a)           
-    .bnd(innerHTML, '', 'quad6', mMtemp)         
-    .bnd(innerHTML, a + " * x * x ", 'quad5', mMtemp)
-    .bnd(a =>
-        mMZ3.bnd(b =>  mMtemp.ret(b)
-        .bnd(innerHTML, " + " + b + " * x ", 'quad6', mMtemp).bnd(b =>
-            mMZ3.bnd(c => {
-                let x = p(qS1(a,b,c));
-                let y = p(qS2(a,b,c));
-                document.getElementById('quad5').innerHTML =
-                  p(a).text + " * " + x.text + " * " + x.text + " + " + p(b).text + " * " + x.text + " " + p(c).text + " = 0"
-                document.getElementById('quad6').innerHTML =
-                  p(a).text + " * " + y.text + " * " + y.text + " + " + p(b).text + " * " + y.text + " " + p(c).text + " = 0"   
-                solve();
-            })))))
-  }();
-
-  var innerHTML = function innerHTML (x, v, u, m) { 
-    document.getElementById(u).innerHTML = v;
-    return m.ret(x);
-  }  
+    var a;
+    var b;
+    mMZ3.bnd(x => a = x); 
+    innerHTML('quad5', a + " * x * x ")
+    mMZ3.bnd(z => b = z);
+    innerHTML('quad6', " + " + b + " * x ")
+    mMZ3.bnd(c => { 
+        let x = qS1(a,b,c);
+        let y = qS2(a,b,c);  
+        innerHTML('quad5', 'The results are: x = ' + x + ' and x =');
+        innerHTML('quad6', y); 
+        solve();
+    }) 
+  }()
 
   const quad$ = sources.DOM
     .select('#quad').events('keypress')
@@ -686,6 +678,10 @@ function main(sources) {
       document.getElementById('quad').value = '';
     }
   });
+
+  var innerHTML = function innerHTML (id, expression) {  
+    document.getElementById(id).innerHTML = expression;
+  }
 
 
   const dummyClick$ = sources.DOM
@@ -922,10 +918,10 @@ function main(sources) {
         h('br' ),
         h('span', 'Please enter an integer here: ' ), 
         h('input#testW' ), 
-        h('p', ' Here is another example. It demonstrates lambda expressions passing values to a remote location for use in a computation. If you enter three numbers consecutively below, call them a, b, and c, then the quadratic equation will be used to find solutions for a*x**2 + b*x + c = 0. The a, b, and c you select might not have a solution. If a and b are positive numbers, you are likely to see solutions if c is a negative number. For example, 12, 12, and -24 yields the solutions 1 and -2. ' ),
+        h('p', ' Here is another example. It demonstrates lambda expressions passing values to a remote location for use in a computation. If you enter three numbers consecutively below, I\'ll call them a, b, and c, then the quadratic equation will be used to find solutions for a*x**2 + b*x + c = 0. The a, b, and c you select might not have a solution. If a and b are positive numbers, you are likely to see solutions if c is a negative number. For example, 12, 12, and -24 yields the solutions 1 and -2. ' ),
         h('p.#quad4.code2'  ),
-        h('p#quad5.red2' ),
-        h('p#quad6.red2'  ),
+        h('span#quad5.red2' ),
+        h('span#quad6.red8'  ),
         h('p' , 'Run mMZ3.release(v) three times for three numbers. The numbers are a, b, and c in ax*x + b*x + c = 0: ' ),
         h('input#quad' ),  
         h('p', 'Here is the code:' ),
@@ -1005,12 +1001,12 @@ function main(sources) {
        code.MonadSet,
        h('p', ' Because sMplayer is immutable, its most recent state can be safely stored in the O.mMsetArchive instance of Monad. This is done so the traversable game history shows who was online in each step. Here is the code that keeps the browser window current and, at the same time, maintains a history of the sate of game play. ' ),
        code.traverse,
-       h('p', ' You must log in and enter something in the "Change group" box in order to see currently online members. You can open this page in more windws and see how promptly additions and exits show up in the scoreboard. ' ),
+       h('p', ' You must log in and enter something in the "Change group" box in order to see currently online members. You can open this page in more windws and see how promptly additions and exits are shown in the scoreboard. ' ),
  
 
 
         h('h2', 'Updating the DOM'  ),
-        h('p', ' Two general methods work in Motorcycle. Sometimes I keep m.x in the virtual DOM code for some monad m. If a user performs some action that cause m.x to have a new value, the actual DOM changes accordingly. Other times I use document.getElementById("someId").innerHTMO = newValue.' ),
+        h('h3', 'Todo List DOM Updates' ),
         h('br' ),
         h('h3', 'Dice Game DOM updates' ),
         h('p', ' mMcurrentRoll.ret() is called only when (1) a new dice roll comes in from the server, (2) when a player clicks a number, and (3) when clicking a number or operator results in a computation being performed. These are the three things that require a DOM update. When a player clicks a number, it disappears from number display. When a computation is performed, the result is added to the number display, unless the result is 18 or 20. A result of 18 or 20 results in a new roll coming in from the server ' ),
@@ -1067,6 +1063,8 @@ function main(sources) {
         h('pre',
 `  var m = new Monad(v, "m");
   ret(v, "m");  `  ),  
+        h('p', 'Let m be a monad with id == "m" and value v. Its bnd() method can return an anonymous monad, a new named monad, or a previously existing monad containing the computation result. To illustrate, here is the definition of "add" along with five uses of it: ' ),
+        code.add,  
         h('p'  ), 
         h('hr'),
         h('hr' ),  

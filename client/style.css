@@ -33,7 +33,7 @@ input {
 }
 
 .tao1 {
-  margin-left: 3%;
+  margin-left: 3%
   color: #b5f4ce;
   font-size: 28px;
 }
@@ -89,6 +89,7 @@ input {
 }
 
 .red8 {
+  margin: 3.5%;
   color: #ff0000;
   font-size: 28px;
 }

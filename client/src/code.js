@@ -595,17 +595,23 @@ var cleanup = h('pre',  `  function cleanup (x) {
     .bnd(innerHTML, '', 'quad6', mMtemp)         
     .bnd(innerHTML, a + " * x * x ", 'quad5', mMtemp)
     .bnd(a =>
-        mMZ3.bnd(b =>  mMtemp.ret(b)
-        .bnd(innerHTML, " + " + b + " * x ", 'quad6', mMtemp).bnd(b =>
-            mMZ3.bnd(c => {
-                let x = qS1(a,b,c);
-                let y = qS2(a,b,c);  
-                document.getElementById('quad5').innerHTML = 
-                  'The results are: x = ' + x + ' and x =';
-                document.getElementById('quad6').innerHTML = y; 
-                solve();
-            })))))
+      mMZ3.bnd(b =>  mMtemp.ret(b)
+      .bnd(innerHTML, " + " + b + " * x ", 'quad6', mMtemp).bnd(b =>
+        mMZ3.bnd(c => {
+          let x = p(qS1(a,b,c));
+          let y = p(qS2(a,b,c));
+          document.getElementById('quad5').innerHTML =
+            p(a).text + " * " + x.text + " * " + x.text + " + " + p(b).text + " * " + x.text + " " + p(c).text + " = 0"
+          document.getElementById('quad6').innerHTML =
+            p(a).text + " * " + y.text + " * " + y.text + " + " + p(b).text + " * " + y.text + " " + p(c).text + " = 0"   
+          solve();
+        })))))
   }();
+
+  var p = function p (x) { 
+    if (x >= 0) {return ' + ' + x}
+    if (x < 0 ) {return ' - ' + Math.abs(x)}
+  }
 
   var qS1 = function qS1 (a, b, c) {
     let n = (b*(-1)) + (Math.sqrt(b*b - 4*a*c));
