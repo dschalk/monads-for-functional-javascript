@@ -620,8 +620,6 @@ function main(sources) {
     }
   });
 
-
-
 // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> END prime factors END
 
 // ?<>>><>><><><><>>>><><><  traversal  ><><><><><><>>><><><><><><><><><><><>< START traversal  
@@ -665,9 +663,11 @@ function main(sources) {
                 let x = p(qS1(a,b,c));
                 let y = p(qS2(a,b,c));
                 document.getElementById('quad5').innerHTML =
-                  p(a).text + " * " + x.text + " * " + x.text + " + " + p(b).text + " * " + x.text + " " + p(c).text + " = 0"
+                  p(a).text + " * " + x.text + " * " + x.text + " + " + p(b).text + 
+                      " * " + x.text + " " + p(c).text + " = 0"
                 document.getElementById('quad6').innerHTML =
-                  p(a).text + " * " + y.text + " * " + y.text + " + " + p(b).text + " * " + y.text + " " + p(c).text + " = 0"   
+                  p(a).text + " * " + y.text + " * " + y.text + " + " + p(b).text + 
+                      " * " + y.text + " " + p(c).text + " = 0"   
                 solve();
             })))))
   }();
@@ -686,7 +686,6 @@ function main(sources) {
       document.getElementById('quad').value = '';
     }
   });
-
 
   const dummyClick$ = sources.DOM
     .select('#dummy').events('click');
@@ -982,10 +981,19 @@ function main(sources) {
         code.factorsMonad,
         h('p', ' And this is how user input is handled: ' ),
         code.factorsInput,
-        
-
 
 //************************************************************************************************************* END MonadState
+//************************************************************************************************************* BEGIN Promises
+     
+        h('h2', ' PROMISES ' ),
+        h('p', ' Using the ES2015 Promises API inside of monads is easy. For example, consider the function "promis", defined as follows: ' ),
+        code.promise,
+        h('p', ' Running the following code causes O.m.x == 42 after two seconds. ' ),
+        code.promiseSnippet,
+        h('p', ' After a two-second delay, the Promise returns an anonymous monad with a value of 27 (O.anonymous.x == 27). The then statement passes 27 to m and adds 14 to it, resulting in O.m.x == 42. This pattern can be used to define less trivial functions that handle database calls, functions that don\'t return immediately, etc. And, of course, ES2015 Promises API error handling can be added. The "anonymous monad" isn\'t entirely anonymous. True, it doesn\'t have a name, but O.anonymous holds the result of calling cube with only two arguments. data is O.anonymous in the expression "data => m.ret(data.x).bnd(add, 15, m)" ' ),
+
+
+
         h('h2', 'Immutable Data And The State Object "O" ' ),
         h('h3', ' Mutations   ' ),
        h('p', ' Mutations in this application are confined to the global state object "O", MonadIter instances, and within function scope. Functions in this application do not have side effects. If a function argument is an array, say "ar", I make a clone by calling "var ar = ar.slice()" or "let ar2 = ar.slice()" before mutating ar or ar2 inside the function. That way, the original ar remains uneffected. MonadItter instances don\'t have monadic properties. When their bnd() method is called, they sit idly until their release() method is called. I don\t see any reason to make a clone each time bnd() or release() is called. As demonstrated below, a MonadItter instance can hold several different expressions simultaneously, executing them one at a time in the order in which they appear in the code, once each time the release() method is called, In the quadratic equation demonstration, the second call to relase() takes the relult from the first call  ' ),
@@ -1072,15 +1080,6 @@ function main(sources) {
         h('hr' ),  
         h('a', {props: {href: '#top'}}, 'Back To The Top'   ),  
         h('p'  ),  
-        h('button#alex','O'  ),  
-        h('p'  ),  
-        h('br'),  
-        h('br'),  
-        h('br'),  
-        h('br'),  
-        h('br'),  
-        h('br'),  
-        h('br'),  
         h('br'),  
         h('br'),  
         h('br'),  

@@ -595,17 +595,19 @@ var cleanup = h('pre',  `  function cleanup (x) {
     .bnd(innerHTML, '', 'quad6', mMtemp)         
     .bnd(innerHTML, a + " * x * x ", 'quad5', mMtemp)
     .bnd(a =>
-      mMZ3.bnd(b =>  mMtemp.ret(b)
-      .bnd(innerHTML, " + " + b + " * x ", 'quad6', mMtemp).bnd(b =>
-        mMZ3.bnd(c => {
-          let x = p(qS1(a,b,c));
-          let y = p(qS2(a,b,c));
-          document.getElementById('quad5').innerHTML =
-            p(a).text + " * " + x.text + " * " + x.text + " + " + p(b).text + " * " + x.text + " " + p(c).text + " = 0"
-          document.getElementById('quad6').innerHTML =
-            p(a).text + " * " + y.text + " * " + y.text + " + " + p(b).text + " * " + y.text + " " + p(c).text + " = 0"   
-          solve();
-        })))))
+        mMZ3.bnd(b =>  mMtemp.ret(b)
+        .bnd(innerHTML, " + " + b + " * x ", 'quad6', mMtemp).bnd(b =>
+            mMZ3.bnd(c => {
+                let x = p(qS1(a,b,c));
+                let y = p(qS2(a,b,c));
+                document.getElementById('quad5').innerHTML =
+                  p(a).text + " * " + x.text + " * " + x.text + " + " + p(b).text + 
+                      " * " + x.text + " " + p(c).text + " = 0"
+                document.getElementById('quad6').innerHTML =
+                  p(a).text + " * " + y.text + " * " + y.text + " + " + p(b).text + 
+                      " * " + y.text + " " + p(c).text + " = 0"   
+                solve();
+            })))))
   }();
 
   var p = function p (x) { 
@@ -753,7 +755,6 @@ var traverse = h('pre',  `  const forwardClick$ = sources.DOM
           .bnd(i => O.mMhistorymM1.bnd(spliceAdd, i, x, mMhistorymM1)
             .bnd(() => O.mMplayerArchive.bnd(spliceAdd, i, playerMonad.s, O.mMplayerArchive)) 
             .bnd(() => O.mMsetArchive.bnd(spliceAdd, i, sMplayers.s, mMsetArchive) ) 
-            .bnd(() => console.log('In game. >>>>>>>>>>>>>>>>>>>>>>>>>> i is ', i))  )          
       document.getElementById('0').innerHTML = x[0];  
       document.getElementById('1').innerHTML = x[1];  
       document.getElementById('2').innerHTML = x[2];  
@@ -956,6 +957,30 @@ var MonadSet = h('pre',  `  var MonadSet = function MonadSet(set, ID) {
   
   var sMplayers = new MonadSet( s, 'sMplayers' )  `  )
 
+var promise = h('pre',  `      var promise = function promise(x, t, mon, args) {
+        return (new Promise((resolve) => {
+          setTimeout(function() {
+            resolve(eval("mon.ret(x).bnd(" + args + ")"))   // eval! Get over it, Douglas.
+          },t*1000  );
+        }));
+      };  `  )
+
+var promiseSnippet = h('pre',  ` 
+      m.ret(3).bnd(promise, 2, m, "cube").then(data => m.ret(data.x).bnd(add, 15, m))
+             `  )
+
+var seed6 = h('pre',  ` 
+             `  )
+
+var seed8 = h('pre',  ` 
+             `  )
+
+var seed6 = h('pre',  ` 
+             `  )
+
+var seed8 = h('pre',  ` 
+             `  )
+
 var seed6 = h('pre',  ` 
              `  )
 
@@ -966,6 +991,6 @@ var seed8 = h('pre',  `
 
 
 
-  export default {monad, monadIt, fib, driver, messages, next, MonadSet, updateCalc, arrayFuncs, travel, nums, cleanup, ret, C42, taskStream, newTask, process, mM$task, addString, colorClick, edit, testZ, quad, mdem1, runTest, todoStream, inc, ret_add_cube, seed,  add, traverse, MonadState, primesMonad, fibsMonad, primeFibInterface, tr3, fpTransformer, innerHTML, factorsMonad, factorsInput, playerMonad, MonadSet  }
+  export default {monad, monadIt, fib, driver, messages, next, MonadSet, updateCalc, arrayFuncs, travel, nums, cleanup, ret, C42, taskStream, newTask, process, mM$task, addString, colorClick, edit, testZ, quad, mdem1, runTest, todoStream, inc, ret_add_cube, seed,  add, traverse, MonadState, primesMonad, fibsMonad, primeFibInterface, tr3, fpTransformer, innerHTML, factorsMonad, factorsInput, playerMonad, MonadSet, promise, promiseSnippet  }
 
 

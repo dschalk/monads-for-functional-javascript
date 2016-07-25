@@ -899,14 +899,19 @@ var log2 = function log2(x) {
 var tempstyle = {display: 'inline'}
 var tempstyle2 = {display: 'none'}
 
-/*
-var delay = function delay(x, mon) {
-  return new Promise(function (resolve) {
-    setTimeout(resolve, 2000);
-  });
-};
-*/
+var timeout = function timeout (x, t, m, args) {
+  setTimeout(function () {
+   return ("m.ret(x).bnd(" + args + ")"); 
+  }, t * 1000  );
+}
 
+var promise = function promise (x, t, mon, args) {
+  return (new Promise((resolve) => {
+    setTimeout(function() {
+      resolve(eval("mon.ret(x).bnd(" + args + ")"))
+    },t*1000  );
+  }));
+};
 
 
 
