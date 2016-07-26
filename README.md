@@ -296,7 +296,7 @@ Here is a screen shot showing the result of running similar code in the Chrome c
 
 ![screen shot](client/timeout.png)
 
-The final blurb confirms that the chained code waits for completion of the asynchronous code. Similar code could be made to wait for database calls, ajax requests, or long-running processes to return before running subsequent chained code. Errors could be handled with try-catch or if-then blocks of code.
+The final blurb confirms that the chained code waits for completion of the asynchronous code. Similar code could be made to wait for database calls, ajax requests, or long-running processes to return before running subsequent chained code. Errors could be handled, perhaps by listening for them with "window.addEventListener('error', function (e) { ...".
 
 Composisition with Promises involves chains of ".then" statements. Using MonadItter, composition can be accomplished in the usual monadic manner, using Monad's bnd() and ret() methods.
 
