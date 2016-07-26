@@ -244,8 +244,62 @@ This is how user input is handled:
     }
   });
 ```
-##Immutability And The Global "O" Object
-###The Haskell Back-End
+#Asynchromous Processes With Either Promises or MonadItter
+
+Using the ES2015 Promises API inside of monads is easy. For example, consider the function "promise", defined as follows:
+```javascript
+  var promise = function promise(x, t, mon, args) {
+    return (new Promise((resolve) => {
+      setTimeout(function() {
+        resolve(eval("mon.ret(x).bnd(" + args + ")"))   // eval! Get over it, Douglas.
+      },t*1000  );
+    }));
+  };
+```
+Running the following code causes O.m.x == 42 after two seconds.
+```javascript
+  m.ret(3).bnd(promise, 2, m, "cube").then(data => m.ret(data.x).bnd(add, 15, m))  
+```
+After a two-second delay, the Promise returns an anonymous monad with a value of 27 (O.anonymous.x == 27). The then statement passes 27 to m and adds 15 to it, resulting in O.m.x == 42. This pattern can be used to define less trivial functions that handle database calls, functions that don't return immediately, etc. And, of course, ES2015 Promises API error handling can be added.
+
+By the way, the "anonymous monad" isn't entirely anonymous. True, it doesn't have a name, but O.anonymous holds the result of calling cube with only two arguments. "data" is O.anonymous in the expression "data => m.ret(data.x).bnd(add, 15, m)"
+
+The same result can be achieved with MonadItter instead of Promises. Consider this:
+```javascript
+  var timeout2 = function timeout (x, t, m, args) {
+    setTimeout(function () {
+      mMZ9.release();
+    }, t * 1000  );
+    return mMZ9.bnd(() => O.m.bnd(... args))
+  };
+```
+The following code uses timeout2 (above). In the online demonstration, If you click RUN, "O.m.x is 27" appears after one second. Two seconds later, "O.m.x is 42" is displayed along with a blurb that confirms the chain can continue after the delayed computation completes.
+```javascript
+  const timeoutClicks$ = sources.DOM.select('#timeout').events('click')
+
+  const timeoutAction$ = timeoutClicks$.map(() => {
+    document.getElementById('timeout2').innerHTML = ''
+    m.ret(3, 'm')
+      .bnd(timeout2, 1, m, [() => O.m
+      .bnd(cube, m)
+      .bnd(send, 'timeout2', 'O.m.x is ' + ' ' + O.m.x, O.m)
+      .bnd(timeout2, 2, m, [() => O.m
+      .bnd(add, 15, m)
+      .bnd(send, 'timeout2',  'O.m.x is ' + ' ' + O.m.x, O.m)
+      /* Continue chaining from here */
+      .bnd(send, 'timeout3', 'The meaning of everything was computed to be' + ' ' + O.m.x, O.m)   
+    ])]);  
+  });
+```
+Here is a screen shot showing the result of running similar code in the Chrome console:
+
+![screen shot](client/timeout.png)
+
+The final blurb confirms that the chained code waits for completion of the asynchronous code. Similar code could be made to wait for database calls, ajax requests, or long-running processes to return before running subsequent chained code. Errors could be handled with try-catch or if-then blocks of code.
+
+Composisition with Promises involves chains of ".then" statements. Using MonadItter, composition can be accomplished in the usual monadic manner, using Monad's bnd() and ret() methods.
+
+### The Haskell Wai Websockets Back End
 This project isn't an exposition of the modified Haskell Wai Websockets server, but I want to point out the similarity between the way the server holds the application's state in a TMVar and the way the front end holds state in an object. The application's state is always changing, so it\'s a pretty safe bet that something is mutating somewhere. The Haskell server for the online demonstration at [JS-monads-stable](http://schalk.net:3055) keeps the ever-changing state of the application in the ServerState list of tupples. It is defined as follows: 
 ```haskell
 type Name = Text

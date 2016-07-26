@@ -895,15 +895,22 @@ var log2 = function log2(x) {
     }
   }
 
-
 var tempstyle = {display: 'inline'}
 var tempstyle2 = {display: 'none'}
 
 var timeout = function timeout (x, t, m, args) {
   setTimeout(function () {
-   return ("m.ret(x).bnd(" + args + ")"); 
+    O.m.bnd(... args);
   }, t * 1000  );
-}
+  return O.m;
+};
+
+var timeout2 = function timeout (x, t, m, args) {
+  setTimeout(function () {
+    mMZ9.release();
+  }, t * 1000  );
+  return mMZ9.bnd(() => O.m.bnd(... args))
+};
 
 var promise = function promise (x, t, mon, args) {
   return (new Promise((resolve) => {
@@ -913,5 +920,9 @@ var promise = function promise (x, t, mon, args) {
   }));
 };
 
+var send = function send (x, el, innerHTML, mon) {
+  document.getElementById(el).innerHTML = innerHTML;
+  return mon;
+}
 
 

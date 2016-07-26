@@ -1,1 +1,0 @@
-cd client && mv no* ../../NO*/ && cd ..
