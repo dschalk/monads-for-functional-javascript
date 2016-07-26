@@ -103,9 +103,7 @@ Here are some definitions, which can also be seen at [the online presentation](h
     };
   
     this.clear = function () {
-      var ar = Array.from(this.s);
-      set = new Set(ar);
-      set.clear();
+      set = new Set([]);
       window[_this.id] = new MonadSet(set, _this.id);
       return window[_this.id];
     };

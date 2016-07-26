@@ -61,9 +61,7 @@ var MonadSet = function MonadSet(set, ID) {
   };
 
   this.clear = function () {
-    var ar = Array.from(this.s);
-    set = new Set(ar);
-    set.clear();
+    set = new Set([]);
     window[_this.id] = new MonadSet(set, _this.id);
     return window[_this.id];
   };
