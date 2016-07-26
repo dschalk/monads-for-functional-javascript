@@ -244,7 +244,7 @@ This is how user input is handled:
     }
   });
 ```
-#Asynchromous Processes With Either Promises or MonadItter
+##Asynchromous Processes With Either Promises or MonadItter
 
 Using the ES2015 Promises API inside of monads is easy. For example, consider the function "promise", defined as follows:
 ```javascript
@@ -279,6 +279,7 @@ The following code uses timeout2 (above). In the online demonstration, If you cl
 
   const timeoutAction$ = timeoutClicks$.map(() => {
     document.getElementById('timeout2').innerHTML = ''
+    document.getElementById('timeout3').innerHTML = ''
     m.ret(3, 'm')
       .bnd(timeout2, 1, m, [() => O.m
       .bnd(cube, m)
