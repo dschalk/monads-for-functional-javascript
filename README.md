@@ -244,7 +244,7 @@ This is how user input is handled:
     }
   });
 ```
-##Asynchromous Processes With Either Promises or MonadItter
+##Asynchronous Composition: Promises or MonadItter
 
 Using the ES2015 Promises API inside of monads is easy. For example, consider the function "promise", defined as follows:
 ```javascript

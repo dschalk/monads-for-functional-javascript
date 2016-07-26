@@ -1001,7 +1001,7 @@ function main(sources) {
 //************************************************************************** END MonadState
 //************************************************************************** BEGIN Promises
      
-        h('h2', ' Asynchromous Processes With Either Promises or MonadItter ' ),
+        h('h2', ' Asynchronous Composition: Promises or MonadItter ' ),
         h('p', ' Using the ES2015 Promises API inside of monads is easy. For example, consider the function "promise", defined as follows: ' ),
         code.promise,
         h('p', ' Running the following code causes O.m.x == 42 after two seconds. ' ),
