@@ -795,7 +795,10 @@ function main(sources) {
         h('div#leftPanel',   [  
         h('br'),
         h('a.tao', {props: {href: '#common'}}, 'Common Patterns'   ),  
-        h('a.tao', {props: {href: '#tdList'}}, 'Todo List Explanation'   ),  
+        h('a.tao', {props: {href: '#async'}}, 'Asyc'   ),  
+        h('a.tao', {props: {href: '#monaditter'}}, 'MonadItter'   ),  
+        h('a.tao', {props: {href: '#monadset'}}, 'Set Monad '   ),  
+        h('a.tao', {props: {href: '#monadstate'}}, 'State Monad'   ),  
         // h('a.tao', {props: {href: '#monads'}}, 'Why Call Them Monads'   ),  
         h('div#captionDiv', [
         h('h1', 'Motorcycle.js With JS-monads' ),
@@ -936,7 +939,7 @@ function main(sources) {
         h('span.red3', 'ret(0).bnd(add, 3).bnd(cube).bnd(m.ret)' ), 
         h('span.td2', 'causes O.m.x == 27, and leaves O.m.id unchanged. ' ),
         h('br' ),  
-        h('br#iterLink' ),
+        h('br#monaditter' ),
         h('br' ),  
         h('span.red3', 'ret(0).bnd(add, 2, m).bnd(cube, m2)' ), 
         h('span.td2', ' causes O.m.x == 2, and O.m2.x == 8. ' ),
@@ -969,7 +972,8 @@ function main(sources) {
         h('input#quad' ),  
         h('p', 'Here is the code:' ),
         code.quad,
-        h('span#tdList' ),
+        h('span' ),
+        h('p#monadstate'   ),
 // ***************************************************************************************************** START MonadState
         h('h2', 'MonadState and MonadState Transformers' ),  
         h('p', ' An instance of MonadState holds the current state and value of a computation. For any instance of MonadState, say m, these can be accessed through m.s and m.a, respectively.  '   ),  
@@ -979,10 +983,6 @@ function main(sources) {
        code.fibsMonad, 
         h('p', ' The other MonadState instance used in this demonstration is primesMonad. Here is its definition along with the function that becomes primesMonad.process:  ' ),  
         code.primesMonad,
-
-
-
-
         h('h3', ' MonadState transformers ' ),
         h('p', ' Transformers take instances of MonadState and return different instances of MonadState, possibly in a modified state. The method call "fibsMonad.bnd(fpTransformer, primesMonad)" returns primesMonad. Here is the definition of fpTransformer: ' ),
         code.fpTransformer,  
@@ -1019,7 +1019,7 @@ function main(sources) {
         h('br' ),
         h('p', ' The demonstration uses primesMonad and factorsMonad. Here are the definitions of factosMonad and factor_state, the function that is factorsMonad.process: ' ),
         code.factorsMonad,
-        h('p', ' And this is how user input is handled: ' ),
+        h('p#async', ' And this is how user input is handled: ' ),
         code.factorsInput,
 
 //************************************************************************** END MonadState
@@ -1053,6 +1053,7 @@ function main(sources) {
         h('p', ' Here is the code: ' ),
         code.async,
 
+        h('a', {props: {href: '#top'}}, 'Back To The Top'   ),  
 //************************************************************************** END Promises
 
         h('h2', 'Immutable Data And The State Object "O" ' ),
@@ -1068,7 +1069,7 @@ function main(sources) {
        h('h3', ' playerMonad ' ), 
        h('p', ' playerMonad and its process attribute are defined as follows: ' ),
        code.playerMonad,
-       h('p', ' As you see, playerMonad.run does one simple thing; it updates the four monads in the player_state function. There are various ways of achieving the same result, but MonadState provides a convenient alternative. Next, I will show how the list of currently online group members is maintained through the use of an instance of MonadSet. ' ),
+       h('p#monadset', ' As you see, playerMonad.run does one simple thing; it updates the four monads in the player_state function. There are various ways of achieving the same result, but MonadState provides a convenient alternative. Next, I will show how the list of currently online group members is maintained through the use of an instance of MonadSet. ' ),
        h('h2', ' MonadSet ' ),
        h('p', ' The list of online group members at the bottom of the scoreboard is very responsive to change. When someone joins the group, a message prefixed by NN#$42 prompts the server to send out the current list of group members. When someone closes their browser window, the server is programmed to send out the new list of group members. All updating is done in the websockets messages function. MonadSet\'s add and delete methods provide convenient alternatives to using Monad\'s bnd method with the push and splice functions. Here are the definitions of MonadSet and the MonadSet instance sMplayers ' ),
        code.MonadSet,
@@ -1078,6 +1079,7 @@ function main(sources) {
  
 
 
+        h('a', {props: {href: '#top'}}, 'Back To The Top'   ),  
         h('h2', 'Updating the DOM'  ),
         h('p', ' Two general methods work in Motorcycle. Sometimes I keep m.x in the virtual DOM code for some monad m. If a user performs some action that cause m.x to have a new value, the actual DOM changes accordingly. Other times I use document.getElementById("someId").innerHTML = newValue.' ),
         h('br' ),
@@ -1122,6 +1124,7 @@ function main(sources) {
         h('p'  ), 
         h('p', ' Here are two basic ways to create a monad named "m" with id = "m" and value v: '  ),
         code.examples2,
+        h('a', {props: {href: '#top'}}, 'Back To The Top'   ),  
         h('hr'),
         h('hr' ),  
         h('a', {props: {href: '#top'}}, 'Back To The Top'   ),  
