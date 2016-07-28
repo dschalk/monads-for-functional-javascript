@@ -34,6 +34,11 @@ input {
   color: #EFD5AA;
 }
 
+#leftPanel {
+  width: 60%;
+  margin-left: 4$;
+}
+
 #spread1 {
   margin-left: 3%;
   width: 100px;
@@ -83,7 +88,7 @@ input {
 }
 
 .red4 {
-  margin: 1%;
+  margin: 1.5%;
   color: #ff9a20;
   font-size: 23px;
 }
