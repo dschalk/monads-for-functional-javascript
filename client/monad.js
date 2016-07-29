@@ -921,9 +921,8 @@ var promise = function promise (x, t, mon, args) {
   }));
 };
 
-var send = function send (x, el, innerHTML, mon) {
-  document.getElementById(el).innerHTML = innerHTML;
-  return mon;
+var display  = function display (x, id, string) {
+  document.getElementById(id).innerHTML = string;
+  return ret(x);
 }
-
 

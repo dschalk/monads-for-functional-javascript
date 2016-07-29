@@ -131,19 +131,22 @@ MonadItter instance mMZ3 calls its bnd() method three times. User input releases
   var solve = function solve () {
     mMZ3.bnd(a => 
     mMtemp.ret(a)           
-    .bnd(innerHTML, '', 'quad6', mMtemp)         
-    .bnd(innerHTML, a + " * x * x ", 'quad5', mMtemp)
-    .bnd(a =>
-        mMZ3.bnd(b =>  mMtemp.ret(b)  // After entering the first number, mMZ3 stops here.
-        .bnd(innerHTML, " + " + b + " * x ", 'quad6', mMtemp).bnd(b =>
-            mMZ3.bnd(c => {           // After entering the second number, mMZ3 stops here.
-                let x = qS1(a,b,c);
-                let y = qS2(a,b,c);  
-                document.getElementById('quad5').innerHTML = 
-                  'The results are: x = ' + x + ' and x =';
-                document.getElementById('quad6').innerHTML = y; 
-                solve();
-            })))))
+    .bnd(display, 'quad6', '')         
+    .bnd(display,'quad5', a + " * x * x ")
+    .bnd(a => mMZ3
+    .bnd(b =>  mMtemp.ret(b)
+    .bnd(display, 'quad6', b + ' * x ').bnd(b => mMZ3
+    .bnd(c => {
+      let x = p(qS1(a,b,c));
+      let y = p(qS2(a,b,c));
+      document.getElementById('quad5').innerHTML =
+        p(a).text + " * " + x.text + " * " + x.text + " + " + p(b).text + 
+            " * " + x.text + " " + p(c).text + " = 0"
+      document.getElementById('quad6').innerHTML =
+        p(a).text + " * " + y.text + " * " + y.text + " + " + p(b).text + 
+            " * " + y.text + " " + p(c).text + " = 0"   
+      solve();    // solve() causes mMZ3.bnd() to wait at the top again. 
+    }) ) ) ) ) 
   }();
 
   var qS1 = function qS1 (a, b, c) {
@@ -162,10 +165,11 @@ MonadItter instance mMZ3 calls its bnd() method three times. User input releases
     return n/(2*a);
   }  
 
-  var innerHTML = function innerHTML (x, v, u, m) {
-    document.getElementById(u).innerHTML = v;
-    return m.ret(x);
-  }
+
+var display = function display (x, id, string) {
+  document.getElementById(id).innerHTML = string;
+  return ret(x);
+}
 ```
 ## MonadState Transformer Example
 MonadState instances are used to create a list of prime Fibonacci number. More commentary is available at [Demonstration](http://schalk.net:3055). Here are the definitions of fibsMonad and its helper functions:
@@ -283,12 +287,12 @@ The following code uses timeout2 (above). In the online demonstration, If you cl
     m.ret(3, 'm')
       .bnd(timeout2, 1, m, [() => O.m
       .bnd(cube, m)
-      .bnd(send, 'timeout2', 'O.m.x is ' + ' ' + O.m.x, O.m)
+      .bnd(display, 'timeout2', 'O.m.x is ' + ' ' + O.m.x, O.m)
       .bnd(timeout2, 2, m, [() => O.m
       .bnd(add, 15, m)
-      .bnd(send, 'timeout2',  'O.m.x is ' + ' ' + O.m.x, O.m)
+      .bnd(display, 'timeout2',  'O.m.x is ' + ' ' + O.m.x, O.m)
       /* Continue chaining from here */
-      .bnd(send, 'timeout3', 'The meaning of everything was computed to be' + ' ' + O.m.x, O.m)   
+      .bnd(display, 'timeout3', 'The meaning of everything was computed to be' + ' ' + O.m.x, O.m)   
     ])]);  
   });
 ```
@@ -296,13 +300,15 @@ Here is a screen shot showing the result of running similar code in the Chrome c
 
 ![screen shot](client/timeout.png)
 
-The final blurb confirms that the chained code waits for completion of the asynchronous code. Similar code could be made to wait for database calls, Ajax requests, or long-running processes to return before running subsequent chained code. In fact, messages$, the stream that handles incoming websockets messages, does just that. A message is sent to the server. A response comes back. Code in MonadItter bnd() blocks is released when the response comes in. Errors could be handled with various techniques, One way to handle errors would be to listen for them with "window.addEventListener("error", function (e) { ...".
+The final blurb confirms that the chained code waits for completion of the asynchronous code. Similar code could be made to wait for database calls, Ajax requests, or long-running processes to return before running subsequent chained code. In fact, messages$, the stream that handles incoming websockets messages, named "messages$", does just that. When a message is sent to the server, messages$ listens for the response. The functions waiting in MonadItter bnd() expressions are released according to the prefix of the incoming message from the server. Essentially, messages$ contains callbacks. MonadItter provides an uncluttered alternative to "if - then" blocks of code. 
+
+I didn\'t provide for error handling. There doesn't seem to be any need for it in this demonstration. If I were getting information from a remote database or Ajax server, I would handle errors with "window.addEventListener("error", function (e) { ...".
 
 Composition with Promises involves chains of ".then" statements. Using MonadItter, composition can be accomplished with Monad's bnd() and ret() methods, just as we have done throughout this presentation.
 
-Handling asychronous event without messy-looking callbacks is easy in this Motorcycle application. There is no need for Promises, a MonadItter instance, or anything special. Plain and simple code is sufficient.
+Handling asychronous events without messy-looking callbacks is easy in this Motorcycle application. There is often no need for Promises, a MonadItter instance, or anything special. 
 
-Clicking a button in the online presentation sends a message to the server requesting the names of all members of the group you are in. When the response comes in, the names are extracted from it and displayed in the browser. The browser update waits for the response from the server to come in. The names are then passed to the log function and finally, LOCKED gets reset to true. mMtemp is the glue that holds the chain together. Here is the code:
+Clicking a button in the online presentation sends a message to the server requesting the names of all members of the group you are in. When the response from the server arrives, the names are extracted from it and displayed in the browser. The names are then passed to the log function, which causes them to be displayed in the browser console. Finally, LOCKED gets reset to true. mMtemp is the instance of Monad that holds the chain together. When the work is done, we have no further use for the names in O.mMtemp.x. Here is the code:
 ```javascript  
   const LOCKED = ret(true, 'LOCKED');
   LOCKED.ret(true);   // Creates O.LOCKED
