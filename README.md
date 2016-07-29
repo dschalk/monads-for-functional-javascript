@@ -303,7 +303,7 @@ Composition with Promises involves chains of ".then" statements. Using MonadItte
 Handling asychronous event without messy-looking callbacks is easy in this Motorcycle application. There is no need for Promises, a MonadItter instance, or anything special. Plain and simple code is sufficient.
 
 Clicking a button in the online presentation sends a message to the server requesting the names of all members of the group you are in. When the response comes in, the names are extracted from it and displayed in the browser. The browser update waits for the response from the server to come in. The names are then passed to the log function and finally, LOCKED gets reset to true. mMtemp is the glue that holds the chain together. Here is the code:
-```  const LOCKED = ret(true, 'LOCKED');
+```javascript  const LOCKED = ret(true, 'LOCKED');
   LOCKED.ret(true);   // Creates O.LOCKED
 
   const requestClicks$ = sources.DOM.select('#request').events('click');
@@ -330,7 +330,6 @@ Clicking a button in the online presentation sends a message to the server reque
     document.getElementById(id).innerHTML = html;
     return ret(x);
   }  
-javascript
 ``` 
 ### The Haskell Wai Websockets Back End
 This project isn't an exposition of the modified Haskell Wai Websockets server, but I want to point out the similarity between the way the server holds the application's state in a TMVar and the way the front end holds state in an object. The application's state is always changing, so it\'s a pretty safe bet that something is mutating somewhere. The Haskell server for the online demonstration at [JS-monads-stable](http://schalk.net:3055) keeps the ever-changing state of the application in the ServerState list of tupples. It is defined as follows: 
