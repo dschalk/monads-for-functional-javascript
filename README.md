@@ -6,6 +6,8 @@ This repository contains the code that is running online at [JS-monads-stable](h
 
 The use of the monads is explained at [the online presentation](http://schalk.net:3055), which is the running version of this code. There, you can see explanations and demonstrations of a shared, persistent todo list; an interactive simulated dice game with a traversable history of number displays, chat rooms for for each group that is formed to play the game or just to chat, and more.
 
+The term "monad" in this presentation refers to any instance of Monad. Instances of Monad behave like category theory monads in the restricted space in which the bnd() method takes only a single argument, and that argument is a function mapping a Javascript value to an instance of the Monad constructor. But instances of Monad can do much more than that. bnd() can take multiple arguments, and the return value doesn't have to be an instance of Monad.
+
 Here are some definitions, which can also be seen at [the online presentation](http://schalk.net:3055) :
 ## Basic Monad    
 ```javascript                 
@@ -242,7 +244,7 @@ This is how user input is handled:
     }
   });
 ```
-##Asynchronous Composition: Promises or MonadItter
+##Asynchronous Composition: Promises, MonadItter, or Niether
 
 Using the ES2015 Promises API inside of monads is easy. For example, consider the function "promise", defined as follows:
 ```javascript
@@ -271,7 +273,7 @@ The same result can be achieved with MonadItter instead of Promises. Consider th
     return mMZ9.bnd(() => O.m.bnd(... args))
   };
 ```
-The following code uses timeout2 (above). In the online demonstration, If you click RUN, "O.m.x is 27" appears after one second. Two seconds later, "O.m.x is 42" is displayed along with a blurb that confirms the chain can continue after the delayed computation completes.
+The following code uses timeout2 (above). In the online demonstration, If you click RUN in the online presentation, "O.m.x is 27" appears after one second. Two seconds later, "O.m.x is 42" is displayed along with a blurb that confirms the chain can continue after the delayed computation completes.
 ```javascript
   const timeoutClicks$ = sources.DOM.select('#timeout').events('click')
 
@@ -294,10 +296,42 @@ Here is a screen shot showing the result of running similar code in the Chrome c
 
 ![screen shot](client/timeout.png)
 
-The final blurb confirms that the chained code waits for completion of the asynchronous code. Similar code could be made to wait for database calls, ajax requests, or long-running processes to return before running subsequent chained code. Errors could be handled, perhaps by listening for them with "window.addEventListener('error', function (e) { ...".
+The final blurb confirms that the chained code waits for completion of the asynchronous code. Similar code could be made to wait for database calls, Ajax requests, or long-running processes to return before running subsequent chained code. In fact, messages$, the stream that handles incoming websockets messages, does just that. A message is sent to the server. A response comes back. Code in MonadItter bnd() blocks is released when the response comes in. Errors could be handled with various techniques, One way to handle errors would be to listen for them with "window.addEventListener("error", function (e) { ...".
 
-Composisition with Promises involves chains of ".then" statements. Using MonadItter, composition can be accomplished in the usual monadic manner, using Monad's bnd() and ret() methods.
+Composition with Promises involves chains of ".then" statements. Using MonadItter, composition can be accomplished with Monad's bnd() and ret() methods, just as we have done throughout this presentation.
 
+Handling asychronous event without messy-looking callbacks is easy in this Motorcycle application. There is no need for Promises, a MonadItter instance, or anything special. Plain and simple code is sufficient.
+
+Clicking a button in the online presentation sends a message to the server requesting the names of all members of the group you are in. When the response comes in, the names are extracted from it and displayed in the browser. The browser update waits for the response from the server to come in. The names are then passed to the log function and finally, LOCKED gets reset to true. mMtemp is the glue that holds the chain together. Here is the code:
+```  const LOCKED = ret(true, 'LOCKED');
+  LOCKED.ret(true);   // Creates O.LOCKED
+
+  const requestClicks$ = sources.DOM.select('#request').events('click');
+
+  const requestAction$ = requestClicks$.map(() => {
+    if (O.pMgroup.x != 'solo') {         // The default non-group
+      LOCKED.ret(false);
+      socket.send('NN#$42,' + O.pMgroup.x  + ',' + O.pMname.x + ',' + O.pMgroup );  // Requests names from the server
+    }
+  });
+
+  const messages2$ = (sources.WS).map(e => {  // Receives the response from the server
+    if (!O.LOCKED.x) {
+      var v2 = e.data.split(',');
+      ret(v2.slice(3))
+      .bnd(v => mMtemp.bnd(html,'request2', 'The current online members of ' + O.pMgroup.x + ' are:')
+      .bnd(() => mMtemp.bnd(html,'request3', v) 
+      .bnd(() => mMtemp.bnd(log, "The member are " + v )
+      .bnd(() => LOCKED.ret(true)))))
+    }
+  });
+
+  var html = function html (x, id, html) {
+    document.getElementById(id).innerHTML = html;
+    return ret(x);
+  }  
+javascript
+``` 
 ### The Haskell Wai Websockets Back End
 This project isn't an exposition of the modified Haskell Wai Websockets server, but I want to point out the similarity between the way the server holds the application's state in a TMVar and the way the front end holds state in an object. The application's state is always changing, so it\'s a pretty safe bet that something is mutating somewhere. The Haskell server for the online demonstration at [JS-monads-stable](http://schalk.net:3055) keeps the ever-changing state of the application in the ServerState list of tupples. It is defined as follows: 
 ```haskell

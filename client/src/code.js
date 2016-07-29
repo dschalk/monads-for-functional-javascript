@@ -1008,28 +1008,33 @@ var examples2 = h('pre',  `
   ret(v, "m");
              `  )
 
-var async = h('pre',  `  const LOCK = ret(false, 'LOCK');
-  LOCK.ret(false);   //                                  Creates O.LOCK
+  var async = h('pre',  `  const LOCKED = ret(true, 'LOCKED');
+  LOCKED.ret(true);   // Creates O.LOCKED
 
   const messages2$ = (sources.WS).map(e => {
-    if (O.LOCK.x) {
+    if (!O.LOCKED.x) {
       var v2 = e.data.split(',');
-      var members = v2.slice(3);
-      document.getElementById('request2')
-        .innerHTML = 'The current online members of ' + O.pMgroup.x + ' are:'; 
-      document.getElementById('request3').innerHTML = members; 
-      LOCK.ret(false);
+      ret(v2.slice(3))
+      .bnd(v => mMtemp.bnd(html,'request2', 'The current online members of ' + O.pMgroup.x + ' are:')
+      .bnd(() => mMtemp.bnd(html,'request3', v) 
+      .bnd(() => mMtemp.bnd(log, "The member are " + v )
+      .bnd(() => LOCKED.ret(true)))))
     }
   });
 
   const requestClicks$ = sources.DOM.select('#request').events('click');
 
   const requestAction$ = requestClicks$.map(() => {
-    if (O.pMgroup.x != 'solo') { 
-      LOCK.ret(true);
+    if (O.pMgroup.x != 'solo') {         // The default non-group
+      LOCKED.ret(false);
       socket.send('NN#$42,' + O.pMgroup.x  + ',' + O.pMname.x + ',' + O.pMgroup ); 
     }
-  });  `  )
+  });
+
+  var html = function html (x, id, html) {
+    document.getElementById(id).innerHTML = html;
+    return ret(x);
+  }  `  )
 
 
 

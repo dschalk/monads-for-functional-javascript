@@ -150,7 +150,7 @@ var fibsMonad = new MonadState('fibsMonad', [0, 1, 3, [0,1]], [0,1], fibs_state 
 
 var factorsMonad = new MonadState('factorsMonad', [ 2, [], 4, [] ], [], factor_state); 
 
-var pMname = new Monad('new player', 'pMname');
+var pMname = new Monad('1v65n$%pqw3*@#9', 'pMname');
 pMname.ret(pMname.x);
 var pMgroup = new Monad('solo', 'pMgroup');
 pMgroup.ret('solo');
@@ -492,6 +492,9 @@ var RESULT =[0,0,0,0];
 
 var mMdisplayFibs = new Monad([0,1], 'mMdisplayFibs');
 mMdisplayFibs.ret(mMdisplayFibs.x);
+
+var mMmembers = ret([], 'mMmembers');
+mMmembers.ret([]);
 
 var mMcount = new Monad(0, 'mMcount');
 var mMcount2 = new Monad(0, 'mMcount2');

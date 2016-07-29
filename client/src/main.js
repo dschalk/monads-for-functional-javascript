@@ -337,28 +337,33 @@ function main(sources) {
     ])]);  
   });
 
-  const LOCK = ret(false, 'LOCK');
-  LOCK.ret(false);   // Creates O.LOCK
+  const LOCKED = ret(true, 'LOCKED');
+  LOCKED.ret(true);   // Creates O.LOCKED
 
   const messages2$ = (sources.WS).map(e => {
-    if (O.LOCK.x) {
+    if (!O.LOCKED.x) {
       var v2 = e.data.split(',');
-      var members = v2.slice(3);
-      document.getElementById('request2')
-        .innerHTML = 'The current online members of ' + O.pMgroup.x + ' are:'; 
-      document.getElementById('request3').innerHTML = members; 
-      LOCK.ret(false);
+      ret(v2.slice(3))
+      .bnd(v => mMtemp.bnd(html,'request2', 'The current online members of ' + O.pMgroup.x + ' are:')
+      .bnd(() => mMtemp.bnd(html,'request3', v) 
+      .bnd(() => mMtemp.bnd(log, "The members are " + v )
+      .bnd(() => LOCKED.ret(true)))))
     }
   });
 
   const requestClicks$ = sources.DOM.select('#request').events('click');
 
   const requestAction$ = requestClicks$.map(() => {
-    if (O.pMgroup.x != 'solo') {
-      LOCK.ret(true);
+    if (O.pMgroup.x != 'solo') {         // The default non-group
+      LOCKED.ret(false);
       socket.send('NN#$42,' + O.pMgroup.x  + ',' + O.pMname.x + ',' + O.pMgroup ); 
     }
   });
+
+var html = function html (x, id, html) {
+  document.getElementById(id).innerHTML = html;
+  return ret(x);
+}
 
   const chatClick$ = sources.DOM
     .select('#chat2').events('click');
@@ -855,8 +860,8 @@ function main(sources) {
         h('p', ' Data for the traversable game history accumulates until a player scores. The data array is then re-set to [], the empty array. When a player clicks the BACK button, other group members are notified. It is up to the group to decide whether clicking the BACK button disqualifies a player. ' ),
         h('hr' ),
         h('h1', 'The Monads'  ),     
-        h('p', ' The term "monad" in this presentation refers to any instance of the Monad, MonadSet, or MonadState constructors. Instances of Monad behave like category theory monads in the restricted space in which the bnd() method takes only a single argument, and that argument is a function mapping any Javascript value to some instance of Monad. But the "monads" described here can do much more than that. bnd() can take multiple arguments, and the return value doesn\'t have to be an instance of Monad. ' ),
-        h('p', 'As you will see, I adhere to certain restrictions regarding what I do with Monad instances as this makes the overall application (this web page) more maintainable, predictable, and organized. If I were working on a team effort, I would want everyone to to refrain from straying outside of certain guidelines. For example, the value held by an instance of Monad (defined below), say m, should be changed only by use of the ret() method. m.ret(7) results in O.m.x == 7. m.x = 7 mutates m. O.m.x = 7 mutates O.m. The value of m, rather than O.m, can be changed without mutation by the expression ret(7, "m"), resulting in m.x == 7. But avoiding that, and using only the ret() method, keeps the current states of all instances of Monad in a single location: on the unique global and mutable object O. Here is the definition of Monad:  '  ),
+        h('p', ' The term "monad" in this presentation refers to any instance of Monad. Instances of Monad behave like category theory monads in the restricted space in which the bnd() method takes only a single argument, and that argument is a function mapping any Javascript value to some instance of Monad. But instances of Monad can do much more than that. bnd() can take multiple arguments, and the return value doesn\'t have to be an instance of Monad. ' ),
+        h('p', 'As you will see, I adhere to certain restrictions regarding what I do with Monad instances as this makes the overall application (this web page) more maintainable, predictable, and organized. If I were working on a team effort, I would want everyone to to refrain from straying outside of certain guidelines. For example, the value held by an instance of Monad (defined below), say m, should be changed only by use of the ret() method. m.ret(7) results in O.m.x == 7. m.x = 7 mutates m. O.m.x = 7 mutates O.m. The value of m, rather than O.m, can be changed without mutation by the expression ret(7, "m"), which creates a new m with m.x == 7 and m.id == "m". But avoiding that, and using only the ret() method, keeps the current states of all instances of Monad in a single location: on the unique global and mutable object O. Here is the definition of Monad:  '  ),
         h('h2', ' Monad ' ),
         code.monad,
         h('p', ' Monad\'s bnd() and ret() methods provide functionality similar to the Haskell ">>=" (pronounced "bind") operator and the Haskell "return" function. They even conform to the optional Haskell monad laws. The following equality expressions demonstrate how the monads work.Note that ret(v) creates a monad with m.id == "Anonymous" and x = v, and for any monad instance m with m.id == "m", and some Javascript value v, m.ret(v) creates or mutates O.m such that O.m.id = "m" and O.m.x == v. The Monad instance m remains unchanged. Let m be an instance of Monad and let v be any Javascript value (number, array, function, monad, ...), then the following expressions return true:  '),
@@ -1045,14 +1050,14 @@ function main(sources) {
         h('p', ' The final blurb confirms that the chained code waits for completion of the asynchronous code. Similar code could be made to wait for database calls, Ajax requests, or long-running processes to return before running subsequent chained code. In fact, messages$, the stream that handles incoming websockets messages, does just that. A message is sent to the server. A response comes back. Code in MonadItter bnd() blocks is released when the response comes in. Errors could be handled with various techniques,  One way to handle errors would be to listen for them with "window.addEventListener("error", function (e) { ...". '  ), 
         h('p', ' Composition with Promises involves chains of ".then" statements. Using MonadItter, composition can be accomplished with Monad\'s bnd() and ret() methods, just as we have done throughout this presentation. ' ),
         h('p', ' Handling asychronous code without messy-looking callbacks is easy in this Motorcycle application. There is no need for Promises, a MonadItter instance, or anything special. Plain and simple code is sufficient. ' ),
-        h('p', ' Clicking the button below will send a message to the server requesting the names of all members of the group you are in. When the response comes in, the names are extracted from it and displayed below. There was no need to do it here, but long chains of composed code could be added after the browser update. ' ),
+        h('p', ' Clicking the button below will send a message to the server requesting the names of all members of the group you are in. When the response comes in, the names are extracted from it and displayed below. The names are then passed to the log function and finally, LOCKED gets reset to true. mMtemp is the glue that holds the chain together. ' ),
         h('p', ' In order to see the demonstration work, you must first log in. Then you must join or create a group by entering something in the "Change group" text box. If you enter "test", you might find me in the group testing some new feature, but you can enter anything you like. If you open another window and log in under a different name but enter the group name you previously used, clicking "CLICK" will display both names.  ' ),
         h('button#request', 'CLICK' ),
         h('span#request2.tao'   ),
         h('span#request3.red4'   ),
         h('p', ' Here is the code: ' ),
         code.async,
-
+        h('p', ' Essentially, it\'s just a callback; but it looks neat without reliance on the Promises API or a promises library. ' ),
         h('a', {props: {href: '#top'}}, 'Back To The Top'   ),  
 //************************************************************************** END Promises
 
