@@ -1017,7 +1017,7 @@ var examples2 = h('pre',  `
       ret(v2.slice(3))
       .bnd(v => mMtemp.bnd(html,'request2', 'The current online members of ' + O.pMgroup.x + ' are:')
       .bnd(() => mMtemp.bnd(html,'request3', v) 
-      .bnd(() => mMtemp.bnd(log, "The member are " + v )
+      .bnd(() => mMtemp.bnd(log, "The members are " + v )
       .bnd(() => LOCKED.ret(true)))))
     }
   });
