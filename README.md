@@ -303,7 +303,8 @@ Composition with Promises involves chains of ".then" statements. Using MonadItte
 Handling asychronous event without messy-looking callbacks is easy in this Motorcycle application. There is no need for Promises, a MonadItter instance, or anything special. Plain and simple code is sufficient.
 
 Clicking a button in the online presentation sends a message to the server requesting the names of all members of the group you are in. When the response comes in, the names are extracted from it and displayed in the browser. The browser update waits for the response from the server to come in. The names are then passed to the log function and finally, LOCKED gets reset to true. mMtemp is the glue that holds the chain together. Here is the code:
-```javascript  const LOCKED = ret(true, 'LOCKED');
+```javascript  
+  const LOCKED = ret(true, 'LOCKED');
   LOCKED.ret(true);   // Creates O.LOCKED
 
   const requestClicks$ = sources.DOM.select('#request').events('click');
