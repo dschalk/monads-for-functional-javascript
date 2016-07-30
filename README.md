@@ -6,9 +6,18 @@ This repository contains the code that is running online at [JS-monads-stable](h
 
 The use of the monads is explained at [the online presentation](http://schalk.net:3055), which is the running version of this code. There, you can see explanations and demonstrations of a shared, persistent todo list; an interactive simulated dice game with a traversable history of number displays, chat rooms for for each group that is formed to play the game or just to chat, and more.
 
-The term "monad" in this presentation refers to any instance of Monad. Instances of Monad behave like category theory monads in the restricted space in which the bnd() method takes only a single argument, and that argument is a function mapping a Javascript value to an instance of the Monad constructor. But instances of Monad can do much more than that. bnd() can take multiple arguments, and the return value doesn't have to be an instance of Monad.
+##Theoretical Considerations
+The term "monad" in this presentation refers to any instance of Monad. Instances of Monad behave like Haskell monads in the restricted space in which m.bnd() takes only functions that map a Javascript value or values to an instance of Monad, where m is any instance of Monad. Let M be the collection of all possible instances of Monad along with all functions of the form m.bnd(f) where m is an instance of Monad and f is a function mapping a Javascript value or values to an instance of Monad.
 
-Here are some definitions, which can also be seen at [the online presentation](http://schalk.net:3055) :
+In other words, m.bnd(f ...args) = m2 for all monads m1 and for some monad m2,(which can be m1) in M, and all functions f in M. Left and Right identity, defined as m.bnd(m.ret) = m and m.ret(m.x) = m, is true where equality id defined as m1 = m2 if and only if m1.x = m2.x and m1.id = m2.id. The identities follow immediately from the definitions of the ret() and bnd() methods. The associativity requirement, m.bnd(f).bnd(g) = m.bnd(v => f(v).bnd(g) for all monads m and functions f in M, is always satisfied. By the definition of bnd(), m.bnd(f) returns f(m.x) and m.bnd(v => passes m.x to f(v).bnd(g), so both sides of the equation are equivalent to f(m.x).bnd(g).
+
+But instances of Monad can do much more than that. The functions provided as arguments to bnd() can return any Javascript value, including functions, objects, etc. Sometimes, at the end of a chain of computations, it is desirable to return a Javascript value that is not an instance of Monad.
+
+##Practical Matters
+As you will see, I adhere to certain restrictions regarding what I do with Monad instances as this makes the overall application (this web page) more maintainable, predictable, and organized. If I were working on a team effort, I would want everyone to to refrain from straying outside of certain guidelines. For example, the value held by an instance of Monad (defined below), say m, should be changed only by use of the ret() method. m.ret(7) results in O.m.x == 7. m.x = 7 mutates m. O.m.x = 7 mutates O.m. The value of m, rather than O.m, can be changed without mutation by the expression ret(7, "m"), which creates a new m with m.x == 7 and m.id == "m". But avoiding that, and using only the ret() method, keeps the current states of all instances of Monad in a single location: on the unique global and mutable object O. 
+
+Here are the definitions of Monad, MonadItter, MonadState, MonadSet, and ret:
+
 ## Basic Monad    
 ```javascript                 
   var Monad = function Monad(value, ID) {
