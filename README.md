@@ -6,8 +6,7 @@ This repository contains the code that is running online at [JS-monads-stable](h
 
 The use of the monads is explained at [the online presentation](http://schalk.net:3055), which is the running version of this code. There, you can see explanations and demonstrations of a shared, persistent todo list; an interactive simulated dice game with a traversable history of number displays, chat rooms for for each group that is formed to play the game or just to chat, and more.
 ##Similarity to Haskell Monads
-
-Let M be the collection of all instances of Monad, let J be the collection of all Javascript values, including functions, instances of Monad, etc, and let F be the collection of all functions mapping values in J to monads in M. For any m, v, f, and f' in M, J, F, and F, respectively, the following relationships hold:
+In the following discussion, "x == y" signifies that x == y returns true. Let M be the collection of all instances of Monad, let J be the collection of all Javascript values, including functions, instances of Monad, etc, and let F be the collection of all functions mapping values in J to monads in M. For any m, v, f, and f' in M, J, F, and F, respectively, the following relationships hold:
 ```javascript
     O.m.ret(v).bnd(f).x == f(v).x                        Left identity
     ret(v).bnd(f).x == f(v).x                            Left identity  
@@ -20,8 +19,8 @@ Let M be the collection of all instances of Monad, let J be the collection of al
     Assume m.x = v, then 
     O.m.bnd(f).bnd(f').x == O.m.bnd(v => f(v).bnd(f'))  Associativity
     (m >>= f) >>= g == m >>= ( \x -> (f x >>= g) )      Haskell monad law  
-```
-".x" is appended to the relationships because we are checking only for equivalence of values, not equivalence of objects.. O.m.ret(v) and m.ret(v) both create new instances of Monad on O named "O.m". ret(v, "m") creates a new instance of Monad name "m" such that m.x == v. ret(v) creates a new instance of Monad named "anonymous". ret(v).ret(v) creates a fresh attribute of O named "anonymous" such that O.anonymous.x == v. So m.ret(3) == m.ret(3) returns false, but m.ret(3).x == m.ret(3).x returns true because 3 == 3 is true.
+```"
+".x" is appended to the relationships because we are checking only for equivalence of values, not equivalence of objects. O.m.ret(v) and m.ret(v, "m") both create new instances of Monad on O named "O.m". ret(v) creates a new instance of Monad named "anonymous". ret(v).ret(v) creates a fresh attribute of O named "anonymous" with O.anonymous.x == v. m.ret(3) == m.ret(3) returns false because each time m.ret(3) runs, a new instance of Monad is created and placed on O. The previous O.m is left to the garbage collector unless there is a reference to it. But m.ret(3).x == m.ret(3).x returns true because 3 == 3 is true and O.m.x == 3 for the current and former attributes of O named "m".
 
 Intances of Monad are Javascript objects while  Haskell monads are types with various names and specified behaviors. The above demonstration of similarities shows (1) that the Monad ret() method is, in a signifant sense, the left and right identity on instances of M, and (2) instances of Monad compose associatively.
 
