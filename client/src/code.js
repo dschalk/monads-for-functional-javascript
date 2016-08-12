@@ -832,13 +832,13 @@ var fibsMonad = h('pre',  `  var fibsMonad = new MonadState('fibsMonad', [0, 1, 
 var tr3 = h('pre',  `  var tr3 = function tr (fibsArray, primesArray) {
     var bound = Math.ceil(Math.sqrt(fibsArray[fibsArray.length - 1]))
     var primes = primesArray.slice();
-    if (primesArray[primesArray.length - 1] >= bound) {
+    if (primesArray.slice(-1)[0] >= bound) {
       primes = primesArray.filter(v => v <= bound);
     } 
     var ar = [];
     var fibs = fibsArray.slice(3);
-    fibs.map (f => {
-      if ( primesArray.every(p => (f % p != 0 || f == p))) ar.push(f);
+    fibs.map (v => {
+      if (primesArray.every(p => (v % p || v == p))) ar.push(v);
     })
     return [fibsArray, primes, ar]
   }  `  )

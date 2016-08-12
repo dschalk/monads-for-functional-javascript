@@ -113,13 +113,13 @@ var bound = Math.ceil(Math.sqrt(s[3][s[3].length - 1]));
 var tr3 = function tr3 (fibsArray, primesArray) {
   var bound = Math.ceil(Math.sqrt(fibsArray[fibsArray.length - 1]))
   var primes = primesArray.slice();
-  if (primesArray[primesArray.length - 1] >= bound) {
+  if (primesArray.slice(-1)[0] >= bound) {
     primes = primesArray.filter(v => v <= bound);
   } 
   var ar = [];
   var fibs = fibsArray.slice(3);
-  fibs.map (f => {
-    if ( primesArray.every(p => (f % p != 0 || f == p))) ar.push(f);
+  fibs.map (v => {
+    if (primesArray.every(p => (v % p || v == p))) ar.push(v);
   })
   return [fibsArray, primes, ar]
 }
@@ -244,6 +244,19 @@ var ret = function ret(v, id) {
   }
   window[id] = new Monad(v, id);
   return window[id];
+}
+
+
+function rang (n, m) {
+  return Array.from(new Array(m - n), (x,i) => i + n)
+}
+
+function primes (n, ar) {    
+  var array = ar.slice();
+  for (var i = array.slice(-1).pop(); i <= n; i += 2) {
+      if (array.every(elem => i % elem)) array.push(i);
+  };
+  return array.join(", ");
 }
 
 var testscore = function testscore (v) {
@@ -921,8 +934,9 @@ var promise = function promise (x, t, mon, args) {
   }));
 };
 
-var display  = function display (x, id, string) {
+var display = function display (x, id, string) {
   document.getElementById(id).innerHTML = string;
   return ret(x);
 }
+
 
