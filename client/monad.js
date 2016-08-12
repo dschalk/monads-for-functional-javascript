@@ -246,7 +246,6 @@ var ret = function ret(v, id) {
   return window[id];
 }
 
-
 function rang (n, m) {
   return Array.from(new Array(m - n), (x,i) => i + n)
 }
@@ -596,6 +595,13 @@ var mMitterPrimeFibs = MI();
 var mMitterPF = MI();
 var mMitterPF2 = MI();
 
+mMZ1.bnd(v => O.mMt1.bnd(add,v,mMt1)
+.bnd(cube,mMt2)          // Returns mMt2.
+.bnd(() => mMt3.ret(O.mMt1.x + ' cubed is ' + O.mMt2.x)))
+  
+mMZ2.bnd(v => cube(v)
+.bnd(w => mMt3.ret(v + ' cubed is ' + w)))
+  
   var qS1 = function qS1 (a, b, c) {
     let n = (b*(-1)) + (Math.sqrt(b*b - 4*a*c));
     if (n != n) {
