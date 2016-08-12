@@ -19,7 +19,7 @@ In the following discussion, "x == y" signifies that x == y returns true. Let M 
     Assume m.x = v, then 
     O.m.bnd(f).bnd(f').x == O.m.bnd(v => f(v).bnd(f'))  Associativity
     (m >>= f) >>= g == m >>= ( \x -> (f x >>= g) )      Haskell monad law  
-```"
+```
 ".x" is appended to the relationships because we are checking only for equivalence of values, not equivalence of objects. O.m.ret(v) and m.ret(v, "m") both create new instances of Monad on O named "O.m". ret(v) creates a new instance of Monad named "anonymous". ret(v).ret(v) creates a fresh attribute of O named "anonymous" with O.anonymous.x == v. m.ret(3) == m.ret(3) returns false because each time m.ret(3) runs, a new instance of Monad is created and placed on O. The previous O.m is left to the garbage collector unless there is a reference to it. But m.ret(3).x == m.ret(3).x returns true because 3 == 3 is true and O.m.x == 3 for the current and former attributes of O named "m".
 
 Intances of Monad are Javascript objects while  Haskell monads are types with various names and specified behaviors. The above demonstration of similarities shows (1) that the Monad ret() method is, in a signifant sense, the left and right identity on instances of M, and (2) instances of Monad compose associatively.
