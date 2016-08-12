@@ -5,16 +5,29 @@ In this version, MonadStream has been dropped. It was dead weight. Simple functi
 This repository contains the code that is running online at [JS-monads-stable](http://schalk.net:3055) in a [Motorcycle.js](https://github.com/motorcyclejs) application. Motorcycle.js is [Cycle.js](https://github.com/cyclejs/core) using [Most](https://github.com/cujojs/most) and [Snabbdom](https://github.com/paldepind/snabbdom) instead of RxJS and "virtual-dom".  
 
 The use of the monads is explained at [the online presentation](http://schalk.net:3055), which is the running version of this code. There, you can see explanations and demonstrations of a shared, persistent todo list; an interactive simulated dice game with a traversable history of number displays, chat rooms for for each group that is formed to play the game or just to chat, and more.
+##Similarity to Haskell Monads
 
-##Theoretical Considerations
-The term "monad" in this presentation refers to any instance of Monad. Instances of Monad behave like Haskell monads in the restricted space in which m.bnd(), for any instance of Monad m, takes only functions that map a Javascript value or values to an instance of Monad. Let M be the collection of all possible instances of Monad along with all functions of the form m.bnd(f) where m is an instance of Monad and f is a function mapping a Javascript value or values to an instance of Monad.
+Let M be the collection of all instances of Monad, let J be the collection of all Javascript values, including functions, instances of Monad, etc, and let F be the collection of all functions mapping values in J to monads in M. For any m, v, f, and f' in M, J, F, and F, respectively, the following relationships hold:
+```javascript
+    O.m.ret(v).bnd(f).x == f(v).x                        Left identity
+    ret(v).bnd(f).x == f(v).x                            Left identity  
+    (return x) >>= f == f x                              Haskell monad law
+    
+    O.m.bnd(m.ret).x == O.m.x                            Right identity
+    O.m.bnd(ret).x == O.m.x                              Right identity
+    m >>= return == m                                    Haskell monad law
+    
+    Assume m.x = v, then 
+    O.m.bnd(f).bnd(f').x == O.m.bnd(v => f(v).bnd(f'))  Associativity
+    (m >>= f) >>= g == m >>= ( \x -> (f x >>= g) )      Haskell monad law  
+```
+".x" is appended to the relationships because we are checking only for equivalence of values, not equivalence of objects.. O.m.ret(v) and m.ret(v) both create new instances of Monad on O named "O.m". ret(v, "m") creates a new instance of Monad name "m" such that m.x == v. ret(v) creates a new instance of Monad named "anonymous". ret(v).ret(v) creates a fresh attribute of O named "anonymous" such that O.anonymous.x == v. So m.ret(3) == m.ret(3) returns false, but m.ret(3).x == m.ret(3).x returns true because 3 == 3 is true.
 
-In other words, m.bnd(f ...args) = m2 for all monads m1 and for some monad m2,(which can be m1) in M, and all functions f in M. Left and Right identity, defined as m.bnd(m.ret) = m and m.ret(m.x) = m, is true where equality id defined as m1 = m2 if and only if m1.x = m2.x and m1.id = m2.id. The identities follow immediately from the definitions of the ret() and bnd() methods. The associativity requirement, m.bnd(f).bnd(g) = m.bnd(v => f(v).bnd(g) for all monads m and functions f in M, is always satisfied. By the definition of bnd(), m.bnd(f) returns f(m.x) and m.bnd(v => passes m.x to f(v).bnd(g), so both sides of the equation are equivalent to f(m.x).bnd(g).
-
-But instances of Monad can do much more than that. The functions provided as arguments to bnd() can return any Javascript value, including functions, objects, etc. Sometimes, at the end of a chain of computations, it is desirable to return a Javascript value that is not an instance of Monad.
+Intances of Monad are Javascript objects while  Haskell monads are types with various names and specified behaviors. The above demonstration of similarities shows (1) that the Monad ret() method is, in a signifant sense, the left and right identity on instances of M, and (2) instances of Monad compose associatively.
 
 ##Practical Matters
-As you will see, I adhere to certain restrictions regarding what I do with Monad instances as this makes the overall application (this web page) more maintainable, predictable, and organized. If I were working on a team effort, I would want everyone to to refrain from straying outside of certain guidelines. For example, the value held by an instance of Monad (defined below), say m, should be changed only by use of the ret() method. m.ret(7) results in O.m.x == 7. m.x = 7 mutates m. O.m.x = 7 mutates O.m. The value of m, rather than O.m, can be changed without mutation by the expression ret(7, "m"), which creates a new m with m.x == 7 and m.id == "m". But avoiding that, and using only the ret() method, keeps the current states of all instances of Monad in a single location: on the unique global and mutable object O. 
+
+Constraints are not enforced in this application, but certain self-imposed constraints tend to prevent coding errors, and they make the code easier to reason about. For example, I don't change the values of monads using ret(newVal, "m") or mutating m with m.x = newVal. The only way I update values is through the use of the ret() method. They stay just as they were when they were created. m.ret(newVal) and O.m.ret(newVal both do the same thing: they cause O.m.x == newVal. By sticking with the the ret() method, I keep the current state of the Monads on the global object "O".
 
 Here are the definitions of Monad, MonadItter, MonadState, MonadSet, and ret:
 
