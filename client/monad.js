@@ -926,11 +926,11 @@ var timeout = function timeout (x, t, m, args) {
 };
 
 var timeout2 = function timeout (x, t, m, args) {
-  setTimeout(function () {
-    mMZ9.release();
-  }, t * 1000  );
-  return mMZ9.bnd(() => O.m.bnd(... args))
-};
+    setTimeout(function () {
+      mMZ9.release();
+    }, t * 1000  );
+    return mMZ9.bnd(() => O.m.bnd(... args))
+  };  
 
 var promise = function promise (x, t, mon, args) {
   return (new Promise((resolve) => {
