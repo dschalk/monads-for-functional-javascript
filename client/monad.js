@@ -1,7 +1,5 @@
 'use strict';
 
-var O = {};
-var count = 0;
 var state, monadState, total; 
 var name = "start"
 var group = "solo"
@@ -24,8 +22,8 @@ var Monad = function Monad(value, ID) {
   };
 
   this.ret = function (a) {
-    O[_this.id] = new Monad(a,_this.id);
-    return O[_this.id];
+    window[_this.id] = new Monad(a,_this.id);
+    return window[_this.id];
   };
 };
 
@@ -95,6 +93,7 @@ var tr4 = function tr4 (state) {
   return state[1];
 }
 
+factor_state([3,[],24,[2,3]])
 function factor_state(v) {
   v[3].map(p => {
     if (v[2]/p == Math.floor(v[2]/p)) {v[1].push(p)}
@@ -102,6 +101,13 @@ function factor_state(v) {
   return v;
 }
           
+var mMfactors = new Monad(-1, 'mMfactors');
+mMfactors.ret(-1, 'mMfactors');
+
+var prFactTransformer = function prFactTransformer (s, m) {
+  return m.run([s[0], [], mMfactors.x, s[3]])
+}
+
 var fpTransformer = function transformer (s, m) {
 var bound = Math.ceil(Math.sqrt(s[3][s[3].length - 1]));
   if (bound > m.a[m.a.length - 1] ) {
@@ -148,75 +154,75 @@ var mMplayer = new Monad([], 'mMplayer');
 
 var fibsMonad = new MonadState('fibsMonad', [0, 1, 3, [0,1]], [0,1], fibs_state  ) 
 
-var factorsMonad = new MonadState('factorsMonad', [ 2, [], 4, [] ], [], factor_state); 
+  var factorsMonad = new MonadState('factorsMonad', [ 2, [], 4, [] ], [], factor_state); 
 
-var pMname = new Monad('1v65n$%pqw3*@#9', 'pMname');
-pMname.ret(pMname.x);
-var pMgroup = new Monad('solo', 'pMgroup');
-pMgroup.ret('solo');
-var pMscore = new Monad(0, 'pMscore');
-pMscore.ret(0);
-var pMgoals = new Monad(0, 'pMgoals');
-pMgoals.ret(0);
+  var pMname = new Monad('1v65n$%pqw3*@#9', 'pMname');
+  pMname.ret(pMname.x);
+  var pMgroup = new Monad('solo', 'pMgroup');
+  pMgroup.ret('solo');
+  var pMscore = new Monad(0, 'pMscore');
+  pMscore.ret(0);
+  var pMgoals = new Monad(0, 'pMgoals');
+  pMgoals.ret(0);
 
-function player_state (v) {
-  var x = v.slice();
-  pMname.ret(x[0]);
-  pMgroup.ret(x[1]);
-  pMscore.ret(x[2]);
-  pMgoals.ret(x[3]);
-  return x; 
-};
+  function player_state (v) {
+    var x = v.slice();
+    pMname.ret(x[0]);
+    pMgroup.ret(x[1]);
+    pMscore.ret(x[2]);
+    pMgoals.ret(x[3]);
+    return x; 
+  };
 
-var playerMonad = new MonadState('playerMonad', [name, group, score, goals], '', player_state);
+  var playerMonad = new MonadState('playerMonad', [name, group, score, goals], '', player_state);
 
-playerMonad.run(['new player', 'solo', 0, 0]);
+  playerMonad.run(['new player', 'solo', 0, 0]);
 
-var mMplayerArchive = new Monad(['start', 'solo', 0, 0], 'mMplayerArchive')
-mMplayerArchive.ret(mMplayerArchive.x);
+  var mMplayerArchive = new Monad(['start', 'solo', 0, 0], 'mMplayerArchive')
+  mMplayerArchive.ret(mMplayerArchive.x);
 
-var mMsetArchive = new Monad([], 'mMsetArchive');
-mMsetArchive.ret([]);
+  var mMsetArchive = new Monad([], 'mMsetArchive');
+  mMsetArchive.ret([]);
 
-var clean = function clean (x, mon) {
-  mon.ret([]);
-}
-
-var runPrime = function runPrime (x) {
-  let l = primesMonad.a[primesMonad.a.length - 1]
-  if (l >= x+1) {
-  let ar = primesMonad.a.filter(e => e <= x+1) ;
-  return(ar);
+  var clean = function clean (x, mon) {
+    mon.ret([]);
   }
-  primesMonad.run([primesMonad.s[0], '', x+1, primesMonad.a]);
-  let prms = primesMonad.a;
-  return prms;
-}
 
-// runPrime([Math.round(Math.sqrt(fibMonad.run([fibMonad.s[0], fibsMonad.s[1], 23, fibsMonad.a]).s[0]))])
-var runFib = function runFib (x) {
-  if (fibsMonad.a.length >= x) { 
-    let ar = fibsMonad.a.slice();
-    ar.length = x;
+  var runPrime = function runPrime (x) {
+    let l = primesMonad.a[primesMonad.a.length - 1]
+    if (l >= x+1) {
+    let ar = primesMonad.a.filter(e => e <= x+1) ;
+    return(ar);
+    }
+    primesMonad.run([primesMonad.s[0], '', x+1, primesMonad.a]);
+    let prms = primesMonad.a;
+    return prms;
+  }
+
+  // runPrime([Math.round(Math.sqrt(fibMonad.run([fibMonad.s[0], fibsMonad.s[1], 23, fibsMonad.a]).s[0]))])
+  var runFib = function runFib (x) {
+    if (fibsMonad.a.length >= x) { 
+      let ar = fibsMonad.a.slice();
+      ar.length = x;
+      return ar;
+    }
+    fibsMonad.run([fibsMonad.s[0], fibsMonad.s[1], x, fibsMonad.a]);
+    return fibsMonad.a;
+  }
+
+  var primesMonad = new MonadState('primesMonad', [2, '', 3, [2]], [2],  primes_state) 
+
+  function pFib (fibs, primes) {
+    console.log('Hello from pFib fibs, primes: ', fibs, primes );
+    var ar = [];
+    fibs.map (f => {
+      if (f < 2) return;
+      if ( primes.every(p => (f % p != 0 || f == p))) ar.push(f);
+    });
     return ar;
-  }
-  fibsMonad.run([fibsMonad.s[0], fibsMonad.s[1], x, fibsMonad.a]);
-  return fibsMonad.a;
-}
+  };
 
-var primesMonad = new MonadState('primesMonad', [2, '', 3, [2]], [2],  primes_state) 
-
-function pFib (fibs, primes) {
-  console.log('Hello from pFib fibs, primes: ', fibs, primes );
-  var ar = [];
-  fibs.map (f => {
-    if (f < 2) return;
-    if ( primes.every(p => (f % p != 0 || f == p))) ar.push(f);
-  });
-  return ar;
-};
-
-fibsMonad.run([0,1,5,[]])
+  fibsMonad.run([0,1,5,[]])
 
 primesMonad.run([3, '', 5, [2]])
 
@@ -595,9 +601,9 @@ var mMitterPrimeFibs = MI();
 var mMitterPF = MI();
 var mMitterPF2 = MI();
 
-mMZ1.bnd(v => O.mMt1.bnd(add,v,mMt1)
+mMZ1.bnd(v => mMt1.bnd(add,v,mMt1)
 .bnd(cube,mMt2)          // Returns mMt2.
-.bnd(() => mMt3.ret(O.mMt1.x + ' cubed is ' + O.mMt2.x)))
+.bnd(() => mMt3.ret(mMt1.x + ' cubed is ' + mMt2.x)))
   
 mMZ2.bnd(v => cube(v)
 .bnd(w => mMt3.ret(v + ' cubed is ' + w)))
@@ -920,16 +926,16 @@ var tempstyle2 = {display: 'none'}
 
 var timeout = function timeout (x, t, m, args) {
   setTimeout(function () {
-    O.m.bnd(... args);
+    m.bnd(... args);
   }, t * 1000  );
-  return O.m;
+  return m;
 };
 
 var timeout2 = function timeout (x, t, m, args) {
     setTimeout(function () {
       mMZ9.release();
     }, t * 1000  );
-    return mMZ9.bnd(() => O.m.bnd(... args))
+    return mMZ9.bnd(() => m.bnd(... args))
   };  
 
 var promise = function promise (x, t, mon, args) {

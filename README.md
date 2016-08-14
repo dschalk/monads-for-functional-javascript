@@ -1,4 +1,4 @@
-#JS-monads-stable -v1.3
+#JS-monads-stable -v1.55555
 
 In this version, MonadStream has been dropped. It was dead weight. Simple function calls are now doing what MonadStream instances were doing in the simulated dice game and persistent, shared todo list.
 
