@@ -66,7 +66,7 @@ These functions can be used with instances of Monad in many ways, for example:
 
   m.bnd(() => add(0, 3).bnd(cube).bnd(m.ret).bnd(v => log("", "m.x is " + v))) 
   Output: In log. Entry:  m.x is 27
-  Note: It doesn't matter what m.x was at the beginning of the computation.
+  Note: It doesn\'t matter what m.x was at the beginning of the computation.
  
   ret(3).bnd(v => ret(v*v).bnd(v2 => log("", "a squared is " + v2).bnd(() => 
   ret(4*4).bnd(v3 => log("", "a squared plus b squared is " + (v2 + v3), m)))))
