@@ -1,0 +1,30 @@
+
+
+
+
+
+
+
+
+
+
+git tag v1.7 && git push --tags
+
+To change default (master) on github to version v1.7, do this:
+
+git checkout v1.7
+git merge -s ours master
+git checkout master
+git merge v1.7
+
+
+to copy to the clipboard, use "*p on selected text.
+
+
+
+sudo apt-get install vim-gnome
+
+
+
+
+

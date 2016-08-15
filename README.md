@@ -22,8 +22,8 @@ This repository is where I keep the code that is running online at [JS-monads-st
     };
   
     this.ret = function (a) {
-      O.[_this.id] = new Monad(a, _this.id);
-      return O.[_this.id]
+      window.[_this.id] = new Monad(a, _this.id);
+      return window.[_this.id]
     };
   };  
 ```
@@ -77,19 +77,19 @@ Each of the functions shown above can be used as a stand-alone function or as an
 ##Similarity to Haskell Monads
 In the following discussion, "x == y" signifies that x == y returns true. Let M be the collection of all instances of Monad, let J be the collection of all Javascript values, including functions, instances of Monad, etc, and let F be the collection of all functions mapping values in J to monads in M. For any m, v, f, and f' in M, J, F, and F, respectively, the following relationships hold:
 ```javascript
-    O.m.ret(v).bnd(f).x == f(v).x                        Left identity
+    m.ret(v).bnd(f).x == f(v).x                        Left identity
     ret(v).bnd(f).x == f(v).x                            Left identity  
     (return x) >>= f == f x                              Haskell monad law
     
-    O.m.bnd(m.ret).x == O.m.x                            Right identity
-    O.m.bnd(ret).x == O.m.x                              Right identity
+    m.bnd(m.ret).x == m.x                            Right identity
+    m.bnd(ret).x == m.x                              Right identity
     m >>= return == m                                    Haskell monad law
     
     Assume m.x = v, then 
-    O.m.bnd(f).bnd(f').x == O.m.bnd(v => f(v).bnd(f'))  Associativity
+    m.bnd(f).bnd(f').x == m.bnd(v => f(v).bnd(f'))  Associativity
     (m >>= f) >>= g == m >>= ( \x -> (f x >>= g) )      Haskell monad law  
 ```
-".x" is appended to the relationships because we are checking only for equivalence of values, not equivalence of objects. O.m.ret(v) and m.ret(v, "m") both create new instances of Monad on O named "O.m". ret(v) creates a new instance of Monad named "anonymous". ret(v).ret(v) creates a fresh attribute of O named "anonymous" with O.anonymous.x == v. m.ret(3) == m.ret(3) returns false because each time m.ret(3) runs, a new instance of Monad is created and placed on O. The previous O.m is left to the garbage collector unless there is a reference to it. But m.ret(3).x == m.ret(3).x returns true because 3 == 3 is true and O.m.x == 3 for the current and former attributes of O named "m".
+".x" is appended to the relationships because we are checking only for equivalence of values, not equivalence of objects. m.ret(v) and m.ret(v, "m") both create new instances of Monad named "m". ret(v) creates a new un-named instance of Monad. ret(v1).ret(v2) creates a fresh attribute of Monad named "anonymous" with anonymous.x == v. m.ret(3) == m.ret(3) returns false because each time m.ret(3) runs, m points to a new instance of Monad. The previous m is left to the garbage collector unless there is a reference to it. But m.ret(3).x == m.ret(3).x returns true because 3 == 3 is true and m.x == 3 for the current and former instances of Monad named "m".
 
 Intances of Monad are Javascript objects while  Haskell monads are types with various names and specified behaviors. The above demonstration of similarities shows (1) that the Monad ret() method is, in a signifant sense, the left and right identity on instances of M, and (2) instances of Monad compose associatively.
 
@@ -324,13 +324,11 @@ Using the ES2015 Promises API inside of monads is easy. For example, consider th
     }));
   };
 ```
-Running the following code causes O.m.x == 42 after two seconds.
+Running the following code causes m.x == 42 after two seconds.
 ```javascript
   m.ret(3).bnd(promise, 2, m, "cube").then(data => m.ret(data.x).bnd(add, 15, m))  
 ```
-After a two-second delay, the Promise returns an anonymous monad with a value of 27 (O.anonymous.x == 27). The then statement passes 27 to m and adds 15 to it, resulting in O.m.x == 42. This pattern can be used to define less trivial functions that handle database calls, functions that don't return immediately, etc. And, of course, ES2015 Promises API error handling can be added.
-
-By the way, the "anonymous monad" isn't entirely anonymous. True, it doesn't have a name, but O.anonymous holds the result of calling cube with only two arguments. "data" is O.anonymous in the expression "data => m.ret(data.x).bnd(add, 15, m)"
+After a two-second delay, the Promise returns the newest version of m with m.x = 27. The then statement passes 27 to m and returns a new version of m with added 15 to it. This pattern can be used to define less trivial functions that handle database calls, functions that don't return immediately, etc. And, of course, ES2015 Promises API error handling can be added.
 
 The same result can be achieved with MonadItter instead of Promises. Consider this:
 ```javascript
@@ -338,10 +336,10 @@ The same result can be achieved with MonadItter instead of Promises. Consider th
     setTimeout(function () {
       mMZ9.release();
     }, t * 1000  );
-    return mMZ9.bnd(() => O.m.bnd(... args))
+    return mMZ9.bnd(() => m.bnd(... args))
   };
 ```
-The following code uses timeout2 (above). In the online demonstration, If you click RUN in the online presentation, "O.m.x is 27" appears after one second. Two seconds later, "O.m.x is 42" is displayed along with a blurb that confirms the chain can continue after the delayed computation completes.
+The following code uses timeout2 (above). If you click RUN in the online presentation, "m.x is 27" appears after one second. Two seconds later, "m.x is 42" is displayed along with a blurb that confirms the chain can continue after the delayed computation completes. Here is the code that handles user input:
 ```javascript
   const timeoutClicks$ = sources.DOM.select('#timeout').events('click')
 
@@ -349,58 +347,23 @@ The following code uses timeout2 (above). In the online demonstration, If you cl
     document.getElementById('timeout2').innerHTML = ''
     document.getElementById('timeout3').innerHTML = ''
     m.ret(3, 'm')
-      .bnd(timeout2, 1, m, [() => O.m
+      .bnd(timeout2, 1, m, [() => m
       .bnd(cube, m)
-      .bnd(display, 'timeout2', 'O.m.x is ' + ' ' + O.m.x, O.m)
-      .bnd(timeout2, 2, m, [() => O.m
+      .bnd(display, 'timeout2', 'm.x is ' + ' ' + m.x, m)
+      .bnd(timeout2, 2, m, [() => m
       .bnd(add, 15, m)
-      .bnd(display, 'timeout2',  'O.m.x is ' + ' ' + O.m.x, O.m)
+      .bnd(display, 'timeout2',  'm.x is ' + ' ' + m.x, m)
       /* Continue chaining from here */
-      .bnd(display, 'timeout3', 'The meaning of everything was computed to be' + ' ' + O.m.x, O.m)   
+      .bnd(display, 'timeout3', 'The meaning of everything was computed to be' + ' ' + m.x, m)   
     ])]);  
   });
 ```
-Here is a screen shot showing the result of running similar code in the Chrome console:
-
-![screen shot](client/timeout.png)
-
 The final blurb confirms that the chained code waits for completion of the asynchronous code. Similar code could be made to wait for database calls, Ajax requests, or long-running processes to return before running subsequent chained code. In fact, messages$, the stream that handles incoming websockets messages, named "messages$", does just that. When a message is sent to the server, messages$ listens for the response. The functions waiting in MonadItter bnd() expressions are released according to the prefix of the incoming message from the server. Essentially, messages$ contains callbacks. MonadItter provides an uncluttered alternative to "if - then" blocks of code. 
 
 I didn\'t provide for error handling. There doesn't seem to be any need for it in this demonstration. If I were getting information from a remote database or Ajax server, I would handle errors with "window.addEventListener("error", function (e) { ...".
 
 Composition with Promises involves chains of ".then" statements. Using MonadItter, composition can be accomplished with Monad's bnd() and ret() methods, just as we have done throughout this presentation.
 
-Handling asychronous events without messy-looking callbacks is easy in this Motorcycle application. There is often no need for Promises, a MonadItter instance, or anything special. 
-
-Clicking a button in the online presentation sends a message to the server requesting the names of all members of the group you are in. When the response from the server arrives, the names are extracted from it and displayed in the browser. The names are then passed to the log function, which causes them to be displayed in the browser console. Finally, LOCKED gets reset to true. mMtemp is the instance of Monad that holds the chain together. When the work is done, we have no further use for the names in O.mMtemp.x. Here is the code:
-```javascript  
-  const LOCKED = ret(true, 'LOCKED');
-  LOCKED.ret(true);   // Creates O.LOCKED
-
-  const requestClicks$ = sources.DOM.select('#request').events('click');
-
-  const requestAction$ = requestClicks$.map(() => {
-    if (O.pMgroup.x != 'solo') {         // The default non-group
-      LOCKED.ret(false);
-      socket.send('NN#$42,' + O.pMgroup.x  + ',' + O.pMname.x + ',' + O.pMgroup );  // Requests names from the server
-    }
-  });
-
-  const messages2$ = (sources.WS).map(e => {  // Receives the response from the server
-    if (!O.LOCKED.x) {
-      var v2 = e.data.split(',');
-      ret(v2.slice(3))
-      .bnd(v => mMtemp.bnd(html,'request2', 'The current online members of ' + O.pMgroup.x + ' are:')
-      .bnd(() => mMtemp.bnd(html,'request3', v) 
-      .bnd(() => mMtemp.bnd(log, "The members are " + v )
-      .bnd(() => LOCKED.ret(true)))))
-    }
-  });
-
-  var html = function html (x, id, html) {
-    document.getElementById(id).innerHTML = html;
-    return ret(x);
-  }  
 ``` 
 ### The Haskell Wai Websockets Back End
 This project isn't an exposition of the modified Haskell Wai Websockets server, but I want to point out the similarity between the way the server holds the application's state in a TMVar and the way the front end holds state in an object. The application's state is always changing, so it\'s a pretty safe bet that something is mutating somewhere. The Haskell server for the online demonstration at [JS-monads-stable](http://schalk.net:3055) keeps the ever-changing state of the application in the ServerState list of tupples. It is defined as follows: 
@@ -434,23 +397,13 @@ else if "CG#$42" `T.isPrefixOf` msg
 ```
 You don't need to be a Haskell programmer to see that state is pulled out of the TMVar and given the name "old". "new" is the state after changeScore sender extraNum extraNum2 old executes. "atomically $ putTMVar state new" replaces "old" in the TMVar with "new".
 
-In the browser, when an instance of Monad, say "m" with m.x == oldValue, executes its ret() method on some reference to a value, let's call it "newValue", O's m attribute points to a fresh Monad instance. O.m.x == oldValue becomes false and O.m.x == newValue becomes true. The Monad instance with m.x == oldValue still exists, and if there is a reference to it, it won't be destroyed by the garbage collector.
+In the browser, when an instance of Monad, say "m" with m.x == oldValue, executes its ret() method on some reference to a value, let's call it "newValue", O's m attribute points to a fresh Monad instance. m.x == oldValue becomes false and m.x == newValue becomes true. The Monad instance with m.x == oldValue still exists, and if there is a reference to it, it won't be destroyed by the garbage collector.
 
-In the server, replacing state in the TMVar takes place inside the IO monad, which scupulously protects the application from side effects. But the fact remains that the TMVar ServerState list of clients is not what it used to be after a score change. Some client in the ServerState list has been replaced by a client with the same name, goal, group, and websockets connection but a different score.
-
-###The Motorcycle.js Front-End
-In the front-end application, state is held in the global object named "O". As mentioned above, when a monad, say "m", executes m.ret(newValue), m does not mutate. Instead, a new monad named "m" with id "m" and value "newValue" becomes an attribute of O. After that, O.m.x == newValue is true, but m remains unchanged. If O.m previously existed, it is not mutated by this process. If there is no reference to it, it will be subject to obliteration by the garbage collector.
-
-I can't think of a good reason for doing it, but if you want to change the value of m, something like ret(42,'m') will do the job. Suppose m.x == 0 and O.m.x == 0. ret(42,'m') creates a new monad named "m" with m.x == 42. After that, O.m.x == 0 would still be true but m.x == 0 returns false. m.x == 42 returns true. If, after that, you update O.m only by using m's ret() and refrain from mutating m with code like "m.x = newValue", the application will proceed as though nothing happened. The most recent update of m will always be in O.
-
-If you want to go a step further and mutate m, nothing prevents you from calling "m.x = 8888", O.m.x = "WTF", and such. If I ever recruit people to help develop an application, I might ask them to update Monad instances only by using the ret() method so everyone could confidently look to the "O" object for changes in Monad instances' state. 
+In the server, replacing state in the TMVar takes place inside the Imonad, which scupulously protects the application from side effects. But the fact remains that the TMVar ServerState list of clients is not what it used to be after a score change. Some client in the ServerState list has been replaced by a client with the same name, goal, group, and websockets connection but a different score.
 
 ### MonadItter
-MonadItter instances are useful only when their bnd() method is used; and when bnd() is used, the "p" attribute becomes the argument to bnd(). I think this is a situation in which it is wise to take advantage of the fact that Javascript allows p to morph into the bnd() argument. Words like "dogmatic", "religous", and "obsessive" come to mind when I think of imposing consistency on this project by eliminating the only exception (other than "O") to the general no-mutations policy. If I find that it interferes with JavaScript engine optimization, I will reconsider.
+MonadItter instances are net monadic in any sense of the word. "Monad" is more like a namespace in the case of MonadItter. It is useful, but only for its bnd() and release() methods.  only when their bnd() method is used; and when bnd() is used, the "p" attribute becomes the argument to bnd(). I think this is a situation in which it is wise to take advantage of the fact that Javascript allows p to morph into the bnd() argument. Words like "dogmatic", "religous", and "obsessive" come to mind when I think of imposing consistency on this project by eliminating the only exception to the general no-mutations policy. If I find that it interferes with JavaScript engine optimization, I will reconsider.
  
-### Implications of "O" for Cycle.js and Motorcycle.js
-[Cycle.js](https://github.com/cyclejs/core) has been criticized for not keeping state in a central location. Well, there it is, in O. I have created applications using Node.js and React.js. [Motorcycle.js](https://github.com/motorcyclejs) is such a relief. It and the monads presented here work well together. As previously mentioned, Motorcycle.js is Cycle.js, only using [Most](https://github.com/cujojs/most) and [Snabbdom](https://github.com/paldepind/snabbdom) instead of RxJS and "virtual-dom").
-
 ##[The Online Demonstration](http://schalk.net:3055)
 The online demonstration features a game with a traversible dice-roll history; group chat rooms; and a persistent, multi-user todo list. People in the same group share the game, chat messages, and whatever todo list they might have. Updating, adding, removing, or checking "Complete" by any member causes every member 's todo list to update. The Haskell websockets server preserves a unique text file for each group's todo list. Restarting the server does not affect the lists. Restarting or refreshing the browser window causes the list display to disappear, but signing in and re-joining the old group brings it back. If the final task is removed, the server deletes the group's todo text file. 
 
