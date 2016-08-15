@@ -7,8 +7,7 @@ This repository is where I keep the code that is running online at [JS-monads-st
 
 [JS-monads-stable](http://schalk.net:3055) features explanations and demonstrations of a shared, persistent todo list; an interactive simulated dice game with a traversable history of number displays, chat rooms shared among members of each group that is formed to play the game or just to chat.
 ## Basic Monad    
-```javascript                 
-  var Monad = function Monad(value, ID) {
+```javascript    var Monad = function Monad(value, ID) {
 
     var _this = this;
 
@@ -25,8 +24,7 @@ This repository is where I keep the code that is running online at [JS-monads-st
       O.[_this.id] = new Monad(a, _this.id);
       return O.[_this.id]
     };
-  };  
-```
+  };  ```
 Monad instances are useful for chaining computations. Typically, the bnd() method provides its value to a computation that returns an instance of Monad. Here are some examples:
 ```javascript
   var ret = function ret(v, id) {
@@ -66,7 +64,7 @@ These functions can be used with instances of Monad in many ways, for example:
 
   m.bnd(() => add(0, 3).bnd(cube).bnd(m.ret).bnd(v => log("", "m.x is " + v))) 
   Output: In log. Entry:  m.x is 27
-  Note: It doesn\'t matter what m.x was at the beginning of the computation.
+  Note: The value of m.x at the start of the computation is ignored.
  
   ret(3).bnd(v => ret(v*v).bnd(v2 => log("", "a squared is " + v2).bnd(() => 
   ret(4*4).bnd(v3 => log("", "a squared plus b squared is " + (v2 + v3), m)))))
