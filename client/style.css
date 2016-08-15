@@ -14,6 +14,8 @@ input {
   margin-left: 3%;
 }
 
+.lb {color: lightblue;}
+
 #timeout2 {
   color: #F2650E;
   margin-left: 3%;
@@ -165,7 +167,7 @@ button {
 }
 
 pre {
-  font-size: 18px;
+  font-size: 21px;
   color: #a5f7a5;
 }
 

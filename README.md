@@ -1,35 +1,11 @@
 #JS-monads-stable 
+The executable file, compiled using stack in Ubuntu 16.04, is in the bin directory. It is also running online at [JS-monads-stable](http://schalk.net:3055) 
 
-In this version, the global object "O" is no longer in use. Monad instances now exist on window intead of O. MonadStream has also been dropped. It was dead weight. Simple function calls are now doing what MonadStream instances were doing in the simulated dice game and persistent, shared todo list.
+In this version, the global object "O" has been removed. Monad instances now exist on window intead of O. MonadStream has also been dropped. Simple function calls are now doing what MonadStream instances were doing in the simulated dice game and persistent, shared todo list. 
 
-This repository contains the code that is running online at [JS-monads-stable](http://schalk.net:3055) in a [Motorcycle.js](https://github.com/motorcyclejs) application. Motorcycle.js is [Cycle.js](https://github.com/cyclejs/core) using [Most](https://github.com/cujojs/most) and [Snabbdom](https://github.com/paldepind/snabbdom) instead of RxJS and "virtual-dom".  
+This repository is where I keep the code that is running online at [JS-monads-stable](http://schalk.net:3055). It is a [Motorcycle.js](https://github.com/motorcyclejs) application. Motorcycle.js is [Cycle.js](https://github.com/cyclejs/core) using [Most](https://github.com/cujojs/most) and [Snabbdom](https://github.com/paldepind/snabbdom) instead of RxJS and "virtual-dom".  
 
-The use of the monads is explained at [the online presentation](http://schalk.net:3055), which is the running version of this code. There, you can see explanations and demonstrations of a shared, persistent todo list; an interactive simulated dice game with a traversable history of number displays, chat rooms for for each group that is formed to play the game or just to chat, and more.
-##Similarity to Haskell Monads
-In the following discussion, "x == y" signifies that x == y returns true. Let M be the collection of all instances of Monad, let J be the collection of all Javascript values, including functions, instances of Monad, etc, and let F be the collection of all functions mapping values in J to monads in M. For any m, v, f, and f' in M, J, F, and F, respectively, the following relationships hold:
-```javascript
-    O.m.ret(v).bnd(f).x == f(v).x                        Left identity
-    ret(v).bnd(f).x == f(v).x                            Left identity  
-    (return x) >>= f == f x                              Haskell monad law
-    
-    O.m.bnd(m.ret).x == O.m.x                            Right identity
-    O.m.bnd(ret).x == O.m.x                              Right identity
-    m >>= return == m                                    Haskell monad law
-    
-    Assume m.x = v, then 
-    O.m.bnd(f).bnd(f').x == O.m.bnd(v => f(v).bnd(f'))  Associativity
-    (m >>= f) >>= g == m >>= ( \x -> (f x >>= g) )      Haskell monad law  
-```
-".x" is appended to the relationships because we are checking only for equivalence of values, not equivalence of objects. O.m.ret(v) and m.ret(v, "m") both create new instances of Monad on O named "O.m". ret(v) creates a new instance of Monad named "anonymous". ret(v).ret(v) creates a fresh attribute of O named "anonymous" with O.anonymous.x == v. m.ret(3) == m.ret(3) returns false because each time m.ret(3) runs, a new instance of Monad is created and placed on O. The previous O.m is left to the garbage collector unless there is a reference to it. But m.ret(3).x == m.ret(3).x returns true because 3 == 3 is true and O.m.x == 3 for the current and former attributes of O named "m".
-
-Intances of Monad are Javascript objects while  Haskell monads are types with various names and specified behaviors. The above demonstration of similarities shows (1) that the Monad ret() method is, in a signifant sense, the left and right identity on instances of M, and (2) instances of Monad compose associatively.
-
-##Practical Matters
-
-Constraints are not enforced in this application, but certain self-imposed constraints tend to prevent coding errors, and they make the code easier to reason about. For example, I don't change the values of monads using ret(newVal, "m") or mutating m with m.x = newVal. The only way I update values is through the use of the ret() method. They stay just as they were when they were created. m.ret(newVal) and O.m.ret(newVal both do the same thing: they cause O.m.x == newVal. By sticking with the the ret() method, I keep the current state of the Monads on the global object "O".
-
-Here are the definitions of Monad, MonadItter, MonadState, MonadSet, and ret:
-
+[JS-monads-stable](http://schalk.net:3055) features explanations and demonstrations of a shared, persistent todo list; an interactive simulated dice game with a traversable history of number displays, chat rooms shared among members of each group that is formed to play the game or just to chat.
 ## Basic Monad    
 ```javascript                 
   var Monad = function Monad(value, ID) {
@@ -51,6 +27,73 @@ Here are the definitions of Monad, MonadItter, MonadState, MonadSet, and ret:
     };
   };  
 ```
+Monad instances are useful for chaining computations. Typically, the bnd() method provides its value to a computation that returns an instance of Monad. Here are some examples:
+```javascript
+  var ret = function ret(v, id) {
+    if (arguments.length === 1) {
+      return (new Monad(v, 'anonymous'));
+    }
+    window[id] = new Monad(v, id);
+    return window[id];
+  }
+  
+  var cube = function(v,mon) {
+    if (arguments.length === 2) {
+      return mon.ret(v*v*v);
+    }
+    return ret(v*v*v);
+  }
+  
+  var add = function(x,b,mon) {
+    if (arguments.length === 3) {
+      return mon.ret(x + b);
+    }
+    return ret(x+b);
+  }
+  
+  var log = function log(x, message, mon) {
+    console.log('In log. Entry: ', message);
+    if (arguments.length === 3) return mon
+    return ret(x);
+  };  
+```  
+These functions can be used with instances of Monad in many ways, for example:
+```javascript
+  var c = m.ret(0).bnd(add,3).bnd(cube)
+  .bnd(log,"m.x and a.x are  " + m.x + " and " + a.x + " respectively ")
+  Output: In log. Entry:  m.x and a.x are  0 and 27 respectively 
+  Note: m.x keeps its initial value of 0.
+
+  m.bnd(() => add(0, 3).bnd(cube).bnd(m.ret).bnd(v => log("", "m.x is " + v))) 
+  Output: In log. Entry:  m.x is 27
+  Note: It doesn't matter what m.x was at the beginning of the computation.
+ 
+  ret(3).bnd(v => ret(v*v).bnd(v2 => log("", "a squared is " + v2).bnd(() => 
+  ret(4*4).bnd(v3 => log("", "a squared plus b squared is " + (v2 + v3), m)))))
+  Output: In log. Entry:  a squared is 9
+          In log. Entry:  a squared plus b squared is 25  
+```
+Each of the functions shown above can be used as a stand-alone function or as an argument to the bnd() method. Each monad in a chain of linked computations can do one of two things with the previous monads value: (1) It can ignore it, possibly letting it move past for use further down the chain or (2) use it, with the option of passing it on down the chain. Any computation can be inserted into the chain by giving it an additional first argument (which will be the previous monad's value), and having it return an instance of Monad. Say you have a function func(a,b,c) {...}. Put something ahead of a (it will have the previous monad's value) and return a monad. You can give the returned monad any value you like. For example, func'(x,a,b,c) {...; return ret(x)} will work. Its bnd() method will pass along the value x, which is the previous monads value.
+##Similarity to Haskell Monads
+In the following discussion, "x == y" signifies that x == y returns true. Let M be the collection of all instances of Monad, let J be the collection of all Javascript values, including functions, instances of Monad, etc, and let F be the collection of all functions mapping values in J to monads in M. For any m, v, f, and f' in M, J, F, and F, respectively, the following relationships hold:
+```javascript
+    O.m.ret(v).bnd(f).x == f(v).x                        Left identity
+    ret(v).bnd(f).x == f(v).x                            Left identity  
+    (return x) >>= f == f x                              Haskell monad law
+    
+    O.m.bnd(m.ret).x == O.m.x                            Right identity
+    O.m.bnd(ret).x == O.m.x                              Right identity
+    m >>= return == m                                    Haskell monad law
+    
+    Assume m.x = v, then 
+    O.m.bnd(f).bnd(f').x == O.m.bnd(v => f(v).bnd(f'))  Associativity
+    (m >>= f) >>= g == m >>= ( \x -> (f x >>= g) )      Haskell monad law  
+```
+".x" is appended to the relationships because we are checking only for equivalence of values, not equivalence of objects. O.m.ret(v) and m.ret(v, "m") both create new instances of Monad on O named "O.m". ret(v) creates a new instance of Monad named "anonymous". ret(v).ret(v) creates a fresh attribute of O named "anonymous" with O.anonymous.x == v. m.ret(3) == m.ret(3) returns false because each time m.ret(3) runs, a new instance of Monad is created and placed on O. The previous O.m is left to the garbage collector unless there is a reference to it. But m.ret(3).x == m.ret(3).x returns true because 3 == 3 is true and O.m.x == 3 for the current and former attributes of O named "m".
+
+Intances of Monad are Javascript objects while  Haskell monads are types with various names and specified behaviors. The above demonstration of similarities shows (1) that the Monad ret() method is, in a signifant sense, the left and right identity on instances of M, and (2) instances of Monad compose associatively.
+
+Here are the definitions of MonadItter, MonadState, and MonadSet:
 ##MonadItter
 ```javascript
   var MonadItter = function MonadItter() {

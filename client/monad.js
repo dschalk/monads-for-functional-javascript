@@ -887,9 +887,10 @@ var mult = function mult(x, y, mon) {
   return ret(x * y);
 };
 
-var log = function log(x, message) {
-  console.log('In log.  message is: ', message);
-    return ret(x);
+var log = function log(x, message, mon) {
+  console.log('In log. Entry: ', message);
+  if (arguments.length === 3) return mon
+  return ret(x);
 };
 
 var log2 = function log2(x) {
