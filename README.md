@@ -91,7 +91,7 @@ In the following discussion, "x == y" signifies that x == y returns true. Let M 
 ```
 ".x" is appended to the relationships because we are checking only for equivalence of values, not equivalence of objects. m.ret(v) and m.ret(v, "m") both create new instances of Monad named "m". ret(v) creates a new un-named instance of Monad. ret(v1).ret(v2) creates a fresh attribute of Monad named "anonymous" with anonymous.x == v. m.ret(3) == m.ret(3) returns false because each time m.ret(3) runs, m points to a new instance of Monad. The previous m is left to the garbage collector unless there is a reference to it. But m.ret(3).x == m.ret(3).x returns true because 3 == 3 is true and m.x == 3 for the current and former instances of Monad named "m".
 
-Intances of Monad are Javascript objects while  Haskell monads are types with various names and specified behaviors. The above demonstration of similarities shows (1) that the Monad ret() method is, in a signifant sense, the left and right identity on instances of M, and (2) instances of Monad compose associatively.
+Just as Javascript if very different from Haskell, so too are the JS-monads very different from Haskell monads. Unlike JS-monads, Haskell monads obtain new values without producing new clones of themselves. I think the essential takeaways from the above demonstration of similarities are not so much that JS-monads are like Haskell monads, but that (1) that the Monad ret() method is, in a comparison of "x" attributes (and also "id" attributes), the left and right identity on instances of Monad, and (2) instances of Monad compose associatively.
 
 Here are the definitions of MonadItter, MonadState, and MonadSet:
 ##MonadItter

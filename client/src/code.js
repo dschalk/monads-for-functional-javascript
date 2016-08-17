@@ -1088,6 +1088,6 @@ var p7 = h('pre',  `
 
 
 
-  export default {monad, e1, e2, fib, driver, messages, next, MonadSet, updateCalc, arrayFuncs, travel, nums, cleanup, ret, C42, newTask, process, mM$task, addString, colorClick, edit, testZ, quad, mdem1, runTest, todoStream, inc, ret_add_cube, seed,  add, traverse, MonadState, primesMonad, fibsMonad, primeFibInterface, tr3, fpTransformer, innerHTML, factorsMonad, factorsInput, playerMonad, MonadSet, promise, promiseSnippet, timeout, timeoutSnippet, examples, examples2, async }
+  export default {monad, e1, e2, fib, driver, messages, next, monadIt, MonadSet, updateCalc, arrayFuncs, travel, nums, cleanup, ret, C42, newTask, process, mM$task, addString, colorClick, edit, testZ, quad, mdem1, runTest, todoStream, inc, ret_add_cube, seed,  add, traverse, MonadState, primesMonad, fibsMonad, primeFibInterface, tr3, fpTransformer, innerHTML, factorsMonad, factorsInput, playerMonad, MonadSet, promise, promiseSnippet, timeout, timeoutSnippet, examples, examples2, async }
 
 
