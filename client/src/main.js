@@ -839,6 +839,15 @@ function main(sources) {
         h('p#monaditter', ' Just as Javascript if very different from Haskell, so too are the JS-monads very different from Haskell monads. Unlike JS-monads, Haskell monads obtain new values without producing new clones of themselves. I think the essential takeaways from the above demonstration of similarities are not so much that JS-monads are like Haskell monads, but that (1) that the Monad ret() method is, in a comparison of "x" attributes (and also "id" attributes), the left and right identity on instances of Monad, and (2) instances of Monad compose associatively.  ' ), 
         h('p', ' Let m2 (with id == "m2") be any member of M. Here is a useful relationships between m and m2:  ' ),
         h('pre', `    m1.bnd(m2.ret) == m2.ret(m1.x). These are two ways of giving m1\'s value to m2.  ` ),
+        h('p', ' Because changing a monad\'s value by using its ret() method avoids mutation, the followingis made possible: ' ),
+        h('pre', `    function f() {var a = m.x; return a)
+    m.ret('yes');
+    var a = f();
+    m.ret('no');
+    var b = f();
+    a == b               false
+    console.log(a, b);   yes no   ` ),
+        h('h', ' One way to facilitate backtracking would be to push m into an array each time its ret() method is called. The array could then map its values to a function that uses each value\'s bnd() method over some series of transformations.  ' ),
         h('h2', 'MonadItter' ),
         code.monadIt,
         h('p', ' MonadItter instances do not have monadic properties, but they facilitate the work of monads. Here\'s how they work: ' ),
@@ -887,7 +896,7 @@ function main(sources) {
         h('p', ' User input is handled by a chain of computations.  first to update fibsMonad, second to extract fibsMonad.s, third to run fpTransformer to modify and then return primesMonad, and fourth to extract primesMonad.s and run tr3(fibsState[3],primesState[3]). Here is the code: ' ),
         code.primeFibInterface,
         h('p', 'ly 48 Fibonacci numbers need to be generated in order to get the eleventh prime Fibonacci number. But 5546 prime numbers need to be generated to test for divisibility into 2971215073. Finding the next Fibonacci number is just a matter of adding the previous two. Getting the next prime number is a more elaborate and time-consuming procedure. In this context, the time needed to compute 48 Fibonacci numbers is insignificant, so I didn\'t bother to save previously computed Fibonacci numbers in the prime Fibonacci demonstration. When a user enters a number smaller than the current length of fibsMonad.a, fibsMonad is modified such that its length becomes exactly what the user entered.' ), 
-        h('p', ' Entering 48 in my desktop Ubuntu Chrome and Firefox browsers got the first eleven prime Fibonacci numbers. I tried gradually incrementing upwards from 48, but when I got to 61 I stopped due to impatience with the lag time. The 61st Fibonacci number was computed to be 1,548,008,755,920. 76,940 prime numbers were needed to check the 60th Fibonacci number. 96,043 prime numbers were needed to check the 61st Fibonacci number.  At Fibonacci number 61, no new prime Fibonacci numbers had appeared.' ),
+        h('p', ' Entering 50 in my desktop Ubuntu Chrome and Firefox browsers got the first eleven prime Fibonacci numbers in about one second. I tried gradually incrementing upwards from 50, but when I got to 61 I stopped due to impatience with the lag time. The 61st Fibonacci number was computed to be 1,548,008,755,920. 76,940 prime numbers were needed to check the 60th Fibonacci number. 96,043 prime numbers were needed to check the 61st Fibonacci number.  At Fibonacci number 61, no new prime Fibonacci numbers had appeared.' ),
         h('p', ' According to multiple sources, these are the first eleven proven prime Fibonacci numbers:' ),
         h('span.lb', ' 2, 3, 5, 13, 89, 233, 1597, 28657, 514229, 433494437, and 2971215073 ' ),
         h('br' ),
@@ -927,10 +936,9 @@ function main(sources) {
         h('p', ' Running the following code causes m.x == 42 after two seconds. ' ),
         code.promiseSnippet,
         h('p', ' After a two-second delay, the Promise returns an anonymous monad with a value of 27 (anonymous.x == 27). The then statement passes 27 to m and adds 15 to it, resulting in m.x == 42. This pattern can be used to define less trivial functions that handle database calls, functions that don\'t return immediately, etc. And, of course, ES2015 Promises API error handling can be added. ' ),
-        h('p', 'The "anonymous monad" isn\'t entirely anonymous. True, it doesn\'t have a name, but anonymous holds the result of calling cube with only two arguments. "data" is anonymous in the expression "data => m.ret(data.x).bnd(add, 15, m)" ' ),
-        h('p', ' The same result can be achieved with MonadItter instead of Promises. Consider this: ' ),
+        h('p', ' The same result can be achieved with MonadItter and the following function ' ),
         code.timeout,
-        h('p', ' The following code uses timeout2 (above). If you click RUN, "m.x is 27" appears after one second. Two seconds later, "m.x is 42" is displayed along with a blurb that confirms the chain can continue after the delayed computation completes. ' ),
+        h('p', ' If you click RUN, "m.x is 27" appears after one second. Two seconds later, "m.x is 42" is displayed along with a blurb. The blurb confirms the chain can continue, without the encumbrance and limitations of "then" clauses, after the delayed computations complete. ' ),
         code.timeoutSnippet,
         h('p', ' '  ),
         h('button#timeout',  ' Run ' ),
