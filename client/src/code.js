@@ -532,34 +532,36 @@ var cleanup = h('pre',  `  function cleanup (x) {
       {  mM1.bnd(push, result, mM1).bnd(z =>
          mM$1.ret(z));                         // Updates the display.             
         if (result == 20) {score(mM13.x, 1)}; 
-         if (result == 18) {score(mM13.x, 3)};
+        if (result == 18) {score(mM13.x, 3)};
       }
     )) 
     reset()
   };
 
   var score = function score(x,j) {
+    socket.send('CA#$42,' + pMgroup.x + ',' + pMname.x + ',6,6,12,20');
     if ((x + j) == 20) {
-      mMgoals.ret(mMgoals.x == 2 ? 0 : (mMgoals.x + 1)); 
+      mMplayer.ret([]);
       mM13.ret(0).bnd(mMindex.ret);
-      mMhistorymM1.ret([[0,0,0,0]]);
-      socket.send('CG#$42,' + mMgroup.x + ',' + mMname.x + ',' + -x + ',' + mMgoals.x); 
-      if (mMgoals.x == 0) {
-        socket.send('CE#$42,' + mMgroup.x + ',' + mMname.x + ',nothing ');
-      }
-      socket.send('CA#$42,' + mMgroup.x.trim() + ',' + mMname.x.trim() + ',6,6,12,20');
+      mMhistorymM1.ret([0,0,0,0]);   
+      mMgoals.bnd(add, 1, mMgoals).bnd(v => {
+        if (v == 3) {
+          socket.send('CG#$42,' + pMgroup.x + ',' + pMname.x + ',' + -x + ',' + 0); 
+          socket.send('CE#$42,' + pMgroup.x + ',' + pMname.x + ',nothing ')
+          mMgoals.ret(0);
+        }
+        else socket.send('CG#$42,' + pMgroup.x + ',' + pMname.x + ',' + -x + ',' + v); 
+      })
       return;
     }
     if ((x + j) % 5 == 0) {
-      socket.send('CG#$42,' + mMgroup.x + ',' + mMname.x + ','+ (j+5)+',' + mMgoals.x); 
+      socket.send('CG#$42,' + pMgroup.x + ',' + pMname.x + ','+ (j+5)+',' + mMgoals.x); 
       mM13.ret(x + j + 5);
-      socket.send('CA#$42,' + mMgroup.x.trim() + ',' + mMname.x.trim() + ',6,6,12,20');
       return;
     } 
-    socket.send('CG#$42,' + mMgroup.x + ',' + mMname.x + ','+j+',' + mMgoals.x); 
+    socket.send('CG#$42,' + pMgroup.x + ',' + pMname.x + ','+ j + ',' + mMgoals.x); 
     mM13.ret(x + j);
-    socket.send('CA#$42,' + mMgroup.x.trim() + ',' + mMname.x.trim() + ',6,6,12,20');
-  }
+ };
 
   var reset = function reset () {
       mM3.ret([])

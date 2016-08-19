@@ -74,7 +74,6 @@ function main(sources) {
 
   const player = function player (v) {
       if (playerMonad.s[0] == v[2]) {
-        mMindex3.bnd(add, 1, mMindex3);
         mMplayer.bnd(push, playerMonad.s, mMplayer);
         playerMonad.run([playerMonad.s[0], playerMonad.s[1], playerMonad.s[2]*1 + v[3]*1, v[4]]); 
         game2(); 
@@ -498,27 +497,28 @@ function main(sources) {
   };
 
   var score = function score(x,j) {
+    socket.send('CA#$42,' + pMgroup.x + ',' + pMname.x + ',6,6,12,20');
     if ((x + j) == 20) {
-      if (mMgoals.x = 2) mMplayer.ret([]);
-      mMgoals.ret(mMgoals.x == 2 ? 0 : (mMgoals.x + 1)); 
+      mMplayer.ret([]);
       mM13.ret(0).bnd(mMindex.ret);
       mMhistorymM1.ret([0,0,0,0]);   
-      socket.send('CG#$42,' + pMgroup.x + ',' + pMname.x + ',' + -x + ',' + mMgoals.x); 
-      if (mMgoals.x == 0) {
-        socket.send('CE#$42,' + pMgroup.x + ',' + pMname.x + ',nothing ');
-      }
-      socket.send('CA#$42,' + pMgroup.x + ',' + pMname.x + ',6,6,12,20');
+      mMgoals.bnd(add, 1, mMgoals).bnd(v => {
+        if (v == 3) {
+          socket.send('CG#$42,' + pMgroup.x + ',' + pMname.x + ',' + -x + ',' + 0); 
+          socket.send('CE#$42,' + pMgroup.x + ',' + pMname.x + ',nothing ')
+          mMgoals.ret(0);
+        }
+        else socket.send('CG#$42,' + pMgroup.x + ',' + pMname.x + ',' + -x + ',' + v); 
+      })
       return;
     }
     if ((x + j) % 5 == 0) {
       socket.send('CG#$42,' + pMgroup.x + ',' + pMname.x + ','+ (j+5)+',' + mMgoals.x); 
       mM13.ret(x + j + 5);
-      socket.send('CA#$42,' + pMgroup.x + ',' + pMname.x + ',6,6,12,20');
       return;
     } 
-    socket.send('CG#$42,' + pMgroup.x + ',' + pMname.x + ','+j+',' + mMgoals.x); 
+    socket.send('CG#$42,' + pMgroup.x + ',' + pMname.x + ','+ j + ',' + mMgoals.x); 
     mM13.ret(x + j);
-    socket.send('CA#$42,' + pMgroup.x + ',' + pMname.x + ',6,6,12,20');
  };
 
   var reset = function reset () {
@@ -952,9 +952,9 @@ function main(sources) {
         h('h2', 'Immutable Data And The State Object " ' ),
         h('h3', ' Mutations   ' ),
        h('p', ' Mutations in this application are confined to MonadItter instances and internal function operations. Functions in this application do not have side effects. If a function argument is an array, say "ar", I make a clone by calling "var ar = ar.slice()" or "let ar2 = ar.slice()" before mutating ar or ar2 inside the function. That way, the original ar remains unaffected. MonadItter instances don\'t have monadic properties. When their bnd() method is called, they sit idly until their release() method is called. I don\t see any reason to make a clone each time bnd() or release() is called. As demonstrated below, a MonadItter instance can hold several different expressions simultaneously, executing them one at a time in the order in which they appear in the code, once each time the release() method is called, In the quadratic equation demonstration, the second call to release() takes the result from the first call  ' ),
-         h('h3', ' Monad Updates ' ),
-       h('p', 'All monad updates caused by the monad ret() method are stored in the object ". When a monad m executes m.ret(v) for some value "v", m remains unchanged and the attribute m is created or, if it already exists, is replaced by the update; i.e., m.x == v becomes true. der versions of m are subObject to garbage collection unless there is a reference to them or to an object (arrays are objects) containing m.  This is illustrated in the score-keeping code below.  All score changes are captured by mM13.ret(). Therefore, mM13.x is always the current score. Replacing monad attributes in is vaguely analogous to swapping out ServerState in the Haskell server\'s state TMVar. der versions of ServerState can be preserved in the server just as prior versions of mM13 can be preserved in the front end. ' ),     
-       h('h3', 'Storing Monads That Have Been Replaced In blah, blah, blah. '  ),
+       h('h3', ' The simulated dice game ' ),
+       h('p', ' A score increases by 1 or 3 if the result of a computation is 20 or 18, respectively. 5 additional points are added each time the result is a multiple of 5. A computation that results in a score of 25 earns 1 goal. So if a score is 17 and a player multiplies 3 * 6, 3 points are awarded resulting in 20 + 5 = 25 points. Goal! When a goal is earned, the traversable history is deleted and prepared for a fresh start. Here is the code involved in the simulated dice game: ' ),
+       code.updateCalc,
        h('p', ' The history of the number display and scoreboard in the game can be traversed in either direction until a player scores a goal. After that, the traversable history is deleted and then builds up until another goal is achieves. Players can score points using historical displays, so to keep competition fair, group members are notified when another member clicks the BACK button. The code is shown below, in the MonadSet section; but first, here is some background. '  ),
 
 
