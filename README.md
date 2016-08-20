@@ -1,9 +1,13 @@
 #JS-monads-stable 
-The executable file, compiled using stack in Ubuntu 16.04, is in the bin directory. It is also running online at [JS-monads-stable](http://schalk.net:3055) 
+The executable file running at [JS-monads-stable](http://schalk.net:3055) was prepared in two stages. In the client directory, I ran webpack. Then in the root directory I ran stack build. This was done in the Ubuntu 16.04 operating system. 
 
-In this version, the global object "O" has been removed. Monad instances now exist on window intead of O. MonadStream has also been dropped. Simple function calls are now doing what MonadStream instances were doing in the simulated dice game and persistent, shared todo list. 
+In this version, the global object "O" has been removed. The branch named "using_object_O" preserved the most recent version. I don\'t anticipate doing any further development with it. 
 
-This repository is where I keep the code that is running online at [JS-monads-stable](http://schalk.net:3055). It is a [Motorcycle.js](https://github.com/motorcyclejs) application. Motorcycle.js is [Cycle.js](https://github.com/cyclejs/core) using [Most](https://github.com/cujojs/most) and [Snabbdom](https://github.com/paldepind/snabbdom) instead of RxJS and "virtual-dom".  
+Monad instances now exist on window intead of O. MonadStream was dropped some time ago because it didn\'t add any value to the project. Simple function calls are now doing what MonadStream instances were doing in the simulated dice game and persistent, shared todo list. 
+
+The branch JS-monads-mutatingInstances is being kept up to date with this, the master branch, because they can share the same main.js and code.js files. Only monad.js differs. As the name implies, JS-monads-mutatingInstances Monad, MonadSet, and MonadStateinstances methods mutate internal attributes rather than create a fresh instances with new values. 
+
+This is a [Motorcycle.js](https://github.com/motorcyclejs) application. Motorcycle.js is [Cycle.js](https://github.com/cyclejs/core) using [Most](https://github.com/cujojs/most) and [Snabbdom](https://github.com/paldepind/snabbdom) instead of RxJS and "virtual-dom".  
 
 [JS-monads-stable](http://schalk.net:3055) features explanations and demonstrations of a shared, persistent todo list; an interactive simulated dice game with a traversable history of number displays, chat rooms shared among members of each group that is formed to play the game or just to chat.
 ## Basic Monad    
@@ -27,7 +31,7 @@ This repository is where I keep the code that is running online at [JS-monads-st
     };
   };  
 ```
-Monad instances are useful for chaining computations. Typically, the bnd() method provides its value to a computation that returns an instance of Monad. Here are some examples:
+Monad instances are useful for chaining computations. Typically, the bnd() method provides its value (the x attribute) to a computation that returns an instance of Monad. Here are some examples:
 ```javascript
   var ret = function ret(v, id) {
     if (arguments.length === 1) {
