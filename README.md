@@ -26,8 +26,7 @@ This is a [Motorcycle.js](https://github.com/motorcyclejs) application. Motorcyc
     };
   
     this.ret = function (a) {
-      if (Object.getPrototypeOf(a).constructor == Monad) window[this.id] = new Monad(a.x, _this.id);
-      else window[_this.id] = new Monad(a,_this.id);
+      window[_this.id] = new Monad(a,_this.id);
       return window[_this.id];
     };
   };  
