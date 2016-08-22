@@ -36,7 +36,7 @@ function main(sources) {
   const messages$ = (sources.WS).map(e => {
     mMtem.ret(e.data.split(',')).bnd(v => {
     console.log('<><><><><><><><><><><><><><><><>  INCING  <><><><><><><> >>> In messages. v is ', v );
-    mMZ10.bnd(() => mM1.ret([v[3], v[4], v[5], v[6]]).bnd(ar => game(ar))) 
+    mMZ10.bnd(() => mM1.ret(v.slice(3)).bnd(y => game([pMscore.x, pMgoals.x, mM8.x].concat(y))));
     mMZ11.bnd(() => socket.send('NN#$42,' + pMgroup.x + ',' + pMname.x))
     mMZ12.bnd(() => mM6.ret(v[2] + ' successfully logged in.'))
     mMZ13.bnd(() => updateMessages(v))
@@ -370,9 +370,7 @@ function main(sources) {
     .select('.roll').events('click');
 
   const rollClickAction$ = rollClick$.map(e => {  
-    mM13.ret(mM13.x - 1);
-    mM8.ret(0);
-    mM3.ret([]);
+    mM3.ret([])
     socket.send('CG#$42,' + pMgroup.x + ',' + 
         pMname.x + ',' + -1 + ',' + mMgoals.x);
     socket.send('CA#$42,' + pMgroup.x + ',' + pMname.x + ',6,6,12,20')
@@ -384,13 +382,10 @@ function main(sources) {
   const numClickAction$ = numClick$.map(e => {
     if (mM3.x.length < 2) {
       mM3.bnd(push, e.target.innerHTML, mM3)
-      var ar = mMhistorymM1.x[mMindex.x].slice()
-      ar.splice(e.target.id, 1)
-      mM1.ret(ar);
-      game(ar);
+      mM1.bnd(splice, e.target.id, 1, mM1).bnd(nums =>
+      game([pMscore.x, pMgoals.x, mM8.x].concat(nums)))
     }
     if (mM3.x.length === 2 && mM8.x !== 0) {
-      console.log('7777777777777777777777777777  In numClickAction$ heading for updateCalc.  mM1.x is ', mM1.x);
       updateCalc();
     }
   }).startWith([0,0,0,0]);
@@ -429,21 +424,20 @@ function main(sources) {
   var game = function game (z) {
     var x = z.slice();
     var onlinePlayers;
-    mMindex.bnd(add, 1, mMindex)
-          .bnd(i => mMhistorymM1.bnd(spliceAdd, i, x, mMhistorymM1)
-            .bnd(() => mMplayerArchive.bnd(spliceAdd, i, playerMonad.s, mMplayerArchive)) 
-            .bnd(() => mMsetArchive.bnd(spliceAdd, i, sMplayers.s, mMsetArchive) ) 
-            .bnd(() => console.log('In game. >>>>>>>>>>>>>>>>>>>>>>>>>> i is ', i))  )          
-      document.getElementById('0').innerHTML = x[0];  
-      document.getElementById('1').innerHTML = x[1];  
-      document.getElementById('2').innerHTML = x[2];  
-      document.getElementById('3').innerHTML = x[3]; 
+    mMindex
+    .bnd(add, 1, mMindex)
+     .bnd(i => mMhistorymM1.bnd(spliceAdd, i, x, mMhistorymM1))
+      document.getElementById('0').innerHTML = x[3];  
+      document.getElementById('1').innerHTML = x[4];  
+      document.getElementById('2').innerHTML = x[5];  
+      document.getElementById('3').innerHTML = x[6]; 
       game2();
       cleanup();
   };
 
   var game2 = function game2 () {
       var ar = Array.from(sMplayers.s);
+      console.log('In game2  pMscore is 111111111111111111111111 pMscore: ', pMscore );
       document.getElementById('sb1').innerHTML = 'Name: ' +  pMname.x;
       document.getElementById('sb2').innerHTML = 'Group: ' + pMgroup.x
       document.getElementById('sb3').innerHTML = 'Score: ' + pMscore.x
@@ -454,28 +448,26 @@ function main(sources) {
   };
  
   var trav = function trav (index) {       
-    document.getElementById('0').innerHTML = mMhistorymM1.x[index][0]; 
-    document.getElementById('1').innerHTML = mMhistorymM1.x[index][1]; 
-    document.getElementById('2').innerHTML = mMhistorymM1.x[index][2]; 
+    console.log("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX index, mMsetArchive.x ", index, mMsetArchive.x );
+    document.getElementById('0').innerHTML = mMhistorymM1.x[index][3]; 
+    document.getElementById('1').innerHTML = mMhistorymM1.x[index][4]; 
+    document.getElementById('2').innerHTML = mMhistorymM1.x[index][5]; 
     document.getElementById('3').innerHTML = mMhistorymM1.x[index][3];
-    document.getElementById('sb3').innerHTML = 'Score: ' + mMplayerArchive.x[index][2];
-    document.getElementById('sb4').innerHTML = 'Goals: ' + mMplayerArchive.x[index][3];
-    if (pMgroup.x != 'solo') {
-      document.getElementById('sb6').innerHTML =  Array.from(mMsetArchive.x[index].s);
-    }
+    document.getElementById('sb3').innerHTML = mMhistorymM1.x[index][0];
+    document.getElementById('sb4').innerHTML = mMhistorymM1.x[index][1];
+    mM8.ret(mMhistorymM1.x[index][2]);
     cleanup();
   };
 
   function updateCalc() { 
-    mM3.bnd(x => mM7
-    .ret(calc(x[0], mM8.x, x[1]))
-    .bnd(res => mM1.bnd(push, res, mM1)
-    .bnd(result => {
-      game(result) 
-      console.log('In updateCalc x, res, mM1.x, and result are ', x, res, mM1.x, result)                                      
-      if (res == 20) {score(mM13.x, 1)} 
-      if (res == 18) {score(mM13.x, 3)}
-    }  ))) ;
+    mM3.bnd(x => 
+    mM7.ret(calc(x[0], mM8.x, x[1])).bnd(result => {
+    mM1.bnd(push, result, mM1)
+    .bnd(nums => game([pMscore.x, pMgoals.x, mM8.x].concat(nums)))
+      if (result == 20) {score(pMscore.x + 1)} 
+      if (result == 18) {score(pMscore.x + 3)}
+      console.log("EEEEEEEEEEEEEEEEEE In updateCalc pMscore.x is ", pMscore.x );
+      })) ;
     reset()
   };
 
@@ -496,30 +488,26 @@ function main(sources) {
       return ret(x);
   };
 
-  var score = function score(x,j) {
+  var score = function score(x) {
+    console.log('In score *************** x and pMscore.x is ', x, pMscore.x );
     socket.send('CA#$42,' + pMgroup.x + ',' + pMname.x + ',6,6,12,20');
-    if ((x + j) == 20) {
+    if ((x) == 20 ) {
       mMplayer.ret([]);
       mM13.ret(0).bnd(mMindex.ret);
-      mMhistorymM1.ret([0,0,0,0]);   
       mMgoals.bnd(add, 1, mMgoals).bnd(v => {
         if (v == 3) {
-          socket.send('CG#$42,' + pMgroup.x + ',' + pMname.x + ',' + -x + ',' + 0); 
           socket.send('CE#$42,' + pMgroup.x + ',' + pMname.x + ',nothing ')
           mMgoals.ret(0);
-        }
-        else socket.send('CG#$42,' + pMgroup.x + ',' + pMname.x + ',' + -x + ',' + v); 
+          mMhistorymM1.ret([0,0,0,0]);   
+          playerMonad.run([pMname.x, pMgroup.x, 0, 0]);
+        } 
+        else playerMonad.run([pMname.x, pMgroup.x, 0, pMgoals.x*1 + 1]);
       })
-      return;
+      return
     }
-    if ((x + j) % 5 == 0) {
-      socket.send('CG#$42,' + pMgroup.x + ',' + pMname.x + ','+ (j+5)+',' + mMgoals.x); 
-      mM13.ret(x + j + 5);
-      return;
-    } 
-    socket.send('CG#$42,' + pMgroup.x + ',' + pMname.x + ','+ j + ',' + mMgoals.x); 
-    mM13.ret(x + j);
- };
+    pMscore.ret(x).bnd(addTest, pMscore);
+    playerMonad.run([pMname.x, pMgroup.x, pMscore.x, pMgoals.x]);
+  }
 
   var reset = function reset () {
       mM3.ret([])
@@ -709,12 +697,12 @@ function main(sources) {
           h('span#tog', [
           h('button#game',  {style: {fontSize: '16px'}}, 'TOGGLE GAME'  ), 
           h('span.tao',' ' ),
-          h('button#todoButton',  {style: {fontSize: '16px'}}, 'TOGGLE TLIST'  ),  
+          h('button#todoButton',  {style: {fontSize: '16px'}}, 'TOGGLE TODO_LIST'  ),  
           h('br'),
           h('br'),
           h('button#chat2',  {style: {fontSize: '16px'}}, 'TOGGLE CHAT'  ),
           h('span.tao',' ' ),
-          h('button#caption',  {style: {fontSize: '16px'}}, 'TOGGLE CAPTI'  )  ]),
+          h('button#caption',  {style: {fontSize: '16px'}}, 'TOGGLE CAPTION'  )  ]),
           h('br'),
           h('br'),
           h('br'),
@@ -824,44 +812,29 @@ function main(sources) {
         h('p', ' Each of the functions shown above can be used as a stand-alone function or as an argument to the bnd() method. Each monad in a chain of linked computations can do one of two things with the previous monad\s value: (1) It can ignore it, possibly letting it move past for use further down the chain or (2) use it, with the option of passing it on down the chain. Any computation can be inserted into the chain by giving it an additional first argument (which will be the previous monad\'s value), and having it return an instance of Monad. Say you have a function func(a,b,c) {...}. Put something ahead of a (it will have the previous monad\'s value) and return a monad. You can give the returned monad any value you like. For example, func\'(x,a,b,c) {...; return ret(x)} will work. Its bnd() method will pass along the value x, which is the previous monad\s value. ' ),
         h('h3', ' The Monad Laws ' ),
         h('p', ' In the following discussion, "x == y" signifies that x == y returns true. Let M be the collection of all instances of Monad, let J be the collection of all Javascript values, including functions, instances of Monad, etc, and let F be the collection of all functions mapping values in J to monads in M where the return values are the calling instance of Monad. For any m (with id == "m"), v, f, and f\' in M, J, F, and F, respectively, the following relationships hold: ' ), 
-        h('pre.lb', `    m.ret(v).bnd(f) == f(v)   Left identity   Holds provided that f returns m.
-    (return x) >>= f == f x       Haskell monad law
+        h('pre.lb', `    equals( m.ret(v).bnd(f), f(v) ) Left identity   Holds provided that f returns m.
+    Example: equals( m.ret(5).bnd(cube, m).x, cube(5, m) )   
+    Haskell monad law: (return x) >>= f ≡ f x  
     
-    m.bnd(m.ret) == m         Right identity
-    m >>= return == m         Haskell monad law
+    m.bnd(m.ret) == m   Right identity   Works even with "==" and "==="
+    Haskell monad law: m >>= return ≡ m  
     
-    Let v = m.x, then 
-    m.bnd(f).bnd(f').x == m.bnd(v => f(v).bnd(f\')).x  Associativity
-    (m >>= f) >>= g == m >>= ( \\x -> (f x >>= g) )  Haskell monad law  ` ),
-        h('p', ' ".x" is appended to the associativity expressions because otherwise it would fail. The == operator on objects checks for location in memory, not equality of attributes and methods. If the left and right sides of predicates create new instances of m, then the left side m and the right side m wind up in different location in memory  ' ),
+    equals( m.bnd(f).bnd(f'), m.bnd(v => f(v).bnd(f\')) )  Associativity
+    Haskell monad law: (m >>= f) >>= g ≡ m >>= ( \\x -> (f x >>= g) ) ` ),
+        h('p', ' where equals is defined as: ' ),
+        code.equals,
+        h('p', ' The function equals() was used because the == and === operators on objects check for location in memory, not equality of attributes and methods. If the left and right sides of predicates create new instances of m, then the left side m and the right side m wind up in different location in memory. That\'s why m.ret(3) == m.ret(3) returns false. If we define equality to mean equality of attributes, then ret is the left and right identity on objects in M and  the objects in M commute when their bind methods operate on functions in F. ' ),
         h('h3', ' The JS-monads-mutableInstances Branch  ' ),
-        h('p', ' In the JS-monads-mutableInstances branch of this project, the associative equivalence holds without appending ".x". For example: ' ),
-        h('pre', `    m.bnd(f).bnd(g) == m.bnd(v => f(v).bnd(g)   where g returns m.
-    m.bnd(add, 3, m).bnd(cube, m) == m.bnd(v => add(v, 3, m).bnd(cube, m)
-    m.ret(v).bnd(f) == f(v)  where f is a function that returns m. 
-    m.ret(5).bnd(cube, m) == cube(5, m)   for 5 and any other number. 
-    ` ),
-        h('p', ' Tests in the JS-monads-mutableInstance branch are more sensible. For example: ' ),
-        h('pre', ` m.ret(7) == m.ret(7)  Returns true in JS-monads-mutableIntances but false here.  `),
-        h('p', ' In this applications Haskell server, state is kept in a TMVar, a container that does not change. Only its contents change. A mutable object is like that. It does not change. Only its contents change. In Haskell, the contents of a TMVar can\'t mutate. They must be removed and replaced. In Monad ret(), what does _this.x = a do and what should it do. Right now, x is mutated. What if I were to delete x each time ret() is called and replace it by stating "_this.x = a". What difference would the rest of the application see? What new possiblilities would arise? Here is a test: ' ),
-        h('pre', `    var a = m.ret({a:5, b:6}).x
-    m.ret({a:'flowers', b:42}) 
-    console.log(a)   Object {a: 5, b: 6}  ` ),
-        h('p', ' As expected, mutating x did not change a. All that a got was {a:5, b:6}, not m.x. Now let\'s try: ' ),
-        h('pre', ` var b = m.ret(m2.ret(3))
-    m2.ret("clouds")  
-    console.log(b.x.x)   clouds ` ),
-        h('p', ' m.x is m2 so b.x.x is a reference to m2.x. When m2.x changed, so did b.x.x. ' ),
-        h('p', ' I changed the definition of ret() in monad as follows: ' ),
-        h('pre', `    this.ret = function (a) {
-        delete _this.x
-        _this.x = a;
-        return _this
-    };  `  ),
-        h('p', ' That made no difference. b.x.x still changed to "clouds". m stayed in the same location in memory and b.x.x is still just a reference to m.x.x so it changes when m.x changes. But here, in this master branch of the application, console.log(b.x.x) returns 3, not clouds. b got a permanent handle on the state of m at the time "b = m.ret(m2.ret(3)) was called.    ' ),
-        h('p#monaditter', ' Just as Javascript if very different from Haskell, so too are the JS-monads very different from Haskell monads. Unlike JS-monads, Haskell monads obtain new values without producing new clones of themselves. I think the essential takeaways from the above demonstration of similarities are not so much that JS-monads are like Haskell monads, but that (1) that the Monad ret() method is the left and right identity on instances of Monad, and (2) instances of Monad compose associatively. Does that mean that instances of Monad along with functions that map values to instances of Monad are monoids in the category of endofunctors, just like Haskell monads? It does seem to be the case, though it wasn\'t formally proven.   ' ), 
-        h('p', ' Let m2 (with id == "m2") be any member of M. Here is a useful relationships between m and m2:  ' ),
-        h('pre', `    m1.bnd(m2.ret) == m2.ret(m1.x). These are two ways of giving m1\'s value to m2.  ` ),
+        h('p', ' In the JS-monads-mutableInstances branch of this project, examples of the laws hold when the == operator is used. For example: ' ),
+        h('pre', `    m.bnd(add, 3, m).bnd(cube, m) == m.bnd(v => add(v, 3, m).bnd(cube, m)
+    m.ret(5).bnd(cube, m) == cube(5, m)   ` ),
+        h('p', ' Tests in the JS-monads-mutableInstance produce results closer to what we would expect in mathematics. For example: ' ),
+        h('pre', `    m.ret(7) == m.ret(7)  Returns true in JS-monads-mutableIntances.  `),
+        h('h3', ' Back to the master branch ' ),
+        h('p#monaditter', ' Just as Javascript if very different from Haskell, so too are the JS-monads very different from Haskell monads. For example, the JS-monads carry bnd() and ret() internally whereas Haskell uses >>= and return. I think the essential takeaways from the above demonstration of similarities are not so much that JS-monads are like Haskell monads, but that (1) the Monad ret() method is the left and right identity on instances of Monad, and (2) instances of Monad compose associatively. Does that mean that members of M (defined above) are monoids in the category of endofunctors, just like Haskell monads? Well, it does sort of feel that way, but it hasn\'t been proven.   ' ), 
+
+// **************************************************************************** END MONAD       START MonadItter   
+
         h('h2', 'MonadItter' ),
         code.monadIt,
         h('p', ' MonadItter instances do not have monadic properties, but they facilitate the work of monads. Here\'s how they work: ' ),

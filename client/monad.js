@@ -696,7 +696,12 @@ var calc = function calc(a,op,b) {
   return result;
 };
 
-var equals = function equals (x, mon1, mon2, mon3) {
+var equals = function equals (mon1, mon2) {
+  if (mon1.id === mon2.id && mon1.x === mon2.x) return true;
+  else return falst
+}
+
+var equals2 = function equals (x, mon1, mon2, mon3) {
   if (mon1.id === mon2.id && mon1.x === mon2.x) {
     mon3.ret('true');
   } else mon3.ret('false');
@@ -784,13 +789,9 @@ var spliceAdd = function spliceAdd(x, index, value, mon) {
 };
 
 var splice = function splice(x, start, howmany, mon) {
-  if (Array.isArray(x)) {
-    let ar = x.slice();
-    ar.splice(start, howmany);
-    return mon.ret(ar);  
-  }
-  console.log('The value provided to splice is not an array');
-  return ret(x);
+  let ar = x.slice();
+  ar.splice(start, howmany);
+  return mon.ret(ar);  
 };
 
 var concat = function concat(x, v, mon) {
@@ -843,6 +844,12 @@ var reduce = function reduce(x) {
     let ar2 = ar.reduce(function(a,b) {return (a + ', ' + b)});
     return ret(ar2);  
 };
+
+var addTest = function test (x,  mon) {
+  console.log('>>>>>>>>>>>>>>>>>>> in addTest  x and mon are ', x, mon );
+  if (x % 5 == 0) return mon.ret(x + 5)
+  else return mon.ret(x);
+}
 
 var next = function next(x, y, mon2, a1, a2) {
   if (x === y) {

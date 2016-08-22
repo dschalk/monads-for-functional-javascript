@@ -45,8 +45,8 @@ const monad = h('pre', {style: {color: '#AFEEEE' }}, `  var Monad = function Mon
     };
 
     this.ret = function (a) {
-      [_this.id] = new Monad(a, _this.id);
-      return [_this.id]
+      window[_this.id] = new Monad(a,_this.id);
+      return window[_this.id];
     };
   }; ` )
 
@@ -1074,8 +1074,10 @@ var e2 = h('pre',  `  var c = m.ret(0).bnd(add,3).bnd(cube)
   Output: In log. Entry:  a squared is 9
           In log. Entry:  a squared plus b squared is 25  `  )
 
-var p5 = h('pre',  `  
-`  )
+var equals = h('pre',  `    var equals = function equals (mon1, mon2) {
+      if (mon1.id === mon2.id && mon1.x === mon2.x) return true;
+      else return falst
+    }  `  )
 
 var p5 = h('pre',  `  
 `  )
@@ -1090,6 +1092,6 @@ var p7 = h('pre',  `
 
 
 
-  export default {monad, e1, e2, fib, driver, messages, next, monadIt, MonadSet, updateCalc, arrayFuncs, travel, nums, cleanup, ret, C42, newTask, process, mM$task, addString, colorClick, edit, testZ, quad, mdem1, runTest, todoStream, inc, ret_add_cube, seed,  add, traverse, MonadState, primesMonad, fibsMonad, primeFibInterface, tr3, fpTransformer, innerHTML, factorsMonad, factorsInput, playerMonad, MonadSet, promise, promiseSnippet, timeout, timeoutSnippet, examples, examples2, async }
+  export default {monad, equals, e1, e2, fib, driver, messages, next, monadIt, MonadSet, updateCalc, arrayFuncs, travel, nums, cleanup, ret, C42, newTask, process, mM$task, addString, colorClick, edit, testZ, quad, mdem1, runTest, todoStream, inc, ret_add_cube, seed,  add, traverse, MonadState, primesMonad, fibsMonad, primeFibInterface, tr3, fpTransformer, innerHTML, factorsMonad, factorsInput, playerMonad, MonadSet, promise, promiseSnippet, timeout, timeoutSnippet, examples, examples2, async }
 
 
