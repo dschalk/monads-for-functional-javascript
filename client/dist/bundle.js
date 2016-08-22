@@ -3477,7 +3477,7 @@
 
 	var e2 = (0, _dom.h)('pre', '  var c = m.ret(0).bnd(add,3).bnd(cube)\n  .bnd(log,"m.x and a.x are  " + m.x + " and " + a.x + " respectively ")\n  Output: In log. Entry:  m.x and a.x are  0 and 27 respectively \n  Note: m.x keeps its initial value of 0.\n\n  m.bnd(() => add(0, 3).bnd(cube).bnd(m.ret).bnd(v => log("", "m.x is " + v))) \n  Output: In log. Entry:  m.x is 27\n  Note: It doesn\'t matter what m.x was at the beginning of the computation.\n \n  ret(3).bnd(v => ret(v*v).bnd(v2 => log("", "a squared is " + v2).bnd(() => \n  ret(4*4).bnd(v3 => log("", "a squared plus b squared is " + (v2 + v3), m)))))\n  Output: In log. Entry:  a squared is 9\n          In log. Entry:  a squared plus b squared is 25  ');
 
-	var equals = (0, _dom.h)('pre', '    var equals = function equals (mon1, mon2) {\n      if (mon1.id === mon2.id && mon1.x === mon2.x) return true;\n      else return falst\n    }  ');
+	var equals = (0, _dom.h)('pre', '    var equals = function equals (mon1, mon2) {\n      if (mon1.id === mon2.id && mon1.x === mon2.x) return true;\n      else return false\n    }  ');
 
 	var p5 = (0, _dom.h)('pre', '  \n');
 

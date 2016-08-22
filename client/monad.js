@@ -698,7 +698,7 @@ var calc = function calc(a,op,b) {
 
 var equals = function equals (mon1, mon2) {
   if (mon1.id === mon2.id && mon1.x === mon2.x) return true;
-  else return falst
+  else return false
 }
 
 var equals2 = function equals (x, mon1, mon2, mon3) {

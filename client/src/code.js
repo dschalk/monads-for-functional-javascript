@@ -1076,7 +1076,7 @@ var e2 = h('pre',  `  var c = m.ret(0).bnd(add,3).bnd(cube)
 
 var equals = h('pre',  `    var equals = function equals (mon1, mon2) {
       if (mon1.id === mon2.id && mon1.x === mon2.x) return true;
-      else return falst
+      else return false
     }  `  )
 
 var p5 = h('pre',  `  
