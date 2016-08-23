@@ -142,8 +142,9 @@ Another way to do essentially the same thing is to run:
 ```javascript
     window["temp"] = new Monad(qS4(m.x), "temp")
     temp.bnd(lg)  
-Monad Arithmetic with opM
-
+```    
+##Monad Arithmetic with opM
+```javascript
     function opM (a, op, b, id) {
       window[id] = new Monad(eval(a.x + op + b.x), id); 
       return window[id];
