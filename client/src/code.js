@@ -1079,11 +1079,45 @@ var equals = h('pre',  `    var equals = function equals (mon1, mon2) {
       else return false
     }  `  )
 
-var p5 = h('pre',  `  
-`  )
+var fmap = h('pre',  `    function fmap (x, g, id) {window[id] = new Monad(g(x), id); return window[id]}
+  
+    var qS1 = function qS1 (a, b, c) {
+      let n = (b*(-1)) + (Math.sqrt(b*b - 4*a*c));
+      if (n != n) {
+        return "No solution";
+      }
+      return n/(2*a);
+    }
+  
+    var qS2 = function qS2 (a, b, c) {
+      let n = (b*(-1)) - (Math.sqrt(b*b - 4*a*c));
+      if (n != n) {
+        return "No solution";
+      }
+      return n/(2*a);
+    }
+  
+    var qS4 = function qS3 ([x,y,z]) {
+      let [a,b,c] = [x,y,z]
+      return [qS1(a,b,c), qS2(a,b,c)]    
+    }  
+    
+    m.ret([12,12,-144])
+  
+    m.bnd(fmap, qS4, "temp").bnd(lg)   logs [3, -4] `  )
 
-var p6 = h('pre',  `  
-`  )
+var opM = h('pre',  `    function opM (a, op, b, id) {
+      window[id] = new Monad(eval(a.x + op + b.x), id); 
+      return window[id];
+    }  
+    
+    m1.ret(42)
+
+    m2.ret(7)
+
+    opM(m1, "%", m2, "ok").bnd(lg)  logs 0
+
+    opM(m1, "+", m2, "ok").bnd(lg)  logs 49  `  )
 
 var p7 = h('pre',  `  
 `  )
@@ -1092,6 +1126,6 @@ var p7 = h('pre',  `
 
 
 
-  export default {monad, equals, e1, e2, fib, driver, messages, next, monadIt, MonadSet, updateCalc, arrayFuncs, travel, nums, cleanup, ret, C42, newTask, process, mM$task, addString, colorClick, edit, testZ, quad, mdem1, runTest, todoStream, inc, ret_add_cube, seed,  add, traverse, MonadState, primesMonad, fibsMonad, primeFibInterface, tr3, fpTransformer, innerHTML, factorsMonad, factorsInput, playerMonad, MonadSet, promise, promiseSnippet, timeout, timeoutSnippet, examples, examples2, async }
+  export default {monad, equals, fmap, opM, e1, e2, fib, driver, messages, next, monadIt, MonadSet, updateCalc, arrayFuncs, travel, nums, cleanup, ret, C42, newTask, process, mM$task, addString, colorClick, edit, testZ, quad, mdem1, runTest, todoStream, inc, ret_add_cube, seed,  add, traverse, MonadState, primesMonad, fibsMonad, primeFibInterface, tr3, fpTransformer, innerHTML, factorsMonad, factorsInput, playerMonad, MonadSet, promise, promiseSnippet, timeout, timeoutSnippet, examples, examples2, async }
 
 

@@ -78,26 +78,97 @@ These functions can be used with instances of Monad in many ways, for example:
           In log. Entry:  a squared plus b squared is 25  
 ```
 Each of the functions shown above can be used as a stand-alone function or as an argument to the bnd() method. Each monad in a chain of linked computations can do one of two things with the previous monads value: (1) It can ignore it, possibly letting it move past for use further down the chain or (2) use it, with the option of passing it on down the chain. Any computation can be inserted into the chain by giving it an additional first argument (which will be the previous monad's value), and having it return an instance of Monad. Say you have a function func(a,b,c) {...}. Put something ahead of a (it will have the previous monad's value) and return a monad. You can give the returned monad any value you like. For example, func'(x,a,b,c) {...; return ret(x)} will work. Its bnd() method will pass along the value x, which is the previous monads value.
-##Similarity to Haskell Monads
-In the following discussion, "x == y" signifies that x == y returns true. Let M be the collection of all instances of Monad, let J be the collection of all Javascript values, including functions, instances of Monad, etc, and let F be the collection of all functions mapping values in J to monads in M. For any m, v, f, and f' in M, J, F, and F, respectively, the following relationships hold:
+
+
+
+
+##The Monad Laws
+
+In the following discussion, "x == y" signifies that x == y returns true. Let M be the collection of all instances of Monad, let J be the collection of all Javascript values, including functions, instances of Monad, etc, and let F be the collection of all functions mapping values in J to monads in M where the return values are the calling instance of Monad. For any m (with id == "m"), v, f, and f' in M, J, F, and F, respectively, the following relationships hold:
 ```javascript
-    m.ret(v).bnd(f).x == f(v).x                        Left identity
-    ret(v).bnd(f).x == f(v).x                            Left identity  
-    (return x) >>= f == f x                              Haskell monad law
+    equals( m.ret(v).bnd(f), f(v) ) Left identity   Holds provided that f returns m.
+    Example: equals( m.ret(5).bnd(cube, m).x, cube(5, m) )   
+    Haskell monad law: (return x) >>= f ≡ f x  
     
-    m.bnd(m.ret).x == m.x                            Right identity
-    m.bnd(ret).x == m.x                              Right identity
-    m >>= return == m                                    Haskell monad law
+    m.bnd(m.ret) == m   Right identity   Works even with "==" and "==="
+    Haskell monad law: m >>= return ≡ m  
     
-    Assume m.x = v, then 
-    m.bnd(f).bnd(f').x == m.bnd(v => f(v).bnd(f'))  Associativity
-    (m >>= f) >>= g == m >>= ( \x -> (f x >>= g) )      Haskell monad law  
-```
-".x" is appended to the relationships because we are checking only for equivalence of values, not equivalence of objects. m.ret(v) and m.ret(v, "m") both create new instances of Monad named "m". ret(v) creates a new un-named instance of Monad. ret(v1).ret(v2) creates a fresh attribute of Monad named "anonymous" with anonymous.x == v. m.ret(3) == m.ret(3) returns false because each time m.ret(3) runs, m points to a new instance of Monad. The previous m is left to the garbage collector unless there is a reference to it. But m.ret(3).x == m.ret(3).x returns true because 3 == 3 is true and m.x == 3 for the current and former instances of Monad named "m".
+    equals( m.bnd(f).bnd(f'), m.bnd(v => f(v).bnd(f')) )  Associativity
+    Haskell monad law: (m >>= f) >>= g ≡ m >>= ( \x -> (f x >>= g) ) 
+      where equals is defined as:
 
-Just as Javascript if very different from Haskell, so too are the JS-monads very different from Haskell monads. Unlike JS-monads, Haskell monads obtain new values without producing new clones of themselves. I think the essential takeaways from the above demonstration of similarities are not so much that JS-monads are like Haskell monads, but that (1) that the Monad ret() method is, in a comparison of "x" attributes (and also "id" attributes), the left and right identity on instances of Monad, and (2) instances of Monad compose associatively.
+    var equals = function equals (mon1, mon2) {
+      if (mon1.id === mon2.id && mon1.x === mon2.x) return true;
+      else return false
+    }  
+```    
+The function equals() was used because the == and === operators on objects check for location in memory, not equality of attributes and methods. If the left and right sides of predicates create new instances of m, then the left side m and the right side m wind up in different location in memory. That's why m.ret(3) == m.ret(3) returns false. If we define equality to mean equality of attributes, then ret is the left and right identity on objects in M and the objects in M commute when their bind methods operate on functions in F.
 
-Here are the definitions of MonadItter, MonadState, and MonadSet:
+##The JS-monads-mutableInstances Branch
+
+In the JS-monads-mutableInstances branch of this project, examples of the laws hold when the == operator is used. For example:
+
+    m.bnd(add, 3, m).bnd(cube, m) == m.bnd(v => add(v, 3, m).bnd(cube, m)
+    m.ret(5).bnd(cube, m) == cube(5, m)   
+Tests in the JS-monads-mutableInstance produce results closer to what we would expect in mathematics. For example:
+
+    m.ret(7) == m.ret(7)  Returns true in JS-monads-mutableIntances.  
+##Back to the master branch
+
+##fmap
+
+I have shown you some functions designed for instances of Monad, but it is easy to use ordinary functions inside of chained monad computations without modifying them. One way of doing this is to use fmap(). It takes an ordinary function, a monad, and a string as arguments. Let f be a function that returns ordinary Javascript values and let m be an instance of Monad. fmap(f, m, "temp") returns an instance of Monad named "temp" with temp.id == "temp" and temp.x == f(m.x). temp can be a previously existing instance of Monad or a brand new one. Here are the definitions of fmap, a function that returns an array, and an example.
+```javascript
+    function fmap (x, g, id) {window[id] = new Monad(g(x), id); return window[id]}
+  
+    var qS1 = function qS1 (a, b, c) {
+      let n = (b*(-1)) + (Math.sqrt(b*b - 4*a*c));
+      if (n != n) {
+        return "No solution";
+      }
+      return n/(2*a);
+    }
+  
+    var qS2 = function qS2 (a, b, c) {
+      let n = (b*(-1)) - (Math.sqrt(b*b - 4*a*c));
+      if (n != n) {
+        return "No solution";
+      }
+      return n/(2*a);
+    }
+  
+    var qS4 = function qS3 ([x,y,z]) {
+      let [a,b,c] = [x,y,z]
+      return [qS1(a,b,c), qS2(a,b,c)]    
+    }  
+    
+    m.ret([12,12,-144])
+  
+    m.bnd(fmap, qS4, "temp").bnd(lg)   logs [3, -4] 
+
+Another way to do essentially the same thing is to run:
+```javascript
+    window["temp"] = new Monad(qS4(m.x), "temp")
+    temp.bnd(lg)  
+Monad Arithmetic with opM
+
+    function opM (a, op, b, id) {
+      window[id] = new Monad(eval(a.x + op + b.x), id); 
+      return window[id];
+    }  
+    
+    m1.ret(42)
+
+    m2.ret(7)
+
+    opM(m1, "%", m2, "ok").bnd(lg)  logs 0
+
+    opM(m1, "+", m2, "ok").bnd(lg)  logs 49  
+```    
+##Are They Category Theory Monads?
+
+Just as Javascript if very different from Haskell, so too are the JS-monads very different from Haskell monads. For example, the JS-monads carry bnd() and ret() internally whereas Haskell uses >>= and return. I think the essential takeaways from the above demonstration of similarities are not so much that JS-monads are like Haskell monads, but that (1) the Monad ret() method is the left and right identity on instances of Monad, and (2) instances of Monad compose associatively. Does that mean that members of M (defined above) are monoids in the category of endofunctors, just like Haskell monads? Well, it does sort of feel that way, but it hasn't been proven.
+
 ##MonadItter
 ```javascript
   var MonadItter = function MonadItter() {

@@ -27,6 +27,15 @@ var Monad = function Monad(value, ID) {
   };
 };
 
+function fmap2 (g, a, id) {window[id] = new Monad(g(a.x), id); return window[id]}
+
+function fmap (x, g, id) {window[id] = new Monad(g(x), id); return window[id]}
+
+function opM (a, op, b, id) {
+  window[id] = new Monad(eval(a.x + op + b.x), id); 
+  return window[id];
+}
+
 var MonadSet = function MonadSet(set, ID) {
   var _this = this;
 
@@ -624,6 +633,15 @@ mMZ2.bnd(v => cube(v)
     return n/(2*a);
   }
 
+  var qS3 = function qS3 (a, b, c) {
+    return [qS1(a,b,c), qS2(a,b,c)]
+  }
+
+  var qS4 = function qS3 ([x,y,z]) {
+    let [a,b,c] = [x,y,z]
+    return [qS1(a,b,c), qS2(a,b,c)]
+  }
+
 var trim = function trim(str) {
   return ret(str.trim());
 };
@@ -904,6 +922,11 @@ var log2 = function log2(x) {
   console.log('In log2.  x is: ', x);
     return ret(x);
 };
+
+var lg = function lg (x) {
+  console.log(x);
+  return ret(x);
+}
 
   var getIndex = function getIndex (event_object) {
     var task = event_object.currentTarget.parentNode.innerText;

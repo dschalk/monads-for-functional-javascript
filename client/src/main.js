@@ -831,6 +831,15 @@ function main(sources) {
         h('p', ' Tests in the JS-monads-mutableInstance produce results closer to what we would expect in mathematics. For example: ' ),
         h('pre', `    m.ret(7) == m.ret(7)  Returns true in JS-monads-mutableIntances.  `),
         h('h3', ' Back to the master branch ' ),
+        h('h3', ' fmap ' ),
+        h('p', ' I have shown you some functions designed for instances of Monad, but it is easy to use ordinary functions inside of chained monad computations without modifying them. One way of doing this is to use fmap(). It takes an ordinary function, a monad, and a string as arguments. Let f be a function that returns ordinary Javascript values and let m be an instance of Monad. fmap(f, m, "temp") returns an instance of Monad named "temp" with temp.id == "temp" and temp.x == f(m.x). temp can be a previously existing instance of Monad or a brand new one. Here are the definitions of fmap, a function that returns an array, and an example. ' ),
+        code.fmap,
+        h('p', ' Another way to do essentially the same thing is to run:  ' ), 
+        h('pre', `    window["temp"] = new Monad(qS4(m.x), "temp")
+    temp.bnd(lg)  ` ),
+        h('h3', ' Monad Arithmetic with opM ' ),
+        code.opM,
+        h('h3', ' Are They Category Theory Monads?  ' ), 
         h('p#monaditter', ' Just as Javascript if very different from Haskell, so too are the JS-monads very different from Haskell monads. For example, the JS-monads carry bnd() and ret() internally whereas Haskell uses >>= and return. I think the essential takeaways from the above demonstration of similarities are not so much that JS-monads are like Haskell monads, but that (1) the Monad ret() method is the left and right identity on instances of Monad, and (2) instances of Monad compose associatively. Does that mean that members of M (defined above) are monoids in the category of endofunctors, just like Haskell monads? Well, it does sort of feel that way, but it hasn\'t been proven.   ' ), 
 
 // **************************************************************************** END MONAD       START MonadItter   
