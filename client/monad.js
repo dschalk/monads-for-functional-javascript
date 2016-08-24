@@ -36,6 +36,10 @@ function opM (a, op, b, id) {
   return window[id];
 }
 
+var fm = (f,x, ...args) => (f,x, ...args) => ret(f(x, ...args))
+
+var fmapF = fm(cu)
+
 var MonadSet = function MonadSet(set, ID) {
   var _this = this;
 
@@ -265,6 +269,10 @@ function rang (n, m) {
   return Array.from(new Array(m - n), (x,i) => i + n)
 }
 
+var ad = (a,b) => a + b
+
+var cu = a => a*a*a
+
 function primes (n, ar) {    
   var array = ar.slice();
   for (var i = array.slice(-1).pop(); i <= n; i += 2) {
@@ -406,6 +414,8 @@ var mMhistorymMtask = new Monad([], 'mMhistorymMtask');
 var mMtemp = new Monad('temp', 'mMtemp');
 var mMtemp2 = new Monad('temp2', 'mMtemp2');
 var mMtemp3 = new Monad('temp3', 'mMtemp3');
+var mMtemp4 = new Monad('temp4', 'mMtemp4');
+var mMtemp5 = new Monad('temp5', 'mMtemp5');
 var mMte = new Monad(0, 'mMte');
 var mMid = new Monad('cow', 'mMid');
 var mMhelper = new Monad('helper', 'mMhelper');
@@ -637,9 +647,9 @@ mMZ2.bnd(v => cube(v)
     return [qS1(a,b,c), qS2(a,b,c)]
   }
 
-  var qS4 = function qS3 ([x,y,z]) {
+  var qS4 = function qS4 ([x,y,z]) {
     let [a,b,c] = [x,y,z]
-    return [qS1(a,b,c), qS2(a,b,c)]
+    return qS3(a,b,c) 
   }
 
 var trim = function trim(str) {
@@ -977,9 +987,9 @@ var promise = function promise (x, t, mon, args) {
   }));
 };
 
-var display = function display (x, id, string) {
+var display = function display (x, id, string, mon) {
   document.getElementById(id).innerHTML = string;
-  return ret(x);
+  if (arguments.length == 4) return mon(x)
+  else return ret(x);
 }
-
 

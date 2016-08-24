@@ -107,42 +107,8 @@ Tests in the JS-monads-mutableInstance produce results closer to what we would e
 
     m.ret(7) == m.ret(7)  Returns true in JS-monads-mutableIntances.  
 ##Back to the master branch
-
 ##fmap
-I have shown you some functions designed for instances of Monad, but it is easy to use ordinary functions inside of chained monad computations without modifying them. One way of doing this is to use fmap(). It takes an ordinary function, a monad, and a string as arguments. Let f be a function that returns ordinary Javascript values and let m be an instance of Monad. fmap(f, m, "temp") returns an instance of Monad named "temp" with temp.id == "temp" and temp.x == f(m.x). temp can be a previously existing instance of Monad or a brand new one. Here are the definitions of fmap, a function that returns an array, and an example.
-```javascript
-    function fmap (x, g, id) {window[id] = new Monad(g(x), id); return window[id]}
-  
-    var qS1 = function qS1 (a, b, c) {
-      let n = (b*(-1)) + (Math.sqrt(b*b - 4*a*c));
-      if (n != n) {
-        return "No solution";
-      }
-      return n/(2*a);
-    }
-  
-    var qS2 = function qS2 (a, b, c) {
-      let n = (b*(-1)) - (Math.sqrt(b*b - 4*a*c));
-      if (n != n) {
-        return "No solution";
-      }
-      return n/(2*a);
-    }
-  
-    var qS4 = function qS3 ([x,y,z]) {
-      let [a,b,c] = [x,y,z]
-      return [qS1(a,b,c), qS2(a,b,c)]    
-    }  
-    
-    m.ret([12,12,-144])
-  
-    m.bnd(fmap, qS4, "temp").bnd(lg)   logs [3, -4] 
-```
-Another way to do essentially the same thing is to run:
-```javascript
-    window["temp"] = new Monad(qS4(m.x), "temp")
-    temp.bnd(lg)  
-```    
+I showed you (abpve) some functions designed for instances of Monad, but it is easy to lift functions that return ordinary Javascript values into chains of monadic computations. One way of doing this is to use fmap(), as shown below in finding solutions to the quadratic equation. 
 ##Monad Arithmetic with opM
 ```javascript
     function opM (a, op, b, id) {
@@ -259,27 +225,6 @@ MonadItter instance mMZ3 calls its bnd() method three times. User input releases
     }
   });
 
-  var solve = function solve () {
-    mMZ3.bnd(a => 
-    mMtemp.ret(a)           
-    .bnd(display, 'quad6', '')         
-    .bnd(display,'quad5', a + " * x * x ")
-    .bnd(a => mMZ3
-    .bnd(b =>  mMtemp.ret(b)
-    .bnd(display, 'quad6', b + ' * x ').bnd(b => mMZ3
-    .bnd(c => {
-      let x = p(qS1(a,b,c));
-      let y = p(qS2(a,b,c));
-      document.getElementById('quad5').innerHTML =
-        p(a).text + " * " + x.text + " * " + x.text + " + " + p(b).text + 
-            " * " + x.text + " " + p(c).text + " = 0"
-      document.getElementById('quad6').innerHTML =
-        p(a).text + " * " + y.text + " * " + y.text + " + " + p(b).text + 
-            " * " + y.text + " " + p(c).text + " = 0"   
-      solve();    // solve() causes mMZ3.bnd() to wait at the top again. 
-    }) ) ) ) ) 
-  }();
-
   var qS1 = function qS1 (a, b, c) {
     let n = (b*(-1)) + (Math.sqrt(b*b - 4*a*c));
     if (n != n) {
@@ -296,6 +241,33 @@ MonadItter instance mMZ3 calls its bnd() method three times. User input releases
     return n/(2*a);
   }  
 
+  var solve = function solve () {
+    mMZ3.bnd(a => 
+    mMtemp.ret(a)           
+    .bnd(display, 'quad4', '')         
+    .bnd(display, 'quad6', '')         
+    .bnd(display,'quad5', a + " * x * x ")
+    .bnd(a => mMZ3    // Blocks here until new user input comes in.
+    .bnd(b =>  mMtemp.ret(b)
+    .bnd(display, 'quad6', b + ' * x ').bnd(b => mMZ3  // Blocks again.
+    .bnd(c => mMtemp.ret([a,b,c]).bnd(fmap, qS4, "mMtemp")
+    .bnd(v => {  
+      let x = v[0]
+      let y = v[1]
+      console.log('Here is x and y: ', x, y)
+    mMtemp.bnd(display, 'quad4', "Results: " + x + " and  " + y)  
+    .bnd(display, 'quad5', p(a).text + " * " + x + " * " + x + " + " + p(b).text + 
+            " * " + x + " " + p(c).text + " = 0")
+    .bnd(display, 'quad6', p(a).text + " * " + y + " * " + y + " + " + p(b).text + 
+            " * " + y + " " + p(c).text + " = 0")   
+    solve();  
+    } ) ) ) ) ) ) 
+  };
+
+function fmap (x, g, id) {
+  window[id] = new Monad(g(x), id); 
+  return window[id]
+}
 
 var display = function display (x, id, string) {
   document.getElementById(id).innerHTML = string;

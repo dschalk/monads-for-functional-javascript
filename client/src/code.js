@@ -596,23 +596,24 @@ var cleanup = h('pre',  `  function cleanup (x) {
   var solve = function solve () {
     mMZ3.bnd(a => 
     mMtemp.ret(a)           
+    .bnd(display, 'quad4', '')         
     .bnd(display, 'quad6', '')         
     .bnd(display,'quad5', a + " * x * x ")
-    .bnd(a => mMZ3
+    .bnd(a => mMZ3    // Blocks here until new user input comes in.
     .bnd(b =>  mMtemp.ret(b)
-    .bnd(display, 'quad6', b + ' * x ').bnd(b => mMZ3
-    .bnd(c => {
-      let x = p(qS1(a,b,c));
-      let y = p(qS2(a,b,c));
-      document.getElementById('quad5').innerHTML =
-        p(a).text + " * " + x.text + " * " + x.text + " + " + p(b).text + 
-            " * " + x.text + " " + p(c).text + " = 0"
-      document.getElementById('quad6').innerHTML =
-        p(a).text + " * " + y.text + " * " + y.text + " + " + p(b).text + 
-            " * " + y.text + " " + p(c).text + " = 0"   
-      solve();
-    }) ) ) ) ) 
-  }();
+    .bnd(display, 'quad6', b + ' * x ').bnd(b => mMZ3  // Blocks again.
+    .bnd(c => mMtemp.ret([a,b,c]).bnd(fmap, qS4, "mMtemp")
+    .bnd(v => {  
+      let x = v[0]
+      let y = v[1]
+    mMtemp.bnd(display, 'quad4', "Results: " + x + " and  " + y)  
+    .bnd(display, 'quad5', p(a).text + " * " + x + " * " + x + " + " + p(b).text + 
+            " * " + x + " " + p(c).text + " = 0")
+    .bnd(display, 'quad6', p(a).text + " * " + y + " * " + y + " + " + p(b).text + 
+            " * " + y + " " + p(c).text + " = 0")   
+    solve();  
+    } ) ) ) ) ) ) 
+  };
 
   var p = function p (x) { 
     if (x >= 0) {return ' + ' + x}
@@ -634,11 +635,15 @@ var cleanup = h('pre',  `  function cleanup (x) {
     }
     return n/(2*a);
   
-
-var display = function display (x, id, string) {
-  document.getElementById(id).innerHTML = string;
-  return ret(x);
-}  `  )
+  function fmap (x, g, id) {
+    window[id] = new Monad(g(x), id); 
+    return window[id]
+  }
+  
+  var display = function display (x, id, string) {
+    document.getElementById(id).innerHTML = string;
+    return ret(x);
+  }  `  )
 
   var mdem1 = h('pre',  `  var equals = function equals (x, mon1, mon2, mon3) {
     if (mon1.id === mon2.id && mon1.x === mon2.x) {
@@ -1097,7 +1102,7 @@ var fmap = h('pre',  `    function fmap (x, g, id) {window[id] = new Monad(g(x),
       return n/(2*a);
     }
   
-    var qS4 = function qS3 ([x,y,z]) {
+    var qS4 = function qS4 ([x,y,z]) {
       let [a,b,c] = [x,y,z]
       return [qS1(a,b,c), qS2(a,b,c)]    
     }  

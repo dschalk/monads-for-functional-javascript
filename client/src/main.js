@@ -646,30 +646,34 @@ function main(sources) {
   var solve = function solve () {
     mMZ3.bnd(a => 
     mMtemp.ret(a)           
+    .bnd(display, 'quad4', '')         
     .bnd(display, 'quad6', '')         
     .bnd(display,'quad5', a + " * x * x ")
-    .bnd(a => mMZ3
+    .bnd(a => mMZ3    // Blocks here until new user input comes in.
     .bnd(b =>  mMtemp.ret(b)
-    .bnd(display, 'quad6', b + ' * x ').bnd(b => mMZ3
-    .bnd(c => {
-      let x = p(qS1(a,b,c));
-      let y = p(qS2(a,b,c));
-      document.getElementById('quad5').innerHTML =
-        p(a).text + " * " + x.text + " * " + x.text + " + " + p(b).text + 
-            " * " + x.text + " " + p(c).text + " = 0"
-      document.getElementById('quad6').innerHTML =
-        p(a).text + " * " + y.text + " * " + y.text + " + " + p(b).text + 
-            " * " + y.text + " " + p(c).text + " = 0"   
-      solve();
-    }) ) ) ) ) 
-  }();
+    .bnd(display, 'quad6', b + ' * x ').bnd(b => mMZ3  // Blocks again.
+    .bnd(c => mMtemp.ret([a,b,c]).bnd(fmap, qS4, "mMtemp")
+    .bnd(v => {  
+      let x = v[0]
+      let y = v[1]
+      console.log('Here is x and y: ', x, y)
+    mMtemp.bnd(display, 'quad4', "Results: " + x + " and  " + y)  
+    .bnd(display, 'quad5', p(a).text + " * " + x + " * " + x + " + " + p(b).text + 
+            " * " + x + " " + p(c).text + " = 0")
+    .bnd(display, 'quad6', p(a).text + " * " + y + " * " + y + " + " + p(b).text + 
+            " * " + y + " " + p(c).text + " = 0")   
+    solve();  
+    } ) ) ) ) ) ) 
+  };
+
+  solve();
 
   const quad$ = sources.DOM
     .select('#quad').events('keypress')
 
   const quadAction$ = quad$.map((e) => {
     if( e.keyCode == 13 ) {
-      mMZ3.release(e.target.value)  // Releases mMZ (below).
+      mMZ3.release(e.target.value)  
       document.getElementById('quad').value = '';
     }
   });
@@ -832,13 +836,12 @@ function main(sources) {
         h('pre', `    m.ret(7) == m.ret(7)  Returns true in JS-monads-mutableIntances.  `),
         h('h3', ' Back to the master branch ' ),
         h('h3', ' fmap ' ),
-        h('p', ' I have shown you some functions designed for instances of Monad, but it is easy to use ordinary functions inside of chained monad computations without modifying them. One way of doing this is to use fmap(). It takes an ordinary function, a monad, and a string as arguments. Let f be a function that returns ordinary Javascript values and let m be an instance of Monad. fmap(f, m, "temp") returns an instance of Monad named "temp" with temp.id == "temp" and temp.x == f(m.x). temp can be a previously existing instance of Monad or a brand new one. Here are the definitions of fmap, a function that returns an array, and an example. ' ),
-        code.fmap,
-        h('p', ' Another way to do essentially the same thing is to run:  ' ), 
-        h('pre', `    window["temp"] = new Monad(qS4(m.x), "temp")
-    temp.bnd(lg)  ` ),
+        h('p', ' I showed you (abpve) some functions designed for instances of Monad, but it is easy to lift functions that return ordinary Javascript values into chains of monadic computations. One way of doing this is to use fmap(), as shown below in finding solutions to the quadratic equation.  ' ),
         h('h3', ' Monad Arithmetic with opM ' ),
         code.opM,
+        h('p', ' Since the Monad instance ok had already been created, the second result could have been obtained by running: ' ),
+        h('pre', `    ok.ret(m1.x + m2.x)   ` ),
+        h('p', ' Just adding the suffix ".x" to an instance of Monad exposes its value. Doing that and running ret() on the return value is all that is needed for performing computations with ordinary functions and wrapping the results in instances of Monad. fmap is non-essential syntactic sugar. This is very different from Haskell, where fmap is an essential component of monadic computation. ' ),  
         h('h3', ' Are They Category Theory Monads?  ' ), 
         h('p#monaditter', ' Just as Javascript if very different from Haskell, so too are the JS-monads very different from Haskell monads. For example, the JS-monads carry bnd() and ret() internally whereas Haskell uses >>= and return. I think the essential takeaways from the above demonstration of similarities are not so much that JS-monads are like Haskell monads, but that (1) the Monad ret() method is the left and right identity on instances of Monad, and (2) instances of Monad compose associatively. Does that mean that members of M (defined above) are monoids in the category of endofunctors, just like Haskell monads? Well, it does sort of feel that way, but it hasn\'t been proven.   ' ), 
 
@@ -865,13 +868,14 @@ function main(sources) {
         h('input#testW' ), 
         h('p', ' cube() is defined in the Monad section (above). If you click "mMZ1.release(1)" several times, the code (above) will run several times, each time with v == 1. The result, mMt3.x, is shown below the button. mMZ1.p (bnd()\'s argument) remains constant while mMZ1.release(1) is repeatedly called, incrementing the number being cubed each time. ' ),
         h('p', ' Here is another example. It demonstrates lambda expressions passing values to a remote location for use in a computation. If you enter three numbers consecutively below, call them a, b, and c, then the quadratic equation will be used to find solutions for a*x**2 + b*x + c = 0. The a, b, and c you select might not have a solution. If a and b are positive numbers, you are likely to see solutions if c is a negative number. For example, 12, 12, and -24 yields the solutions 1 and -2. ' ),
-        h('p.#quad4.code2'  ),
+        h('p#quad4.red2'  ),  
         h('p#quad5.red2' ),
         h('p#quad6.red2'  ),
         h('p' , 'Run mMZ3.release(v) three times for three numbers. The numbers are a, b, and c in ax*x + b*x + c = 0: ' ),
         h('input#quad' ),
         h('p', 'Here is the code:' ),
         code.quad,
+        h('p', ' fmap (above) facilitated using qS4 in a monadic sequence. qS4 returns an array, not an instance of Monad, but fmap lifts qS4 into the monadic sequence. ' ),  
         h('span' ),
         h('p#monadstate'   ),
 // ***************************************************************************************************** START MonadState
