@@ -3411,7 +3411,7 @@
 
 	var colorClick = (0, _dom.h)('pre', '  const colorClick$ = sources.DOM\n    .select(\'#cb\').events(\'click\')\n    \n  const colorAction$ = colorClick$.map(e => {\n    let index = getIndex(e);\n    let s = mM$taskList.x;\n    let ar = s.split(\',\');\n    let n = 6 * index + 3;\n    let j = 6 * index + 2;\n    let k = 6 * index + 1;\n    let checked = ar[n];\n    if (checked == \'true\')  {\n      ar[n] = \'false\'; \n      ar[k] = \'yellow\'; \n      ar[j] = \'none\'; \n    }\n    else {\n      ar[n] = \'true\'; \n      ar[k] = \'lightGreen\'; \n      ar[j] = \'line-through\'; \n    }\n    mM$taskList.ret( ar.reduce((a,b) => a + \',\' + b) )\n  });  \n                     \n  var getIndex = function getIndex (event_object) {\n    var task = event_object.currentTarget.parentNode.innerText;\n    var possibilities = event_object.currentTarget.parentNode.parentNode.childNodes;\n    var keys = Object.keys(possibilities);\n    for (let k in keys) {\n      if (task == possibilities[k].innerText) {\n        return k\n      }\n    }\n    console.log(\'In getIndex. No match\');\n  }  ');
 
-	var edit = (0, _dom.h)('pre', '  const edit1$ = sources.DOM\n    .select(\'#edit1\').events(\'click\')\n    \n  const edit1Action$ = edit1$.map(e => {\n    let index = getIndex2(e);\n    mMtaskList.x[index].children[3].elm.style.display = \'block\';\n  });\n\n  const edit2$ = sources.DOM\n    .select(\'#edit2\').events(\'keypress\')\n    \n  const edit2Action$ = edit2$.map(e => {\n    let v = e.target.value;\n    let index = getIndex2(e);\n    if( e.keyCode == 13 ) {\n      process2(v, index);\n    mMtaskList.x[index].children[3].elm.style.display = \'none\';\n    }\n  });\n\n  const process2 = function(str, index) {\n    let a = mM$taskList.x;\n    let ar = a.split(\',\');\n    let task = str.split(\',\').reduce((a,b) => ar + \'$*$*$\' + b)\n    ar[index * 6] = task;\n    let s = ar.reduce((a,b) => a + \',\' + b);\n    mM$taskList.ret(s);\n  };\n\n  var getIndex2 = function getIndex2 (e) {\n    var elem = e.currentTarget.parentNode.children[0].innerHTML\n    var elem2 = e.currentTarget.parentNode.parentNode.childNodes\n    var keys = Object.keys(elem2);\n    for (let k in keys) {\n      if (elem == elem2[k].childNodes[0].innerHTML) {\n        return k\n      }\n      console.log(\'In getIndex2. No match\');\n    }\n  }  ');
+	var edit = (0, _dom.h)('pre', '  const edit1$ = sources.DOM\n    .select(\'#edit1\').events(\'click\')\n    \n  const edit1Action$ = edit1$.map(e => {\n    let index = getIndex2(e);\n    mMtaskList.x[index].children[3].elm.style.display = \'block\';\n  });\n\n  const edit2$ = sources.DOM\n    .select(\'#edit2\').events(\'keypress\')\n    \n  const edit2Action$ = edit2$.map(e => {\n    let v = e.target.value;\n    let index = getIndex2(e);\n    if( e.keyCode == 13 ) {\n      process2(v, index);\n    mMtaskList.x[index].children[3].elm.style.display = \'none\';\n    }\n  });\n\n  const process2 = function(str, index) {\n    var a = mMcurrentList.x.split(\',\');\n    a[6*index] = str;\n    var b = a.reduce((a,b) => a + \',\' + b)\n    task2(b);  \n  };\n\n  var getIndex2 = function getIndex2 (e) {\n    var elem = e.currentTarget.parentNode.children[0].innerHTML\n    var elem2 = e.currentTarget.parentNode.parentNode.childNodes\n    var keys = Object.keys(elem2);\n    for (let k in keys) {\n      if (elem == elem2[k].childNodes[0].innerHTML) {\n        return k\n      }\n      console.log(\'In getIndex2. No match\');\n    }\n  }  ');
 
 	var mM$task = (0, _dom.h)('pre', '  const taskAction$ = mM$taskList.stream.map(str => {\n    socket.send(\'TD#$42\' + \',\' + mMgroup.x.trim() + \n        \',\' + mMname.x.trim() + \',\' + \'@\' + str);\n  });  ');
 
@@ -3455,7 +3455,7 @@
 
 	var factorsInput = (0, _dom.h)('pre', '  var prFactTransformer = function prFactTransformer (s, m) {\n    return m.run([s[0], [], mMfactors.x, s[3]])\n  }\n\n  const factorsPress$ = sources.DOM\n    .select(\'input#factors_1\').events(\'keydown\');\n\n  const factorsAction$ = factorsPress$.map(e => {\n    mMfactors.ret(e.target.value);                  // Used in prFactTransformer (above)\n    if (e.target.value == \'\') {return};\n    if( e.keyCode == 13 && Number.isInteger(e.target.value*1) ) {\n      var result;\n      var factors = primesMonad.run([primesMonad.s[0], [], e.target.value, primesMonad.a])\n      .bnd(prFactTransformer, factorsMonad).s[1];  // prFactTransformer (defined above) returns factorsMonad\n      if (e.target.value == factors.slice().pop()){\n        result = e.target.value + \' is a prime number\'\n      }\n      else {\n        result = \'The prime factors of \' + e.target.value + \' are \' + factors;\n      }\n      document.getElementById(\'factors_3\').innerHTML = result;\n    }\n  });\n             ');
 
-	var playerMonad = (0, _dom.h)('pre', '  var playerMonad = new MonadState(\'playerMonad\', [name, group, score, goals], \'\', player_state);\n\n  function player_state (v) {\n    var x = v.slice();\n    pMname.ret(x[0]);\n    pMgroup.ret(x[1]);\n    pMscore.ret(x[2]);\n    pMgoals.ret(x[3]);\n    return x; \n  };  ');
+	var playerMonad = (0, _dom.h)('pre', '  var playerMonad = new MonadState(\'playerMonad\', [0,0], [0,0], player_state);\n\n  function player_state (v) {\n    var x = v.slice();\n    let ar = [ \n    pMscore.ret(x[0]),\n    pMgoals.ret(x[1]) ]\n    playerMonad.a = ar;\n    playerMonad.s = ar;  \n    return x; \n  };  ');
 
 	var MonadSet = (0, _dom.h)('pre', '  var MonadSet = function MonadSet(set, ID) {\n    var _this = this;\n  \n    this.s = set;\n  \n    if (arguments.length === 1) this.id = \'anonymous\';\n    else this.id = ID;\n  \n    this.bnd = function (func, ...args) {\n       return func(_this.x, ...args);\n    };\n  \n    this.add = function (a) {\n      var ar = Array.from(_this.s);\n      set = new Set(ar);\n      set.add(a);\n      window[_this.id] = new MonadSet(set, _this.id);\n      return window[_this.id];\n    };\n  \n    this.delete = function (a) {\n      var ar = Array.from(_this.s);\n      set = new Set(ar);\n      set.delete(a);\n      window[_this.id] = new MonadSet(set, _this.id);\n      return window[_this.id];\n    };\n  \n    this.clear = function () {\n      set = new Set([]);\n      window[_this.id] = new MonadSet(set, _this.id);\n      return window[_this.id];\n    };\n  };\n  \n  var s = new Set();\n  \n  var sMplayers = new MonadSet( s, \'sMplayers\' )  ');
 
@@ -8634,11 +8634,11 @@
 	      console.log('<><><><><><><><><><><><><><><><>  INCING  <><><><><><><> >>> In messages. v is ', v);
 	      mMZ10.bnd(function () {
 	        return mM1.ret(v.slice(3)).bnd(function (y) {
-	          return game([pMscore.x, pMgoals.x, mM8.x].concat(y));
+	          return game([pMscore.x, pMgoals.x, y, mM3.x].concat(y));
 	        });
 	      });
 	      mMZ11.bnd(function () {
-	        return socket.send('NN#$42,' + pMgroup.x + ',' + pMname.x);
+	        return socket.send('CG#$42,' + pMgroup.x + ',' + pMname.x + ',' + pMscore + ',' + pMgoals);
 	      });
 	      mMZ12.bnd(function () {
 	        return mM6.ret(v[2] + ' successfully logged in.');
@@ -8665,26 +8665,52 @@
 	        }
 	      });
 	      mMZ18.bnd(function () {
-	        return player(v);
+	        if (pMname == v[2]) playersMonad.run([v[3], v[4]]);
 	      });
 	      mMZ19.bnd(function () {
-	        var names = v.slice(3);
 	        sMplayers.clear();
-	        names.forEach(function (player) {
+	        var namesL = e.data.split("<br>");
+	        var namesList = namesL.slice(1);
+	        updateScoreboard2(namesList);
+	        namesList.forEach(function (player) {
 	          return sMplayers.add(player.trim());
 	        });
 	        game2();
+	        console.log('In mMZ19 <><><><><><> namesL, and namesList are ', namesL, namesList);
 	      });
 	    });
 	    mMtemp.ret(e.data.split(',')[0]).bnd(next, 'CA#$42', mMZ10).bnd(next, 'XX#$42', mMZ11).bnd(next, 'CC#$42', mMZ12).bnd(next, 'CD#$42', mMZ13).bnd(next, 'CE#$42', mMZ14).bnd(next, 'EE#$42', mMZ15).bnd(next, 'DE#$42', mMZ16).bnd(next, 'DD#$42', mMZ17).bnd(next, 'CG#$42', mMZ18).bnd(next, 'NN#$42', mMZ19);
 	  });
 
-	  var player = function player(v) {
-	    if (playerMonad.s[0] == v[2]) {
-	      mMplayer.bnd(push, playerMonad.s, mMplayer);
-	      playerMonad.run([playerMonad.s[0], playerMonad.s[1], playerMonad.s[2] * 1 + v[3] * 1, v[4]]);
-	      game2();
+	  var updateScoreboard2 = function updateScoreboard(v) {
+	    var ar = [];
+	    var _iteratorNormalCompletion = true;
+	    var _didIteratorError = false;
+	    var _iteratorError = undefined;
+
+	    try {
+	      for (var _iterator = v[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+	        var k = _step.value;
+
+	        ar.push(['  ' + k]);
+	      }
+	    } catch (err) {
+	      _didIteratorError = true;
+	      _iteratorError = err;
+	    } finally {
+	      try {
+	        if (!_iteratorNormalCompletion && _iterator.return) {
+	          _iterator.return();
+	        }
+	      } finally {
+	        if (_didIteratorError) {
+	          throw _iteratorError;
+	        }
+	      }
 	    }
+
+	    ;
+	    return mMscoreboard.ret(ar);
 	  };
 
 	  var updateMessages = function updateMessages(ar) {
@@ -8705,7 +8731,6 @@
 	    }
 	    if (e.keyCode == 13) {
 	      socket.send("CC#$42" + e.target.value);
-	      playerMonad.run([e.target.value, 'solo', 0, 0]);
 	      pMname.ret(e.target.value).bnd(function () {
 	        return game2();
 	      });
@@ -8723,11 +8748,12 @@
 
 	  var groupPressAction$ = groupPress$.map(function (e) {
 	    if (e.keyCode == 13) {
-	      playerMonad.run([playerMonad.s[0], e.target.value, 0, 0]);
+	      pMgroup.ret(e.target.value);
+	      playerMonad.run([0, 0]);
 	      socket.send('CO#$42,' + pMgroup.x + ',' + pMname.x + ',' + e.target.value);
 	      game2();
 	      console.log('In groupPressAction$ ', socket.readyState);
-	      socket.send('NN#$42,' + pMgroup.x + ',' + pMname.x + ',' + e.target.value);
+	      socket.send('CG#$42,' + pMgroup.x + ',' + pMname.x + ',' + 0 + ',' + 0);
 	    }
 	  });
 
@@ -8741,7 +8767,7 @@
 	    }
 	  });
 
-	  var task2 = function task(str) {
+	  var task2 = function task2(str) {
 	    console.log('In taskAction$. str is: ', str);
 	    socket.send('TD#$42' + ',' + pMgroup.x + ',' + pMname.x + ',' + '@' + str);
 	  };
@@ -8882,16 +8908,12 @@
 	  });
 
 	  var process2 = function process2(str, index) {
-	    var a = mMcurrentList.x;
-	    var ar = a.split(',');
-	    var task = str.split(',').reduce(function (a, b) {
-	      return ar + '$*$*$' + b;
-	    });
-	    ar[index * 6] = task;
-	    var s = ar.reduce(function (a, b) {
+	    var a = mMcurrentList.x.split(',');
+	    a[6 * index] = str;
+	    var b = a.reduce(function (a, b) {
 	      return a + ',' + b;
 	    });
-	    task2(s);
+	    task2(b);
 	  };
 
 	  var deleteClick$ = sources.DOM.select('.delete').events('click');
@@ -8953,18 +8975,21 @@
 	  var rollClick$ = sources.DOM.select('.roll').events('click');
 
 	  var rollClickAction$ = rollClick$.map(function (e) {
-	    mM3.ret([]);
-	    socket.send('CG#$42,' + pMgroup.x + ',' + pMname.x + ',' + -1 + ',' + mMgoals.x);
 	    socket.send('CA#$42,' + pMgroup.x + ',' + pMname.x + ',6,6,12,20');
+	    mM3.ret([]);
+	    pMscore.bnd(add, -1, pMscore).bnd(function (v) {
+	      return socket.send('CG#$42,' + pMgroup.x + ',' + pMname.x + ',' + v + ',' + mMgoals.x);
+	    });
 	  });
 
 	  var numClick$ = sources.DOM.select('.num').events('click');
 
 	  var numClickAction$ = numClick$.map(function (e) {
 	    if (mM3.x.length < 2) {
-	      mM3.bnd(push, e.target.innerHTML, mM3);
-	      mM1.bnd(splice, e.target.id, 1, mM1).bnd(function (nums) {
-	        return game([pMscore.x, pMgoals.x, mM8.x].concat(nums));
+	      mM3.bnd(push, e.target.innerHTML, mM3).bnd(function (nums) {
+	        return mM1.bnd(splice, e.target.id, 1, mM1).bnd(function (nums2) {
+	          return game([pMscore.x, pMgoals.x, nums2, nums].concat(nums2));
+	        });
 	      });
 	    }
 	    if (mM3.x.length === 2 && mM8.x !== 0) {
@@ -8986,7 +9011,7 @@
 	  var backClick$ = sources.DOM.select('#back').events('click');
 
 	  var forwardAction$ = forwardClick$.map(function () {
-	    if (mMindex.x < mMhistorymM1.x.length - 1) {
+	    if (mMindex.x < mMhistory.x.length - 1) {
 	      mMindex.bnd(add, 1, mMindex).bnd(function (v) {
 	        return trav(v);
 	      });
@@ -9004,55 +9029,58 @@
 
 	  var game = function game(z) {
 	    var x = z.slice();
-	    var onlinePlayers;
 	    mMindex.bnd(add, 1, mMindex).bnd(function (i) {
-	      return mMhistorymM1.bnd(spliceAdd, i, x, mMhistorymM1);
+	      return mMhistory.bnd(spliceAdd, i, x, mMhistory);
 	    });
-	    document.getElementById('0').innerHTML = x[3];
-	    document.getElementById('1').innerHTML = x[4];
-	    document.getElementById('2').innerHTML = x[5];
-	    document.getElementById('3').innerHTML = x[6];
+	    document.getElementById('0').innerHTML = x[4];
+	    document.getElementById('1').innerHTML = x[5];
+	    document.getElementById('2').innerHTML = x[6];
+	    document.getElementById('3').innerHTML = x[7];
 	    game2();
 	    cleanup();
 	  };
 
 	  var game2 = function game2() {
-	    var ar = Array.from(sMplayers.s);
-	    console.log('In game2  pMscore is 111111111111111111111111 pMscore: ', pMscore);
 	    document.getElementById('sb1').innerHTML = 'Name: ' + pMname.x;
 	    document.getElementById('sb2').innerHTML = 'Group: ' + pMgroup.x;
-	    document.getElementById('sb3').innerHTML = 'Score: ' + pMscore.x;
-	    document.getElementById('sb4').innerHTML = 'Goals: ' + pMgoals.x;
-	    document.getElementById('sb5').innerHTML = 'Currently online: ';
-	    document.getElementById('sb6').innerHTML = ar.join(', ');
+	    document.getElementById('sb5').innerHTML = 'Currently online: Name | score | goals';
+	    document.getElementById('sb6').innerHTML = mMscoreboard.x;
 	    cleanup();
 	  };
 
 	  var trav = function trav(index) {
-	    console.log("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX index, mMsetArchive.x ", index, mMsetArchive.x);
-	    document.getElementById('0').innerHTML = mMhistorymM1.x[index][3];
-	    document.getElementById('1').innerHTML = mMhistorymM1.x[index][4];
-	    document.getElementById('2').innerHTML = mMhistorymM1.x[index][5];
-	    document.getElementById('3').innerHTML = mMhistorymM1.x[index][3];
-	    document.getElementById('sb3').innerHTML = mMhistorymM1.x[index][0];
-	    document.getElementById('sb4').innerHTML = mMhistorymM1.x[index][1];
-	    mM8.ret(mMhistorymM1.x[index][2]);
+	    document.getElementById('0').innerHTML = mMhistory.x[index][4];
+	    document.getElementById('1').innerHTML = mMhistory.x[index][5];
+	    document.getElementById('2').innerHTML = mMhistory.x[index][6];
+	    document.getElementById('3').innerHTML = mMhistory.x[index][7];
+
+	    var a = mMhistory.x[index];
+	    mM1.ret(a[2]);
+	    mM3.ret(a[3]);
+	    socket.send('CG#$42,' + pMgroup.x + ',' + pMname.x + ',' + a[0] + ',' + a[1]);
+	    mM8.ret(0);
 	    cleanup();
 	  };
+
+	  function changeS(ar, name) {
+	    var x = ar.filter(function (v) {
+	      return v.split("|")[0].trim() != pMname.x;
+	    });
+	    return x;
+	  }
 
 	  function updateCalc() {
 	    mM3.bnd(function (x) {
 	      return mM7.ret(calc(x[0], mM8.x, x[1])).bnd(function (result) {
 	        mM1.bnd(push, result, mM1).bnd(function (nums) {
-	          return game([pMscore.x, pMgoals.x, mM8.x].concat(nums));
+	          return game([pMscore.x, pMgoals.x, nums, []].concat(nums));
 	        });
 	        if (result == 20) {
-	          score(pMscore.x + 1);
+	          score(pMscore.x * 1 + 1);
 	        }
 	        if (result == 18) {
-	          score(pMscore.x + 3);
+	          score(pMscore.x * 1 + 3);
 	        }
-	        console.log("EEEEEEEEEEEEEEEEEE In updateCalc pMscore.x is ", pMscore.x);
 	      });
 	    });
 	    reset();
@@ -9075,23 +9103,30 @@
 	  };
 
 	  var score = function score(x) {
-	    console.log('In score *************** x and pMscore.x is ', x, pMscore.x);
 	    socket.send('CA#$42,' + pMgroup.x + ',' + pMname.x + ',6,6,12,20');
-	    if (x == 20) {
+	    if (x !== 20) {
+	      console.log('In score *******<><><><><><><><><><><>********4444444444444444 x and pMscore.x is ', x, pMscore.x);
+	      pMscore.ret(x).bnd(addTest, pMscore).bnd(function (v) {
+	        playerMonad.run([v, pMgoals.x]);
+	        socket.send('CG#$42,' + pMgroup.x + ',' + pMname.x + ',' + v + ',' + mMgoals.x);
+	      });
+	    } else {
 	      mMplayer.ret([]);
-	      mM13.ret(0).bnd(mMindex.ret);
+	      mM13.ret(0);
 	      mMgoals.bnd(add, 1, mMgoals).bnd(function (v) {
 	        if (v == 3) {
 	          socket.send('CE#$42,' + pMgroup.x + ',' + pMname.x + ',nothing ');
-	          mMgoals.ret(0);
-	          mMhistorymM1.ret([0, 0, 0, 0]);
-	          playerMonad.run([pMname.x, pMgroup.x, 0, 0]);
-	        } else playerMonad.run([pMname.x, pMgroup.x, 0, pMgoals.x * 1 + 1]);
+	          mMgoals.ret(0).bnd(mMindex.ret);
+	          mMhistory.ret([0, 0, 0, 0]);
+	          playerMonad.run([0, 0]);
+	          socket.send('CG#$42,' + pMgroup.x + ',' + pMname.x + ',' + 0 + ',' + 0);
+	        } else {
+	          var g = pMgoals.x * 1 + 1;
+	          playerMonad.run([0, g]);
+	          socket.send('CG#$42,' + pMgroup.x + ',' + pMname.x + ',' + 0 + ',' + g);
+	        };
 	      });
-	      return;
 	    }
-	    pMscore.ret(x).bnd(addTest, pMscore);
-	    playerMonad.run([pMname.x, pMgroup.x, pMscore.x, pMgoals.x]);
 	  };
 
 	  var reset = function reset() {
@@ -9102,13 +9137,7 @@
 	  };
 
 	  var updateScoreboard = function updateScoreboard(v) {
-	    var ar2 = v.split("<br>");
-	    var keys = Object.keys(ar2);
-	    var ar = [];
-	    keys.map(function (k) {
-	      ar.push((0, _dom.h)('div', ar2[k]));
-	    });
-	    return mMscoreboard.ret(ar);
+	    mMscoreboard.push((0, _dom.h)('div', v));
 	  };
 
 	  //**************************************   GAME   *********************************************** GAME END
@@ -9273,7 +9302,7 @@
 
 	  return {
 	    DOM: calcStream$.map(function () {
-	      return (0, _dom.h)('div.content', [(0, _dom.h)('div#rightPanel', { style: { display: 'none' } }, [(0, _dom.h)('span#tog', [(0, _dom.h)('button#game', { style: { fontSize: '16px' } }, 'TOGGLE GAME'), (0, _dom.h)('span.tao', ' '), (0, _dom.h)('button#todoButton', { style: { fontSize: '16px' } }, 'TOGGLE TODO_LIST'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('button#chat2', { style: { fontSize: '16px' } }, 'TOGGLE CHAT'), (0, _dom.h)('span.tao', ' '), (0, _dom.h)('button#caption', { style: { fontSize: '16px' } }, 'TOGGLE CAPTION')]), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('div#gameDiv', [(0, _dom.h)('span#sb1'), (0, _dom.h)('br'), (0, _dom.h)('span#sb2'), (0, _dom.h)('br'), (0, _dom.h)('span#sb3'), (0, _dom.h)('br'), (0, _dom.h)('span#sb4'), (0, _dom.h)('br'), (0, _dom.h)('span#sb5'), (0, _dom.h)('span#sb6')]), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('div#todoDiv', [(0, _dom.h)('div#taskList', mMtaskList.x), (0, _dom.h)('span', 'Author, Responsible Person, Task: '), (0, _dom.h)('input.newTask')]), (0, _dom.h)('br'), (0, _dom.h)('span#alert'), (0, _dom.h)('br'), (0, _dom.h)('span#alert2'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('div#chatDiv', [(0, _dom.h)('div#messages', [(0, _dom.h)('span', 'Message: '), (0, _dom.h)('input.inputMessage'), (0, _dom.h)('div', mMmsg.x)])])]), (0, _dom.h)('div#leftPanel', [(0, _dom.h)('br'), (0, _dom.h)('a.tao', { props: { href: '#common' } }, 'Common Patterns'), (0, _dom.h)('a.tao', { props: { href: '#async' } }, 'Asyc'), (0, _dom.h)('a.tao', { props: { href: '#monaditter' } }, 'MonadItter'), (0, _dom.h)('a.tao', { props: { href: '#monadset' } }, 'Set Monad '), (0, _dom.h)('a.tao', { props: { href: '#monadstate' } }, 'State Monad'),
+	      return (0, _dom.h)('div.content', [(0, _dom.h)('div#rightPanel', { style: { display: 'none' } }, [(0, _dom.h)('span#tog', [(0, _dom.h)('button#game', { style: { fontSize: '16px' } }, 'TOGGLE GAME'), (0, _dom.h)('span.tao', ' '), (0, _dom.h)('button#todoButton', { style: { fontSize: '16px' } }, 'TOGGLE TODO_LIST'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('button#chat2', { style: { fontSize: '16px' } }, 'TOGGLE CHAT'), (0, _dom.h)('span.tao', ' '), (0, _dom.h)('button#caption', { style: { fontSize: '16px' } }, 'TOGGLE CAPTION')]), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('div#gameDiv', [(0, _dom.h)('span#sb1'), (0, _dom.h)('br'), (0, _dom.h)('span#sb2'), (0, _dom.h)('br'), (0, _dom.h)('span#sb5'), (0, _dom.h)('br'), (0, _dom.h)('span#sb6')]), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('div#todoDiv', [(0, _dom.h)('div#taskList', mMtaskList.x), (0, _dom.h)('span', 'Author, Responsible Person, Task: '), (0, _dom.h)('input.newTask')]), (0, _dom.h)('br'), (0, _dom.h)('span#alert'), (0, _dom.h)('br'), (0, _dom.h)('span#alert2'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('div#chatDiv', [(0, _dom.h)('div#messages', [(0, _dom.h)('span', 'Message: '), (0, _dom.h)('input.inputMessage'), (0, _dom.h)('div', mMmsg.x)])])]), (0, _dom.h)('div#leftPanel', [(0, _dom.h)('br'), (0, _dom.h)('a.tao', { props: { href: '#common' } }, 'Common Patterns'), (0, _dom.h)('a.tao', { props: { href: '#async' } }, 'Asyc'), (0, _dom.h)('a.tao', { props: { href: '#monaditter' } }, 'MonadItter'), (0, _dom.h)('a.tao', { props: { href: '#monadset' } }, 'Set Monad '), (0, _dom.h)('a.tao', { props: { href: '#monadstate' } }, 'State Monad'),
 	      // h('a.tao', {props: {href: '#monads'}}, 'Why Call Them Monads'   ),  
 	      (0, _dom.h)('div#captionDiv', [(0, _dom.h)('h1', 'Motorcycle.js With JS-monads'), (0, _dom.h)('span.tao1', ' A shared, persistent todo list, '), (0, _dom.h)('br'), (0, _dom.h)('span.tao1', ' A websockets simulated dice game with a traversable history, '), (0, _dom.h)('br'), (0, _dom.h)('span.tao1', ' Group chat rooms and more demonstrations of efficient, '), (0, _dom.h)('br'), (0, _dom.h)('span.tao2', ' maintainable code using Motorcycle.js and JS-monads.  ')]), (0, _dom.h)('br'), (0, _dom.h)('span.tao', 'This is a '), (0, _dom.h)('a', { props: { href: "https://github.com/motorcyclejs", target: "_blank" } }, 'Motorcycle.js'), (0, _dom.h)('span', ' application. Motorcycle.js is '), (0, _dom.h)('a', { props: { href: "https://github.com/cyclejs/core", target: "_blank" } }, 'Cycle.js'), (0, _dom.h)('span', ' using '), (0, _dom.h)('a', { props: { href: "https://github.com/cujojs/most", target: "_blank" } }, 'Most'), (0, _dom.h)('span', ' , '), (0, _dom.h)('span', ' and '), (0, _dom.h)('a', { props: { href: "https://github.com/paldepind/snabbdom", target: "_blank" } }, 'Snabbdom'), (0, _dom.h)('span', ' instead of RxJS and virtual-dom.  The code for this repository is at '), (0, _dom.h)('a', { props: { href: "https://github.com/dschalk/JS-monads-stable", target: "_blank" } }, 'JS-monads-stable'), (0, _dom.h)('div#gameDiv2', { style: { display: 'none' } }, [(0, _dom.h)('br'), (0, _dom.h)('p.red8', mMgoals2.x), (0, _dom.h)('span', ' Here are the basic rules:'), (0, _dom.h)('p', 'RULES: If clicking two numbers and an operator (in any order) results in 20 or 18, the score increases by 1 or 3, respectively. If the score becomes 0 or is evenly divisible by 5, 5 points are added. A score of 25 results in one goal. That can only be achieved by arriving at a score of 20, which jumps the score to 25. Directly computing 25 results in a score of 30, and no goal. Each time RL is clicked, one point is deducted. Three goals wins the game. '), (0, _dom.h)('button#0.num'), (0, _dom.h)('button#1.num'), (0, _dom.h)('button#2.num'), (0, _dom.h)('button#3.num'), (0, _dom.h)('br'), (0, _dom.h)('button#4.op', 'add'), (0, _dom.h)('button#5.op', 'subtract'), (0, _dom.h)('button#5.op', 'mult'), (0, _dom.h)('button#5.op', 'div'), (0, _dom.h)('button#5.op', 'concat'), (0, _dom.h)('br'), (0, _dom.h)('div#dice', { style: { display: 'none' } }, [(0, _dom.h)('button.roll', 'ROLL'), (0, _dom.h)('br'), (0, _dom.h)('button#back', 'BACK'), (0, _dom.h)('button#forward', 'FORWARD')])]), (0, _dom.h)('div#log1', [(0, _dom.h)('p', 'IN ORDER TO SEE THE GAME, TODOLIST, AND CHAT DEMONSTRATIONS, YOU MUST ENTER SOMETHING .'), (0, _dom.h)('span', 'Name: '), (0, _dom.h)('input#login', { props: { placeholder: "focus on; start typing" } })]), (0, _dom.h)('p', mM6.x), (0, _dom.h)('div#log2', { style: { display: 'none' } }, [(0, _dom.h)('span', 'Change group: '), (0, _dom.h)('input#group')]), (0, _dom.h)('p', mMsoloAlert.x), (0, _dom.h)('p', 'People who are in the same group, other than solo, share the same todo list, messages, and simulated dice game. In order to see any of these, you must establish an identity on the server by logging in. The websockets connection terminates if the first message the server receives does not come from the sign in form. You can enter any random numbers or letters you like. The only check is to make sure someone hasn\t already signed in with whatever you have selected. If you log in with a name that is already in use, a message will appear and this page will be re-loaded in the browser after a four-second pause. '), (0, _dom.h)('p', ' Data for the traversable game history accumulates until a player scores. The data array is then re-set to [], the empty array. When a player clicks the BACK button, other group members are notified. It is up to the group to decide whether clicking the BACK button disqualifies a player. '), (0, _dom.h)('hr'), (0, _dom.h)('h1', 'The Monads'), (0, _dom.h)('h3', ' Monad '), _code2.default.monad, (0, _dom.h)('p', ' Monad instances are useful for chaining computations. Typically, the bnd() method provides its value to a computation that returns an instance of Monad. Here are some examples: '), _code2.default.e1, (0, _dom.h)('p', ' These functions can be used with instances of Monad in many ways, for example: '), _code2.default.e2, (0, _dom.h)('p', ' Each of the functions shown above can be used as a stand-alone function or as an argument to the bnd() method. Each monad in a chain of linked computations can do one of two things with the previous monad\s value: (1) It can ignore it, possibly letting it move past for use further down the chain or (2) use it, with the option of passing it on down the chain. Any computation can be inserted into the chain by giving it an additional first argument (which will be the previous monad\'s value), and having it return an instance of Monad. Say you have a function func(a,b,c) {...}. Put something ahead of a (it will have the previous monad\'s value) and return a monad. You can give the returned monad any value you like. For example, func\'(x,a,b,c) {...; return ret(x)} will work. Its bnd() method will pass along the value x, which is the previous monad\s value. '), (0, _dom.h)('h3', ' The Monad Laws '), (0, _dom.h)('p', ' In the following discussion, "x == y" signifies that x == y returns true. Let M be the collection of all instances of Monad, let J be the collection of all Javascript values, including functions, instances of Monad, etc, and let F be the collection of all functions mapping values in J to monads in M where the return values are the calling instance of Monad. For any m (with id == "m"), v, f, and f\' in M, J, F, and F, respectively, the following relationships hold: '), (0, _dom.h)('pre.lb', '    equals( m.ret(v).bnd(f), f(v) ) Left identity   Holds provided that f returns m.\n    Example: equals( m.ret(5).bnd(cube, m).x, cube(5, m) )   \n    Haskell monad law: (return x) >>= f ≡ f x  \n    \n    m.bnd(m.ret) == m   Right identity   Works even with "==" and "==="\n    Haskell monad law: m >>= return ≡ m  \n    \n    equals( m.bnd(f).bnd(f\'), m.bnd(v => f(v).bnd(f\')) )  Associativity\n    Haskell monad law: (m >>= f) >>= g ≡ m >>= ( \\x -> (f x >>= g) ) '), (0, _dom.h)('p', ' where equals is defined as: '), _code2.default.equals, (0, _dom.h)('p', ' The function equals() was used because the == and === operators on objects check for location in memory, not equality of attributes and methods. If the left and right sides of predicates create new instances of m, then the left side m and the right side m wind up in different location in memory. That\'s why m.ret(3) == m.ret(3) returns false. If we define equality to mean equality of attributes, then ret is the left and right identity on objects in M and  the objects in M commute when their bind methods operate on functions in F. '), (0, _dom.h)('h3', ' The JS-monads-mutableInstances Branch  '), (0, _dom.h)('p', ' In the JS-monads-mutableInstances branch of this project, examples of the laws hold when the == operator is used. For example: '), (0, _dom.h)('pre', '    m.bnd(add, 3, m).bnd(cube, m) == m.bnd(v => add(v, 3, m).bnd(cube, m)\n    m.ret(5).bnd(cube, m) == cube(5, m)   '), (0, _dom.h)('p', ' Tests in the JS-monads-mutableInstance produce results closer to what we would expect in mathematics. For example: '), (0, _dom.h)('pre', '    m.ret(7) == m.ret(7)  Returns true in JS-monads-mutableIntances.  '), (0, _dom.h)('h3', ' Back to the master branch '), (0, _dom.h)('h3', ' fmap '), (0, _dom.h)('p', ' I showed you (abpve) some functions designed for instances of Monad, but it is easy to lift functions that return ordinary Javascript values into chains of monadic computations. One way of doing this is to use fmap(), as shown below in finding solutions to the quadratic equation.  '), (0, _dom.h)('h3', ' Monad Arithmetic with opM '), _code2.default.opM, (0, _dom.h)('p', ' Since the Monad instance ok had already been created, the second result could have been obtained by running: '), (0, _dom.h)('pre', '    ok.ret(m1.x + m2.x)   '), (0, _dom.h)('p', ' Just adding the suffix ".x" to an instance of Monad exposes its value. Doing that and running ret() on the return value is all that is needed for performing computations with ordinary functions and wrapping the results in instances of Monad. fmap is non-essential syntactic sugar. This is very different from Haskell, where fmap is an essential component of monadic computation. '), (0, _dom.h)('h3', ' Are They Category Theory Monads?  '), (0, _dom.h)('p#monaditter', ' Just as Javascript if very different from Haskell, so too are the JS-monads very different from Haskell monads. For example, the JS-monads carry bnd() and ret() internally whereas Haskell uses >>= and return. I think the essential takeaways from the above demonstration of similarities are not so much that JS-monads are like Haskell monads, but that (1) the Monad ret() method is the left and right identity on instances of Monad, and (2) instances of Monad compose associatively. Does that mean that members of M (defined above) are monoids in the category of endofunctors, just like Haskell monads? Well, it does sort of feel that way, but it hasn\'t been proven.   '),
 

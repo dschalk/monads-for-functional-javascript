@@ -180,16 +180,17 @@ var fibsMonad = new MonadState('fibsMonad', [0, 1, 3, [0,1]], [0,1], fibs_state 
 
   function player_state (v) {
     var x = v.slice();
-    pMname.ret(x[0]);
-    pMgroup.ret(x[1]);
-    pMscore.ret(x[2]);
-    pMgoals.ret(x[3]);
+    let ar = [ 
+    pMscore.ret(x[0]),
+    pMgoals.ret(x[1]) ]
+    playerMonad.a = ar;
+    playerMonad.s = ar;  
     return x; 
   };
 
-  var playerMonad = new MonadState('playerMonad', [name, group, score, goals], '', player_state);
+  var playerMonad = new MonadState('playerMonad', [0,0], [0,0], player_state);
 
-  playerMonad.run(['new player', 'solo', 0, 0]);
+  playerMonad.run([0, 0]);
 
   var mMplayerArchive = new Monad(['start', 'solo', 0, 0], 'mMplayerArchive')
   mMplayerArchive.ret(mMplayerArchive.x);

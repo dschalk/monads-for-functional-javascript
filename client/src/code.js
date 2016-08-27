@@ -500,12 +500,10 @@ var cleanup = h('pre',  `  function cleanup (x) {
   });
 
   const process2 = function(str, index) {
-    let a = mM$taskList.x;
-    let ar = a.split(',');
-    let task = str.split(',').reduce((a,b) => ar + '$*$*$' + b)
-    ar[index * 6] = task;
-    let s = ar.reduce((a,b) => a + ',' + b);
-    mM$taskList.ret(s);
+    var a = mMcurrentList.x.split(',');
+    a[6*index] = str;
+    var b = a.reduce((a,b) => a + ',' + b)
+    task2(b);  
   };
 
   var getIndex2 = function getIndex2 (e) {
@@ -906,14 +904,15 @@ var factorsInput = h('pre',  `  var prFactTransformer = function prFactTransform
   });
              `  )
 
-var playerMonad = h('pre',  `  var playerMonad = new MonadState('playerMonad', [name, group, score, goals], '', player_state);
+var playerMonad = h('pre',  `  var playerMonad = new MonadState('playerMonad', [0,0], [0,0], player_state);
 
   function player_state (v) {
     var x = v.slice();
-    pMname.ret(x[0]);
-    pMgroup.ret(x[1]);
-    pMscore.ret(x[2]);
-    pMgoals.ret(x[3]);
+    let ar = [ 
+    pMscore.ret(x[0]),
+    pMgoals.ret(x[1]) ]
+    playerMonad.a = ar;
+    playerMonad.s = ar;  
     return x; 
   };  `  )
 

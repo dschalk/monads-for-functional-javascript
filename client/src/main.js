@@ -36,8 +36,8 @@ function main(sources) {
   const messages$ = (sources.WS).map(e => {
     mMtem.ret(e.data.split(',')).bnd(v => {
     console.log('<><><><><><><><><><><><><><><><>  INCING  <><><><><><><> >>> In messages. v is ', v );
-    mMZ10.bnd(() => mM1.ret(v.slice(3)).bnd(y => game([pMscore.x, pMgoals.x, mM8.x].concat(y))));
-    mMZ11.bnd(() => socket.send('NN#$42,' + pMgroup.x + ',' + pMname.x))
+    mMZ10.bnd(() => mM1.ret(v.slice(3)).bnd(y => game([pMscore.x, pMgoals.x, y, mM3.x].concat(y))));
+    mMZ11.bnd(() => socket.send('CG#$42,' + pMgroup.x + ',' + pMname.x + ',' + pMscore + ',' + pMgoals))
     mMZ12.bnd(() => mM6.ret(v[2] + ' successfully logged in.'))
     mMZ13.bnd(() => updateMessages(v))
     mMZ14.bnd(() => mMgoals2.ret('The winner is ' + v[2] ))
@@ -52,12 +52,15 @@ function main(sources) {
         process(e.data)
       }
     })
-    mMZ18.bnd(() => player(v))
+    mMZ18.bnd(() => {if (pMname == v[2]) playersMonad.run([v[3], v[4]])}) 
     mMZ19.bnd(() => {
-      var names = v.slice(3);
       sMplayers.clear();
-      names.forEach(player => sMplayers.add(player.trim()))
-      game2();
+      let namesL = e.data.split("<br>")
+      let namesList = namesL.slice(1)
+      updateScoreboard2(namesList)
+      namesList.forEach(player => sMplayers.add(player.trim()))
+      game2()
+      console.log('In mMZ19 <><><><><><> namesL, and namesList are ', namesL, namesList )
     }) })
        mMtemp.ret(e.data.split(',')[0])
       .bnd(next, 'CA#$42', mMZ10)
@@ -72,13 +75,13 @@ function main(sources) {
       .bnd(next, 'NN#$42', mMZ19)
   });
 
-  const player = function player (v) {
-      if (playerMonad.s[0] == v[2]) {
-        mMplayer.bnd(push, playerMonad.s, mMplayer);
-        playerMonad.run([playerMonad.s[0], playerMonad.s[1], playerMonad.s[2]*1 + v[3]*1, v[4]]); 
-        game2(); 
-      } 
-  }
+ var updateScoreboard2 = function updateScoreboard(v) {
+   let ar = [] 
+   for (let k of v) {
+     ar.push(['  '+k]) 
+   };
+   return mMscoreboard.ret(ar);
+  };
 
   const updateMessages = function updateMessages (ar) {
     console.log('In updateMessages ar is >>>>>>>>>>>>>>', ar );
@@ -100,7 +103,6 @@ function main(sources) {
     } 
     if( e.keyCode == 13 ) {
       socket.send("CC#$42" + e.target.value);
-      playerMonad.run([e.target.value, 'solo', 0, 0]);
       pMname.ret(e.target.value).bnd(() => game2());
       mM3.ret([]).bnd(mM2.ret);
       document.getElementById('dice').style.display = 'block';
@@ -117,11 +119,12 @@ function main(sources) {
 
   const groupPressAction$ = groupPress$.map(e => {
     if( e.keyCode == 13 ) {
-      playerMonad.run([playerMonad.s[0], e.target.value, 0, 0])
+      pMgroup.ret(e.target.value);
+      playerMonad.run([0, 0])
       socket.send('CO#$42,' + pMgroup.x  + ',' + pMname.x + ',' + e.target.value); 
       game2();
       console.log('In groupPressAction$ ', socket.readyState);
-      socket.send('NN#$42,' + pMgroup.x  + ',' + pMname.x + ',' + e.target.value); 
+      socket.send('CG#$42,' +  pMgroup.x  + ',' + pMname.x + ',' + 0 + ',' + 0); 
     }
   });
 
@@ -136,7 +139,7 @@ function main(sources) {
     }
   });
 
-  var task2 = function task (str) { 
+  var task2 = function task2 (str) { 
     console.log('In taskAction$. str is: ', str)
     socket.send('TD#$42' + ',' + pMgroup.x + ',' + pMname.x + ',' + '@' + str);
   };
@@ -289,12 +292,10 @@ function main(sources) {
   });
 
   const process2 = function(str, index) {
-    let a = mMcurrentList.x;
-    let ar = a.split(',');
-    let task = str.split(',').reduce((a,b) => ar + '$*$*$' + b)
-    ar[index * 6] = task;
-    let s = ar.reduce((a,b) => a + ',' + b);
-    task2(s);
+    var a = mMcurrentList.x.split(',');
+    a[6*index] = str;
+    var b = a.reduce((a,b) => a + ',' + b)
+    task2(b);  
   };
 
   const deleteClick$ = sources.DOM
@@ -370,10 +371,10 @@ function main(sources) {
     .select('.roll').events('click');
 
   const rollClickAction$ = rollClick$.map(e => {  
-    mM3.ret([])
-    socket.send('CG#$42,' + pMgroup.x + ',' + 
-        pMname.x + ',' + -1 + ',' + mMgoals.x);
     socket.send('CA#$42,' + pMgroup.x + ',' + pMname.x + ',6,6,12,20')
+    mM3.ret([])
+    pMscore.bnd(add, -1, pMscore).bnd(v =>
+    socket.send('CG#$42,' + pMgroup.x + ',' + pMname.x + ',' + v + ',' + mMgoals.x))
   });
  
   const numClick$ = sources.DOM
@@ -381,9 +382,9 @@ function main(sources) {
      
   const numClickAction$ = numClick$.map(e => {
     if (mM3.x.length < 2) {
-      mM3.bnd(push, e.target.innerHTML, mM3)
-      mM1.bnd(splice, e.target.id, 1, mM1).bnd(nums =>
-      game([pMscore.x, pMgoals.x, mM8.x].concat(nums)))
+      mM3.bnd(push, e.target.innerHTML, mM3).bnd(nums =>
+      mM1.bnd(splice, e.target.id, 1, mM1).bnd(nums2 =>
+      game([pMscore.x, pMgoals.x, nums2, nums].concat(nums2))))
     }
     if (mM3.x.length === 2 && mM8.x !== 0) {
       updateCalc();
@@ -407,7 +408,7 @@ function main(sources) {
     .select('#back').events('click');
  
   const forwardAction$ = forwardClick$.map(() => {
-    if (mMindex.x < (mMhistorymM1.x.length - 1)) {
+    if (mMindex.x < (mMhistory.x.length - 1)) {
       mMindex.bnd(add, 1, mMindex)
       .bnd(v => trav(v))
     }
@@ -423,50 +424,50 @@ function main(sources) {
 
   var game = function game (z) {
     var x = z.slice();
-    var onlinePlayers;
-    mMindex
-    .bnd(add, 1, mMindex)
-     .bnd(i => mMhistorymM1.bnd(spliceAdd, i, x, mMhistorymM1))
-      document.getElementById('0').innerHTML = x[3];  
-      document.getElementById('1').innerHTML = x[4];  
-      document.getElementById('2').innerHTML = x[5];  
-      document.getElementById('3').innerHTML = x[6]; 
+    mMindex.bnd(add, 1, mMindex)
+     .bnd(i => mMhistory.bnd(spliceAdd, i, x, mMhistory))
+      document.getElementById('0').innerHTML = x[4];  
+      document.getElementById('1').innerHTML = x[5];  
+      document.getElementById('2').innerHTML = x[6];  
+      document.getElementById('3').innerHTML = x[7]; 
       game2();
       cleanup();
   };
 
   var game2 = function game2 () {
-      var ar = Array.from(sMplayers.s);
-      console.log('In game2  pMscore is 111111111111111111111111 pMscore: ', pMscore );
       document.getElementById('sb1').innerHTML = 'Name: ' +  pMname.x;
       document.getElementById('sb2').innerHTML = 'Group: ' + pMgroup.x
-      document.getElementById('sb3').innerHTML = 'Score: ' + pMscore.x
-      document.getElementById('sb4').innerHTML = 'Goals: ' + pMgoals.x
-      document.getElementById('sb5').innerHTML = 'Currently online: ';
-      document.getElementById('sb6').innerHTML =  ar.join(', ');
+      document.getElementById('sb5').innerHTML = 'Currently online: Name | score | goals';
+      document.getElementById('sb6').innerHTML = mMscoreboard.x      
       cleanup();
   };
  
   var trav = function trav (index) {       
-    console.log("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX index, mMsetArchive.x ", index, mMsetArchive.x );
-    document.getElementById('0').innerHTML = mMhistorymM1.x[index][3]; 
-    document.getElementById('1').innerHTML = mMhistorymM1.x[index][4]; 
-    document.getElementById('2').innerHTML = mMhistorymM1.x[index][5]; 
-    document.getElementById('3').innerHTML = mMhistorymM1.x[index][3];
-    document.getElementById('sb3').innerHTML = mMhistorymM1.x[index][0];
-    document.getElementById('sb4').innerHTML = mMhistorymM1.x[index][1];
-    mM8.ret(mMhistorymM1.x[index][2]);
+    document.getElementById('0').innerHTML = mMhistory.x[index][4]; 
+    document.getElementById('1').innerHTML = mMhistory.x[index][5]; 
+    document.getElementById('2').innerHTML = mMhistory.x[index][6]; 
+    document.getElementById('3').innerHTML = mMhistory.x[index][7];
+   
+    let a = mMhistory.x[index];
+    mM1.ret(a[2]);
+    mM3.ret(a[3]);
+    socket.send('CG#$42,' +  pMgroup.x  + ',' + pMname.x + ',' + a[0] + ',' + a[1]); 
+    mM8.ret(0);
     cleanup();
   };
+
+  function changeS (ar, name) {
+    var x = ar.filter(v => v.split("|")[0].trim() != pMname.x)
+    return x
+  }
 
   function updateCalc() { 
     mM3.bnd(x => 
     mM7.ret(calc(x[0], mM8.x, x[1])).bnd(result => {
     mM1.bnd(push, result, mM1)
-    .bnd(nums => game([pMscore.x, pMgoals.x, mM8.x].concat(nums)))
-      if (result == 20) {score(pMscore.x + 1)} 
-      if (result == 18) {score(pMscore.x + 3)}
-      console.log("EEEEEEEEEEEEEEEEEE In updateCalc pMscore.x is ", pMscore.x );
+    .bnd(nums => game([pMscore.x, pMgoals.x, nums, []].concat(nums)))
+      if (result == 20) {score(pMscore.x*1 + 1)} 
+      if (result == 18) {score(pMscore.x*1 + 3)}
       })) ;
     reset()
   };
@@ -489,25 +490,32 @@ function main(sources) {
   };
 
   var score = function score(x) {
-    console.log('In score *************** x and pMscore.x is ', x, pMscore.x );
     socket.send('CA#$42,' + pMgroup.x + ',' + pMname.x + ',6,6,12,20');
-    if ((x) == 20 ) {
+    if (x !== 20) {
+    console.log('In score *******<><><><><><><><><><><>********4444444444444444 x and pMscore.x is ', x, pMscore.x );
+    pMscore.ret(x).bnd(addTest, pMscore).bnd( v => {
+    playerMonad.run([v, pMgoals.x])
+    socket.send('CG#$42,' + pMgroup.x + ',' + pMname.x + ',' + v + ',' + mMgoals.x)});
+    }
+    else {
       mMplayer.ret([]);
-      mM13.ret(0).bnd(mMindex.ret);
+      mM13.ret(0);
       mMgoals.bnd(add, 1, mMgoals).bnd(v => {
         if (v == 3) {
           socket.send('CE#$42,' + pMgroup.x + ',' + pMname.x + ',nothing ')
-          mMgoals.ret(0);
-          mMhistorymM1.ret([0,0,0,0]);   
-          playerMonad.run([pMname.x, pMgroup.x, 0, 0]);
-        } 
-        else playerMonad.run([pMname.x, pMgroup.x, 0, pMgoals.x*1 + 1]);
-      })
-      return
+          mMgoals.ret(0).bnd(mMindex.ret);
+          mMhistory.ret([0,0,0,0]);   
+          playerMonad.run([0, 0]);
+          socket.send('CG#$42,' + pMgroup.x + ',' + pMname.x + ',' + 0 + ',' + 0)
+        }
+        else { 
+          let g = pMgoals.x*1 + 1;
+          playerMonad.run([0, g]);
+          socket.send('CG#$42,' + pMgroup.x + ',' + pMname.x + ',' + 0 + ',' + g)
+        };
+      }) 
     }
-    pMscore.ret(x).bnd(addTest, pMscore);
-    playerMonad.run([pMname.x, pMgroup.x, pMscore.x, pMgoals.x]);
-  }
+ } 
 
   var reset = function reset () {
       mM3.ret([])
@@ -518,13 +526,7 @@ function main(sources) {
   }
 
   var updateScoreboard = function updateScoreboard(v) {
-    let ar2 = v.split("<br>");
-    let keys = Object.keys(ar2);
-    let ar = [];
-    keys.map(k => {
-      ar.push(h('div', ar2[k]))
-    });
-    return mMscoreboard.ret(ar);
+    mMscoreboard.push(h('div', v))
   };
 
 //**************************************   GAME   *********************************************** GAME END
@@ -717,11 +719,8 @@ function main(sources) {
           h('br'),
           h('span#sb2'  ),
           h('br'),
-          h('span#sb3' ),
-          h('br'),
-          h('span#sb4' ),
-          h('br'),
           h('span#sb5' ),
+          h('br'),
           h('span#sb6' ) ]),
           h('br'),
           h('br'),  
