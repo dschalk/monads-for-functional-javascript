@@ -1,7 +1,7 @@
 var path = require('path');
 
 module.exports = {
-  context: __dirname + "/src",
+  context: __dirname + "/",
   entry: "./main.js",
   output: {
       path: __dirname + "/dist",

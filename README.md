@@ -12,33 +12,18 @@ This is a [Motorcycle.js](https://github.com/motorcyclejs) application. Motorcyc
 [JS-monads-stable](http://schalk.net:3055) features explanations and demonstrations of a shared, persistent todo list; an interactive simulated dice game with a traversable history of number displays, chat rooms shared among members of each group that is formed to play the game or just to chat.
 ## Basic Monad    
 ```javascript    
-    var Monad = function Monad(value, ID) {
-
-    var _this = this;
-
-    this.x = value
-
-    if (arguments.length === 1) this.id = 'anonymous';
-    else this.id = ID;
-  
-    this.bnd = function (func, ...args) {
-       return func(_this.x, ...args);
-    };
-  
-    this.ret = function (a) {
-      window[_this.id] = new Monad(a,_this.id);
-      return window[_this.id];
-    };
-  };  
+var Monad = function Monad(z, ID = 'anonymous') {
+    this.id = g;
+    this.x = z;
+    this.bnd = (func, ...args) => func(this.x, ...args);
+    this.ret =  a => window[this.id] = new Monad(a,this.id);
+}; 
 ```
 Monad instances are useful for chaining computations. Typically, the bnd() method provides its value (the x attribute) to a computation that returns an instance of Monad. Here are some examples:
 ```javascript
-  var ret = function ret(v, id) {
-    if (arguments.length === 1) {
-      return (new Monad(v, 'anonymous'));
-    }
-    window[id] = new Monad(v, id);
-    return window[id];
+  var ret = function ret(v, id = 'anonymous') {
+      window[id] = new Monad(v, id )
+      return window[id]
   }
   
   var cube = function(v,mon) {
@@ -129,37 +114,27 @@ Just as Javascript if very different from Haskell, so too are the JS-monads very
 
 ##MonadItter
 ```javascript
-  var MonadItter = function MonadItter() {
-    var _this = this;
-    this.p = function () {};
-  
-    this.release = function (...args) {
-      return this.p(...args);
-    };
-  
-    this.bnd = function (func) {
-      _this.p = func;
-    };
-  }; `
+const MonadItter = function ()  {
+  this.p = function () {};
+  this.release = (...args) => this.p(...args);
+  this.bnd = func => this.p = func;
+};
 ```
 ## MonadState
 ```javascript
-  var MonadState = function MonadState (g, state, value, p) {
-    var _this = this;
-    this.id = g;
-    this.s = state;
-    this.a = value;
-    this.process = p;
-    this.bnd = function (func, ...args) {
-       return func(_this.s, ...args);  // func operates on state
-    };
-    this.run = function(st) { 
-      let s = _this.process(st); 
-      let a = s[3];
-      window[_this.id] = new MonadState(_this.id, s, a, _this.process);
-      return window[_this.id];
-    }
+const MonadState = function (g, state, value, p)  {
+  this.id = g;
+  this.s = state;
+  this.a = value;
+  this.process = p;
+  this.bnd = (func, ...args) => func(this.s, ...args);  
+  this.run = st => { 
+    let s = this.process(st); 
+    let a = s[3];
+    window[this.id] = new MonadState(this.id, s, a, this.process);
+    return window[this.id];
   }
+}
 ```
 ## Stand alone ret()
 ```javascript
@@ -173,40 +148,13 @@ Just as Javascript if very different from Haskell, so too are the JS-monads very
 ```
 ## MonadSet
 ```javascript
-  var MonadSet = function MonadSet(set, ID) {
-    var _this = this;
-  
-    this.s = set;
-  
-    if (arguments.length === 1) this.id = 'anonymous';
-    else this.id = ID;
-  
-    this.bnd = function (func, ...args) {
-       return func(_this.x, ...args);
-    };
-  
-    this.add = function (a) {
-      var ar = Array.from(_this.s);
-      set = new Set(ar);
-      set.add(a);
-      window[_this.id] = new MonadSet(set, _this.id);
-      return window[_this.id];
-    };
-  
-    this.delete = function (a) {
-      var ar = Array.from(_this.s);
-      set = new Set(ar);
-      set.delete(a);
-      window[_this.id] = new MonadSet(set, _this.id);
-      return window[_this.id];
-    };
-  
-    this.clear = function () {
-      set = new Set([]);
-      window[_this.id] = new MonadSet(set, _this.id);
-      return window[_this.id];
-    };
-  };
+const MonadSet = function (set, ID = 'anonymous')  {
+  this.s = set;
+  this.bnd = (func, ...args) => func(this.s, ...args);  
+  this.add = a => new MonadSet(s.add(a), this.id);
+  this.delete = a => new MonadSet(s.delete(a), this.id);
+  this.clear = () => new MonadSet(s.clear(), this.id);
+};
 
 var s = new Set();
 

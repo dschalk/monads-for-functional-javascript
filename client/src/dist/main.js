@@ -97,13 +97,13 @@ function main(sources) {
         return mMscoreboard.ret(ar);
     };
     var updateMessages = function updateMessages(ar) {
-        console.log('8888888888888888888888888In updateMessages ar is >>>>>>>>>>>>>>', ar);
+        console.log('In updateMessages ar is >>>>>>>>>>>>>>', ar);
         var sender = ar[2];
         mMhelper.ret(ar)
-            .bnd(slice, 3, mMtemp3)
-            .bnd(intersperse, mMtemp4)
+            .bnd(splice, 0, 3, mMhelper)
+            .bnd(reduce)
             .bnd(function (v) { return mMmsg.bnd(unshift, dom_1.h('div', sender + ': ' + v), mMmsg); });
-        console.log('99999999999999999999999In updateMessages mMmsg is ', mMmsg);
+        console.log('In updateMessages ', socket.readyState);
     };
     var loginPress$ = sources.DOM
         .select('input#login').events('keypress');
@@ -175,7 +175,7 @@ function main(sources) {
                 document.getElementById('alert').innerHTML = task + " is already listed.";
             }
             else if (ar.length > 2) {
-                mMcurrentList.bnd(addString, task + ',yellow, none, false,' + ar[0] + ',' + ar[1], mMcurrentList);
+                mMcurrentList.bnd(addString, task + ',yellow, none, false,' + ar[0] + ',' + ar[1], mMtemp);
                 task2(mMcurrentList.x);
                 e.target.value = '';
                 document.getElementById('alert').innerHTML = '';
@@ -195,7 +195,7 @@ function main(sources) {
         var ob = {};
         var ar = a.slice(3);
         var s = ar.reduce(function (a, b) { return a + ',' + b; });
-        console.log('2323232323232323232323232323232 In process. ar and s are: ', ar, s);
+        // console.log('In process. ar and s are: ', ar, s);
         var tempArray = [];
         if (ar.length < 6) {
             return;
@@ -208,7 +208,6 @@ function main(sources) {
         process3(ar);
     };
     var process3 = function (a) {
-        console.log('77766677766677766677766676767676 In process3. a is ', a);
         if (a.length > 0 && (a.length % 6) == 0) {
             var ar5 = [];
             var keys = rang(0, a.length / 6);
@@ -586,7 +585,6 @@ function main(sources) {
     };
     // <>>><>><><><><>>>><><><  traversal  ><><><><><><>>><><><><><><><><><><><>< ENDOM traversal  
     // <>>><>><><><><>>>><><><  traversal  ><><><><><><>>><><><><><><><><><><><>< START Itterator  
-    mMZ2.bnd(function (v) { return cube(v, mMtemp5).bnd(function (w) { return mMt3.ret(v + ' cubed is ' + w); }); });
     var testZ = sources.DOM
         .select('#testZ').events('click');
     var testZAction$ = testZ.map(function () {
@@ -633,7 +631,7 @@ function main(sources) {
     var quadAction$ = quad$.map(function (e) {
         if (e.keyCode == 13) {
             mMZ3.release(e.target.value);
-            document.getElementById('quad').value = null;
+            document.getElementById('quad').innerHTML = '';
         }
     });
     var dummyClick$ = sources.DOM

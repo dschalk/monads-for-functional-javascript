@@ -6,99 +6,49 @@ var group = "solo"
 var score = 0;
 var goals = 0;
 
-var Monad = function Monad(value, ID) {
-  var _this = this;
+var Monad = function Monad(z, ID = 'anonymous') {
+    this.id = g;
+    this.x = z;
+    this.bnd = (func, ...args) => func(this.x, ...args);
+    this.ret =  a => window[this.id] = new Monad(a,this.id);
+}; 
 
-  this.x = value;
-
-  if (arguments.length === 1) this.id = 'anonymous';
-  else this.id = ID;
-
-  this.bnd = function (func) {
-    for (var _len = arguments.length, args = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
-      args[_key - 1] = arguments[_key];
-    }
-    return func.apply(undefined, [_this.x].concat(args));
-  };
-
-  this.ret = function (a) {
-    window[_this.id] = new Monad(a,_this.id);
-    return window[_this.id];
-  };
-};
-
-function fmap2 (g, a, id) {window[id] = new Monad(g(a.x), id); return window[id]}
-
-function fmap (x, g, id) {window[id] = new Monad(g(x), id); return window[id]}
-
-function opM (a, op, b, id) {
-  window[id] = new Monad(eval(a.x + op + b.x), id); 
-  return window[id];
+var ret = function ret(v, id = 'anonymous') {
+      window[id] = new Monad(v, id )
+      return window[id]
 }
 
-var fm = (f,x, ...args) => (f,x, ...args) => ret(f(x, ...args))
+function fmap2 (g, a, id) {return (new Monad(g(a.x), id))}
 
-var fmapF = fm(cu)
+function fmap (x, g, id) {return (new Monad(g(x), id));}
 
-var MonadSet = function MonadSet(set, ID) {
-  var _this = this;
+function opM (a, op, b, id) {
+  return (new Monad(a.x + op + b.x), id); 
+}
 
-  this.s = set;
-
-  if (arguments.length === 1) this.id = 'anonymous';
-  else this.id = ID;
-
-  this.bnd = function (func) {
-    for (var _len = arguments.length, args = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
-      args[_key - 1] = arguments[_key];
-    }
-    return func.apply(undefined, [_this.s].concat(args));
-  };
-
-  this.add = function (a) {
-    var ar = Array.from(_this.s);
-    set = new Set(ar);
-    set.add(a);
-    window[_this.id] = new MonadSet(set, _this.id);
-    return window[_this.id];
-  };
-
-  this.delete = function (a) {
-    var ar = Array.from(_this.s);
-    set = new Set(ar);
-    set.delete(a);
-    window[_this.id] = new MonadSet(set, _this.id);
-    return window[_this.id];
-  };
-
-  this.clear = function () {
-    set = new Set([]);
-    window[_this.id] = new MonadSet(set, _this.id);
-    return window[_this.id];
-  };
+const MonadSet = function (set, ID = 'anonymous')  {
+    this.s = set;
+    this.bnd = (func, ...args) => func(this.s, ...args);  
+    this.add = a => new MonadSet(s.add(a), this.id);
+    this.delete = a => new MonadSet(s.delete(a), this.id);
+    this.clear = () => new MonadSet(s.clear(), this.id);
 };
-
+  
 var s = new Set();
 
 var sMplayers = new MonadSet(s, 'sMplayers')  // holds currently online players
 
-var MonadState = function MonadState (g, state, value, p) {
-  var _this = this;
+const MonadState = function (g, state, value, p)  {
   this.id = g;
   this.s = state;
   this.a = value;
   this.process = p;
-  this.bnd = function (func) {
-    for (var _len = arguments.length, args = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
-      args[_key - 1] = arguments[_key];
-    }
-    return func.apply(undefined, [_this.s].concat(args));   
-  };
-  this.run = function(st) { 
-    let s = _this.process(st); 
+  this.bnd = (func, ...args) => func(this.s, ...args);  
+  this.run = st => { 
+    let s = this.process(st); 
     let a = s[3];
-    window[_this.id] = new MonadState(_this.id, s, a, _this.process);
-    return window[_this.id];
+    window[this.id] = new MonadState(this.id, s, a, this.process);
+    return window[this.id];
   }
 }
 
@@ -115,7 +65,6 @@ function factor_state(v) {
 }
           
 var mMfactors = new Monad(-1, 'mMfactors');
-mMfactors.ret(-1, 'mMfactors');
 
 var prFactTransformer = function prFactTransformer (s, m) {
   return m.run([s[0], [], mMfactors.x, s[3]])
@@ -170,11 +119,8 @@ var fibsMonad = new MonadState('fibsMonad', [0, 1, 3, [0,1]], [0,1], fibs_state 
   var factorsMonad = new MonadState('factorsMonad', [ 2, [], 4, [] ], [], factor_state); 
 
   var pMname = new Monad('1v65n$%pqw3*@#9', 'pMname');
-  pMname.ret(pMname.x);
   var pMgroup = new Monad('solo', 'pMgroup');
-  pMgroup.ret('solo');
   var pMscore = new Monad(0, 'pMscore');
-  pMscore.ret(0);
   var pMgoals = new Monad(0, 'pMgoals');
   pMgoals.ret(0);
 
@@ -198,7 +144,7 @@ var fibsMonad = new MonadState('fibsMonad', [0, 1, 3, [0,1]], [0,1], fibs_state 
   var mMsetArchive = new Monad([], 'mMsetArchive');
   mMsetArchive.ret([]);
 
-  var clean = function clean (x, mon) {
+  var clean = function clean (x: any, mon = mMtemp ) {
     mon.ret([]);
   }
 
@@ -245,26 +191,11 @@ var CURRENT_ROLL = [];
 var emitevent;
 var data$;
 
-var MonadItter = function MonadItter() {
-  var _this = this;
+const MonadItter = function ()  {
   this.p = function () {};
-
-  this.release = function () {
-    return this.p.apply(this, arguments);
-  };
-
-  this.bnd = function (func) {
-    _this.p = func;
-  };
+  this.release = (...args) => this.p(...args);
+  this.bnd = func => this.p = func;
 };
-
-var ret = function ret(v, id) {
-  if (arguments.length === 1) {
-    return (new Monad(v, 'anonymous'));
-  }
-  window[id] = new Monad(v, id);
-  return window[id];
-}
 
 function rang (n, m) {
   return Array.from(new Array(m - n), (x,i) => i + n)
@@ -295,7 +226,7 @@ var cube = function(v,mon) {
   if (arguments.length === 2) {
     return mon.ret(v*v*v);
   }
-  return ret(v*v*v);
+  return ret(v*v*v, 'fred');
 }
 
 var p = function p (x) {
@@ -303,22 +234,12 @@ var p = function p (x) {
   if (x < 0 ) {return ' - ' + Math.abs(x)}
 }
 
-var double = function(v) {
-  if (arguments.length === 2) {
-    return mon.ret(v*v);
-  }
-  return ret(v + v);
-}
-
-var add = function(x,b,mon) {
-  if (arguments.length === 3) {
-    return mon.ret(x + b);
-  }
-  return ret(x+b);
+var add = function(x,b,mon = mMtemp5) {
+  return mon.ret(x+b);
 }
 
 var addar = function(a,b) {
-  return ret(a.map(v => v*1 + b*1));
+  return ret(a.map(v => v*1 + b*1), 'sally');
 }
 
 var M = function M(a,b) {
@@ -326,8 +247,8 @@ var M = function M(a,b) {
   return mon;
 };
 
-var MI = function MI(x) {
-  return new MonadItter(x);
+var MI = function MI() {
+  return new MonadItter();
 };
 
 var count = 0;
@@ -374,12 +295,10 @@ var mMnumbers = M([],'mMnumbers');
 var mMname = M('', 'mMname');
 var mMar = M([1,2,3,4,5], 'mMar');
 var mMar2 = M([], 'mMar2');
-mMar2.ret(mMar2.x);
 var mMscores = M('', 'mMscores');
 var mMprefix = M('', 'mMprefix');
 var mMfib = M([0,1], 'mMfib');
 var mMfib2 = M([0,1], 'mMfib2');
-mMfib2.ret(mMfib.x);
 var mMmain = M(null, 'mMmain');
 var mMcalc = M(null, 'mMcalc');
 var mMadd = new Monad(0, 'mMadd');
@@ -403,11 +322,8 @@ var mMsender = new Monad('nobody', 'mMsender');
 var mMextra = new Monad('nothing', 'mMextra');
 var mMextra2 = new Monad('nothing', 'mMextra2');
 var mMsave = new Monad({x: 'start'}, 'mMsave');
-var mMsavear = new Monad([ret([0,0,0,0])], 'mMsavear');
 var mMindex = new Monad(0, 'mMindex');
-mMindex.ret(mMindex.x)
 var mMindex3 = new Monad(0, 'mMindex3');
-mMindex3.ret(mMindex3.x)
 var mMhistory = new Monad([], 'mMhistory');
 var mMhistorymM1 = new Monad([0,0,0,0], 'mMhistorymM1');
 var mMhistorymM3 = new Monad([], 'mMhistorymM3');
@@ -427,152 +343,46 @@ var fibmon = new Monad([0,1]);
 var mMmax = new Monad(0, 'mMmax');
 var mMfibSave = new Monad(0, 'mMfibSave');
 var mMfibSave2 = new Monad(0, 'mMfibSave2');
-mMmax.ret(mMmax.x);
 var mMscoreChange = new Monad(0, 'mMscoreChange');
-mMscoreChange.ret(mMscoreChange.x);
 var mMcurrentRoll = new Monad([0,0,0,0], 'mMcurrentRoll');
-mMcurrentRoll.ret(mMcurrentRoll.x);
-
 var mMfibs8 = M([0,1], 'mMfibs8');
-mMfibs8.ret(mMfibs8.x);
-
 var mMallRolls = new Monad([[0,0,0,0]], 'mMallRolls');
-mMallRolls.ret(mMallRolls.x);
-
 var mMcurrentList = new Monad([], 'mMcurrentList');
-mMcurrentList.ret(mMcurrentList.x);
-
 var mMtaskList = new Monad([], 'mMtaskList');
-mMtaskList.ret(mMtaskList.x);
-
 var mMsenderList = new Monad([], 'mMsenderList');
-mMsenderList.ret(mMsenderList.x);
-
 var mMsoloAlert = new Monad('', 'mMsoloAlert');
-mMsoloAlert.ret(mMsoloAlert.x);
-
 var mMe = new Monad('', 'mMe');
-mMe.ret(mMe.x);
-
 var mMgoals = M(0,'mMgoals');
-mMgoals.ret(mMgoals.x);
-
 var mMt1 = new Monad(0,'mMt1')
-mMt1.ret(mMt1.x)
-
 var mMt2 = new Monad(0,'mMt2')
-mMt2.ret(mMt2.x)
-
 var mMt3 = new Monad('','mMt3')
-mMt3.ret(mMt3.x)
-
 var mMa = new Monad('waiting','mMa')
-mMa.ret(mMa.x)
-
 var mMx = new Monad([],'mMx')
-mMx.ret(mMx.x)
-
 var mMy = new Monad('waiting','mMy')
-mMy.ret(mMy.x)
-
 var mMb = new Monad('waiting','mMb')
-mMb.ret(mMb.x)
-
 var mMc = new Monad('waiting','mMc')
-mMc.ret(mMc.x)
-
 var mMquad1 = new Monad('','mMquad1')
-mMquad1.ret(mMquad1.x)
-
 var mMquad2 = new Monad('','mMquad2')
-mMquad2.ret(mMquad2.x)
-
 var mMquad3 = new Monad('','mMquad3')
-mMquad3.ret(mMquad3.x)
-
 var m = new Monad([2],'m')
-m.ret(m.x)
-
 var m1 = new Monad(0,'m1')
-m1.ret(m1.x)
-
 var m2 = new Monad(0,'m2')
-m2.ret(m2.x)
-
 var m3 = new Monad(0,'m3')
-m3.ret(m3.x)
-
 var mMprime = new Monad([2],'mMprime')
-mMprime.ret(mMprime.x)
-
 var mMprime2 = new Monad([2],'mMprime2')
-mMprime2.ret(mMprime2.x)
-
 var mMprimes = new Monad([2],'mMprimes')
-mMprimes.ret(mMprimes.x)
-
 var mMspreadsheet = new Monad([0,0,0,0], 'mMspreadsheet');
-mMspreadsheet.ret(mMspreadsheet.x)
-
 var mMspreadsheet2 = new Monad([0,0,0,0], 'mMspreadsheet2');
-mMspreadsheet2.ret(mMspreadsheet2.x)
-
 var mMdummy = new Monad(0, 'mMdummy');
-mMdummy.ret(mMdummy.x);
-
 var mMpf = new Monad(0, 'mMpf');
-mMpf.ret(mMpf.x);
-
 var mMpFib = new Monad([], 'mMpFib');
-mMpFib.ret(mMpFib.x);
-
 var RESULT =[0,0,0,0];
-
 var mMdisplayFibs = new Monad([0,1], 'mMdisplayFibs');
-mMdisplayFibs.ret(mMdisplayFibs.x);
-
 var mMmembers = ret([], 'mMmembers');
-mMmembers.ret([]);
-
 var mMcount = new Monad(0, 'mMcount');
 var mMcount2 = new Monad(0, 'mMcount2');
 var mMcount3 = new Monad(0, 'mMcount3');
 var mMcount4 = new Monad(0, 'mMcount4');
-mMcount.ret(mMcount.x);
-mMcount2.ret(mMcount2.x);
-mMcount3.ret(mMcount3.x);
-mMcount4.ret(mMcount4.x);
-
-mMgoals2.ret(mMgoals2.x)
-mM3.ret(mM3.x)
-mM6.ret(mM6.x)
-mM24.ret(mM24.x)
-mM25.ret(mM25.x)
-mM26.ret(mM26.x)
-mMmsg.ret(mMmsg.x)
-mMmessages.ret(mMmessages.x)
-mMgroup.ret(mMgroup.x)
-mMname.ret(mMname.x)
-mMscoreboard.ret(mMscoreboard.x)
-mMscbd.ret(mMscbd.x)
-mM13.ret(mM13.x)
-mM3.ret(mM3.x)
-mM8.ret(mM8.x)
-mM19.ret(mM19.x)
-mMhistorymM1.ret(mMhistorymM1.x)
-mMhistorymM3.ret(mMhistorymM3.x)
-mMhistory.ret(mMhistory.x)
-mMhelper.ret(mMhelper.x);
-mMtasks.ret(mMtasks.x);
-mMalert.ret(mMalert.x);
-mMfib.ret(mMfib.x);
-fibmon.ret(fibmon.x);
-mM5.ret(mM5.x);
-mM6.ret(mM6.x);
-mM27.ret(mM27.x);
-mM21.ret(mM21.x);
-
-
 var mMZ1 = MI();
 var mMZ2 = MI();
 var mMZ3 = MI();
@@ -625,13 +435,10 @@ mMZ1.bnd(v => mMt1.bnd(add,v,mMt1)
 .bnd(cube,mMt2)          // Returns mMt2.
 .bnd(() => mMt3.ret(mMt1.x + ' cubed is ' + mMt2.x)))
   
-mMZ2.bnd(v => cube(v)
-.bnd(w => mMt3.ret(v + ' cubed is ' + w)))
-  
   var qS1 = function qS1 (a, b, c) {
     let n = (b*(-1)) + (Math.sqrt(b*b - 4*a*c));
     if (n != n) {
-      return "No solution";
+      return 0;
     }
     return n/(2*a);
   }
@@ -639,7 +446,7 @@ mMZ2.bnd(v => cube(v)
   var qS2 = function qS2 (a, b, c) {
     let n = (b*(-1)) - (Math.sqrt(b*b - 4*a*c));
     if (n != n) {
-      return "No solution";
+      return 0;
     }
     return n/(2*a);
   }
@@ -654,7 +461,7 @@ mMZ2.bnd(v => cube(v)
   }
 
 var trim = function trim(str) {
-  return ret(str.trim());
+  return ret(str.trim(), 'fred');
 };
 
 var convertBack = function convertBack(str) {
@@ -676,15 +483,14 @@ var stringify = function stringify (ob) {
   return str;
 }
 
-var addString = function addString (x, str, mon) {
+var addString = function addString (x, str, mon = mMtemp5) {
   var s = str;
   if (x.length > 4) {
   s = x + ',' + str;
   }
   return mon.ret(s);
 }
-
-var intersection = function (a, b, mon) {
+var intersection = function (a, b, mon = mMtemp5) {
   let ar3 = []
   for (let x of a) {
     for (let y of b) {
@@ -696,29 +502,18 @@ var intersection = function (a, b, mon) {
   return mon.ret(ar3);
 }
 
-var range = function intArray (x, n) {   // Returns [0, ... n-1]
-  let ar = Array(n).fill().map((_, i) => i);
-  return ret(ar);
-}
-
-var range2 = function range2 (x, n) {    // Returns [0, ... n]
-    var arr = Array(n+1);
-    for (var ii = 0; ii <= n; ii++) { arr[ii] = ii; };
-    return ret(arr);
-}
-
-var calc = function calc(a,op,b) { 
+var calc = function calc(a: string, op: string, b: string) { 
   var result;
   switch (op) {
-      case "add": result = (parseFloat(a) + parseFloat(b));
+      case "add": result = parseInt(a,10) + parseInt(b,10);
       break;
-      case "subtract": result = (a - b);
+      case "subtract": result = parseInt(a,10) - parseInt(b,10);
       break;
-      case "mult": result = (a * b);
+      case "mult": result = parseInt(a,10) * parseInt(b,10);
       break;
-      case "div": result = (a / b);
+      case "div": result = parseInt(a,10) / parseInt(b,10);
       break;
-      case "concat": result = (a+""+b)*1.0;
+      case "concat": result = (a + b);
       break;
       default : 'major malfunction in calc.';
   }
@@ -734,17 +529,7 @@ var equals2 = function equals (x, mon1, mon2, mon3) {
   if (mon1.id === mon2.id && mon1.x === mon2.x) {
     mon3.ret('true');
   } else mon3.ret('false');
-  return ret(x);
-}
-
-var runtest = function runtest () {
-  mM5.bnd( equals,  
-    m.ret(0).bnd(v => add(v, 3, m).bnd(cube)), 
-    m.ret(0).bnd(add, 3, m).bnd(cube), mMa)
-
-  mM5.bnd(equals, m, m.bnd(m.ret), mMb)
-
-  mM5.bnd(equals, m, m.ret(m.x), mMc)
+  return ret(x, 'Mtemp3');
 }
 
 var pause = function(x,t,mon2) {
@@ -755,53 +540,30 @@ var pause = function(x,t,mon2) {
   return mon2;
 };
 
-var wait = function wait(x, y, mon) {
+var wait = function wait(x, y, mon = mMtemp5) {
   if (x === y) {
-    mon2.release();
+    mon.release();
   }
   return mon;
 };
 
-var unshift = function unshift(y,v,mon) {
-  if (Array.isArray(y)) {
-    let ar = [];
-    let keys = Object.keys(y);
-    for (let k in keys) {ar[k] = y[k]};
-    ar.unshift(v);
-    return mon.ret(ar);  
-  }
-  console.log('The value provided to unshift is not an array');
-  return ret(y);
-};
-
-var unshift2 = function unshift(y,v,mon) {
-  return mon.ret(ret(y).x.unshift(v));
+var unshift = function unshift(x, y, mon = ret(x, 'mMunshift')) {
+    var ar = x.slice();
+    ar.unshift(y);
+    return mon.ret(ar)
 };
 
 var toFloat = function toFloat(x) {
     return ret(parseFloat(x));
 };
 
-var clean = function clean(x, mon) {
-  let ar = ret(x);
-  return mon.ret(ar.x.filter(v => v !== "" && v!== undefined));
-}
-
-/*var push = function push(y,v,mon) {
-  console.log('In push. y, v, mon are: ', y, v, mon);
-    let ar = [];
-    if (y.length == 0) { ar = [v]; } else { let keys = Object.keys(y); for (let k in keys) {ar[k] = y[k]}; ar.push(v);
-    }
-    return mon.ret(ar);
-};*/
-
-var push = function push(y, v, mon) {
+var push = function push(y, v, mon = mMtemp5) {
   let ar = y.slice();
   ar.push(v);
   return mon.ret(ar);
 }
 
-var spliceRemove = function spliceRemove(x, index, location, mon) {
+var spliceRemove = function spliceRemove(x, index, location, mon = mMtemp) {
   if (Array.isArray(x)) {
     let ar = x[index].slice();
     console.log('In spliceRemove. ar is: ', ar )
@@ -811,19 +573,24 @@ var spliceRemove = function spliceRemove(x, index, location, mon) {
   console.log('Major malfunction in spliceRemove. x, index, location, mon: ', x, index, location, mon);
 };
 
-var spliceAdd = function spliceAdd(x, index, value, mon) {
+var spliceAdd = function spliceAdd(x, index, value, mon = mMtemp5) {
     let ar = x.slice(); 
     ar.splice(index, 0, value);
     return mon.ret(ar);  
 };
 
-var splice = function splice(x, start, howmany, mon) {
+var splice = function splice(x, start, howmany, mon = mMtemp5) {
   let ar = x.slice();
   ar.splice(start, howmany);
   return mon.ret(ar);  
 };
 
-var concat = function concat(x, v, mon) {
+var slice = function splice(x, y, mon = new Monad(x, 'mMslice')) {
+  let ar = x.slice(y);
+  return mon.ret(ar);  
+};
+
+var concat = function concat(x, v, mon = mMtemp5) {
   if (Array.isArray(v)) {
     let ar = x.slice();
     let ar2 = ar.concat(v);
@@ -833,7 +600,7 @@ var concat = function concat(x, v, mon) {
   mon.ret(x + v)
 }
 
-var sliceFront = function sliceFront(x, n, mon) {
+var sliceFront = function sliceFront(x, n, mon = mMtemp5) {
   if (Array.isArray(x)) {
     let ar = x.slice(n);
     return mon.ret(ar);  
@@ -842,11 +609,11 @@ var sliceFront = function sliceFront(x, n, mon) {
   return ret(x);
 };
 
-var inc = function inc(x, mon) {
+var inc = function inc(x, mon = mMtemp5) {
   return mon.ret(x + 1);
 }
 
-var dec = function dec(x, mon) {
+var dec = function dec(x, mon = mMtemp5) {
   return mon.ret(x - 1);
 }
 
@@ -855,7 +622,7 @@ var filter = function filter(x, condition) {
     return ret(ar.filter(v => condition))
 }
 
-var map = function map(x, f, mon) {
+var map = function map(x, f, mon = mMtemp) {
   if (Array.isArray(x)) {
     let ar = [];
     let keys = Object.keys(x);
@@ -868,10 +635,10 @@ var map = function map(x, f, mon) {
   return ret(x);
 };
 
-var reduce = function reduce(x) {
-    let ar = x.slice(); 
-    let ar2 = ar.reduce(function(a,b) {return (a + ', ' + b)});
-    return ret(ar2);  
+var intersperse = function intersperse(x, mon = ret(42, 'mMintersperse')) {
+  console.log('In intersperse ()()()()()()()()() x is ', x)
+  let ar = x.reduce((a,b) => (a + ', ' + b))
+  return mon.ret(ar);  
 };
 
 var addTest = function test (x,  mon) {
@@ -880,11 +647,12 @@ var addTest = function test (x,  mon) {
   else return mon.ret(x);
 }
 
-var next = function next(x, y, mon2, a1, a2) {
-  if (x === y) {
-    mon2.release(a1, a2);
+var next = function next(x, y, instance, mon = ret(x,'mMnext')) {
+  console.log('000000000000000000000000000000 In next. x, y and instance are: ', x, y, instance)
+  if (x == y) {
+    instance.release();
   }
-  return ret(x);
+  return mon.ret(x);
 }
 
 var next2 = function next(x, condition, mon2) {
@@ -909,11 +677,12 @@ var doub = function doub(v,mon) {
   return ret(v + v);
 };
 
-var square = function square(v,mon) {
-  if (arguments.length === 2) {
-    return mon.ret(x * b);
-  }
-  return ret(v * v);
+var double = function double(v: number, mon = new Monad(1, 'anonymous')) {
+  return mon.ret(v + v)
+}
+
+var square = function square(v: number,mon = new Monad(1, 'anonymous')) {
+  return mon.ret(v * v)
 };
 
 var mult = function mult(x, y, mon) {

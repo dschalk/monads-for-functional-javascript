@@ -1,0 +1,12 @@
+{
+    "compileOnSave": true,
+    "compilerOptions": {
+        "removeComments": false,
+        "outFile": "dist/tsc.js"
+    },
+    "files": [
+        "code.ts",
+        "monad.ts",
+        "main.ts"
+    ]
+}

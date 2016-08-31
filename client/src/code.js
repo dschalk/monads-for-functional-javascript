@@ -6,61 +6,39 @@ var sub = subject
 var observer = sub.observer;
 var stream = sub.stream;
 */
-var Monad = function Monad(value, ID) {
-  var _this = this;
 
-  this.x = value;
+var Monad = function Monad(z) {
+    var _this = this;
 
-  if (arguments.length === 1) this.id = 'anonymous';
-  else this.id = ID;
+    var g = arguments.length <= 1 || arguments[1] === undefined ? 'anonymous' : arguments[1];
 
-  this.bnd = function (func) {
-    for (var _len = arguments.length, args = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
-      args[_key - 1] = arguments[_key];
-    }
-    return func.apply(undefined, [_this.x].concat(args));
-  };
+    this.id = g;
+    this.x = z;
+    this.bnd = function (func) {
+        for (var _len = arguments.length, args = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
+            args[_key - 1] = arguments[_key];
+        }
 
-  this.ret = function (a) {
-    window[_this.id] = new Monad(a,_this.id);
-    return window[_this.id];
-  };
+        return func.apply(undefined, [_this.x].concat(args));
+    };
+    this.ret = function (a) {
+        return window[_this.id] = new Monad(a, _this.id);
+    };
 };
 
 var mMname = new Monad('Fred', 'mMname');
 
-const monad = h('pre', {style: {color: '#AFEEEE' }}, `  var Monad = function Monad(z, g) {
-    var _this = this;
-
+const monad = h('pre', {style: {color: '#AFEEEE' }}, `  const Monad = function Monad(z, ID = 'anonymous') {
+    this.id = g;
     this.x = z;
-
-    if (arguments.length === 1) {
-      this.id = 'anonymous';
-    } else {
-      this.id = g;
-    };
-
-    this.bnd = function (func, ...args) {
-       return func(_this.x, ...args);
-    };
-
-    this.ret = function (a) {
-      window[_this.id] = new Monad(a,_this.id);
-      return window[_this.id];
-    };
+    this.bnd = (func, ...args) => func(this.x, ...args);
+    this.ret =  a => window[this.id] = new Monad(a,this.id);
   }; ` )
 
-const monadIt = h('pre', {style: {color: '#AFEEEE' }}, `  var MonadItter = function MonadItter() {
-    var _this = this;
+const monadIt = h('pre', {style: {color: '#AFEEEE' }}, `  const MonadItter = () => {
     this.p = function () {};
-  
-    this.release = function (...args) {
-      return this.p(...args);
-    };
-  
-    this.bnd = function (func) {
-      _this.p = func;
-    };
+    this.release = (...args) => this.p(...args);
+    this.bnd = func => this.p = func;
   }; ` )
 
 const ret = h('pre', {style: {color: '#AFEEEE' }}, `  var ret = function ret(v, id) {
@@ -144,43 +122,11 @@ var messages = h('pre', `  const messages$ = (sources.WS).map(e =>
   });  `  )
 
 var MonadSet = h('pre',  `  var MonadSet = function MonadSet(set, ID) {
-    var _this = this;
-  
     this.s = set;
-  
-    if (arguments.length === 1) this.id = 'anonymous';
-    else this.id = ID;
-  
-    this.bnd = function (func) {
-      for (var _len = arguments.length, args = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
-        args[_key - 1] = arguments[_key];
-      }
-      return func.apply(undefined, [_this.s].concat(args));
-    };
-  
-    this.add = function (a) {
-      var ar = Array.from(_this.s);
-      set = new Set(ar);
-      set.add(a);
-      window[_this.id] = new MonadSet(set, _this.id);
-      return window[_this.id];
-    };
-  
-    this.delete = function (a) {
-      var ar = Array.from(_this.s);
-      set = new Set(ar);
-      set.delete(a);
-      window[_this.id] = new MonadSet(set, _this.id);
-      return window[_this.id];
-    };
-  
-    this.clear = function () {
-      var ar = Array.from(this.s);
-      set = new Set(ar);
-      set.clear();
-      window[_this.id] = new MonadSet(set, _this.id);
-      return window[_this.id];
-    };
+    this.bnd = (func, ...args) => func(this.s, ...args);  
+    this.add = a => new MonadSet(s.add(a), this.id);
+    this.delete = a => new MonadSet(s.delete(a), this.id);
+    this.clear = () => new MonadSet(s.clear(), this.id);
   };  `  )
 
 var nums = h('pre',  `    const numClick$ = sources.DOM
@@ -786,22 +732,19 @@ var traverse = h('pre',  `  const forwardClick$ = sources.DOM
     cleanup();
   };  `  )
 
-var MonadState = h('pre',  `  var MonadState = function MonadState (g, state, value, p) {
-    var _this = this;
-    this.id = g;
-    this.s = state;
-    this.a = value;
-    this.process = p;
-    this.bnd = function (func, ...args) {
-       return func(_this.s, ...args);   // bnd provides instances' state to func.
-    };
-    this.run = function(st) { 
-      let s = _this.process(st); 
-      let a = s[3];
-      window[_this.id] = new MonadState(_this.id, s, a, _this.process);
-      return window[_this.id];
-    }
-  }  `  )
+var MonadState = h('pre',  `  const MonadState = function (g, state, value, p)  {
+  this.id = g;
+  this.s = state;
+  this.a = value;
+  this.process = p;
+  this.bnd = (func, ...args) => func(this.s, ...args);  
+  this.run = st => { 
+    let s = this.process(st); 
+    let a = s[3];
+    window[this.id] = new MonadState(this.id, s, a, this.process);
+    return window[this.id];
+  }
+}  `  )
 
 var primesMonad = h('pre',  `  var primesMonad = new MonadState('primesMonad', [2, '', 3, [2]], [2],  primes_state) 
 
@@ -1127,9 +1070,9 @@ var p7 = h('pre',  `
 `  )
 
 
+  export default {monad, equals, fmap, opM, e1, e2, fib, driver, messages, next, monadIt, MonadSet, updateCalc, arrayFuncs, travel, nums, cleanup, ret, C42, newTask, process, mM$task, addString, colorClick, edit, testZ, quad, mdem1, runTest, todoStream, inc, ret_add_cube, seed,  add, traverse, MonadState, primesMonad, fibsMonad, primeFibInterface, tr3, fpTransformer, innerHTML, factorsMonad, factorsInput, playerMonad, promise, promiseSnippet, timeout, timeoutSnippet, examples, examples2, async }
 
 
 
-  export default {monad, equals, fmap, opM, e1, e2, fib, driver, messages, next, monadIt, MonadSet, updateCalc, arrayFuncs, travel, nums, cleanup, ret, C42, newTask, process, mM$task, addString, colorClick, edit, testZ, quad, mdem1, runTest, todoStream, inc, ret_add_cube, seed,  add, traverse, MonadState, primesMonad, fibsMonad, primeFibInterface, tr3, fpTransformer, innerHTML, factorsMonad, factorsInput, playerMonad, MonadSet, promise, promiseSnippet, timeout, timeoutSnippet, examples, examples2, async }
 
 
