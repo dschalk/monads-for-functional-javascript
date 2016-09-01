@@ -143,7 +143,7 @@ main = do
          Warp.defaultSettings) $ 
            WaiWS.websocketsOr WS.defaultConnectionOptions (application state) staticApp
 staticApp :: Network.Wai.Application
-staticApp = Static.staticApp $ Static.embeddedSettings $(embedDir "/home/e/MonadState/SRC/src/dist")
+staticApp = Static.staticApp $ Static.embeddedSettings $(embedDir "./client/src/dist")
 application :: TMVar ServerState -> WS.ServerApp
 application state pending = do
     print "App is fired up"

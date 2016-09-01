@@ -39,12 +39,14 @@
 /******/ 	// __webpack_public_path__
 /******/ 	__webpack_require__.p = "";
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 39);
+/******/ 	return __webpack_require__(__webpack_require__.s = 64);
 /******/ })
 /************************************************************************/
 /******/ ([
 /* 0 */
 /***/ function(module, exports) {
+
+	"use strict";
 
 	/** @license MIT License (c) copyright 2010-2016 original author or authors */
 	/** @author Brian Cavalier */
@@ -60,171 +62,29 @@
 /* 1 */
 /***/ function(module, exports) {
 
+	"use strict";
+
 	/** @license MIT License (c) copyright 2010-2016 original author or authors */
 	/** @author Brian Cavalier */
 	/** @author John Hann */
 
-	module.exports = Pipe;
+	module.exports = Stream;
 
-	/**
-	 * A sink mixin that simply forwards event, end, and error to
-	 * another sink.
-	 * @param sink
-	 * @constructor
-	 */
-	function Pipe(sink) {
-	  this.sink = sink;
+	function Stream(source) {
+		this.source = source;
 	}
-
-	Pipe.prototype.event = function (t, x) {
-	  return this.sink.event(t, x);
-	};
-
-	Pipe.prototype.end = function (t, x) {
-	  return this.sink.end(t, x);
-	};
-
-	Pipe.prototype.error = function (t, e) {
-	  return this.sink.error(t, e);
-	};
 
 /***/ },
 /* 2 */
 /***/ function(module, exports, __webpack_require__) {
 
-	/** @license MIT License (c) copyright 2010-2016 original author or authors */
-	/** @author Brian Cavalier */
-	/** @author John Hann */
+	var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
 
-	var Disposable = __webpack_require__(73);
-	var SettableDisposable = __webpack_require__(74);
-	var isPromise = __webpack_require__(11).isPromise;
-	var base = __webpack_require__(3);
-
-	var map = base.map;
-	var identity = base.id;
-
-	exports.tryDispose = tryDispose;
-	exports.create = create;
-	exports.once = once;
-	exports.empty = empty;
-	exports.all = all;
-	exports.settable = settable;
-	exports.promised = promised;
-
-	/**
-	 * Call disposable.dispose.  If it returns a promise, catch promise
-	 * error and forward it through the provided sink.
-	 * @param {number} t time
-	 * @param {{dispose: function}} disposable
-	 * @param {{error: function}} sink
-	 * @return {*} result of disposable.dispose
-	 */
-	function tryDispose(t, disposable, sink) {
-	  var result = disposeSafely(disposable);
-	  return isPromise(result) ? result.catch(function (e) {
-	    sink.error(t, e);
-	  }) : result;
-	}
-
-	/**
-	 * Create a new Disposable which will dispose its underlying resource
-	 * at most once.
-	 * @param {function} dispose function
-	 * @param {*?} data any data to be passed to disposer function
-	 * @return {Disposable}
-	 */
-	function create(dispose, data) {
-	  return once(new Disposable(dispose, data));
-	}
-
-	/**
-	 * Create a noop disposable. Can be used to satisfy a Disposable
-	 * requirement when no actual resource needs to be disposed.
-	 * @return {Disposable|exports|module.exports}
-	 */
-	function empty() {
-	  return new Disposable(identity, void 0);
-	}
-
-	/**
-	 * Create a disposable that will dispose all input disposables in parallel.
-	 * @param {Array<Disposable>} disposables
-	 * @return {Disposable}
-	 */
-	function all(disposables) {
-	  return create(disposeAll, disposables);
-	}
-
-	function disposeAll(disposables) {
-	  return Promise.all(map(disposeSafely, disposables));
-	}
-
-	function disposeSafely(disposable) {
-	  try {
-	    return disposable.dispose();
-	  } catch (e) {
-	    return Promise.reject(e);
-	  }
-	}
-
-	/**
-	 * Create a disposable from a promise for another disposable
-	 * @param {Promise<Disposable>} disposablePromise
-	 * @return {Disposable}
-	 */
-	function promised(disposablePromise) {
-	  return create(disposePromise, disposablePromise);
-	}
-
-	function disposePromise(disposablePromise) {
-	  return disposablePromise.then(disposeOne);
-	}
-
-	function disposeOne(disposable) {
-	  return disposable.dispose();
-	}
-
-	/**
-	 * Create a disposable proxy that allows its underlying disposable to
-	 * be set later.
-	 * @return {SettableDisposable}
-	 */
-	function settable() {
-	  return new SettableDisposable();
-	}
-
-	/**
-	 * Wrap an existing disposable (which may not already have been once()d)
-	 * so that it will only dispose its underlying resource at most once.
-	 * @param {{ dispose: function() }} disposable
-	 * @return {Disposable} wrapped disposable
-	 */
-	function once(disposable) {
-	  return new Disposable(disposeMemoized, memoized(disposable));
-	}
-
-	function disposeMemoized(memoized) {
-	  if (!memoized.disposed) {
-	    memoized.disposed = true;
-	    memoized.value = disposeSafely(memoized.disposable);
-	    memoized.disposable = void 0;
-	  }
-
-	  return memoized.value;
-	}
-
-	function memoized(disposable) {
-	  return { disposed: false, disposable: disposable, value: void 0 };
-	}
-
-/***/ },
-/* 3 */
-/***/ function(module, exports, __webpack_require__) {
+	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
 
 	(function (global, factory) {
-	   true ? factory(exports) : typeof define === 'function' && define.amd ? define(['exports'], factory) : factory(global.mostPrelude = global.mostPrelude || {});
-	})(this, function (exports) {
+	  ( false ? 'undefined' : _typeof(exports)) === 'object' && typeof module !== 'undefined' ? factory(exports) :  true ? !(__WEBPACK_AMD_DEFINE_ARRAY__ = [exports], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__)) : factory(global.mostPrelude = global.mostPrelude || {});
+	})(undefined, function (exports) {
 	  'use strict';
 
 	  /** @license MIT License (c) copyright 2010-2016 original author or authors */
@@ -416,19 +276,19 @@
 	  /** @license MIT License (c) copyright 2010-2016 original author or authors */
 
 	  // id :: a -> a
-	  var id = function (x) {
+	  var id = function id(x) {
 	    return x;
 	  };
 
 	  // compose :: (b -> c) -> (a -> b) -> (a -> c)
-	  var compose = function (f, g) {
+	  var compose = function compose(f, g) {
 	    return function (x) {
 	      return f(g(x));
 	    };
 	  };
 
 	  // apply :: (a -> b) -> a -> b
-	  var apply = function (f, x) {
+	  var apply = function apply(f, x) {
 	    return f(x);
 	  };
 
@@ -494,18 +354,637 @@
 	//# sourceMappingURL=prelude.js.map
 
 /***/ },
+/* 3 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	/** @license MIT License (c) copyright 2010-2016 original author or authors */
+	/** @author Brian Cavalier */
+	/** @author John Hann */
+
+	var Disposable = __webpack_require__(110);
+	var SettableDisposable = __webpack_require__(111);
+	var isPromise = __webpack_require__(21).isPromise;
+	var base = __webpack_require__(2);
+
+	var map = base.map;
+	var identity = base.id;
+
+	exports.tryDispose = tryDispose;
+	exports.create = create;
+	exports.once = once;
+	exports.empty = empty;
+	exports.all = all;
+	exports.settable = settable;
+	exports.promised = promised;
+
+	/**
+	 * Call disposable.dispose.  If it returns a promise, catch promise
+	 * error and forward it through the provided sink.
+	 * @param {number} t time
+	 * @param {{dispose: function}} disposable
+	 * @param {{error: function}} sink
+	 * @return {*} result of disposable.dispose
+	 */
+	function tryDispose(t, disposable, sink) {
+	  var result = disposeSafely(disposable);
+	  return isPromise(result) ? result.catch(function (e) {
+	    sink.error(t, e);
+	  }) : result;
+	}
+
+	/**
+	 * Create a new Disposable which will dispose its underlying resource
+	 * at most once.
+	 * @param {function} dispose function
+	 * @param {*?} data any data to be passed to disposer function
+	 * @return {Disposable}
+	 */
+	function create(dispose, data) {
+	  return once(new Disposable(dispose, data));
+	}
+
+	/**
+	 * Create a noop disposable. Can be used to satisfy a Disposable
+	 * requirement when no actual resource needs to be disposed.
+	 * @return {Disposable|exports|module.exports}
+	 */
+	function empty() {
+	  return new Disposable(identity, void 0);
+	}
+
+	/**
+	 * Create a disposable that will dispose all input disposables in parallel.
+	 * @param {Array<Disposable>} disposables
+	 * @return {Disposable}
+	 */
+	function all(disposables) {
+	  return create(disposeAll, disposables);
+	}
+
+	function disposeAll(disposables) {
+	  return Promise.all(map(disposeSafely, disposables));
+	}
+
+	function disposeSafely(disposable) {
+	  try {
+	    return disposable.dispose();
+	  } catch (e) {
+	    return Promise.reject(e);
+	  }
+	}
+
+	/**
+	 * Create a disposable from a promise for another disposable
+	 * @param {Promise<Disposable>} disposablePromise
+	 * @return {Disposable}
+	 */
+	function promised(disposablePromise) {
+	  return create(disposePromise, disposablePromise);
+	}
+
+	function disposePromise(disposablePromise) {
+	  return disposablePromise.then(disposeOne);
+	}
+
+	function disposeOne(disposable) {
+	  return disposable.dispose();
+	}
+
+	/**
+	 * Create a disposable proxy that allows its underlying disposable to
+	 * be set later.
+	 * @return {SettableDisposable}
+	 */
+	function settable() {
+	  return new SettableDisposable();
+	}
+
+	/**
+	 * Wrap an existing disposable (which may not already have been once()d)
+	 * so that it will only dispose its underlying resource at most once.
+	 * @param {{ dispose: function() }} disposable
+	 * @return {Disposable} wrapped disposable
+	 */
+	function once(disposable) {
+	  return new Disposable(disposeMemoized, memoized(disposable));
+	}
+
+	function disposeMemoized(memoized) {
+	  if (!memoized.disposed) {
+	    memoized.disposed = true;
+	    memoized.value = disposeSafely(memoized.disposable);
+	    memoized.disposable = void 0;
+	  }
+
+	  return memoized.value;
+	}
+
+	function memoized(disposable) {
+	  return { disposed: false, disposable: disposable, value: void 0 };
+	}
+
+/***/ },
 /* 4 */
 /***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	/** @license MIT License (c) copyright 2010-2016 original author or authors */
+	/** @author Brian Cavalier */
+	/** @author John Hann */
+
+	var Disposable = __webpack_require__(156);
+	var SettableDisposable = __webpack_require__(157);
+	var isPromise = __webpack_require__(28).isPromise;
+	var base = __webpack_require__(2);
+
+	var map = base.map;
+	var identity = base.id;
+
+	exports.tryDispose = tryDispose;
+	exports.create = create;
+	exports.once = once;
+	exports.empty = empty;
+	exports.all = all;
+	exports.settable = settable;
+	exports.promised = promised;
+
+	/**
+	 * Call disposable.dispose.  If it returns a promise, catch promise
+	 * error and forward it through the provided sink.
+	 * @param {number} t time
+	 * @param {{dispose: function}} disposable
+	 * @param {{error: function}} sink
+	 * @return {*} result of disposable.dispose
+	 */
+	function tryDispose(t, disposable, sink) {
+	  var result = disposeSafely(disposable);
+	  return isPromise(result) ? result.catch(function (e) {
+	    sink.error(t, e);
+	  }) : result;
+	}
+
+	/**
+	 * Create a new Disposable which will dispose its underlying resource
+	 * at most once.
+	 * @param {function} dispose function
+	 * @param {*?} data any data to be passed to disposer function
+	 * @return {Disposable}
+	 */
+	function create(dispose, data) {
+	  return once(new Disposable(dispose, data));
+	}
+
+	/**
+	 * Create a noop disposable. Can be used to satisfy a Disposable
+	 * requirement when no actual resource needs to be disposed.
+	 * @return {Disposable|exports|module.exports}
+	 */
+	function empty() {
+	  return new Disposable(identity, void 0);
+	}
+
+	/**
+	 * Create a disposable that will dispose all input disposables in parallel.
+	 * @param {Array<Disposable>} disposables
+	 * @return {Disposable}
+	 */
+	function all(disposables) {
+	  return create(disposeAll, disposables);
+	}
+
+	function disposeAll(disposables) {
+	  return Promise.all(map(disposeSafely, disposables));
+	}
+
+	function disposeSafely(disposable) {
+	  try {
+	    return disposable.dispose();
+	  } catch (e) {
+	    return Promise.reject(e);
+	  }
+	}
+
+	/**
+	 * Create a disposable from a promise for another disposable
+	 * @param {Promise<Disposable>} disposablePromise
+	 * @return {Disposable}
+	 */
+	function promised(disposablePromise) {
+	  return create(disposePromise, disposablePromise);
+	}
+
+	function disposePromise(disposablePromise) {
+	  return disposablePromise.then(disposeOne);
+	}
+
+	function disposeOne(disposable) {
+	  return disposable.dispose();
+	}
+
+	/**
+	 * Create a disposable proxy that allows its underlying disposable to
+	 * be set later.
+	 * @return {SettableDisposable}
+	 */
+	function settable() {
+	  return new SettableDisposable();
+	}
+
+	/**
+	 * Wrap an existing disposable (which may not already have been once()d)
+	 * so that it will only dispose its underlying resource at most once.
+	 * @param {{ dispose: function() }} disposable
+	 * @return {Disposable} wrapped disposable
+	 */
+	function once(disposable) {
+	  return new Disposable(disposeMemoized, memoized(disposable));
+	}
+
+	function disposeMemoized(memoized) {
+	  if (!memoized.disposed) {
+	    memoized.disposed = true;
+	    memoized.value = disposeSafely(memoized.disposable);
+	    memoized.disposable = void 0;
+	  }
+
+	  return memoized.value;
+	}
+
+	function memoized(disposable) {
+	  return { disposed: false, disposable: disposable, value: void 0 };
+	}
+
+/***/ },
+/* 5 */
+/***/ function(module, exports) {
+
+	"use strict";
+
+	/** @license MIT License (c) copyright 2010-2016 original author or authors */
+	/** @author Brian Cavalier */
+	/** @author John Hann */
+
+	module.exports = Pipe;
+
+	/**
+	 * A sink mixin that simply forwards event, end, and error to
+	 * another sink.
+	 * @param sink
+	 * @constructor
+	 */
+	function Pipe(sink) {
+	  this.sink = sink;
+	}
+
+	Pipe.prototype.event = function (t, x) {
+	  return this.sink.event(t, x);
+	};
+
+	Pipe.prototype.end = function (t, x) {
+	  return this.sink.end(t, x);
+	};
+
+	Pipe.prototype.error = function (t, e) {
+	  return this.sink.error(t, e);
+	};
+
+/***/ },
+/* 6 */
+/***/ function(module, exports) {
+
+	"use strict";
+
+	/** @license MIT License (c) copyright 2010-2016 original author or authors */
+	/** @author Brian Cavalier */
+	/** @author John Hann */
+
+	module.exports = Pipe;
+
+	/**
+	 * A sink mixin that simply forwards event, end, and error to
+	 * another sink.
+	 * @param sink
+	 * @constructor
+	 */
+	function Pipe(sink) {
+	  this.sink = sink;
+	}
+
+	Pipe.prototype.event = function (t, x) {
+	  return this.sink.event(t, x);
+	};
+
+	Pipe.prototype.end = function (t, x) {
+	  return this.sink.end(t, x);
+	};
+
+	Pipe.prototype.error = function (t, e) {
+	  return this.sink.error(t, e);
+	};
+
+/***/ },
+/* 7 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	/** @license MIT License (c) copyright 2010-2016 original author or authors */
+	/** @author Brian Cavalier */
+	/** @author John Hann */
+
+	var fatal = __webpack_require__(22);
+
+	module.exports = PropagateTask;
+
+	function PropagateTask(run, value, sink) {
+		this._run = run;
+		this.value = value;
+		this.sink = sink;
+		this.active = true;
+	}
+
+	PropagateTask.event = function (value, sink) {
+		return new PropagateTask(emit, value, sink);
+	};
+
+	PropagateTask.end = function (value, sink) {
+		return new PropagateTask(end, value, sink);
+	};
+
+	PropagateTask.error = function (value, sink) {
+		return new PropagateTask(error, value, sink);
+	};
+
+	PropagateTask.prototype.dispose = function () {
+		this.active = false;
+	};
+
+	PropagateTask.prototype.run = function (t) {
+		if (!this.active) {
+			return;
+		}
+		this._run(t, this.value, this.sink);
+	};
+
+	PropagateTask.prototype.error = function (t, e) {
+		if (!this.active) {
+			return fatal(e);
+		}
+		this.sink.error(t, e);
+	};
+
+	function error(t, e, sink) {
+		sink.error(t, e);
+	}
+
+	function emit(t, x, sink) {
+		sink.event(t, x);
+	}
+
+	function end(t, x, sink) {
+		sink.end(t, x);
+	}
+
+/***/ },
+/* 8 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	/** @license MIT License (c) copyright 2010-2016 original author or authors */
+	/** @author Brian Cavalier */
+	/** @author John Hann */
+
+	var fatal = __webpack_require__(29);
+
+	module.exports = PropagateTask;
+
+	function PropagateTask(run, value, sink) {
+		this._run = run;
+		this.value = value;
+		this.sink = sink;
+		this.active = true;
+	}
+
+	PropagateTask.event = function (value, sink) {
+		return new PropagateTask(emit, value, sink);
+	};
+
+	PropagateTask.end = function (value, sink) {
+		return new PropagateTask(end, value, sink);
+	};
+
+	PropagateTask.error = function (value, sink) {
+		return new PropagateTask(error, value, sink);
+	};
+
+	PropagateTask.prototype.dispose = function () {
+		this.active = false;
+	};
+
+	PropagateTask.prototype.run = function (t) {
+		if (!this.active) {
+			return;
+		}
+		this._run(t, this.value, this.sink);
+	};
+
+	PropagateTask.prototype.error = function (t, e) {
+		if (!this.active) {
+			return fatal(e);
+		}
+		this.sink.error(t, e);
+	};
+
+	function error(t, e, sink) {
+		sink.error(t, e);
+	}
+
+	function emit(t, x, sink) {
+		sink.event(t, x);
+	}
+
+	function end(t, x, sink) {
+		sink.end(t, x);
+	}
+
+/***/ },
+/* 9 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	/** @license MIT License (c) copyright 2010-2016 original author or authors */
+	/** @author Brian Cavalier */
+	/** @author John Hann */
+
+	var Stream = __webpack_require__(1);
+	var dispose = __webpack_require__(3);
+	var PropagateTask = __webpack_require__(7);
+
+	exports.of = streamOf;
+	exports.empty = empty;
+	exports.never = never;
+
+	/**
+	 * Stream containing only x
+	 * @param {*} x
+	 * @returns {Stream}
+	 */
+	function streamOf(x) {
+	  return new Stream(new Just(x));
+	}
+
+	function Just(x) {
+	  this.value = x;
+	}
+
+	Just.prototype.run = function (sink, scheduler) {
+	  return scheduler.asap(new PropagateTask(runJust, this.value, sink));
+	};
+
+	function runJust(t, x, sink) {
+	  sink.event(t, x);
+	  sink.end(t, void 0);
+	}
+
+	/**
+	 * Stream containing no events and ends immediately
+	 * @returns {Stream}
+	 */
+	function empty() {
+	  return EMPTY;
+	}
+
+	function EmptySource() {}
+
+	EmptySource.prototype.run = function (sink, scheduler) {
+	  var task = PropagateTask.end(void 0, sink);
+	  scheduler.asap(task);
+
+	  return dispose.create(disposeEmpty, task);
+	};
+
+	function disposeEmpty(task) {
+	  return task.dispose();
+	}
+
+	var EMPTY = new Stream(new EmptySource());
+
+	/**
+	 * Stream containing no events and never ends
+	 * @returns {Stream}
+	 */
+	function never() {
+	  return NEVER;
+	}
+
+	function NeverSource() {}
+
+	NeverSource.prototype.run = function () {
+	  return dispose.empty();
+	};
+
+	var NEVER = new Stream(new NeverSource());
+
+/***/ },
+/* 10 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
 
 	/** @license MIT License (c) copyright 2010-2016 original author or authors */
 	/** @author Brian Cavalier */
 	/** @author John Hann */
 
 	var Stream = __webpack_require__(0);
-	var base = __webpack_require__(3);
-	var core = __webpack_require__(7);
-	var from = __webpack_require__(85).from;
-	var periodic = __webpack_require__(91).periodic;
+	var dispose = __webpack_require__(4);
+	var PropagateTask = __webpack_require__(8);
+
+	exports.of = streamOf;
+	exports.empty = empty;
+	exports.never = never;
+
+	/**
+	 * Stream containing only x
+	 * @param {*} x
+	 * @returns {Stream}
+	 */
+	function streamOf(x) {
+	  return new Stream(new Just(x));
+	}
+
+	function Just(x) {
+	  this.value = x;
+	}
+
+	Just.prototype.run = function (sink, scheduler) {
+	  return scheduler.asap(new PropagateTask(runJust, this.value, sink));
+	};
+
+	function runJust(t, x, sink) {
+	  sink.event(t, x);
+	  sink.end(t, void 0);
+	}
+
+	/**
+	 * Stream containing no events and ends immediately
+	 * @returns {Stream}
+	 */
+	function empty() {
+	  return EMPTY;
+	}
+
+	function EmptySource() {}
+
+	EmptySource.prototype.run = function (sink, scheduler) {
+	  var task = PropagateTask.end(void 0, sink);
+	  scheduler.asap(task);
+
+	  return dispose.create(disposeEmpty, task);
+	};
+
+	function disposeEmpty(task) {
+	  return task.dispose();
+	}
+
+	var EMPTY = new Stream(new EmptySource());
+
+	/**
+	 * Stream containing no events and never ends
+	 * @returns {Stream}
+	 */
+	function never() {
+	  return NEVER;
+	}
+
+	function NeverSource() {}
+
+	NeverSource.prototype.run = function () {
+	  return dispose.empty();
+	};
+
+	var NEVER = new Stream(new NeverSource());
+
+/***/ },
+/* 11 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	/** @license MIT License (c) copyright 2010-2016 original author or authors */
+	/** @author Brian Cavalier */
+	/** @author John Hann */
+
+	var Stream = __webpack_require__(0);
+	var base = __webpack_require__(2);
+	var core = __webpack_require__(10);
+	var from = __webpack_require__(169).from;
+	var periodic = __webpack_require__(175).periodic;
+	var symbolObservable = __webpack_require__(61);
 
 	/**
 	 * Core stream type
@@ -522,11 +1001,42 @@
 	exports.periodic = periodic;
 
 	//-----------------------------------------------------------------------
-	// Creating
+	// Draft ES Observable proposal interop
+	// https://github.com/zenparsing/es-observable
 
-	var create = __webpack_require__(84);
+	var subscribe = __webpack_require__(161).subscribe;
+
+	Stream.prototype.subscribe = function (subscriber) {
+	  return subscribe(subscriber, this);
+	};
+
+	Stream.prototype[symbolObservable] = function () {
+	  return this;
+	};
+
+	//-----------------------------------------------------------------------
+	// Fluent adapter
+
+	var thru = __webpack_require__(151).thru;
 
 	/**
+	 * Adapt a functional stream transform to fluent style.
+	 * It applies f to the this stream object
+	 * @param  {function(s: Stream): Stream} f function that
+	 * receives the stream itself and must return a new stream
+	 * @return {Stream}
+	 */
+	Stream.prototype.thru = function (f) {
+	  return thru(f, this);
+	};
+
+	//-----------------------------------------------------------------------
+	// Creating
+
+	var create = __webpack_require__(168);
+
+	/**
+	 * @deprecated
 	 * Create a stream by imperatively pushing events.
 	 * @param {function(add:function(x), end:function(e)):function} run function
 	 *  that will receive 2 functions as arguments, the first to add new values to the
@@ -539,7 +1049,7 @@
 	//-----------------------------------------------------------------------
 	// Adapting other sources
 
-	var events = __webpack_require__(87);
+	var events = __webpack_require__(171);
 
 	/**
 	 * Create a stream of events from the supplied EventTarget or EventEmitter
@@ -555,7 +1065,7 @@
 	//-----------------------------------------------------------------------
 	// Observing
 
-	var observe = __webpack_require__(64);
+	var observe = __webpack_require__(146);
 
 	exports.observe = observe.observe;
 	exports.forEach = observe.observe;
@@ -584,7 +1094,7 @@
 
 	//-------------------------------------------------------
 
-	var loop = __webpack_require__(62).loop;
+	var loop = __webpack_require__(144).loop;
 
 	exports.loop = loop;
 
@@ -604,7 +1114,7 @@
 
 	//-------------------------------------------------------
 
-	var accumulate = __webpack_require__(55);
+	var accumulate = __webpack_require__(136);
 
 	exports.scan = accumulate.scan;
 	exports.reduce = accumulate.reduce;
@@ -635,10 +1145,10 @@
 	//-----------------------------------------------------------------------
 	// Building and extending
 
-	var unfold = __webpack_require__(92);
-	var iterate = __webpack_require__(90);
-	var generate = __webpack_require__(89);
-	var build = __webpack_require__(23);
+	var unfold = __webpack_require__(176);
+	var iterate = __webpack_require__(174);
+	var generate = __webpack_require__(173);
+	var build = __webpack_require__(138);
 
 	exports.unfold = unfold.unfold;
 	exports.iterate = iterate.iterate;
@@ -676,8 +1186,8 @@
 	//-----------------------------------------------------------------------
 	// Transforming
 
-	var transform = __webpack_require__(12);
-	var applicative = __webpack_require__(56);
+	var transform = __webpack_require__(18);
+	var applicative = __webpack_require__(137);
 
 	exports.map = transform.map;
 	exports.constant = transform.constant;
@@ -725,7 +1235,7 @@
 	//-----------------------------------------------------------------------
 	// Transducer support
 
-	var transduce = __webpack_require__(71);
+	var transduce = __webpack_require__(154);
 
 	exports.transduce = transduce.transduce;
 
@@ -741,7 +1251,7 @@
 	//-----------------------------------------------------------------------
 	// FlatMapping
 
-	var flatMap = __webpack_require__(26);
+	var flatMap = __webpack_require__(55);
 
 	exports.flatMap = exports.chain = flatMap.flatMap;
 	exports.join = flatMap.join;
@@ -765,7 +1275,7 @@
 	  return flatMap.join(this);
 	};
 
-	var continueWith = __webpack_require__(25).continueWith;
+	var continueWith = __webpack_require__(54).continueWith;
 
 	exports.continueWith = continueWith;
 	exports.flatMapEnd = continueWith;
@@ -781,7 +1291,7 @@
 	  return continueWith(f, this);
 	};
 
-	var concatMap = __webpack_require__(57).concatMap;
+	var concatMap = __webpack_require__(139).concatMap;
 
 	exports.concatMap = concatMap;
 
@@ -792,7 +1302,7 @@
 	//-----------------------------------------------------------------------
 	// Concurrent merging
 
-	var mergeConcurrently = __webpack_require__(8);
+	var mergeConcurrently = __webpack_require__(17);
 
 	exports.mergeConcurrently = mergeConcurrently.mergeConcurrently;
 
@@ -812,7 +1322,7 @@
 	//-----------------------------------------------------------------------
 	// Merging
 
-	var merge = __webpack_require__(63);
+	var merge = __webpack_require__(145);
 
 	exports.merge = merge.merge;
 	exports.mergeArray = merge.mergeArray;
@@ -830,7 +1340,7 @@
 	//-----------------------------------------------------------------------
 	// Combining
 
-	var combine = __webpack_require__(24);
+	var combine = __webpack_require__(53);
 
 	exports.combine = combine.combine;
 	exports.combineArray = combine.combineArray;
@@ -848,7 +1358,7 @@
 	//-----------------------------------------------------------------------
 	// Sampling
 
-	var sample = __webpack_require__(66);
+	var sample = __webpack_require__(148);
 
 	exports.sample = sample.sample;
 	exports.sampleWith = sample.sampleWith;
@@ -876,7 +1386,7 @@
 	//-----------------------------------------------------------------------
 	// Zipping
 
-	var zip = __webpack_require__(72);
+	var zip = __webpack_require__(155);
 
 	exports.zip = zip.zip;
 
@@ -894,7 +1404,7 @@
 	//-----------------------------------------------------------------------
 	// Switching
 
-	var switchLatest = __webpack_require__(68).switch;
+	var switchLatest = __webpack_require__(150).switch;
 
 	exports.switch = switchLatest;
 	exports.switchLatest = switchLatest;
@@ -911,7 +1421,7 @@
 	//-----------------------------------------------------------------------
 	// Filtering
 
-	var filter = __webpack_require__(60);
+	var filter = __webpack_require__(142);
 
 	exports.filter = filter.filter;
 	exports.skipRepeats = exports.distinct = filter.skipRepeats;
@@ -950,7 +1460,7 @@
 	//-----------------------------------------------------------------------
 	// Slicing
 
-	var slice = __webpack_require__(67);
+	var slice = __webpack_require__(149);
 
 	exports.take = slice.take;
 	exports.skip = slice.skip;
@@ -1015,7 +1525,7 @@
 	//-----------------------------------------------------------------------
 	// Time slicing
 
-	var timeslice = __webpack_require__(69);
+	var timeslice = __webpack_require__(152);
 
 	exports.until = exports.takeUntil = timeslice.takeUntil;
 	exports.since = exports.skipUntil = timeslice.skipUntil;
@@ -1064,7 +1574,7 @@
 	//-----------------------------------------------------------------------
 	// Delaying
 
-	var delay = __webpack_require__(58).delay;
+	var delay = __webpack_require__(140).delay;
 
 	exports.delay = delay;
 
@@ -1079,7 +1589,7 @@
 	//-----------------------------------------------------------------------
 	// Getting event timestamp
 
-	var timestamp = __webpack_require__(70).timestamp;
+	var timestamp = __webpack_require__(153).timestamp;
 
 	exports.timestamp = timestamp;
 
@@ -1095,7 +1605,7 @@
 	//-----------------------------------------------------------------------
 	// Rate limiting
 
-	var limit = __webpack_require__(61);
+	var limit = __webpack_require__(143);
 
 	exports.throttle = limit.throttle;
 	exports.debounce = limit.debounce;
@@ -1126,7 +1636,7 @@
 	//-----------------------------------------------------------------------
 	// Awaiting Promises
 
-	var promises = __webpack_require__(65);
+	var promises = __webpack_require__(147);
 
 	exports.fromPromise = promises.fromPromise;
 	exports.await = promises.awaitPromises;
@@ -1143,7 +1653,7 @@
 	//-----------------------------------------------------------------------
 	// Error handling
 
-	var errors = __webpack_require__(59);
+	var errors = __webpack_require__(141);
 
 	exports.recoverWith = errors.flatMapError;
 	exports.flatMapError = errors.flatMapError;
@@ -1165,7 +1675,7 @@
 	//-----------------------------------------------------------------------
 	// Multicasting
 
-	var multicast = __webpack_require__(5).default;
+	var multicast = __webpack_require__(12).default;
 
 	exports.multicast = multicast;
 
@@ -1179,12 +1689,16 @@
 	};
 
 /***/ },
-/* 5 */
+/* 12 */
 /***/ function(module, exports, __webpack_require__) {
 
+	var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
+
+	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
+
 	(function (global, factory) {
-	   true ? factory(exports, __webpack_require__(3)) : typeof define === 'function' && define.amd ? define(['exports', '@most/prelude'], factory) : factory(global.mostMulticast = global.mostMulticast || {}, global.mostPrelude);
-	})(this, function (exports, _most_prelude) {
+	  ( false ? 'undefined' : _typeof(exports)) === 'object' && typeof module !== 'undefined' ? factory(exports, __webpack_require__(2)) :  true ? !(__WEBPACK_AMD_DEFINE_ARRAY__ = [exports, __webpack_require__(2)], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__)) : factory(global.mostMulticast = global.mostMulticast || {}, global.mostPrelude);
+	})(undefined, function (exports, _most_prelude) {
 	  'use strict';
 
 	  var MulticastDisposable = function MulticastDisposable(source, sink) {
@@ -1218,7 +1732,7 @@
 	    }
 	  }
 
-	  var dispose = function (disposable) {
+	  var dispose = function dispose(disposable) {
 	    return disposable.dispose();
 	  };
 
@@ -1298,148 +1812,32 @@
 	//# sourceMappingURL=multicast.js.map
 
 /***/ },
-/* 6 */
-/***/ function(module, exports, __webpack_require__) {
+/* 13 */
+/***/ function(module, exports) {
 
-	/** @license MIT License (c) copyright 2010-2016 original author or authors */
-	/** @author Brian Cavalier */
-	/** @author John Hann */
+	'use strict';
 
-	var fatal = __webpack_require__(28);
-
-	module.exports = PropagateTask;
-
-	function PropagateTask(run, value, sink) {
-		this._run = run;
-		this.value = value;
-		this.sink = sink;
-		this.active = true;
-	}
-
-	PropagateTask.event = function (value, sink) {
-		return new PropagateTask(emit, value, sink);
+	module.exports = {
+	  array: Array.isArray,
+	  primitive: function primitive(s) {
+	    return typeof s === 'string' || typeof s === 'number';
+	  }
 	};
-
-	PropagateTask.end = function (value, sink) {
-		return new PropagateTask(end, value, sink);
-	};
-
-	PropagateTask.error = function (value, sink) {
-		return new PropagateTask(error, value, sink);
-	};
-
-	PropagateTask.prototype.dispose = function () {
-		this.active = false;
-	};
-
-	PropagateTask.prototype.run = function (t) {
-		if (!this.active) {
-			return;
-		}
-		this._run(t, this.value, this.sink);
-	};
-
-	PropagateTask.prototype.error = function (t, e) {
-		if (!this.active) {
-			return fatal(e);
-		}
-		this.sink.error(t, e);
-	};
-
-	function error(t, e, sink) {
-		sink.error(t, e);
-	}
-
-	function emit(t, x, sink) {
-		sink.event(t, x);
-	}
-
-	function end(t, x, sink) {
-		sink.end(t, x);
-	}
 
 /***/ },
-/* 7 */
+/* 14 */
 /***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
 
 	/** @license MIT License (c) copyright 2010-2016 original author or authors */
 	/** @author Brian Cavalier */
 	/** @author John Hann */
 
-	var Stream = __webpack_require__(0);
-	var ValueSource = __webpack_require__(34);
-	var dispose = __webpack_require__(2);
-	var PropagateTask = __webpack_require__(6);
-
-	exports.of = streamOf;
-	exports.empty = empty;
-	exports.never = never;
-
-	/**
-	 * Stream containing only x
-	 * @param {*} x
-	 * @returns {Stream}
-	 */
-	function streamOf(x) {
-	  return new Stream(new ValueSource(emit, x));
-	}
-
-	function emit(t, x, sink) {
-	  sink.event(0, x);
-	  sink.end(0, void 0);
-	}
-
-	/**
-	 * Stream containing no events and ends immediately
-	 * @returns {Stream}
-	 */
-	function empty() {
-	  return EMPTY;
-	}
-
-	function EmptySource() {}
-
-	EmptySource.prototype.run = function (sink, scheduler) {
-	  var task = PropagateTask.end(void 0, sink);
-	  scheduler.asap(task);
-
-	  return dispose.create(disposeEmpty, task);
-	};
-
-	function disposeEmpty(task) {
-	  return task.dispose();
-	}
-
-	var EMPTY = new Stream(new EmptySource());
-
-	/**
-	 * Stream containing no events and never ends
-	 * @returns {Stream}
-	 */
-	function never() {
-	  return NEVER;
-	}
-
-	function NeverSource() {}
-
-	NeverSource.prototype.run = function () {
-	  return dispose.empty();
-	};
-
-	var NEVER = new Stream(new NeverSource());
-
-/***/ },
-/* 8 */
-/***/ function(module, exports, __webpack_require__) {
-
-	/** @license MIT License (c) copyright 2010-2016 original author or authors */
-	/** @author Brian Cavalier */
-	/** @author John Hann */
-
-	var Stream = __webpack_require__(0);
-	var dispose = __webpack_require__(2);
-	var LinkedList = __webpack_require__(53);
-	var identity = __webpack_require__(3).id;
+	var Stream = __webpack_require__(1);
+	var dispose = __webpack_require__(3);
+	var LinkedList = __webpack_require__(88);
+	var identity = __webpack_require__(2).id;
 
 	exports.mergeConcurrently = mergeConcurrently;
 	exports.mergeMapConcurrently = mergeMapConcurrently;
@@ -1477,22 +1875,30 @@
 		this._addInner(t, x);
 	};
 
-	Outer.prototype._addInner = function (t, stream) {
+	Outer.prototype._addInner = function (t, x) {
 		if (this.current.length < this.concurrency) {
-			this._startInner(t, stream);
+			this._startInner(t, x);
 		} else {
-			this.pending.push(stream);
+			this.pending.push(x);
 		}
 	};
 
-	Outer.prototype._startInner = function (t, stream) {
-		var innerSink = new Inner(t, this, this.sink);
-		this.current.add(innerSink);
-		innerSink.disposable = mapAndRun(this.f, innerSink, this.scheduler, stream);
+	Outer.prototype._startInner = function (t, x) {
+		try {
+			this._initInner(t, x);
+		} catch (e) {
+			this.error(t, e);
+		}
 	};
 
-	function mapAndRun(f, innerSink, scheduler, stream) {
-		return f(stream).source.run(innerSink, scheduler);
+	Outer.prototype._initInner = function (t, x) {
+		var innerSink = new Inner(t, this, this.sink);
+		innerSink.disposable = mapAndRun(this.f, x, innerSink, this.scheduler);
+		this.current.add(innerSink);
+	};
+
+	function mapAndRun(f, x, sink, scheduler) {
+		return f(x).source.run(sink, scheduler);
 	}
 
 	Outer.prototype.end = function (t, x) {
@@ -1554,67 +1960,18 @@
 	};
 
 /***/ },
-/* 9 */
-/***/ function(module, exports) {
-
-	/** @license MIT License (c) copyright 2010-2016 original author or authors */
-	/** @author Brian Cavalier */
-	/** @author John Hann */
-
-	exports.tryEvent = tryEvent;
-	exports.tryEnd = tryEnd;
-
-	function tryEvent(t, x, sink) {
-		try {
-			sink.event(t, x);
-		} catch (e) {
-			sink.error(t, e);
-		}
-	}
-
-	function tryEnd(t, x, sink) {
-		try {
-			sink.end(t, x);
-		} catch (e) {
-			sink.error(t, e);
-		}
-	}
-
-/***/ },
-/* 10 */
-/***/ function(module, exports) {
-
-	module.exports = {
-	  array: Array.isArray,
-	  primitive: function (s) {
-	    return typeof s === 'string' || typeof s === 'number';
-	  }
-	};
-
-/***/ },
-/* 11 */
-/***/ function(module, exports) {
-
-	/** @license MIT License (c) copyright 2010-2016 original author or authors */
-	/** @author Brian Cavalier */
-	/** @author John Hann */
-
-	exports.isPromise = isPromise;
-
-	function isPromise(p) {
-		return p !== null && typeof p === 'object' && typeof p.then === 'function';
-	}
-
-/***/ },
-/* 12 */
+/* 15 */
 /***/ function(module, exports, __webpack_require__) {
 
+	'use strict';
+
 	/** @license MIT License (c) copyright 2010-2016 original author or authors */
 	/** @author Brian Cavalier */
 	/** @author John Hann */
 
-	var Stream = __webpack_require__(0);
-	var Map = __webpack_require__(30);
+	var Stream = __webpack_require__(1);
+	var Map = __webpack_require__(23);
+	var Pipe = __webpack_require__(5);
 
 	exports.map = map;
 	exports.constant = constant;
@@ -1650,15 +2007,397 @@
 	 * @returns {Stream} new stream containing the same items as this stream
 	 */
 	function tap(f, stream) {
-	  return map(function (x) {
-	    f(x);
+	  return new Stream(new Tap(f, stream.source));
+	}
+
+	function Tap(f, source) {
+	  this.source = source;
+	  this.f = f;
+	}
+
+	Tap.prototype.run = function (sink, scheduler) {
+	  return this.source.run(new TapSink(this.f, sink), scheduler);
+	};
+
+	function TapSink(f, sink) {
+	  this.sink = sink;
+	  this.f = f;
+	}
+
+	TapSink.prototype.end = Pipe.prototype.end;
+	TapSink.prototype.error = Pipe.prototype.error;
+
+	TapSink.prototype.event = function (t, x) {
+	  var f = this.f;
+	  f(x);
+	  this.sink.event(t, x);
+	};
+
+/***/ },
+/* 16 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	/** @license MIT License (c) copyright 2010-2016 original author or authors */
+	/** @author Brian Cavalier */
+	/** @author John Hann */
+
+	var Scheduler = __webpack_require__(118);
+	var ClockTimer = __webpack_require__(116);
+	var Timeline = __webpack_require__(51);
+
+	module.exports = new Scheduler(new ClockTimer(), new Timeline());
+
+/***/ },
+/* 17 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	/** @license MIT License (c) copyright 2010-2016 original author or authors */
+	/** @author Brian Cavalier */
+	/** @author John Hann */
+
+	var Stream = __webpack_require__(0);
+	var dispose = __webpack_require__(4);
+	var LinkedList = __webpack_require__(134);
+	var identity = __webpack_require__(2).id;
+
+	exports.mergeConcurrently = mergeConcurrently;
+	exports.mergeMapConcurrently = mergeMapConcurrently;
+
+	function mergeConcurrently(concurrency, stream) {
+		return mergeMapConcurrently(identity, concurrency, stream);
+	}
+
+	function mergeMapConcurrently(f, concurrency, stream) {
+		return new Stream(new MergeConcurrently(f, concurrency, stream.source));
+	}
+
+	function MergeConcurrently(f, concurrency, source) {
+		this.f = f;
+		this.concurrency = concurrency;
+		this.source = source;
+	}
+
+	MergeConcurrently.prototype.run = function (sink, scheduler) {
+		return new Outer(this.f, this.concurrency, this.source, sink, scheduler);
+	};
+
+	function Outer(f, concurrency, source, sink, scheduler) {
+		this.f = f;
+		this.concurrency = concurrency;
+		this.sink = sink;
+		this.scheduler = scheduler;
+		this.pending = [];
+		this.current = new LinkedList();
+		this.disposable = dispose.once(source.run(this, scheduler));
+		this.active = true;
+	}
+
+	Outer.prototype.event = function (t, x) {
+		this._addInner(t, x);
+	};
+
+	Outer.prototype._addInner = function (t, x) {
+		if (this.current.length < this.concurrency) {
+			this._startInner(t, x);
+		} else {
+			this.pending.push(x);
+		}
+	};
+
+	Outer.prototype._startInner = function (t, x) {
+		try {
+			this._initInner(t, x);
+		} catch (e) {
+			this.error(t, e);
+		}
+	};
+
+	Outer.prototype._initInner = function (t, x) {
+		var innerSink = new Inner(t, this, this.sink);
+		innerSink.disposable = mapAndRun(this.f, x, innerSink, this.scheduler);
+		this.current.add(innerSink);
+	};
+
+	function mapAndRun(f, x, sink, scheduler) {
+		return f(x).source.run(sink, scheduler);
+	}
+
+	Outer.prototype.end = function (t, x) {
+		this.active = false;
+		dispose.tryDispose(t, this.disposable, this.sink);
+		this._checkEnd(t, x);
+	};
+
+	Outer.prototype.error = function (t, e) {
+		this.active = false;
+		this.sink.error(t, e);
+	};
+
+	Outer.prototype.dispose = function () {
+		this.active = false;
+		this.pending.length = 0;
+		return Promise.all([this.disposable.dispose(), this.current.dispose()]);
+	};
+
+	Outer.prototype._endInner = function (t, x, inner) {
+		this.current.remove(inner);
+		dispose.tryDispose(t, inner, this);
+
+		if (this.pending.length === 0) {
+			this._checkEnd(t, x);
+		} else {
+			this._startInner(t, this.pending.shift());
+		}
+	};
+
+	Outer.prototype._checkEnd = function (t, x) {
+		if (!this.active && this.current.isEmpty()) {
+			this.sink.end(t, x);
+		}
+	};
+
+	function Inner(time, outer, sink) {
+		this.prev = this.next = null;
+		this.time = time;
+		this.outer = outer;
+		this.sink = sink;
+		this.disposable = void 0;
+	}
+
+	Inner.prototype.event = function (t, x) {
+		this.sink.event(Math.max(t, this.time), x);
+	};
+
+	Inner.prototype.end = function (t, x) {
+		this.outer._endInner(Math.max(t, this.time), x, this);
+	};
+
+	Inner.prototype.error = function (t, e) {
+		this.outer.error(Math.max(t, this.time), e);
+	};
+
+	Inner.prototype.dispose = function () {
+		return this.disposable.dispose();
+	};
+
+/***/ },
+/* 18 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	/** @license MIT License (c) copyright 2010-2016 original author or authors */
+	/** @author Brian Cavalier */
+	/** @author John Hann */
+
+	var Stream = __webpack_require__(0);
+	var Map = __webpack_require__(30);
+	var Pipe = __webpack_require__(6);
+
+	exports.map = map;
+	exports.constant = constant;
+	exports.tap = tap;
+
+	/**
+	 * Transform each value in the stream by applying f to each
+	 * @param {function(*):*} f mapping function
+	 * @param {Stream} stream stream to map
+	 * @returns {Stream} stream containing items transformed by f
+	 */
+	function map(f, stream) {
+	  return new Stream(Map.create(f, stream.source));
+	}
+
+	/**
+	 * Replace each value in the stream with x
+	 * @param {*} x
+	 * @param {Stream} stream
+	 * @returns {Stream} stream containing items replaced with x
+	 */
+	function constant(x, stream) {
+	  return map(function () {
 	    return x;
 	  }, stream);
 	}
 
+	/**
+	 * Perform a side effect for each item in the stream
+	 * @param {function(x:*):*} f side effect to execute for each item. The
+	 *  return value will be discarded.
+	 * @param {Stream} stream stream to tap
+	 * @returns {Stream} new stream containing the same items as this stream
+	 */
+	function tap(f, stream) {
+	  return new Stream(new Tap(f, stream.source));
+	}
+
+	function Tap(f, source) {
+	  this.source = source;
+	  this.f = f;
+	}
+
+	Tap.prototype.run = function (sink, scheduler) {
+	  return this.source.run(new TapSink(this.f, sink), scheduler);
+	};
+
+	function TapSink(f, sink) {
+	  this.sink = sink;
+	  this.f = f;
+	}
+
+	TapSink.prototype.end = Pipe.prototype.end;
+	TapSink.prototype.error = Pipe.prototype.error;
+
+	TapSink.prototype.event = function (t, x) {
+	  var f = this.f;
+	  f(x);
+	  this.sink.event(t, x);
+	};
+
 /***/ },
-/* 13 */
+/* 19 */
 /***/ function(module, exports) {
+
+	"use strict";
+
+	/** @license MIT License (c) copyright 2010-2016 original author or authors */
+	/** @author Brian Cavalier */
+	/** @author John Hann */
+
+	exports.tryEvent = tryEvent;
+	exports.tryEnd = tryEnd;
+
+	function tryEvent(t, x, sink) {
+		try {
+			sink.event(t, x);
+		} catch (e) {
+			sink.error(t, e);
+		}
+	}
+
+	function tryEnd(t, x, sink) {
+		try {
+			sink.end(t, x);
+		} catch (e) {
+			sink.error(t, e);
+		}
+	}
+
+/***/ },
+/* 20 */
+/***/ function(module, exports) {
+
+	"use strict";
+
+	module.exports = function (sel, data, children, text, elm) {
+	  var key = data === undefined ? undefined : data.key;
+	  return { sel: sel, data: data, children: children,
+	    text: text, elm: elm, key: key };
+	};
+
+/***/ },
+/* 21 */
+/***/ function(module, exports) {
+
+	'use strict';
+
+	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
+
+	/** @license MIT License (c) copyright 2010-2016 original author or authors */
+	/** @author Brian Cavalier */
+	/** @author John Hann */
+
+	exports.isPromise = isPromise;
+
+	function isPromise(p) {
+		return p !== null && (typeof p === 'undefined' ? 'undefined' : _typeof(p)) === 'object' && typeof p.then === 'function';
+	}
+
+/***/ },
+/* 22 */
+/***/ function(module, exports) {
+
+	"use strict";
+
+	/** @license MIT License (c) copyright 2010-2016 original author or authors */
+	/** @author Brian Cavalier */
+	/** @author John Hann */
+
+	module.exports = fatalError;
+
+	function fatalError(e) {
+		setTimeout(function () {
+			throw e;
+		}, 0);
+	}
+
+/***/ },
+/* 23 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	/** @license MIT License (c) copyright 2010-2016 original author or authors */
+	/** @author Brian Cavalier */
+	/** @author John Hann */
+
+	var Pipe = __webpack_require__(5);
+	var Filter = __webpack_require__(48);
+	var FilterMap = __webpack_require__(112);
+	var base = __webpack_require__(2);
+
+	module.exports = Map;
+
+	function Map(f, source) {
+		this.f = f;
+		this.source = source;
+	}
+
+	/**
+	 * Create a mapped source, fusing adjacent map.map, filter.map,
+	 * and filter.map.map if possible
+	 * @param {function(*):*} f mapping function
+	 * @param {{run:function}} source source to map
+	 * @returns {Map|FilterMap} mapped source, possibly fused
+	 */
+	Map.create = function createMap(f, source) {
+		if (source instanceof Map) {
+			return new Map(base.compose(f, source.f), source.source);
+		}
+
+		if (source instanceof Filter) {
+			return new FilterMap(source.p, f, source.source);
+		}
+
+		return new Map(f, source);
+	};
+
+	Map.prototype.run = function (sink, scheduler) {
+		return this.source.run(new MapSink(this.f, sink), scheduler);
+	};
+
+	function MapSink(f, sink) {
+		this.f = f;
+		this.sink = sink;
+	}
+
+	MapSink.prototype.end = Pipe.prototype.end;
+	MapSink.prototype.error = Pipe.prototype.error;
+
+	MapSink.prototype.event = function (t, x) {
+		var f = this.f;
+		this.sink.event(t, f(x));
+	};
+
+/***/ },
+/* 24 */
+/***/ function(module, exports) {
+
+	"use strict";
 
 	/** @license MIT License (c) copyright 2010-2016 original author or authors */
 	/** @author Brian Cavalier */
@@ -1687,28 +2426,23 @@
 	}
 
 /***/ },
-/* 14 */
+/* 25 */
 /***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
 
 	/** @license MIT License (c) copyright 2010-2016 original author or authors */
 	/** @author Brian Cavalier */
 	/** @author John Hann */
 
-	var Sink = __webpack_require__(1);
+	var Sink = __webpack_require__(5);
 
 	module.exports = IndexSink;
 
-	IndexSink.hasValue = hasValue;
-
-	function hasValue(indexSink) {
-		return indexSink.hasValue;
-	}
-
 	function IndexSink(i, sink) {
-		this.index = i;
 		this.sink = sink;
+		this.index = i;
 		this.active = true;
-		this.hasValue = false;
 		this.value = void 0;
 	}
 
@@ -1717,7 +2451,6 @@
 			return;
 		}
 		this.value = x;
-		this.hasValue = true;
 		this.sink.event(t, this);
 	};
 
@@ -1732,17 +2465,247 @@
 	IndexSink.prototype.error = Sink.prototype.error;
 
 /***/ },
-/* 15 */
+/* 26 */
 /***/ function(module, exports) {
 
-	module.exports = function (sel, data, children, text, elm) {
-	  var key = data === undefined ? undefined : data.key;
-	  return { sel: sel, data: data, children: children,
-	    text: text, elm: elm, key: key };
+	"use strict";
+
+	/** @license MIT License (c) copyright 2010-2016 original author or authors */
+	/** @author Brian Cavalier */
+	/** @author John Hann */
+
+	exports.tryEvent = tryEvent;
+	exports.tryEnd = tryEnd;
+
+	function tryEvent(t, x, sink) {
+		try {
+			sink.event(t, x);
+		} catch (e) {
+			sink.error(t, e);
+		}
+	}
+
+	function tryEnd(t, x, sink) {
+		try {
+			sink.end(t, x);
+		} catch (e) {
+			sink.error(t, e);
+		}
+	}
+
+/***/ },
+/* 27 */
+/***/ function(module, exports) {
+
+	"use strict";
+
+	/** @license MIT License (c) copyright 2010-2016 original author or authors */
+	/** @author Brian Cavalier */
+	/** @author John Hann */
+
+	exports.defer = defer;
+	exports.runTask = runTask;
+
+	function defer(task) {
+		return Promise.resolve(task).then(runTask);
+	}
+
+	function runTask(task) {
+		try {
+			return task.run();
+		} catch (e) {
+			return task.error(e);
+		}
+	}
+
+/***/ },
+/* 28 */
+/***/ function(module, exports) {
+
+	'use strict';
+
+	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
+
+	/** @license MIT License (c) copyright 2010-2016 original author or authors */
+	/** @author Brian Cavalier */
+	/** @author John Hann */
+
+	exports.isPromise = isPromise;
+
+	function isPromise(p) {
+		return p !== null && (typeof p === 'undefined' ? 'undefined' : _typeof(p)) === 'object' && typeof p.then === 'function';
+	}
+
+/***/ },
+/* 29 */
+/***/ function(module, exports) {
+
+	"use strict";
+
+	/** @license MIT License (c) copyright 2010-2016 original author or authors */
+	/** @author Brian Cavalier */
+	/** @author John Hann */
+
+	module.exports = fatalError;
+
+	function fatalError(e) {
+		setTimeout(function () {
+			throw e;
+		}, 0);
+	}
+
+/***/ },
+/* 30 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	/** @license MIT License (c) copyright 2010-2016 original author or authors */
+	/** @author Brian Cavalier */
+	/** @author John Hann */
+
+	var Pipe = __webpack_require__(6);
+	var Filter = __webpack_require__(57);
+	var FilterMap = __webpack_require__(158);
+	var base = __webpack_require__(2);
+
+	module.exports = Map;
+
+	function Map(f, source) {
+		this.f = f;
+		this.source = source;
+	}
+
+	/**
+	 * Create a mapped source, fusing adjacent map.map, filter.map,
+	 * and filter.map.map if possible
+	 * @param {function(*):*} f mapping function
+	 * @param {{run:function}} source source to map
+	 * @returns {Map|FilterMap} mapped source, possibly fused
+	 */
+	Map.create = function createMap(f, source) {
+		if (source instanceof Map) {
+			return new Map(base.compose(f, source.f), source.source);
+		}
+
+		if (source instanceof Filter) {
+			return new FilterMap(source.p, f, source.source);
+		}
+
+		return new Map(f, source);
+	};
+
+	Map.prototype.run = function (sink, scheduler) {
+		return this.source.run(new MapSink(this.f, sink), scheduler);
+	};
+
+	function MapSink(f, sink) {
+		this.f = f;
+		this.sink = sink;
+	}
+
+	MapSink.prototype.end = Pipe.prototype.end;
+	MapSink.prototype.error = Pipe.prototype.error;
+
+	MapSink.prototype.event = function (t, x) {
+		var f = this.f;
+		this.sink.event(t, f(x));
 	};
 
 /***/ },
-/* 16 */
+/* 31 */
+/***/ function(module, exports) {
+
+	"use strict";
+
+	/** @license MIT License (c) copyright 2010-2016 original author or authors */
+	/** @author Brian Cavalier */
+	/** @author John Hann */
+
+	module.exports = invoke;
+
+	function invoke(f, args) {
+		/*eslint complexity: [2,7]*/
+		switch (args.length) {
+			case 0:
+				return f();
+			case 1:
+				return f(args[0]);
+			case 2:
+				return f(args[0], args[1]);
+			case 3:
+				return f(args[0], args[1], args[2]);
+			case 4:
+				return f(args[0], args[1], args[2], args[3]);
+			case 5:
+				return f(args[0], args[1], args[2], args[3], args[4]);
+			default:
+				return f.apply(void 0, args);
+		}
+	}
+
+/***/ },
+/* 32 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/* WEBPACK VAR INJECTION */(function(process) {'use strict';
+
+	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
+
+	/** @license MIT License (c) copyright 2010-2016 original author or authors */
+	/** @author Brian Cavalier */
+	/** @author John Hann */
+
+	var Scheduler = __webpack_require__(162);
+	var setTimeoutTimer = __webpack_require__(164);
+	var nodeTimer = __webpack_require__(163);
+
+	var isNode = (typeof process === 'undefined' ? 'undefined' : _typeof(process)) === 'object' && typeof process.nextTick === 'function';
+
+	module.exports = new Scheduler(isNode ? nodeTimer : setTimeoutTimer);
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(35)))
+
+/***/ },
+/* 33 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	/** @license MIT License (c) copyright 2010-2016 original author or authors */
+	/** @author Brian Cavalier */
+	/** @author John Hann */
+
+	var Sink = __webpack_require__(6);
+
+	module.exports = IndexSink;
+
+	function IndexSink(i, sink) {
+		this.sink = sink;
+		this.index = i;
+		this.active = true;
+		this.value = void 0;
+	}
+
+	IndexSink.prototype.event = function (t, x) {
+		if (!this.active) {
+			return;
+		}
+		this.value = x;
+		this.sink.event(t, this);
+	};
+
+	IndexSink.prototype.end = function (t, x) {
+		if (!this.active) {
+			return;
+		}
+		this.active = false;
+		this.sink.end(t, { index: this.index, value: x });
+	};
+
+	IndexSink.prototype.error = Sink.prototype.error;
+
+/***/ },
+/* 34 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -1752,7 +2715,7 @@
 	});
 	exports.mockDOMSource = exports.makeDOMDriver = exports.video = exports.ul = exports.u = exports.tr = exports.title = exports.thead = exports.th = exports.tfoot = exports.textarea = exports.td = exports.tbody = exports.table = exports.sup = exports.sub = exports.style = exports.strong = exports.span = exports.source = exports.small = exports.select = exports.section = exports.script = exports.samp = exports.s = exports.ruby = exports.rt = exports.rp = exports.q = exports.pre = exports.param = exports.p = exports.option = exports.optgroup = exports.ol = exports.object = exports.noscript = exports.nav = exports.meta = exports.menu = exports.mark = exports.map = exports.main = exports.link = exports.li = exports.legend = exports.label = exports.keygen = exports.kbd = exports.ins = exports.input = exports.img = exports.iframe = exports.i = exports.html = exports.hr = exports.hgroup = exports.header = exports.head = exports.h6 = exports.h5 = exports.h4 = exports.h3 = exports.h2 = exports.h1 = exports.form = exports.footer = exports.figure = exports.figcaption = exports.fieldset = exports.embed = exports.em = exports.dt = exports.dl = exports.div = exports.dir = exports.dfn = exports.del = exports.dd = exports.colgroup = exports.col = exports.code = exports.cite = exports.caption = exports.canvas = exports.button = exports.br = exports.body = exports.blockquote = exports.bdo = exports.bdi = exports.base = exports.b = exports.audio = exports.aside = exports.article = exports.area = exports.address = exports.abbr = exports.a = exports.h = exports.thunk = exports.modules = undefined;
 
-	var _makeDOMDriver = __webpack_require__(43);
+	var _makeDOMDriver = __webpack_require__(68);
 
 	Object.defineProperty(exports, 'makeDOMDriver', {
 	  enumerable: true,
@@ -1761,7 +2724,7 @@
 	  }
 	});
 
-	var _mockDOMSource = __webpack_require__(44);
+	var _mockDOMSource = __webpack_require__(69);
 
 	Object.defineProperty(exports, 'mockDOMSource', {
 	  enumerable: true,
@@ -1770,19 +2733,19 @@
 	  }
 	});
 
-	var _modules = __webpack_require__(21);
+	var _modules = __webpack_require__(39);
 
 	var modules = _interopRequireWildcard(_modules);
 
-	var _thunk = __webpack_require__(102);
+	var _thunk = __webpack_require__(81);
 
 	var _thunk2 = _interopRequireDefault(_thunk);
 
-	var _hyperscript = __webpack_require__(42);
+	var _hyperscript = __webpack_require__(67);
 
 	var _hyperscript2 = _interopRequireDefault(_hyperscript);
 
-	var _hyperscriptHelpers = __webpack_require__(48);
+	var _hyperscriptHelpers = __webpack_require__(83);
 
 	var _hyperscriptHelpers2 = _interopRequireDefault(_hyperscriptHelpers);
 
@@ -2008,8 +2971,10 @@
 	exports.video = video;
 
 /***/ },
-/* 17 */
+/* 35 */
 /***/ function(module, exports) {
+
+	'use strict';
 
 	// shim for using process in browser
 	var process = module.exports = {};
@@ -2022,25 +2987,40 @@
 	var cachedSetTimeout;
 	var cachedClearTimeout;
 
+	function defaultSetTimout() {
+	    throw new Error('setTimeout has not been defined');
+	}
+	function defaultClearTimeout() {
+	    throw new Error('clearTimeout has not been defined');
+	}
 	(function () {
 	    try {
-	        cachedSetTimeout = setTimeout;
+	        if (typeof setTimeout === 'function') {
+	            cachedSetTimeout = setTimeout;
+	        } else {
+	            cachedSetTimeout = defaultSetTimout;
+	        }
 	    } catch (e) {
-	        cachedSetTimeout = function () {
-	            throw new Error('setTimeout is not defined');
-	        };
+	        cachedSetTimeout = defaultSetTimout;
 	    }
 	    try {
-	        cachedClearTimeout = clearTimeout;
+	        if (typeof clearTimeout === 'function') {
+	            cachedClearTimeout = clearTimeout;
+	        } else {
+	            cachedClearTimeout = defaultClearTimeout;
+	        }
 	    } catch (e) {
-	        cachedClearTimeout = function () {
-	            throw new Error('clearTimeout is not defined');
-	        };
+	        cachedClearTimeout = defaultClearTimeout;
 	    }
 	})();
 	function runTimeout(fun) {
 	    if (cachedSetTimeout === setTimeout) {
 	        //normal enviroments in sane situations
+	        return setTimeout(fun, 0);
+	    }
+	    // if setTimeout wasn't available but was latter defined
+	    if ((cachedSetTimeout === defaultSetTimout || !cachedSetTimeout) && setTimeout) {
+	        cachedSetTimeout = setTimeout;
 	        return setTimeout(fun, 0);
 	    }
 	    try {
@@ -2059,6 +3039,11 @@
 	function runClearTimeout(marker) {
 	    if (cachedClearTimeout === clearTimeout) {
 	        //normal enviroments in sane situations
+	        return clearTimeout(marker);
+	    }
+	    // if clearTimeout wasn't available but was latter defined
+	    if ((cachedClearTimeout === defaultClearTimeout || !cachedClearTimeout) && clearTimeout) {
+	        cachedClearTimeout = clearTimeout;
 	        return clearTimeout(marker);
 	    }
 	    try {
@@ -2172,7 +3157,7 @@
 	};
 
 /***/ },
-/* 18 */
+/* 36 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -2182,13 +3167,13 @@
 	});
 	exports.makeEventsSelector = undefined;
 
-	var _domEvent = __webpack_require__(40);
+	var _domEvent = __webpack_require__(65);
 
-	var _makeIsStrictlyInRootScope = __webpack_require__(20);
+	var _makeIsStrictlyInRootScope = __webpack_require__(38);
 
 	var matchesSelector = void 0;
 	try {
-	  matchesSelector = __webpack_require__(49);
+	  matchesSelector = __webpack_require__(84);
 	} catch (e) {
 	  matchesSelector = function matchesSelector() {};
 	}
@@ -2282,7 +3267,7 @@
 	exports.makeEventsSelector = makeEventsSelector;
 
 /***/ },
-/* 19 */
+/* 37 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -2292,7 +3277,7 @@
 	});
 	exports.isolateSource = exports.isolateSink = undefined;
 
-	var _utils = __webpack_require__(22);
+	var _utils = __webpack_require__(40);
 
 	var isolateSource = function isolateSource(source_, scope) {
 	  return source_.select('.' + _utils.SCOPE_PREFIX + scope);
@@ -2319,7 +3304,7 @@
 	exports.isolateSource = isolateSource;
 
 /***/ },
-/* 20 */
+/* 38 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -2355,7 +3340,7 @@
 	exports.makeIsStrictlyInRootScope = makeIsStrictlyInRootScope;
 
 /***/ },
-/* 21 */
+/* 39 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -2365,27 +3350,27 @@
 	});
 	exports.EventsModule = exports.HeroModule = exports.AttrsModule = exports.PropsModule = exports.ClassModule = exports.StyleModule = undefined;
 
-	var _class = __webpack_require__(96);
+	var _class = __webpack_require__(75);
 
 	var _class2 = _interopRequireDefault(_class);
 
-	var _props = __webpack_require__(99);
+	var _props = __webpack_require__(78);
 
 	var _props2 = _interopRequireDefault(_props);
 
-	var _attributes = __webpack_require__(95);
+	var _attributes = __webpack_require__(74);
 
 	var _attributes2 = _interopRequireDefault(_attributes);
 
-	var _eventlisteners = __webpack_require__(97);
+	var _eventlisteners = __webpack_require__(76);
 
 	var _eventlisteners2 = _interopRequireDefault(_eventlisteners);
 
-	var _style = __webpack_require__(100);
+	var _style = __webpack_require__(79);
 
 	var _style2 = _interopRequireDefault(_style);
 
-	var _hero = __webpack_require__(98);
+	var _hero = __webpack_require__(77);
 
 	var _hero2 = _interopRequireDefault(_hero);
 
@@ -2402,10 +3387,12 @@
 	exports.EventsModule = _eventlisteners2.default;
 
 /***/ },
-/* 22 */
+/* 40 */
 /***/ function(module, exports) {
 
 	"use strict";
+
+	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
 
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
@@ -2413,7 +3400,7 @@
 	var SCOPE_PREFIX = "cycle-scope-";
 
 	var isElement = function isElement(obj) {
-	  return typeof HTMLElement === "object" ? obj instanceof HTMLElement || obj instanceof DocumentFragment : obj && typeof obj === "object" && obj !== null && (obj.nodeType === 1 || obj.nodeType === 11) && typeof obj.nodeName === "string";
+	  return (typeof HTMLElement === "undefined" ? "undefined" : _typeof(HTMLElement)) === "object" ? obj instanceof HTMLElement || obj instanceof DocumentFragment : obj && (typeof obj === "undefined" ? "undefined" : _typeof(obj)) === "object" && obj !== null && (obj.nodeType === 1 || obj.nodeType === 11) && typeof obj.nodeName === "string";
 	};
 
 	var domSelectorParser = function domSelectorParser(selectors) {
@@ -2431,71 +3418,322 @@
 	exports.SCOPE_PREFIX = SCOPE_PREFIX;
 
 /***/ },
-/* 23 */
+/* 41 */
 /***/ function(module, exports, __webpack_require__) {
 
-	/** @license MIT License (c) copyright 2010-2016 original author or authors */
-	/** @author Brian Cavalier */
-	/** @author John Hann */
+	'use strict';
 
-	var streamOf = __webpack_require__(7).of;
-	var continueWith = __webpack_require__(25).continueWith;
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	exports.default = selectorParser;
 
-	exports.concat = concat;
-	exports.cycle = cycle;
-	exports.cons = cons;
+	var _browserSplit = __webpack_require__(82);
 
-	/**
-	 * @param {*} x value to prepend
-	 * @param {Stream} stream
-	 * @returns {Stream} new stream with x prepended
-	 */
-	function cons(x, stream) {
-	  return concat(streamOf(x), stream);
+	var _browserSplit2 = _interopRequireDefault(_browserSplit);
+
+	function _interopRequireDefault(obj) {
+	  return obj && obj.__esModule ? obj : { default: obj };
 	}
 
-	/**
-	 * @param {Stream} left
-	 * @param {Stream} right
-	 * @returns {Stream} new stream containing all events in left followed by all
-	 *  events in right.  This *timeshifts* right to the end of left.
-	 */
-	function concat(left, right) {
-	  return continueWith(function () {
-	    return right;
-	  }, left);
-	}
+	var classIdSplit = /([\.#]?[a-zA-Z0-9\u007F-\uFFFF_:-]+)/;
+	var notClassId = /^\.|#/;
 
-	/**
-	 * @deprecated
-	 * Tie stream into a circle, creating an infinite stream
-	 * @param {Stream} stream
-	 * @returns {Stream} new infinite stream
-	 */
-	function cycle(stream) {
-	  return continueWith(function cycleNext() {
-	    return cycle(stream);
-	  }, stream);
+	function selectorParser() {
+	  var selector = arguments.length <= 0 || arguments[0] === undefined ? '' : arguments[0];
+
+	  var tagName = undefined;
+	  var id = '';
+	  var classes = [];
+
+	  var tagParts = (0, _browserSplit2.default)(selector, classIdSplit);
+
+	  if (notClassId.test(tagParts[1]) || selector === '') {
+	    tagName = 'div';
+	  }
+
+	  var part = undefined;
+	  var type = undefined;
+	  var i = undefined;
+
+	  for (i = 0; i < tagParts.length; i++) {
+	    part = tagParts[i];
+
+	    if (!part) {
+	      continue;
+	    }
+
+	    type = part.charAt(0);
+
+	    if (!tagName) {
+	      tagName = part;
+	    } else if (type === '.') {
+	      classes.push(part.substring(1, part.length));
+	    } else if (type === '#') {
+	      id = part.substring(1, part.length);
+	    }
+	  }
+
+	  return {
+	    tagName: tagName,
+	    id: id,
+	    className: classes.join(' ')
+	  };
 	}
 
 /***/ },
-/* 24 */
+/* 42 */
 /***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var VNode = __webpack_require__(20);
+	var is = __webpack_require__(13);
+
+	function addNS(data, children) {
+	  data.ns = 'http://www.w3.org/2000/svg';
+	  if (children !== undefined) {
+	    for (var i = 0; i < children.length; ++i) {
+	      addNS(children[i].data, children[i].children);
+	    }
+	  }
+	}
+
+	module.exports = function h(sel, b, c) {
+	  var data = {},
+	      children,
+	      text,
+	      i;
+	  if (arguments.length === 3) {
+	    data = b;
+	    if (is.array(c)) {
+	      children = c;
+	    } else if (is.primitive(c)) {
+	      text = c;
+	    }
+	  } else if (arguments.length === 2) {
+	    if (is.array(b)) {
+	      children = b;
+	    } else if (is.primitive(b)) {
+	      text = b;
+	    } else {
+	      data = b;
+	    }
+	  }
+	  if (is.array(children)) {
+	    for (i = 0; i < children.length; ++i) {
+	      if (is.primitive(children[i])) children[i] = VNode(undefined, undefined, undefined, children[i]);
+	    }
+	  }
+	  if (sel[0] === 's' && sel[1] === 'v' && sel[2] === 'g') {
+	    addNS(data, children);
+	  }
+	  return VNode(sel, data, children, text, undefined);
+	};
+
+/***/ },
+/* 43 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+
+	var SubjectDisposable_1 = __webpack_require__(86);
+	var util_1 = __webpack_require__(44);
+	var defaultScheduler = __webpack_require__(16);
+	var BasicSubjectSource = function () {
+	    function BasicSubjectSource() {
+	        this.scheduler = defaultScheduler;
+	        this.sinks = [];
+	        this.active = false;
+	    }
+	    BasicSubjectSource.prototype.run = function (sink, scheduler) {
+	        var n = this.add(sink);
+	        if (n === 1) {
+	            this.scheduler = scheduler;
+	            this.active = true;
+	        }
+	        return new SubjectDisposable_1.SubjectDisposable(this, sink);
+	    };
+	    BasicSubjectSource.prototype.add = function (sink) {
+	        this.sinks = util_1.append(sink, this.sinks);
+	        return this.sinks.length;
+	    };
+	    BasicSubjectSource.prototype.remove = function (sink) {
+	        var i = util_1.findIndex(sink, this.sinks);
+	        if (i >= 0) {
+	            this.sinks = util_1.remove(i, this.sinks);
+	        }
+	        return this.sinks.length;
+	    };
+	    BasicSubjectSource.prototype._dispose = function () {
+	        this.active = false;
+	    };
+	    BasicSubjectSource.prototype.next = function (value) {
+	        if (!this.active || this.scheduler === void 0) return;
+	        this._next(this.scheduler.now(), value);
+	    };
+	    BasicSubjectSource.prototype.error = function (err) {
+	        if (!this.active || this.scheduler === void 0) return;
+	        this._dispose();
+	        this._error(this.scheduler.now(), err);
+	    };
+	    BasicSubjectSource.prototype.complete = function (value) {
+	        if (!this.active || this.scheduler === void 0) return;
+	        this._dispose();
+	        this._complete(this.scheduler.now(), value);
+	    };
+	    BasicSubjectSource.prototype._next = function (time, value) {
+	        var s = this.sinks;
+	        if (s.length === 1) {
+	            return s[0].event(time, value);
+	        }
+	        for (var i = 0; i < s.length; ++i) {
+	            util_1.tryEvent(time, value, s[i]);
+	        }
+	    };
+	    BasicSubjectSource.prototype._complete = function (time, value) {
+	        var s = this.sinks;
+	        for (var i = 0; i < s.length; ++i) {
+	            util_1.tryEnd(time, value, s[i]);
+	        }
+	    };
+	    BasicSubjectSource.prototype._error = function (time, err) {
+	        var s = this.sinks;
+	        for (var i = 0; i < s.length; ++i) {
+	            s[i].error(time, err);
+	        }
+	    };
+	    return BasicSubjectSource;
+	}();
+	exports.BasicSubjectSource = BasicSubjectSource;
+	//# sourceMappingURL=SubjectSource.js.map
+
+/***/ },
+/* 44 */
+/***/ function(module, exports) {
+
+	"use strict";
+
+	function tryEvent(t, x, sink) {
+	    try {
+	        sink.event(t, x);
+	    } catch (e) {
+	        sink.error(t, e);
+	    }
+	}
+	exports.tryEvent = tryEvent;
+	function tryEnd(t, x, sink) {
+	    try {
+	        sink.end(t, x);
+	    } catch (e) {
+	        sink.error(t, e);
+	    }
+	}
+	exports.tryEnd = tryEnd;
+	function pushEvents(buffer, sink) {
+	    for (var i = 0; i < buffer.length; ++i) {
+	        var _a = buffer[i],
+	            time = _a.time,
+	            value = _a.value;
+	        sink.event(time, value);
+	    }
+	}
+	exports.pushEvents = pushEvents;
+	function dropAndAppend(event, buffer, bufferSize) {
+	    if (buffer.length === bufferSize) {
+	        return append(event, drop(1, buffer));
+	    }
+	    return append(event, buffer);
+	}
+	exports.dropAndAppend = dropAndAppend;
+	function append(x, a) {
+	    var l = a.length;
+	    var b = new Array(l + 1);
+	    for (var i = 0; i < l; ++i) {
+	        b[i] = a[i];
+	    }
+	    b[l] = x;
+	    return b;
+	}
+	exports.append = append;
+	function drop(n, a) {
+	    if (n < 0) {
+	        throw new TypeError('n must be >= 0');
+	    }
+	    var l = a.length;
+	    if (n === 0 || l === 0) {
+	        return a;
+	    }
+	    if (n >= l) {
+	        return [];
+	    }
+	    return unsafeDrop(n, a, l - n);
+	}
+	// unsafeDrop :: Int -> [a] -> Int -> [a]
+	// Internal helper for drop
+	function unsafeDrop(n, a, l) {
+	    var b = new Array(l);
+	    for (var i = 0; i < l; ++i) {
+	        b[i] = a[n + i];
+	    }
+	    return b;
+	}
+	function remove(i, a) {
+	    if (i < 0) {
+	        throw new TypeError('i must be >= 0');
+	    }
+	    var l = a.length;
+	    if (l === 0 || i >= l) {
+	        return a;
+	    }
+	    if (l === 1) {
+	        return [];
+	    }
+	    return unsafeRemove(i, a, l - 1);
+	}
+	exports.remove = remove;
+	// unsafeRemove :: Int -> [a] -> Int -> [a]
+	// Internal helper to remove element at index
+	function unsafeRemove(i, a, l) {
+	    var b = new Array(l);
+	    var j;
+	    for (j = 0; j < i; ++j) {
+	        b[j] = a[j];
+	    }
+	    for (j = i; j < l; ++j) {
+	        b[j] = a[j + 1];
+	    }
+	    return b;
+	}
+	function findIndex(x, a) {
+	    for (var i = 0, l = a.length; i < l; ++i) {
+	        if (x === a[i]) {
+	            return i;
+	        }
+	    }
+	    return -1;
+	}
+	exports.findIndex = findIndex;
+	//# sourceMappingURL=util.js.map
+
+/***/ },
+/* 45 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
 
 	/** @license MIT License (c) copyright 2010-2016 original author or authors */
 	/** @author Brian Cavalier */
 	/** @author John Hann */
 
-	var Stream = __webpack_require__(0);
-	var transform = __webpack_require__(12);
-	var core = __webpack_require__(7);
-	var Pipe = __webpack_require__(1);
-	var IndexSink = __webpack_require__(14);
-	var dispose = __webpack_require__(2);
-	var base = __webpack_require__(3);
-	var invoke = __webpack_require__(13);
-
-	var hasValue = IndexSink.hasValue;
+	var Stream = __webpack_require__(1);
+	var transform = __webpack_require__(15);
+	var core = __webpack_require__(9);
+	var Pipe = __webpack_require__(5);
+	var IndexSink = __webpack_require__(25);
+	var dispose = __webpack_require__(3);
+	var base = __webpack_require__(2);
+	var invoke = __webpack_require__(24);
 
 	var map = base.map;
 	var tail = base.tail;
@@ -2558,22 +3796,38 @@
 		this.disposables = disposables;
 		this.sinks = sinks;
 		this.f = f;
-		this.values = new Array(sinks.length);
-		this.ready = false;
+
+		var l = sinks.length;
+		this.awaiting = l;
+		this.values = new Array(l);
+		this.hasValue = new Array(l);
+		for (var i = 0; i < l; ++i) {
+			this.hasValue[i] = false;
+		}
+
 		this.activeCount = sinks.length;
 	}
 
 	CombineSink.prototype.error = Pipe.prototype.error;
 
 	CombineSink.prototype.event = function (t, indexedValue) {
-		if (!this.ready) {
-			this.ready = this.sinks.every(hasValue);
-		}
+		var i = indexedValue.index;
+		var awaiting = this._updateReady(i);
 
-		this.values[indexedValue.index] = indexedValue.value;
-		if (this.ready) {
+		this.values[i] = indexedValue.value;
+		if (awaiting === 0) {
 			this.sink.event(t, invoke(this.f, this.values));
 		}
+	};
+
+	CombineSink.prototype._updateReady = function (index) {
+		if (this.awaiting > 0) {
+			if (!this.hasValue[index]) {
+				this.hasValue[index] = true;
+				this.awaiting -= 1;
+			}
+		}
+		return this.awaiting;
 	};
 
 	CombineSink.prototype.end = function (t, indexedValue) {
@@ -2584,17 +3838,19 @@
 	};
 
 /***/ },
-/* 25 */
+/* 46 */
 /***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
 
 	/** @license MIT License (c) copyright 2010-2016 original author or authors */
 	/** @author Brian Cavalier */
 	/** @author John Hann */
 
-	var Stream = __webpack_require__(0);
-	var Sink = __webpack_require__(1);
-	var dispose = __webpack_require__(2);
-	var isPromise = __webpack_require__(11).isPromise;
+	var Stream = __webpack_require__(1);
+	var Sink = __webpack_require__(5);
+	var dispose = __webpack_require__(3);
+	var isPromise = __webpack_require__(21).isPromise;
 
 	exports.continueWith = continueWith;
 
@@ -2633,19 +3889,20 @@
 			return;
 		}
 
-		var result = dispose.tryDispose(t, this.disposable, this.sink);
-		this.disposable = isPromise(result) ? dispose.promised(this._thenContinue(result, x)) : this._continue(this.f, x);
+		dispose.tryDispose(t, this.disposable, this.sink);
+		this._startNext(t, x, this.sink);
 	};
 
-	ContinueWithSink.prototype._thenContinue = function (p, x) {
-		var self = this;
-		return p.then(function () {
-			return self._continue(self.f, x);
-		});
+	ContinueWithSink.prototype._startNext = function (t, x, sink) {
+		try {
+			this.disposable = this._continue(this.f, x, sink);
+		} catch (e) {
+			sink.error(t, e);
+		}
 	};
 
-	ContinueWithSink.prototype._continue = function (f, x) {
-		return f(x).source.run(this.sink, this.scheduler);
+	ContinueWithSink.prototype._continue = function (f, x, sink) {
+		return f(x).source.run(sink, this.scheduler);
 	};
 
 	ContinueWithSink.prototype.dispose = function () {
@@ -2654,15 +3911,17 @@
 	};
 
 /***/ },
-/* 26 */
+/* 47 */
 /***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
 
 	/** @license MIT License (c) copyright 2010-2016 original author or authors */
 	/** @author Brian Cavalier */
 	/** @author John Hann */
 
-	var mergeConcurrently = __webpack_require__(8).mergeConcurrently;
-	var mergeMapConcurrently = __webpack_require__(8).mergeMapConcurrently;
+	var mergeConcurrently = __webpack_require__(14).mergeConcurrently;
+	var mergeMapConcurrently = __webpack_require__(14).mergeMapConcurrently;
 
 	exports.flatMap = flatMap;
 	exports.join = join;
@@ -2689,52 +3948,16 @@
 	}
 
 /***/ },
-/* 27 */
-/***/ function(module, exports) {
-
-	/** @license MIT License (c) copyright 2010-2016 original author or authors */
-	/** @author Brian Cavalier */
-	/** @author John Hann */
-
-	module.exports = defer;
-
-	function defer(task) {
-		return Promise.resolve(task).then(runTask);
-	}
-
-	function runTask(task) {
-		try {
-			return task.run();
-		} catch (e) {
-			return task.error(e);
-		}
-	}
-
-/***/ },
-/* 28 */
-/***/ function(module, exports) {
-
-	/** @license MIT License (c) copyright 2010-2016 original author or authors */
-	/** @author Brian Cavalier */
-	/** @author John Hann */
-
-	module.exports = fatalError;
-
-	function fatalError(e) {
-		setTimeout(function () {
-			throw e;
-		}, 0);
-	}
-
-/***/ },
-/* 29 */
+/* 48 */
 /***/ function(module, exports, __webpack_require__) {
 
+	'use strict';
+
 	/** @license MIT License (c) copyright 2010-2016 original author or authors */
 	/** @author Brian Cavalier */
 	/** @author John Hann */
 
-	var Pipe = __webpack_require__(1);
+	var Pipe = __webpack_require__(5);
 
 	module.exports = Filter;
 
@@ -2781,68 +4004,10 @@
 	}
 
 /***/ },
-/* 30 */
-/***/ function(module, exports, __webpack_require__) {
-
-	/** @license MIT License (c) copyright 2010-2016 original author or authors */
-	/** @author Brian Cavalier */
-	/** @author John Hann */
-
-	var Pipe = __webpack_require__(1);
-	var Filter = __webpack_require__(29);
-	var FilterMap = __webpack_require__(75);
-	var base = __webpack_require__(3);
-
-	module.exports = Map;
-
-	function Map(f, source) {
-		this.f = f;
-		this.source = source;
-	}
-
-	/**
-	 * Create a mapped source, fusing adjacent map.map, filter.map,
-	 * and filter.map.map if possible
-	 * @param {function(*):*} f mapping function
-	 * @param {{run:function}} source source to map
-	 * @returns {Map|FilterMap} mapped source, possibly fused
-	 */
-	Map.create = function createMap(f, source) {
-		if (source instanceof Map) {
-			return new Map(base.compose(f, source.f), source.source);
-		}
-
-		if (source instanceof Filter) {
-			return new FilterMap(source.p, f, source.source);
-		}
-
-		if (source instanceof FilterMap) {
-			return new FilterMap(source.p, base.compose(f, source.f), source.source);
-		}
-
-		return new Map(f, source);
-	};
-
-	Map.prototype.run = function (sink, scheduler) {
-		return this.source.run(new MapSink(this.f, sink), scheduler);
-	};
-
-	function MapSink(f, sink) {
-		this.f = f;
-		this.sink = sink;
-	}
-
-	MapSink.prototype.end = Pipe.prototype.end;
-	MapSink.prototype.error = Pipe.prototype.error;
-
-	MapSink.prototype.event = function (t, x) {
-		var f = this.f;
-		this.sink.event(t, f(x));
-	};
-
-/***/ },
-/* 31 */
+/* 49 */
 /***/ function(module, exports) {
+
+	'use strict';
 
 	/** @license MIT License (c) copyright 2010-2016 original author or authors */
 	/** @author Brian Cavalier */
@@ -2876,53 +4041,634 @@
 	}
 
 /***/ },
-/* 32 */
+/* 50 */
 /***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
 
 	/** @license MIT License (c) copyright 2010-2016 original author or authors */
 	/** @author Brian Cavalier */
 	/** @author John Hann */
 
-	var Observer = __webpack_require__(80);
-	var dispose = __webpack_require__(2);
-	var defaultScheduler = __webpack_require__(77);
+	var dispose = __webpack_require__(3);
+	var defaultScheduler = __webpack_require__(16);
 
 	exports.withDefaultScheduler = withDefaultScheduler;
 	exports.withScheduler = withScheduler;
 
-	function withDefaultScheduler(f, source) {
-		return withScheduler(f, source, defaultScheduler);
+	function withDefaultScheduler(source) {
+		return withScheduler(source, defaultScheduler);
 	}
 
-	function withScheduler(f, source, scheduler) {
+	function withScheduler(source, scheduler) {
 		return new Promise(function (resolve, reject) {
-			runSource(f, source, scheduler, resolve, reject);
+			runSource(source, scheduler, resolve, reject);
 		});
 	}
 
-	function runSource(f, source, scheduler, resolve, reject) {
+	function runSource(source, scheduler, resolve, reject) {
 		var disposable = dispose.settable();
-		var observer = new Observer(f, resolve, reject, disposable);
+		var observer = new Drain(resolve, reject, disposable);
 
 		disposable.setDisposable(source.run(observer, scheduler));
 	}
 
+	function Drain(end, error, disposable) {
+		this._end = end;
+		this._error = error;
+		this._disposable = disposable;
+		this.active = true;
+	}
+
+	Drain.prototype.event = function (t, x) {};
+
+	Drain.prototype.end = function (t, x) {
+		if (!this.active) {
+			return;
+		}
+		this.active = false;
+		disposeThen(this._end, this._error, this._disposable, x);
+	};
+
+	Drain.prototype.error = function (t, e) {
+		this.active = false;
+		disposeThen(this._error, this._error, this._disposable, e);
+	};
+
+	function disposeThen(end, error, disposable, x) {
+		Promise.resolve(disposable.dispose()).then(function () {
+			end(x);
+		}, error);
+	}
+
 /***/ },
-/* 33 */
+/* 51 */
 /***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
 
 	/** @license MIT License (c) copyright 2010-2016 original author or authors */
 	/** @author Brian Cavalier */
 	/** @author John Hann */
 
-	var defer = __webpack_require__(27);
+	var base = __webpack_require__(2);
+
+	module.exports = Timeline;
+
+	function Timeline() {
+		this.tasks = [];
+	}
+
+	Timeline.prototype.nextArrival = function () {
+		return this.isEmpty() ? Infinity : this.tasks[0].time;
+	};
+
+	Timeline.prototype.isEmpty = function () {
+		return this.tasks.length === 0;
+	};
+
+	Timeline.prototype.add = function (st) {
+		insertByTime(st, this.tasks);
+	};
+
+	Timeline.prototype.remove = function (st) {
+		var i = binarySearch(st.time, this.tasks);
+
+		if (i >= 0 && i < this.tasks.length) {
+			var at = base.findIndex(st, this.tasks[i].events);
+			if (at >= 0) {
+				this.tasks[i].events.splice(at, 1);
+				return true;
+			}
+		}
+
+		return false;
+	};
+
+	Timeline.prototype.removeAll = function (f) {
+		for (var i = 0, l = this.tasks.length; i < l; ++i) {
+			removeAllFrom(f, this.tasks[i]);
+		}
+	};
+
+	Timeline.prototype.runTasks = function (t, runTask) {
+		var tasks = this.tasks;
+		var l = tasks.length;
+		var i = 0;
+
+		while (i < l && tasks[i].time <= t) {
+			++i;
+		}
+
+		this.tasks = tasks.slice(i);
+
+		// Run all ready tasks
+		for (var j = 0; j < i; ++j) {
+			this.tasks = runTasks(runTask, tasks[j], this.tasks);
+		}
+	};
+
+	function runTasks(runTask, timeslot, tasks) {
+		var events = timeslot.events;
+		for (var i = 0; i < events.length; ++i) {
+			var task = events[i];
+
+			if (task.active) {
+				runTask(task);
+
+				// Reschedule periodic repeating tasks
+				// Check active again, since a task may have canceled itself
+				if (task.period >= 0 && task.active) {
+					task.time = task.time + task.period;
+					insertByTime(task, tasks);
+				}
+			}
+		}
+
+		return tasks;
+	}
+
+	function insertByTime(task, timeslots) {
+		var l = timeslots.length;
+
+		if (l === 0) {
+			timeslots.push(newTimeslot(task.time, [task]));
+			return;
+		}
+
+		var i = binarySearch(task.time, timeslots);
+
+		if (i >= l) {
+			timeslots.push(newTimeslot(task.time, [task]));
+		} else if (task.time === timeslots[i].time) {
+			timeslots[i].events.push(task);
+		} else {
+			timeslots.splice(i, 0, newTimeslot(task.time, [task]));
+		}
+	}
+
+	function removeAllFrom(f, timeslot) {
+		timeslot.events = base.removeAll(f, timeslot.events);
+	}
+
+	function binarySearch(t, sortedArray) {
+		var lo = 0;
+		var hi = sortedArray.length;
+		var mid, y;
+
+		while (lo < hi) {
+			mid = Math.floor((lo + hi) / 2);
+			y = sortedArray[mid];
+
+			if (t === y.time) {
+				return mid;
+			} else if (t < y.time) {
+				hi = mid;
+			} else {
+				lo = mid + 1;
+			}
+		}
+		return hi;
+	}
+
+	function newTimeslot(t, events) {
+		return { time: t, events: events };
+	}
+
+/***/ },
+/* 52 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	module.exports = __webpack_require__(132);
+
+/***/ },
+/* 53 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	/** @license MIT License (c) copyright 2010-2016 original author or authors */
+	/** @author Brian Cavalier */
+	/** @author John Hann */
+
+	var Stream = __webpack_require__(0);
+	var transform = __webpack_require__(18);
+	var core = __webpack_require__(10);
+	var Pipe = __webpack_require__(6);
+	var IndexSink = __webpack_require__(33);
+	var dispose = __webpack_require__(4);
+	var base = __webpack_require__(2);
+	var invoke = __webpack_require__(31);
+
+	var map = base.map;
+	var tail = base.tail;
+
+	exports.combineArray = combineArray;
+	exports.combine = combine;
+
+	/**
+	 * Combine latest events from all input streams
+	 * @param {function(...events):*} f function to combine most recent events
+	 * @returns {Stream} stream containing the result of applying f to the most recent
+	 *  event of each input stream, whenever a new event arrives on any stream.
+	 */
+	function combine(f /*, ...streams */) {
+		return combineArray(f, tail(arguments));
+	}
+
+	/**
+	 * Combine latest events from all input streams
+	 * @param {function(...events):*} f function to combine most recent events
+	 * @param {[Stream]} streams most recent events
+	 * @returns {Stream} stream containing the result of applying f to the most recent
+	 *  event of each input stream, whenever a new event arrives on any stream.
+	 */
+	function combineArray(f, streams) {
+		var l = streams.length;
+		return l === 0 ? core.empty() : l === 1 ? transform.map(f, streams[0]) : new Stream(combineSources(f, streams));
+	}
+
+	function combineSources(f, streams) {
+		return new Combine(f, map(getSource, streams));
+	}
+
+	function getSource(stream) {
+		return stream.source;
+	}
+
+	function Combine(f, sources) {
+		this.f = f;
+		this.sources = sources;
+	}
+
+	Combine.prototype.run = function (sink, scheduler) {
+		var l = this.sources.length;
+		var disposables = new Array(l);
+		var sinks = new Array(l);
+
+		var mergeSink = new CombineSink(disposables, sinks, sink, this.f);
+
+		for (var indexSink, i = 0; i < l; ++i) {
+			indexSink = sinks[i] = new IndexSink(i, mergeSink);
+			disposables[i] = this.sources[i].run(indexSink, scheduler);
+		}
+
+		return dispose.all(disposables);
+	};
+
+	function CombineSink(disposables, sinks, sink, f) {
+		this.sink = sink;
+		this.disposables = disposables;
+		this.sinks = sinks;
+		this.f = f;
+
+		var l = sinks.length;
+		this.awaiting = l;
+		this.values = new Array(l);
+		this.hasValue = new Array(l);
+		for (var i = 0; i < l; ++i) {
+			this.hasValue[i] = false;
+		}
+
+		this.activeCount = sinks.length;
+	}
+
+	CombineSink.prototype.error = Pipe.prototype.error;
+
+	CombineSink.prototype.event = function (t, indexedValue) {
+		var i = indexedValue.index;
+		var awaiting = this._updateReady(i);
+
+		this.values[i] = indexedValue.value;
+		if (awaiting === 0) {
+			this.sink.event(t, invoke(this.f, this.values));
+		}
+	};
+
+	CombineSink.prototype._updateReady = function (index) {
+		if (this.awaiting > 0) {
+			if (!this.hasValue[index]) {
+				this.hasValue[index] = true;
+				this.awaiting -= 1;
+			}
+		}
+		return this.awaiting;
+	};
+
+	CombineSink.prototype.end = function (t, indexedValue) {
+		dispose.tryDispose(t, this.disposables[indexedValue.index], this.sink);
+		if (--this.activeCount === 0) {
+			this.sink.end(t, indexedValue.value);
+		}
+	};
+
+/***/ },
+/* 54 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	/** @license MIT License (c) copyright 2010-2016 original author or authors */
+	/** @author Brian Cavalier */
+	/** @author John Hann */
+
+	var Stream = __webpack_require__(0);
+	var Sink = __webpack_require__(6);
+	var dispose = __webpack_require__(4);
+	var isPromise = __webpack_require__(28).isPromise;
+
+	exports.continueWith = continueWith;
+
+	function continueWith(f, stream) {
+		return new Stream(new ContinueWith(f, stream.source));
+	}
+
+	function ContinueWith(f, source) {
+		this.f = f;
+		this.source = source;
+	}
+
+	ContinueWith.prototype.run = function (sink, scheduler) {
+		return new ContinueWithSink(this.f, this.source, sink, scheduler);
+	};
+
+	function ContinueWithSink(f, source, sink, scheduler) {
+		this.f = f;
+		this.sink = sink;
+		this.scheduler = scheduler;
+		this.active = true;
+		this.disposable = dispose.once(source.run(this, scheduler));
+	}
+
+	ContinueWithSink.prototype.error = Sink.prototype.error;
+
+	ContinueWithSink.prototype.event = function (t, x) {
+		if (!this.active) {
+			return;
+		}
+		this.sink.event(t, x);
+	};
+
+	ContinueWithSink.prototype.end = function (t, x) {
+		if (!this.active) {
+			return;
+		}
+
+		dispose.tryDispose(t, this.disposable, this.sink);
+		this._startNext(t, x, this.sink);
+	};
+
+	ContinueWithSink.prototype._startNext = function (t, x, sink) {
+		try {
+			this.disposable = this._continue(this.f, x, sink);
+		} catch (e) {
+			sink.error(t, e);
+		}
+	};
+
+	ContinueWithSink.prototype._continue = function (f, x, sink) {
+		return f(x).source.run(sink, this.scheduler);
+	};
+
+	ContinueWithSink.prototype.dispose = function () {
+		this.active = false;
+		return this.disposable.dispose();
+	};
+
+/***/ },
+/* 55 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	/** @license MIT License (c) copyright 2010-2016 original author or authors */
+	/** @author Brian Cavalier */
+	/** @author John Hann */
+
+	var mergeConcurrently = __webpack_require__(17).mergeConcurrently;
+	var mergeMapConcurrently = __webpack_require__(17).mergeMapConcurrently;
+
+	exports.flatMap = flatMap;
+	exports.join = join;
+
+	/**
+	 * Map each value in the stream to a new stream, and merge it into the
+	 * returned outer stream. Event arrival times are preserved.
+	 * @param {function(x:*):Stream} f chaining function, must return a Stream
+	 * @param {Stream} stream
+	 * @returns {Stream} new stream containing all events from each stream returned by f
+	 */
+	function flatMap(f, stream) {
+	  return mergeMapConcurrently(f, Infinity, stream);
+	}
+
+	/**
+	 * Monadic join. Flatten a Stream<Stream<X>> to Stream<X> by merging inner
+	 * streams to the outer. Event arrival times are preserved.
+	 * @param {Stream<Stream<X>>} stream stream of streams
+	 * @returns {Stream<X>} new stream containing all events of all inner streams
+	 */
+	function join(stream) {
+	  return mergeConcurrently(Infinity, stream);
+	}
+
+/***/ },
+/* 56 */
+/***/ function(module, exports) {
+
+	"use strict";
+
+	/** @license MIT License (c) copyright 2010-2016 original author or authors */
+	/** @author Brian Cavalier */
+	/** @author John Hann */
+
+	module.exports = defer;
+
+	function defer(task) {
+		return Promise.resolve(task).then(runTask);
+	}
+
+	function runTask(task) {
+		try {
+			return task.run();
+		} catch (e) {
+			return task.error(e);
+		}
+	}
+
+/***/ },
+/* 57 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	/** @license MIT License (c) copyright 2010-2016 original author or authors */
+	/** @author Brian Cavalier */
+	/** @author John Hann */
+
+	var Pipe = __webpack_require__(6);
+
+	module.exports = Filter;
+
+	function Filter(p, source) {
+		this.p = p;
+		this.source = source;
+	}
+
+	/**
+	 * Create a filtered source, fusing adjacent filter.filter if possible
+	 * @param {function(x:*):boolean} p filtering predicate
+	 * @param {{run:function}} source source to filter
+	 * @returns {Filter} filtered source
+	 */
+	Filter.create = function createFilter(p, source) {
+		if (source instanceof Filter) {
+			return new Filter(and(source.p, p), source.source);
+		}
+
+		return new Filter(p, source);
+	};
+
+	Filter.prototype.run = function (sink, scheduler) {
+		return this.source.run(new FilterSink(this.p, sink), scheduler);
+	};
+
+	function FilterSink(p, sink) {
+		this.p = p;
+		this.sink = sink;
+	}
+
+	FilterSink.prototype.end = Pipe.prototype.end;
+	FilterSink.prototype.error = Pipe.prototype.error;
+
+	FilterSink.prototype.event = function (t, x) {
+		var p = this.p;
+		p(x) && this.sink.event(t, x);
+	};
+
+	function and(p, q) {
+		return function (x) {
+			return p(x) && q(x);
+		};
+	}
+
+/***/ },
+/* 58 */
+/***/ function(module, exports) {
+
+	'use strict';
+
+	/** @license MIT License (c) copyright 2010-2016 original author or authors */
+	/** @author Brian Cavalier */
+	/** @author John Hann */
+
+	exports.isIterable = isIterable;
+	exports.getIterator = getIterator;
+	exports.makeIterable = makeIterable;
+
+	/*global Set, Symbol*/
+	var iteratorSymbol;
+	// Firefox ships a partial implementation using the name @@iterator.
+	// https://bugzilla.mozilla.org/show_bug.cgi?id=907077#c14
+	if (typeof Set === 'function' && typeof new Set()['@@iterator'] === 'function') {
+		iteratorSymbol = '@@iterator';
+	} else {
+		iteratorSymbol = typeof Symbol === 'function' && Symbol.iterator || '_es6shim_iterator_';
+	}
+
+	function isIterable(o) {
+		return typeof o[iteratorSymbol] === 'function';
+	}
+
+	function getIterator(o) {
+		return o[iteratorSymbol]();
+	}
+
+	function makeIterable(f, o) {
+		o[iteratorSymbol] = f;
+		return o;
+	}
+
+/***/ },
+/* 59 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	/** @license MIT License (c) copyright 2010-2016 original author or authors */
+	/** @author Brian Cavalier */
+	/** @author John Hann */
+
+	var dispose = __webpack_require__(4);
+	var defaultScheduler = __webpack_require__(32);
+
+	exports.withDefaultScheduler = withDefaultScheduler;
+	exports.withScheduler = withScheduler;
+
+	function withDefaultScheduler(source) {
+		return withScheduler(source, defaultScheduler);
+	}
+
+	function withScheduler(source, scheduler) {
+		return new Promise(function (resolve, reject) {
+			runSource(source, scheduler, resolve, reject);
+		});
+	}
+
+	function runSource(source, scheduler, resolve, reject) {
+		var disposable = dispose.settable();
+		var observer = new Drain(resolve, reject, disposable);
+
+		disposable.setDisposable(source.run(observer, scheduler));
+	}
+
+	function Drain(end, error, disposable) {
+		this._end = end;
+		this._error = error;
+		this._disposable = disposable;
+		this.active = true;
+	}
+
+	Drain.prototype.event = function (t, x) {};
+
+	Drain.prototype.end = function (t, x) {
+		if (!this.active) {
+			return;
+		}
+		this.active = false;
+		disposeThen(this._end, this._error, this._disposable, x);
+	};
+
+	Drain.prototype.error = function (t, e) {
+		this.active = false;
+		disposeThen(this._error, this._error, this._disposable, e);
+	};
+
+	function disposeThen(end, error, disposable, x) {
+		Promise.resolve(disposable.dispose()).then(function () {
+			end(x);
+		}, error);
+	}
+
+/***/ },
+/* 60 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	/** @license MIT License (c) copyright 2010-2016 original author or authors */
+	/** @author Brian Cavalier */
+	/** @author John Hann */
+
+	var defer = __webpack_require__(56);
 
 	module.exports = DeferredSink;
 
 	function DeferredSink(sink) {
 		this.sink = sink;
 		this.events = [];
-		this.length = 0;
 		this.active = true;
 	}
 
@@ -2931,44 +4677,47 @@
 			return;
 		}
 
-		if (this.length === 0) {
-			defer(new PropagateAllTask(this));
+		if (this.events.length === 0) {
+			defer(new PropagateAllTask(this.sink, this.events));
 		}
 
-		this.events[this.length++] = { time: t, value: x };
+		this.events.push({ time: t, value: x });
 	};
 
 	DeferredSink.prototype.error = function (t, e) {
-		this.active = false;
-		defer(new ErrorTask(t, e, this.sink));
+		this._end(new ErrorTask(t, e, this.sink));
 	};
 
 	DeferredSink.prototype.end = function (t, x) {
-		this.active = false;
-		defer(new EndTask(t, x, this.sink));
+		this._end(new EndTask(t, x, this.sink));
 	};
 
-	function PropagateAllTask(deferred) {
-		this.deferred = deferred;
+	DeferredSink.prototype._end = function (task) {
+		this.active = false;
+		this.events = void 0;
+		defer(task);
+	};
+
+	function PropagateAllTask(sink, events) {
+		this.sink = sink;
+		this.events = events;
 	}
 
 	PropagateAllTask.prototype.run = function () {
-		var p = this.deferred;
-		var events = p.events;
-		var sink = p.sink;
+		var events = this.events;
+		var sink = this.sink;
 		var event;
 
-		for (var i = 0, l = p.length; i < l; ++i) {
+		for (var i = 0, l = events.length; i < l; ++i) {
 			event = events[i];
 			sink.event(event.time, event.value);
-			events[i] = void 0;
 		}
 
-		p.length = 0;
+		events.length = 0;
 	};
 
 	PropagateAllTask.prototype.error = function (e) {
-		this.deferred.error(0, e);
+		this.sink.error(0, e);
 	};
 
 	function EndTask(t, x, sink) {
@@ -3000,36 +4749,17 @@
 	};
 
 /***/ },
-/* 34 */
+/* 61 */
 /***/ function(module, exports, __webpack_require__) {
 
-	/** @license MIT License (c) copyright 2010-2016 original author or authors */
-	/** @author Brian Cavalier */
-	/** @author John Hann */
+	/* WEBPACK VAR INJECTION */(function(global) {/* global window */
+	'use strict';
 
-	var PropagateTask = __webpack_require__(6);
-
-	module.exports = ValueSource;
-
-	function ValueSource(emit, x) {
-		this.emit = emit;
-		this.value = x;
-	}
-
-	ValueSource.prototype.run = function (sink, scheduler) {
-		return new ValueProducer(this.emit, this.value, sink, scheduler);
-	};
-
-	function ValueProducer(emit, x, sink, scheduler) {
-		this.task = scheduler.asap(new PropagateTask(emit, x, sink));
-	}
-
-	ValueProducer.prototype.dispose = function () {
-		return this.task.cancel();
-	};
+	module.exports = __webpack_require__(177)(global || window || undefined);
+	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }())))
 
 /***/ },
-/* 35 */
+/* 62 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -3037,117 +4767,8 @@
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-	exports.default = selectorParser;
 
-	var _browserSplit = __webpack_require__(47);
-
-	var _browserSplit2 = _interopRequireDefault(_browserSplit);
-
-	function _interopRequireDefault(obj) {
-	  return obj && obj.__esModule ? obj : { default: obj };
-	}
-
-	var classIdSplit = /([\.#]?[a-zA-Z0-9\u007F-\uFFFF_:-]+)/;
-	var notClassId = /^\.|#/;
-
-	function selectorParser() {
-	  var selector = arguments.length <= 0 || arguments[0] === undefined ? '' : arguments[0];
-
-	  var tagName = undefined;
-	  var id = '';
-	  var classes = [];
-
-	  var tagParts = (0, _browserSplit2.default)(selector, classIdSplit);
-
-	  if (notClassId.test(tagParts[1]) || selector === '') {
-	    tagName = 'div';
-	  }
-
-	  var part = undefined;
-	  var type = undefined;
-	  var i = undefined;
-
-	  for (i = 0; i < tagParts.length; i++) {
-	    part = tagParts[i];
-
-	    if (!part) {
-	      continue;
-	    }
-
-	    type = part.charAt(0);
-
-	    if (!tagName) {
-	      tagName = part;
-	    } else if (type === '.') {
-	      classes.push(part.substring(1, part.length));
-	    } else if (type === '#') {
-	      id = part.substring(1, part.length);
-	    }
-	  }
-
-	  return {
-	    tagName: tagName,
-	    id: id,
-	    className: classes.join(' ')
-	  };
-	}
-
-/***/ },
-/* 36 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var VNode = __webpack_require__(15);
-	var is = __webpack_require__(10);
-
-	function addNS(data, children) {
-	  data.ns = 'http://www.w3.org/2000/svg';
-	  if (children !== undefined) {
-	    for (var i = 0; i < children.length; ++i) {
-	      addNS(children[i].data, children[i].children);
-	    }
-	  }
-	}
-
-	module.exports = function h(sel, b, c) {
-	  var data = {},
-	      children,
-	      text,
-	      i;
-	  if (arguments.length === 3) {
-	    data = b;
-	    if (is.array(c)) {
-	      children = c;
-	    } else if (is.primitive(c)) {
-	      text = c;
-	    }
-	  } else if (arguments.length === 2) {
-	    if (is.array(b)) {
-	      children = b;
-	    } else if (is.primitive(b)) {
-	      text = b;
-	    } else {
-	      data = b;
-	    }
-	  }
-	  if (is.array(children)) {
-	    for (i = 0; i < children.length; ++i) {
-	      if (is.primitive(children[i])) children[i] = VNode(undefined, undefined, undefined, children[i]);
-	    }
-	  }
-	  if (sel[0] === 's' && sel[1] === 'v' && sel[2] === 'g') {
-	    addNS(data, children);
-	  }
-	  return VNode(sel, data, children, text, undefined);
-	};
-
-/***/ },
-/* 37 */
-/***/ function(module, exports, __webpack_require__) {
-
-	/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__motorcycle_dom__ = __webpack_require__(16);
-	/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__motorcycle_dom___default = __WEBPACK_IMPORTED_MODULE_0__motorcycle_dom__ && __WEBPACK_IMPORTED_MODULE_0__motorcycle_dom__.__esModule ? function() { return __WEBPACK_IMPORTED_MODULE_0__motorcycle_dom__['default'] } : function() { return __WEBPACK_IMPORTED_MODULE_0__motorcycle_dom__; }
-	/* harmony import */ Object.defineProperty(__WEBPACK_IMPORTED_MODULE_0__motorcycle_dom___default, 'a', { get: __WEBPACK_IMPORTED_MODULE_0__motorcycle_dom___default });
-
+	var _dom = __webpack_require__(34);
 
 	/*
 	import {subject} from 'most-subject'
@@ -3177,1058 +4798,130 @@
 
 	var mMname = new Monad('Fred', 'mMname');
 
-	const monad = /* harmony import */ __WEBPACK_IMPORTED_MODULE_0__motorcycle_dom__["h"]('pre', { style: { color: '#AFEEEE' } }, `  const Monad = function Monad(z, ID = 'anonymous') {
-	    this.id = g;
-	    this.x = z;
-	    this.bnd = (func, ...args) => func(this.x, ...args);
-	    this.ret =  a => window[this.id] = new Monad(a,this.id);
-	  }; `);
-
-	const monadIt = /* harmony import */ __WEBPACK_IMPORTED_MODULE_0__motorcycle_dom__["h"]('pre', { style: { color: '#AFEEEE' } }, `  const MonadItter = () => {
-	    this.p = function () {};
-	    this.release = (...args) => this.p(...args);
-	    this.bnd = func => this.p = func;
-	  }; `);
-
-	const ret = /* harmony import */ __WEBPACK_IMPORTED_MODULE_0__motorcycle_dom__["h"]('pre', { style: { color: '#AFEEEE' } }, `  var ret = function ret(v, id) {
-	    if (arguments.length === 1) {
-	      return (new Monad(v, 'anonymous'));
-	    }
-	    window[id] = new Monad(v, id);
-	    return window[id];
-	  }; `);
-
-	var fib = /* harmony import */ __WEBPACK_IMPORTED_MODULE_0__motorcycle_dom__["h"]('pre', `  mM$fib.stream.addListener({
-	    next: v => {
-	      if (v[2] > 1) {mM$fib.ret([v[1], v[0] + v[1], v[2] -1])}
-	      else {
-	        mM19.ret(v[1]);
-	      }
-	    },
-	    error: err => console.error(err),
-	    complete: () => console.log('completed')
-	  });
-
-	  const fibPress$ = sources.DOM
-	    .select('input#code').events('keydown');
-
-	  const fibPressAction$ = fibPress$.map(e => {
-	    if (e.target.value == '') {return};
-	    if( e.keyCode == 13 && Number.isInteger(e.target.value*1) ) {
-	      mM21.ret(e.target.value);
-	      mM$fib.ret([0, 1, e.target.value]);
-	    }
-	    if( e.keyCode == 13 && !Number.isInteger(e.target.value*1 )) {
-	      mM19.ret("You didn't provide an integer");
-	    }
-	  });  `);
-
-	var driver = /* harmony import */ __WEBPACK_IMPORTED_MODULE_0__motorcycle_dom__["h"]('pre', `  var websocketsDriver = function () {
-	      return create((add) => {
-	        socket.onmessage = msg => add(msg)
-	      })
-	  };
-	`);
-
-	var messages = /* harmony import */ __WEBPACK_IMPORTED_MODULE_0__motorcycle_dom__["h"]('pre', `  const messages$ = (sources.WS).map(e => 
-	    mMtem.ret(e.data.split(',')).bnd(v => {
-	    console.log('<><><><><><><><><><><><><><><><>  INCING  <><><><><><><> >>> In messages. v is ', v );
-	    mMZ10.bnd(() => mM1.ret([v[3], v[4], v[5], v[6]]).bnd(ar => game(ar))) 
-	    mMZ11.bnd(() => socket.send('NN#$42,' + pMgroup.x + ',' + pMname.x))
-	    mMZ12.bnd(() => mM6.ret(v[2] + ' successfully logged in.'))
-	    mMZ13.bnd(() => updateMessages(v))
-	    mMZ14.bnd(() => mMgoals2.ret('The winner is ' + v[2] ))
-	    mMZ15.bnd(() => mMgoals2.ret('A player named ' + v[2] + ' is currently logged in. Page will refresh in 4 seconds.')
-	    .bnd(refresh))
-	    mMZ16.bnd(() => {if (pMname.x != v[2]) {mMgoals2.ret(v[2] + v[3])}})
-	    mMZ17.bnd(() => {
-	      if (v[3] == 'no file') {
-	        mMtaskList.ret([])
-	      } 
-	      else {
-	        process(e.data)
-	      }
-	    })
-	    mMZ18.bnd(() => player(v))
-	    mMZ19.bnd(() => {
-	      var names = v.slice(3);
-	      sMplayers.clear();
-	      names.forEach(player => sMplayers.add(player.trim()))
-	      game2();
-	    }) })
-	       mMtemp.ret(e.data.split(',')[0])
-	      .bnd(next, 'CA#$42', mMZ10)
-	      .bnd(next, 'XX#$42', mMZ11)
-	      .bnd(next, 'CC#$42', mMZ12)
-	      .bnd(next, 'CD#$42', mMZ13)
-	      .bnd(next, 'CE#$42', mMZ14)
-	      .bnd(next, 'EE#$42', mMZ15)
-	      .bnd(next, 'DE#$42', mMZ16)
-	      .bnd(next, 'DD#$42', mMZ17)
-	      .bnd(next, 'CG#$42', mMZ18)
-	      .bnd(next, 'NN#$42', mMZ19)
-	  });  `);
-
-	var MonadSet = /* harmony import */ __WEBPACK_IMPORTED_MODULE_0__motorcycle_dom__["h"]('pre', `  var MonadSet = function MonadSet(set, ID) {
-	    this.s = set;
-	    this.bnd = (func, ...args) => func(this.s, ...args);  
-	    this.add = a => new MonadSet(s.add(a), this.id);
-	    this.delete = a => new MonadSet(s.delete(a), this.id);
-	    this.clear = () => new MonadSet(s.clear(), this.id);
-	  };  `);
-
-	var nums = /* harmony import */ __WEBPACK_IMPORTED_MODULE_0__motorcycle_dom__["h"]('pre', `    const numClick$ = sources.DOM
-	      .select('.num').events('click');
-	       
-	    const numClickAction$ = numClick$.map(e => {
-	      if (mM3.x.length < 2) {
-	        mM3.bnd(push, e.target.innerHTML, mM3)
-	        var ar = mMhistorymM1.x[mMindex.x].slice()
-	        ar.splice(e.target.id, 1)
-	        mM1.ret(ar);
-	        game(ar);
-	      }
-	      if (mM3.x.length === 2 && mM8.x !== 0) {
-	        console.log('7777777777777777777777777777  In numClickAction$ heading for updateCalc.  mM1.x is ', mM1.x);
-	        updateCalc();
-	      }
-	    }).startWith([0,0,0,0]);
-	      
-	    const opClick$ = sources.DOM
-	      .select('.op').events('click');
-	   
-	    const opClickAction$ = opClick$.map(e => {
-	      mM8.ret(e.target.textContent);
-	      if (mM3.x.length === 2) {
-	        updateCalc();
-	      }
-	    })
-	   
-	    var game = function game (z) {
-	      console.log('>>>>>>>>>>>>>>> game has been called. mMindex.x and z are ', mMindex.x, z);
-	      var x = z.slice();
-	      var onlinePlayers;
-	          mMindex.bnd(add, 1, mMindex).bnd(i => mMhistorymM1.bnd(spliceAdd, i, x, mMhistorymM1)
-	            .bnd(() => mMplayerArchive.bnd(spliceAdd, i, playerMonad.s, mMplayerArchive)) 
-	            .bnd(() => mMsetArchive.bnd(spliceAdd, i, sMplayers.s, mMsetArchive) ) 
-	            .bnd(() => console.log('In game. >>>>>>>>>>>>>>>>>>>>>>>>>> i is ', i))  )          
-	        document.getElementById('0').innerHTML = x[0];  
-	        document.getElementById('1').innerHTML = x[1];  
-	        document.getElementById('2').innerHTML = x[2];  
-	        document.getElementById('3').innerHTML = x[3]; 
-	        game2();
-	        cleanup();
-	    };
-	  
-	    var game2 = function game2 () {
-	        var ar = Array.from(sMplayers.s);
-	        document.getElementById('sb1').innerHTML = 'Name: ' +  pMname.x;
-	        document.getElementById('sb2').innerHTML = 'Group: ' + pMgroup.x
-	        document.getElementById('sb3').innerHTML = 'Score: ' + pMscore.x
-	        document.getElementById('sb4').innerHTML = 'Goals: ' + pMgoals.x
-	        document.getElementById('sb5').innerHTML = 'Currently online: ';
-	        document.getElementById('sb6').innerHTML =  ar.join(', ');
-	        cleanup();
-	    };
-	  });  `);
-
-	const arrayFuncs = /* harmony import */ __WEBPACK_IMPORTED_MODULE_0__motorcycle_dom__["h"]('pre', `  var push = function push(y,v,mon) {
-	      if (Array.isArray(y)) {
-	        let ar = [];
-	        let keys = Object.keys(y);
-	        for (let k in keys) {ar[k] = y[k]};
-	        ar.push(v);
-	        return mon.ret(ar);  
-	      }
-	      console.log('The value provided to push is not an array');
-	      return ret(y);
-	    };
-	    
-	    var spliceRemove = function splice(x, j, mon) {
-	      if (Array.isArray(x)) {
-	        let ar = [];
-	        let keys = Object.keys(x);
-	        for (let k in keys) {ar[k] = x[k]};
-	        ar.splice(j,1);
-	        return mon.ret(ar);  
-	      }
-	      console.log('The value provided to spliceRemove is not an array');
-	      return ret(x);
-	    };
-	    
-	    var spliceAdd = function splice(x, index, value, mon) {
-	      if (Array.isArray(x)) {
-	        let ar = [];
-	        let keys = Object.keys(x);
-	        for (let k in keys) {ar[k] = x[k]};
-	        ar.splice(index, 0, value);
-	        return mon.ret(ar);  
-	      }
-	      console.log('The value provided to spliceAdd is not an array');
-	      return ret(x);
-	    };
-	    
-	    var splice = function splice(x, start, end, mon) {
-	      if (Array.isArray(x)) {
-	        let ar = [];
-	        let keys = Object.keys(x);
-	        for (let k in keys) {ar[k] = x[k]};
-	        ar.splice(start, end);
-	        return mon.ret(ar);  
-	      }
-	      console.log('The value provided to spliceAdd is not an array');
-	      return ret(x);
-	    };
-	  `);
-
-	var cleanup = /* harmony import */ __WEBPACK_IMPORTED_MODULE_0__motorcycle_dom__["h"]('pre', `  function cleanup (x) {
-	      let target0 = document.getElementById('0');
-	      let target1 = document.getElementById('1');
-	      let target2 = document.getElementById('2');
-	      let target3 = document.getElementById('3');
-	      let targetAr = [target0, target1, target2, target3];
-	      for (let i in [0,1,2,3]) {
-	        if (targetAr[i].innerHTML == 'undefined' )    {
-	          targetAr[i].style.display = 'none';
-	        }
-	        else {
-	          targetAr[i].style.display = 'inline';
-	        }
-	      }
-	      return ret(x);
-	  }; `);
-
-	var travel = /* harmony import */ __WEBPACK_IMPORTED_MODULE_0__motorcycle_dom__["h"]('pre', `    const forwardClick$ = sources.DOM
-	      .select('#forward').events('click');
-	   
-	      const backClick$ = sources.DOM
-	        .select('#back').events('click');
-	     
-	      const forwardAction$ = forwardClick$.map(() => {
-	        if (mMindex.x < (mMhistorymM1.x.length - 1)) {
-	          mMindex.bnd(add, 1, mMindex)
-	          .bnd(v => trav(v))
-	        }
-	      });
-	     
-	      const backAction$ = backClick$.map(() => {
-	        if (mMindex.x > 0) {
-	          mMindex.bnd(add, -1, mMindex)
-	          .bnd(v => trav(v))
-	          socket.send('DE#$42,' + pMgroup.x + ',' + pMname.x + ', clicked the BACK button. ');
-	        }
-	      });
-	    
-	    var trav = function trav (index) {       
-	      document.getElementById('0').innerHTML = mMhistorymM1.x[index][0]; 
-	      document.getElementById('1').innerHTML = mMhistorymM1.x[index][1]; 
-	      document.getElementById('2').innerHTML = mMhistorymM1.x[index][2]; 
-	      document.getElementById('3').innerHTML = mMhistorymM1.x[index][3];
-	      document.getElementById('sb3').innerHTML = 'Score: ' + mMplayerArchive.x[index][2];
-	      document.getElementById('sb4').innerHTML = 'Goals: ' + mMplayerArchive.x[index][3];
-	      if (pMgroup.x != 'solo') {
-	        document.getElementById('sb6').innerHTML =  Array.from(mMsetArchive.x[index].s);
-	      }
-	      cleanup();
-	    };    `);
-
-	var C42 = /* harmony import */ __WEBPACK_IMPORTED_MODULE_0__motorcycle_dom__["h"]('pre', `  mMZ10.bnd(() => mM$1
-	     .ret([mMar.x[3], mMar.x[4], mMar.x[5], mMar.x[6]])
-	     .bnd(() => mM$2.ret([]))
-	     .bnd(displayInline,'0')
-	     .bnd(displayInline,'1')
-	     .bnd(displayInline,'2')
-	     .bnd(displayInline,'3'));  `);
-
-	var taskStream = /* harmony import */ __WEBPACK_IMPORTED_MODULE_0__motorcycle_dom__["h"]('pre', `  
-	      `);
-
-	var deleteTask2 = /* harmony import */ __WEBPACK_IMPORTED_MODULE_0__motorcycle_dom__["h"]('pre', `  mMZ19.bnd(() => mM$task.bnd(spliceRemove, mMar.x[3], mM$task));
-	  `);
-
-	var newTask = /* harmony import */ __WEBPACK_IMPORTED_MODULE_0__motorcycle_dom__["h"]('pre', `  const newTask$ = sources.DOM
-	    .select('input.newTask').events('keydown'); 
-
-	  const newTaskAction$ = newTask$.map(e => {
-	      let ob = {};
-	      var alert = '';
-	      var ar = e.target.value.split(',');
-	      var ar2 = ar.slice(2);
-	      var task = '';
-	      if (ar.length < 4) {
-	        task = ar[2];
-	      }
-	      if (ar.length > 3) {
-	        task = ar2.reduce((a,b) => a + '$*$*$' + b);
-	      }
-	      if( e.keyCode == 13 ) {
-	        if ( ar.length < 3 ) {
-	          alert = 'You should enter "author, responsible party, task" separated by commas';
-	          document.getElementById('alert').innerHTML = alert;
-	        }
-
-	        else if ( (mMar2.x.filter(v => (v.task == task)).length) > 0 ) {
-	          document.getElementById('alert').innerHTML = task + " is already listed.";
-	        }
-
-	        else if ( ar.length > 2 ) {
-	          mM$taskList.bnd(addString, task + ',yellow, none, false,' +  ar[0] + ',' + ar[1], mM$taskList);
-	          e.target.value = '';
-	          document.getElementById('alert').innerHTML = '';
-	        } 
-	      } 
-	  };  `);
-
-	var process = /* harmony import */ __WEBPACK_IMPORTED_MODULE_0__motorcycle_dom__["h"]('pre', `  const process = function(str) {
-	    let a = str.split(",");
-	    console.log('In process. str and a are: ', str, a);
-	    if (a == undefined) {
-	      return;
-	    };
-	    if (a.length < 9) {
-	      return
-	    };
-	    let ob = {};
-	    let ar = a.slice(3)
-	    let s = ar.reduce((a,b) => a + ',' + b);
-	    if (mM$taskList.x.length < 5) {
-	      mM$taskList.ret(s);
-	    }
-	    let ar2 = [];
-	    let tempArray = [];
-	    if (ar.length < 6) {return};
-	    if ((ar.length % 6) !== 0) {
-	      document.getElementById('alert').innerHTML = 'Error: array length is: ' + length;
-	    } else {
-	      let keys = Array(ar.length/6).fill(1);
-	      keys.map(_ => {
-	        ar2.push(
-	          {
-	            task: convertBack(ar.shift()),
-	            color: ar.shift(),
-	            textDecoration: ar.shift(),
-	            checked: ar.shift() === 'true',
-	            author: ar.shift(),
-	            responsible: ar.shift()
-	          }
-	        )
-	      })
-	      console.log('In process  ar2 is: ', ar2)
-	      let keys2 = Object.keys(ar2);
-	      for (let k in keys) {
-	        tempArray.push(
-	          h('div.todo',  [
-	            h('span.task3', {style: {color: ar2[k].color, textDecoration: ar2[k].textDecoration}},
-	                'Task: ' + ar2[k].task  ),  
-	            h('br'),
-	            h('button#edit1', 'Edit'  ),
-	            h('input#edit2', {props: {type: 'textarea', value: ar2[k].task}, style: {display: 'none'}}  ), 
-	            h('span#author.tao', 'Author: ' + ar2[k].author  + ' / ' + 'Responsibility: ' + ar2[k].responsible),
-	            h('br'),
-	            h('input#cb', {props: {type: 'checkbox', checked: ar2[k].checked}, style: {color: ar2[k].color,
-	                 textDecoration: ar2[k].textDecoration} } ), 
-	            h('label.cbox', { props: {for: '#cb'}}, 'Completed' ),
-	            h('button.delete', 'Delete'  ),  
-	            h('br'),
-	            h('hr')])
-	        )
-	      }
-	      mMtaskList.ret(tempArray)
-	    }
-	  };  `);
-
-	var colorClick = /* harmony import */ __WEBPACK_IMPORTED_MODULE_0__motorcycle_dom__["h"]('pre', `  const colorClick$ = sources.DOM
-	    .select('#cb').events('click')
-	    
-	  const colorAction$ = colorClick$.map(e => {
-	    let index = getIndex(e);
-	    let s = mM$taskList.x;
-	    let ar = s.split(',');
-	    let n = 6 * index + 3;
-	    let j = 6 * index + 2;
-	    let k = 6 * index + 1;
-	    let checked = ar[n];
-	    if (checked == 'true')  {
-	      ar[n] = 'false'; 
-	      ar[k] = 'yellow'; 
-	      ar[j] = 'none'; 
-	    }
-	    else {
-	      ar[n] = 'true'; 
-	      ar[k] = 'lightGreen'; 
-	      ar[j] = 'line-through'; 
-	    }
-	    mM$taskList.ret( ar.reduce((a,b) => a + ',' + b) )
-	  });  
-	                     
-	  var getIndex = function getIndex (event_object) {
-	    var task = event_object.currentTarget.parentNode.innerText;
-	    var possibilities = event_object.currentTarget.parentNode.parentNode.childNodes;
-	    var keys = Object.keys(possibilities);
-	    for (let k in keys) {
-	      if (task == possibilities[k].innerText) {
-	        return k
-	      }
-	    }
-	    console.log('In getIndex. No match');
-	  }  `);
-
-	var edit = /* harmony import */ __WEBPACK_IMPORTED_MODULE_0__motorcycle_dom__["h"]('pre', `  const edit1$ = sources.DOM
-	    .select('#edit1').events('click')
-	    
-	  const edit1Action$ = edit1$.map(e => {
-	    let index = getIndex2(e);
-	    mMtaskList.x[index].children[3].elm.style.display = 'block';
-	  });
-
-	  const edit2$ = sources.DOM
-	    .select('#edit2').events('keypress')
-	    
-	  const edit2Action$ = edit2$.map(e => {
-	    let v = e.target.value;
-	    let index = getIndex2(e);
-	    if( e.keyCode == 13 ) {
-	      process2(v, index);
-	    mMtaskList.x[index].children[3].elm.style.display = 'none';
-	    }
-	  });
-
-	  const process2 = function(str, index) {
-	    var a = mMcurrentList.x.split(',');
-	    a[6*index] = str;
-	    var b = a.reduce((a,b) => a + ',' + b)
-	    task2(b);  
-	  };
-
-	  var getIndex2 = function getIndex2 (e) {
-	    var elem = e.currentTarget.parentNode.children[0].innerHTML
-	    var elem2 = e.currentTarget.parentNode.parentNode.childNodes
-	    var keys = Object.keys(elem2);
-	    for (let k in keys) {
-	      if (elem == elem2[k].childNodes[0].innerHTML) {
-	        return k
-	      }
-	      console.log('In getIndex2. No match');
-	    }
-	  }  `);
-
-	var mM$task = /* harmony import */ __WEBPACK_IMPORTED_MODULE_0__motorcycle_dom__["h"]('pre', `  const taskAction$ = mM$taskList.stream.map(str => {
-	    socket.send('TD#$42' + ',' + mMgroup.x.trim() + 
-	        ',' + mMname.x.trim() + ',' + '@' + str);
-	  });  `);
-
-	var updateCalc = /* harmony import */ __WEBPACK_IMPORTED_MODULE_0__motorcycle_dom__["h"]('pre', `  function updateCalc() { 
-	    mM3.bnd(ar => mM7       // mM3 contributes mM3.x to the computation.
-	    .ret(calc(ar[0], mM8.x, ar[1]))      // mM8.x is the operator string.
-	    .bnd(result =>   // The return value of calc(), which is mM7.x, is used three times.
-	      {  mM1.bnd(push, result, mM1).bnd(z =>
-	         mM$1.ret(z));                         // Updates the display.             
-	        if (result == 20) {score(mM13.x, 1)}; 
-	        if (result == 18) {score(mM13.x, 3)};
-	      }
-	    )) 
-	    reset()
-	  };
-
-	  var score = function score(x,j) {
-	    socket.send('CA#$42,' + pMgroup.x + ',' + pMname.x + ',6,6,12,20');
-	    if ((x + j) == 20) {
-	      mMplayer.ret([]);
-	      mM13.ret(0).bnd(mMindex.ret);
-	      mMhistorymM1.ret([0,0,0,0]);   
-	      mMgoals.bnd(add, 1, mMgoals).bnd(v => {
-	        if (v == 3) {
-	          socket.send('CG#$42,' + pMgroup.x + ',' + pMname.x + ',' + -x + ',' + 0); 
-	          socket.send('CE#$42,' + pMgroup.x + ',' + pMname.x + ',nothing ')
-	          mMgoals.ret(0);
-	        }
-	        else socket.send('CG#$42,' + pMgroup.x + ',' + pMname.x + ',' + -x + ',' + v); 
-	      })
-	      return;
-	    }
-	    if ((x + j) % 5 == 0) {
-	      socket.send('CG#$42,' + pMgroup.x + ',' + pMname.x + ','+ (j+5)+',' + mMgoals.x); 
-	      mM13.ret(x + j + 5);
-	      return;
-	    } 
-	    socket.send('CG#$42,' + pMgroup.x + ',' + pMname.x + ','+ j + ',' + mMgoals.x); 
-	    mM13.ret(x + j);
-	 };
-
-	  var reset = function reset () {
-	      mM3.ret([])
-	      .bnd(() => mM4.ret(0)
-	      .bnd(mM8.ret)
-	      .bnd(cleanup))    // Hides 'undefined' values in the display.
-	  }
-
-	  var updateScoreboard = function updateScoreboard(v) {  // v is received from the server.
-	    let ar2 = v.split("<br>");
-	    let ar = ar.slice();
-	    return mMscoreboard.ret(ar);
-	  };  `);
-
-	var testZ = /* harmony import */ __WEBPACK_IMPORTED_MODULE_0__motorcycle_dom__["h"]('pre', `  mMZ1.bnd(v => mMt1.bnd(add,v,mMt1)
-	  .bnd(cube,mMt2)
-	  .bnd(() => mMt3.ret(mMt1.x + ' cubed is ' + mMt2.x)))  
-	  
-	  mMZ2.bnd(v => cube(v).bnd(w => mMt3.ret(v + ' cubed is ' + w)))  `);
-
-	var quad = /* harmony import */ __WEBPACK_IMPORTED_MODULE_0__motorcycle_dom__["h"]('pre', `  const quad$ = sources.DOM
-	    .select('#quad').events('keypress')  // Motorcycle way to get user input.
-	  
-	  const quadAction$ = quad$.map((e) => {
-	    if( e.keyCode == 13 ) {
-	      mMZ3.release(e.target.value)       // Releases mMZ (below).
-	      document.getElementById('quad').value = '';
-	    }
-	  });
-
-	  var solve = function solve () {
-	    mMZ3.bnd(a => 
-	    mMtemp.ret(a)           
-	    .bnd(display, 'quad4', '')         
-	    .bnd(display, 'quad6', '')         
-	    .bnd(display,'quad5', a + " * x * x ")
-	    .bnd(a => mMZ3    // Blocks here until new user input comes in.
-	    .bnd(b =>  mMtemp.ret(b)
-	    .bnd(display, 'quad6', b + ' * x ').bnd(b => mMZ3  // Blocks again.
-	    .bnd(c => mMtemp.ret([a,b,c]).bnd(fmap, qS4, "mMtemp")
-	    .bnd(v => {  
-	      let x = v[0]
-	      let y = v[1]
-	    mMtemp.bnd(display, 'quad4', "Results: " + x + " and  " + y)  
-	    .bnd(display, 'quad5', p(a).text + " * " + x + " * " + x + " + " + p(b).text + 
-	            " * " + x + " " + p(c).text + " = 0")
-	    .bnd(display, 'quad6', p(a).text + " * " + y + " * " + y + " + " + p(b).text + 
-	            " * " + y + " " + p(c).text + " = 0")   
-	    solve();  
-	    } ) ) ) ) ) ) 
-	  };
-
-	  var p = function p (x) { 
-	    if (x >= 0) {return ' + ' + x}
-	    if (x < 0 ) {return ' - ' + Math.abs(x)}
-	  }
-
-	  var qS1 = function qS1 (a, b, c) {
-	    let n = (b*(-1)) + (Math.sqrt(b*b - 4*a*c));
-	    if (n != n) {
-	      return "No solution";
-	    }
-	    return n/(2*a);
-	  }
-
-	  var qS2 = function qS2 (a, b, c) {
-	    let n = (b*(-1)) - (Math.sqrt(b*b - 4*a*c));
-	    if (n != n) {
-	      return "No solution";
-	    }
-	    return n/(2*a);
-	  
-	  function fmap (x, g, id) {
-	    window[id] = new Monad(g(x), id); 
-	    return window[id]
-	  }
-	  
-	  var display = function display (x, id, string) {
-	    document.getElementById(id).innerHTML = string;
-	    return ret(x);
-	  }  `);
-
-	var mdem1 = /* harmony import */ __WEBPACK_IMPORTED_MODULE_0__motorcycle_dom__["h"]('pre', `  var equals = function equals (x, mon1, mon2, mon3) {
-	    if (mon1.id === mon2.id && mon1.x === mon2.x) {
-	      mon3.ret('true');
-	    } else mon3.ret('false');
-	    return ret(x);
-	  }
-	  
-	  var add = function(x,b,mon) {
-	    if (arguments.length === 3) {
-	      return mon.ret(x + b);
-	    }
-	    return ret(x+b);
-	  }
-
-	  var cube = function(v,mon) {
-	    if (arguments.length === 2) {
-	      return mon.ret(v*v*v);
-	    }
-	    return ret(v*v*v);
-	  }  `);
-
-	var runTest = /* harmony import */ __WEBPACK_IMPORTED_MODULE_0__motorcycle_dom__["h"]('pre', `  var runTest = function monTest () {
-	  mM5.bnd( equals,  
-	    m.ret(0).bnd(v => add(v, 3, m).bnd(cube)), 
-	    m.ret(0).bnd(add, 3, m).bnd(cube), mMa)
-
-	  mM5.bnd(equals, m, m.bnd(m.ret), mMb)
-
-	  mM5.bnd(equals, m, m.ret(m.x), mMc)
-	  }  `);
-
-	var inc = /* harmony import */ __WEBPACK_IMPORTED_MODULE_0__motorcycle_dom__["h"]('pre', `  var inc = function inc(x, mon) {
-	      return mon.ret(x + 1);
-	  };
-
-	  var spliceAdd = function spliceAdd(x, index, value, mon) {
-	    if (Array.isArray(x)) {
-	      let ar = [];
-	      let keys = Object.keys(x);
-	      for (let k in keys) {ar[k] = x[k]};
-	      ar.splice(index, 0, value);
-	      return mon.ret(ar);  
-	    }
-	    console.log('The value provided to spliceAdd is not an array');
-	    return ret(x);
-	  }  `);
-
-	var todoStream = /* harmony import */ __WEBPACK_IMPORTED_MODULE_0__motorcycle_dom__["h"]('pre', `  const taskAction$ = mM$taskList.stream.map(str => {
-	    socket.send('TD#$42' + ',' + mMgroup.x.trim() + 
-	        ',' + mMname.x.trim() + ',' + '@' + str);
-	  });  `);
-
-	var add = /* harmony import */ __WEBPACK_IMPORTED_MODULE_0__motorcycle_dom__["h"]('pre', `  var add = function(x,b,mon) {
-	    if (arguments.length === 3) {
-	      return mon.ret(x + b);
-	    }
-	    return ret(x+b);  
-	  }; `);
-
-	var ret_add_cube = /* harmony import */ __WEBPACK_IMPORTED_MODULE_0__motorcycle_dom__["h"]('pre', `  var ret = function ret(v, id) {
-	    if (arguments.length === 1) {
-	      return (new Monad(v, 'anonymous'));
-	    }
-	    window[id] = new Monad(v, id);
-	    return window[id];
-	  }  
-
-	  var add = function(x,b,mon) {
-	    if (arguments.length === 3) {
-	      return mon.ret(x + b);
-	    }
-	    return ret(x+b);
-	  };
-
-	  var cube = function(v,mon) {
-	    if (arguments.length === 2) {
-	      return mon.ret(v*v*v);
-	    }
-	    return ret(v*v*v);
-	}  `);
-
-	var seed = /* harmony import */ __WEBPACK_IMPORTED_MODULE_0__motorcycle_dom__["h"]('pre', `  mM$prime.ret([[2],3])  `);
-
-	var traverse = /* harmony import */ __WEBPACK_IMPORTED_MODULE_0__motorcycle_dom__["h"]('pre', `  const forwardClick$ = sources.DOM
-	    .select('#forward').events('click');
-	 
-	  const backClick$ = sources.DOM
-	    .select('#back').events('click');
-	 
-	  const forwardAction$ = forwardClick$.map(() => {
-	    if (mMindex.x < (mMhistorymM1.x.length - 1)) {
-	      mMindex.bnd(add, 1, mMindex)
-	      .bnd(v => trav(v))
-	    }
-	  });
-	 
-	  const backAction$ = backClick$.map(() => {
-	    if (mMindex.x > 0) {
-	      mMindex.bnd(add, -1, mMindex)
-	      .bnd(v => trav(v))
-	      socket.send('DE#$42,' + pMgroup.x + ',' + pMname.x + ', clicked the BACK button. ');
-	    }
-	  });
-
-	  var game = function game (z) {  // Runs each time a number is clicked
-	    var x = z.slice();
-	        mMindex.bnd(add, 1, mMindex)
-	          .bnd(i => mMhistorymM1.bnd(spliceAdd, i, x, mMhistorymM1)
-	            .bnd(() => mMplayerArchive.bnd(spliceAdd, i, playerMonad.s, mMplayerArchive)) 
-	            .bnd(() => mMsetArchive.bnd(spliceAdd, i, sMplayers.s, mMsetArchive) ) 
-	      document.getElementById('0').innerHTML = x[0];  
-	      document.getElementById('1').innerHTML = x[1];  
-	      document.getElementById('2').innerHTML = x[2];  
-	      document.getElementById('3').innerHTML = x[3]; 
-	      game2();
-	      cleanup();
-	  };
-
-	  var game2 = function game2 () {
-	      var ar = Array.from(sMplayers.s);
-	      document.getElementById('sb1').innerHTML = 'Name: ' +  pMname.x;  // kept current by playerMonad
-	      document.getElementById('sb2').innerHTML = 'Group: ' + pMgroup.x
-	      document.getElementById('sb3').innerHTML = 'Score: ' + pMscore.x
-	      document.getElementById('sb4').innerHTML = 'Goals: ' + pMgoals.x
-	      document.getElementById('sb5').innerHTML = 'Currently online: ';
-	      document.getElementById('sb6').innerHTML =  ar.join(', ');
-	      cleanup();
-	  };
-	 
-	  var trav = function trav (index) {       
-	    document.getElementById('0').innerHTML = mMhistorymM1.x[index][0]; 
-	    document.getElementById('1').innerHTML = mMhistorymM1.x[index][1]; 
-	    document.getElementById('2').innerHTML = mMhistorymM1.x[index][2]; 
-	    document.getElementById('3').innerHTML = mMhistorymM1.x[index][3];
-	    document.getElementById('sb3').innerHTML = 'Score: ' + mMplayerArchive.x[index][2];
-	    document.getElementById('sb4').innerHTML = 'Goals: ' + mMplayerArchive.x[index][3];
-	    if (pMgroup.x != 'solo') {
-	      document.getElementById('sb6').innerHTML =  Array.from(mMsetArchive.x[index].s);
-	    }
-	    cleanup();
-	  };  `);
-
-	var MonadState = /* harmony import */ __WEBPACK_IMPORTED_MODULE_0__motorcycle_dom__["h"]('pre', `  const MonadState = function (g, state, value, p)  {
-	  this.id = g;
-	  this.s = state;
-	  this.a = value;
-	  this.process = p;
-	  this.bnd = (func, ...args) => func(this.s, ...args);  
-	  this.run = st => { 
-	    let s = this.process(st); 
-	    let a = s[3];
-	    window[this.id] = new MonadState(this.id, s, a, this.process);
-	    return window[this.id];
-	  }
-	}  `);
-
-	var primesMonad = /* harmony import */ __WEBPACK_IMPORTED_MODULE_0__motorcycle_dom__["h"]('pre', `  var primesMonad = new MonadState('primesMonad', [2, '', 3, [2]], [2],  primes_state) 
-
-	  var primes_state = function primes_state(x) {
-	    var v = x.slice();
-	      while (2 == 2) {
-	        if (v[3].every(e => ((v[0]/e) != Math.floor(v[0]/e)))) {
-	          v[3].push(v[0]);
-	        }
-	        if (v[3][v[3].length - 1] > v[2]) { break }; // Not an infinite loop afterall
-	        v[0]+=2;
-	      }
-	    return v;
-	  }  `);
-
-	var fibsMonad = /* harmony import */ __WEBPACK_IMPORTED_MODULE_0__motorcycle_dom__["h"]('pre', `  var fibsMonad = new MonadState('fibsMonad', [0, 1, 3, [0,1]], [0,1], fibs_state  ) 
-
-	  var fibs_state = function fibs_state(ar) {
-	    var a = ar.slice();
-	    while (a[3].length < a[2]) {
-	      a = [a[1], a[0] + a[1], a[2], a[3].concat(a[0])];
-	    }
-	    return a
-	  }  `);
-
-	var tr3 = /* harmony import */ __WEBPACK_IMPORTED_MODULE_0__motorcycle_dom__["h"]('pre', `  var tr3 = function tr (fibsArray, primesArray) {
-	    var bound = Math.ceil(Math.sqrt(fibsArray[fibsArray.length - 1]))
-	    var primes = primesArray.slice();
-	    if (primesArray.slice(-1)[0] >= bound) {
-	      primes = primesArray.filter(v => v <= bound);
-	    } 
-	    var ar = [];
-	    var fibs = fibsArray.slice(3);
-	    fibs.map (v => {
-	      if (primesArray.every(p => (v % p || v == p))) ar.push(v);
-	    })
-	    return [fibsArray, primes, ar]
-	  }  `);
-
-	var primeFibInterface = /* harmony import */ __WEBPACK_IMPORTED_MODULE_0__motorcycle_dom__["h"]('pre', `  const fibKeyPress5$ = sources.DOM
-	    .select('input#fib92').events('keydown');
-
-	  const primeFib$ = fibKeyPress5$.map(e => {
-	    if( e.keyCode == 13 ) {
-	      var res = fibsMonad
-	      .run([0, 1, e.target.value, []])
-	      .bnd(fibsState => fibsMonad
-	      .bnd(fpTransformer, primesMonad)
-	      .bnd(primesState => tr3(fibsState[3],primesState[3])))
-	      document.getElementById('PF_9').innerHTML = res[0];
-	      document.getElementById('PF_22').innerHTML = res[1];
-	      document.getElementById('primeFibs').innerHTML = res[2];
-	    }
-	  });  `);
-
-	var fpTransformer = /* harmony import */ __WEBPACK_IMPORTED_MODULE_0__motorcycle_dom__["h"]('pre', `  var fpTransformer = function fpTransformer (s, m) {
-	    var bound = Math.ceil(Math.sqrt(s[3][s[3].length - 1]));
-	    if (bound > m.a[m.a.length - 1] ) {
-	      m.run([m.s[0], "from the fibKeyPress5$ handler", bound, primesMonad.a])
-	    }
-	    return m;
-	  }  `);
-
-	var innerHTML = /* harmony import */ __WEBPACK_IMPORTED_MODULE_0__motorcycle_dom__["h"]('pre', `  var innerHTML = function innerHTML (x, v, u, m) { 
-	    document.getElementById(u).innerHTML = v;
-	    return m.ret(x);
-	  }  `);
-
-	var factorsMonad = /* harmony import */ __WEBPACK_IMPORTED_MODULE_0__motorcycle_dom__["h"]('pre', `  var factorsMonad = new MonadState('factorsMonad', [ 2, [], 4, [] ], [], factor_state); 
-
-	  function factor_state(v) {
-	    v[3].map(p => {
-	      if (v[2]/p == Math.floor(v[2]/p)) {v[1].push(p)}
-	    })
-	    return v;
-	  }  `);
-
-	var factorsInput = /* harmony import */ __WEBPACK_IMPORTED_MODULE_0__motorcycle_dom__["h"]('pre', `  var prFactTransformer = function prFactTransformer (s, m) {
-	    return m.run([s[0], [], mMfactors.x, s[3]])
-	  }
-
-	  const factorsPress$ = sources.DOM
-	    .select('input#factors_1').events('keydown');
-
-	  const factorsAction$ = factorsPress$.map(e => {
-	    mMfactors.ret(e.target.value);                  // Used in prFactTransformer (above)
-	    if (e.target.value == '') {return};
-	    if( e.keyCode == 13 && Number.isInteger(e.target.value*1) ) {
-	      var result;
-	      var factors = primesMonad.run([primesMonad.s[0], [], e.target.value, primesMonad.a])
-	      .bnd(prFactTransformer, factorsMonad).s[1];  // prFactTransformer (defined above) returns factorsMonad
-	      if (e.target.value == factors.slice().pop()){
-	        result = e.target.value + ' is a prime number'
-	      }
-	      else {
-	        result = 'The prime factors of ' + e.target.value + ' are ' + factors;
-	      }
-	      document.getElementById('factors_3').innerHTML = result;
-	    }
-	  });
-	             `);
-
-	var playerMonad = /* harmony import */ __WEBPACK_IMPORTED_MODULE_0__motorcycle_dom__["h"]('pre', `  var playerMonad = new MonadState('playerMonad', [0,0], [0,0], player_state);
-
-	  function player_state (v) {
-	    var x = v.slice();
-	    let ar = [ 
-	    pMscore.ret(x[0]),
-	    pMgoals.ret(x[1]) ]
-	    playerMonad.a = ar;
-	    playerMonad.s = ar;  
-	    return x; 
-	  };  `);
-
-	var MonadSet = /* harmony import */ __WEBPACK_IMPORTED_MODULE_0__motorcycle_dom__["h"]('pre', `  var MonadSet = function MonadSet(set, ID) {
-	    var _this = this;
-	  
-	    this.s = set;
-	  
-	    if (arguments.length === 1) this.id = 'anonymous';
-	    else this.id = ID;
-	  
-	    this.bnd = function (func, ...args) {
-	       return func(_this.x, ...args);
-	    };
-	  
-	    this.add = function (a) {
-	      var ar = Array.from(_this.s);
-	      set = new Set(ar);
-	      set.add(a);
-	      window[_this.id] = new MonadSet(set, _this.id);
-	      return window[_this.id];
-	    };
-	  
-	    this.delete = function (a) {
-	      var ar = Array.from(_this.s);
-	      set = new Set(ar);
-	      set.delete(a);
-	      window[_this.id] = new MonadSet(set, _this.id);
-	      return window[_this.id];
-	    };
-	  
-	    this.clear = function () {
-	      set = new Set([]);
-	      window[_this.id] = new MonadSet(set, _this.id);
-	      return window[_this.id];
-	    };
-	  };
-	  
-	  var s = new Set();
-	  
-	  var sMplayers = new MonadSet( s, 'sMplayers' )  `);
-
-	var promise = /* harmony import */ __WEBPACK_IMPORTED_MODULE_0__motorcycle_dom__["h"]('pre', `      var promise = function promise(x, t, mon, args) {
-	        return (new Promise((resolve) => {
-	          setTimeout(function() {
-	            resolve(eval("mon.ret(x).bnd(" + args + ")"))   // eval! Get over it, Douglas.
-	          },t*1000  );
-	        }));
-	      };  `);
-
-	var promiseSnippet = /* harmony import */ __WEBPACK_IMPORTED_MODULE_0__motorcycle_dom__["h"]('pre', `  m.ret(3).bnd(promise, 2, m, "cube").then(data => m.ret(data.x).bnd(add, 15, m))  `);
-
-	var timeoutSnippet = /* harmony import */ __WEBPACK_IMPORTED_MODULE_0__motorcycle_dom__["h"]('pre', `  const timeoutClicks$ = sources.DOM.select('#timeout').events('click')
-
-	  const timeoutAction$ = timeoutClicks$.map(() => {
-	    document.getElementById('timeout2').innerHTML = ''
-	    m.ret(3, 'm')
-	      .bnd(timeout2, 1, m, [() => m
-	      .bnd(cube, m)
-	      .bnd(display, 'timeout2', 'm.x is ' + ' ' + m.x, m)
-	      .bnd(timeout2, 2, m, [() => m
-	      .bnd(add, 15, m)
-	      .bnd(display, 'timeout2',  'm.x is ' + ' ' + m.x, m)
-	      /* Continue chaining from here */
-	      .bnd(display, 'timeout3', 'The meaning of everything was computed to be' + ' ' + m.x, m)   
-	    ])]);  
-	  });  `);
-
-	var timeout = /* harmony import */ __WEBPACK_IMPORTED_MODULE_0__motorcycle_dom__["h"]('pre', `  var timeout2 = function timeout (x, t, m, args) {
-	    setTimeout(function () {
-	      mMZ9.release();
-	    }, t * 1000  );
-	    return mMZ9.bnd(() => m.bnd(... args))
-	  };  `);
-
-	var examples = /* harmony import */ __WEBPACK_IMPORTED_MODULE_0__motorcycle_dom__["h"]('pre', ` 
-	             ret('m1Val','m1')
-	             m1.x === 'm1Val'   // true
-	             ret('m2Val', 'm2')
-	             m2.x === 'm2Val'   // true
-
-	             m1.bnd(m2.ret)
-	             m2.x === 'm1Val' // true
-	             m2.x === 'm2Val'   // still true
-
-	             m1.ret('newVal')
-	             m1.bnd(v => ret(v, 'm2'))
-	             m2.x === 'newVal'  // true
-	             m2.x === 'm1Val' // true   still the same  `);
-
-	var examples2 = /* harmony import */ __WEBPACK_IMPORTED_MODULE_0__motorcycle_dom__["h"]('pre', ` 
-	  var m = new Monad(v, "m");
-	  ret(v, "m");
-	             `);
-
-	var async = /* harmony import */ __WEBPACK_IMPORTED_MODULE_0__motorcycle_dom__["h"]('pre', `  const LOCKED = ret(true, 'LOCKED');
-	  LOCKED.ret(true);   // Creates LOCKED
-
-	  const messages2$ = (sources.WS).map(e => {
-	    if (!LOCKED.x) {
-	      var v2 = e.data.split(',');
-	      ret(v2.slice(3))
-	      .bnd(v => mMtemp.bnd(display,'request2', 'The current online members of ' + pMgroup.x + ' are:')
-	      .bnd(() => mMtemp.bnd(display,'request3', v) 
-	      .bnd(() => mMtemp.bnd(log, "The members are " + v )
-	      .bnd(() => LOCKED.ret(true)))))
-	    }
-	  });
-
-	  const requestClicks$ = sources.DOM.select('#request').events('click');
-
-	  const requestAction$ = requestClicks$.map(() => {
-	    if (pMgroup.x != 'solo') {         // The default non-group
-	      LOCKED.ret(false);
-	      socket.send('NN#$42,' + pMgroup.x  + ',' + pMname.x + ',' + pMgroup ); 
-	    }
-	  });
-
-	var display = function display (x, id, string) {
-	  document.getElementById(id).innerHTML = string;
-	  return ret(x);
-	}  `);
-
-	var e1 = /* harmony import */ __WEBPACK_IMPORTED_MODULE_0__motorcycle_dom__["h"]('pre', `  var ret = function ret(v, id) {
-	    if (arguments.length === 1) {
-	      return (new Monad(v, 'anonymous'));
-	    }
-	    window[id] = new Monad(v, id);
-	    return window[id];
-	  }
-	  
-	  var cube = function(v,mon) {
-	    if (arguments.length === 2) {
-	      return mon.ret(v*v*v);
-	    }
-	    return ret(v*v*v);
-	  }
-	  
-	  var add = function(x,b,mon) {
-	    if (arguments.length === 3) {
-	      return mon.ret(x + b);
-	    }
-	    return ret(x+b);
-	  }
-	  
-	  var log = function log(x, message, mon) {
-	    console.log('In log. Entry: ', message);
-	    if (arguments.length === 3) return mon
-	    return ret(x);
-	  };  `);
-
-	var e2 = /* harmony import */ __WEBPACK_IMPORTED_MODULE_0__motorcycle_dom__["h"]('pre', `  var c = m.ret(0).bnd(add,3).bnd(cube)
-	  .bnd(log,"m.x and a.x are  " + m.x + " and " + a.x + " respectively ")
-	  Output: In log. Entry:  m.x and a.x are  0 and 27 respectively 
-	  Note: m.x keeps its initial value of 0.
-
-	  m.bnd(() => add(0, 3).bnd(cube).bnd(m.ret).bnd(v => log("", "m.x is " + v))) 
-	  Output: In log. Entry:  m.x is 27
-	  Note: It doesn\'t matter what m.x was at the beginning of the computation.
-	 
-	  ret(3).bnd(v => ret(v*v).bnd(v2 => log("", "a squared is " + v2).bnd(() => 
-	  ret(4*4).bnd(v3 => log("", "a squared plus b squared is " + (v2 + v3), m)))))
-	  Output: In log. Entry:  a squared is 9
-	          In log. Entry:  a squared plus b squared is 25  `);
-
-	var equals = /* harmony import */ __WEBPACK_IMPORTED_MODULE_0__motorcycle_dom__["h"]('pre', `    var equals = function equals (mon1, mon2) {
-	      if (mon1.id === mon2.id && mon1.x === mon2.x) return true;
-	      else return false
-	    }  `);
-
-	var fmap = /* harmony import */ __WEBPACK_IMPORTED_MODULE_0__motorcycle_dom__["h"]('pre', `    function fmap (x, g, id) {window[id] = new Monad(g(x), id); return window[id]}
-	  
-	    var qS1 = function qS1 (a, b, c) {
-	      let n = (b*(-1)) + (Math.sqrt(b*b - 4*a*c));
-	      if (n != n) {
-	        return "No solution";
-	      }
-	      return n/(2*a);
-	    }
-	  
-	    var qS2 = function qS2 (a, b, c) {
-	      let n = (b*(-1)) - (Math.sqrt(b*b - 4*a*c));
-	      if (n != n) {
-	        return "No solution";
-	      }
-	      return n/(2*a);
-	    }
-	  
-	    var qS4 = function qS4 ([x,y,z]) {
-	      let [a,b,c] = [x,y,z]
-	      return [qS1(a,b,c), qS2(a,b,c)]    
-	    }  
-	    
-	    m.ret([12,12,-144])
-	  
-	    m.bnd(fmap, qS4, "temp").bnd(lg)   logs [3, -4] `);
-
-	var opM = /* harmony import */ __WEBPACK_IMPORTED_MODULE_0__motorcycle_dom__["h"]('pre', `    function opM (a, op, b, id) {
-	      window[id] = new Monad(eval(a.x + op + b.x), id); 
-	      return window[id];
-	    }  
-	    
-	    m1.ret(42)
-
-	    m2.ret(7)
-
-	    opM(m1, "%", m2, "ok").bnd(lg)  logs 0
-
-	    opM(m1, "+", m2, "ok").bnd(lg)  logs 49  `);
-
-	var p7 = /* harmony import */ __WEBPACK_IMPORTED_MODULE_0__motorcycle_dom__["h"]('pre', `  
-	`);
-
-	/* harmony default export */ exports["default"] = { monad, equals, fmap, opM, e1, e2, fib, driver, messages, next, monadIt, MonadSet, updateCalc, arrayFuncs, travel, nums, cleanup, ret, C42, newTask, process, mM$task, addString, colorClick, edit, testZ, quad, mdem1, runTest, todoStream, inc, ret_add_cube, seed, add, traverse, MonadState, primesMonad, fibsMonad, primeFibInterface, tr3, fpTransformer, innerHTML, factorsMonad, factorsInput, playerMonad, promise, promiseSnippet, timeout, timeoutSnippet, examples, examples2, async }
+	var monad = (0, _dom.h)('pre', { style: { color: '#AFEEEE' } }, '  const Monad = function Monad(z, ID = \'anonymous\') {\n    this.id = ID;\n    this.x = z;\n    this.bnd = (func, ...args) => func(this.x, ...args);\n    this.ret =  a => window[this.id] = new Monad(a,this.id);\n  }; ');
+
+	var monadIt = (0, _dom.h)('pre', { style: { color: '#AFEEEE' } }, '  const MonadItter = () => {\n    this.p = function () {};\n    this.release = (...args) => this.p(...args);\n    this.bnd = func => this.p = func;\n  }; ');
+
+	var ret = (0, _dom.h)('pre', { style: { color: '#AFEEEE' } }, '  var ret = function ret(v, id) {\n    if (arguments.length === 1) {\n      return (new Monad(v, \'anonymous\'));\n    }\n    window[id] = new Monad(v, id);\n    return window[id];\n  }; ');
+
+	var fib = (0, _dom.h)('pre', '  mM$fib.stream.addListener({\n    next: v => {\n      if (v[2] > 1) {mM$fib.ret([v[1], v[0] + v[1], v[2] -1])}\n      else {\n        mM19.ret(v[1]);\n      }\n    },\n    error: err => console.error(err),\n    complete: () => console.log(\'completed\')\n  });\n\n  const fibPress$ = sources.DOM\n    .select(\'input#code\').events(\'keydown\');\n\n  const fibPressAction$ = fibPress$.map(e => {\n    if (e.target.value == \'\') {return};\n    if( e.keyCode == 13 && Number.isInteger(e.target.value*1) ) {\n      mM21.ret(e.target.value);\n      mM$fib.ret([0, 1, e.target.value]);\n    }\n    if( e.keyCode == 13 && !Number.isInteger(e.target.value*1 )) {\n      mM19.ret("You didn\'t provide an integer");\n    }\n  });  ');
+
+	var driver = (0, _dom.h)('pre', '  var websocketsDriver = function () {\n      return create((add) => {\n        socket.onmessage = msg => add(msg)\n      })\n  };\n');
+
+	var messages = (0, _dom.h)('pre', '  const messages$ = (sources.WS).map(e => \n    mMtem.ret(e.data.split(\',\')).bnd(v => {\n    console.log(\'<><><><><><><><><><><><><><><><>  INCING  <><><><><><><> >>> In messages. v is \', v );\n    mMZ10.bnd(() => mM1.ret([v[3], v[4], v[5], v[6]]).bnd(ar => game(ar))) \n    mMZ11.bnd(() => socket.send(\'NN#$42,\' + pMgroup.x + \',\' + pMname.x))\n    mMZ12.bnd(() => mM6.ret(v[2] + \' successfully logged in.\'))\n    mMZ13.bnd(() => updateMessages(v))\n    mMZ14.bnd(() => mMgoals2.ret(\'The winner is \' + v[2] ))\n    mMZ15.bnd(() => mMgoals2.ret(\'A player named \' + v[2] + \' is currently logged in. Page will refresh in 4 seconds.\')\n    .bnd(refresh))\n    mMZ16.bnd(() => {if (pMname.x != v[2]) {mMgoals2.ret(v[2] + v[3])}})\n    mMZ17.bnd(() => {\n      if (v[3] == \'no file\') {\n        mMtaskList.ret([])\n      } \n      else {\n        process(e.data)\n      }\n    })\n    mMZ18.bnd(() => player(v))\n    mMZ19.bnd(() => {\n      var names = v.slice(3);\n      sMplayers.clear();\n      names.forEach(player => sMplayers.add(player.trim()))\n      game2();\n    }) })\n       mMtemp.ret(e.data.split(\',\')[0])\n      .bnd(next, \'CA#$42\', mMZ10)\n      .bnd(next, \'XX#$42\', mMZ11)\n      .bnd(next, \'CC#$42\', mMZ12)\n      .bnd(next, \'CD#$42\', mMZ13)\n      .bnd(next, \'CE#$42\', mMZ14)\n      .bnd(next, \'EE#$42\', mMZ15)\n      .bnd(next, \'DE#$42\', mMZ16)\n      .bnd(next, \'DD#$42\', mMZ17)\n      .bnd(next, \'CG#$42\', mMZ18)\n      .bnd(next, \'NN#$42\', mMZ19)\n  });  ');
+
+	var MonadSet = (0, _dom.h)('pre', '  var MonadSet = function MonadSet(set, ID) {\n    this.s = set;\n    this.bnd = (func, ...args) => func(this.s, ...args);  \n    this.add = a => new MonadSet(s.add(a), this.id);\n    this.delete = a => new MonadSet(s.delete(a), this.id);\n    this.clear = () => new MonadSet(s.clear(), this.id);\n  };  ');
+
+	var nums = (0, _dom.h)('pre', '    const numClick$ = sources.DOM\n      .select(\'.num\').events(\'click\');\n       \n    const numClickAction$ = numClick$.map(e => {\n      if (mM3.x.length < 2) {\n        mM3.bnd(push, e.target.innerHTML, mM3)\n        var ar = mMhistorymM1.x[mMindex.x].slice()\n        ar.splice(e.target.id, 1)\n        mM1.ret(ar);\n        game(ar);\n      }\n      if (mM3.x.length === 2 && mM8.x !== 0) {\n        console.log(\'7777777777777777777777777777  In numClickAction$ heading for updateCalc.  mM1.x is \', mM1.x);\n        updateCalc();\n      }\n    }).startWith([0,0,0,0]);\n      \n    const opClick$ = sources.DOM\n      .select(\'.op\').events(\'click\');\n   \n    const opClickAction$ = opClick$.map(e => {\n      mM8.ret(e.target.textContent);\n      if (mM3.x.length === 2) {\n        updateCalc();\n      }\n    })\n   \n    var game = function game (z) {\n      console.log(\'>>>>>>>>>>>>>>> game has been called. mMindex.x and z are \', mMindex.x, z);\n      var x = z.slice();\n      var onlinePlayers;\n          mMindex.bnd(add, 1, mMindex).bnd(i => mMhistorymM1.bnd(spliceAdd, i, x, mMhistorymM1)\n            .bnd(() => mMplayerArchive.bnd(spliceAdd, i, playerMonad.s, mMplayerArchive)) \n            .bnd(() => mMsetArchive.bnd(spliceAdd, i, sMplayers.s, mMsetArchive) ) \n            .bnd(() => console.log(\'In game. >>>>>>>>>>>>>>>>>>>>>>>>>> i is \', i))  )          \n        document.getElementById(\'0\').innerHTML = x[0];  \n        document.getElementById(\'1\').innerHTML = x[1];  \n        document.getElementById(\'2\').innerHTML = x[2];  \n        document.getElementById(\'3\').innerHTML = x[3]; \n        game2();\n        cleanup();\n    };\n  \n    var game2 = function game2 () {\n        var ar = Array.from(sMplayers.s);\n        document.getElementById(\'sb1\').innerHTML = \'Name: \' +  pMname.x;\n        document.getElementById(\'sb2\').innerHTML = \'Group: \' + pMgroup.x\n        document.getElementById(\'sb3\').innerHTML = \'Score: \' + pMscore.x\n        document.getElementById(\'sb4\').innerHTML = \'Goals: \' + pMgoals.x\n        document.getElementById(\'sb5\').innerHTML = \'Currently online: \';\n        document.getElementById(\'sb6\').innerHTML =  ar.join(\', \');\n        cleanup();\n    };\n  });  ');
+
+	var arrayFuncs = (0, _dom.h)('pre', '  var push = function push(y,v,mon) {\n      if (Array.isArray(y)) {\n        let ar = [];\n        let keys = Object.keys(y);\n        for (let k in keys) {ar[k] = y[k]};\n        ar.push(v);\n        return mon.ret(ar);  \n      }\n      console.log(\'The value provided to push is not an array\');\n      return ret(y);\n    };\n    \n    var spliceRemove = function splice(x, j, mon) {\n      if (Array.isArray(x)) {\n        let ar = [];\n        let keys = Object.keys(x);\n        for (let k in keys) {ar[k] = x[k]};\n        ar.splice(j,1);\n        return mon.ret(ar);  \n      }\n      console.log(\'The value provided to spliceRemove is not an array\');\n      return ret(x);\n    };\n    \n    var spliceAdd = function splice(x, index, value, mon) {\n      if (Array.isArray(x)) {\n        let ar = [];\n        let keys = Object.keys(x);\n        for (let k in keys) {ar[k] = x[k]};\n        ar.splice(index, 0, value);\n        return mon.ret(ar);  \n      }\n      console.log(\'The value provided to spliceAdd is not an array\');\n      return ret(x);\n    };\n    \n    var splice = function splice(x, start, end, mon) {\n      if (Array.isArray(x)) {\n        let ar = [];\n        let keys = Object.keys(x);\n        for (let k in keys) {ar[k] = x[k]};\n        ar.splice(start, end);\n        return mon.ret(ar);  \n      }\n      console.log(\'The value provided to spliceAdd is not an array\');\n      return ret(x);\n    };\n  ');
+
+	var cleanup = (0, _dom.h)('pre', '  function cleanup (x) {\n      let target0 = document.getElementById(\'0\');\n      let target1 = document.getElementById(\'1\');\n      let target2 = document.getElementById(\'2\');\n      let target3 = document.getElementById(\'3\');\n      let targetAr = [target0, target1, target2, target3];\n      for (let i in [0,1,2,3]) {\n        if (targetAr[i].innerHTML == \'undefined\' )    {\n          targetAr[i].style.display = \'none\';\n        }\n        else {\n          targetAr[i].style.display = \'inline\';\n        }\n      }\n      return ret(x);\n  }; ');
+
+	var travel = (0, _dom.h)('pre', '    const forwardClick$ = sources.DOM\n      .select(\'#forward\').events(\'click\');\n   \n      const backClick$ = sources.DOM\n        .select(\'#back\').events(\'click\');\n     \n      const forwardAction$ = forwardClick$.map(() => {\n        if (mMindex.x < (mMhistorymM1.x.length - 1)) {\n          mMindex.bnd(add, 1, mMindex)\n          .bnd(v => trav(v))\n        }\n      });\n     \n      const backAction$ = backClick$.map(() => {\n        if (mMindex.x > 0) {\n          mMindex.bnd(add, -1, mMindex)\n          .bnd(v => trav(v))\n          socket.send(\'DE#$42,\' + pMgroup.x + \',\' + pMname.x + \', clicked the BACK button. \');\n        }\n      });\n    \n    var trav = function trav (index) {       \n      document.getElementById(\'0\').innerHTML = mMhistorymM1.x[index][0]; \n      document.getElementById(\'1\').innerHTML = mMhistorymM1.x[index][1]; \n      document.getElementById(\'2\').innerHTML = mMhistorymM1.x[index][2]; \n      document.getElementById(\'3\').innerHTML = mMhistorymM1.x[index][3];\n      document.getElementById(\'sb3\').innerHTML = \'Score: \' + mMplayerArchive.x[index][2];\n      document.getElementById(\'sb4\').innerHTML = \'Goals: \' + mMplayerArchive.x[index][3];\n      if (pMgroup.x != \'solo\') {\n        document.getElementById(\'sb6\').innerHTML =  Array.from(mMsetArchive.x[index].s);\n      }\n      cleanup();\n    };    ');
+
+	var C42 = (0, _dom.h)('pre', '  mMZ10.bnd(() => mM$1\n     .ret([mMar.x[3], mMar.x[4], mMar.x[5], mMar.x[6]])\n     .bnd(() => mM$2.ret([]))\n     .bnd(displayInline,\'0\')\n     .bnd(displayInline,\'1\')\n     .bnd(displayInline,\'2\')\n     .bnd(displayInline,\'3\'));  ');
+
+	var taskStream = (0, _dom.h)('pre', '  \n      ');
+
+	var deleteTask2 = (0, _dom.h)('pre', '  mMZ19.bnd(() => mM$task.bnd(spliceRemove, mMar.x[3], mM$task));\n  ');
+
+	var newTask = (0, _dom.h)('pre', '  const newTask$ = sources.DOM\n    .select(\'input.newTask\').events(\'keydown\'); \n\n  const newTaskAction$ = newTask$.map(e => {\n      let ob = {};\n      var alert = \'\';\n      var ar = e.target.value.split(\',\');\n      var ar2 = ar.slice(2);\n      var task = \'\';\n      if (ar.length < 4) {\n        task = ar[2];\n      }\n      if (ar.length > 3) {\n        task = ar2.reduce((a,b) => a + \'$*$*$\' + b);\n      }\n      if( e.keyCode == 13 ) {\n        if ( ar.length < 3 ) {\n          alert = \'You should enter "author, responsible party, task" separated by commas\';\n          document.getElementById(\'alert\').innerHTML = alert;\n        }\n\n        else if ( (mMar2.x.filter(v => (v.task == task)).length) > 0 ) {\n          document.getElementById(\'alert\').innerHTML = task + " is already listed.";\n        }\n\n        else if ( ar.length > 2 ) {\n          mM$taskList.bnd(addString, task + \',yellow, none, false,\' +  ar[0] + \',\' + ar[1], mM$taskList);\n          e.target.value = \'\';\n          document.getElementById(\'alert\').innerHTML = \'\';\n        } \n      } \n  };  ');
+
+	var process = (0, _dom.h)('pre', '  const process = function(str) {\n    let a = str.split(",");\n    console.log(\'In process. str and a are: \', str, a);\n    if (a == undefined) {\n      return;\n    };\n    if (a.length < 9) {\n      return\n    };\n    let ob = {};\n    let ar = a.slice(3)\n    let s = ar.reduce((a,b) => a + \',\' + b);\n    if (mM$taskList.x.length < 5) {\n      mM$taskList.ret(s);\n    }\n    let ar2 = [];\n    let tempArray = [];\n    if (ar.length < 6) {return};\n    if ((ar.length % 6) !== 0) {\n      document.getElementById(\'alert\').innerHTML = \'Error: array length is: \' + length;\n    } else {\n      let keys = Array(ar.length/6).fill(1);\n      keys.map(_ => {\n        ar2.push(\n          {\n            task: convertBack(ar.shift()),\n            color: ar.shift(),\n            textDecoration: ar.shift(),\n            checked: ar.shift() === \'true\',\n            author: ar.shift(),\n            responsible: ar.shift()\n          }\n        )\n      })\n      console.log(\'In process  ar2 is: \', ar2)\n      let keys2 = Object.keys(ar2);\n      for (let k in keys) {\n        tempArray.push(\n          h(\'div.todo\',  [\n            h(\'span.task3\', {style: {color: ar2[k].color, textDecoration: ar2[k].textDecoration}},\n                \'Task: \' + ar2[k].task  ),  \n            h(\'br\'),\n            h(\'button#edit1\', \'Edit\'  ),\n            h(\'input#edit2\', {props: {type: \'textarea\', value: ar2[k].task}, style: {display: \'none\'}}  ), \n            h(\'span#author.tao\', \'Author: \' + ar2[k].author  + \' / \' + \'Responsibility: \' + ar2[k].responsible),\n            h(\'br\'),\n            h(\'input#cb\', {props: {type: \'checkbox\', checked: ar2[k].checked}, style: {color: ar2[k].color,\n                 textDecoration: ar2[k].textDecoration} } ), \n            h(\'label.cbox\', { props: {for: \'#cb\'}}, \'Completed\' ),\n            h(\'button.delete\', \'Delete\'  ),  \n            h(\'br\'),\n            h(\'hr\')])\n        )\n      }\n      mMtaskList.ret(tempArray)\n    }\n  };  ');
+
+	var colorClick = (0, _dom.h)('pre', '  const colorClick$ = sources.DOM\n    .select(\'#cb\').events(\'click\')\n    \n  const colorAction$ = colorClick$.map(e => {\n    let index = getIndex(e);\n    let s = mM$taskList.x;\n    let ar = s.split(\',\');\n    let n = 6 * index + 3;\n    let j = 6 * index + 2;\n    let k = 6 * index + 1;\n    let checked = ar[n];\n    if (checked == \'true\')  {\n      ar[n] = \'false\'; \n      ar[k] = \'yellow\'; \n      ar[j] = \'none\'; \n    }\n    else {\n      ar[n] = \'true\'; \n      ar[k] = \'lightGreen\'; \n      ar[j] = \'line-through\'; \n    }\n    mM$taskList.ret( ar.reduce((a,b) => a + \',\' + b) )\n  });  \n                     \n  var getIndex = function getIndex (event_object) {\n    var task = event_object.currentTarget.parentNode.innerText;\n    var possibilities = event_object.currentTarget.parentNode.parentNode.childNodes;\n    var keys = Object.keys(possibilities);\n    for (let k in keys) {\n      if (task == possibilities[k].innerText) {\n        return k\n      }\n    }\n    console.log(\'In getIndex. No match\');\n  }  ');
+
+	var edit = (0, _dom.h)('pre', '  const edit1$ = sources.DOM\n    .select(\'#edit1\').events(\'click\')\n    \n  const edit1Action$ = edit1$.map(e => {\n    let index = getIndex2(e);\n    mMtaskList.x[index].children[3].elm.style.display = \'block\';\n  });\n\n  const edit2$ = sources.DOM\n    .select(\'#edit2\').events(\'keypress\')\n    \n  const edit2Action$ = edit2$.map(e => {\n    let v = e.target.value;\n    let index = getIndex2(e);\n    if( e.keyCode == 13 ) {\n      process2(v, index);\n    mMtaskList.x[index].children[3].elm.style.display = \'none\';\n    }\n  });\n\n  const process2 = function(str, index) {\n    var a = mMcurrentList.x.split(\',\');\n    a[6*index] = str;\n    var b = a.reduce((a,b) => a + \',\' + b)\n    task2(b);  \n  };\n\n  var getIndex2 = function getIndex2 (e) {\n    var elem = e.currentTarget.parentNode.children[0].innerHTML\n    var elem2 = e.currentTarget.parentNode.parentNode.childNodes\n    var keys = Object.keys(elem2);\n    for (let k in keys) {\n      if (elem == elem2[k].childNodes[0].innerHTML) {\n        return k\n      }\n      console.log(\'In getIndex2. No match\');\n    }\n  }  ');
+
+	var mM$task = (0, _dom.h)('pre', '  const taskAction$ = mM$taskList.stream.map(str => {\n    socket.send(\'TD#$42\' + \',\' + mMgroup.x.trim() + \n        \',\' + mMname.x.trim() + \',\' + \'@\' + str);\n  });  ');
+
+	var updateCalc = (0, _dom.h)('pre', '  function updateCalc() { \n    mM3.bnd(ar => mM7       // mM3 contributes mM3.x to the computation.\n    .ret(calc(ar[0], mM8.x, ar[1]))      // mM8.x is the operator string.\n    .bnd(result =>   // The return value of calc(), which is mM7.x, is used three times.\n      {  mM1.bnd(push, result, mM1).bnd(z =>\n         mM$1.ret(z));                         // Updates the display.             \n        if (result == 20) {score(mM13.x, 1)}; \n        if (result == 18) {score(mM13.x, 3)};\n      }\n    )) \n    reset()\n  };\n\n  var score = function score(x,j) {\n    socket.send(\'CA#$42,\' + pMgroup.x + \',\' + pMname.x + \',6,6,12,20\');\n    if ((x + j) == 20) {\n      mMplayer.ret([]);\n      mM13.ret(0).bnd(mMindex.ret);\n      mMhistorymM1.ret([0,0,0,0]);   \n      mMgoals.bnd(add, 1, mMgoals).bnd(v => {\n        if (v == 3) {\n          socket.send(\'CG#$42,\' + pMgroup.x + \',\' + pMname.x + \',\' + -x + \',\' + 0); \n          socket.send(\'CE#$42,\' + pMgroup.x + \',\' + pMname.x + \',nothing \')\n          mMgoals.ret(0);\n        }\n        else socket.send(\'CG#$42,\' + pMgroup.x + \',\' + pMname.x + \',\' + -x + \',\' + v); \n      })\n      return;\n    }\n    if ((x + j) % 5 == 0) {\n      socket.send(\'CG#$42,\' + pMgroup.x + \',\' + pMname.x + \',\'+ (j+5)+\',\' + mMgoals.x); \n      mM13.ret(x + j + 5);\n      return;\n    } \n    socket.send(\'CG#$42,\' + pMgroup.x + \',\' + pMname.x + \',\'+ j + \',\' + mMgoals.x); \n    mM13.ret(x + j);\n };\n\n  var reset = function reset () {\n      mM3.ret([])\n      .bnd(() => mM4.ret(0)\n      .bnd(mM8.ret)\n      .bnd(cleanup))    // Hides \'undefined\' values in the display.\n  }\n\n  var updateScoreboard = function updateScoreboard(v) {  // v is received from the server.\n    let ar2 = v.split("<br>");\n    let ar = ar.slice();\n    return mMscoreboard.ret(ar);\n  };  ');
+
+	var testZ = (0, _dom.h)('pre', '  mMZ1.bnd(v => mMt1.bnd(add,v,mMt1)\n  .bnd(cube,mMt2)\n  .bnd(() => mMt3.ret(mMt1.x + \' cubed is \' + mMt2.x)))  \n  \n  mMZ2.bnd(v => cube(v).bnd(w => mMt3.ret(v + \' cubed is \' + w)))  ');
+
+	var quad = (0, _dom.h)('pre', '  const quad$ = sources.DOM\n    .select(\'#quad\').events(\'keypress\')  // Motorcycle way to get user input.\n  \n  const quadAction$ = quad$.map((e) => {\n    if( e.keyCode == 13 ) {\n      mMZ3.release(e.target.value)       // Releases mMZ (below).\n      document.getElementById(\'quad\').value = \'\';\n    }\n  });\n\n  var solve = function solve () {\n    mMZ3.bnd(a => \n    mMtemp.ret(a)           \n    .bnd(display, \'quad4\', \'\')         \n    .bnd(display, \'quad6\', \'\')         \n    .bnd(display,\'quad5\', a + " * x * x ")\n    .bnd(a => mMZ3    // Blocks here until new user input comes in.\n    .bnd(b =>  mMtemp.ret(b)\n    .bnd(display, \'quad6\', b + \' * x \').bnd(b => mMZ3  // Blocks again.\n    .bnd(c => mMtemp.ret([a,b,c]).bnd(fmap, qS4, "mMtemp")\n    .bnd(v => {  \n      let x = v[0]\n      let y = v[1]\n    mMtemp.bnd(display, \'quad4\', "Results: " + x + " and  " + y)  \n    .bnd(display, \'quad5\', p(a).text + " * " + x + " * " + x + " + " + p(b).text + \n            " * " + x + " " + p(c).text + " = 0")\n    .bnd(display, \'quad6\', p(a).text + " * " + y + " * " + y + " + " + p(b).text + \n            " * " + y + " " + p(c).text + " = 0")   \n    solve();  \n    } ) ) ) ) ) ) \n  };\n\n  var p = function p (x) { \n    if (x >= 0) {return \' + \' + x}\n    if (x < 0 ) {return \' - \' + Math.abs(x)}\n  }\n\n  var qS1 = function qS1 (a, b, c) {\n    let n = (b*(-1)) + (Math.sqrt(b*b - 4*a*c));\n    if (n != n) {\n      return "No solution";\n    }\n    return n/(2*a);\n  }\n\n  var qS2 = function qS2 (a, b, c) {\n    let n = (b*(-1)) - (Math.sqrt(b*b - 4*a*c));\n    if (n != n) {\n      return "No solution";\n    }\n    return n/(2*a);\n  \n  function fmap (x, g, id) {\n    window[id] = new Monad(g(x), id); \n    return window[id]\n  }\n  \n  var display = function display (x, id, string) {\n    document.getElementById(id).innerHTML = string;\n    return ret(x);\n  }  ');
+
+	var mdem1 = (0, _dom.h)('pre', '  var equals = function equals (x, mon1, mon2, mon3) {\n    if (mon1.id === mon2.id && mon1.x === mon2.x) {\n      mon3.ret(\'true\');\n    } else mon3.ret(\'false\');\n    return ret(x);\n  }\n  \n  var add = function(x,b,mon) {\n    if (arguments.length === 3) {\n      return mon.ret(x + b);\n    }\n    return ret(x+b);\n  }\n\n  var cube = function(v,mon) {\n    if (arguments.length === 2) {\n      return mon.ret(v*v*v);\n    }\n    return ret(v*v*v);\n  }  ');
+
+	var runTest = (0, _dom.h)('pre', '  var runTest = function monTest () {\n  mM5.bnd( equals,  \n    m.ret(0).bnd(v => add(v, 3, m).bnd(cube)), \n    m.ret(0).bnd(add, 3, m).bnd(cube), mMa)\n\n  mM5.bnd(equals, m, m.bnd(m.ret), mMb)\n\n  mM5.bnd(equals, m, m.ret(m.x), mMc)\n  }  ');
+
+	var inc = (0, _dom.h)('pre', '  var inc = function inc(x, mon) {\n      return mon.ret(x + 1);\n  };\n\n  var spliceAdd = function spliceAdd(x, index, value, mon) {\n    if (Array.isArray(x)) {\n      let ar = [];\n      let keys = Object.keys(x);\n      for (let k in keys) {ar[k] = x[k]};\n      ar.splice(index, 0, value);\n      return mon.ret(ar);  \n    }\n    console.log(\'The value provided to spliceAdd is not an array\');\n    return ret(x);\n  }  ');
+
+	var todoStream = (0, _dom.h)('pre', '  const taskAction$ = mM$taskList.stream.map(str => {\n    socket.send(\'TD#$42\' + \',\' + mMgroup.x.trim() + \n        \',\' + mMname.x.trim() + \',\' + \'@\' + str);\n  });  ');
+
+	var add = (0, _dom.h)('pre', '  var add = function(x,b,mon) {\n    if (arguments.length === 3) {\n      return mon.ret(x + b);\n    }\n    return ret(x+b);  \n  }; ');
+
+	var ret_add_cube = (0, _dom.h)('pre', '  var ret = function ret(v, id) {\n    if (arguments.length === 1) {\n      return (new Monad(v, \'anonymous\'));\n    }\n    window[id] = new Monad(v, id);\n    return window[id];\n  }  \n\n  var add = function(x,b,mon) {\n    if (arguments.length === 3) {\n      return mon.ret(x + b);\n    }\n    return ret(x+b);\n  };\n\n  var cube = function(v,mon) {\n    if (arguments.length === 2) {\n      return mon.ret(v*v*v);\n    }\n    return ret(v*v*v);\n}  ');
+
+	var seed = (0, _dom.h)('pre', '  mM$prime.ret([[2],3])  ');
+
+	var traverse = (0, _dom.h)('pre', '  const forwardClick$ = sources.DOM\n    .select(\'#forward\').events(\'click\');\n \n  const backClick$ = sources.DOM\n    .select(\'#back\').events(\'click\');\n \n  const forwardAction$ = forwardClick$.map(() => {\n    if (mMindex.x < (mMhistorymM1.x.length - 1)) {\n      mMindex.bnd(add, 1, mMindex)\n      .bnd(v => trav(v))\n    }\n  });\n \n  const backAction$ = backClick$.map(() => {\n    if (mMindex.x > 0) {\n      mMindex.bnd(add, -1, mMindex)\n      .bnd(v => trav(v))\n      socket.send(\'DE#$42,\' + pMgroup.x + \',\' + pMname.x + \', clicked the BACK button. \');\n    }\n  });\n\n  var game = function game (z) {  // Runs each time a number is clicked\n    var x = z.slice();\n        mMindex.bnd(add, 1, mMindex)\n          .bnd(i => mMhistorymM1.bnd(spliceAdd, i, x, mMhistorymM1)\n            .bnd(() => mMplayerArchive.bnd(spliceAdd, i, playerMonad.s, mMplayerArchive)) \n            .bnd(() => mMsetArchive.bnd(spliceAdd, i, sMplayers.s, mMsetArchive) ) \n      document.getElementById(\'0\').innerHTML = x[0];  \n      document.getElementById(\'1\').innerHTML = x[1];  \n      document.getElementById(\'2\').innerHTML = x[2];  \n      document.getElementById(\'3\').innerHTML = x[3]; \n      game2();\n      cleanup();\n  };\n\n  var game2 = function game2 () {\n      var ar = Array.from(sMplayers.s);\n      document.getElementById(\'sb1\').innerHTML = \'Name: \' +  pMname.x;  // kept current by playerMonad\n      document.getElementById(\'sb2\').innerHTML = \'Group: \' + pMgroup.x\n      document.getElementById(\'sb3\').innerHTML = \'Score: \' + pMscore.x\n      document.getElementById(\'sb4\').innerHTML = \'Goals: \' + pMgoals.x\n      document.getElementById(\'sb5\').innerHTML = \'Currently online: \';\n      document.getElementById(\'sb6\').innerHTML =  ar.join(\', \');\n      cleanup();\n  };\n \n  var trav = function trav (index) {       \n    document.getElementById(\'0\').innerHTML = mMhistorymM1.x[index][0]; \n    document.getElementById(\'1\').innerHTML = mMhistorymM1.x[index][1]; \n    document.getElementById(\'2\').innerHTML = mMhistorymM1.x[index][2]; \n    document.getElementById(\'3\').innerHTML = mMhistorymM1.x[index][3];\n    document.getElementById(\'sb3\').innerHTML = \'Score: \' + mMplayerArchive.x[index][2];\n    document.getElementById(\'sb4\').innerHTML = \'Goals: \' + mMplayerArchive.x[index][3];\n    if (pMgroup.x != \'solo\') {\n      document.getElementById(\'sb6\').innerHTML =  Array.from(mMsetArchive.x[index].s);\n    }\n    cleanup();\n  };  ');
+
+	var MonadState = (0, _dom.h)('pre', '  const MonadState = function (g, state, value, p)  {\n  this.id = g;\n  this.s = state;\n  this.a = value;\n  this.process = p;\n  this.bnd = (func, ...args) => func(this.s, ...args);  \n  this.run = st => { \n    let s = this.process(st); \n    let a = s[3];\n    window[this.id] = new MonadState(this.id, s, a, this.process);\n    return window[this.id];\n  }\n}  ');
+
+	var primesMonad = (0, _dom.h)('pre', '  var primesMonad = new MonadState(\'primesMonad\', [2, \'\', 3, [2]], [2],  primes_state) \n\n  var primes_state = function primes_state(x) {\n    var v = x.slice();\n      while (2 == 2) {\n        if (v[3].every(e => ((v[0]/e) != Math.floor(v[0]/e)))) {\n          v[3].push(v[0]);\n        }\n        if (v[3][v[3].length - 1] > v[2]) { break }; // Not an infinite loop afterall\n        v[0]+=2;\n      }\n    return v;\n  }  ');
+
+	var fibsMonad = (0, _dom.h)('pre', '  var fibsMonad = new MonadState(\'fibsMonad\', [0, 1, 3, [0,1]], [0,1], fibs_state  ) \n\n  var fibs_state = function fibs_state(ar) {\n    var a = ar.slice();\n    while (a[3].length < a[2]) {\n      a = [a[1], a[0] + a[1], a[2], a[3].concat(a[0])];\n    }\n    return a\n  }  ');
+
+	var tr3 = (0, _dom.h)('pre', '  var tr3 = function tr (fibsArray, primesArray) {\n    var bound = Math.ceil(Math.sqrt(fibsArray[fibsArray.length - 1]))\n    var primes = primesArray.slice();\n    if (primesArray.slice(-1)[0] >= bound) {\n      primes = primesArray.filter(v => v <= bound);\n    } \n    var ar = [];\n    var fibs = fibsArray.slice(3);\n    fibs.map (v => {\n      if (primesArray.every(p => (v % p || v == p))) ar.push(v);\n    })\n    return [fibsArray, primes, ar]\n  }  ');
+
+	var primeFibInterface = (0, _dom.h)('pre', '  const fibKeyPress5$ = sources.DOM\n    .select(\'input#fib92\').events(\'keydown\');\n\n  const primeFib$ = fibKeyPress5$.map(e => {\n    if( e.keyCode == 13 ) {\n      var res = fibsMonad\n      .run([0, 1, e.target.value, []])\n      .bnd(fibsState => fibsMonad\n      .bnd(fpTransformer, primesMonad)\n      .bnd(primesState => tr3(fibsState[3],primesState[3])))\n      document.getElementById(\'PF_9\').innerHTML = res[0];\n      document.getElementById(\'PF_22\').innerHTML = res[1];\n      document.getElementById(\'primeFibs\').innerHTML = res[2];\n    }\n  });  ');
+
+	var fpTransformer = (0, _dom.h)('pre', '  var fpTransformer = function fpTransformer (s, m) {\n    var bound = Math.ceil(Math.sqrt(s[3][s[3].length - 1]));\n    if (bound > m.a[m.a.length - 1] ) {\n      m.run([m.s[0], "from the fibKeyPress5$ handler", bound, primesMonad.a])\n    }\n    return m;\n  }  ');
+
+	var innerHTML = (0, _dom.h)('pre', '  var innerHTML = function innerHTML (x, v, u, m) { \n    document.getElementById(u).innerHTML = v;\n    return m.ret(x);\n  }  ');
+
+	var factorsMonad = (0, _dom.h)('pre', '  var factorsMonad = new MonadState(\'factorsMonad\', [ 2, [], 4, [] ], [], factor_state); \n\n  function factor_state(v) {\n    v[3].map(p => {\n      if (v[2]/p == Math.floor(v[2]/p)) {v[1].push(p)}\n    })\n    return v;\n  }  ');
+
+	var factorsInput = (0, _dom.h)('pre', '  var prFactTransformer = function prFactTransformer (s, m) {\n    return m.run([s[0], [], mMfactors.x, s[3]])\n  }\n\n  const factorsPress$ = sources.DOM\n    .select(\'input#factors_1\').events(\'keydown\');\n\n  const factorsAction$ = factorsPress$.map(e => {\n    mMfactors.ret(e.target.value);                  // Used in prFactTransformer (above)\n    if (e.target.value == \'\') {return};\n    if( e.keyCode == 13 && Number.isInteger(e.target.value*1) ) {\n      var result;\n      var factors = primesMonad.run([primesMonad.s[0], [], e.target.value, primesMonad.a])\n      .bnd(prFactTransformer, factorsMonad).s[1];  // prFactTransformer (defined above) returns factorsMonad\n      if (e.target.value == factors.slice().pop()){\n        result = e.target.value + \' is a prime number\'\n      }\n      else {\n        result = \'The prime factors of \' + e.target.value + \' are \' + factors;\n      }\n      document.getElementById(\'factors_3\').innerHTML = result;\n    }\n  });\n             ');
+
+	var playerMonad = (0, _dom.h)('pre', '  var playerMonad = new MonadState(\'playerMonad\', [0,0], [0,0], player_state);\n\n  function player_state (v) {\n    var x = v.slice();\n    let ar = [ \n    pMscore.ret(x[0]),\n    pMgoals.ret(x[1]) ]\n    playerMonad.a = ar;\n    playerMonad.s = ar;  \n    return x; \n  };  ');
+
+	var MonadSet = (0, _dom.h)('pre', '  var MonadSet = function MonadSet(set, ID) {\n    var _this = this;\n  \n    this.s = set;\n  \n    if (arguments.length === 1) this.id = \'anonymous\';\n    else this.id = ID;\n  \n    this.bnd = function (func, ...args) {\n       return func(_this.x, ...args);\n    };\n  \n    this.add = function (a) {\n      var ar = Array.from(_this.s);\n      set = new Set(ar);\n      set.add(a);\n      window[_this.id] = new MonadSet(set, _this.id);\n      return window[_this.id];\n    };\n  \n    this.delete = function (a) {\n      var ar = Array.from(_this.s);\n      set = new Set(ar);\n      set.delete(a);\n      window[_this.id] = new MonadSet(set, _this.id);\n      return window[_this.id];\n    };\n  \n    this.clear = function () {\n      set = new Set([]);\n      window[_this.id] = new MonadSet(set, _this.id);\n      return window[_this.id];\n    };\n  };\n  \n  var s = new Set();\n  \n  var sMplayers = new MonadSet( s, \'sMplayers\' )  ');
+
+	var promise = (0, _dom.h)('pre', '      var promise = function promise(x, t, mon, args) {\n        return (new Promise((resolve) => {\n          setTimeout(function() {\n            resolve(eval("mon.ret(x).bnd(" + args + ")"))   // eval! Get over it, Douglas.\n          },t*1000  );\n        }));\n      };  ');
+
+	var promiseSnippet = (0, _dom.h)('pre', '  m.ret(3).bnd(promise, 2, m, "cube").then(data => m.ret(data.x).bnd(add, 15, m))  ');
+
+	var timeoutSnippet = (0, _dom.h)('pre', '  const timeoutClicks$ = sources.DOM.select(\'#timeout\').events(\'click\')\n\n  const timeoutAction$ = timeoutClicks$.map(() => {\n    document.getElementById(\'timeout2\').innerHTML = \'\'\n    m.ret(3, \'m\')\n      .bnd(timeout2, 1, m, [() => m\n      .bnd(cube, m)\n      .bnd(display, \'timeout2\', \'m.x is \' + \' \' + m.x, m)\n      .bnd(timeout2, 2, m, [() => m\n      .bnd(add, 15, m)\n      .bnd(display, \'timeout2\',  \'m.x is \' + \' \' + m.x, m)\n      /* Continue chaining from here */\n      .bnd(display, \'timeout3\', \'The meaning of everything was computed to be\' + \' \' + m.x, m)   \n    ])]);  \n  });  ');
+
+	var timeout = (0, _dom.h)('pre', '  var timeout2 = function timeout (x, t, m, args) {\n    setTimeout(function () {\n      mMZ9.release();\n    }, t * 1000  );\n    return mMZ9.bnd(() => m.bnd(... args))\n  };  ');
+
+	var examples = (0, _dom.h)('pre', ' \n             ret(\'m1Val\',\'m1\')\n             m1.x === \'m1Val\'   // true\n             ret(\'m2Val\', \'m2\')\n             m2.x === \'m2Val\'   // true\n\n             m1.bnd(m2.ret)\n             m2.x === \'m1Val\' // true\n             m2.x === \'m2Val\'   // still true\n\n             m1.ret(\'newVal\')\n             m1.bnd(v => ret(v, \'m2\'))\n             m2.x === \'newVal\'  // true\n             m2.x === \'m1Val\' // true   still the same  ');
+
+	var examples2 = (0, _dom.h)('pre', ' \n  var m = new Monad(v, "m");\n  ret(v, "m");\n             ');
+
+	var async = (0, _dom.h)('pre', '  const LOCKED = ret(true, \'LOCKED\');\n  LOCKED.ret(true);   // Creates LOCKED\n\n  const messages2$ = (sources.WS).map(e => {\n    if (!LOCKED.x) {\n      var v2 = e.data.split(\',\');\n      ret(v2.slice(3))\n      .bnd(v => mMtemp.bnd(display,\'request2\', \'The current online members of \' + pMgroup.x + \' are:\')\n      .bnd(() => mMtemp.bnd(display,\'request3\', v) \n      .bnd(() => mMtemp.bnd(log, "The members are " + v )\n      .bnd(() => LOCKED.ret(true)))))\n    }\n  });\n\n  const requestClicks$ = sources.DOM.select(\'#request\').events(\'click\');\n\n  const requestAction$ = requestClicks$.map(() => {\n    if (pMgroup.x != \'solo\') {         // The default non-group\n      LOCKED.ret(false);\n      socket.send(\'NN#$42,\' + pMgroup.x  + \',\' + pMname.x + \',\' + pMgroup ); \n    }\n  });\n\nvar display = function display (x, id, string) {\n  document.getElementById(id).innerHTML = string;\n  return ret(x);\n}  ');
+
+	var e1 = (0, _dom.h)('pre', '  var ret = function ret(v, id) {\n    if (arguments.length === 1) {\n      return (new Monad(v, \'anonymous\'));\n    }\n    window[id] = new Monad(v, id);\n    return window[id];\n  }\n  \n  var cube = function(v,mon) {\n    if (arguments.length === 2) {\n      return mon.ret(v*v*v);\n    }\n    return ret(v*v*v);\n  }\n  \n  var add = function(x,b,mon) {\n    if (arguments.length === 3) {\n      return mon.ret(x + b);\n    }\n    return ret(x+b);\n  }\n  \n  var log = function log(x, message, mon) {\n    console.log(\'In log. Entry: \', message);\n    if (arguments.length === 3) return mon\n    return ret(x);\n  };  ');
+
+	var e2 = (0, _dom.h)('pre', '  var c = m.ret(0).bnd(add,3).bnd(cube)\n  .bnd(log,"m.x and a.x are  " + m.x + " and " + a.x + " respectively ")\n  Output: In log. Entry:  m.x and a.x are  0 and 27 respectively \n  Note: m.x keeps its initial value of 0.\n\n  m.bnd(() => add(0, 3).bnd(cube).bnd(m.ret).bnd(v => log("", "m.x is " + v))) \n  Output: In log. Entry:  m.x is 27\n  Note: It doesn\'t matter what m.x was at the beginning of the computation.\n \n  ret(3).bnd(v => ret(v*v).bnd(v2 => log("", "a squared is " + v2).bnd(() => \n  ret(4*4).bnd(v3 => log("", "a squared plus b squared is " + (v2 + v3), m)))))\n  Output: In log. Entry:  a squared is 9\n          In log. Entry:  a squared plus b squared is 25  ');
+
+	var equals = (0, _dom.h)('pre', '    var equals = function equals (mon1, mon2) {\n      if (mon1.id === mon2.id && mon1.x === mon2.x) return true;\n      else return false\n    }  ');
+
+	var fmap = (0, _dom.h)('pre', '    function fmap (x, g, id) {window[id] = new Monad(g(x), id); return window[id]}\n  \n    var qS1 = function qS1 (a, b, c) {\n      let n = (b*(-1)) + (Math.sqrt(b*b - 4*a*c));\n      if (n != n) {\n        return "No solution";\n      }\n      return n/(2*a);\n    }\n  \n    var qS2 = function qS2 (a, b, c) {\n      let n = (b*(-1)) - (Math.sqrt(b*b - 4*a*c));\n      if (n != n) {\n        return "No solution";\n      }\n      return n/(2*a);\n    }\n  \n    var qS4 = function qS4 ([x,y,z]) {\n      let [a,b,c] = [x,y,z]\n      return [qS1(a,b,c), qS2(a,b,c)]    \n    }  \n    \n    m.ret([12,12,-144])\n  \n    m.bnd(fmap, qS4, "temp").bnd(lg)   logs [3, -4] ');
+
+	var opM = (0, _dom.h)('pre', '    function opM (a, op, b, id) {\n      window[id] = new Monad(eval(a.x + op + b.x), id); \n      return window[id];\n    }  \n    \n    m1.ret(42)\n\n    m2.ret(7)\n\n    opM(m1, "%", m2, "ok").bnd(lg)  logs 0\n\n    opM(m1, "+", m2, "ok").bnd(lg)  logs 49  ');
+
+	var p7 = (0, _dom.h)('pre', '  \n');
+
+	exports.default = { monad: monad, equals: equals, fmap: fmap, opM: opM, e1: e1, e2: e2, fib: fib, driver: driver, messages: messages, next: next, monadIt: monadIt, MonadSet: MonadSet, updateCalc: updateCalc, arrayFuncs: arrayFuncs, travel: travel, nums: nums, cleanup: cleanup, ret: ret, C42: C42, newTask: newTask, process: process, mM$task: mM$task, addString: addString, colorClick: colorClick, edit: edit, testZ: testZ, quad: quad, mdem1: mdem1, runTest: runTest, todoStream: todoStream, inc: inc, ret_add_cube: ret_add_cube, seed: seed, add: add, traverse: traverse, MonadState: MonadState, primesMonad: primesMonad, fibsMonad: fibsMonad, primeFibInterface: primeFibInterface, tr3: tr3, fpTransformer: fpTransformer, innerHTML: innerHTML, factorsMonad: factorsMonad, factorsInput: factorsInput, playerMonad: playerMonad, promise: promise, promiseSnippet: promiseSnippet, timeout: timeout, timeoutSnippet: timeoutSnippet, examples: examples, examples2: examples2, async: async };
 
 /***/ },
-/* 38 */
+/* 63 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
+
+	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
 
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
 	exports.run = undefined;
 
-	var _mostSubject = __webpack_require__(52);
+	var _mostSubject = __webpack_require__(87);
 
 	function makeSinkProxies(drivers) {
 	  var sinkProxies = {};
@@ -4244,14 +4937,14 @@
 	  var keys = Object.keys(drivers);
 	  for (var i = 0; i < keys.length; i++) {
 	    var name = keys[i];
-	    sources[name] = drivers[name](sinkProxies[name].stream, name);
+	    sources[name] = drivers[name](sinkProxies[name], name);
 	  }
 	  return sources;
 	}
 
-	function makeHandleError(observer, onError) {
+	function makeHandleError(stream, onError) {
 	  return function handleError(err) {
-	    observer.error(err);
+	    stream.error(err);
 	    onError(err);
 	  };
 	}
@@ -4266,9 +4959,14 @@
 	  for (var i = 0; i < sinkKeys.length; i++) {
 	    var name = sinkKeys[i];
 	    if (sinkProxies.hasOwnProperty(name)) {
-	      var observer = sinkProxies[name].observer;
-
-	      sinks[name].until(disposableStream).observe(observer.next).then(observer.complete).catch(makeHandleError(observer, onError));
+	      (function () {
+	        var stream = sinkProxies[name];
+	        sinks[name].until(disposableStream).observe(function (x) {
+	          return stream.next(x);
+	        }).then(function (x) {
+	          return stream.complete(x);
+	        }).catch(makeHandleError(stream, onError));
+	      })();
 	    }
 	  }
 	}
@@ -4299,7 +4997,7 @@
 	  if (typeof main !== 'function') {
 	    throw new Error('First argument given to run() must be the ' + '\'main\' function.');
 	  }
-	  if (typeof drivers !== 'object' || drivers === null) {
+	  if ((typeof drivers === 'undefined' ? 'undefined' : _typeof(drivers)) !== 'object' || drivers === null) {
 	    throw new Error('Second argument given to run() must be an ' + 'object with driver functions as properties.');
 	  }
 	  if (!Object.keys(drivers).length) {
@@ -4318,20 +5016,15 @@
 	  var onError = _ref3$onError === undefined ? logErrorToConsole : _ref3$onError;
 
 	  runInputGuard({ main: main, drivers: drivers, onError: onError });
-
-	  var _subject = (0, _mostSubject.subject)();
-
-	  var disposableObserver = _subject.observer;
-	  var disposableStream = _subject.stream;
-
+	  var disposableStream = (0, _mostSubject.subject)();
 	  var sinkProxies = makeSinkProxies(drivers);
 	  var sources = callDrivers(drivers, sinkProxies);
 	  var sinks = assertSinks(main(sources));
 	  replicateMany({ sinks: sinks, sinkProxies: sinkProxies, disposableStream: disposableStream, onError: onError });
 
 	  function dispose() {
-	    disposableObserver.next(1);
-	    disposableObserver.complete();
+	    disposableStream.next(1);
+	    disposableStream.complete();
 	  }
 
 	  return { sinks: sinks, sources: sources, dispose: dispose };
@@ -4341,7 +5034,7 @@
 	exports.run = run;
 
 /***/ },
-/* 39 */
+/* 64 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {/// <reference path="./monad.ts" />
@@ -4350,10 +5043,10 @@
 	/// <reference path="./code.ts" />
 	"use strict";
 
-	var core_1 = __webpack_require__(38);
-	var dom_1 = __webpack_require__(16);
-	var most_1 = __webpack_require__(4);
-	var code_js_1 = __webpack_require__(37);
+	var core_1 = __webpack_require__(63);
+	var dom_1 = __webpack_require__(34);
+	var most_1 = __webpack_require__(11);
+	var code_js_1 = __webpack_require__(62);
 	var Greeter = function () {
 	    function Greeter(message) {
 	        this.greeting = message;
@@ -4375,7 +5068,7 @@
 	}
 	var socket = createWebSocket('/');
 	console.log('########## socket: ', socket);
-	var websocketsDriver = function () {
+	var websocketsDriver = function websocketsDriver() {
 	    return most_1.create(function (add) {
 	        socket.onmessage = function (msg) {
 	            return add(msg);
@@ -4535,7 +5228,7 @@
 	            }
 	        }
 	    });
-	    var process = function (str) {
+	    var process = function process(str) {
 	        var a = str.split(",");
 	        if (a == undefined) {
 	            return;
@@ -4562,7 +5255,7 @@
 	        mMcurrentList.ret(s);
 	        process3(ar);
 	    };
-	    var process3 = function (a) {
+	    var process3 = function process3(a) {
 	        console.log('77766677766677766677766676767676 In process3. a is ', a);
 	        if (a.length > 0 && a.length % 6 == 0) {
 	            var ar5 = [];
@@ -4583,7 +5276,7 @@
 	            document.getElementById('alert2').innerHTML = 'The length of the game array is either 0 or is not divisible by 6';
 	        }
 	    };
-	    var process4 = function (a) {
+	    var process4 = function process4(a) {
 	        var tempArray = [];
 	        var keys = Object.keys(a);
 	        for (var k in keys) {
@@ -4629,7 +5322,7 @@
 	            mMtaskList.x[index].children[3].elm.style.display = 'none';
 	        }
 	    });
-	    var process2 = function (str, index) {
+	    var process2 = function process2(str, index) {
 	        var a = mMcurrentList.x.split(',');
 	        a[6 * index] = str;
 	        var b = a.reduce(function (a, b) {
@@ -4967,7 +5660,7 @@
 	        DOM: calcStream$.map(function () {
 	            return dom_1.h('div.content', [dom_1.h('div#rightPanel', { style: { display: 'none' } }, [dom_1.h('span#tog', [dom_1.h('button#game', { style: { fontSize: '16px' } }, 'TOGGLE GAME'), dom_1.h('span.tao', ' '), dom_1.h('button#todoButton', { style: { fontSize: '16px' } }, 'TOGGLE TODO_LIST'), dom_1.h('br'), dom_1.h('br'), dom_1.h('button#chat2', { style: { fontSize: '16px' } }, 'TOGGLE CHAT'), dom_1.h('span.tao', ' '), dom_1.h('button#caption', { style: { fontSize: '16px' } }, 'TOGGLE CAPTION')]), dom_1.h('br'), dom_1.h('br'), dom_1.h('br'), dom_1.h('br'), dom_1.h('div#gameDiv', [dom_1.h('span#sb1'), dom_1.h('br'), dom_1.h('span#sb2'), dom_1.h('br'), dom_1.h('span#sb5'), dom_1.h('br'), dom_1.h('span#sb6')]), dom_1.h('br'), dom_1.h('br'), dom_1.h('br'), dom_1.h('div#todoDiv', [dom_1.h('div#taskList', mMtaskList.x), dom_1.h('span', 'Author, Responsible Person, Task: '), dom_1.h('input.newTask')]), dom_1.h('br'), dom_1.h('span#alert'), dom_1.h('br'), dom_1.h('span#alert2'), dom_1.h('br'), dom_1.h('br'), dom_1.h('div#chatDiv', [dom_1.h('div#messages', [dom_1.h('span', 'Message: '), dom_1.h('input.inputMessage'), dom_1.h('div', mMmsg.x)])])]), dom_1.h('div#leftPanel', [dom_1.h('br'), dom_1.h('a.tao', { props: { href: '#common' } }, 'Common Patterns'), dom_1.h('a.tao', { props: { href: '#async' } }, 'Asyc'), dom_1.h('a.tao', { props: { href: '#monaditter' } }, 'MonadItter'), dom_1.h('a.tao', { props: { href: '#monadset' } }, 'Set Monad '), dom_1.h('a.tao', { props: { href: '#monadstate' } }, 'State Monad'),
 	            // h('a.tao', {props: {href: '#monads'}}, 'Why Call Them Monads'   ),  
-	            dom_1.h('div#captionDiv', [dom_1.h('h1', 'Motorcycle.js With JS-monads'), dom_1.h('span.tao1', ' A shared, persistent todo list, '), dom_1.h('br'), dom_1.h('span.tao1', ' A websockets simulated dice game with a traversable history, '), dom_1.h('br'), dom_1.h('span.tao1', ' Group chat rooms and more demonstrations of efficient, '), dom_1.h('br'), dom_1.h('span.tao2', ' maintainable code using Motorcycle.js and JS-monads.  ')]), dom_1.h('br'), dom_1.h('span.tao', 'This is a '), dom_1.h('a', { props: { href: "https://github.com/motorcyclejs", target: "_blank" } }, 'Motorcycle.js'), dom_1.h('span', ' application. Motorcycle.js is '), dom_1.h('a', { props: { href: "https://github.com/cyclejs/core", target: "_blank" } }, 'Cycle.js'), dom_1.h('span', ' using '), dom_1.h('a', { props: { href: "https://github.com/cujojs/most", target: "_blank" } }, 'Most'), dom_1.h('span', ' , '), dom_1.h('span', ' and '), dom_1.h('a', { props: { href: "https://github.com/paldepind/snabbdom", target: "_blank" } }, 'Snabbdom'), dom_1.h('span', ' instead of RxJS and virtual-dom.  The code for this repository is at '), dom_1.h('a', { props: { href: "https://github.com/dschalk/JS-monads-stable", target: "_blank" } }, 'JS-monads-stable'), dom_1.h('div#gameDiv2', { style: { display: 'none' } }, [dom_1.h('br'), dom_1.h('p.red8', mMgoals2.x), dom_1.h('span', ' Here are the basic rules:'), dom_1.h('p', 'RULES: If clicking two numbers and an operator (in any order) results in 20 or 18, the score increases by 1 or 3, respectively. If the score becomes 0 or is evenly divisible by 5, 5 points are added. A score of 25 results in one goal. That can only be achieved by arriving at a score of 20, which jumps the score to 25. Directly computing 25 results in a score of 30, and no goal. Each time RL is clicked, one point is deducted. Three goals wins the game. '), dom_1.h('button#0.num'), dom_1.h('button#1.num'), dom_1.h('button#2.num'), dom_1.h('button#3.num'), dom_1.h('br'), dom_1.h('button#4.op', 'add'), dom_1.h('button#5.op', 'subtract'), dom_1.h('button#5.op', 'mult'), dom_1.h('button#5.op', 'div'), dom_1.h('button#5.op', 'concat'), dom_1.h('br'), dom_1.h('div#dice', { style: { display: 'none' } }, [dom_1.h('button.roll', 'ROLL'), dom_1.h('br'), dom_1.h('button#back', 'BACK'), dom_1.h('button#forward', 'FORWARD')])]), dom_1.h('div#log1', [dom_1.h('p', 'IN ORDER TO SEE THE GAME, TODOLIST, AND CHAT DEMONSTRATIONS, YOU MUST ENTER SOMETHING .'), dom_1.h('span', 'Name: '), dom_1.h('input#login', { props: { placeholder: "focus on; start typing" } })]), dom_1.h('p', mM6.x), dom_1.h('div#log2', { style: { display: 'none' } }, [dom_1.h('span', 'Change group: '), dom_1.h('input#group')]), dom_1.h('p', mMsoloAlert.x), dom_1.h('p', 'People who are in the same group, other than solo, share the same todo list, messages, and simulated dice game. In order to see any of these, you must establish an identity on the server by logging in. The websockets connection terminates if the first message the server receives does not come from the sign in form. You can enter any random numbers or letters you like. The only check is to make sure someone hasn\t already signed in with whatever you have selected. If you log in with a name that is already in use, a message will appear and this page will be re-loaded in the browser after a four-second pause. '), dom_1.h('p', ' Data for the traversable game history accumulates until a player scores. The data array is then re-set to [], the empty array. When a player clicks the BACK button, other group members are notified. It is up to the group to decide whether clicking the BACK button disqualifies a player. '), dom_1.h('hr'), dom_1.h('h1', 'The Monads'), dom_1.h('h3', ' Monad '), code_js_1["default"].monad, dom_1.h('p', ' Monad instances are useful for chaining computations. Typically, the bnd() method provides its value to a computation that returns an instance of Monad. Here are some examples: '), code_js_1["default"].e1, dom_1.h('p', ' These functions can be used with instances of Monad in many ways, for example: '), code_js_1["default"].e2, dom_1.h('p', ' Each of the functions shown above can be used as a stand-alone function or as an argument to the bnd() method. Each monad in a chain of linked computations can do one of two things with the previous monad\s value: (1) It can ignore it, possibly letting it move past for use further down the chain or (2) use it, with the option of passing it on down the chain. Any computation can be inserted into the chain by giving it an additional first argument (which will be the previous monad\'s value), and having it return an instance of Monad. Say you have a function func(a,b,c) {...}. Put something ahead of a (it will have the previous monad\'s value) and return a monad. You can give the returned monad any value you like. For example, func\'(x,a,b,c) {...; return ret(x)} will work. Its bnd() method will pass along the value x, which is the previous monad\s value. '), dom_1.h('h3', ' The Monad Laws '), dom_1.h('p', ' In the following discussion, "x == y" signifies that x == y returns true. Let M be the collection of all instances of Monad, let J be the collection of all Javascript values, including functions, instances of Monad, etc, and let F be the collection of all functions mapping values in J to monads in M where the return values are the calling instance of Monad. For any m (with id == "m"), v, f, and f\' in M, J, F, and F, respectively, the following relationships hold: '), dom_1.h('pre.lb', "    equals( m.ret(v).bnd(f), f(v) ) Left identity   Holds provided that f returns m.\n    Example: equals( m.ret(5).bnd(cube, m).x, cube(5, m) )   \n    Haskell monad law: (return x) >>= f \u2261 f x  \n    \n    m.bnd(m.ret) == m   Right identity   Works even with \"==\" and \"===\"\n    Haskell monad law: m >>= return \u2261 m  \n    \n    equals( m.bnd(f).bnd(f'), m.bnd(v => f(v).bnd(f')) )  Associativity\n    Haskell monad law: (m >>= f) >>= g \u2261 m >>= ( \\x -> (f x >>= g) ) "), dom_1.h('p', ' where equals is defined as: '), code_js_1["default"].equals, dom_1.h('p', ' The function equals() was used because the == and === operators on objects check for location in memory, not equality of attributes and methods. If the left and right sides of predicates create new instances of m, then the left side m and the right side m wind up in different location in memory. That\'s why m.ret(3) == m.ret(3) returns false. If we define equality to mean equality of attributes, then ret is the left and right identity on objects in M and  the objects in M commute when their bind methods operate on functions in F. '), dom_1.h('h3', ' The JS-monads-mutableInstances Branch  '), dom_1.h('p', ' In the JS-monads-mutableInstances branch of this project, examples of the laws hold when the == operator is used. For example: '), dom_1.h('pre', "    m.bnd(add, 3, m).bnd(cube, m) == m.bnd(v => add(v, 3, m).bnd(cube, m)\n    m.ret(5).bnd(cube, m) == cube(5, m)   "), dom_1.h('p', ' Tests in the JS-monads-mutableInstance produce results closer to what we would expect in mathematics. For example: '), dom_1.h('pre', "    m.ret(7) == m.ret(7)  Returns true in JS-monads-mutableIntances.  "), dom_1.h('h3', ' Back to the master branch '), dom_1.h('h3', ' fmap '), dom_1.h('p', ' I showed you (abpve) some functions designed for instances of Monad, but it is easy to lift functions that return ordinary Javascript values into chains of monadic computations. One way of doing this is to use fmap(), as shown below in finding solutions to the quadratic equation.  '), dom_1.h('h3', ' Monad Arithmetic with opM '), code_js_1["default"].opM, dom_1.h('p', ' Since the Monad instance ok had already been created, the second result could have been obtained by running: '), dom_1.h('pre', "    ok.ret(m1.x + m2.x)   "), dom_1.h('p', ' Just adding the suffix ".x" to an instance of Monad exposes its value. Doing that and running ret() on the return value is all that is needed for performing computations with ordinary functions and wrapping the results in instances of Monad. fmap is non-essential syntactic sugar. This is very different from Haskell, where fmap is an essential component of monadic computation. '), dom_1.h('h3', ' Are They Category Theory Monads?  '), dom_1.h('p#monaditter', ' Just as Javascript if very different from Haskell, so too are the JS-monads very different from Haskell monads. For example, the JS-monads carry bnd() and ret() internally whereas Haskell uses >>= and return. I think the essential takeaways from the above demonstration of similarities are not so much that JS-monads are like Haskell monads, but that (1) the Monad ret() method is the left and right identity on instances of Monad, and (2) instances of Monad compose associatively. Does that mean that members of M (defined above) are monoids in the category of endofunctors, just like Haskell monads? Well, it does sort of feel that way, but it hasn\'t been proven.   '),
+	            dom_1.h('div#captionDiv', [dom_1.h('h1', 'Motorcycle.js With JS-monads'), dom_1.h('span.tao1', ' A shared, persistent todo list, '), dom_1.h('br'), dom_1.h('span.tao1', ' A websockets simulated dice game with a traversable history, '), dom_1.h('br'), dom_1.h('span.tao1', ' Group chat rooms and more demonstrations of efficient, '), dom_1.h('br'), dom_1.h('span.tao2', ' maintainable code using Motorcycle.js and JS-monads.  ')]), dom_1.h('br'), dom_1.h('span.tao', 'This is a '), dom_1.h('a', { props: { href: "https://github.com/motorcyclejs", target: "_blank" } }, 'Motorcycle.js'), dom_1.h('span', ' application. Motorcycle.js is '), dom_1.h('a', { props: { href: "https://github.com/cyclejs/core", target: "_blank" } }, 'Cycle.js'), dom_1.h('span', ' using '), dom_1.h('a', { props: { href: "https://github.com/cujojs/most", target: "_blank" } }, 'Most'), dom_1.h('span', ' , '), dom_1.h('span', ' and '), dom_1.h('a', { props: { href: "https://github.com/paldepind/snabbdom", target: "_blank" } }, 'Snabbdom'), dom_1.h('span', ' instead of RxJS and virtual-dom.  The code for this repository is at '), dom_1.h('a', { props: { href: "https://github.com/dschalk/JS-monads-stable", target: "_blank" } }, 'JS-monads-stable'), dom_1.h('div#gameDiv2', { style: { display: 'none' } }, [dom_1.h('br'), dom_1.h('p.red8', mMgoals2.x), dom_1.h('span', ' Here are the basic rules:'), dom_1.h('p', 'RULES: If clicking two numbers and an operator (in any order) results in 20 or 18, the score increases by 1 or 3, respectively. If the score becomes 0 or is evenly divisible by 5, 5 points are added. A score of 25 results in one goal. That can only be achieved by arriving at a score of 20, which jumps the score to 25. Directly computing 25 results in a score of 30, and no goal. Each time RL is clicked, one point is deducted. Three goals wins the game. '), dom_1.h('button#0.num'), dom_1.h('button#1.num'), dom_1.h('button#2.num'), dom_1.h('button#3.num'), dom_1.h('br'), dom_1.h('button#4.op', 'add'), dom_1.h('button#5.op', 'subtract'), dom_1.h('button#5.op', 'mult'), dom_1.h('button#5.op', 'div'), dom_1.h('button#5.op', 'concat'), dom_1.h('br'), dom_1.h('div#dice', { style: { display: 'none' } }, [dom_1.h('button.roll', 'ROLL'), dom_1.h('br'), dom_1.h('button#back', 'BACK'), dom_1.h('button#forward', 'FORWARD')])]), dom_1.h('div#log1', [dom_1.h('p', 'IN ORDER TO SEE THE GAME, TODOLIST, AND CHAT DEMONSTRATIONS, YOU MUST ENTER SOMETHING .'), dom_1.h('span', 'Name: '), dom_1.h('input#login', { props: { placeholder: "focus on; start typing" } })]), dom_1.h('p', mM6.x), dom_1.h('div#log2', { style: { display: 'none' } }, [dom_1.h('span', 'Change group: '), dom_1.h('input#group')]), dom_1.h('p', mMsoloAlert.x), dom_1.h('p', 'People who are in the same group, other than solo, share the same todo list, messages, and simulated dice game. In order to see any of these, you must establish an identity on the server by logging in. The websockets connection terminates if the first message the server receives does not come from the sign in form. You can enter any random numbers or letters you like. The only check is to make sure someone hasn\t already signed in with whatever you have selected. If you log in with a name that is already in use, a message will appear and this page will be re-loaded in the browser after a four-second pause. '), dom_1.h('p', ' Data for the traversable game history accumulates until a player scores. The data array is then re-set to [], the empty array. When a player clicks the BACK button, other group members are notified. It is up to the group to decide whether clicking the BACK button disqualifies a player. '), dom_1.h('hr'), dom_1.h('h1', 'The Monads'), dom_1.h('h3', ' Monad '), code_js_1["default"].monad, dom_1.h('p', ' Monad instances are useful for chaining computations. Typically, the bnd() method provides its value to a computation that returns an instance of Monad. Here are some examples: '), code_js_1["default"].e1, dom_1.h('p', ' These functions can be used with instances of Monad in many ways, for example: '), code_js_1["default"].e2, dom_1.h('p', ' Each of the functions shown above can be used as a stand-alone function or as an argument to the bnd() method. Each monad in a chain of linked computations can do one of two things with the previous monad\s value: (1) It can ignore it, possibly letting it move past for use further down the chain or (2) use it, with the option of passing it on down the chain. Any computation can be inserted into the chain by giving it an additional first argument (which will be the previous monad\'s value), and having it return an instance of Monad. Say you have a function func(a,b,c) {...}. Put something ahead of a (it will have the previous monad\'s value) and return a monad. You can give the returned monad any value you like. For example, func\'(x,a,b,c) {...; return ret(x)} will work. Its bnd() method will pass along the value x, which is the previous monad\s value. '), dom_1.h('h3', ' The Monad Laws '), dom_1.h('p', ' In the following discussion, "x == y" signifies that x == y returns true. Let M be the collection of all instances of Monad, let J be the collection of all Javascript values, including functions, instances of Monad, etc, and let F be the collection of all functions mapping values in J to monads in M where the return values are the calling instance of Monad. For any m (with id == "m"), v, f, and f\' in M, J, F, and F, respectively, the following relationships hold: '), dom_1.h('pre.lb', '    equals( m.ret(v).bnd(f), f(v) ) Left identity   Holds provided that f returns m.\n    Example: equals( m.ret(5).bnd(cube, m).x, cube(5, m) )   \n    Haskell monad law: (return x) >>= f ≡ f x  \n    \n    m.bnd(m.ret) == m   Right identity   Works even with "==" and "==="\n    Haskell monad law: m >>= return ≡ m  \n    \n    equals( m.bnd(f).bnd(f\'), m.bnd(v => f(v).bnd(f\')) )  Associativity\n    Haskell monad law: (m >>= f) >>= g ≡ m >>= ( \\x -> (f x >>= g) ) '), dom_1.h('p', ' where equals is defined as: '), code_js_1["default"].equals, dom_1.h('p', ' The function equals() was used because the == and === operators on objects check for location in memory, not equality of attributes and methods. If the left and right sides of predicates create new instances of m, then the left side m and the right side m wind up in different location in memory. That\'s why m.ret(3) == m.ret(3) returns false. If we define equality to mean equality of attributes, then ret is the left and right identity on objects in M and  the objects in M commute when their bind methods operate on functions in F. '), dom_1.h('h3', ' The JS-monads-mutableInstances Branch  '), dom_1.h('p', ' In the JS-monads-mutableInstances branch of this project, examples of the laws hold when the == operator is used. For example: '), dom_1.h('pre', "    m.bnd(add, 3, m).bnd(cube, m) == m.bnd(v => add(v, 3, m).bnd(cube, m)\n    m.ret(5).bnd(cube, m) == cube(5, m)   "), dom_1.h('p', ' Tests in the JS-monads-mutableInstance produce results closer to what we would expect in mathematics. For example: '), dom_1.h('pre', "    m.ret(7) == m.ret(7)  Returns true in JS-monads-mutableIntances.  "), dom_1.h('h3', ' Back to the master branch '), dom_1.h('h3', ' fmap '), dom_1.h('p', ' I showed you (abpve) some functions designed for instances of Monad, but it is easy to lift functions that return ordinary Javascript values into chains of monadic computations. One way of doing this is to use fmap(), as shown below in finding solutions to the quadratic equation.  '), dom_1.h('h3', ' Monad Arithmetic with opM '), code_js_1["default"].opM, dom_1.h('p', ' Since the Monad instance ok had already been created, the second result could have been obtained by running: '), dom_1.h('pre', "    ok.ret(m1.x + m2.x)   "), dom_1.h('p', ' Just adding the suffix ".x" to an instance of Monad exposes its value. Doing that and running ret() on the return value is all that is needed for performing computations with ordinary functions and wrapping the results in instances of Monad. fmap is non-essential syntactic sugar. This is very different from Haskell, where fmap is an essential component of monadic computation. '), dom_1.h('h3', ' Are They Category Theory Monads?  '), dom_1.h('p#monaditter', ' Just as Javascript if very different from Haskell, so too are the JS-monads very different from Haskell monads. For example, the JS-monads carry bnd() and ret() internally whereas Haskell uses >>= and return. I think the essential takeaways from the above demonstration of similarities are not so much that JS-monads are like Haskell monads, but that (1) the Monad ret() method is the left and right identity on instances of Monad, and (2) instances of Monad compose associatively. Does that mean that members of M (defined above) are monoids in the category of endofunctors, just like Haskell monads? Well, it does sort of feel that way, but it hasn\'t been proven.   '),
 	            // **************************************************************************** END MONAD       START MonadItter   
 	            dom_1.h('h2', 'MonadItter'), code_js_1["default"].monadIt, dom_1.h('p', ' MonadItter instances do not have monadic properties, but they facilitate the work of monads. Here\'s how they work: '), dom_1.h('p', 'For any instance of MonadItter, say "it", "it.bnd(func)" causes it.p == func. Calling the method "it.release(...args)" causes p(...args) to run, possibly with arguments supplied by the caller. Here is the definition: '), dom_1.h('p', ' As shown later on this page, MonadItter instances control the routing of incoming websockets messages and the flow of action in the simulated dice game. In one of the demonstrations below, they behave much like ES2015 iterators. I prefer them over ES2015 iterators. They also provide promises-like functionality'), dom_1.h('h3', ' A Basic Itterator '), dom_1.h('p', 'The following example illustrates the use of release() with an argument. It also shows a lambda expressions being provided as an argument for the method mMZ1.bnd() (thereby becoming the value of mMZ1.p) and then mMZ1.release providing an arguments for the function mMZ1.p. The code is shown beneith the following two buttons. '), dom_1.h('button#testZ', 'mMZ1.release(1)'), dom_1.h('p.code2', mMt3.x), dom_1.h('span', 'Refresh button: '), dom_1.h('button#testQ', 'mMt1.ret(0).bnd(v => mMZ2.release(v)) '), dom_1.h('br'), code_js_1["default"].testZ, dom_1.h('span.tao', ' mMt3.x sits permanently in the Motorcycle virtual DOM description. You can call '), dom_1.h('span.green', 'mMZ2.release(v)'), dom_1.h('span', ' by entering a value for v below: '), dom_1.h('br'), dom_1.h('span', 'Please enter an integer here: '), dom_1.h('input#testW'), dom_1.h('p', ' cube() is defined in the Monad section (above). If you click "mMZ1.release(1)" several times, the code (above) will run several times, each time with v == 1. The result, mMt3.x, is shown below the button. mMZ1.p (bnd()\'s argument) remains constant while mMZ1.release(1) is repeatedly called, incrementing the number being cubed each time. '), dom_1.h('p', ' Here is another example. It demonstrates lambda expressions passing values to a remote location for use in a computation. If you enter three numbers consecutively below, call them a, b, and c, then the quadratic equation will be used to find solutions for a*x**2 + b*x + c = 0. The a, b, and c you select might not have a solution. If a and b are positive numbers, you are likely to see solutions if c is a negative number. For example, 12, 12, and -24 yields the solutions 1 and -2. '), dom_1.h('p#quad4.red2'), dom_1.h('p#quad5.red2'), dom_1.h('p#quad6.red2'), dom_1.h('p', 'Run mMZ3.release(v) three times for three numbers. The numbers are a, b, and c in ax*x + b*x + c = 0: '), dom_1.h('input#quad'), dom_1.h('p', 'Here is the code:'), code_js_1["default"].quad, dom_1.h('p', ' fmap (above) facilitated using qS4 in a monadic sequence. qS4 returns an array, not an instance of Monad, but fmap lifts qS4 into the monadic sequence. '), dom_1.h('span'), dom_1.h('p#monadstate'),
 	            // ***************************************************************************************************** START MonadState
@@ -4987,11 +5680,11 @@
 	    if (document.getElementById(a)) document.getElementById(a).style.display = 'inline';
 	    return ret(x);
 	};
-	var newRoll = function (v) {
+	var newRoll = function newRoll(v) {
 	    socket.send('CA#$42,' + pMgroup.x + ',' + pMname.x + ',6,6,12,20');
 	    return ret(v);
 	};
-	var refresh = function () {
+	var refresh = function refresh() {
 	    setTimeout(function () {
 	        document.location.reload(false);
 	    }, 4000);
@@ -5001,219 +5694,223 @@
 	    WS: websocketsDriver
 	};
 	core_1["default"].run(main, sources);
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(17)))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(35)))
 
 /***/ },
-/* 40 */
+/* 65 */
 /***/ function(module, exports, __webpack_require__) {
 
+	var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
+
+	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
+
 	(function (global, factory) {
-	   true ? factory(exports, __webpack_require__(4)) : typeof define === 'function' && define.amd ? define(['exports', 'most'], factory) : factory(global.mostDomEvent = global.mostDomEvent || {}, global.most);
-	})(this, function (exports, most) {
+	  ( false ? 'undefined' : _typeof(exports)) === 'object' && typeof module !== 'undefined' ? factory(exports, __webpack_require__(11)) :  true ? !(__WEBPACK_AMD_DEFINE_ARRAY__ = [exports, __webpack_require__(11)], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__)) : factory(global.mostDomEvent = global.mostDomEvent || {}, global.most);
+	})(undefined, function (exports, most) {
 	  'use strict';
 
 	  // domEvent :: (EventTarget t, Event e) => String -> t -> boolean=false -> Stream e
 
-	  var domEvent = function (event, node, capture) {
+	  var domEvent = function domEvent(event, node, capture) {
 	    if (capture === void 0) capture = false;
 
 	    return new most.Stream(new DomEvent(event, node, capture));
 	  };
 
-	  var blur = function (node, capture) {
+	  var blur = function blur(node, capture) {
 	    if (capture === void 0) capture = false;
 
 	    return domEvent('blur', node, capture);
 	  };
-	  var focus = function (node, capture) {
+	  var focus = function focus(node, capture) {
 	    if (capture === void 0) capture = false;
 
 	    return domEvent('focus', node, capture);
 	  };
-	  var focusin = function (node, capture) {
+	  var focusin = function focusin(node, capture) {
 	    if (capture === void 0) capture = false;
 
 	    return domEvent('focusin', node, capture);
 	  };
-	  var focusout = function (node, capture) {
+	  var focusout = function focusout(node, capture) {
 	    if (capture === void 0) capture = false;
 
 	    return domEvent('focusout', node, capture);
 	  };
-	  var click = function (node, capture) {
+	  var click = function click(node, capture) {
 	    if (capture === void 0) capture = false;
 
 	    return domEvent('click', node, capture);
 	  };
-	  var dblclick = function (node, capture) {
+	  var dblclick = function dblclick(node, capture) {
 	    if (capture === void 0) capture = false;
 
 	    return domEvent('dblclick', node, capture);
 	  };
-	  var mousedown = function (node, capture) {
+	  var mousedown = function mousedown(node, capture) {
 	    if (capture === void 0) capture = false;
 
 	    return domEvent('mousedown', node, capture);
 	  };
-	  var mouseup = function (node, capture) {
+	  var mouseup = function mouseup(node, capture) {
 	    if (capture === void 0) capture = false;
 
 	    return domEvent('mouseup', node, capture);
 	  };
-	  var mousemove = function (node, capture) {
+	  var mousemove = function mousemove(node, capture) {
 	    if (capture === void 0) capture = false;
 
 	    return domEvent('mousemove', node, capture);
 	  };
-	  var mouseover = function (node, capture) {
+	  var mouseover = function mouseover(node, capture) {
 	    if (capture === void 0) capture = false;
 
 	    return domEvent('mouseover', node, capture);
 	  };
-	  var mouseenter = function (node, capture) {
+	  var mouseenter = function mouseenter(node, capture) {
 	    if (capture === void 0) capture = false;
 
 	    return domEvent('mouseenter', node, capture);
 	  };
-	  var mouseout = function (node, capture) {
+	  var mouseout = function mouseout(node, capture) {
 	    if (capture === void 0) capture = false;
 
 	    return domEvent('mouseout', node, capture);
 	  };
-	  var mouseleave = function (node, capture) {
+	  var mouseleave = function mouseleave(node, capture) {
 	    if (capture === void 0) capture = false;
 
 	    return domEvent('mouseleave', node, capture);
 	  };
-	  var change = function (node, capture) {
+	  var change = function change(node, capture) {
 	    if (capture === void 0) capture = false;
 
 	    return domEvent('change', node, capture);
 	  };
-	  var select = function (node, capture) {
+	  var select = function select(node, capture) {
 	    if (capture === void 0) capture = false;
 
 	    return domEvent('select', node, capture);
 	  };
-	  var submit = function (node, capture) {
+	  var submit = function submit(node, capture) {
 	    if (capture === void 0) capture = false;
 
 	    return domEvent('submit', node, capture);
 	  };
-	  var keydown = function (node, capture) {
+	  var keydown = function keydown(node, capture) {
 	    if (capture === void 0) capture = false;
 
 	    return domEvent('keydown', node, capture);
 	  };
-	  var keypress = function (node, capture) {
+	  var keypress = function keypress(node, capture) {
 	    if (capture === void 0) capture = false;
 
 	    return domEvent('keypress', node, capture);
 	  };
-	  var keyup = function (node, capture) {
+	  var keyup = function keyup(node, capture) {
 	    if (capture === void 0) capture = false;
 
 	    return domEvent('keyup', node, capture);
 	  };
-	  var input = function (node, capture) {
+	  var input = function input(node, capture) {
 	    if (capture === void 0) capture = false;
 
 	    return domEvent('input', node, capture);
 	  };
-	  var contextmenu = function (node, capture) {
+	  var contextmenu = function contextmenu(node, capture) {
 	    if (capture === void 0) capture = false;
 
 	    return domEvent('contextmenu', node, capture);
 	  };
-	  var resize = function (node, capture) {
+	  var resize = function resize(node, capture) {
 	    if (capture === void 0) capture = false;
 
 	    return domEvent('resize', node, capture);
 	  };
-	  var scroll = function (node, capture) {
+	  var scroll = function scroll(node, capture) {
 	    if (capture === void 0) capture = false;
 
 	    return domEvent('scroll', node, capture);
 	  };
-	  var error = function (node, capture) {
+	  var error = function error(node, capture) {
 	    if (capture === void 0) capture = false;
 
 	    return domEvent('error', node, capture);
 	  };
 
-	  var hashchange = function (node, capture) {
+	  var hashchange = function hashchange(node, capture) {
 	    if (capture === void 0) capture = false;
 
 	    return domEvent('hashchange', node, capture);
 	  };
-	  var popstate = function (node, capture) {
+	  var popstate = function popstate(node, capture) {
 	    if (capture === void 0) capture = false;
 
 	    return domEvent('popstate', node, capture);
 	  };
-	  var load = function (node, capture) {
+	  var load = function load(node, capture) {
 	    if (capture === void 0) capture = false;
 
 	    return domEvent('load', node, capture);
 	  };
-	  var unload = function (node, capture) {
+	  var unload = function unload(node, capture) {
 	    if (capture === void 0) capture = false;
 
 	    return domEvent('unload', node, capture);
 	  };
 
-	  var pointerdown = function (node, capture) {
+	  var pointerdown = function pointerdown(node, capture) {
 	    if (capture === void 0) capture = false;
 
 	    return domEvent('pointerdown', node, capture);
 	  };
-	  var pointerup = function (node, capture) {
+	  var pointerup = function pointerup(node, capture) {
 	    if (capture === void 0) capture = false;
 
 	    return domEvent('pointerup', node, capture);
 	  };
-	  var pointermove = function (node, capture) {
+	  var pointermove = function pointermove(node, capture) {
 	    if (capture === void 0) capture = false;
 
 	    return domEvent('pointermove', node, capture);
 	  };
-	  var pointerover = function (node, capture) {
+	  var pointerover = function pointerover(node, capture) {
 	    if (capture === void 0) capture = false;
 
 	    return domEvent('pointerover', node, capture);
 	  };
-	  var pointerenter = function (node, capture) {
+	  var pointerenter = function pointerenter(node, capture) {
 	    if (capture === void 0) capture = false;
 
 	    return domEvent('pointerenter', node, capture);
 	  };
-	  var pointerout = function (node, capture) {
+	  var pointerout = function pointerout(node, capture) {
 	    if (capture === void 0) capture = false;
 
 	    return domEvent('pointerout', node, capture);
 	  };
-	  var pointerleave = function (node, capture) {
+	  var pointerleave = function pointerleave(node, capture) {
 	    if (capture === void 0) capture = false;
 
 	    return domEvent('pointerleave', node, capture);
 	  };
 
-	  var touchstart = function (node, capture) {
+	  var touchstart = function touchstart(node, capture) {
 	    if (capture === void 0) capture = false;
 
 	    return domEvent('touchstart', node, capture);
 	  };
-	  var touchend = function (node, capture) {
+	  var touchend = function touchend(node, capture) {
 	    if (capture === void 0) capture = false;
 
 	    return domEvent('touchend', node, capture);
 	  };
-	  var touchmove = function (node, capture) {
+	  var touchmove = function touchmove(node, capture) {
 	    if (capture === void 0) capture = false;
 
 	    return domEvent('touchmove', node, capture);
 	  };
-	  var touchcancel = function (node, capture) {
+	  var touchcancel = function touchcancel(node, capture) {
 	    if (capture === void 0) capture = false;
 
 	    return domEvent('touchcancel', node, capture);
@@ -5228,10 +5925,10 @@
 	  DomEvent.prototype.run = function run(sink, scheduler) {
 	    var this$1 = this;
 
-	    var send = function (e) {
+	    var send = function send(e) {
 	      return tryEvent(scheduler.now(), e, sink);
 	    };
-	    var dispose = function () {
+	    var dispose = function dispose() {
 	      return this$1.node.removeEventListener(this$1.event, send, this$1.capture);
 	    };
 
@@ -5294,12 +5991,14 @@
 	//# sourceMappingURL=mostDomEvent.js.map
 
 /***/ },
-/* 41 */
+/* 66 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;(function (global, factory) {
+	var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
+
+	(function (global, factory) {
 	  if (true) {
-	    !(__WEBPACK_AMD_DEFINE_ARRAY__ = [exports, __webpack_require__(5)], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+	    !(__WEBPACK_AMD_DEFINE_ARRAY__ = [exports, __webpack_require__(12)], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 	  } else if (typeof exports !== "undefined") {
 	    factory(exports, require('@most/multicast'));
 	  } else {
@@ -5309,7 +6008,7 @@
 	    factory(mod.exports, global.multicast);
 	    global.mostHold = mod.exports;
 	  }
-	})(this, function (exports, _multicast) {
+	})(undefined, function (exports, _multicast) {
 	  'use strict';
 
 	  Object.defineProperty(exports, "__esModule", {
@@ -5396,7 +6095,7 @@
 	});
 
 /***/ },
-/* 42 */
+/* 67 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -5405,11 +6104,11 @@
 	  value: true
 	});
 
-	var _vnode = __webpack_require__(15);
+	var _vnode = __webpack_require__(20);
 
 	var _vnode2 = _interopRequireDefault(_vnode);
 
-	var _is = __webpack_require__(10);
+	var _is = __webpack_require__(13);
 
 	var _is2 = _interopRequireDefault(_is);
 
@@ -5477,7 +6176,7 @@
 	exports.default = h;
 
 /***/ },
-/* 43 */
+/* 68 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -5487,39 +6186,39 @@
 	});
 	exports.makeDOMDriver = undefined;
 
-	var _most = __webpack_require__(4);
+	var _most = __webpack_require__(11);
 
-	var _hold = __webpack_require__(41);
+	var _hold = __webpack_require__(66);
 
 	var _hold2 = _interopRequireDefault(_hold);
 
-	var _snabbdom = __webpack_require__(101);
+	var _snabbdom = __webpack_require__(80);
 
-	var _h = __webpack_require__(36);
+	var _h = __webpack_require__(42);
 
 	var _h2 = _interopRequireDefault(_h);
 
-	var _classNameFromVNode = __webpack_require__(93);
+	var _classNameFromVNode = __webpack_require__(72);
 
 	var _classNameFromVNode2 = _interopRequireDefault(_classNameFromVNode);
 
-	var _selectorParser2 = __webpack_require__(35);
+	var _selectorParser2 = __webpack_require__(41);
 
 	var _selectorParser3 = _interopRequireDefault(_selectorParser2);
 
-	var _utils = __webpack_require__(22);
+	var _utils = __webpack_require__(40);
 
-	var _modules = __webpack_require__(21);
+	var _modules = __webpack_require__(39);
 
 	var _modules2 = _interopRequireDefault(_modules);
 
-	var _transposition = __webpack_require__(46);
+	var _transposition = __webpack_require__(71);
 
-	var _isolate = __webpack_require__(19);
+	var _isolate = __webpack_require__(37);
 
-	var _select = __webpack_require__(45);
+	var _select = __webpack_require__(70);
 
-	var _events = __webpack_require__(18);
+	var _events = __webpack_require__(36);
 
 	function _interopRequireDefault(obj) {
 	  return obj && obj.__esModule ? obj : { default: obj };
@@ -5623,7 +6322,7 @@
 	exports.makeDOMDriver = makeDOMDriver;
 
 /***/ },
-/* 44 */
+/* 69 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -5633,7 +6332,7 @@
 	});
 	exports.mockDOMSource = undefined;
 
-	var _most = __webpack_require__(4);
+	var _most = __webpack_require__(11);
 
 	var _most2 = _interopRequireDefault(_most);
 
@@ -5694,7 +6393,7 @@
 	exports.mockDOMSource = mockDOMSource;
 
 /***/ },
-/* 45 */
+/* 70 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -5704,11 +6403,11 @@
 	});
 	exports.makeIsStrictlyInRootScope = exports.makeElementSelector = undefined;
 
-	var _makeIsStrictlyInRootScope = __webpack_require__(20);
+	var _makeIsStrictlyInRootScope = __webpack_require__(38);
 
-	var _events = __webpack_require__(18);
+	var _events = __webpack_require__(36);
 
-	var _isolate = __webpack_require__(19);
+	var _isolate = __webpack_require__(37);
 
 	var isValidString = function isValidString(param) {
 	  return typeof param === 'string' && param.length > 0;
@@ -5791,17 +6490,19 @@
 	exports.makeIsStrictlyInRootScope = _makeIsStrictlyInRootScope.makeIsStrictlyInRootScope;
 
 /***/ },
-/* 46 */
+/* 71 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
+
+	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
 
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
 	exports.transposeVTree = undefined;
 
-	var _most = __webpack_require__(4);
+	var _most = __webpack_require__(11);
 
 	var _most2 = _interopRequireDefault(_most);
 
@@ -5823,11 +6524,11 @@
 	function transposeVTree(vTree) {
 	  if (!vTree) {
 	    return null;
-	  } else if (vTree && typeof vTree.data === 'object' && vTree.data.static) {
+	  } else if (vTree && _typeof(vTree.data) === 'object' && vTree.data.static) {
 	    return _most2.default.just(vTree);
 	  } else if (typeof vTree.observe === 'function') {
 	    return vTree.map(transposeVTree).switch();
-	  } else if (typeof vTree === 'object') {
+	  } else if ((typeof vTree === 'undefined' ? 'undefined' : _typeof(vTree)) === 'object') {
 	    if (!vTree.children || vTree.children.length === 0) {
 	      return _most2.default.just(vTree);
 	    }
@@ -5851,8 +6552,863 @@
 	exports.transposeVTree = transposeVTree;
 
 /***/ },
-/* 47 */
+/* 72 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	exports.default = classNameFromVNode;
+
+	var _selectorParser2 = __webpack_require__(41);
+
+	var _selectorParser3 = _interopRequireDefault(_selectorParser2);
+
+	function _interopRequireDefault(obj) {
+	  return obj && obj.__esModule ? obj : { default: obj };
+	}
+
+	function classNameFromVNode(vNode) {
+	  var _selectorParser = (0, _selectorParser3.default)(vNode.sel);
+
+	  var cn = _selectorParser.className;
+
+	  if (!vNode.data) {
+	    return cn;
+	  }
+
+	  var _vNode$data = vNode.data;
+	  var dataClass = _vNode$data.class;
+	  var props = _vNode$data.props;
+
+	  if (dataClass) {
+	    var c = Object.keys(vNode.data.class).filter(function (cl) {
+	      return vNode.data.class[cl];
+	    });
+	    cn += ' ' + c.join(' ');
+	  }
+
+	  if (props && props.className) {
+	    cn += ' ' + props.className;
+	  }
+
+	  return cn.trim();
+	}
+
+/***/ },
+/* 73 */
 /***/ function(module, exports) {
+
+	"use strict";
+
+	function createElement(tagName) {
+	  return document.createElement(tagName);
+	}
+
+	function createElementNS(namespaceURI, qualifiedName) {
+	  return document.createElementNS(namespaceURI, qualifiedName);
+	}
+
+	function createTextNode(text) {
+	  return document.createTextNode(text);
+	}
+
+	function insertBefore(parentNode, newNode, referenceNode) {
+	  parentNode.insertBefore(newNode, referenceNode);
+	}
+
+	function removeChild(node, child) {
+	  node.removeChild(child);
+	}
+
+	function appendChild(node, child) {
+	  node.appendChild(child);
+	}
+
+	function parentNode(node) {
+	  return node.parentElement;
+	}
+
+	function nextSibling(node) {
+	  return node.nextSibling;
+	}
+
+	function tagName(node) {
+	  return node.tagName;
+	}
+
+	function setTextContent(node, text) {
+	  node.textContent = text;
+	}
+
+	module.exports = {
+	  createElement: createElement,
+	  createElementNS: createElementNS,
+	  createTextNode: createTextNode,
+	  appendChild: appendChild,
+	  removeChild: removeChild,
+	  insertBefore: insertBefore,
+	  parentNode: parentNode,
+	  nextSibling: nextSibling,
+	  tagName: tagName,
+	  setTextContent: setTextContent
+	};
+
+/***/ },
+/* 74 */
+/***/ function(module, exports) {
+
+	"use strict";
+
+	var booleanAttrs = ["allowfullscreen", "async", "autofocus", "autoplay", "checked", "compact", "controls", "declare", "default", "defaultchecked", "defaultmuted", "defaultselected", "defer", "disabled", "draggable", "enabled", "formnovalidate", "hidden", "indeterminate", "inert", "ismap", "itemscope", "loop", "multiple", "muted", "nohref", "noresize", "noshade", "novalidate", "nowrap", "open", "pauseonexit", "readonly", "required", "reversed", "scoped", "seamless", "selected", "sortable", "spellcheck", "translate", "truespeed", "typemustmatch", "visible"];
+
+	var booleanAttrsDict = {};
+	for (var i = 0, len = booleanAttrs.length; i < len; i++) {
+	  booleanAttrsDict[booleanAttrs[i]] = true;
+	}
+
+	function updateAttrs(oldVnode, vnode) {
+	  var key,
+	      cur,
+	      old,
+	      elm = vnode.elm,
+	      oldAttrs = oldVnode.data.attrs || {},
+	      attrs = vnode.data.attrs || {};
+
+	  // update modified attributes, add new attributes
+	  for (key in attrs) {
+	    cur = attrs[key];
+	    old = oldAttrs[key];
+	    if (old !== cur) {
+	      // TODO: add support to namespaced attributes (setAttributeNS)
+	      if (!cur && booleanAttrsDict[key]) elm.removeAttribute(key);else elm.setAttribute(key, cur);
+	    }
+	  }
+	  //remove removed attributes
+	  // use `in` operator since the previous `for` iteration uses it (.i.e. add even attributes with undefined value)
+	  // the other option is to remove all attributes with value == undefined
+	  for (key in oldAttrs) {
+	    if (!(key in attrs)) {
+	      elm.removeAttribute(key);
+	    }
+	  }
+	}
+
+	module.exports = { create: updateAttrs, update: updateAttrs };
+
+/***/ },
+/* 75 */
+/***/ function(module, exports) {
+
+	'use strict';
+
+	function updateClass(oldVnode, vnode) {
+	  var cur,
+	      name,
+	      elm = vnode.elm,
+	      oldClass = oldVnode.data.class || {},
+	      klass = vnode.data.class || {};
+	  for (name in oldClass) {
+	    if (!klass[name]) {
+	      elm.classList.remove(name);
+	    }
+	  }
+	  for (name in klass) {
+	    cur = klass[name];
+	    if (cur !== oldClass[name]) {
+	      elm.classList[cur ? 'add' : 'remove'](name);
+	    }
+	  }
+	}
+
+	module.exports = { create: updateClass, update: updateClass };
+
+/***/ },
+/* 76 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var is = __webpack_require__(13);
+
+	function arrInvoker(arr) {
+	  return function () {
+	    // Special case when length is two, for performance
+	    arr.length === 2 ? arr[0](arr[1]) : arr[0].apply(undefined, arr.slice(1));
+	  };
+	}
+
+	function fnInvoker(o) {
+	  return function (ev) {
+	    o.fn(ev);
+	  };
+	}
+
+	function updateEventListeners(oldVnode, vnode) {
+	  var name,
+	      cur,
+	      old,
+	      elm = vnode.elm,
+	      oldOn = oldVnode.data.on || {},
+	      on = vnode.data.on;
+	  if (!on) return;
+	  for (name in on) {
+	    cur = on[name];
+	    old = oldOn[name];
+	    if (old === undefined) {
+	      if (is.array(cur)) {
+	        elm.addEventListener(name, arrInvoker(cur));
+	      } else {
+	        cur = { fn: cur };
+	        on[name] = cur;
+	        elm.addEventListener(name, fnInvoker(cur));
+	      }
+	    } else if (is.array(old)) {
+	      // Deliberately modify old array since it's captured in closure created with `arrInvoker`
+	      old.length = cur.length;
+	      for (var i = 0; i < old.length; ++i) {
+	        old[i] = cur[i];
+	      }on[name] = old;
+	    } else {
+	      old.fn = cur;
+	      on[name] = old;
+	    }
+	  }
+	}
+
+	module.exports = { create: updateEventListeners, update: updateEventListeners };
+
+/***/ },
+/* 77 */
+/***/ function(module, exports) {
+
+	'use strict';
+
+	var raf = typeof window !== 'undefined' && window.requestAnimationFrame || setTimeout;
+	var nextFrame = function nextFrame(fn) {
+	  raf(function () {
+	    raf(fn);
+	  });
+	};
+
+	function setNextFrame(obj, prop, val) {
+	  nextFrame(function () {
+	    obj[prop] = val;
+	  });
+	}
+
+	function getTextNodeRect(textNode) {
+	  var rect;
+	  if (document.createRange) {
+	    var range = document.createRange();
+	    range.selectNodeContents(textNode);
+	    if (range.getBoundingClientRect) {
+	      rect = range.getBoundingClientRect();
+	    }
+	  }
+	  return rect;
+	}
+
+	function calcTransformOrigin(isTextNode, textRect, boundingRect) {
+	  if (isTextNode) {
+	    if (textRect) {
+	      //calculate pixels to center of text from left edge of bounding box
+	      var relativeCenterX = textRect.left + textRect.width / 2 - boundingRect.left;
+	      var relativeCenterY = textRect.top + textRect.height / 2 - boundingRect.top;
+	      return relativeCenterX + 'px ' + relativeCenterY + 'px';
+	    }
+	  }
+	  return '0 0'; //top left
+	}
+
+	function getTextDx(oldTextRect, newTextRect) {
+	  if (oldTextRect && newTextRect) {
+	    return oldTextRect.left + oldTextRect.width / 2 - (newTextRect.left + newTextRect.width / 2);
+	  }
+	  return 0;
+	}
+	function getTextDy(oldTextRect, newTextRect) {
+	  if (oldTextRect && newTextRect) {
+	    return oldTextRect.top + oldTextRect.height / 2 - (newTextRect.top + newTextRect.height / 2);
+	  }
+	  return 0;
+	}
+
+	function isTextElement(elm) {
+	  return elm.childNodes.length === 1 && elm.childNodes[0].nodeType === 3;
+	}
+
+	var removed, created;
+
+	function pre(oldVnode, vnode) {
+	  removed = {};
+	  created = [];
+	}
+
+	function create(oldVnode, vnode) {
+	  var hero = vnode.data.hero;
+	  if (hero && hero.id) {
+	    created.push(hero.id);
+	    created.push(vnode);
+	  }
+	}
+
+	function destroy(vnode) {
+	  var hero = vnode.data.hero;
+	  if (hero && hero.id) {
+	    var elm = vnode.elm;
+	    vnode.isTextNode = isTextElement(elm); //is this a text node?
+	    vnode.boundingRect = elm.getBoundingClientRect(); //save the bounding rectangle to a new property on the vnode
+	    vnode.textRect = vnode.isTextNode ? getTextNodeRect(elm.childNodes[0]) : null; //save bounding rect of inner text node
+	    var computedStyle = window.getComputedStyle(elm, null); //get current styles (includes inherited properties)
+	    vnode.savedStyle = JSON.parse(JSON.stringify(computedStyle)); //save a copy of computed style values
+	    removed[hero.id] = vnode;
+	  }
+	}
+
+	function post() {
+	  var i, id, newElm, oldVnode, oldElm, hRatio, wRatio, oldRect, newRect, dx, dy, origTransform, origTransition, newStyle, oldStyle, newComputedStyle, isTextNode, newTextRect, oldTextRect;
+	  for (i = 0; i < created.length; i += 2) {
+	    id = created[i];
+	    newElm = created[i + 1].elm;
+	    oldVnode = removed[id];
+	    if (oldVnode) {
+	      isTextNode = oldVnode.isTextNode && isTextElement(newElm); //Are old & new both text?
+	      newStyle = newElm.style;
+	      newComputedStyle = window.getComputedStyle(newElm, null); //get full computed style for new element
+	      oldElm = oldVnode.elm;
+	      oldStyle = oldElm.style;
+	      //Overall element bounding boxes
+	      newRect = newElm.getBoundingClientRect();
+	      oldRect = oldVnode.boundingRect; //previously saved bounding rect
+	      //Text node bounding boxes & distances
+	      if (isTextNode) {
+	        newTextRect = getTextNodeRect(newElm.childNodes[0]);
+	        oldTextRect = oldVnode.textRect;
+	        dx = getTextDx(oldTextRect, newTextRect);
+	        dy = getTextDy(oldTextRect, newTextRect);
+	      } else {
+	        //Calculate distances between old & new positions
+	        dx = oldRect.left - newRect.left;
+	        dy = oldRect.top - newRect.top;
+	      }
+	      hRatio = newRect.height / Math.max(oldRect.height, 1);
+	      wRatio = isTextNode ? hRatio : newRect.width / Math.max(oldRect.width, 1); //text scales based on hRatio
+	      // Animate new element
+	      origTransform = newStyle.transform;
+	      origTransition = newStyle.transition;
+	      if (newComputedStyle.display === 'inline') //inline elements cannot be transformed
+	        newStyle.display = 'inline-block'; //this does not appear to have any negative side effects
+	      newStyle.transition = origTransition + 'transform 0s';
+	      newStyle.transformOrigin = calcTransformOrigin(isTextNode, newTextRect, newRect);
+	      newStyle.opacity = '0';
+	      newStyle.transform = origTransform + 'translate(' + dx + 'px, ' + dy + 'px) ' + 'scale(' + 1 / wRatio + ', ' + 1 / hRatio + ')';
+	      setNextFrame(newStyle, 'transition', origTransition);
+	      setNextFrame(newStyle, 'transform', origTransform);
+	      setNextFrame(newStyle, 'opacity', '1');
+	      // Animate old element
+	      for (var key in oldVnode.savedStyle) {
+	        //re-apply saved inherited properties
+	        if (parseInt(key) != key) {
+	          var ms = key.substring(0, 2) === 'ms';
+	          var moz = key.substring(0, 3) === 'moz';
+	          var webkit = key.substring(0, 6) === 'webkit';
+	          if (!ms && !moz && !webkit) //ignore prefixed style properties
+	            oldStyle[key] = oldVnode.savedStyle[key];
+	        }
+	      }
+	      oldStyle.position = 'absolute';
+	      oldStyle.top = oldRect.top + 'px'; //start at existing position
+	      oldStyle.left = oldRect.left + 'px';
+	      oldStyle.width = oldRect.width + 'px'; //Needed for elements who were sized relative to their parents
+	      oldStyle.height = oldRect.height + 'px'; //Needed for elements who were sized relative to their parents
+	      oldStyle.margin = 0; //Margin on hero element leads to incorrect positioning
+	      oldStyle.transformOrigin = calcTransformOrigin(isTextNode, oldTextRect, oldRect);
+	      oldStyle.transform = '';
+	      oldStyle.opacity = '1';
+	      document.body.appendChild(oldElm);
+	      setNextFrame(oldStyle, 'transform', 'translate(' + -dx + 'px, ' + -dy + 'px) scale(' + wRatio + ', ' + hRatio + ')'); //scale must be on far right for translate to be correct
+	      setNextFrame(oldStyle, 'opacity', '0');
+	      oldElm.addEventListener('transitionend', function (ev) {
+	        if (ev.propertyName === 'transform') document.body.removeChild(ev.target);
+	      });
+	    }
+	  }
+	  removed = created = undefined;
+	}
+
+	module.exports = { pre: pre, create: create, destroy: destroy, post: post };
+
+/***/ },
+/* 78 */
+/***/ function(module, exports) {
+
+	'use strict';
+
+	function updateProps(oldVnode, vnode) {
+	  var key,
+	      cur,
+	      old,
+	      elm = vnode.elm,
+	      oldProps = oldVnode.data.props || {},
+	      props = vnode.data.props || {};
+	  for (key in oldProps) {
+	    if (!props[key]) {
+	      delete elm[key];
+	    }
+	  }
+	  for (key in props) {
+	    cur = props[key];
+	    old = oldProps[key];
+	    if (old !== cur && (key !== 'value' || elm[key] !== cur)) {
+	      elm[key] = cur;
+	    }
+	  }
+	}
+
+	module.exports = { create: updateProps, update: updateProps };
+
+/***/ },
+/* 79 */
+/***/ function(module, exports) {
+
+	'use strict';
+
+	var raf = typeof window !== 'undefined' && window.requestAnimationFrame || setTimeout;
+	var nextFrame = function nextFrame(fn) {
+	  raf(function () {
+	    raf(fn);
+	  });
+	};
+
+	function setNextFrame(obj, prop, val) {
+	  nextFrame(function () {
+	    obj[prop] = val;
+	  });
+	}
+
+	function updateStyle(oldVnode, vnode) {
+	  var cur,
+	      name,
+	      elm = vnode.elm,
+	      oldStyle = oldVnode.data.style || {},
+	      style = vnode.data.style || {},
+	      oldHasDel = 'delayed' in oldStyle;
+	  for (name in oldStyle) {
+	    if (!style[name]) {
+	      elm.style[name] = '';
+	    }
+	  }
+	  for (name in style) {
+	    cur = style[name];
+	    if (name === 'delayed') {
+	      for (name in style.delayed) {
+	        cur = style.delayed[name];
+	        if (!oldHasDel || cur !== oldStyle.delayed[name]) {
+	          setNextFrame(elm.style, name, cur);
+	        }
+	      }
+	    } else if (name !== 'remove' && cur !== oldStyle[name]) {
+	      elm.style[name] = cur;
+	    }
+	  }
+	}
+
+	function applyDestroyStyle(vnode) {
+	  var style,
+	      name,
+	      elm = vnode.elm,
+	      s = vnode.data.style;
+	  if (!s || !(style = s.destroy)) return;
+	  for (name in style) {
+	    elm.style[name] = style[name];
+	  }
+	}
+
+	function applyRemoveStyle(vnode, rm) {
+	  var s = vnode.data.style;
+	  if (!s || !s.remove) {
+	    rm();
+	    return;
+	  }
+	  var name,
+	      elm = vnode.elm,
+	      idx,
+	      i = 0,
+	      maxDur = 0,
+	      compStyle,
+	      style = s.remove,
+	      amount = 0,
+	      applied = [];
+	  for (name in style) {
+	    applied.push(name);
+	    elm.style[name] = style[name];
+	  }
+	  compStyle = getComputedStyle(elm);
+	  var props = compStyle['transition-property'].split(', ');
+	  for (; i < props.length; ++i) {
+	    if (applied.indexOf(props[i]) !== -1) amount++;
+	  }
+	  elm.addEventListener('transitionend', function (ev) {
+	    if (ev.target === elm) --amount;
+	    if (amount === 0) rm();
+	  });
+	}
+
+	module.exports = { create: updateStyle, update: updateStyle, destroy: applyDestroyStyle, remove: applyRemoveStyle };
+
+/***/ },
+/* 80 */
+/***/ function(module, exports, __webpack_require__) {
+
+	// jshint newcap: false
+	/* global require, module, document, Node */
+	'use strict';
+
+	var VNode = __webpack_require__(20);
+	var is = __webpack_require__(13);
+	var domApi = __webpack_require__(73);
+
+	function isUndef(s) {
+	  return s === undefined;
+	}
+	function isDef(s) {
+	  return s !== undefined;
+	}
+
+	var emptyNode = VNode('', {}, [], undefined, undefined);
+
+	function sameVnode(vnode1, vnode2) {
+	  return vnode1.key === vnode2.key && vnode1.sel === vnode2.sel;
+	}
+
+	function createKeyToOldIdx(children, beginIdx, endIdx) {
+	  var i,
+	      map = {},
+	      key;
+	  for (i = beginIdx; i <= endIdx; ++i) {
+	    key = children[i].key;
+	    if (isDef(key)) map[key] = i;
+	  }
+	  return map;
+	}
+
+	var hooks = ['create', 'update', 'remove', 'destroy', 'pre', 'post'];
+
+	function init(modules, api) {
+	  var i,
+	      j,
+	      cbs = {};
+
+	  if (isUndef(api)) api = domApi;
+
+	  for (i = 0; i < hooks.length; ++i) {
+	    cbs[hooks[i]] = [];
+	    for (j = 0; j < modules.length; ++j) {
+	      if (modules[j][hooks[i]] !== undefined) cbs[hooks[i]].push(modules[j][hooks[i]]);
+	    }
+	  }
+
+	  function emptyNodeAt(elm) {
+	    return VNode(api.tagName(elm).toLowerCase(), {}, [], undefined, elm);
+	  }
+
+	  function createRmCb(childElm, listeners) {
+	    return function () {
+	      if (--listeners === 0) {
+	        var parent = api.parentNode(childElm);
+	        api.removeChild(parent, childElm);
+	      }
+	    };
+	  }
+
+	  function createElm(vnode, insertedVnodeQueue) {
+	    var i,
+	        thunk,
+	        data = vnode.data;
+	    if (isDef(data)) {
+	      if (isDef(i = data.hook) && isDef(i = i.init)) i(vnode);
+	      if (isDef(i = data.vnode)) {
+	        thunk = vnode;
+	        vnode = i;
+	      }
+	    }
+	    var elm,
+	        children = vnode.children,
+	        sel = vnode.sel;
+	    if (isDef(sel)) {
+	      // Parse selector
+	      var hashIdx = sel.indexOf('#');
+	      var dotIdx = sel.indexOf('.', hashIdx);
+	      var hash = hashIdx > 0 ? hashIdx : sel.length;
+	      var dot = dotIdx > 0 ? dotIdx : sel.length;
+	      var tag = hashIdx !== -1 || dotIdx !== -1 ? sel.slice(0, Math.min(hash, dot)) : sel;
+	      elm = vnode.elm = isDef(data) && isDef(i = data.ns) ? api.createElementNS(i, tag) : api.createElement(tag);
+	      if (hash < dot) elm.id = sel.slice(hash + 1, dot);
+	      if (dotIdx > 0) elm.className = sel.slice(dot + 1).replace(/\./g, ' ');
+	      if (is.array(children)) {
+	        for (i = 0; i < children.length; ++i) {
+	          api.appendChild(elm, createElm(children[i], insertedVnodeQueue));
+	        }
+	      } else if (is.primitive(vnode.text)) {
+	        api.appendChild(elm, api.createTextNode(vnode.text));
+	      }
+	      for (i = 0; i < cbs.create.length; ++i) {
+	        cbs.create[i](emptyNode, vnode);
+	      }i = vnode.data.hook; // Reuse variable
+	      if (isDef(i)) {
+	        if (i.create) i.create(emptyNode, vnode);
+	        if (i.insert) insertedVnodeQueue.push(vnode);
+	      }
+	    } else {
+	      elm = vnode.elm = api.createTextNode(vnode.text);
+	    }
+	    if (isDef(thunk)) thunk.elm = vnode.elm;
+	    return vnode.elm;
+	  }
+
+	  function addVnodes(parentElm, before, vnodes, startIdx, endIdx, insertedVnodeQueue) {
+	    for (; startIdx <= endIdx; ++startIdx) {
+	      api.insertBefore(parentElm, createElm(vnodes[startIdx], insertedVnodeQueue), before);
+	    }
+	  }
+
+	  function invokeDestroyHook(vnode) {
+	    var i,
+	        j,
+	        data = vnode.data;
+	    if (isDef(data)) {
+	      if (isDef(i = data.hook) && isDef(i = i.destroy)) i(vnode);
+	      for (i = 0; i < cbs.destroy.length; ++i) {
+	        cbs.destroy[i](vnode);
+	      }if (isDef(i = vnode.children)) {
+	        for (j = 0; j < vnode.children.length; ++j) {
+	          invokeDestroyHook(vnode.children[j]);
+	        }
+	      }
+	      if (isDef(i = data.vnode)) invokeDestroyHook(i);
+	    }
+	  }
+
+	  function removeVnodes(parentElm, vnodes, startIdx, endIdx) {
+	    for (; startIdx <= endIdx; ++startIdx) {
+	      var i,
+	          listeners,
+	          rm,
+	          ch = vnodes[startIdx];
+	      if (isDef(ch)) {
+	        if (isDef(ch.sel)) {
+	          invokeDestroyHook(ch);
+	          listeners = cbs.remove.length + 1;
+	          rm = createRmCb(ch.elm, listeners);
+	          for (i = 0; i < cbs.remove.length; ++i) {
+	            cbs.remove[i](ch, rm);
+	          }if (isDef(i = ch.data) && isDef(i = i.hook) && isDef(i = i.remove)) {
+	            i(ch, rm);
+	          } else {
+	            rm();
+	          }
+	        } else {
+	          // Text node
+	          api.removeChild(parentElm, ch.elm);
+	        }
+	      }
+	    }
+	  }
+
+	  function updateChildren(parentElm, oldCh, newCh, insertedVnodeQueue) {
+	    var oldStartIdx = 0,
+	        newStartIdx = 0;
+	    var oldEndIdx = oldCh.length - 1;
+	    var oldStartVnode = oldCh[0];
+	    var oldEndVnode = oldCh[oldEndIdx];
+	    var newEndIdx = newCh.length - 1;
+	    var newStartVnode = newCh[0];
+	    var newEndVnode = newCh[newEndIdx];
+	    var oldKeyToIdx, idxInOld, elmToMove, before;
+
+	    while (oldStartIdx <= oldEndIdx && newStartIdx <= newEndIdx) {
+	      if (isUndef(oldStartVnode)) {
+	        oldStartVnode = oldCh[++oldStartIdx]; // Vnode has been moved left
+	      } else if (isUndef(oldEndVnode)) {
+	        oldEndVnode = oldCh[--oldEndIdx];
+	      } else if (sameVnode(oldStartVnode, newStartVnode)) {
+	        patchVnode(oldStartVnode, newStartVnode, insertedVnodeQueue);
+	        oldStartVnode = oldCh[++oldStartIdx];
+	        newStartVnode = newCh[++newStartIdx];
+	      } else if (sameVnode(oldEndVnode, newEndVnode)) {
+	        patchVnode(oldEndVnode, newEndVnode, insertedVnodeQueue);
+	        oldEndVnode = oldCh[--oldEndIdx];
+	        newEndVnode = newCh[--newEndIdx];
+	      } else if (sameVnode(oldStartVnode, newEndVnode)) {
+	        // Vnode moved right
+	        patchVnode(oldStartVnode, newEndVnode, insertedVnodeQueue);
+	        api.insertBefore(parentElm, oldStartVnode.elm, api.nextSibling(oldEndVnode.elm));
+	        oldStartVnode = oldCh[++oldStartIdx];
+	        newEndVnode = newCh[--newEndIdx];
+	      } else if (sameVnode(oldEndVnode, newStartVnode)) {
+	        // Vnode moved left
+	        patchVnode(oldEndVnode, newStartVnode, insertedVnodeQueue);
+	        api.insertBefore(parentElm, oldEndVnode.elm, oldStartVnode.elm);
+	        oldEndVnode = oldCh[--oldEndIdx];
+	        newStartVnode = newCh[++newStartIdx];
+	      } else {
+	        if (isUndef(oldKeyToIdx)) oldKeyToIdx = createKeyToOldIdx(oldCh, oldStartIdx, oldEndIdx);
+	        idxInOld = oldKeyToIdx[newStartVnode.key];
+	        if (isUndef(idxInOld)) {
+	          // New element
+	          api.insertBefore(parentElm, createElm(newStartVnode, insertedVnodeQueue), oldStartVnode.elm);
+	          newStartVnode = newCh[++newStartIdx];
+	        } else {
+	          elmToMove = oldCh[idxInOld];
+	          patchVnode(elmToMove, newStartVnode, insertedVnodeQueue);
+	          oldCh[idxInOld] = undefined;
+	          api.insertBefore(parentElm, elmToMove.elm, oldStartVnode.elm);
+	          newStartVnode = newCh[++newStartIdx];
+	        }
+	      }
+	    }
+	    if (oldStartIdx > oldEndIdx) {
+	      before = isUndef(newCh[newEndIdx + 1]) ? null : newCh[newEndIdx + 1].elm;
+	      addVnodes(parentElm, before, newCh, newStartIdx, newEndIdx, insertedVnodeQueue);
+	    } else if (newStartIdx > newEndIdx) {
+	      removeVnodes(parentElm, oldCh, oldStartIdx, oldEndIdx);
+	    }
+	  }
+
+	  function patchVnode(oldVnode, vnode, insertedVnodeQueue) {
+	    var i, hook;
+	    if (isDef(i = vnode.data) && isDef(hook = i.hook) && isDef(i = hook.prepatch)) {
+	      i(oldVnode, vnode);
+	    }
+	    if (isDef(i = oldVnode.data) && isDef(i = i.vnode)) oldVnode = i;
+	    if (isDef(i = vnode.data) && isDef(i = i.vnode)) {
+	      patchVnode(oldVnode, i, insertedVnodeQueue);
+	      vnode.elm = i.elm;
+	      return;
+	    }
+	    var elm = vnode.elm = oldVnode.elm,
+	        oldCh = oldVnode.children,
+	        ch = vnode.children;
+	    if (oldVnode === vnode) return;
+	    if (!sameVnode(oldVnode, vnode)) {
+	      var parentElm = api.parentNode(oldVnode.elm);
+	      elm = createElm(vnode, insertedVnodeQueue);
+	      api.insertBefore(parentElm, elm, oldVnode.elm);
+	      removeVnodes(parentElm, [oldVnode], 0, 0);
+	      return;
+	    }
+	    if (isDef(vnode.data)) {
+	      for (i = 0; i < cbs.update.length; ++i) {
+	        cbs.update[i](oldVnode, vnode);
+	      }i = vnode.data.hook;
+	      if (isDef(i) && isDef(i = i.update)) i(oldVnode, vnode);
+	    }
+	    if (isUndef(vnode.text)) {
+	      if (isDef(oldCh) && isDef(ch)) {
+	        if (oldCh !== ch) updateChildren(elm, oldCh, ch, insertedVnodeQueue);
+	      } else if (isDef(ch)) {
+	        if (isDef(oldVnode.text)) api.setTextContent(elm, '');
+	        addVnodes(elm, null, ch, 0, ch.length - 1, insertedVnodeQueue);
+	      } else if (isDef(oldCh)) {
+	        removeVnodes(elm, oldCh, 0, oldCh.length - 1);
+	      } else if (isDef(oldVnode.text)) {
+	        api.setTextContent(elm, '');
+	      }
+	    } else if (oldVnode.text !== vnode.text) {
+	      api.setTextContent(elm, vnode.text);
+	    }
+	    if (isDef(hook) && isDef(i = hook.postpatch)) {
+	      i(oldVnode, vnode);
+	    }
+	  }
+
+	  return function (oldVnode, vnode) {
+	    var i, elm, parent;
+	    var insertedVnodeQueue = [];
+	    for (i = 0; i < cbs.pre.length; ++i) {
+	      cbs.pre[i]();
+	    }if (isUndef(oldVnode.sel)) {
+	      oldVnode = emptyNodeAt(oldVnode);
+	    }
+
+	    if (sameVnode(oldVnode, vnode)) {
+	      patchVnode(oldVnode, vnode, insertedVnodeQueue);
+	    } else {
+	      elm = oldVnode.elm;
+	      parent = api.parentNode(elm);
+
+	      createElm(vnode, insertedVnodeQueue);
+
+	      if (parent !== null) {
+	        api.insertBefore(parent, vnode.elm, api.nextSibling(elm));
+	        removeVnodes(parent, [oldVnode], 0, 0);
+	      }
+	    }
+
+	    for (i = 0; i < insertedVnodeQueue.length; ++i) {
+	      insertedVnodeQueue[i].data.hook.insert(insertedVnodeQueue[i]);
+	    }
+	    for (i = 0; i < cbs.post.length; ++i) {
+	      cbs.post[i]();
+	    }return vnode;
+	  };
+	}
+
+	module.exports = { init: init };
+
+/***/ },
+/* 81 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var h = __webpack_require__(42);
+
+	function init(thunk) {
+	  var i,
+	      cur = thunk.data;
+	  cur.vnode = cur.fn.apply(undefined, cur.args);
+	}
+
+	function prepatch(oldThunk, thunk) {
+	  var i,
+	      old = oldThunk.data,
+	      cur = thunk.data;
+	  var oldArgs = old.args,
+	      args = cur.args;
+	  cur.vnode = old.vnode;
+	  if (old.fn !== cur.fn || oldArgs.length !== args.length) {
+	    cur.vnode = cur.fn.apply(undefined, args);
+	    return;
+	  }
+	  for (i = 0; i < args.length; ++i) {
+	    if (oldArgs[i] !== args[i]) {
+	      cur.vnode = cur.fn.apply(undefined, args);
+	      return;
+	    }
+	  }
+	}
+
+	module.exports = function (name, fn /* args */) {
+	  var i,
+	      args = [];
+	  for (i = 2; i < arguments.length; ++i) {
+	    args[i - 2] = arguments[i];
+	  }
+	  return h('thunk' + name, {
+	    hook: { init: init, prepatch: prepatch },
+	    fn: fn, args: args
+	  });
+	};
+
+/***/ },
+/* 82 */
+/***/ function(module, exports) {
+
+	"use strict";
 
 	/*!
 	 * Cross-Browser Split 1.1.1
@@ -5893,7 +7449,7 @@
 	  // NPCG: nonparticipating capturing group
 	  self;
 
-	  self = function (str, separator, limit) {
+	  self = function self(str, separator, limit) {
 	    // If `separator` is not a regex, use `nativeSplit`
 	    if (Object.prototype.toString.call(separator) !== "[object RegExp]") {
 	      return nativeSplit.call(str, separator, limit);
@@ -5968,7 +7524,7 @@
 	}();
 
 /***/ },
-/* 48 */
+/* 83 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -6018,7 +7574,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 49 */
+/* 84 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -6047,257 +7603,130 @@
 	}
 
 /***/ },
-/* 50 */
+/* 85 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+
+	var __extends = undefined && undefined.__extends || function (d, b) {
+	    for (var p in b) {
+	        if (b.hasOwnProperty(p)) d[p] = b[p];
+	    }function __() {
+	        this.constructor = d;
+	    }
+	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+	};
+	var SubjectSource_1 = __webpack_require__(43);
+	var util_1 = __webpack_require__(44);
+	var HoldSubjectSource = function (_super) {
+	    __extends(HoldSubjectSource, _super);
+	    function HoldSubjectSource(bufferSize) {
+	        _super.call(this);
+	        this.buffer = [];
+	        this.bufferSize = bufferSize;
+	    }
+	    HoldSubjectSource.prototype.add = function (sink) {
+	        var buffer = this.buffer;
+	        if (buffer.length > 0) {
+	            util_1.pushEvents(buffer, sink);
+	        }
+	        return _super.prototype.add.call(this, sink);
+	    };
+	    HoldSubjectSource.prototype.next = function (value) {
+	        if (this.scheduler === void 0) {
+	            return;
+	        }
+	        var time = this.scheduler.now();
+	        this.buffer = util_1.dropAndAppend({ time: time, value: value }, this.buffer, this.bufferSize);
+	        if (this.active) {
+	            this._next(time, value);
+	        }
+	    };
+	    return HoldSubjectSource;
+	}(SubjectSource_1.BasicSubjectSource);
+	exports.HoldSubjectSource = HoldSubjectSource;
+	//# sourceMappingURL=HoldSubjectSource.js.map
+
+/***/ },
+/* 86 */
 /***/ function(module, exports) {
 
 	"use strict";
 
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-
-	var _createClass = function () {
-	  function defineProperties(target, props) {
-	    for (var i = 0; i < props.length; i++) {
-	      var descriptor = props[i];descriptor.enumerable = descriptor.enumerable || false;descriptor.configurable = true;if ("value" in descriptor) descriptor.writable = true;Object.defineProperty(target, descriptor.key, descriptor);
+	var SubjectDisposable = function () {
+	    function SubjectDisposable(source, sink) {
+	        this.source = source;
+	        this.sink = sink;
+	        this.disposed = false;
 	    }
-	  }return function (Constructor, protoProps, staticProps) {
-	    if (protoProps) defineProperties(Constructor.prototype, protoProps);if (staticProps) defineProperties(Constructor, staticProps);return Constructor;
-	  };
+	    SubjectDisposable.prototype.dispose = function () {
+	        if (this.disposed) return;
+	        this.disposed = true;
+	        var remaining = this.source.remove(this.sink);
+	        return remaining === 0 && this.source._dispose();
+	    };
+	    return SubjectDisposable;
 	}();
-
-	function _classCallCheck(instance, Constructor) {
-	  if (!(instance instanceof Constructor)) {
-	    throw new TypeError("Cannot call a class as a function");
-	  }
-	}
-
-	function tryEvent(sink, scheduler, event) {
-	  try {
-	    sink.event(scheduler.now(), event);
-	  } catch (err) {
-	    sink.error(scheduler.now(), err);
-	  }
-	}
-
-	function tryEnd(sink, scheduler, event) {
-	  try {
-	    sink.end(scheduler.now(), event);
-	  } catch (err) {
-	    sink.error(scheduler.now(), err);
-	  }
-	}
-
-	var Observer = function () {
-	  function Observer() {
-	    var _this = this;
-
-	    _classCallCheck(this, Observer);
-
-	    this.run = function (sink, scheduler) {
-	      return _this._run(sink, scheduler);
-	    };
-	    this.next = function (x) {
-	      return _this._next(x);
-	    };
-	    this.error = function (err) {
-	      return _this._error(err);
-	    };
-	    this.complete = function (x) {
-	      return _this._complete(x);
-	    };
-	  }
-
-	  _createClass(Observer, [{
-	    key: "_run",
-	    value: function _run(sink, scheduler) {
-	      this.sink = sink;
-	      this.scheduler = scheduler;
-	      this.active = true;
-	      return this;
-	    }
-	  }, {
-	    key: "dispose",
-	    value: function dispose() {
-	      this.active = false;
-	    }
-	  }, {
-	    key: "_next",
-	    value: function _next(value) {
-	      if (!this.active) {
-	        return;
-	      }
-	      tryEvent(this.sink, this.scheduler, value);
-	    }
-	  }, {
-	    key: "_error",
-	    value: function _error(err) {
-	      this.active = false;
-	      this.sink.error(this.scheduler.now(), err);
-	    }
-	  }, {
-	    key: "_complete",
-	    value: function _complete(value) {
-	      if (!this.active) {
-	        return;
-	      }
-	      this.active = false;
-	      tryEnd(this.sink, this.scheduler, value);
-	    }
-	  }]);
-
-	  return Observer;
-	}();
-
-	exports.Observer = Observer;
+	exports.SubjectDisposable = SubjectDisposable;
+	//# sourceMappingURL=SubjectDisposable.js.map
 
 /***/ },
-/* 51 */
+/* 87 */
 /***/ function(module, exports, __webpack_require__) {
 
-	'use strict';
+	"use strict";
 
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-	exports.replay = undefined;
-
-	var _createClass = function () {
-	  function defineProperties(target, props) {
-	    for (var i = 0; i < props.length; i++) {
-	      var descriptor = props[i];descriptor.enumerable = descriptor.enumerable || false;descriptor.configurable = true;if ("value" in descriptor) descriptor.writable = true;Object.defineProperty(target, descriptor.key, descriptor);
+	var __extends = undefined && undefined.__extends || function (d, b) {
+	    for (var p in b) {
+	        if (b.hasOwnProperty(p)) d[p] = b[p];
+	    }function __() {
+	        this.constructor = d;
 	    }
-	  }return function (Constructor, protoProps, staticProps) {
-	    if (protoProps) defineProperties(Constructor.prototype, protoProps);if (staticProps) defineProperties(Constructor, staticProps);return Constructor;
-	  };
-	}();
-
-	var _most = __webpack_require__(4);
-
-	var _multicast = __webpack_require__(5);
-
-	function _classCallCheck(instance, Constructor) {
-	  if (!(instance instanceof Constructor)) {
-	    throw new TypeError("Cannot call a class as a function");
-	  }
-	}
-
-	function pushEvents(sink, buffer) {
-	  var i = 0;
-	  for (; i < buffer.length; ++i) {
-	    var item = buffer[i];
-	    sink.event(item.time, item.value);
-	  }
-	}
-
-	function replayAdd(sink) {
-	  var length = this._replayAdd(sink);
-	  if (this._replay.buffer.length > 0) {
-	    pushEvents(sink, this._replay.buffer);
-	  }
-	  return length;
-	}
-
-	function addToBuffer(event, replay) {
-	  if (replay.buffer.length >= replay.bufferSize) {
-	    replay.buffer.shift();
-	  }
-	  replay.buffer.push(event);
-	}
-
-	function replayEvent(time, value) {
-	  if (this._replay.bufferSize > 0) {
-	    addToBuffer({ time: time, value: value }, this._replay);
-	  }
-	  this._replayEvent(time, value);
-	}
-
-	var Replay = function () {
-	  function Replay(bufferSize, source) {
-	    _classCallCheck(this, Replay);
-
-	    this.source = source;
-	    this.bufferSize = bufferSize;
-	    this.buffer = [];
-	  }
-
-	  _createClass(Replay, [{
-	    key: 'run',
-	    value: function run(sink, scheduler) {
-	      if (sink._replay !== this) {
-	        sink._replay = this;
-	        sink._replayAdd = sink.add;
-	        sink.add = replayAdd;
-
-	        sink._replayEvent = sink.event;
-	        sink.event = replayEvent;
-	      }
-
-	      return this.source.run(sink, scheduler);
-	    }
-	  }]);
-
-	  return Replay;
-	}();
-
-	var replay = function replay(bufferSize, stream) {
-	  return new _most.Stream(new _multicast.MulticastSource(new Replay(bufferSize, stream.source)));
+	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-
-	exports.replay = replay;
-
-/***/ },
-/* 52 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-	exports.holdSubject = exports.subject = undefined;
-
-	var _most = __webpack_require__(4);
-
-	var _multicast = __webpack_require__(5);
-
-	var _Observer = __webpack_require__(50);
-
-	var _Replay = __webpack_require__(51);
-
-	function create(hold, bufferSize, initialValue) {
-	  var observer = new _Observer.Observer();
-	  var stream = hold ? (0, _Replay.replay)(bufferSize, new _most.Stream(observer)) : new _most.Stream(new _multicast.MulticastSource(observer));
-
-	  stream.drain();
-
-	  if (typeof initialValue !== 'undefined') {
-	    observer.next(initialValue);
-	  }
-
-	  return { stream: stream, observer: observer };
-	}
-
+	var most_1 = __webpack_require__(131);
+	var SubjectSource_1 = __webpack_require__(43);
+	exports.BasicSubjectSource = SubjectSource_1.BasicSubjectSource;
+	var HoldSubjectSource_1 = __webpack_require__(85);
+	exports.HoldSubjectSource = HoldSubjectSource_1.HoldSubjectSource;
 	function subject() {
-	  return create(false, 0);
+	    return new Subject(new SubjectSource_1.BasicSubjectSource());
 	}
-
-	function holdSubject() {
-	  var bufferSize = arguments.length <= 0 || arguments[0] === undefined ? 1 : arguments[0];
-	  var initialValue = arguments[1];
-
-	  if (bufferSize < 1) {
-	    throw new Error('First argument to holdSubject is expected to be an ' + 'integer greater than or equal to 1');
-	  }
-	  return create(true, bufferSize, initialValue);
-	}
-
 	exports.subject = subject;
+	function holdSubject(bufferSize) {
+	    if (bufferSize === void 0) {
+	        bufferSize = 1;
+	    }
+	    if (bufferSize <= 0) {
+	        throw new Error('bufferSize must be an integer 1 or greater');
+	    }
+	    return new Subject(new HoldSubjectSource_1.HoldSubjectSource(bufferSize));
+	}
 	exports.holdSubject = holdSubject;
+	var Subject = function (_super) {
+	    __extends(Subject, _super);
+	    function Subject(source) {
+	        _super.call(this, source);
+	    }
+	    Subject.prototype.next = function (value) {
+	        this.source.next(value);
+	    };
+	    Subject.prototype.error = function (err) {
+	        this.source.error(err);
+	    };
+	    Subject.prototype.complete = function (value) {
+	        this.source.complete(value);
+	    };
+	    return Subject;
+	}(most_1.Stream);
+	exports.Subject = Subject;
+	//# sourceMappingURL=index.js.map
 
 /***/ },
-/* 53 */
+/* 88 */
 /***/ function(module, exports) {
+
+	"use strict";
 
 	/** @license MIT License (c) copyright 2010-2016 original author or authors */
 	/** @author Brian Cavalier */
@@ -6377,8 +7806,10 @@
 	};
 
 /***/ },
-/* 54 */
+/* 89 */
 /***/ function(module, exports) {
+
+	"use strict";
 
 	/** @license MIT License (c) copyright 2010-2016 original author or authors */
 	/** @author Brian Cavalier */
@@ -6446,17 +7877,20 @@
 	}
 
 /***/ },
-/* 55 */
+/* 90 */
 /***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
 
 	/** @license MIT License (c) copyright 2010-2016 original author or authors */
 	/** @author Brian Cavalier */
 	/** @author John Hann */
 
-	var Stream = __webpack_require__(0);
-	var Pipe = __webpack_require__(1);
-	var runSource = __webpack_require__(32);
-	var cons = __webpack_require__(23).cons;
+	var Stream = __webpack_require__(1);
+	var Pipe = __webpack_require__(5);
+	var runSource = __webpack_require__(50).withDefaultScheduler;
+	var dispose = __webpack_require__(3);
+	var PropagateTask = __webpack_require__(7);
 
 	exports.scan = scan;
 	exports.reduce = reduce;
@@ -6470,8 +7904,20 @@
 	 * @returns {Stream} new stream containing successive reduce results
 	 */
 	function scan(f, initial, stream) {
-		return cons(initial, new Stream(new Accumulate(ScanSink, f, initial, stream.source)));
+		return new Stream(new Scan(f, initial, stream.source));
 	}
+
+	function Scan(f, z, source) {
+		this.source = source;
+		this.f = f;
+		this.value = z;
+	}
+
+	Scan.prototype.run = function (sink, scheduler) {
+		var d1 = scheduler.asap(PropagateTask.event(this.value, sink));
+		var d2 = this.source.run(new ScanSink(this.f, this.value, sink), scheduler);
+		return dispose.all([d1, d2]);
+	};
 
 	function ScanSink(f, z, sink) {
 		this.f = f;
@@ -6498,50 +7944,51 @@
 	 * @returns {Promise} promise for the file result of the reduce
 	 */
 	function reduce(f, initial, stream) {
-		return runSource.withDefaultScheduler(noop, new Accumulate(AccumulateSink, f, initial, stream.source));
+		return runSource(new Reduce(f, initial, stream.source));
 	}
 
-	function Accumulate(SinkType, f, z, source) {
-		this.SinkType = SinkType;
+	function Reduce(f, z, source) {
+		this.source = source;
 		this.f = f;
 		this.value = z;
-		this.source = source;
 	}
 
-	Accumulate.prototype.run = function (sink, scheduler) {
-		return this.source.run(new this.SinkType(this.f, this.value, sink), scheduler);
+	Reduce.prototype.run = function (sink, scheduler) {
+		return this.source.run(new ReduceSink(this.f, this.value, sink), scheduler);
 	};
 
-	function AccumulateSink(f, z, sink) {
+	function ReduceSink(f, z, sink) {
 		this.f = f;
 		this.value = z;
 		this.sink = sink;
 	}
 
-	AccumulateSink.prototype.event = function (t, x) {
+	ReduceSink.prototype.event = function (t, x) {
 		var f = this.f;
 		this.value = f(this.value, x);
 		this.sink.event(t, this.value);
 	};
 
-	AccumulateSink.prototype.error = Pipe.prototype.error;
+	ReduceSink.prototype.error = Pipe.prototype.error;
 
-	AccumulateSink.prototype.end = function (t) {
+	ReduceSink.prototype.end = function (t) {
 		this.sink.end(t, this.value);
 	};
 
 	function noop() {}
 
 /***/ },
-/* 56 */
+/* 91 */
 /***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
 
 	/** @license MIT License (c) copyright 2010-2016 original author or authors */
 	/** @author Brian Cavalier */
 	/** @author John Hann */
 
-	var combine = __webpack_require__(24).combine;
-	var apply = __webpack_require__(3).apply;
+	var combine = __webpack_require__(45).combine;
+	var apply = __webpack_require__(2).apply;
 
 	exports.ap = ap;
 
@@ -6560,14 +8007,53 @@
 	}
 
 /***/ },
-/* 57 */
+/* 92 */
 /***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
 
 	/** @license MIT License (c) copyright 2010-2016 original author or authors */
 	/** @author Brian Cavalier */
 	/** @author John Hann */
 
-	var mergeMapConcurrently = __webpack_require__(8).mergeMapConcurrently;
+	var streamOf = __webpack_require__(9).of;
+	var continueWith = __webpack_require__(46).continueWith;
+
+	exports.concat = concat;
+	exports.cons = cons;
+
+	/**
+	 * @param {*} x value to prepend
+	 * @param {Stream} stream
+	 * @returns {Stream} new stream with x prepended
+	 */
+	function cons(x, stream) {
+	  return concat(streamOf(x), stream);
+	}
+
+	/**
+	 * @param {Stream} left
+	 * @param {Stream} right
+	 * @returns {Stream} new stream containing all events in left followed by all
+	 *  events in right.  This *timeshifts* right to the end of left.
+	 */
+	function concat(left, right) {
+	  return continueWith(function () {
+	    return right;
+	  }, left);
+	}
+
+/***/ },
+/* 93 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	/** @license MIT License (c) copyright 2010-2016 original author or authors */
+	/** @author Brian Cavalier */
+	/** @author John Hann */
+
+	var mergeMapConcurrently = __webpack_require__(14).mergeMapConcurrently;
 
 	exports.concatMap = concatMap;
 
@@ -6587,17 +8073,19 @@
 	}
 
 /***/ },
-/* 58 */
+/* 94 */
 /***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
 
 	/** @license MIT License (c) copyright 2010-2016 original author or authors */
 	/** @author Brian Cavalier */
 	/** @author John Hann */
 
-	var Stream = __webpack_require__(0);
-	var Sink = __webpack_require__(1);
-	var dispose = __webpack_require__(2);
-	var PropagateTask = __webpack_require__(6);
+	var Stream = __webpack_require__(1);
+	var Sink = __webpack_require__(5);
+	var dispose = __webpack_require__(3);
+	var PropagateTask = __webpack_require__(7);
 
 	exports.delay = delay;
 
@@ -6644,20 +8132,22 @@
 	DelaySink.prototype.error = Sink.prototype.error;
 
 /***/ },
-/* 59 */
+/* 95 */
 /***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
 
 	/** @license MIT License (c) copyright 2010-2016 original author or authors */
 	/** @author Brian Cavalier */
 	/** @author John Hann */
 
-	var Stream = __webpack_require__(0);
-	var ValueSource = __webpack_require__(34);
-	var SafeSink = __webpack_require__(81);
-	var Pipe = __webpack_require__(1);
-	var dispose = __webpack_require__(2);
-	var tryEvent = __webpack_require__(9);
-	var isPromise = __webpack_require__(11).isPromise;
+	var Stream = __webpack_require__(1);
+	var SafeSink = __webpack_require__(120);
+	var Pipe = __webpack_require__(5);
+	var dispose = __webpack_require__(3);
+	var tryEvent = __webpack_require__(26);
+	var isPromise = __webpack_require__(21).isPromise;
+	var PropagateTask = __webpack_require__(7);
 
 	exports.flatMapError = recoverWith;
 	exports.recoverWith = recoverWith;
@@ -6680,10 +8170,18 @@
 	 * @returns {Stream} new stream containing only an error
 	 */
 	function throwError(e) {
-		return new Stream(new ValueSource(error, e));
+		return new Stream(new ErrorSource(e));
 	}
 
-	function error(t, e, sink) {
+	function ErrorSource(e) {
+		this.value = e;
+	}
+
+	ErrorSource.prototype.run = function (sink, scheduler) {
+		return scheduler.asap(new PropagateTask(runError, this.value, sink));
+	};
+
+	function runError(t, e, sink) {
 		sink.error(t, e);
 	}
 
@@ -6714,19 +8212,21 @@
 	RecoverWithSink.prototype.error = function (t, e) {
 		var nextSink = this.sink.disable();
 
-		var result = dispose.tryDispose(t, this.disposable, nextSink);
-		this.disposable = isPromise(result) ? dispose.promised(this._thenContinue(result, e, nextSink)) : this._continue(this.f, e, nextSink);
+		dispose.tryDispose(t, this.disposable, this.sink);
+		this._startNext(t, e, nextSink);
 	};
 
-	RecoverWithSink.prototype._thenContinue = function (p, x, sink) {
-		var self = this;
-		return p.then(function () {
-			return self._continue(self.f, x, sink);
-		});
+	RecoverWithSink.prototype._startNext = function (t, x, sink) {
+		try {
+			this.disposable = this._continue(this.f, x, sink);
+		} catch (e) {
+			sink.error(t, e);
+		}
 	};
 
 	RecoverWithSink.prototype._continue = function (f, x, sink) {
-		return f(x).source.run(sink, this.scheduler);
+		var stream = f(x);
+		return stream.source.run(sink, this.scheduler);
 	};
 
 	RecoverWithSink.prototype.dispose = function () {
@@ -6734,16 +8234,18 @@
 	};
 
 /***/ },
-/* 60 */
+/* 96 */
 /***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
 
 	/** @license MIT License (c) copyright 2010-2016 original author or authors */
 	/** @author Brian Cavalier */
 	/** @author John Hann */
 
-	var Stream = __webpack_require__(0);
-	var Sink = __webpack_require__(1);
-	var Filter = __webpack_require__(29);
+	var Stream = __webpack_require__(1);
+	var Sink = __webpack_require__(5);
+	var Filter = __webpack_require__(48);
 
 	exports.filter = filter;
 	exports.skipRepeats = skipRepeats;
@@ -6813,17 +8315,20 @@
 	}
 
 /***/ },
-/* 61 */
+/* 97 */
 /***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
 
 	/** @license MIT License (c) copyright 2010-2016 original author or authors */
 	/** @author Brian Cavalier */
 	/** @author John Hann */
 
-	var Stream = __webpack_require__(0);
-	var Sink = __webpack_require__(1);
-	var dispose = __webpack_require__(2);
-	var PropagateTask = __webpack_require__(6);
+	var Stream = __webpack_require__(1);
+	var Sink = __webpack_require__(5);
+	var dispose = __webpack_require__(3);
+	var PropagateTask = __webpack_require__(7);
+	var Map = __webpack_require__(23);
 
 	exports.throttle = throttle;
 	exports.debounce = debounce;
@@ -6835,27 +8340,39 @@
 	 * @returns {Stream}
 	 */
 	function throttle(period, stream) {
-		return new Stream(new Throttle(period, stream.source));
+		return new Stream(throttleSource(period, stream.source));
+	}
+
+	function throttleSource(period, source) {
+		return source instanceof Map ? commuteMapThrottle(period, source) : source instanceof Throttle ? fuseThrottle(period, source) : new Throttle(period, source);
+	}
+
+	function commuteMapThrottle(period, source) {
+		return Map.create(source.f, throttleSource(period, source.source));
+	}
+
+	function fuseThrottle(period, source) {
+		return new Throttle(Math.max(period, source.period), source.source);
 	}
 
 	function Throttle(period, source) {
-		this.dt = period;
+		this.period = period;
 		this.source = source;
 	}
 
 	Throttle.prototype.run = function (sink, scheduler) {
-		return this.source.run(new ThrottleSink(this.dt, sink), scheduler);
+		return this.source.run(new ThrottleSink(this.period, sink), scheduler);
 	};
 
-	function ThrottleSink(dt, sink) {
+	function ThrottleSink(period, sink) {
 		this.time = 0;
-		this.dt = dt;
+		this.period = period;
 		this.sink = sink;
 	}
 
 	ThrottleSink.prototype.event = function (t, x) {
 		if (t >= this.time) {
-			this.time = t + this.dt;
+			this.time = t + this.period;
 			this.sink.event(t, x);
 		}
 	};
@@ -6922,21 +8439,23 @@
 		if (this.timer === null) {
 			return false;
 		}
-		this.timer.cancel();
+		this.timer.dispose();
 		this.timer = null;
 		return true;
 	};
 
 /***/ },
-/* 62 */
+/* 98 */
 /***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
 
 	/** @license MIT License (c) copyright 2010-2016 original author or authors */
 	/** @author Brian Cavalier */
 	/** @author John Hann */
 
-	var Stream = __webpack_require__(0);
-	var Pipe = __webpack_require__(1);
+	var Stream = __webpack_require__(1);
+	var Pipe = __webpack_require__(5);
 
 	exports.loop = loop;
 
@@ -6984,19 +8503,21 @@
 	};
 
 /***/ },
-/* 63 */
+/* 99 */
 /***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
 
 	/** @license MIT License (c) copyright 2010-2016 original author or authors */
 	/** @author Brian Cavalier */
 	/** @author John Hann */
 
-	var Stream = __webpack_require__(0);
-	var Pipe = __webpack_require__(1);
-	var IndexSink = __webpack_require__(14);
-	var empty = __webpack_require__(7).empty;
-	var dispose = __webpack_require__(2);
-	var base = __webpack_require__(3);
+	var Stream = __webpack_require__(1);
+	var Pipe = __webpack_require__(5);
+	var IndexSink = __webpack_require__(25);
+	var empty = __webpack_require__(9).empty;
+	var dispose = __webpack_require__(3);
+	var base = __webpack_require__(2);
 
 	var copy = base.copy;
 	var reduce = base.reduce;
@@ -7081,14 +8602,17 @@
 	};
 
 /***/ },
-/* 64 */
+/* 100 */
 /***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
 
 	/** @license MIT License (c) copyright 2010-2016 original author or authors */
 	/** @author Brian Cavalier */
 	/** @author John Hann */
 
-	var runSource = __webpack_require__(32);
+	var run = __webpack_require__(50).withDefaultScheduler;
+	var tap = __webpack_require__(15).tap;
 
 	exports.observe = observe;
 	exports.drain = drain;
@@ -7102,31 +8626,35 @@
 	 *  an error, or rejects if the stream ends with an error.
 	 */
 	function observe(f, stream) {
-	  return runSource.withDefaultScheduler(f, stream.source);
+	  return drain(tap(f, stream));
 	}
+
+	var defaultScheduler = __webpack_require__(16);
+	var dispose = __webpack_require__(3);
 
 	/**
-	 * "Run" a stream by
-	 * @param stream
-	 * @return {*}
+	 * "Run" a stream by creating demand and consuming all events
+	 * @param {Stream<T>} stream stream to drain
+	 * @return {Promise} promise that fulfills after the stream ends without
+	 *  an error, or rejects if the stream ends with an error.
 	 */
 	function drain(stream) {
-	  return runSource.withDefaultScheduler(noop, stream.source);
+	  return run(stream.source);
 	}
 
-	function noop() {}
-
 /***/ },
-/* 65 */
+/* 101 */
 /***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
 
 	/** @license MIT License (c) copyright 2010-2016 original author or authors */
 	/** @author Brian Cavalier */
 	/** @author John Hann */
 
-	var Stream = __webpack_require__(0);
-	var fatal = __webpack_require__(28);
-	var just = __webpack_require__(7).of;
+	var Stream = __webpack_require__(1);
+	var fatal = __webpack_require__(22);
+	var just = __webpack_require__(9).of;
 
 	exports.fromPromise = fromPromise;
 	exports.awaitPromises = awaitPromises;
@@ -7212,18 +8740,20 @@
 	};
 
 /***/ },
-/* 66 */
+/* 102 */
 /***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
 
 	/** @license MIT License (c) copyright 2010-2016 original author or authors */
 	/** @author Brian Cavalier */
 	/** @author John Hann */
 
-	var Stream = __webpack_require__(0);
-	var Pipe = __webpack_require__(1);
-	var dispose = __webpack_require__(2);
-	var base = __webpack_require__(3);
-	var invoke = __webpack_require__(13);
+	var Stream = __webpack_require__(1);
+	var Pipe = __webpack_require__(5);
+	var dispose = __webpack_require__(3);
+	var base = __webpack_require__(2);
+	var invoke = __webpack_require__(24);
 
 	exports.sample = sample;
 	exports.sampleWith = sampleWith;
@@ -7328,17 +8858,3797 @@
 	}
 
 /***/ },
-/* 67 */
+/* 103 */
 /***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	/** @license MIT License (c) copyright 2010-2016 original author or authors */
+	/** @author Brian Cavalier */
+	/** @author John Hann */
+
+	var Stream = __webpack_require__(1);
+	var Sink = __webpack_require__(5);
+	var core = __webpack_require__(9);
+	var dispose = __webpack_require__(3);
+	var Map = __webpack_require__(23);
+
+	exports.take = take;
+	exports.skip = skip;
+	exports.slice = slice;
+	exports.takeWhile = takeWhile;
+	exports.skipWhile = skipWhile;
+
+	/**
+	 * @param {number} n
+	 * @param {Stream} stream
+	 * @returns {Stream} new stream containing only up to the first n items from stream
+	 */
+	function take(n, stream) {
+		return slice(0, n, stream);
+	}
+
+	/**
+	 * @param {number} n
+	 * @param {Stream} stream
+	 * @returns {Stream} new stream with the first n items removed
+	 */
+	function skip(n, stream) {
+		return slice(n, Infinity, stream);
+	}
+
+	/**
+	 * Slice a stream by index. Negative start/end indexes are not supported
+	 * @param {number} start
+	 * @param {number} end
+	 * @param {Stream} stream
+	 * @returns {Stream} stream containing items where start <= index < end
+	 */
+	function slice(start, end, stream) {
+		return end <= start ? core.empty() : new Stream(sliceSource(start, end, stream.source));
+	}
+
+	function sliceSource(start, end, source) {
+		return source instanceof Map ? commuteMapSlice(start, end, source) : source instanceof Slice ? fuseSlice(start, end, source) : new Slice(start, end, source);
+	}
+
+	function commuteMapSlice(start, end, source) {
+		return Map.create(source.f, sliceSource(start, end, source.source));
+	}
+
+	function fuseSlice(start, end, source) {
+		start += source.min;
+		end = Math.min(end + source.min, source.max);
+		return new Slice(start, end, source.source);
+	}
+
+	function Slice(min, max, source) {
+		this.source = source;
+		this.min = min;
+		this.max = max;
+	}
+
+	Slice.prototype.run = function (sink, scheduler) {
+		return new SliceSink(this.min, this.max - this.min, this.source, sink, scheduler);
+	};
+
+	function SliceSink(skip, take, source, sink, scheduler) {
+		this.sink = sink;
+		this.skip = skip;
+		this.take = take;
+		this.disposable = dispose.once(source.run(this, scheduler));
+	}
+
+	SliceSink.prototype.end = Sink.prototype.end;
+	SliceSink.prototype.error = Sink.prototype.error;
+
+	SliceSink.prototype.event = function (t, x) {
+		if (this.skip > 0) {
+			this.skip -= 1;
+			return;
+		}
+
+		if (this.take === 0) {
+			return;
+		}
+
+		this.take -= 1;
+		this.sink.event(t, x);
+		if (this.take === 0) {
+			this.dispose();
+			this.sink.end(t, x);
+		}
+	};
+
+	SliceSink.prototype.dispose = function () {
+		return this.disposable.dispose();
+	};
+
+	function takeWhile(p, stream) {
+		return new Stream(new TakeWhile(p, stream.source));
+	}
+
+	function TakeWhile(p, source) {
+		this.p = p;
+		this.source = source;
+	}
+
+	TakeWhile.prototype.run = function (sink, scheduler) {
+		return new TakeWhileSink(this.p, this.source, sink, scheduler);
+	};
+
+	function TakeWhileSink(p, source, sink, scheduler) {
+		this.p = p;
+		this.sink = sink;
+		this.active = true;
+		this.disposable = dispose.once(source.run(this, scheduler));
+	}
+
+	TakeWhileSink.prototype.end = Sink.prototype.end;
+	TakeWhileSink.prototype.error = Sink.prototype.error;
+
+	TakeWhileSink.prototype.event = function (t, x) {
+		if (!this.active) {
+			return;
+		}
+
+		var p = this.p;
+		this.active = p(x);
+		if (this.active) {
+			this.sink.event(t, x);
+		} else {
+			this.dispose();
+			this.sink.end(t, x);
+		}
+	};
+
+	TakeWhileSink.prototype.dispose = function () {
+		return this.disposable.dispose();
+	};
+
+	function skipWhile(p, stream) {
+		return new Stream(new SkipWhile(p, stream.source));
+	}
+
+	function SkipWhile(p, source) {
+		this.p = p;
+		this.source = source;
+	}
+
+	SkipWhile.prototype.run = function (sink, scheduler) {
+		return this.source.run(new SkipWhileSink(this.p, sink), scheduler);
+	};
+
+	function SkipWhileSink(p, sink) {
+		this.p = p;
+		this.sink = sink;
+		this.skipping = true;
+	}
+
+	SkipWhileSink.prototype.end = Sink.prototype.end;
+	SkipWhileSink.prototype.error = Sink.prototype.error;
+
+	SkipWhileSink.prototype.event = function (t, x) {
+		if (this.skipping) {
+			var p = this.p;
+			this.skipping = p(x);
+			if (this.skipping) {
+				return;
+			}
+		}
+
+		this.sink.event(t, x);
+	};
+
+/***/ },
+/* 104 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	/** @license MIT License (c) copyright 2010-2016 original author or authors */
+	/** @author Brian Cavalier */
+	/** @author John Hann */
+
+	var Stream = __webpack_require__(1);
+	var dispose = __webpack_require__(3);
+
+	exports.switch = switchLatest;
+
+	/**
+	 * Given a stream of streams, return a new stream that adopts the behavior
+	 * of the most recent inner stream.
+	 * @param {Stream} stream of streams on which to switch
+	 * @returns {Stream} switching stream
+	 */
+	function switchLatest(stream) {
+		return new Stream(new Switch(stream.source));
+	}
+
+	function Switch(source) {
+		this.source = source;
+	}
+
+	Switch.prototype.run = function (sink, scheduler) {
+		var switchSink = new SwitchSink(sink, scheduler);
+		return dispose.all([switchSink, this.source.run(switchSink, scheduler)]);
+	};
+
+	function SwitchSink(sink, scheduler) {
+		this.sink = sink;
+		this.scheduler = scheduler;
+		this.current = null;
+		this.ended = false;
+	}
+
+	SwitchSink.prototype.event = function (t, stream) {
+		this._disposeCurrent(t); // TODO: capture the result of this dispose
+		this.current = new Segment(t, Infinity, this, this.sink);
+		this.current.disposable = stream.source.run(this.current, this.scheduler);
+	};
+
+	SwitchSink.prototype.end = function (t, x) {
+		this.ended = true;
+		this._checkEnd(t, x);
+	};
+
+	SwitchSink.prototype.error = function (t, e) {
+		this.ended = true;
+		this.sink.error(t, e);
+	};
+
+	SwitchSink.prototype.dispose = function () {
+		return this._disposeCurrent(this.scheduler.now());
+	};
+
+	SwitchSink.prototype._disposeCurrent = function (t) {
+		if (this.current !== null) {
+			return this.current._dispose(t);
+		}
+	};
+
+	SwitchSink.prototype._disposeInner = function (t, inner) {
+		inner._dispose(t); // TODO: capture the result of this dispose
+		if (inner === this.current) {
+			this.current = null;
+		}
+	};
+
+	SwitchSink.prototype._checkEnd = function (t, x) {
+		if (this.ended && this.current === null) {
+			this.sink.end(t, x);
+		}
+	};
+
+	SwitchSink.prototype._endInner = function (t, x, inner) {
+		this._disposeInner(t, inner);
+		this._checkEnd(t, x);
+	};
+
+	SwitchSink.prototype._errorInner = function (t, e, inner) {
+		this._disposeInner(t, inner);
+		this.sink.error(t, e);
+	};
+
+	function Segment(min, max, outer, sink) {
+		this.min = min;
+		this.max = max;
+		this.outer = outer;
+		this.sink = sink;
+		this.disposable = dispose.empty();
+	}
+
+	Segment.prototype.event = function (t, x) {
+		if (t < this.max) {
+			this.sink.event(Math.max(t, this.min), x);
+		}
+	};
+
+	Segment.prototype.end = function (t, x) {
+		this.outer._endInner(Math.max(t, this.min), x, this);
+	};
+
+	Segment.prototype.error = function (t, e) {
+		this.outer._errorInner(Math.max(t, this.min), e, this);
+	};
+
+	Segment.prototype._dispose = function (t) {
+		this.max = t;
+		dispose.tryDispose(t, this.disposable, this.sink);
+	};
+
+/***/ },
+/* 105 */
+/***/ function(module, exports) {
+
+	"use strict";
+
+	/** @license MIT License (c) copyright 2010-2016 original author or authors */
+	/** @author Brian Cavalier */
+	/** @author John Hann */
+
+	exports.thru = function thru(f, stream) {
+		return f(stream);
+	};
+
+/***/ },
+/* 106 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	/** @license MIT License (c) copyright 2010-2016 original author or authors */
+	/** @author Brian Cavalier */
+	/** @author John Hann */
+
+	var Stream = __webpack_require__(1);
+	var Pipe = __webpack_require__(5);
+	var dispose = __webpack_require__(3);
+	var join = __webpack_require__(47).join;
+
+	exports.during = during;
+	exports.takeUntil = takeUntil;
+	exports.skipUntil = skipUntil;
+
+	function takeUntil(signal, stream) {
+		return new Stream(new Until(signal.source, stream.source));
+	}
+
+	function skipUntil(signal, stream) {
+		return new Stream(new Since(signal.source, stream.source));
+	}
+
+	function during(timeWindow, stream) {
+		return takeUntil(join(timeWindow), skipUntil(timeWindow, stream));
+	}
+
+	function Until(maxSignal, source) {
+		this.maxSignal = maxSignal;
+		this.source = source;
+	}
+
+	Until.prototype.run = function (sink, scheduler) {
+		var min = new Bound(-Infinity, sink);
+		var max = new UpperBound(this.maxSignal, sink, scheduler);
+		var disposable = this.source.run(new TimeWindowSink(min, max, sink), scheduler);
+
+		return dispose.all([min, max, disposable]);
+	};
+
+	function Since(minSignal, source) {
+		this.minSignal = minSignal;
+		this.source = source;
+	}
+
+	Since.prototype.run = function (sink, scheduler) {
+		var min = new LowerBound(this.minSignal, sink, scheduler);
+		var max = new Bound(Infinity, sink);
+		var disposable = this.source.run(new TimeWindowSink(min, max, sink), scheduler);
+
+		return dispose.all([min, max, disposable]);
+	};
+
+	function Bound(value, sink) {
+		this.value = value;
+		this.sink = sink;
+	}
+
+	Bound.prototype.error = Pipe.prototype.error;
+	Bound.prototype.event = noop;
+	Bound.prototype.end = noop;
+	Bound.prototype.dispose = noop;
+
+	function TimeWindowSink(min, max, sink) {
+		this.min = min;
+		this.max = max;
+		this.sink = sink;
+	}
+
+	TimeWindowSink.prototype.event = function (t, x) {
+		if (t >= this.min.value && t < this.max.value) {
+			this.sink.event(t, x);
+		}
+	};
+
+	TimeWindowSink.prototype.error = Pipe.prototype.error;
+	TimeWindowSink.prototype.end = Pipe.prototype.end;
+
+	function LowerBound(signal, sink, scheduler) {
+		this.value = Infinity;
+		this.sink = sink;
+		this.disposable = signal.run(this, scheduler);
+	}
+
+	LowerBound.prototype.event = function (t /*, x */) {
+		if (t < this.value) {
+			this.value = t;
+		}
+	};
+
+	LowerBound.prototype.end = noop;
+	LowerBound.prototype.error = Pipe.prototype.error;
+
+	LowerBound.prototype.dispose = function () {
+		return this.disposable.dispose();
+	};
+
+	function UpperBound(signal, sink, scheduler) {
+		this.value = Infinity;
+		this.sink = sink;
+		this.disposable = signal.run(this, scheduler);
+	}
+
+	UpperBound.prototype.event = function (t, x) {
+		if (t < this.value) {
+			this.value = t;
+			this.sink.end(t, x);
+		}
+	};
+
+	UpperBound.prototype.end = noop;
+	UpperBound.prototype.error = Pipe.prototype.error;
+
+	UpperBound.prototype.dispose = function () {
+		return this.disposable.dispose();
+	};
+
+	function noop() {}
+
+/***/ },
+/* 107 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	/** @license MIT License (c) copyright 2010-2016 original author or authors */
+	/** @author Brian Cavalier */
+	/** @author John Hann */
+
+	var Stream = __webpack_require__(1);
+	var Sink = __webpack_require__(5);
+
+	exports.timestamp = timestamp;
+
+	function timestamp(stream) {
+		return new Stream(new Timestamp(stream.source));
+	}
+
+	function Timestamp(source) {
+		this.source = source;
+	}
+
+	Timestamp.prototype.run = function (sink, scheduler) {
+		return this.source.run(new TimestampSink(sink), scheduler);
+	};
+
+	function TimestampSink(sink) {
+		this.sink = sink;
+	}
+
+	TimestampSink.prototype.end = Sink.prototype.end;
+	TimestampSink.prototype.error = Sink.prototype.error;
+
+	TimestampSink.prototype.event = function (t, x) {
+		this.sink.event(t, { time: t, value: x });
+	};
+
+/***/ },
+/* 108 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	/** @license MIT License (c) copyright 2010-2016 original author or authors */
+	/** @author Brian Cavalier */
+	/** @author John Hann */
+
+	var Stream = __webpack_require__(1);
+
+	exports.transduce = transduce;
+
+	/**
+	 * Transform a stream by passing its events through a transducer.
+	 * @param  {function} transducer transducer function
+	 * @param  {Stream} stream stream whose events will be passed through the
+	 *  transducer
+	 * @return {Stream} stream of events transformed by the transducer
+	 */
+	function transduce(transducer, stream) {
+		return new Stream(new Transduce(transducer, stream.source));
+	}
+
+	function Transduce(transducer, source) {
+		this.transducer = transducer;
+		this.source = source;
+	}
+
+	Transduce.prototype.run = function (sink, scheduler) {
+		var xf = this.transducer(new Transformer(sink));
+		return this.source.run(new TransduceSink(getTxHandler(xf), sink), scheduler);
+	};
+
+	function TransduceSink(adapter, sink) {
+		this.xf = adapter;
+		this.sink = sink;
+	}
+
+	TransduceSink.prototype.event = function (t, x) {
+		var next = this.xf.step(t, x);
+
+		return this.xf.isReduced(next) ? this.sink.end(t, this.xf.getResult(next)) : next;
+	};
+
+	TransduceSink.prototype.end = function (t, x) {
+		return this.xf.result(x);
+	};
+
+	TransduceSink.prototype.error = function (t, e) {
+		return this.sink.error(t, e);
+	};
+
+	function Transformer(sink) {
+		this.time = -Infinity;
+		this.sink = sink;
+	}
+
+	Transformer.prototype['@@transducer/init'] = Transformer.prototype.init = function () {};
+
+	Transformer.prototype['@@transducer/step'] = Transformer.prototype.step = function (t, x) {
+		if (!isNaN(t)) {
+			this.time = Math.max(t, this.time);
+		}
+		return this.sink.event(this.time, x);
+	};
+
+	Transformer.prototype['@@transducer/result'] = Transformer.prototype.result = function (x) {
+		return this.sink.end(this.time, x);
+	};
+
+	/**
+	 * Given an object supporting the new or legacy transducer protocol,
+	 * create an adapter for it.
+	 * @param {object} tx transform
+	 * @returns {TxAdapter|LegacyTxAdapter}
+	 */
+	function getTxHandler(tx) {
+		return typeof tx['@@transducer/step'] === 'function' ? new TxAdapter(tx) : new LegacyTxAdapter(tx);
+	}
+
+	/**
+	 * Adapter for new official transducer protocol
+	 * @param {object} tx transform
+	 * @constructor
+	 */
+	function TxAdapter(tx) {
+		this.tx = tx;
+	}
+
+	TxAdapter.prototype.step = function (t, x) {
+		return this.tx['@@transducer/step'](t, x);
+	};
+	TxAdapter.prototype.result = function (x) {
+		return this.tx['@@transducer/result'](x);
+	};
+	TxAdapter.prototype.isReduced = function (x) {
+		return x != null && x['@@transducer/reduced'];
+	};
+	TxAdapter.prototype.getResult = function (x) {
+		return x['@@transducer/value'];
+	};
+
+	/**
+	 * Adapter for older transducer protocol
+	 * @param {object} tx transform
+	 * @constructor
+	 */
+	function LegacyTxAdapter(tx) {
+		this.tx = tx;
+	}
+
+	LegacyTxAdapter.prototype.step = function (t, x) {
+		return this.tx.step(t, x);
+	};
+	LegacyTxAdapter.prototype.result = function (x) {
+		return this.tx.result(x);
+	};
+	LegacyTxAdapter.prototype.isReduced = function (x) {
+		return x != null && x.__transducers_reduced__;
+	};
+	LegacyTxAdapter.prototype.getResult = function (x) {
+		return x.value;
+	};
+
+/***/ },
+/* 109 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	/** @license MIT License (c) copyright 2010-2016 original author or authors */
+	/** @author Brian Cavalier */
+	/** @author John Hann */
+
+	var Stream = __webpack_require__(1);
+	var transform = __webpack_require__(15);
+	var core = __webpack_require__(9);
+	var Sink = __webpack_require__(5);
+	var IndexSink = __webpack_require__(25);
+	var dispose = __webpack_require__(3);
+	var base = __webpack_require__(2);
+	var invoke = __webpack_require__(24);
+	var Queue = __webpack_require__(89);
+
+	var map = base.map;
+	var tail = base.tail;
+
+	exports.zip = zip;
+	exports.zipArray = zipArray;
+
+	/**
+	 * Combine streams pairwise (or tuple-wise) by index by applying f to values
+	 * at corresponding indices.  The returned stream ends when any of the input
+	 * streams ends.
+	 * @param {function} f function to combine values
+	 * @returns {Stream} new stream with items at corresponding indices combined
+	 *  using f
+	 */
+	function zip(f /*,...streams */) {
+		return zipArray(f, tail(arguments));
+	}
+
+	/**
+	 * Combine streams pairwise (or tuple-wise) by index by applying f to values
+	 * at corresponding indices.  The returned stream ends when any of the input
+	 * streams ends.
+	 * @param {function} f function to combine values
+	 * @param {[Stream]} streams streams to zip using f
+	 * @returns {Stream} new stream with items at corresponding indices combined
+	 *  using f
+	 */
+	function zipArray(f, streams) {
+		return streams.length === 0 ? core.empty() : streams.length === 1 ? transform.map(f, streams[0]) : new Stream(new Zip(f, map(getSource, streams)));
+	}
+
+	function getSource(stream) {
+		return stream.source;
+	}
+
+	function Zip(f, sources) {
+		this.f = f;
+		this.sources = sources;
+	}
+
+	Zip.prototype.run = function (sink, scheduler) {
+		var l = this.sources.length;
+		var disposables = new Array(l);
+		var sinks = new Array(l);
+		var buffers = new Array(l);
+
+		var zipSink = new ZipSink(this.f, buffers, sinks, sink);
+
+		for (var indexSink, i = 0; i < l; ++i) {
+			buffers[i] = new Queue();
+			indexSink = sinks[i] = new IndexSink(i, zipSink);
+			disposables[i] = this.sources[i].run(indexSink, scheduler);
+		}
+
+		return dispose.all(disposables);
+	};
+
+	function ZipSink(f, buffers, sinks, sink) {
+		this.f = f;
+		this.sinks = sinks;
+		this.sink = sink;
+		this.buffers = buffers;
+	}
+
+	ZipSink.prototype.event = function (t, indexedValue) {
+		var buffers = this.buffers;
+		var buffer = buffers[indexedValue.index];
+
+		buffer.push(indexedValue.value);
+
+		if (buffer.length() === 1) {
+			if (!ready(this.buffers)) {
+				return;
+			}
+
+			emitZipped(this.f, t, buffers, this.sink);
+
+			if (ended(this.buffers, this.sinks)) {
+				this.sink.end(t, void 0);
+			}
+		}
+	};
+
+	ZipSink.prototype.end = function (t, indexedValue) {
+		var buffer = this.buffers[indexedValue.index];
+		if (buffer.isEmpty()) {
+			this.sink.end(t, indexedValue.value);
+		}
+	};
+
+	ZipSink.prototype.error = Sink.prototype.error;
+
+	function emitZipped(f, t, buffers, sink) {
+		sink.event(t, invoke(f, map(head, buffers)));
+	}
+
+	function head(buffer) {
+		return buffer.shift();
+	}
+
+	function ended(buffers, sinks) {
+		for (var i = 0, l = buffers.length; i < l; ++i) {
+			if (buffers[i].isEmpty() && !sinks[i].active) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	function ready(buffers) {
+		for (var i = 0, l = buffers.length; i < l; ++i) {
+			if (buffers[i].isEmpty()) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+/***/ },
+/* 110 */
+/***/ function(module, exports) {
+
+	"use strict";
+
+	/** @license MIT License (c) copyright 2010-2016 original author or authors */
+	/** @author Brian Cavalier */
+	/** @author John Hann */
+
+	module.exports = Disposable;
+
+	/**
+	 * Create a new Disposable which will dispose its underlying resource.
+	 * @param {function} dispose function
+	 * @param {*?} data any data to be passed to disposer function
+	 * @constructor
+	 */
+	function Disposable(dispose, data) {
+	  this._dispose = dispose;
+	  this._data = data;
+	}
+
+	Disposable.prototype.dispose = function () {
+	  return this._dispose(this._data);
+	};
+
+/***/ },
+/* 111 */
+/***/ function(module, exports) {
+
+	'use strict';
+
+	/** @license MIT License (c) copyright 2010-2016 original author or authors */
+	/** @author Brian Cavalier */
+	/** @author John Hann */
+
+	module.exports = SettableDisposable;
+
+	function SettableDisposable() {
+		this.disposable = void 0;
+		this.disposed = false;
+		this._resolve = void 0;
+
+		var self = this;
+		this.result = new Promise(function (resolve) {
+			self._resolve = resolve;
+		});
+	}
+
+	SettableDisposable.prototype.setDisposable = function (disposable) {
+		if (this.disposable !== void 0) {
+			throw new Error('setDisposable called more than once');
+		}
+
+		this.disposable = disposable;
+
+		if (this.disposed) {
+			this._resolve(disposable.dispose());
+		}
+	};
+
+	SettableDisposable.prototype.dispose = function () {
+		if (this.disposed) {
+			return this.result;
+		}
+
+		this.disposed = true;
+
+		if (this.disposable !== void 0) {
+			this.result = this.disposable.dispose();
+		}
+
+		return this.result;
+	};
+
+/***/ },
+/* 112 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	/** @license MIT License (c) copyright 2010-2016 original author or authors */
+	/** @author Brian Cavalier */
+	/** @author John Hann */
+
+	var Pipe = __webpack_require__(5);
+
+	module.exports = FilterMap;
+
+	function FilterMap(p, f, source) {
+		this.p = p;
+		this.f = f;
+		this.source = source;
+	}
+
+	FilterMap.prototype.run = function (sink, scheduler) {
+		return this.source.run(new FilterMapSink(this.p, this.f, sink), scheduler);
+	};
+
+	function FilterMapSink(p, f, sink) {
+		this.p = p;
+		this.f = f;
+		this.sink = sink;
+	}
+
+	FilterMapSink.prototype.event = function (t, x) {
+		var f = this.f;
+		var p = this.p;
+		p(x) && this.sink.event(t, f(x));
+	};
+
+	FilterMapSink.prototype.end = Pipe.prototype.end;
+	FilterMapSink.prototype.error = Pipe.prototype.error;
+
+/***/ },
+/* 113 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	/** @license MIT License (c) copyright 2010-2016 original author or authors */
+	/** @author Brian Cavalier */
+	/** @author John Hann */
+
+	var Stream = __webpack_require__(1);
+	var dispose = __webpack_require__(3);
+
+	exports.fromObservable = fromObservable;
+	exports.ObservableSource = ObservableSource;
+	exports.SubscriberSink = SubscriberSink;
+
+	function fromObservable(observable) {
+		return new Stream(new ObservableSource(observable));
+	}
+
+	function ObservableSource(observable) {
+		this.observable = observable;
+	}
+
+	ObservableSource.prototype.run = function (sink, scheduler) {
+		var sub = this.observable.subscribe(new SubscriberSink(sink, scheduler));
+		if (typeof sub === 'function') {
+			return dispose.create(sub);
+		} else if (sub && typeof sub.unsubscribe === 'function') {
+			return dispose.create(unsubscribe, sub);
+		}
+
+		throw new TypeError('Observable returned invalid subscription ' + String(sub));
+	};
+
+	function SubscriberSink(sink, scheduler) {
+		this.sink = sink;
+		this.scheduler = scheduler;
+	}
+
+	SubscriberSink.prototype.next = function (x) {
+		this.sink.event(this.scheduler.now(), x);
+	};
+
+	SubscriberSink.prototype.complete = function (x) {
+		this.sink.end(this.scheduler.now(), x);
+	};
+
+	SubscriberSink.prototype.error = function (e) {
+		this.sink.error(this.scheduler.now(), e);
+	};
+
+	function unsubscribe(subscription) {
+		return subscription.unsubscribe();
+	}
+
+/***/ },
+/* 114 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	/** @license MIT License (c) copyright 2010-2016 original author or authors */
+	/** @author Brian Cavalier */
+	/** @author John Hann */
+
+	var symbolObservable = __webpack_require__(52).default;
+
+	module.exports = getObservable;
+
+	function getObservable(o) {
+		var obs = null;
+		if (o) {
+			// Access foreign method only once
+			var method = o[symbolObservable];
+			if (typeof method === 'function') {
+				obs = method.call(o);
+				if (!(obs && typeof obs.subscribe === 'function')) {
+					throw new TypeError('invalid observable ' + obs);
+				}
+			}
+		}
+
+		return obs;
+	}
+
+/***/ },
+/* 115 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
+
+	/** @license MIT License (c) copyright 2010-2016 original author or authors */
+	/** @author Brian Cavalier */
+	/** @author John Hann */
+
+	var defaultScheduler = __webpack_require__(16);
+	var dispose = __webpack_require__(3);
+	var fatalError = __webpack_require__(22);
+
+	exports.subscribe = subscribe;
+	exports.SubscribeObserver = SubscribeObserver;
+	exports.Subscription = Subscription;
+
+	function subscribe(subscriber, stream) {
+		if (subscriber == null || (typeof subscriber === 'undefined' ? 'undefined' : _typeof(subscriber)) !== 'object') {
+			throw new TypeError('subscriber must be an object');
+		}
+
+		var disposable = dispose.settable();
+		var observer = new SubscribeObserver(fatalError, subscriber, disposable);
+
+		disposable.setDisposable(stream.source.run(observer, defaultScheduler));
+
+		return new Subscription(disposable);
+	}
+
+	function SubscribeObserver(fatalError, subscriber, disposable) {
+		this.fatalError = fatalError;
+		this.subscriber = subscriber;
+		this.disposable = disposable;
+	}
+
+	SubscribeObserver.prototype.event = function (t, x) {
+		if (typeof this.subscriber.next === 'function') {
+			this.subscriber.next(x);
+		}
+	};
+
+	SubscribeObserver.prototype.end = function (t, x) {
+		var s = this.subscriber;
+		doDispose(this.fatalError, s, s.complete, s.error, this.disposable, x);
+	};
+
+	SubscribeObserver.prototype.error = function (t, e) {
+		var s = this.subscriber;
+		doDispose(this.fatalError, s, s.error, s.error, this.disposable, e);
+	};
+
+	function Subscription(disposable) {
+		this.disposable = disposable;
+	}
+
+	Subscription.prototype.unsubscribe = function () {
+		this.disposable.dispose();
+	};
+
+	function doDispose(fatal, subscriber, complete, error, disposable, x) {
+		Promise.resolve(disposable.dispose()).then(function () {
+			if (typeof complete === 'function') {
+				complete.call(subscriber, x);
+			}
+		}).catch(function (e) {
+			if (typeof error === 'function') {
+				error.call(subscriber, e);
+			}
+		}).catch(fatal);
+	}
+
+/***/ },
+/* 116 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	/** @license MIT License (c) copyright 2010-2016 original author or authors */
+	/** @author Brian Cavalier */
+	/** @author John Hann */
+
+	var defer = __webpack_require__(27).defer;
+
+	/*global setTimeout, clearTimeout*/
+
+	module.exports = ClockTimer;
+
+	function ClockTimer() {}
+
+	ClockTimer.prototype.now = Date.now;
+
+	ClockTimer.prototype.setTimer = function (f, dt) {
+		return dt <= 0 ? runAsap(f) : setTimeout(f, dt);
+	};
+
+	ClockTimer.prototype.clearTimer = function (t) {
+		return t instanceof Asap ? t.cancel() : clearTimeout(t);
+	};
+
+	function Asap(f) {
+		this.f = f;
+		this.active = true;
+	}
+
+	Asap.prototype.run = function () {
+		return this.active && this.f();
+	};
+
+	Asap.prototype.error = function (e) {
+		throw e;
+	};
+
+	Asap.prototype.cancel = function () {
+		this.active = false;
+	};
+
+	function runAsap(f) {
+		var task = new Asap(f);
+		defer(task);
+		return task;
+	}
+
+/***/ },
+/* 117 */
+/***/ function(module, exports) {
+
+	"use strict";
+
+	/** @license MIT License (c) copyright 2010-2016 original author or authors */
+	/** @author Brian Cavalier */
+	/** @author John Hann */
+
+	module.exports = ScheduledTask;
+
+	function ScheduledTask(delay, period, task, scheduler) {
+		this.time = delay;
+		this.period = period;
+		this.task = task;
+		this.scheduler = scheduler;
+		this.active = true;
+	}
+
+	ScheduledTask.prototype.run = function () {
+		return this.task.run(this.time);
+	};
+
+	ScheduledTask.prototype.error = function (e) {
+		return this.task.error(this.time, e);
+	};
+
+	ScheduledTask.prototype.dispose = function () {
+		this.scheduler.cancel(this);
+		return this.task.dispose();
+	};
+
+/***/ },
+/* 118 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	/** @license MIT License (c) copyright 2010-2016 original author or authors */
+	/** @author Brian Cavalier */
+	/** @author John Hann */
+
+	var base = __webpack_require__(2);
+	var ScheduledTask = __webpack_require__(117);
+	var runTask = __webpack_require__(27).runTask;
+	var Timeline = __webpack_require__(51);
+
+	module.exports = Scheduler;
+
+	function Scheduler(timer, timeline) {
+		this.timer = timer;
+		this.timeline = timeline;
+
+		this._timer = null;
+		this._nextArrival = Infinity;
+
+		var self = this;
+		this._runReadyTasksBound = function () {
+			self._runReadyTasks(self.now());
+		};
+	}
+
+	Scheduler.prototype.now = function () {
+		return this.timer.now();
+	};
+
+	Scheduler.prototype.asap = function (task) {
+		return this.schedule(0, -1, task);
+	};
+
+	Scheduler.prototype.delay = function (delay, task) {
+		return this.schedule(delay, -1, task);
+	};
+
+	Scheduler.prototype.periodic = function (period, task) {
+		return this.schedule(0, period, task);
+	};
+
+	Scheduler.prototype.schedule = function (delay, period, task) {
+		var now = this.now();
+		var st = new ScheduledTask(now + Math.max(0, delay), period, task, this);
+
+		this.timeline.add(st);
+		this._scheduleNextRun(now);
+		return st;
+	};
+
+	Scheduler.prototype.cancel = function (task) {
+		task.active = false;
+		if (this.timeline.remove(task)) {
+			this._reschedule();
+		}
+	};
+
+	Scheduler.prototype.cancelAll = function (f) {
+		this.timeline.removeAll(f);
+		this._reschedule();
+	};
+
+	Scheduler.prototype._reschedule = function () {
+		if (this.timeline.isEmpty()) {
+			this._unschedule();
+		} else {
+			this._scheduleNextRun(this.now());
+		}
+	};
+
+	Scheduler.prototype._unschedule = function () {
+		this.timer.clearTimer(this._timer);
+		this._timer = null;
+	};
+
+	Scheduler.prototype._scheduleNextRun = function (now) {
+		if (this.timeline.isEmpty()) {
+			return;
+		}
+
+		var nextArrival = this.timeline.nextArrival();
+
+		if (this._timer === null) {
+			this._scheduleNextArrival(nextArrival, now);
+		} else if (nextArrival < this._nextArrival) {
+			this._unschedule();
+			this._scheduleNextArrival(nextArrival, now);
+		}
+	};
+
+	Scheduler.prototype._scheduleNextArrival = function (nextArrival, now) {
+		this._nextArrival = nextArrival;
+		var delay = Math.max(0, nextArrival - now);
+		this._timer = this.timer.setTimer(this._runReadyTasksBound, delay);
+	};
+
+	Scheduler.prototype._runReadyTasks = function (now) {
+		this._timer = null;
+		this.timeline.runTasks(now, runTask);
+		this._scheduleNextRun(this.now());
+	};
+
+/***/ },
+/* 119 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	/** @license MIT License (c) copyright 2010-2016 original author or authors */
+	/** @author Brian Cavalier */
+	/** @author John Hann */
+
+	var defer = __webpack_require__(27).defer;
+
+	module.exports = DeferredSink;
+
+	function DeferredSink(sink) {
+		this.sink = sink;
+		this.events = [];
+		this.active = true;
+	}
+
+	DeferredSink.prototype.event = function (t, x) {
+		if (!this.active) {
+			return;
+		}
+
+		if (this.events.length === 0) {
+			defer(new PropagateAllTask(this.sink, t, this.events));
+		}
+
+		this.events.push({ time: t, value: x });
+	};
+
+	DeferredSink.prototype.end = function (t, x) {
+		if (!this.active) {
+			return;
+		}
+
+		this._end(new EndTask(t, x, this.sink));
+	};
+
+	DeferredSink.prototype.error = function (t, e) {
+		this._end(new ErrorTask(t, e, this.sink));
+	};
+
+	DeferredSink.prototype._end = function (task) {
+		this.active = false;
+		defer(task);
+	};
+
+	function PropagateAllTask(sink, time, events) {
+		this.sink = sink;
+		this.events = events;
+		this.time = time;
+	}
+
+	PropagateAllTask.prototype.run = function () {
+		var events = this.events;
+		var sink = this.sink;
+		var event;
+
+		for (var i = 0, l = events.length; i < l; ++i) {
+			event = events[i];
+			this.time = event.time;
+			sink.event(event.time, event.value);
+		}
+
+		events.length = 0;
+	};
+
+	PropagateAllTask.prototype.error = function (e) {
+		this.sink.error(this.time, e);
+	};
+
+	function EndTask(t, x, sink) {
+		this.time = t;
+		this.value = x;
+		this.sink = sink;
+	}
+
+	EndTask.prototype.run = function () {
+		this.sink.end(this.time, this.value);
+	};
+
+	EndTask.prototype.error = function (e) {
+		this.sink.error(this.time, e);
+	};
+
+	function ErrorTask(t, e, sink) {
+		this.time = t;
+		this.value = e;
+		this.sink = sink;
+	}
+
+	ErrorTask.prototype.run = function () {
+		this.sink.error(this.time, this.value);
+	};
+
+	ErrorTask.prototype.error = function (e) {
+		throw e;
+	};
+
+/***/ },
+/* 120 */
+/***/ function(module, exports) {
+
+	"use strict";
+
+	/** @license MIT License (c) copyright 2010-2016 original author or authors */
+	/** @author Brian Cavalier */
+	/** @author John Hann */
+
+	module.exports = SafeSink;
+
+	function SafeSink(sink) {
+		this.sink = sink;
+		this.active = true;
+	}
+
+	SafeSink.prototype.event = function (t, x) {
+		if (!this.active) {
+			return;
+		}
+		this.sink.event(t, x);
+	};
+
+	SafeSink.prototype.end = function (t, x) {
+		if (!this.active) {
+			return;
+		}
+		this.disable();
+		this.sink.end(t, x);
+	};
+
+	SafeSink.prototype.error = function (t, e) {
+		this.disable();
+		this.sink.error(t, e);
+	};
+
+	SafeSink.prototype.disable = function () {
+		this.active = false;
+		return this.sink;
+	};
+
+/***/ },
+/* 121 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	/** @license MIT License (c) copyright 2010-2016 original author or authors */
+	/** @author Brian Cavalier */
+	/** @author John Hann */
+
+	var DeferredSink = __webpack_require__(119);
+	var dispose = __webpack_require__(3);
+	var tryEvent = __webpack_require__(26);
+
+	module.exports = EventEmitterSource;
+
+	function EventEmitterSource(event, source) {
+		this.event = event;
+		this.source = source;
+	}
+
+	EventEmitterSource.prototype.run = function (sink, scheduler) {
+		// NOTE: Because EventEmitter allows events in the same call stack as
+		// a listener is added, use a DeferredSink to buffer events
+		// until the stack clears, then propagate.  This maintains most.js's
+		// invariant that no event will be delivered in the same call stack
+		// as an observer begins observing.
+		var dsink = new DeferredSink(sink);
+
+		function addEventVariadic(a) {
+			var l = arguments.length;
+			if (l > 1) {
+				var arr = new Array(l);
+				for (var i = 0; i < l; ++i) {
+					arr[i] = arguments[i];
+				}
+				tryEvent.tryEvent(scheduler.now(), arr, dsink);
+			} else {
+				tryEvent.tryEvent(scheduler.now(), a, dsink);
+			}
+		}
+
+		this.source.addListener(this.event, addEventVariadic);
+
+		return dispose.create(disposeEventEmitter, { target: this, addEvent: addEventVariadic });
+	};
+
+	function disposeEventEmitter(info) {
+		var target = info.target;
+		target.source.removeListener(target.event, info.addEvent);
+	}
+
+/***/ },
+/* 122 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	/** @license MIT License (c) copyright 2010-2016 original author or authors */
+	/** @author Brian Cavalier */
+	/** @author John Hann */
+
+	var dispose = __webpack_require__(3);
+	var tryEvent = __webpack_require__(26);
+
+	module.exports = EventTargetSource;
+
+	function EventTargetSource(event, source, capture) {
+		this.event = event;
+		this.source = source;
+		this.capture = capture;
+	}
+
+	EventTargetSource.prototype.run = function (sink, scheduler) {
+		function addEvent(e) {
+			tryEvent.tryEvent(scheduler.now(), e, sink);
+		}
+
+		this.source.addEventListener(this.event, addEvent, this.capture);
+
+		return dispose.create(disposeEventTarget, { target: this, addEvent: addEvent });
+	};
+
+	function disposeEventTarget(info) {
+		var target = info.target;
+		target.source.removeEventListener(target.event, info.addEvent, target.capture);
+	}
+
+/***/ },
+/* 123 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	/** @license MIT License (c) copyright 2010-2016 original author or authors */
+	/** @author Brian Cavalier */
+	/** @author John Hann */
+
+	var Stream = __webpack_require__(1);
+	var fromArray = __webpack_require__(124).fromArray;
+	var isIterable = __webpack_require__(49).isIterable;
+	var fromIterable = __webpack_require__(126).fromIterable;
+	var getObservable = __webpack_require__(114);
+	var fromObservable = __webpack_require__(113).fromObservable;
+	var isArrayLike = __webpack_require__(2).isArrayLike;
+
+	exports.from = from;
+
+	function from(a) {
+		// eslint-disable-line complexity
+		if (a instanceof Stream) {
+			return a;
+		}
+
+		var observable = getObservable(a);
+		if (observable != null) {
+			return fromObservable(observable);
+		}
+
+		if (Array.isArray(a) || isArrayLike(a)) {
+			return fromArray(a);
+		}
+
+		if (isIterable(a)) {
+			return fromIterable(a);
+		}
+
+		throw new TypeError('from(x) must be observable, iterable, or array-like: ' + a);
+	}
+
+/***/ },
+/* 124 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	/** @license MIT License (c) copyright 2010-2016 original author or authors */
+	/** @author Brian Cavalier */
+	/** @author John Hann */
+
+	var Stream = __webpack_require__(1);
+	var PropagateTask = __webpack_require__(7);
+
+	exports.fromArray = fromArray;
+
+	function fromArray(a) {
+		return new Stream(new ArraySource(a));
+	}
+
+	function ArraySource(a) {
+		this.array = a;
+	}
+
+	ArraySource.prototype.run = function (sink, scheduler) {
+		return scheduler.asap(new PropagateTask(runProducer, this.array, sink));
+	};
+
+	function runProducer(t, array, sink) {
+		for (var i = 0, l = array.length; i < l && this.active; ++i) {
+			sink.event(t, array[i]);
+		}
+
+		this.active && end(t);
+
+		function end(t) {
+			sink.end(t);
+		}
+	}
+
+/***/ },
+/* 125 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	/** @license MIT License (c) copyright 2010-2016 original author or authors */
+	/** @author Brian Cavalier */
+	/** @author John Hann */
+
+	var Stream = __webpack_require__(1);
+	var EventTargetSource = __webpack_require__(122);
+	var EventEmitterSource = __webpack_require__(121);
+
+	exports.fromEvent = fromEvent;
+
+	/**
+	 * Create a stream from an EventTarget, such as a DOM Node, or EventEmitter.
+	 * @param {String} event event type name, e.g. 'click'
+	 * @param {EventTarget|EventEmitter} source EventTarget or EventEmitter
+	 * @param {*?} capture for DOM events, whether to use
+	 *  capturing--passed as 3rd parameter to addEventListener.
+	 * @returns {Stream} stream containing all events of the specified type
+	 * from the source.
+	 */
+	function fromEvent(event, source, capture) {
+		var s;
+
+		if (typeof source.addEventListener === 'function' && typeof source.removeEventListener === 'function') {
+			if (arguments.length < 3) {
+				capture = false;
+			}
+
+			s = new EventTargetSource(event, source, capture);
+		} else if (typeof source.addListener === 'function' && typeof source.removeListener === 'function') {
+			s = new EventEmitterSource(event, source);
+		} else {
+			throw new Error('source must support addEventListener/removeEventListener or addListener/removeListener');
+		}
+
+		return new Stream(s);
+	}
+
+/***/ },
+/* 126 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	/** @license MIT License (c) copyright 2010-2016 original author or authors */
+	/** @author Brian Cavalier */
+	/** @author John Hann */
+
+	var Stream = __webpack_require__(1);
+	var getIterator = __webpack_require__(49).getIterator;
+	var PropagateTask = __webpack_require__(7);
+
+	exports.fromIterable = fromIterable;
+
+	function fromIterable(iterable) {
+		return new Stream(new IterableSource(iterable));
+	}
+
+	function IterableSource(iterable) {
+		this.iterable = iterable;
+	}
+
+	IterableSource.prototype.run = function (sink, scheduler) {
+		return new IteratorProducer(getIterator(this.iterable), sink, scheduler);
+	};
+
+	function IteratorProducer(iterator, sink, scheduler) {
+		this.scheduler = scheduler;
+		this.iterator = iterator;
+		this.task = new PropagateTask(runProducer, this, sink);
+		scheduler.asap(this.task);
+	}
+
+	IteratorProducer.prototype.dispose = function () {
+		return this.task.dispose();
+	};
+
+	function runProducer(t, producer, sink) {
+		var x = producer.iterator.next();
+		if (x.done) {
+			sink.end(t, x.value);
+		} else {
+			sink.event(t, x.value);
+		}
+
+		producer.scheduler.asap(producer.task);
+	}
+
+/***/ },
+/* 127 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	/** @license MIT License (c) copyright 2010-2014 original author or authors */
+	/** @author Brian Cavalier */
+	/** @author John Hann */
+
+	var Stream = __webpack_require__(1);
+	var base = __webpack_require__(2);
+
+	exports.generate = generate;
+
+	/**
+	 * Compute a stream using an *async* generator, which yields promises
+	 * to control event times.
+	 * @param f
+	 * @returns {Stream}
+	 */
+	function generate(f /*, ...args */) {
+		return new Stream(new GenerateSource(f, base.tail(arguments)));
+	}
+
+	function GenerateSource(f, args) {
+		this.f = f;
+		this.args = args;
+	}
+
+	GenerateSource.prototype.run = function (sink, scheduler) {
+		return new Generate(this.f.apply(void 0, this.args), sink, scheduler);
+	};
+
+	function Generate(iterator, sink, scheduler) {
+		this.iterator = iterator;
+		this.sink = sink;
+		this.scheduler = scheduler;
+		this.active = true;
+
+		var self = this;
+		function err(e) {
+			self.sink.error(self.scheduler.now(), e);
+		}
+
+		Promise.resolve(this).then(next).catch(err);
+	}
+
+	function next(generate, x) {
+		return generate.active ? handle(generate, generate.iterator.next(x)) : x;
+	}
+
+	function handle(generate, result) {
+		if (result.done) {
+			return generate.sink.end(generate.scheduler.now(), result.value);
+		}
+
+		return Promise.resolve(result.value).then(function (x) {
+			return emit(generate, x);
+		}, function (e) {
+			return error(generate, e);
+		});
+	}
+
+	function emit(generate, x) {
+		generate.sink.event(generate.scheduler.now(), x);
+		return next(generate, x);
+	}
+
+	function error(generate, e) {
+		return handle(generate, generate.iterator.throw(e));
+	}
+
+	Generate.prototype.dispose = function () {
+		this.active = false;
+	};
+
+/***/ },
+/* 128 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	/** @license MIT License (c) copyright 2010-2016 original author or authors */
+	/** @author Brian Cavalier */
+	/** @author John Hann */
+
+	var Stream = __webpack_require__(1);
+
+	exports.iterate = iterate;
+
+	/**
+	 * Compute a stream by iteratively calling f to produce values
+	 * Event times may be controlled by returning a Promise from f
+	 * @param {function(x:*):*|Promise<*>} f
+	 * @param {*} x initial value
+	 * @returns {Stream}
+	 */
+	function iterate(f, x) {
+		return new Stream(new IterateSource(f, x));
+	}
+
+	function IterateSource(f, x) {
+		this.f = f;
+		this.value = x;
+	}
+
+	IterateSource.prototype.run = function (sink, scheduler) {
+		return new Iterate(this.f, this.value, sink, scheduler);
+	};
+
+	function Iterate(f, initial, sink, scheduler) {
+		this.f = f;
+		this.sink = sink;
+		this.scheduler = scheduler;
+		this.active = true;
+
+		var x = initial;
+
+		var self = this;
+		function err(e) {
+			self.sink.error(self.scheduler.now(), e);
+		}
+
+		function start(iterate) {
+			return stepIterate(iterate, x);
+		}
+
+		Promise.resolve(this).then(start).catch(err);
+	}
+
+	Iterate.prototype.dispose = function () {
+		this.active = false;
+	};
+
+	function stepIterate(iterate, x) {
+		iterate.sink.event(iterate.scheduler.now(), x);
+
+		if (!iterate.active) {
+			return x;
+		}
+
+		var f = iterate.f;
+		return Promise.resolve(f(x)).then(function (y) {
+			return continueIterate(iterate, y);
+		});
+	}
+
+	function continueIterate(iterate, x) {
+		return !iterate.active ? iterate.value : stepIterate(iterate, x);
+	}
+
+/***/ },
+/* 129 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	/** @license MIT License (c) copyright 2010-2016 original author or authors */
+	/** @author Brian Cavalier */
+	/** @author John Hann */
+
+	var Stream = __webpack_require__(1);
+	var dispose = __webpack_require__(3);
+	var PropagateTask = __webpack_require__(7);
+
+	exports.periodic = periodic;
+
+	/**
+	 * Create a stream that emits the current time periodically
+	 * @param {Number} period periodicity of events in millis
+	 * @param {*} value value to emit each period
+	 * @returns {Stream} new stream that emits the current time every period
+	 */
+	function periodic(period, value) {
+	  return new Stream(new Periodic(period, value));
+	}
+
+	function Periodic(period, value) {
+	  this.period = period;
+	  this.value = value;
+	}
+
+	Periodic.prototype.run = function (sink, scheduler) {
+	  return scheduler.periodic(this.period, PropagateTask.event(this.value, sink));
+	};
+
+/***/ },
+/* 130 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	/** @license MIT License (c) copyright 2010-2016 original author or authors */
+	/** @author Brian Cavalier */
+	/** @author John Hann */
+
+	var Stream = __webpack_require__(1);
+
+	exports.unfold = unfold;
+
+	/**
+	 * Compute a stream by unfolding tuples of future values from a seed value
+	 * Event times may be controlled by returning a Promise from f
+	 * @param {function(seed:*):{value:*, seed:*, done:boolean}|Promise<{value:*, seed:*, done:boolean}>} f unfolding function accepts
+	 *  a seed and returns a new tuple with a value, new seed, and boolean done flag.
+	 *  If tuple.done is true, the stream will end.
+	 * @param {*} seed seed value
+	 * @returns {Stream} stream containing all value of all tuples produced by the
+	 *  unfolding function.
+	 */
+	function unfold(f, seed) {
+		return new Stream(new UnfoldSource(f, seed));
+	}
+
+	function UnfoldSource(f, seed) {
+		this.f = f;
+		this.value = seed;
+	}
+
+	UnfoldSource.prototype.run = function (sink, scheduler) {
+		return new Unfold(this.f, this.value, sink, scheduler);
+	};
+
+	function Unfold(f, x, sink, scheduler) {
+		this.f = f;
+		this.sink = sink;
+		this.scheduler = scheduler;
+		this.active = true;
+
+		var self = this;
+		function err(e) {
+			self.sink.error(self.scheduler.now(), e);
+		}
+
+		function start(unfold) {
+			return stepUnfold(unfold, x);
+		}
+
+		Promise.resolve(this).then(start).catch(err);
+	}
+
+	Unfold.prototype.dispose = function () {
+		this.active = false;
+	};
+
+	function stepUnfold(unfold, x) {
+		var f = unfold.f;
+		return Promise.resolve(f(x)).then(function (tuple) {
+			return continueUnfold(unfold, tuple);
+		});
+	}
+
+	function continueUnfold(unfold, tuple) {
+		if (tuple.done) {
+			unfold.sink.end(unfold.scheduler.now(), tuple.value);
+			return tuple.value;
+		}
+
+		unfold.sink.event(unfold.scheduler.now(), tuple.value);
+
+		if (!unfold.active) {
+			return tuple.value;
+		}
+		return stepUnfold(unfold, tuple.seed);
+	}
+
+/***/ },
+/* 131 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	/** @license MIT License (c) copyright 2010-2016 original author or authors */
+	/** @author Brian Cavalier */
+	/** @author John Hann */
+
+	var Stream = __webpack_require__(1);
+	var base = __webpack_require__(2);
+	var core = __webpack_require__(9);
+	var from = __webpack_require__(123).from;
+	var periodic = __webpack_require__(129).periodic;
+	var symbolObservable = __webpack_require__(52).default;
+
+	/**
+	 * Core stream type
+	 * @type {Stream}
+	 */
+	exports.Stream = Stream;
+
+	// Add of and empty to constructor for fantasy-land compat
+	exports.of = Stream.of = core.of;
+	exports.just = core.of; // easier ES6 import alias
+	exports.empty = Stream.empty = core.empty;
+	exports.never = core.never;
+	exports.from = from;
+	exports.periodic = periodic;
+
+	//-----------------------------------------------------------------------
+	// Draft ES Observable proposal interop
+	// https://github.com/zenparsing/es-observable
+
+	var subscribe = __webpack_require__(115).subscribe;
+
+	Stream.prototype.subscribe = function (subscriber) {
+	  return subscribe(subscriber, this);
+	};
+
+	Stream.prototype[symbolObservable] = function () {
+	  return this;
+	};
+
+	//-----------------------------------------------------------------------
+	// Fluent adapter
+
+	var thru = __webpack_require__(105).thru;
+
+	/**
+	 * Adapt a functional stream transform to fluent style.
+	 * It applies f to the this stream object
+	 * @param  {function(s: Stream): Stream} f function that
+	 * receives the stream itself and must return a new stream
+	 * @return {Stream}
+	 */
+	Stream.prototype.thru = function (f) {
+	  return thru(f, this);
+	};
+
+	//-----------------------------------------------------------------------
+	// Adapting other sources
+
+	var events = __webpack_require__(125);
+
+	/**
+	 * Create a stream of events from the supplied EventTarget or EventEmitter
+	 * @param {String} event event name
+	 * @param {EventTarget|EventEmitter} source EventTarget or EventEmitter. The source
+	 *  must support either addEventListener/removeEventListener (w3c EventTarget:
+	 *  http://www.w3.org/TR/DOM-Level-2-Events/events.html#Events-EventTarget),
+	 *  or addListener/removeListener (node EventEmitter: http://nodejs.org/api/events.html)
+	 * @returns {Stream} stream of events of the specified type from the source
+	 */
+	exports.fromEvent = events.fromEvent;
+
+	//-----------------------------------------------------------------------
+	// Observing
+
+	var observe = __webpack_require__(100);
+
+	exports.observe = observe.observe;
+	exports.forEach = observe.observe;
+	exports.drain = observe.drain;
+
+	/**
+	 * Process all the events in the stream
+	 * @returns {Promise} promise that fulfills when the stream ends, or rejects
+	 *  if the stream fails with an unhandled error.
+	 */
+	Stream.prototype.observe = Stream.prototype.forEach = function (f) {
+	  return observe.observe(f, this);
+	};
+
+	/**
+	 * Consume all events in the stream, without providing a function to process each.
+	 * This causes a stream to become active and begin emitting events, and is useful
+	 * in cases where all processing has been setup upstream via other combinators, and
+	 * there is no need to process the terminal events.
+	 * @returns {Promise} promise that fulfills when the stream ends, or rejects
+	 *  if the stream fails with an unhandled error.
+	 */
+	Stream.prototype.drain = function () {
+	  return observe.drain(this);
+	};
+
+	//-------------------------------------------------------
+
+	var loop = __webpack_require__(98).loop;
+
+	exports.loop = loop;
+
+	/**
+	 * Generalized feedback loop. Call a stepper function for each event. The stepper
+	 * will be called with 2 params: the current seed and the an event value.  It must
+	 * return a new { seed, value } pair. The `seed` will be fed back into the next
+	 * invocation of stepper, and the `value` will be propagated as the event value.
+	 * @param {function(seed:*, value:*):{seed:*, value:*}} stepper loop step function
+	 * @param {*} seed initial seed value passed to first stepper call
+	 * @returns {Stream} new stream whose values are the `value` field of the objects
+	 * returned by the stepper
+	 */
+	Stream.prototype.loop = function (stepper, seed) {
+	  return loop(stepper, seed, this);
+	};
+
+	//-------------------------------------------------------
+
+	var accumulate = __webpack_require__(90);
+
+	exports.scan = accumulate.scan;
+	exports.reduce = accumulate.reduce;
+
+	/**
+	 * Create a stream containing successive reduce results of applying f to
+	 * the previous reduce result and the current stream item.
+	 * @param {function(result:*, x:*):*} f reducer function
+	 * @param {*} initial initial value
+	 * @returns {Stream} new stream containing successive reduce results
+	 */
+	Stream.prototype.scan = function (f, initial) {
+	  return accumulate.scan(f, initial, this);
+	};
+
+	/**
+	 * Reduce the stream to produce a single result.  Note that reducing an infinite
+	 * stream will return a Promise that never fulfills, but that may reject if an error
+	 * occurs.
+	 * @param {function(result:*, x:*):*} f reducer function
+	 * @param {*} initial optional initial value
+	 * @returns {Promise} promise for the file result of the reduce
+	 */
+	Stream.prototype.reduce = function (f, initial) {
+	  return accumulate.reduce(f, initial, this);
+	};
+
+	//-----------------------------------------------------------------------
+	// Building and extending
+
+	var unfold = __webpack_require__(130);
+	var iterate = __webpack_require__(128);
+	var generate = __webpack_require__(127);
+	var build = __webpack_require__(92);
+
+	exports.unfold = unfold.unfold;
+	exports.iterate = iterate.iterate;
+	exports.generate = generate.generate;
+	exports.concat = build.concat;
+	exports.startWith = build.cons;
+
+	/**
+	 * @param {Stream} tail
+	 * @returns {Stream} new stream containing all items in this followed by
+	 *  all items in tail
+	 */
+	Stream.prototype.concat = function (tail) {
+	  return build.concat(this, tail);
+	};
+
+	/**
+	 * @param {*} x value to prepend
+	 * @returns {Stream} a new stream with x prepended
+	 */
+	Stream.prototype.startWith = function (x) {
+	  return build.cons(x, this);
+	};
+
+	//-----------------------------------------------------------------------
+	// Transforming
+
+	var transform = __webpack_require__(15);
+	var applicative = __webpack_require__(91);
+
+	exports.map = transform.map;
+	exports.constant = transform.constant;
+	exports.tap = transform.tap;
+	exports.ap = applicative.ap;
+
+	/**
+	 * Transform each value in the stream by applying f to each
+	 * @param {function(*):*} f mapping function
+	 * @returns {Stream} stream containing items transformed by f
+	 */
+	Stream.prototype.map = function (f) {
+	  return transform.map(f, this);
+	};
+
+	/**
+	 * Assume this stream contains functions, and apply each function to each item
+	 * in the provided stream.  This generates, in effect, a cross product.
+	 * @param {Stream} xs stream of items to which
+	 * @returns {Stream} stream containing the cross product of items
+	 */
+	Stream.prototype.ap = function (xs) {
+	  return applicative.ap(this, xs);
+	};
+
+	/**
+	 * Replace each value in the stream with x
+	 * @param {*} x
+	 * @returns {Stream} stream containing items replaced with x
+	 */
+	Stream.prototype.constant = function (x) {
+	  return transform.constant(x, this);
+	};
+
+	/**
+	 * Perform a side effect for each item in the stream
+	 * @param {function(x:*):*} f side effect to execute for each item. The
+	 *  return value will be discarded.
+	 * @returns {Stream} new stream containing the same items as this stream
+	 */
+	Stream.prototype.tap = function (f) {
+	  return transform.tap(f, this);
+	};
+
+	//-----------------------------------------------------------------------
+	// Transducer support
+
+	var transduce = __webpack_require__(108);
+
+	exports.transduce = transduce.transduce;
+
+	/**
+	 * Transform this stream by passing its events through a transducer.
+	 * @param  {function} transducer transducer function
+	 * @return {Stream} stream of events transformed by the transducer
+	 */
+	Stream.prototype.transduce = function (transducer) {
+	  return transduce.transduce(transducer, this);
+	};
+
+	//-----------------------------------------------------------------------
+	// FlatMapping
+
+	var flatMap = __webpack_require__(47);
+
+	exports.flatMap = exports.chain = flatMap.flatMap;
+	exports.join = flatMap.join;
+
+	/**
+	 * Map each value in the stream to a new stream, and merge it into the
+	 * returned outer stream. Event arrival times are preserved.
+	 * @param {function(x:*):Stream} f chaining function, must return a Stream
+	 * @returns {Stream} new stream containing all events from each stream returned by f
+	 */
+	Stream.prototype.flatMap = Stream.prototype.chain = function (f) {
+	  return flatMap.flatMap(f, this);
+	};
+
+	/**
+	 * Monadic join. Flatten a Stream<Stream<X>> to Stream<X> by merging inner
+	 * streams to the outer. Event arrival times are preserved.
+	 * @returns {Stream<X>} new stream containing all events of all inner streams
+	 */
+	Stream.prototype.join = function () {
+	  return flatMap.join(this);
+	};
+
+	var continueWith = __webpack_require__(46).continueWith;
+
+	exports.continueWith = continueWith;
+	exports.flatMapEnd = continueWith;
+
+	/**
+	 * Map the end event to a new stream, and begin emitting its values.
+	 * @param {function(x:*):Stream} f function that receives the end event value,
+	 * and *must* return a new Stream to continue with.
+	 * @returns {Stream} new stream that emits all events from the original stream,
+	 * followed by all events from the stream returned by f.
+	 */
+	Stream.prototype.continueWith = Stream.prototype.flatMapEnd = function (f) {
+	  return continueWith(f, this);
+	};
+
+	var concatMap = __webpack_require__(93).concatMap;
+
+	exports.concatMap = concatMap;
+
+	Stream.prototype.concatMap = function (f) {
+	  return concatMap(f, this);
+	};
+
+	//-----------------------------------------------------------------------
+	// Concurrent merging
+
+	var mergeConcurrently = __webpack_require__(14);
+
+	exports.mergeConcurrently = mergeConcurrently.mergeConcurrently;
+
+	/**
+	 * Flatten a Stream<Stream<X>> to Stream<X> by merging inner
+	 * streams to the outer, limiting the number of inner streams that may
+	 * be active concurrently.
+	 * @param {number} concurrency at most this many inner streams will be
+	 *  allowed to be active concurrently.
+	 * @return {Stream<X>} new stream containing all events of all inner
+	 *  streams, with limited concurrency.
+	 */
+	Stream.prototype.mergeConcurrently = function (concurrency) {
+	  return mergeConcurrently.mergeConcurrently(concurrency, this);
+	};
+
+	//-----------------------------------------------------------------------
+	// Merging
+
+	var merge = __webpack_require__(99);
+
+	exports.merge = merge.merge;
+	exports.mergeArray = merge.mergeArray;
+
+	/**
+	 * Merge this stream and all the provided streams
+	 * @returns {Stream} stream containing items from this stream and s in time
+	 * order.  If two events are simultaneous they will be merged in
+	 * arbitrary order.
+	 */
+	Stream.prototype.merge = function () /*...streams*/{
+	  return merge.mergeArray(base.cons(this, arguments));
+	};
+
+	//-----------------------------------------------------------------------
+	// Combining
+
+	var combine = __webpack_require__(45);
+
+	exports.combine = combine.combine;
+	exports.combineArray = combine.combineArray;
+
+	/**
+	 * Combine latest events from all input streams
+	 * @param {function(...events):*} f function to combine most recent events
+	 * @returns {Stream} stream containing the result of applying f to the most recent
+	 *  event of each input stream, whenever a new event arrives on any stream.
+	 */
+	Stream.prototype.combine = function (f /*, ...streams*/) {
+	  return combine.combineArray(f, base.replace(this, 0, arguments));
+	};
+
+	//-----------------------------------------------------------------------
+	// Sampling
+
+	var sample = __webpack_require__(102);
+
+	exports.sample = sample.sample;
+	exports.sampleWith = sample.sampleWith;
+
+	/**
+	 * When an event arrives on sampler, emit the latest event value from stream.
+	 * @param {Stream} sampler stream of events at whose arrival time
+	 *  signal's latest value will be propagated
+	 * @returns {Stream} sampled stream of values
+	 */
+	Stream.prototype.sampleWith = function (sampler) {
+	  return sample.sampleWith(sampler, this);
+	};
+
+	/**
+	 * When an event arrives on this stream, emit the result of calling f with the latest
+	 * values of all streams being sampled
+	 * @param {function(...values):*} f function to apply to each set of sampled values
+	 * @returns {Stream} stream of sampled and transformed values
+	 */
+	Stream.prototype.sample = function (f /* ...streams */) {
+	  return sample.sampleArray(f, this, base.tail(arguments));
+	};
+
+	//-----------------------------------------------------------------------
+	// Zipping
+
+	var zip = __webpack_require__(109);
+
+	exports.zip = zip.zip;
+
+	/**
+	 * Pair-wise combine items with those in s. Given 2 streams:
+	 * [1,2,3] zipWith f [4,5,6] -> [f(1,4),f(2,5),f(3,6)]
+	 * Note: zip causes fast streams to buffer and wait for slow streams.
+	 * @param {function(a:Stream, b:Stream, ...):*} f function to combine items
+	 * @returns {Stream} new stream containing pairs
+	 */
+	Stream.prototype.zip = function (f /*, ...streams*/) {
+	  return zip.zipArray(f, base.replace(this, 0, arguments));
+	};
+
+	//-----------------------------------------------------------------------
+	// Switching
+
+	var switchLatest = __webpack_require__(104).switch;
+
+	exports.switch = switchLatest;
+	exports.switchLatest = switchLatest;
+
+	/**
+	 * Given a stream of streams, return a new stream that adopts the behavior
+	 * of the most recent inner stream.
+	 * @returns {Stream} switching stream
+	 */
+	Stream.prototype.switch = Stream.prototype.switchLatest = function () {
+	  return switchLatest(this);
+	};
+
+	//-----------------------------------------------------------------------
+	// Filtering
+
+	var filter = __webpack_require__(96);
+
+	exports.filter = filter.filter;
+	exports.skipRepeats = exports.distinct = filter.skipRepeats;
+	exports.skipRepeatsWith = exports.distinctBy = filter.skipRepeatsWith;
+
+	/**
+	 * Retain only items matching a predicate
+	 * stream:                           -12345678-
+	 * filter(x => x % 2 === 0, stream): --2-4-6-8-
+	 * @param {function(x:*):boolean} p filtering predicate called for each item
+	 * @returns {Stream} stream containing only items for which predicate returns truthy
+	 */
+	Stream.prototype.filter = function (p) {
+	  return filter.filter(p, this);
+	};
+
+	/**
+	 * Skip repeated events, using === to compare items
+	 * stream:           -abbcd-
+	 * distinct(stream): -ab-cd-
+	 * @returns {Stream} stream with no repeated events
+	 */
+	Stream.prototype.skipRepeats = function () {
+	  return filter.skipRepeats(this);
+	};
+
+	/**
+	 * Skip repeated events, using supplied equals function to compare items
+	 * @param {function(a:*, b:*):boolean} equals function to compare items
+	 * @returns {Stream} stream with no repeated events
+	 */
+	Stream.prototype.skipRepeatsWith = function (equals) {
+	  return filter.skipRepeatsWith(equals, this);
+	};
+
+	//-----------------------------------------------------------------------
+	// Slicing
+
+	var slice = __webpack_require__(103);
+
+	exports.take = slice.take;
+	exports.skip = slice.skip;
+	exports.slice = slice.slice;
+	exports.takeWhile = slice.takeWhile;
+	exports.skipWhile = slice.skipWhile;
+
+	/**
+	 * stream:          -abcd-
+	 * take(2, stream): -ab|
+	 * @param {Number} n take up to this many events
+	 * @returns {Stream} stream containing at most the first n items from this stream
+	 */
+	Stream.prototype.take = function (n) {
+	  return slice.take(n, this);
+	};
+
+	/**
+	 * stream:          -abcd->
+	 * skip(2, stream): ---cd->
+	 * @param {Number} n skip this many events
+	 * @returns {Stream} stream not containing the first n events
+	 */
+	Stream.prototype.skip = function (n) {
+	  return slice.skip(n, this);
+	};
+
+	/**
+	 * Slice a stream by event index. Equivalent to, but more efficient than
+	 * stream.take(end).skip(start);
+	 * NOTE: Negative start and end are not supported
+	 * @param {Number} start skip all events before the start index
+	 * @param {Number} end allow all events from the start index to the end index
+	 * @returns {Stream} stream containing items where start <= index < end
+	 */
+	Stream.prototype.slice = function (start, end) {
+	  return slice.slice(start, end, this);
+	};
+
+	/**
+	 * stream:                        -123451234->
+	 * takeWhile(x => x < 5, stream): -1234|
+	 * @param {function(x:*):boolean} p predicate
+	 * @returns {Stream} stream containing items up to, but not including, the
+	 * first item for which p returns falsy.
+	 */
+	Stream.prototype.takeWhile = function (p) {
+	  return slice.takeWhile(p, this);
+	};
+
+	/**
+	 * stream:                        -123451234->
+	 * skipWhile(x => x < 5, stream): -----51234->
+	 * @param {function(x:*):boolean} p predicate
+	 * @returns {Stream} stream containing items following *and including* the
+	 * first item for which p returns falsy.
+	 */
+	Stream.prototype.skipWhile = function (p) {
+	  return slice.skipWhile(p, this);
+	};
+
+	//-----------------------------------------------------------------------
+	// Time slicing
+
+	var timeslice = __webpack_require__(106);
+
+	exports.until = exports.takeUntil = timeslice.takeUntil;
+	exports.since = exports.skipUntil = timeslice.skipUntil;
+	exports.during = timeslice.during;
+
+	/**
+	 * stream:                    -a-b-c-d-e-f-g->
+	 * signal:                    -------x
+	 * takeUntil(signal, stream): -a-b-c-|
+	 * @param {Stream} signal retain only events in stream before the first
+	 * event in signal
+	 * @returns {Stream} new stream containing only events that occur before
+	 * the first event in signal.
+	 */
+	Stream.prototype.until = Stream.prototype.takeUntil = function (signal) {
+	  return timeslice.takeUntil(signal, this);
+	};
+
+	/**
+	 * stream:                    -a-b-c-d-e-f-g->
+	 * signal:                    -------x
+	 * takeUntil(signal, stream): -------d-e-f-g->
+	 * @param {Stream} signal retain only events in stream at or after the first
+	 * event in signal
+	 * @returns {Stream} new stream containing only events that occur after
+	 * the first event in signal.
+	 */
+	Stream.prototype.since = Stream.prototype.skipUntil = function (signal) {
+	  return timeslice.skipUntil(signal, this);
+	};
+
+	/**
+	 * stream:                    -a-b-c-d-e-f-g->
+	 * timeWindow:                -----s
+	 * s:                               -----t
+	 * stream.during(timeWindow): -----c-d-e-|
+	 * @param {Stream<Stream>} timeWindow a stream whose first event (s) represents
+	 *  the window start time.  That event (s) is itself a stream whose first event (t)
+	 *  represents the window end time
+	 * @returns {Stream} new stream containing only events within the provided timespan
+	 */
+	Stream.prototype.during = function (timeWindow) {
+	  return timeslice.during(timeWindow, this);
+	};
+
+	//-----------------------------------------------------------------------
+	// Delaying
+
+	var delay = __webpack_require__(94).delay;
+
+	exports.delay = delay;
+
+	/**
+	 * @param {Number} delayTime milliseconds to delay each item
+	 * @returns {Stream} new stream containing the same items, but delayed by ms
+	 */
+	Stream.prototype.delay = function (delayTime) {
+	  return delay(delayTime, this);
+	};
+
+	//-----------------------------------------------------------------------
+	// Getting event timestamp
+
+	var timestamp = __webpack_require__(107).timestamp;
+
+	exports.timestamp = timestamp;
+
+	/**
+	 * Expose event timestamps into the stream. Turns a Stream<X> into
+	 * Stream<{time:t, value:X}>
+	 * @returns {Stream<{time:number, value:*}>}
+	 */
+	Stream.prototype.timestamp = function () {
+	  return timestamp(this);
+	};
+
+	//-----------------------------------------------------------------------
+	// Rate limiting
+
+	var limit = __webpack_require__(97);
+
+	exports.throttle = limit.throttle;
+	exports.debounce = limit.debounce;
+
+	/**
+	 * Limit the rate of events
+	 * stream:              abcd----abcd----
+	 * throttle(2, stream): a-c-----a-c-----
+	 * @param {Number} period time to suppress events
+	 * @returns {Stream} new stream that skips events for throttle period
+	 */
+	Stream.prototype.throttle = function (period) {
+	  return limit.throttle(period, this);
+	};
+
+	/**
+	 * Wait for a burst of events to subside and emit only the last event in the burst
+	 * stream:              abcd----abcd----
+	 * debounce(2, stream): -----d-------d--
+	 * @param {Number} period events occuring more frequently than this
+	 *  on the provided scheduler will be suppressed
+	 * @returns {Stream} new debounced stream
+	 */
+	Stream.prototype.debounce = function (period) {
+	  return limit.debounce(period, this);
+	};
+
+	//-----------------------------------------------------------------------
+	// Awaiting Promises
+
+	var promises = __webpack_require__(101);
+
+	exports.fromPromise = promises.fromPromise;
+	exports.await = promises.awaitPromises;
+
+	/**
+	 * Await promises, turning a Stream<Promise<X>> into Stream<X>.  Preserves
+	 * event order, but timeshifts events based on promise resolution time.
+	 * @returns {Stream<X>} stream containing non-promise values
+	 */
+	Stream.prototype.await = function () {
+	  return promises.awaitPromises(this);
+	};
+
+	//-----------------------------------------------------------------------
+	// Error handling
+
+	var errors = __webpack_require__(95);
+
+	exports.recoverWith = errors.flatMapError;
+	exports.flatMapError = errors.flatMapError;
+	exports.throwError = errors.throwError;
+
+	/**
+	 * If this stream encounters an error, recover and continue with items from stream
+	 * returned by f.
+	 * stream:                  -a-b-c-X-
+	 * f(X):                           d-e-f-g-
+	 * flatMapError(f, stream): -a-b-c-d-e-f-g-
+	 * @param {function(error:*):Stream} f function which returns a new stream
+	 * @returns {Stream} new stream which will recover from an error by calling f
+	 */
+	Stream.prototype.recoverWith = Stream.prototype.flatMapError = function (f) {
+	  return errors.flatMapError(f, this);
+	};
+
+	//-----------------------------------------------------------------------
+	// Multicasting
+
+	var multicast = __webpack_require__(12).default;
+
+	exports.multicast = multicast;
+
+	/**
+	 * Transform the stream into multicast stream.  That means that many subscribers
+	 * to the stream will not cause multiple invocations of the internal machinery.
+	 * @returns {Stream} new stream which will multicast events to all observers.
+	 */
+	Stream.prototype.multicast = function () {
+	  return multicast(this);
+	};
+
+/***/ },
+/* 132 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/* WEBPACK VAR INJECTION */(function(global) {'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+		value: true
+	});
+
+	var _ponyfill = __webpack_require__(133);
+
+	var _ponyfill2 = _interopRequireDefault(_ponyfill);
+
+	function _interopRequireDefault(obj) {
+		return obj && obj.__esModule ? obj : { 'default': obj };
+	}
+
+	var root = undefined; /* global window */
+
+	if (typeof global !== 'undefined') {
+		root = global;
+	} else if (typeof window !== 'undefined') {
+		root = window;
+	}
+
+	var result = (0, _ponyfill2['default'])(root);
+	exports['default'] = result;
+	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }())))
+
+/***/ },
+/* 133 */
+/***/ function(module, exports) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+		value: true
+	});
+	exports['default'] = symbolObservablePonyfill;
+	function symbolObservablePonyfill(root) {
+		var result;
+		var _Symbol = root.Symbol;
+
+		if (typeof _Symbol === 'function') {
+			if (_Symbol.observable) {
+				result = _Symbol.observable;
+			} else {
+				result = _Symbol('observable');
+				_Symbol.observable = result;
+			}
+		} else {
+			result = '@@observable';
+		}
+
+		return result;
+	};
+
+/***/ },
+/* 134 */
+/***/ function(module, exports) {
+
+	"use strict";
+
+	/** @license MIT License (c) copyright 2010-2016 original author or authors */
+	/** @author Brian Cavalier */
+	/** @author John Hann */
+
+	module.exports = LinkedList;
+
+	/**
+	 * Doubly linked list
+	 * @constructor
+	 */
+	function LinkedList() {
+		this.head = null;
+		this.length = 0;
+	}
+
+	/**
+	 * Add a node to the end of the list
+	 * @param {{prev:Object|null, next:Object|null, dispose:function}} x node to add
+	 */
+	LinkedList.prototype.add = function (x) {
+		if (this.head !== null) {
+			this.head.prev = x;
+			x.next = this.head;
+		}
+		this.head = x;
+		++this.length;
+	};
+
+	/**
+	 * Remove the provided node from the list
+	 * @param {{prev:Object|null, next:Object|null, dispose:function}} x node to remove
+	 */
+	LinkedList.prototype.remove = function (x) {
+		--this.length;
+		if (x === this.head) {
+			this.head = this.head.next;
+		}
+		if (x.next !== null) {
+			x.next.prev = x.prev;
+			x.next = null;
+		}
+		if (x.prev !== null) {
+			x.prev.next = x.next;
+			x.prev = null;
+		}
+	};
+
+	/**
+	 * @returns {boolean} true iff there are no nodes in the list
+	 */
+	LinkedList.prototype.isEmpty = function () {
+		return this.length === 0;
+	};
+
+	/**
+	 * Dispose all nodes
+	 * @returns {Promise} promise that fulfills when all nodes have been disposed,
+	 *  or rejects if an error occurs while disposing
+	 */
+	LinkedList.prototype.dispose = function () {
+		if (this.isEmpty()) {
+			return Promise.resolve();
+		}
+
+		var promises = [];
+		var x = this.head;
+		this.head = null;
+		this.length = 0;
+
+		while (x !== null) {
+			promises.push(x.dispose());
+			x = x.next;
+		}
+
+		return Promise.all(promises);
+	};
+
+/***/ },
+/* 135 */
+/***/ function(module, exports) {
+
+	"use strict";
+
+	/** @license MIT License (c) copyright 2010-2016 original author or authors */
+	/** @author Brian Cavalier */
+	/** @author John Hann */
+
+	// Based on https://github.com/petkaantonov/deque
+
+	module.exports = Queue;
+
+	function Queue(capPow2) {
+		this._capacity = capPow2 || 32;
+		this._length = 0;
+		this._head = 0;
+	}
+
+	Queue.prototype.push = function (x) {
+		var len = this._length;
+		this._checkCapacity(len + 1);
+
+		var i = this._head + len & this._capacity - 1;
+		this[i] = x;
+		this._length = len + 1;
+	};
+
+	Queue.prototype.shift = function () {
+		var head = this._head;
+		var x = this[head];
+
+		this[head] = void 0;
+		this._head = head + 1 & this._capacity - 1;
+		this._length--;
+		return x;
+	};
+
+	Queue.prototype.isEmpty = function () {
+		return this._length === 0;
+	};
+
+	Queue.prototype.length = function () {
+		return this._length;
+	};
+
+	Queue.prototype._checkCapacity = function (size) {
+		if (this._capacity < size) {
+			this._ensureCapacity(this._capacity << 1);
+		}
+	};
+
+	Queue.prototype._ensureCapacity = function (capacity) {
+		var oldCapacity = this._capacity;
+		this._capacity = capacity;
+
+		var last = this._head + this._length;
+
+		if (last > oldCapacity) {
+			copy(this, 0, this, oldCapacity, last & oldCapacity - 1);
+		}
+	};
+
+	function copy(src, srcIndex, dst, dstIndex, len) {
+		for (var j = 0; j < len; ++j) {
+			dst[j + dstIndex] = src[j + srcIndex];
+			src[j + srcIndex] = void 0;
+		}
+	}
+
+/***/ },
+/* 136 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
 
 	/** @license MIT License (c) copyright 2010-2016 original author or authors */
 	/** @author Brian Cavalier */
 	/** @author John Hann */
 
 	var Stream = __webpack_require__(0);
-	var Sink = __webpack_require__(1);
-	var core = __webpack_require__(7);
-	var dispose = __webpack_require__(2);
+	var Pipe = __webpack_require__(6);
+	var runSource = __webpack_require__(59).withDefaultScheduler;
+	var dispose = __webpack_require__(4);
+	var PropagateTask = __webpack_require__(8);
+
+	exports.scan = scan;
+	exports.reduce = reduce;
+
+	/**
+	 * Create a stream containing successive reduce results of applying f to
+	 * the previous reduce result and the current stream item.
+	 * @param {function(result:*, x:*):*} f reducer function
+	 * @param {*} initial initial value
+	 * @param {Stream} stream stream to scan
+	 * @returns {Stream} new stream containing successive reduce results
+	 */
+	function scan(f, initial, stream) {
+		return new Stream(new Scan(f, initial, stream.source));
+	}
+
+	function Scan(f, z, source) {
+		this.source = source;
+		this.f = f;
+		this.value = z;
+	}
+
+	Scan.prototype.run = function (sink, scheduler) {
+		var d1 = scheduler.asap(PropagateTask.event(this.value, sink));
+		var d2 = this.source.run(new ScanSink(this.f, this.value, sink), scheduler);
+		return dispose.all([d1, d2]);
+	};
+
+	function ScanSink(f, z, sink) {
+		this.f = f;
+		this.value = z;
+		this.sink = sink;
+	}
+
+	ScanSink.prototype.event = function (t, x) {
+		var f = this.f;
+		this.value = f(this.value, x);
+		this.sink.event(t, this.value);
+	};
+
+	ScanSink.prototype.error = Pipe.prototype.error;
+	ScanSink.prototype.end = Pipe.prototype.end;
+
+	/**
+	 * Reduce a stream to produce a single result.  Note that reducing an infinite
+	 * stream will return a Promise that never fulfills, but that may reject if an error
+	 * occurs.
+	 * @param {function(result:*, x:*):*} f reducer function
+	 * @param {*} initial initial value
+	 * @param {Stream} stream to reduce
+	 * @returns {Promise} promise for the file result of the reduce
+	 */
+	function reduce(f, initial, stream) {
+		return runSource(new Reduce(f, initial, stream.source));
+	}
+
+	function Reduce(f, z, source) {
+		this.source = source;
+		this.f = f;
+		this.value = z;
+	}
+
+	Reduce.prototype.run = function (sink, scheduler) {
+		return this.source.run(new ReduceSink(this.f, this.value, sink), scheduler);
+	};
+
+	function ReduceSink(f, z, sink) {
+		this.f = f;
+		this.value = z;
+		this.sink = sink;
+	}
+
+	ReduceSink.prototype.event = function (t, x) {
+		var f = this.f;
+		this.value = f(this.value, x);
+		this.sink.event(t, this.value);
+	};
+
+	ReduceSink.prototype.error = Pipe.prototype.error;
+
+	ReduceSink.prototype.end = function (t) {
+		this.sink.end(t, this.value);
+	};
+
+	function noop() {}
+
+/***/ },
+/* 137 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	/** @license MIT License (c) copyright 2010-2016 original author or authors */
+	/** @author Brian Cavalier */
+	/** @author John Hann */
+
+	var combine = __webpack_require__(53).combine;
+	var apply = __webpack_require__(2).apply;
+
+	exports.ap = ap;
+
+	/**
+	 * Assume fs is a stream containing functions, and apply the latest function
+	 * in fs to the latest value in xs.
+	 * fs:         --f---------g--------h------>
+	 * xs:         -a-------b-------c-------d-->
+	 * ap(fs, xs): --fa-----fb-gb---gc--hc--hd->
+	 * @param {Stream} fs stream of functions to apply to the latest x
+	 * @param {Stream} xs stream of values to which to apply all the latest f
+	 * @returns {Stream} stream containing all the applications of fs to xs
+	 */
+	function ap(fs, xs) {
+	  return combine(apply, fs, xs);
+	}
+
+/***/ },
+/* 138 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	/** @license MIT License (c) copyright 2010-2016 original author or authors */
+	/** @author Brian Cavalier */
+	/** @author John Hann */
+
+	var streamOf = __webpack_require__(10).of;
+	var continueWith = __webpack_require__(54).continueWith;
+
+	exports.concat = concat;
+	exports.cycle = cycle;
+	exports.cons = cons;
+
+	/**
+	 * @param {*} x value to prepend
+	 * @param {Stream} stream
+	 * @returns {Stream} new stream with x prepended
+	 */
+	function cons(x, stream) {
+	  return concat(streamOf(x), stream);
+	}
+
+	/**
+	 * @param {Stream} left
+	 * @param {Stream} right
+	 * @returns {Stream} new stream containing all events in left followed by all
+	 *  events in right.  This *timeshifts* right to the end of left.
+	 */
+	function concat(left, right) {
+	  return continueWith(function () {
+	    return right;
+	  }, left);
+	}
+
+	/**
+	 * @deprecated
+	 * Tie stream into a circle, creating an infinite stream
+	 * @param {Stream} stream
+	 * @returns {Stream} new infinite stream
+	 */
+	function cycle(stream) {
+	  return continueWith(function cycleNext() {
+	    return cycle(stream);
+	  }, stream);
+	}
+
+/***/ },
+/* 139 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	/** @license MIT License (c) copyright 2010-2016 original author or authors */
+	/** @author Brian Cavalier */
+	/** @author John Hann */
+
+	var mergeMapConcurrently = __webpack_require__(17).mergeMapConcurrently;
+
+	exports.concatMap = concatMap;
+
+	/**
+	 * Map each value in stream to a new stream, and concatenate them all
+	 * stream:              -a---b---cX
+	 * f(a):                 1-1-1-1X
+	 * f(b):                        -2-2-2-2X
+	 * f(c):                                -3-3-3-3X
+	 * stream.concatMap(f): -1-1-1-1-2-2-2-2-3-3-3-3X
+	 * @param {function(x:*):Stream} f function to map each value to a stream
+	 * @param {Stream} stream
+	 * @returns {Stream} new stream containing all events from each stream returned by f
+	 */
+	function concatMap(f, stream) {
+	  return mergeMapConcurrently(f, 1, stream);
+	}
+
+/***/ },
+/* 140 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	/** @license MIT License (c) copyright 2010-2016 original author or authors */
+	/** @author Brian Cavalier */
+	/** @author John Hann */
+
+	var Stream = __webpack_require__(0);
+	var Sink = __webpack_require__(6);
+	var dispose = __webpack_require__(4);
+	var PropagateTask = __webpack_require__(8);
+
+	exports.delay = delay;
+
+	/**
+	 * @param {Number} delayTime milliseconds to delay each item
+	 * @param {Stream} stream
+	 * @returns {Stream} new stream containing the same items, but delayed by ms
+	 */
+	function delay(delayTime, stream) {
+		return delayTime <= 0 ? stream : new Stream(new Delay(delayTime, stream.source));
+	}
+
+	function Delay(dt, source) {
+		this.dt = dt;
+		this.source = source;
+	}
+
+	Delay.prototype.run = function (sink, scheduler) {
+		var delaySink = new DelaySink(this.dt, sink, scheduler);
+		return dispose.all([delaySink, this.source.run(delaySink, scheduler)]);
+	};
+
+	function DelaySink(dt, sink, scheduler) {
+		this.dt = dt;
+		this.sink = sink;
+		this.scheduler = scheduler;
+	}
+
+	DelaySink.prototype.dispose = function () {
+		var self = this;
+		this.scheduler.cancelAll(function (task) {
+			return task.sink === self.sink;
+		});
+	};
+
+	DelaySink.prototype.event = function (t, x) {
+		this.scheduler.delay(this.dt, PropagateTask.event(x, this.sink));
+	};
+
+	DelaySink.prototype.end = function (t, x) {
+		this.scheduler.delay(this.dt, PropagateTask.end(x, this.sink));
+	};
+
+	DelaySink.prototype.error = Sink.prototype.error;
+
+/***/ },
+/* 141 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	/** @license MIT License (c) copyright 2010-2016 original author or authors */
+	/** @author Brian Cavalier */
+	/** @author John Hann */
+
+	var Stream = __webpack_require__(0);
+	var SafeSink = __webpack_require__(165);
+	var Pipe = __webpack_require__(6);
+	var dispose = __webpack_require__(4);
+	var tryEvent = __webpack_require__(19);
+	var isPromise = __webpack_require__(28).isPromise;
+	var PropagateTask = __webpack_require__(8);
+
+	exports.flatMapError = recoverWith;
+	exports.recoverWith = recoverWith;
+	exports.throwError = throwError;
+
+	/**
+	 * If stream encounters an error, recover and continue with items from stream
+	 * returned by f.
+	 * @param {function(error:*):Stream} f function which returns a new stream
+	 * @param {Stream} stream
+	 * @returns {Stream} new stream which will recover from an error by calling f
+	 */
+	function recoverWith(f, stream) {
+		return new Stream(new RecoverWith(f, stream.source));
+	}
+
+	/**
+	 * Create a stream containing only an error
+	 * @param {*} e error value, preferably an Error or Error subtype
+	 * @returns {Stream} new stream containing only an error
+	 */
+	function throwError(e) {
+		return new Stream(new ErrorSource(e));
+	}
+
+	function ErrorSource(e) {
+		this.value = e;
+	}
+
+	ErrorSource.prototype.run = function (sink, scheduler) {
+		return scheduler.asap(new PropagateTask(runError, this.value, sink));
+	};
+
+	function runError(t, e, sink) {
+		sink.error(t, e);
+	}
+
+	function RecoverWith(f, source) {
+		this.f = f;
+		this.source = source;
+	}
+
+	RecoverWith.prototype.run = function (sink, scheduler) {
+		return new RecoverWithSink(this.f, this.source, sink, scheduler);
+	};
+
+	function RecoverWithSink(f, source, sink, scheduler) {
+		this.f = f;
+		this.sink = new SafeSink(sink);
+		this.scheduler = scheduler;
+		this.disposable = source.run(this, scheduler);
+	}
+
+	RecoverWithSink.prototype.event = function (t, x) {
+		tryEvent.tryEvent(t, x, this.sink);
+	};
+
+	RecoverWithSink.prototype.end = function (t, x) {
+		tryEvent.tryEnd(t, x, this.sink);
+	};
+
+	RecoverWithSink.prototype.error = function (t, e) {
+		var nextSink = this.sink.disable();
+
+		dispose.tryDispose(t, this.disposable, this.sink);
+		this._startNext(t, e, nextSink);
+	};
+
+	RecoverWithSink.prototype._startNext = function (t, x, sink) {
+		try {
+			this.disposable = this._continue(this.f, x, sink);
+		} catch (e) {
+			sink.error(t, e);
+		}
+	};
+
+	RecoverWithSink.prototype._continue = function (f, x, sink) {
+		var stream = f(x);
+		return stream.source.run(sink, this.scheduler);
+	};
+
+	RecoverWithSink.prototype.dispose = function () {
+		return this.disposable.dispose();
+	};
+
+/***/ },
+/* 142 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	/** @license MIT License (c) copyright 2010-2016 original author or authors */
+	/** @author Brian Cavalier */
+	/** @author John Hann */
+
+	var Stream = __webpack_require__(0);
+	var Sink = __webpack_require__(6);
+	var Filter = __webpack_require__(57);
+
+	exports.filter = filter;
+	exports.skipRepeats = skipRepeats;
+	exports.skipRepeatsWith = skipRepeatsWith;
+
+	/**
+	 * Retain only items matching a predicate
+	 * @param {function(x:*):boolean} p filtering predicate called for each item
+	 * @param {Stream} stream stream to filter
+	 * @returns {Stream} stream containing only items for which predicate returns truthy
+	 */
+	function filter(p, stream) {
+		return new Stream(Filter.create(p, stream.source));
+	}
+
+	/**
+	 * Skip repeated events, using === to detect duplicates
+	 * @param {Stream} stream stream from which to omit repeated events
+	 * @returns {Stream} stream without repeated events
+	 */
+	function skipRepeats(stream) {
+		return skipRepeatsWith(same, stream);
+	}
+
+	/**
+	 * Skip repeated events using the provided equals function to detect duplicates
+	 * @param {function(a:*, b:*):boolean} equals optional function to compare items
+	 * @param {Stream} stream stream from which to omit repeated events
+	 * @returns {Stream} stream without repeated events
+	 */
+	function skipRepeatsWith(equals, stream) {
+		return new Stream(new SkipRepeats(equals, stream.source));
+	}
+
+	function SkipRepeats(equals, source) {
+		this.equals = equals;
+		this.source = source;
+	}
+
+	SkipRepeats.prototype.run = function (sink, scheduler) {
+		return this.source.run(new SkipRepeatsSink(this.equals, sink), scheduler);
+	};
+
+	function SkipRepeatsSink(equals, sink) {
+		this.equals = equals;
+		this.sink = sink;
+		this.value = void 0;
+		this.init = true;
+	}
+
+	SkipRepeatsSink.prototype.end = Sink.prototype.end;
+	SkipRepeatsSink.prototype.error = Sink.prototype.error;
+
+	SkipRepeatsSink.prototype.event = function (t, x) {
+		if (this.init) {
+			this.init = false;
+			this.value = x;
+			this.sink.event(t, x);
+		} else if (!this.equals(this.value, x)) {
+			this.value = x;
+			this.sink.event(t, x);
+		}
+	};
+
+	function same(a, b) {
+		return a === b;
+	}
+
+/***/ },
+/* 143 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	/** @license MIT License (c) copyright 2010-2016 original author or authors */
+	/** @author Brian Cavalier */
+	/** @author John Hann */
+
+	var Stream = __webpack_require__(0);
+	var Sink = __webpack_require__(6);
+	var dispose = __webpack_require__(4);
+	var PropagateTask = __webpack_require__(8);
+	var Map = __webpack_require__(30);
+
+	exports.throttle = throttle;
+	exports.debounce = debounce;
+
+	/**
+	 * Limit the rate of events by suppressing events that occur too often
+	 * @param {Number} period time to suppress events
+	 * @param {Stream} stream
+	 * @returns {Stream}
+	 */
+	function throttle(period, stream) {
+		return new Stream(throttleSource(period, stream.source));
+	}
+
+	function throttleSource(period, source) {
+		return source instanceof Map ? commuteMapThrottle(period, source) : source instanceof Throttle ? fuseThrottle(period, source) : new Throttle(period, source);
+	}
+
+	function commuteMapThrottle(period, source) {
+		return Map.create(source.f, throttleSource(period, source.source));
+	}
+
+	function fuseThrottle(period, source) {
+		return new Throttle(Math.max(period, source.period), source.source);
+	}
+
+	function Throttle(period, source) {
+		this.period = period;
+		this.source = source;
+	}
+
+	Throttle.prototype.run = function (sink, scheduler) {
+		return this.source.run(new ThrottleSink(this.period, sink), scheduler);
+	};
+
+	function ThrottleSink(period, sink) {
+		this.time = 0;
+		this.period = period;
+		this.sink = sink;
+	}
+
+	ThrottleSink.prototype.event = function (t, x) {
+		if (t >= this.time) {
+			this.time = t + this.period;
+			this.sink.event(t, x);
+		}
+	};
+
+	ThrottleSink.prototype.end = Sink.prototype.end;
+
+	ThrottleSink.prototype.error = Sink.prototype.error;
+
+	/**
+	 * Wait for a burst of events to subside and emit only the last event in the burst
+	 * @param {Number} period events occuring more frequently than this
+	 *  will be suppressed
+	 * @param {Stream} stream stream to debounce
+	 * @returns {Stream} new debounced stream
+	 */
+	function debounce(period, stream) {
+		return new Stream(new Debounce(period, stream.source));
+	}
+
+	function Debounce(dt, source) {
+		this.dt = dt;
+		this.source = source;
+	}
+
+	Debounce.prototype.run = function (sink, scheduler) {
+		return new DebounceSink(this.dt, this.source, sink, scheduler);
+	};
+
+	function DebounceSink(dt, source, sink, scheduler) {
+		this.dt = dt;
+		this.sink = sink;
+		this.scheduler = scheduler;
+		this.value = void 0;
+		this.timer = null;
+
+		var sourceDisposable = source.run(this, scheduler);
+		this.disposable = dispose.all([this, sourceDisposable]);
+	}
+
+	DebounceSink.prototype.event = function (t, x) {
+		this._clearTimer();
+		this.value = x;
+		this.timer = this.scheduler.delay(this.dt, PropagateTask.event(x, this.sink));
+	};
+
+	DebounceSink.prototype.end = function (t, x) {
+		if (this._clearTimer()) {
+			this.sink.event(t, this.value);
+			this.value = void 0;
+		}
+		this.sink.end(t, x);
+	};
+
+	DebounceSink.prototype.error = function (t, x) {
+		this._clearTimer();
+		this.sink.error(t, x);
+	};
+
+	DebounceSink.prototype.dispose = function () {
+		this._clearTimer();
+	};
+
+	DebounceSink.prototype._clearTimer = function () {
+		if (this.timer === null) {
+			return false;
+		}
+		this.timer.dispose();
+		this.timer = null;
+		return true;
+	};
+
+/***/ },
+/* 144 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	/** @license MIT License (c) copyright 2010-2016 original author or authors */
+	/** @author Brian Cavalier */
+	/** @author John Hann */
+
+	var Stream = __webpack_require__(0);
+	var Pipe = __webpack_require__(6);
+
+	exports.loop = loop;
+
+	/**
+	 * Generalized feedback loop. Call a stepper function for each event. The stepper
+	 * will be called with 2 params: the current seed and the an event value.  It must
+	 * return a new { seed, value } pair. The `seed` will be fed back into the next
+	 * invocation of stepper, and the `value` will be propagated as the event value.
+	 * @param {function(seed:*, value:*):{seed:*, value:*}} stepper loop step function
+	 * @param {*} seed initial seed value passed to first stepper call
+	 * @param {Stream} stream event stream
+	 * @returns {Stream} new stream whose values are the `value` field of the objects
+	 * returned by the stepper
+	 */
+	function loop(stepper, seed, stream) {
+		return new Stream(new Loop(stepper, seed, stream.source));
+	}
+
+	function Loop(stepper, seed, source) {
+		this.step = stepper;
+		this.seed = seed;
+		this.source = source;
+	}
+
+	Loop.prototype.run = function (sink, scheduler) {
+		return this.source.run(new LoopSink(this.step, this.seed, sink), scheduler);
+	};
+
+	function LoopSink(stepper, seed, sink) {
+		this.step = stepper;
+		this.seed = seed;
+		this.sink = sink;
+	}
+
+	LoopSink.prototype.error = Pipe.prototype.error;
+
+	LoopSink.prototype.event = function (t, x) {
+		var result = this.step(this.seed, x);
+		this.seed = result.seed;
+		this.sink.event(t, result.value);
+	};
+
+	LoopSink.prototype.end = function (t) {
+		this.sink.end(t, this.seed);
+	};
+
+/***/ },
+/* 145 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	/** @license MIT License (c) copyright 2010-2016 original author or authors */
+	/** @author Brian Cavalier */
+	/** @author John Hann */
+
+	var Stream = __webpack_require__(0);
+	var Pipe = __webpack_require__(6);
+	var IndexSink = __webpack_require__(33);
+	var empty = __webpack_require__(10).empty;
+	var dispose = __webpack_require__(4);
+	var base = __webpack_require__(2);
+
+	var copy = base.copy;
+	var reduce = base.reduce;
+
+	exports.merge = merge;
+	exports.mergeArray = mergeArray;
+
+	/**
+	 * @returns {Stream} stream containing events from all streams in the argument
+	 * list in time order.  If two events are simultaneous they will be merged in
+	 * arbitrary order.
+	 */
+	function merge() /*...streams*/{
+		return mergeArray(copy(arguments));
+	}
+
+	/**
+	 * @param {Array} streams array of stream to merge
+	 * @returns {Stream} stream containing events from all input observables
+	 * in time order.  If two events are simultaneous they will be merged in
+	 * arbitrary order.
+	 */
+	function mergeArray(streams) {
+		var l = streams.length;
+		return l === 0 ? empty() : l === 1 ? streams[0] : new Stream(mergeSources(streams));
+	}
+
+	/**
+	 * This implements fusion/flattening for merge.  It will
+	 * fuse adjacent merge operations.  For example:
+	 * - a.merge(b).merge(c) effectively becomes merge(a, b, c)
+	 * - merge(a, merge(b, c)) effectively becomes merge(a, b, c)
+	 * It does this by concatenating the sources arrays of
+	 * any nested Merge sources, in effect "flattening" nested
+	 * merge operations into a single merge.
+	 */
+	function mergeSources(streams) {
+		return new Merge(reduce(appendSources, [], streams));
+	}
+
+	function appendSources(sources, stream) {
+		var source = stream.source;
+		return source instanceof Merge ? sources.concat(source.sources) : sources.concat(source);
+	}
+
+	function Merge(sources) {
+		this.sources = sources;
+	}
+
+	Merge.prototype.run = function (sink, scheduler) {
+		var l = this.sources.length;
+		var disposables = new Array(l);
+		var sinks = new Array(l);
+
+		var mergeSink = new MergeSink(disposables, sinks, sink);
+
+		for (var indexSink, i = 0; i < l; ++i) {
+			indexSink = sinks[i] = new IndexSink(i, mergeSink);
+			disposables[i] = this.sources[i].run(indexSink, scheduler);
+		}
+
+		return dispose.all(disposables);
+	};
+
+	function MergeSink(disposables, sinks, sink) {
+		this.sink = sink;
+		this.disposables = disposables;
+		this.activeCount = sinks.length;
+	}
+
+	MergeSink.prototype.error = Pipe.prototype.error;
+
+	MergeSink.prototype.event = function (t, indexValue) {
+		this.sink.event(t, indexValue.value);
+	};
+
+	MergeSink.prototype.end = function (t, indexedValue) {
+		dispose.tryDispose(t, this.disposables[indexedValue.index], this.sink);
+		if (--this.activeCount === 0) {
+			this.sink.end(t, indexedValue.value);
+		}
+	};
+
+/***/ },
+/* 146 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	/** @license MIT License (c) copyright 2010-2016 original author or authors */
+	/** @author Brian Cavalier */
+	/** @author John Hann */
+
+	var run = __webpack_require__(59).withDefaultScheduler;
+	var tap = __webpack_require__(18).tap;
+
+	exports.observe = observe;
+	exports.drain = drain;
+
+	/**
+	 * Observe all the event values in the stream in time order. The
+	 * provided function `f` will be called for each event value
+	 * @param {function(x:T):*} f function to call with each event value
+	 * @param {Stream<T>} stream stream to observe
+	 * @return {Promise} promise that fulfills after the stream ends without
+	 *  an error, or rejects if the stream ends with an error.
+	 */
+	function observe(f, stream) {
+	  return drain(tap(f, stream));
+	}
+
+	var defaultScheduler = __webpack_require__(32);
+	var dispose = __webpack_require__(4);
+
+	/**
+	 * "Run" a stream by creating demand and consuming all events
+	 * @param {Stream<T>} stream stream to drain
+	 * @return {Promise} promise that fulfills after the stream ends without
+	 *  an error, or rejects if the stream ends with an error.
+	 */
+	function drain(stream) {
+	  return run(stream.source);
+	}
+
+/***/ },
+/* 147 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	/** @license MIT License (c) copyright 2010-2016 original author or authors */
+	/** @author Brian Cavalier */
+	/** @author John Hann */
+
+	var Stream = __webpack_require__(0);
+	var fatal = __webpack_require__(29);
+	var just = __webpack_require__(10).of;
+
+	exports.fromPromise = fromPromise;
+	exports.awaitPromises = awaitPromises;
+
+	/**
+	 * Create a stream containing only the promise's fulfillment
+	 * value at the time it fulfills.
+	 * @param {Promise<T>} p promise
+	 * @return {Stream<T>} stream containing promise's fulfillment value.
+	 *  If the promise rejects, the stream will error
+	 */
+	function fromPromise(p) {
+		return awaitPromises(just(p));
+	}
+
+	/**
+	 * Turn a Stream<Promise<T>> into Stream<T> by awaiting each promise.
+	 * Event order is preserved.
+	 * @param {Stream<Promise<T>>} stream
+	 * @return {Stream<T>} stream of fulfillment values.  The stream will
+	 * error if any promise rejects.
+	 */
+	function awaitPromises(stream) {
+		return new Stream(new Await(stream.source));
+	}
+
+	function Await(source) {
+		this.source = source;
+	}
+
+	Await.prototype.run = function (sink, scheduler) {
+		return this.source.run(new AwaitSink(sink, scheduler), scheduler);
+	};
+
+	function AwaitSink(sink, scheduler) {
+		this.sink = sink;
+		this.scheduler = scheduler;
+		this.queue = Promise.resolve();
+		var self = this;
+
+		// Pre-create closures, to avoid creating them per event
+		this._eventBound = function (x) {
+			self.sink.event(self.scheduler.now(), x);
+		};
+
+		this._endBound = function (x) {
+			self.sink.end(self.scheduler.now(), x);
+		};
+
+		this._errorBound = function (e) {
+			self.sink.error(self.scheduler.now(), e);
+		};
+	}
+
+	AwaitSink.prototype.event = function (t, promise) {
+		var self = this;
+		this.queue = this.queue.then(function () {
+			return self._event(promise);
+		}).catch(this._errorBound);
+	};
+
+	AwaitSink.prototype.end = function (t, x) {
+		var self = this;
+		this.queue = this.queue.then(function () {
+			return self._end(x);
+		}).catch(this._errorBound);
+	};
+
+	AwaitSink.prototype.error = function (t, e) {
+		var self = this;
+		// Don't resolve error values, propagate directly
+		this.queue = this.queue.then(function () {
+			return self._errorBound(e);
+		}).catch(fatal);
+	};
+
+	AwaitSink.prototype._event = function (promise) {
+		return promise.then(this._eventBound);
+	};
+
+	AwaitSink.prototype._end = function (x) {
+		return Promise.resolve(x).then(this._endBound);
+	};
+
+/***/ },
+/* 148 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	/** @license MIT License (c) copyright 2010-2016 original author or authors */
+	/** @author Brian Cavalier */
+	/** @author John Hann */
+
+	var Stream = __webpack_require__(0);
+	var Pipe = __webpack_require__(6);
+	var dispose = __webpack_require__(4);
+	var base = __webpack_require__(2);
+	var invoke = __webpack_require__(31);
+
+	exports.sample = sample;
+	exports.sampleWith = sampleWith;
+	exports.sampleArray = sampleArray;
+
+	/**
+	 * When an event arrives on sampler, emit the result of calling f with the latest
+	 * values of all streams being sampled
+	 * @param {function(...values):*} f function to apply to each set of sampled values
+	 * @param {Stream} sampler streams will be sampled whenever an event arrives
+	 *  on sampler
+	 * @returns {Stream} stream of sampled and transformed values
+	 */
+	function sample(f, sampler /*, ...streams */) {
+		return sampleArray(f, sampler, base.drop(2, arguments));
+	}
+
+	/**
+	 * When an event arrives on sampler, emit the latest event value from stream.
+	 * @param {Stream} sampler stream of events at whose arrival time
+	 *  stream's latest value will be propagated
+	 * @param {Stream} stream stream of values
+	 * @returns {Stream} sampled stream of values
+	 */
+	function sampleWith(sampler, stream) {
+		return new Stream(new Sampler(base.id, sampler.source, [stream.source]));
+	}
+
+	function sampleArray(f, sampler, streams) {
+		return new Stream(new Sampler(f, sampler.source, base.map(getSource, streams)));
+	}
+
+	function getSource(stream) {
+		return stream.source;
+	}
+
+	function Sampler(f, sampler, sources) {
+		this.f = f;
+		this.sampler = sampler;
+		this.sources = sources;
+	}
+
+	Sampler.prototype.run = function (sink, scheduler) {
+		var l = this.sources.length;
+		var disposables = new Array(l + 1);
+		var sinks = new Array(l);
+
+		var sampleSink = new SampleSink(this.f, sinks, sink);
+
+		for (var hold, i = 0; i < l; ++i) {
+			hold = sinks[i] = new Hold(sampleSink);
+			disposables[i] = this.sources[i].run(hold, scheduler);
+		}
+
+		disposables[i] = this.sampler.run(sampleSink, scheduler);
+
+		return dispose.all(disposables);
+	};
+
+	function Hold(sink) {
+		this.sink = sink;
+		this.hasValue = false;
+	}
+
+	Hold.prototype.event = function (t, x) {
+		this.value = x;
+		this.hasValue = true;
+		this.sink._notify(this);
+	};
+
+	Hold.prototype.end = function () {};
+	Hold.prototype.error = Pipe.prototype.error;
+
+	function SampleSink(f, sinks, sink) {
+		this.f = f;
+		this.sinks = sinks;
+		this.sink = sink;
+		this.active = false;
+	}
+
+	SampleSink.prototype._notify = function () {
+		if (!this.active) {
+			this.active = this.sinks.every(hasValue);
+		}
+	};
+
+	SampleSink.prototype.event = function (t) {
+		if (this.active) {
+			this.sink.event(t, invoke(this.f, base.map(getValue, this.sinks)));
+		}
+	};
+
+	SampleSink.prototype.end = Pipe.prototype.end;
+	SampleSink.prototype.error = Pipe.prototype.error;
+
+	function hasValue(hold) {
+		return hold.hasValue;
+	}
+
+	function getValue(hold) {
+		return hold.value;
+	}
+
+/***/ },
+/* 149 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	/** @license MIT License (c) copyright 2010-2016 original author or authors */
+	/** @author Brian Cavalier */
+	/** @author John Hann */
+
+	var Stream = __webpack_require__(0);
+	var Sink = __webpack_require__(6);
+	var core = __webpack_require__(10);
+	var dispose = __webpack_require__(4);
 	var Map = __webpack_require__(30);
 
 	exports.take = take;
@@ -7509,15 +12819,17 @@
 	};
 
 /***/ },
-/* 68 */
+/* 150 */
 /***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
 
 	/** @license MIT License (c) copyright 2010-2016 original author or authors */
 	/** @author Brian Cavalier */
 	/** @author John Hann */
 
 	var Stream = __webpack_require__(0);
-	var dispose = __webpack_require__(2);
+	var dispose = __webpack_require__(4);
 
 	exports.switch = switchLatest;
 
@@ -7624,17 +12936,33 @@
 	};
 
 /***/ },
-/* 69 */
+/* 151 */
+/***/ function(module, exports) {
+
+	"use strict";
+
+	/** @license MIT License (c) copyright 2010-2016 original author or authors */
+	/** @author Brian Cavalier */
+	/** @author John Hann */
+
+	exports.thru = function thru(f, stream) {
+		return f(stream);
+	};
+
+/***/ },
+/* 152 */
 /***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
 
 	/** @license MIT License (c) copyright 2010-2016 original author or authors */
 	/** @author Brian Cavalier */
 	/** @author John Hann */
 
 	var Stream = __webpack_require__(0);
-	var Pipe = __webpack_require__(1);
-	var dispose = __webpack_require__(2);
-	var join = __webpack_require__(26).join;
+	var Pipe = __webpack_require__(6);
+	var dispose = __webpack_require__(4);
+	var join = __webpack_require__(55).join;
 
 	exports.during = during;
 	exports.takeUntil = takeUntil;
@@ -7745,15 +13073,17 @@
 	function noop() {}
 
 /***/ },
-/* 70 */
+/* 153 */
 /***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
 
 	/** @license MIT License (c) copyright 2010-2016 original author or authors */
 	/** @author Brian Cavalier */
 	/** @author John Hann */
 
 	var Stream = __webpack_require__(0);
-	var Sink = __webpack_require__(1);
+	var Sink = __webpack_require__(6);
 
 	exports.timestamp = timestamp;
 
@@ -7781,8 +13111,10 @@
 	};
 
 /***/ },
-/* 71 */
+/* 154 */
 /***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
 
 	/** @license MIT License (c) copyright 2010-2016 original author or authors */
 	/** @author Brian Cavalier */
@@ -7905,22 +13237,24 @@
 	};
 
 /***/ },
-/* 72 */
+/* 155 */
 /***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
 
 	/** @license MIT License (c) copyright 2010-2016 original author or authors */
 	/** @author Brian Cavalier */
 	/** @author John Hann */
 
 	var Stream = __webpack_require__(0);
-	var transform = __webpack_require__(12);
-	var core = __webpack_require__(7);
-	var Sink = __webpack_require__(1);
-	var IndexSink = __webpack_require__(14);
-	var dispose = __webpack_require__(2);
-	var base = __webpack_require__(3);
-	var invoke = __webpack_require__(13);
-	var Queue = __webpack_require__(54);
+	var transform = __webpack_require__(18);
+	var core = __webpack_require__(10);
+	var Sink = __webpack_require__(6);
+	var IndexSink = __webpack_require__(33);
+	var dispose = __webpack_require__(4);
+	var base = __webpack_require__(2);
+	var invoke = __webpack_require__(31);
+	var Queue = __webpack_require__(135);
 
 	var map = base.map;
 	var tail = base.tail;
@@ -8041,8 +13375,10 @@
 	}
 
 /***/ },
-/* 73 */
+/* 156 */
 /***/ function(module, exports) {
+
+	"use strict";
 
 	/** @license MIT License (c) copyright 2010-2016 original author or authors */
 	/** @author Brian Cavalier */
@@ -8066,8 +13402,10 @@
 	};
 
 /***/ },
-/* 74 */
+/* 157 */
 /***/ function(module, exports) {
+
+	'use strict';
 
 	/** @license MIT License (c) copyright 2010-2016 original author or authors */
 	/** @author Brian Cavalier */
@@ -8113,14 +13451,16 @@
 	};
 
 /***/ },
-/* 75 */
+/* 158 */
 /***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
 
 	/** @license MIT License (c) copyright 2010-2016 original author or authors */
 	/** @author Brian Cavalier */
 	/** @author John Hann */
 
-	var Pipe = __webpack_require__(1);
+	var Pipe = __webpack_require__(6);
 
 	module.exports = FilterMap;
 
@@ -8150,14 +13490,179 @@
 	FilterMapSink.prototype.error = Pipe.prototype.error;
 
 /***/ },
-/* 76 */
+/* 159 */
 /***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
 
 	/** @license MIT License (c) copyright 2010-2016 original author or authors */
 	/** @author Brian Cavalier */
 	/** @author John Hann */
 
-	var base = __webpack_require__(3);
+	var Stream = __webpack_require__(0);
+	var dispose = __webpack_require__(4);
+
+	exports.fromObservable = fromObservable;
+	exports.ObservableSource = ObservableSource;
+	exports.SubscriberSink = SubscriberSink;
+
+	function fromObservable(observable) {
+		return new Stream(new ObservableSource(observable));
+	}
+
+	function ObservableSource(observable) {
+		this.observable = observable;
+	}
+
+	ObservableSource.prototype.run = function (sink, scheduler) {
+		var sub = this.observable.subscribe(new SubscriberSink(sink, scheduler));
+		if (typeof sub === 'function') {
+			return dispose.create(sub);
+		} else if (sub && typeof sub.unsubscribe === 'function') {
+			return dispose.create(unsubscribe, sub);
+		}
+
+		throw new TypeError('Observable returned invalid subscription ' + String(sub));
+	};
+
+	function SubscriberSink(sink, scheduler) {
+		this.sink = sink;
+		this.scheduler = scheduler;
+	}
+
+	SubscriberSink.prototype.next = function (x) {
+		this.sink.event(this.scheduler.now(), x);
+	};
+
+	SubscriberSink.prototype.complete = function (x) {
+		this.sink.end(this.scheduler.now(), x);
+	};
+
+	SubscriberSink.prototype.error = function (e) {
+		this.sink.error(this.scheduler.now(), e);
+	};
+
+	function unsubscribe(subscription) {
+		return subscription.unsubscribe();
+	}
+
+/***/ },
+/* 160 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
+
+	/** @license MIT License (c) copyright 2010-2016 original author or authors */
+	/** @author Brian Cavalier */
+	/** @author John Hann */
+
+	var symbolObservable = __webpack_require__(61);
+
+	module.exports = getObservable;
+
+	function getObservable(o) {
+		var obs = null;
+		if (o != null && (typeof o === 'undefined' ? 'undefined' : _typeof(o)) === 'object') {
+			var method = o[symbolObservable];
+			if (typeof method === 'function') {
+				obs = method.call(o);
+				if (obs == null || (typeof obs === 'undefined' ? 'undefined' : _typeof(obs)) !== 'object') {
+					throw new TypeError('invalid observable ' + obs);
+				}
+			}
+		}
+
+		return obs;
+	}
+
+/***/ },
+/* 161 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
+
+	/** @license MIT License (c) copyright 2010-2016 original author or authors */
+	/** @author Brian Cavalier */
+	/** @author John Hann */
+
+	var defaultScheduler = __webpack_require__(32);
+	var dispose = __webpack_require__(4);
+	var fatalError = __webpack_require__(29);
+
+	exports.subscribe = subscribe;
+	exports.SubscribeObserver = SubscribeObserver;
+	exports.Subscription = Subscription;
+
+	function subscribe(subscriber, stream) {
+		if (subscriber == null || (typeof subscriber === 'undefined' ? 'undefined' : _typeof(subscriber)) !== 'object') {
+			throw new TypeError('subscriber must be an object');
+		}
+
+		var disposable = dispose.settable();
+		var observer = new SubscribeObserver(fatalError, subscriber, disposable);
+
+		disposable.setDisposable(stream.source.run(observer, defaultScheduler));
+
+		return new Subscription(disposable);
+	}
+
+	function SubscribeObserver(fatalError, subscriber, disposable) {
+		this.fatalError = fatalError;
+		this.subscriber = subscriber;
+		this.disposable = disposable;
+	}
+
+	SubscribeObserver.prototype.event = function (t, x) {
+		if (typeof this.subscriber.next === 'function') {
+			this.subscriber.next(x);
+		}
+	};
+
+	SubscribeObserver.prototype.end = function (t, x) {
+		var s = this.subscriber;
+		doDispose(this.fatalError, s, s.complete, s.error, this.disposable, x);
+	};
+
+	SubscribeObserver.prototype.error = function (t, e) {
+		var s = this.subscriber;
+		doDispose(this.fatalError, s, s.error, s.error, this.disposable, e);
+	};
+
+	function Subscription(disposable) {
+		this.disposable = disposable;
+	}
+
+	Subscription.prototype.unsubscribe = function () {
+		this.disposable.dispose();
+	};
+
+	function doDispose(fatal, subscriber, complete, error, disposable, x) {
+		Promise.resolve(disposable.dispose()).then(function () {
+			if (typeof complete === 'function') {
+				complete.call(subscriber, x);
+			}
+		}).catch(function (e) {
+			if (typeof error === 'function') {
+				error.call(subscriber, e);
+			}
+		}).catch(fatal);
+	}
+
+/***/ },
+/* 162 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	/** @license MIT License (c) copyright 2010-2016 original author or authors */
+	/** @author Brian Cavalier */
+	/** @author John Hann */
+
+	var base = __webpack_require__(2);
 
 	module.exports = Scheduler;
 
@@ -8177,7 +13682,7 @@
 		return this.task.error(this.time, e);
 	};
 
-	ScheduledTask.prototype.cancel = function () {
+	ScheduledTask.prototype.dispose = function () {
 		this.scheduler.cancel(this);
 		return this.task.dispose();
 	};
@@ -8376,31 +13881,16 @@
 	}
 
 /***/ },
-/* 77 */
+/* 163 */
 /***/ function(module, exports, __webpack_require__) {
 
-	/* WEBPACK VAR INJECTION */(function(process) {/** @license MIT License (c) copyright 2010-2016 original author or authors */
-	/** @author Brian Cavalier */
-	/** @author John Hann */
-
-	var Scheduler = __webpack_require__(76);
-	var setTimeoutTimer = __webpack_require__(79);
-	var nodeTimer = __webpack_require__(78);
-
-	var isNode = typeof process === 'object' && typeof process.nextTick === 'function';
-
-	module.exports = new Scheduler(isNode ? nodeTimer : setTimeoutTimer);
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(17)))
-
-/***/ },
-/* 78 */
-/***/ function(module, exports, __webpack_require__) {
+	'use strict';
 
 	/** @license MIT License (c) copyright 2010-2016 original author or authors */
 	/** @author Brian Cavalier */
 	/** @author John Hann */
 
-	var defer = __webpack_require__(27);
+	var defer = __webpack_require__(56);
 
 	/*global setTimeout, clearTimeout*/
 
@@ -8433,17 +13923,19 @@
 
 	module.exports = {
 		now: Date.now,
-		setTimer: function (f, dt) {
+		setTimer: function setTimer(f, dt) {
 			return dt <= 0 ? runAsTask(f) : setTimeout(f, dt);
 		},
-		clearTimer: function (t) {
+		clearTimer: function clearTimer(t) {
 			return t instanceof Task ? t.cancel() : clearTimeout(t);
 		}
 	};
 
 /***/ },
-/* 79 */
+/* 164 */
 /***/ function(module, exports) {
+
+	"use strict";
 
 	/** @license MIT License (c) copyright 2010-2016 original author or authors */
 	/** @author Brian Cavalier */
@@ -8453,66 +13945,19 @@
 
 	module.exports = {
 		now: Date.now,
-		setTimer: function (f, dt) {
+		setTimer: function setTimer(f, dt) {
 			return setTimeout(f, dt);
 		},
-		clearTimer: function (t) {
+		clearTimer: function clearTimer(t) {
 			return clearTimeout(t);
 		}
 	};
 
 /***/ },
-/* 80 */
+/* 165 */
 /***/ function(module, exports) {
 
-	/** @license MIT License (c) copyright 2010-2016 original author or authors */
-	/** @author Brian Cavalier */
-	/** @author John Hann */
-
-	module.exports = Observer;
-
-	/**
-	 * Sink that accepts functions to apply to each event, and to end, and error
-	 * signals.
-	 * @constructor
-	 */
-	function Observer(event, end, error, disposable) {
-		this._event = event;
-		this._end = end;
-		this._error = error;
-		this._disposable = disposable;
-		this.active = true;
-	}
-
-	Observer.prototype.event = function (t, x) {
-		if (!this.active) {
-			return;
-		}
-		this._event(x);
-	};
-
-	Observer.prototype.end = function (t, x) {
-		if (!this.active) {
-			return;
-		}
-		this.active = false;
-		disposeThen(this._end, this._error, this._disposable, x);
-	};
-
-	Observer.prototype.error = function (t, e) {
-		this.active = false;
-		disposeThen(this._error, this._error, this._disposable, e);
-	};
-
-	function disposeThen(end, error, disposable, x) {
-		Promise.resolve(disposable.dispose()).then(function () {
-			end(x);
-		}, error);
-	}
-
-/***/ },
-/* 81 */
-/***/ function(module, exports) {
+	"use strict";
 
 	/** @license MIT License (c) copyright 2010-2016 original author or authors */
 	/** @author Brian Cavalier */
@@ -8551,16 +13996,18 @@
 	};
 
 /***/ },
-/* 82 */
+/* 166 */
 /***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
 
 	/** @license MIT License (c) copyright 2010-2016 original author or authors */
 	/** @author Brian Cavalier */
 	/** @author John Hann */
 
-	var DeferredSink = __webpack_require__(33);
-	var dispose = __webpack_require__(2);
-	var tryEvent = __webpack_require__(9);
+	var DeferredSink = __webpack_require__(60);
+	var dispose = __webpack_require__(4);
+	var tryEvent = __webpack_require__(19);
 
 	module.exports = EventEmitterSource;
 
@@ -8601,15 +14048,17 @@
 	}
 
 /***/ },
-/* 83 */
+/* 167 */
 /***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
 
 	/** @license MIT License (c) copyright 2010-2016 original author or authors */
 	/** @author Brian Cavalier */
 	/** @author John Hann */
 
-	var dispose = __webpack_require__(2);
-	var tryEvent = __webpack_require__(9);
+	var dispose = __webpack_require__(4);
+	var tryEvent = __webpack_require__(19);
 
 	module.exports = EventTargetSource;
 
@@ -8635,20 +14084,25 @@
 	}
 
 /***/ },
-/* 84 */
+/* 168 */
 /***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
 
 	/** @license MIT License (c) copyright 2010-2016 original author or authors */
 	/** @author Brian Cavalier */
 	/** @author John Hann */
 
 	var Stream = __webpack_require__(0);
-	var MulticastSource = __webpack_require__(5).MulticastSource;
-	var DeferredSink = __webpack_require__(33);
-	var tryEvent = __webpack_require__(9);
+	var MulticastSource = __webpack_require__(12).MulticastSource;
+	var DeferredSink = __webpack_require__(60);
+	var tryEvent = __webpack_require__(19);
 
 	exports.create = create;
 
+	/**
+	 * @deprecated
+	 */
 	function create(run) {
 		return new Stream(new MulticastSource(new SubscriberSource(run)));
 	}
@@ -8716,21 +14170,36 @@
 	};
 
 /***/ },
-/* 85 */
+/* 169 */
 /***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
 
 	/** @license MIT License (c) copyright 2010-2016 original author or authors */
 	/** @author Brian Cavalier */
 	/** @author John Hann */
 
-	var fromArray = __webpack_require__(86).fromArray;
-	var isIterable = __webpack_require__(31).isIterable;
-	var fromIterable = __webpack_require__(88).fromIterable;
-	var isArrayLike = __webpack_require__(3).isArrayLike;
+	var Stream = __webpack_require__(0);
+	var fromArray = __webpack_require__(170).fromArray;
+	var isIterable = __webpack_require__(58).isIterable;
+	var fromIterable = __webpack_require__(172).fromIterable;
+	var getObservable = __webpack_require__(160);
+	var fromObservable = __webpack_require__(159).fromObservable;
+	var isArrayLike = __webpack_require__(2).isArrayLike;
 
 	exports.from = from;
 
 	function from(a) {
+		// eslint-disable-line complexity
+		if (a instanceof Stream) {
+			return a;
+		}
+
+		var observable = getObservable(a);
+		if (observable != null) {
+			return fromObservable(observable);
+		}
+
 		if (Array.isArray(a) || isArrayLike(a)) {
 			return fromArray(a);
 		}
@@ -8739,19 +14208,21 @@
 			return fromIterable(a);
 		}
 
-		throw new TypeError('not iterable: ' + a);
+		throw new TypeError('from(x) must be observable, iterable, or array-like: ' + a);
 	}
 
 /***/ },
-/* 86 */
+/* 170 */
 /***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
 
 	/** @license MIT License (c) copyright 2010-2016 original author or authors */
 	/** @author Brian Cavalier */
 	/** @author John Hann */
 
 	var Stream = __webpack_require__(0);
-	var PropagateTask = __webpack_require__(6);
+	var PropagateTask = __webpack_require__(8);
 
 	exports.fromArray = fromArray;
 
@@ -8764,47 +14235,35 @@
 	}
 
 	ArraySource.prototype.run = function (sink, scheduler) {
-		return new ArrayProducer(this.array, sink, scheduler);
-	};
-
-	function ArrayProducer(array, sink, scheduler) {
-		this.scheduler = scheduler;
-		this.task = new PropagateTask(runProducer, array, sink);
-		scheduler.asap(this.task);
-	}
-
-	ArrayProducer.prototype.dispose = function () {
-		return this.task.dispose();
+		return scheduler.asap(new PropagateTask(runProducer, this.array, sink));
 	};
 
 	function runProducer(t, array, sink) {
-		produce(this, array, sink);
-	}
-
-	function produce(task, array, sink) {
-		for (var i = 0, l = array.length; i < l && task.active; ++i) {
-			sink.event(0, array[i]);
+		for (var i = 0, l = array.length; i < l && this.active; ++i) {
+			sink.event(t, array[i]);
 		}
 
-		task.active && end();
+		this.active && end(t);
 
-		function end() {
-			sink.end(0);
+		function end(t) {
+			sink.end(t);
 		}
 	}
 
 /***/ },
-/* 87 */
+/* 171 */
 /***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
 
 	/** @license MIT License (c) copyright 2010-2016 original author or authors */
 	/** @author Brian Cavalier */
 	/** @author John Hann */
 
 	var Stream = __webpack_require__(0);
-	var MulticastSource = __webpack_require__(5).MulticastSource;
-	var EventTargetSource = __webpack_require__(83);
-	var EventEmitterSource = __webpack_require__(82);
+	var MulticastSource = __webpack_require__(12).MulticastSource;
+	var EventTargetSource = __webpack_require__(167);
+	var EventEmitterSource = __webpack_require__(166);
 
 	exports.fromEvent = fromEvent;
 
@@ -8833,16 +14292,18 @@
 	}
 
 /***/ },
-/* 88 */
+/* 172 */
 /***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
 
 	/** @license MIT License (c) copyright 2010-2016 original author or authors */
 	/** @author Brian Cavalier */
 	/** @author John Hann */
 
 	var Stream = __webpack_require__(0);
-	var getIterator = __webpack_require__(31).getIterator;
-	var PropagateTask = __webpack_require__(6);
+	var getIterator = __webpack_require__(58).getIterator;
+	var PropagateTask = __webpack_require__(8);
 
 	exports.fromIterable = fromIterable;
 
@@ -8881,15 +14342,17 @@
 	}
 
 /***/ },
-/* 89 */
+/* 173 */
 /***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
 
 	/** @license MIT License (c) copyright 2010-2014 original author or authors */
 	/** @author Brian Cavalier */
 	/** @author John Hann */
 
 	var Stream = __webpack_require__(0);
-	var base = __webpack_require__(3);
+	var base = __webpack_require__(2);
 
 	exports.generate = generate;
 
@@ -8956,8 +14419,10 @@
 	};
 
 /***/ },
-/* 90 */
+/* 174 */
 /***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
 
 	/** @license MIT License (c) copyright 2010-2016 original author or authors */
 	/** @author Brian Cavalier */
@@ -9029,17 +14494,19 @@
 	}
 
 /***/ },
-/* 91 */
+/* 175 */
 /***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
 
 	/** @license MIT License (c) copyright 2010-2016 original author or authors */
 	/** @author Brian Cavalier */
 	/** @author John Hann */
 
 	var Stream = __webpack_require__(0);
-	var dispose = __webpack_require__(2);
-	var MulticastSource = __webpack_require__(5).MulticastSource;
-	var PropagateTask = __webpack_require__(6);
+	var dispose = __webpack_require__(4);
+	var MulticastSource = __webpack_require__(12).MulticastSource;
+	var PropagateTask = __webpack_require__(8);
 
 	exports.periodic = periodic;
 
@@ -9050,30 +14517,27 @@
 	 * @returns {Stream} new stream that emits the current time every period
 	 */
 	function periodic(period, value) {
-		return new Stream(new MulticastSource(new Periodic(period, value)));
+	  return new Stream(new MulticastSource(new Periodic(period, value)));
 	}
 
 	function Periodic(period, value) {
-		this.period = period;
-		this.value = value;
+	  this.period = period;
+	  this.value = value;
 	}
 
 	Periodic.prototype.run = function (sink, scheduler) {
-		var task = scheduler.periodic(this.period, new PropagateTask(emit, this.value, sink));
-		return dispose.create(cancelTask, task);
+	  return scheduler.periodic(this.period, new PropagateTask(emit, this.value, sink));
 	};
 
-	function cancelTask(task) {
-		task.cancel();
-	}
-
 	function emit(t, x, sink) {
-		sink.event(t, x);
+	  sink.event(t, x);
 	}
 
 /***/ },
-/* 92 */
+/* 176 */
 /***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
 
 	/** @license MIT License (c) copyright 2010-2016 original author or authors */
 	/** @author Brian Cavalier */
@@ -9150,834 +14614,27 @@
 	}
 
 /***/ },
-/* 93 */
-/***/ function(module, exports, __webpack_require__) {
+/* 177 */
+/***/ function(module, exports) {
 
 	'use strict';
 
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-	exports.default = classNameFromVNode;
-
-	var _selectorParser2 = __webpack_require__(35);
-
-	var _selectorParser3 = _interopRequireDefault(_selectorParser2);
-
-	function _interopRequireDefault(obj) {
-	  return obj && obj.__esModule ? obj : { default: obj };
-	}
-
-	function classNameFromVNode(vNode) {
-	  var _selectorParser = (0, _selectorParser3.default)(vNode.sel);
-
-	  var cn = _selectorParser.className;
-
-	  if (!vNode.data) {
-	    return cn;
-	  }
-
-	  var _vNode$data = vNode.data;
-	  var dataClass = _vNode$data.class;
-	  var props = _vNode$data.props;
-
-	  if (dataClass) {
-	    var c = Object.keys(vNode.data.class).filter(function (cl) {
-	      return vNode.data.class[cl];
-	    });
-	    cn += ' ' + c.join(' ');
-	  }
-
-	  if (props && props.className) {
-	    cn += ' ' + props.className;
-	  }
-
-	  return cn.trim();
-	}
-
-/***/ },
-/* 94 */
-/***/ function(module, exports) {
-
-	function createElement(tagName) {
-	  return document.createElement(tagName);
-	}
-
-	function createElementNS(namespaceURI, qualifiedName) {
-	  return document.createElementNS(namespaceURI, qualifiedName);
-	}
-
-	function createTextNode(text) {
-	  return document.createTextNode(text);
-	}
-
-	function insertBefore(parentNode, newNode, referenceNode) {
-	  parentNode.insertBefore(newNode, referenceNode);
-	}
-
-	function removeChild(node, child) {
-	  node.removeChild(child);
-	}
-
-	function appendChild(node, child) {
-	  node.appendChild(child);
-	}
-
-	function parentNode(node) {
-	  return node.parentElement;
-	}
-
-	function nextSibling(node) {
-	  return node.nextSibling;
-	}
-
-	function tagName(node) {
-	  return node.tagName;
-	}
-
-	function setTextContent(node, text) {
-	  node.textContent = text;
-	}
-
-	module.exports = {
-	  createElement: createElement,
-	  createElementNS: createElementNS,
-	  createTextNode: createTextNode,
-	  appendChild: appendChild,
-	  removeChild: removeChild,
-	  insertBefore: insertBefore,
-	  parentNode: parentNode,
-	  nextSibling: nextSibling,
-	  tagName: tagName,
-	  setTextContent: setTextContent
-	};
-
-/***/ },
-/* 95 */
-/***/ function(module, exports) {
-
-	var booleanAttrs = ["allowfullscreen", "async", "autofocus", "autoplay", "checked", "compact", "controls", "declare", "default", "defaultchecked", "defaultmuted", "defaultselected", "defer", "disabled", "draggable", "enabled", "formnovalidate", "hidden", "indeterminate", "inert", "ismap", "itemscope", "loop", "multiple", "muted", "nohref", "noresize", "noshade", "novalidate", "nowrap", "open", "pauseonexit", "readonly", "required", "reversed", "scoped", "seamless", "selected", "sortable", "spellcheck", "translate", "truespeed", "typemustmatch", "visible"];
-
-	var booleanAttrsDict = {};
-	for (var i = 0, len = booleanAttrs.length; i < len; i++) {
-	  booleanAttrsDict[booleanAttrs[i]] = true;
-	}
-
-	function updateAttrs(oldVnode, vnode) {
-	  var key,
-	      cur,
-	      old,
-	      elm = vnode.elm,
-	      oldAttrs = oldVnode.data.attrs || {},
-	      attrs = vnode.data.attrs || {};
-
-	  // update modified attributes, add new attributes
-	  for (key in attrs) {
-	    cur = attrs[key];
-	    old = oldAttrs[key];
-	    if (old !== cur) {
-	      // TODO: add support to namespaced attributes (setAttributeNS)
-	      if (!cur && booleanAttrsDict[key]) elm.removeAttribute(key);else elm.setAttribute(key, cur);
-	    }
-	  }
-	  //remove removed attributes
-	  // use `in` operator since the previous `for` iteration uses it (.i.e. add even attributes with undefined value)
-	  // the other option is to remove all attributes with value == undefined
-	  for (key in oldAttrs) {
-	    if (!(key in attrs)) {
-	      elm.removeAttribute(key);
-	    }
-	  }
-	}
-
-	module.exports = { create: updateAttrs, update: updateAttrs };
-
-/***/ },
-/* 96 */
-/***/ function(module, exports) {
-
-	function updateClass(oldVnode, vnode) {
-	  var cur,
-	      name,
-	      elm = vnode.elm,
-	      oldClass = oldVnode.data.class || {},
-	      klass = vnode.data.class || {};
-	  for (name in oldClass) {
-	    if (!klass[name]) {
-	      elm.classList.remove(name);
-	    }
-	  }
-	  for (name in klass) {
-	    cur = klass[name];
-	    if (cur !== oldClass[name]) {
-	      elm.classList[cur ? 'add' : 'remove'](name);
-	    }
-	  }
-	}
-
-	module.exports = { create: updateClass, update: updateClass };
-
-/***/ },
-/* 97 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var is = __webpack_require__(10);
-
-	function arrInvoker(arr) {
-	  return function () {
-	    // Special case when length is two, for performance
-	    arr.length === 2 ? arr[0](arr[1]) : arr[0].apply(undefined, arr.slice(1));
-	  };
-	}
-
-	function fnInvoker(o) {
-	  return function (ev) {
-	    o.fn(ev);
-	  };
-	}
-
-	function updateEventListeners(oldVnode, vnode) {
-	  var name,
-	      cur,
-	      old,
-	      elm = vnode.elm,
-	      oldOn = oldVnode.data.on || {},
-	      on = vnode.data.on;
-	  if (!on) return;
-	  for (name in on) {
-	    cur = on[name];
-	    old = oldOn[name];
-	    if (old === undefined) {
-	      if (is.array(cur)) {
-	        elm.addEventListener(name, arrInvoker(cur));
-	      } else {
-	        cur = { fn: cur };
-	        on[name] = cur;
-	        elm.addEventListener(name, fnInvoker(cur));
-	      }
-	    } else if (is.array(old)) {
-	      // Deliberately modify old array since it's captured in closure created with `arrInvoker`
-	      old.length = cur.length;
-	      for (var i = 0; i < old.length; ++i) old[i] = cur[i];
-	      on[name] = old;
-	    } else {
-	      old.fn = cur;
-	      on[name] = old;
-	    }
-	  }
-	}
-
-	module.exports = { create: updateEventListeners, update: updateEventListeners };
-
-/***/ },
-/* 98 */
-/***/ function(module, exports) {
-
-	var raf = typeof window !== 'undefined' && window.requestAnimationFrame || setTimeout;
-	var nextFrame = function (fn) {
-	  raf(function () {
-	    raf(fn);
-	  });
-	};
-
-	function setNextFrame(obj, prop, val) {
-	  nextFrame(function () {
-	    obj[prop] = val;
-	  });
-	}
-
-	function getTextNodeRect(textNode) {
-	  var rect;
-	  if (document.createRange) {
-	    var range = document.createRange();
-	    range.selectNodeContents(textNode);
-	    if (range.getBoundingClientRect) {
-	      rect = range.getBoundingClientRect();
-	    }
-	  }
-	  return rect;
-	}
-
-	function calcTransformOrigin(isTextNode, textRect, boundingRect) {
-	  if (isTextNode) {
-	    if (textRect) {
-	      //calculate pixels to center of text from left edge of bounding box
-	      var relativeCenterX = textRect.left + textRect.width / 2 - boundingRect.left;
-	      var relativeCenterY = textRect.top + textRect.height / 2 - boundingRect.top;
-	      return relativeCenterX + 'px ' + relativeCenterY + 'px';
-	    }
-	  }
-	  return '0 0'; //top left
-	}
-
-	function getTextDx(oldTextRect, newTextRect) {
-	  if (oldTextRect && newTextRect) {
-	    return oldTextRect.left + oldTextRect.width / 2 - (newTextRect.left + newTextRect.width / 2);
-	  }
-	  return 0;
-	}
-	function getTextDy(oldTextRect, newTextRect) {
-	  if (oldTextRect && newTextRect) {
-	    return oldTextRect.top + oldTextRect.height / 2 - (newTextRect.top + newTextRect.height / 2);
-	  }
-	  return 0;
-	}
-
-	function isTextElement(elm) {
-	  return elm.childNodes.length === 1 && elm.childNodes[0].nodeType === 3;
-	}
-
-	var removed, created;
-
-	function pre(oldVnode, vnode) {
-	  removed = {};
-	  created = [];
-	}
-
-	function create(oldVnode, vnode) {
-	  var hero = vnode.data.hero;
-	  if (hero && hero.id) {
-	    created.push(hero.id);
-	    created.push(vnode);
-	  }
-	}
-
-	function destroy(vnode) {
-	  var hero = vnode.data.hero;
-	  if (hero && hero.id) {
-	    var elm = vnode.elm;
-	    vnode.isTextNode = isTextElement(elm); //is this a text node?
-	    vnode.boundingRect = elm.getBoundingClientRect(); //save the bounding rectangle to a new property on the vnode
-	    vnode.textRect = vnode.isTextNode ? getTextNodeRect(elm.childNodes[0]) : null; //save bounding rect of inner text node
-	    var computedStyle = window.getComputedStyle(elm, null); //get current styles (includes inherited properties)
-	    vnode.savedStyle = JSON.parse(JSON.stringify(computedStyle)); //save a copy of computed style values
-	    removed[hero.id] = vnode;
-	  }
-	}
-
-	function post() {
-	  var i, id, newElm, oldVnode, oldElm, hRatio, wRatio, oldRect, newRect, dx, dy, origTransform, origTransition, newStyle, oldStyle, newComputedStyle, isTextNode, newTextRect, oldTextRect;
-	  for (i = 0; i < created.length; i += 2) {
-	    id = created[i];
-	    newElm = created[i + 1].elm;
-	    oldVnode = removed[id];
-	    if (oldVnode) {
-	      isTextNode = oldVnode.isTextNode && isTextElement(newElm); //Are old & new both text?
-	      newStyle = newElm.style;
-	      newComputedStyle = window.getComputedStyle(newElm, null); //get full computed style for new element
-	      oldElm = oldVnode.elm;
-	      oldStyle = oldElm.style;
-	      //Overall element bounding boxes
-	      newRect = newElm.getBoundingClientRect();
-	      oldRect = oldVnode.boundingRect; //previously saved bounding rect
-	      //Text node bounding boxes & distances
-	      if (isTextNode) {
-	        newTextRect = getTextNodeRect(newElm.childNodes[0]);
-	        oldTextRect = oldVnode.textRect;
-	        dx = getTextDx(oldTextRect, newTextRect);
-	        dy = getTextDy(oldTextRect, newTextRect);
-	      } else {
-	        //Calculate distances between old & new positions
-	        dx = oldRect.left - newRect.left;
-	        dy = oldRect.top - newRect.top;
-	      }
-	      hRatio = newRect.height / Math.max(oldRect.height, 1);
-	      wRatio = isTextNode ? hRatio : newRect.width / Math.max(oldRect.width, 1); //text scales based on hRatio
-	      // Animate new element
-	      origTransform = newStyle.transform;
-	      origTransition = newStyle.transition;
-	      if (newComputedStyle.display === 'inline') //inline elements cannot be transformed
-	        newStyle.display = 'inline-block'; //this does not appear to have any negative side effects
-	      newStyle.transition = origTransition + 'transform 0s';
-	      newStyle.transformOrigin = calcTransformOrigin(isTextNode, newTextRect, newRect);
-	      newStyle.opacity = '0';
-	      newStyle.transform = origTransform + 'translate(' + dx + 'px, ' + dy + 'px) ' + 'scale(' + 1 / wRatio + ', ' + 1 / hRatio + ')';
-	      setNextFrame(newStyle, 'transition', origTransition);
-	      setNextFrame(newStyle, 'transform', origTransform);
-	      setNextFrame(newStyle, 'opacity', '1');
-	      // Animate old element
-	      for (var key in oldVnode.savedStyle) {
-	        //re-apply saved inherited properties
-	        if (parseInt(key) != key) {
-	          var ms = key.substring(0, 2) === 'ms';
-	          var moz = key.substring(0, 3) === 'moz';
-	          var webkit = key.substring(0, 6) === 'webkit';
-	          if (!ms && !moz && !webkit) //ignore prefixed style properties
-	            oldStyle[key] = oldVnode.savedStyle[key];
-	        }
-	      }
-	      oldStyle.position = 'absolute';
-	      oldStyle.top = oldRect.top + 'px'; //start at existing position
-	      oldStyle.left = oldRect.left + 'px';
-	      oldStyle.width = oldRect.width + 'px'; //Needed for elements who were sized relative to their parents
-	      oldStyle.height = oldRect.height + 'px'; //Needed for elements who were sized relative to their parents
-	      oldStyle.margin = 0; //Margin on hero element leads to incorrect positioning
-	      oldStyle.transformOrigin = calcTransformOrigin(isTextNode, oldTextRect, oldRect);
-	      oldStyle.transform = '';
-	      oldStyle.opacity = '1';
-	      document.body.appendChild(oldElm);
-	      setNextFrame(oldStyle, 'transform', 'translate(' + -dx + 'px, ' + -dy + 'px) scale(' + wRatio + ', ' + hRatio + ')'); //scale must be on far right for translate to be correct
-	      setNextFrame(oldStyle, 'opacity', '0');
-	      oldElm.addEventListener('transitionend', function (ev) {
-	        if (ev.propertyName === 'transform') document.body.removeChild(ev.target);
-	      });
-	    }
-	  }
-	  removed = created = undefined;
-	}
-
-	module.exports = { pre: pre, create: create, destroy: destroy, post: post };
-
-/***/ },
-/* 99 */
-/***/ function(module, exports) {
-
-	function updateProps(oldVnode, vnode) {
-	  var key,
-	      cur,
-	      old,
-	      elm = vnode.elm,
-	      oldProps = oldVnode.data.props || {},
-	      props = vnode.data.props || {};
-	  for (key in oldProps) {
-	    if (!props[key]) {
-	      delete elm[key];
-	    }
-	  }
-	  for (key in props) {
-	    cur = props[key];
-	    old = oldProps[key];
-	    if (old !== cur && (key !== 'value' || elm[key] !== cur)) {
-	      elm[key] = cur;
-	    }
-	  }
-	}
-
-	module.exports = { create: updateProps, update: updateProps };
-
-/***/ },
-/* 100 */
-/***/ function(module, exports) {
-
-	var raf = typeof window !== 'undefined' && window.requestAnimationFrame || setTimeout;
-	var nextFrame = function (fn) {
-	  raf(function () {
-	    raf(fn);
-	  });
-	};
-
-	function setNextFrame(obj, prop, val) {
-	  nextFrame(function () {
-	    obj[prop] = val;
-	  });
-	}
-
-	function updateStyle(oldVnode, vnode) {
-	  var cur,
-	      name,
-	      elm = vnode.elm,
-	      oldStyle = oldVnode.data.style || {},
-	      style = vnode.data.style || {},
-	      oldHasDel = 'delayed' in oldStyle;
-	  for (name in oldStyle) {
-	    if (!style[name]) {
-	      elm.style[name] = '';
-	    }
-	  }
-	  for (name in style) {
-	    cur = style[name];
-	    if (name === 'delayed') {
-	      for (name in style.delayed) {
-	        cur = style.delayed[name];
-	        if (!oldHasDel || cur !== oldStyle.delayed[name]) {
-	          setNextFrame(elm.style, name, cur);
-	        }
-	      }
-	    } else if (name !== 'remove' && cur !== oldStyle[name]) {
-	      elm.style[name] = cur;
-	    }
-	  }
-	}
-
-	function applyDestroyStyle(vnode) {
-	  var style,
-	      name,
-	      elm = vnode.elm,
-	      s = vnode.data.style;
-	  if (!s || !(style = s.destroy)) return;
-	  for (name in style) {
-	    elm.style[name] = style[name];
-	  }
-	}
-
-	function applyRemoveStyle(vnode, rm) {
-	  var s = vnode.data.style;
-	  if (!s || !s.remove) {
-	    rm();
-	    return;
-	  }
-	  var name,
-	      elm = vnode.elm,
-	      idx,
-	      i = 0,
-	      maxDur = 0,
-	      compStyle,
-	      style = s.remove,
-	      amount = 0,
-	      applied = [];
-	  for (name in style) {
-	    applied.push(name);
-	    elm.style[name] = style[name];
-	  }
-	  compStyle = getComputedStyle(elm);
-	  var props = compStyle['transition-property'].split(', ');
-	  for (; i < props.length; ++i) {
-	    if (applied.indexOf(props[i]) !== -1) amount++;
-	  }
-	  elm.addEventListener('transitionend', function (ev) {
-	    if (ev.target === elm) --amount;
-	    if (amount === 0) rm();
-	  });
-	}
-
-	module.exports = { create: updateStyle, update: updateStyle, destroy: applyDestroyStyle, remove: applyRemoveStyle };
-
-/***/ },
-/* 101 */
-/***/ function(module, exports, __webpack_require__) {
-
-	// jshint newcap: false
-	/* global require, module, document, Node */
-	'use strict';
-
-	var VNode = __webpack_require__(15);
-	var is = __webpack_require__(10);
-	var domApi = __webpack_require__(94);
-
-	function isUndef(s) {
-	  return s === undefined;
-	}
-	function isDef(s) {
-	  return s !== undefined;
-	}
-
-	var emptyNode = VNode('', {}, [], undefined, undefined);
-
-	function sameVnode(vnode1, vnode2) {
-	  return vnode1.key === vnode2.key && vnode1.sel === vnode2.sel;
-	}
-
-	function createKeyToOldIdx(children, beginIdx, endIdx) {
-	  var i,
-	      map = {},
-	      key;
-	  for (i = beginIdx; i <= endIdx; ++i) {
-	    key = children[i].key;
-	    if (isDef(key)) map[key] = i;
-	  }
-	  return map;
-	}
-
-	var hooks = ['create', 'update', 'remove', 'destroy', 'pre', 'post'];
-
-	function init(modules, api) {
-	  var i,
-	      j,
-	      cbs = {};
-
-	  if (isUndef(api)) api = domApi;
-
-	  for (i = 0; i < hooks.length; ++i) {
-	    cbs[hooks[i]] = [];
-	    for (j = 0; j < modules.length; ++j) {
-	      if (modules[j][hooks[i]] !== undefined) cbs[hooks[i]].push(modules[j][hooks[i]]);
-	    }
-	  }
-
-	  function emptyNodeAt(elm) {
-	    return VNode(api.tagName(elm).toLowerCase(), {}, [], undefined, elm);
-	  }
-
-	  function createRmCb(childElm, listeners) {
-	    return function () {
-	      if (--listeners === 0) {
-	        var parent = api.parentNode(childElm);
-	        api.removeChild(parent, childElm);
-	      }
-	    };
-	  }
-
-	  function createElm(vnode, insertedVnodeQueue) {
-	    var i,
-	        thunk,
-	        data = vnode.data;
-	    if (isDef(data)) {
-	      if (isDef(i = data.hook) && isDef(i = i.init)) i(vnode);
-	      if (isDef(i = data.vnode)) {
-	        thunk = vnode;
-	        vnode = i;
-	      }
-	    }
-	    var elm,
-	        children = vnode.children,
-	        sel = vnode.sel;
-	    if (isDef(sel)) {
-	      // Parse selector
-	      var hashIdx = sel.indexOf('#');
-	      var dotIdx = sel.indexOf('.', hashIdx);
-	      var hash = hashIdx > 0 ? hashIdx : sel.length;
-	      var dot = dotIdx > 0 ? dotIdx : sel.length;
-	      var tag = hashIdx !== -1 || dotIdx !== -1 ? sel.slice(0, Math.min(hash, dot)) : sel;
-	      elm = vnode.elm = isDef(data) && isDef(i = data.ns) ? api.createElementNS(i, tag) : api.createElement(tag);
-	      if (hash < dot) elm.id = sel.slice(hash + 1, dot);
-	      if (dotIdx > 0) elm.className = sel.slice(dot + 1).replace(/\./g, ' ');
-	      if (is.array(children)) {
-	        for (i = 0; i < children.length; ++i) {
-	          api.appendChild(elm, createElm(children[i], insertedVnodeQueue));
-	        }
-	      } else if (is.primitive(vnode.text)) {
-	        api.appendChild(elm, api.createTextNode(vnode.text));
-	      }
-	      for (i = 0; i < cbs.create.length; ++i) cbs.create[i](emptyNode, vnode);
-	      i = vnode.data.hook; // Reuse variable
-	      if (isDef(i)) {
-	        if (i.create) i.create(emptyNode, vnode);
-	        if (i.insert) insertedVnodeQueue.push(vnode);
-	      }
-	    } else {
-	      elm = vnode.elm = api.createTextNode(vnode.text);
-	    }
-	    if (isDef(thunk)) thunk.elm = vnode.elm;
-	    return vnode.elm;
-	  }
-
-	  function addVnodes(parentElm, before, vnodes, startIdx, endIdx, insertedVnodeQueue) {
-	    for (; startIdx <= endIdx; ++startIdx) {
-	      api.insertBefore(parentElm, createElm(vnodes[startIdx], insertedVnodeQueue), before);
-	    }
-	  }
-
-	  function invokeDestroyHook(vnode) {
-	    var i,
-	        j,
-	        data = vnode.data;
-	    if (isDef(data)) {
-	      if (isDef(i = data.hook) && isDef(i = i.destroy)) i(vnode);
-	      for (i = 0; i < cbs.destroy.length; ++i) cbs.destroy[i](vnode);
-	      if (isDef(i = vnode.children)) {
-	        for (j = 0; j < vnode.children.length; ++j) {
-	          invokeDestroyHook(vnode.children[j]);
-	        }
-	      }
-	      if (isDef(i = data.vnode)) invokeDestroyHook(i);
-	    }
-	  }
-
-	  function removeVnodes(parentElm, vnodes, startIdx, endIdx) {
-	    for (; startIdx <= endIdx; ++startIdx) {
-	      var i,
-	          listeners,
-	          rm,
-	          ch = vnodes[startIdx];
-	      if (isDef(ch)) {
-	        if (isDef(ch.sel)) {
-	          invokeDestroyHook(ch);
-	          listeners = cbs.remove.length + 1;
-	          rm = createRmCb(ch.elm, listeners);
-	          for (i = 0; i < cbs.remove.length; ++i) cbs.remove[i](ch, rm);
-	          if (isDef(i = ch.data) && isDef(i = i.hook) && isDef(i = i.remove)) {
-	            i(ch, rm);
-	          } else {
-	            rm();
-	          }
-	        } else {
-	          // Text node
-	          api.removeChild(parentElm, ch.elm);
-	        }
-	      }
-	    }
-	  }
-
-	  function updateChildren(parentElm, oldCh, newCh, insertedVnodeQueue) {
-	    var oldStartIdx = 0,
-	        newStartIdx = 0;
-	    var oldEndIdx = oldCh.length - 1;
-	    var oldStartVnode = oldCh[0];
-	    var oldEndVnode = oldCh[oldEndIdx];
-	    var newEndIdx = newCh.length - 1;
-	    var newStartVnode = newCh[0];
-	    var newEndVnode = newCh[newEndIdx];
-	    var oldKeyToIdx, idxInOld, elmToMove, before;
-
-	    while (oldStartIdx <= oldEndIdx && newStartIdx <= newEndIdx) {
-	      if (isUndef(oldStartVnode)) {
-	        oldStartVnode = oldCh[++oldStartIdx]; // Vnode has been moved left
-	      } else if (isUndef(oldEndVnode)) {
-	        oldEndVnode = oldCh[--oldEndIdx];
-	      } else if (sameVnode(oldStartVnode, newStartVnode)) {
-	        patchVnode(oldStartVnode, newStartVnode, insertedVnodeQueue);
-	        oldStartVnode = oldCh[++oldStartIdx];
-	        newStartVnode = newCh[++newStartIdx];
-	      } else if (sameVnode(oldEndVnode, newEndVnode)) {
-	        patchVnode(oldEndVnode, newEndVnode, insertedVnodeQueue);
-	        oldEndVnode = oldCh[--oldEndIdx];
-	        newEndVnode = newCh[--newEndIdx];
-	      } else if (sameVnode(oldStartVnode, newEndVnode)) {
-	        // Vnode moved right
-	        patchVnode(oldStartVnode, newEndVnode, insertedVnodeQueue);
-	        api.insertBefore(parentElm, oldStartVnode.elm, api.nextSibling(oldEndVnode.elm));
-	        oldStartVnode = oldCh[++oldStartIdx];
-	        newEndVnode = newCh[--newEndIdx];
-	      } else if (sameVnode(oldEndVnode, newStartVnode)) {
-	        // Vnode moved left
-	        patchVnode(oldEndVnode, newStartVnode, insertedVnodeQueue);
-	        api.insertBefore(parentElm, oldEndVnode.elm, oldStartVnode.elm);
-	        oldEndVnode = oldCh[--oldEndIdx];
-	        newStartVnode = newCh[++newStartIdx];
-	      } else {
-	        if (isUndef(oldKeyToIdx)) oldKeyToIdx = createKeyToOldIdx(oldCh, oldStartIdx, oldEndIdx);
-	        idxInOld = oldKeyToIdx[newStartVnode.key];
-	        if (isUndef(idxInOld)) {
-	          // New element
-	          api.insertBefore(parentElm, createElm(newStartVnode, insertedVnodeQueue), oldStartVnode.elm);
-	          newStartVnode = newCh[++newStartIdx];
-	        } else {
-	          elmToMove = oldCh[idxInOld];
-	          patchVnode(elmToMove, newStartVnode, insertedVnodeQueue);
-	          oldCh[idxInOld] = undefined;
-	          api.insertBefore(parentElm, elmToMove.elm, oldStartVnode.elm);
-	          newStartVnode = newCh[++newStartIdx];
-	        }
-	      }
-	    }
-	    if (oldStartIdx > oldEndIdx) {
-	      before = isUndef(newCh[newEndIdx + 1]) ? null : newCh[newEndIdx + 1].elm;
-	      addVnodes(parentElm, before, newCh, newStartIdx, newEndIdx, insertedVnodeQueue);
-	    } else if (newStartIdx > newEndIdx) {
-	      removeVnodes(parentElm, oldCh, oldStartIdx, oldEndIdx);
-	    }
-	  }
-
-	  function patchVnode(oldVnode, vnode, insertedVnodeQueue) {
-	    var i, hook;
-	    if (isDef(i = vnode.data) && isDef(hook = i.hook) && isDef(i = hook.prepatch)) {
-	      i(oldVnode, vnode);
-	    }
-	    if (isDef(i = oldVnode.data) && isDef(i = i.vnode)) oldVnode = i;
-	    if (isDef(i = vnode.data) && isDef(i = i.vnode)) {
-	      patchVnode(oldVnode, i, insertedVnodeQueue);
-	      vnode.elm = i.elm;
-	      return;
-	    }
-	    var elm = vnode.elm = oldVnode.elm,
-	        oldCh = oldVnode.children,
-	        ch = vnode.children;
-	    if (oldVnode === vnode) return;
-	    if (!sameVnode(oldVnode, vnode)) {
-	      var parentElm = api.parentNode(oldVnode.elm);
-	      elm = createElm(vnode, insertedVnodeQueue);
-	      api.insertBefore(parentElm, elm, oldVnode.elm);
-	      removeVnodes(parentElm, [oldVnode], 0, 0);
-	      return;
-	    }
-	    if (isDef(vnode.data)) {
-	      for (i = 0; i < cbs.update.length; ++i) cbs.update[i](oldVnode, vnode);
-	      i = vnode.data.hook;
-	      if (isDef(i) && isDef(i = i.update)) i(oldVnode, vnode);
-	    }
-	    if (isUndef(vnode.text)) {
-	      if (isDef(oldCh) && isDef(ch)) {
-	        if (oldCh !== ch) updateChildren(elm, oldCh, ch, insertedVnodeQueue);
-	      } else if (isDef(ch)) {
-	        if (isDef(oldVnode.text)) api.setTextContent(elm, '');
-	        addVnodes(elm, null, ch, 0, ch.length - 1, insertedVnodeQueue);
-	      } else if (isDef(oldCh)) {
-	        removeVnodes(elm, oldCh, 0, oldCh.length - 1);
-	      } else if (isDef(oldVnode.text)) {
-	        api.setTextContent(elm, '');
-	      }
-	    } else if (oldVnode.text !== vnode.text) {
-	      api.setTextContent(elm, vnode.text);
-	    }
-	    if (isDef(hook) && isDef(i = hook.postpatch)) {
-	      i(oldVnode, vnode);
-	    }
-	  }
-
-	  return function (oldVnode, vnode) {
-	    var i, elm, parent;
-	    var insertedVnodeQueue = [];
-	    for (i = 0; i < cbs.pre.length; ++i) cbs.pre[i]();
-
-	    if (isUndef(oldVnode.sel)) {
-	      oldVnode = emptyNodeAt(oldVnode);
-	    }
-
-	    if (sameVnode(oldVnode, vnode)) {
-	      patchVnode(oldVnode, vnode, insertedVnodeQueue);
-	    } else {
-	      elm = oldVnode.elm;
-	      parent = api.parentNode(elm);
-
-	      createElm(vnode, insertedVnodeQueue);
-
-	      if (parent !== null) {
-	        api.insertBefore(parent, vnode.elm, api.nextSibling(elm));
-	        removeVnodes(parent, [oldVnode], 0, 0);
-	      }
-	    }
-
-	    for (i = 0; i < insertedVnodeQueue.length; ++i) {
-	      insertedVnodeQueue[i].data.hook.insert(insertedVnodeQueue[i]);
-	    }
-	    for (i = 0; i < cbs.post.length; ++i) cbs.post[i]();
-	    return vnode;
-	  };
-	}
-
-	module.exports = { init: init };
-
-/***/ },
-/* 102 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var h = __webpack_require__(36);
-
-	function init(thunk) {
-	  var i,
-	      cur = thunk.data;
-	  cur.vnode = cur.fn.apply(undefined, cur.args);
-	}
-
-	function prepatch(oldThunk, thunk) {
-	  var i,
-	      old = oldThunk.data,
-	      cur = thunk.data;
-	  var oldArgs = old.args,
-	      args = cur.args;
-	  cur.vnode = old.vnode;
-	  if (old.fn !== cur.fn || oldArgs.length !== args.length) {
-	    cur.vnode = cur.fn.apply(undefined, args);
-	    return;
-	  }
-	  for (i = 0; i < args.length; ++i) {
-	    if (oldArgs[i] !== args[i]) {
-	      cur.vnode = cur.fn.apply(undefined, args);
-	      return;
-	    }
-	  }
-	}
-
-	module.exports = function (name, fn /* args */) {
-	  var i,
-	      args = [];
-	  for (i = 2; i < arguments.length; ++i) {
-	    args[i - 2] = arguments[i];
-	  }
-	  return h('thunk' + name, {
-	    hook: { init: init, prepatch: prepatch },
-	    fn: fn, args: args
-	  });
+	module.exports = function symbolObservablePonyfill(root) {
+		var result;
+		var _Symbol = root.Symbol;
+
+		if (typeof _Symbol === 'function') {
+			if (_Symbol.observable) {
+				result = _Symbol.observable;
+			} else {
+				result = _Symbol('observable');
+				_Symbol.observable = result;
+			}
+		} else {
+			result = '@@observable';
+		}
+
+		return result;
 	};
 
 /***/ }

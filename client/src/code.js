@@ -29,7 +29,7 @@ var Monad = function Monad(z) {
 var mMname = new Monad('Fred', 'mMname');
 
 const monad = h('pre', {style: {color: '#AFEEEE' }}, `  const Monad = function Monad(z, ID = 'anonymous') {
-    this.id = g;
+    this.id = ID;
     this.x = z;
     this.bnd = (func, ...args) => func(this.x, ...args);
     this.ret =  a => window[this.id] = new Monad(a,this.id);

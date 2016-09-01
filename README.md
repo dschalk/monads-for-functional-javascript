@@ -13,7 +13,7 @@ This is a [Motorcycle.js](https://github.com/motorcyclejs) application. Motorcyc
 ## Basic Monad    
 ```javascript    
 var Monad = function Monad(z, ID = 'anonymous') {
-    this.id = g;
+    this.id = ID;
     this.x = z;
     this.bnd = (func, ...args) => func(this.x, ...args);
     this.ret =  a => window[this.id] = new Monad(a,this.id);
