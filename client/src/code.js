@@ -41,10 +41,7 @@ const monadIt = h('pre', {style: {color: '#AFEEEE' }}, `  const MonadItter = () 
     this.bnd = func => this.p = func;
   }; ` )
 
-const ret = h('pre', {style: {color: '#AFEEEE' }}, `  var ret = function ret(v, id) {
-    if (arguments.length === 1) {
-      return (new Monad(v, 'anonymous'));
-    }
+const ret = h('pre', {style: {color: '#AFEEEE' }}, `  var ret = function ret(v, id = "anonymous") {
     window[id] = new Monad(v, id);
     return window[id];
   }; ` )
@@ -649,10 +646,7 @@ var add = h('pre',  `  var add = function(x,b,mon) {
     return ret(x+b);  
   }; ` )
   
-var ret_add_cube = h('pre',  `  var ret = function ret(v, id) {
-    if (arguments.length === 1) {
-      return (new Monad(v, 'anonymous'));
-    }
+var ret_add_cube = h('pre',  `  var ret = function ret(v, id = 'anonymous') {
     window[id] = new Monad(v, id);
     return window[id];
   }  
@@ -979,10 +973,7 @@ var display = function display (x, id, string) {
   return ret(x);
 }  `  )
 
-var e1 = h('pre',  `  var ret = function ret(v, id) {
-    if (arguments.length === 1) {
-      return (new Monad(v, 'anonymous'));
-    }
+var e1 = h('pre',  `  var ret = function ret(v, id = 'anonymous') {
     window[id] = new Monad(v, id);
     return window[id];
   }

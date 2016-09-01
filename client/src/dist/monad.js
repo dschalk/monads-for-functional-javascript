@@ -29,12 +29,11 @@ console.log(m.bnd(m.ret) == m)
 m.bnd(function (x) {
     return console.log(x);
 });
-var ret = function ret(v, id) {
-    if (id === void 0) { id = 'anonymous'; }
+function fmap2(g, a, id) { return (new Monad(g(a.x), id)); }
+var ret = function ret(v, id = 'anonymous') {
     window[id] = new Monad(v, id);
     return window[id];
 };
-function fmap2(g, a, id) { return (new Monad(g(a.x), id)); }
 function fmap(x, g, id) { return (new Monad(g(x), id)); }
 function opM(a, op, b, id) {
     return (new Monad(a.x + op + b.x), id);
