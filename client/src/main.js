@@ -568,19 +568,18 @@ function main(sources) {
         }
         ;
         if (e.keyCode == 13 && (parseInt(e.target.value, 10) != null)) {
-            var message;
-            var factors = primesMonad.run([primesMonad.s[0], [], e.target.value, primesMonad.a])
-                .bnd(prFactTransformer, factorsMonad).s[1];
-            if (e.target.value == factors.slice().pop()) {
-                message = e.target.value + ' is a prime number';
-            }
-            else {
-                message = 'The prime factors of ' + e.target.value + ' are ' + factors;
-            }
-            document.getElementById('factors_3').innerHTML = message;
+            var message1;
+            var message2;
+            var m = primesMonad.run([primesMonad.s[0], [], e.target.value, primesMonad.a]).bnd(prFactTransformer, e.target.value);
+            message1 = 'The distinct prime factors of ' + e.target.value + ' are ' + m.s[0];
+            document.getElementById('factors_3').innerHTML = message1;
+          
+            var m2 = primesMonad.run([primesMonad.s[0], [], e.target.value, primesMonad.a]).bnd(prFactTransformer2, e.target.value);
+            message2 = 'All of the prime factors of ' + e.target.value + ' are ' + m2.s[0];
+            document.getElementById('factors_4').innerHTML = message2;
         }
     });
-    // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> ENDOM prime factors END
+    // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> ENDOM prime factors END
     // ?<>>><>><><><><>>>><><><  traversal  ><><><><><><>>><><><><><><><><><><><>< START traversal  
     window.onload = function (event) {
         console.log('onopen event: ', event);
@@ -864,6 +863,8 @@ function main(sources) {
                     h('span#factors_2.red6'),
                     h('br'),
                     h('span#factors_3.red7'),
+                    h('br'),
+                    h('span#factors_4.red7'),
                     h('br'),
                     h('p', ' The demonstration uses primesMonad and factorsMonad. Here are the definitions of factosMonad and factor_state, the function that is factorsMonad.process: '),
                     code.factorsMonad,

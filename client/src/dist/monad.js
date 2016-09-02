@@ -91,19 +91,7 @@ var MonadState = function MonadState(g, state, value, p) {
 var tr4 = function tr4(state) {
     return state[1];
 };
-factor_state([3, [], 24, [2, 3]]);
-function factor_state(v) {
-    v[3].map(function (p) {
-        if (v[2] / p == Math.floor(v[2] / p)) {
-            v[1].push(p);
-        }
-    });
-    return v;
-}
-var mMfactors = new Monad(-1, 'mMfactors');
-var prFactTransformer = function prFactTransformer(s, m) {
-    return m.run([s[0], [], mMfactors.x, s[3]]);
-};
+
 var fpTransformer = function transformer(s, m) {
     var bound = Math.ceil(Math.sqrt(s[3][s[3].length - 1]));
     if (bound > m.a[m.a.length - 1]) {
@@ -111,6 +99,7 @@ var fpTransformer = function transformer(s, m) {
     }
     return m;
 };
+
 var tr3 = function tr3(fibsArray, primesArray) {
     var bound = Math.ceil(Math.sqrt(fibsArray[fibsArray.length - 1]));
     var primes = primesArray.slice();
@@ -146,9 +135,52 @@ var primes_state = function primes_state(x) {
     }
     return v;
 };
+
+function factor_state(v) {
+    v[3].map(function (p) {
+        if (v[2] / p == Math.floor(v[2] / p)) {
+            v[0].push(p);
+        }
+    });
+    return v;
+}
+
 var mMplayer = new Monad([], 'mMplayer');
 var fibsMonad = new MonadState('fibsMonad', [0, 1, 3, [0, 1]], [0, 1], fibs_state);
-var factorsMonad = new MonadState('factorsMonad', [2, [], 4, []], [], factor_state);
+var factorsMonad = new MonadState('factorsMonad', [[], [], 2, []], [], factor_state);
+var factorsMonad2 = new MonadState('factorsMonad2', [[], [], 2, []], [], factor_state2);
+
+factor_state([[], [], 24, [2, 3, 5]]);
+
+factor_state2([[], [], 24, [2, 3, 5]]);
+
+function factor_state2(a) {
+    var v = a.slice();
+    var result;
+    func(v);
+    function func (v) {
+      for (let p of v[3]) {
+        if (v[2] / p == Math.floor(v[2] / p)) {
+            v[0].push(p);
+            func([v[0], v[1], v[2]/p, v[3]])
+            break;
+        };
+        result = v;
+      }; 
+    }
+    return result;
+}
+
+var mMfactors = new Monad(-1, 'mMfactors');
+
+var prFactTransformer = function prFactTransformer(s, n) {
+    return factorsMonad.run([[], [], n, s[3]]);
+};
+
+var prFactTransformer2 = function prFactTransformer2(s, n) {
+    return factorsMonad2.run([[], [], n, s[3]]);
+};
+
 var pMname = new Monad('1v65n$%pqw3*@#9', 'pMname');
 var pMgroup = new Monad('solo', 'pMgroup');
 var pMscore = new Monad(0, 'pMscore');

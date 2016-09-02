@@ -807,39 +807,57 @@ var innerHTML = h('pre',  `  var innerHTML = function innerHTML (x, v, u, m) {
     return m.ret(x);
   }  `  )
 
-var factorsMonad = h('pre',  `  var factorsMonad = new MonadState('factorsMonad', [ 2, [], 4, [] ], [], factor_state); 
-
+var factorsMonad = h('pre',  `  var factorsMonad = new MonadState('factorsMonad', [[], [], 2, []], [], factor_state);
+  var factorsMonad2 = new MonadState('factorsMonad2', [[], [], 2, []], [], factor_state2);
+  
   function factor_state(v) {
-    v[3].map(p => {
-      if (v[2]/p == Math.floor(v[2]/p)) {v[1].push(p)}
-    })
-    return v;
+      v[3].map(function (p) {
+          if (v[2] / p == Math.floor(v[2] / p)) {
+              v[0].push(p);
+          }
+      });
+      return v;
+  }
+  
+  function factor_state2(a) {
+      var v = a.slice();
+      var result;
+      func(v);
+      function func (v) {
+        for (let p of v[3]) {
+          if (v[2] / p == Math.floor(v[2] / p)) {
+              v[0].push(p);
+              func([v[0], v[1], v[2]/p, v[3]])
+              break;
+          };
+          result = v;
+        }; 
+      }
+      return result;
   }  `  )
 
-var factorsInput = h('pre',  `  var prFactTransformer = function prFactTransformer (s, m) {
-    return m.run([s[0], [], mMfactors.x, s[3]])
-  }
-
-  const factorsPress$ = sources.DOM
-    .select('input#factors_1').events('keydown');
-
-  const factorsAction$ = factorsPress$.map(e => {
-    mMfactors.ret(e.target.value);                  // Used in prFactTransformer (above)
-    if (e.target.value == '') {return};
-    if( e.keyCode == 13 && Number.isInteger(e.target.value*1) ) {
-      var result;
-      var factors = primesMonad.run([primesMonad.s[0], [], e.target.value, primesMonad.a])
-      .bnd(prFactTransformer, factorsMonad).s[1];  // prFactTransformer (defined above) returns factorsMonad
-      if (e.target.value == factors.slice().pop()){
-        result = e.target.value + ' is a prime number'
+var factorsInput = h('pre',  `  var factorsPress$ = sources.DOM
+      .select('input#factors_1').events('keydown');
+  var factorsAction$ = factorsPress$.map(function (e) {
+      mMfactors.ret(e.target.value);
+      if (e.target.value == '') {
+          return;
       }
-      else {
-        result = 'The prime factors of ' + e.target.value + ' are ' + factors;
+      ;
+      if (e.keyCode == 13 && (parseInt(e.target.value, 10) != null)) {
+          var message1;
+          var message2;
+          var m = primesMonad.run([primesMonad.s[0], [], e.target.value, primesMonad.a])
+          .bnd(prFactTransformer, e.target.value);
+          message1 = 'The distinct prime factors of ' + e.target.value + ' are ' + m.s[0];
+          document.getElementById('factors_3').innerHTML = message1;
+        
+          var m2 = primesMonad.run([primesMonad.s[0], [], e.target.value, primesMonad.a])
+          .bnd(prFactTransformer2, e.target.value);
+          message2 = 'All of the prime factors of ' + e.target.value + ' are ' + m2.s[0];
+          document.getElementById('factors_4').innerHTML = message2;
       }
-      document.getElementById('factors_3').innerHTML = result;
-    }
-  });
-             `  )
+  });  `  )
 
 var playerMonad = h('pre',  `  var playerMonad = new MonadState('playerMonad', [0,0], [0,0], player_state);
 
