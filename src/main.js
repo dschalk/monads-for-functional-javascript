@@ -46,51 +46,47 @@ socket.onclose = function (event) {
 
 function main(sources) {
     mMindex.ret(0);
-    var messages$ = (sources.WS).map(function (e) {
-        mMtem.ret(e.data.split(',')).bnd(function (v) {
-            console.log('<><><><><><><><><><><><><><><><>  INCOMING  <><><><><><><> >>> In messages. e amd v are ', e, v);
-            mMZ10.bnd(function () { return mM1.ret(v.slice(3)).bnd(function (y) { return game([pMscore.x, pMgoals.x, y, mM3.x].concat(y)); }); });
-            mMZ11.bnd(function () { return socket.send('CG#$42,' + pMgroup.x + ',' + pMname.x + ',' + pMscore + ',' + pMgoals); });
-            mMZ12.bnd(function () { return mM6.ret(v[2] + ' successfully logged in.'); });
-            mMZ13.bnd(function () { return updateMessages(v); });
-            mMZ14.bnd(function () { return mMgoals2.ret('The winner is ' + v[2]); });
-            mMZ15.bnd(function () { return mMgoals2.ret('A player named ' + v[2] + ' is currently logged in. Page will refresh in 4 seconds.')
-                .bnd(refresh); });
-            mMZ16.bnd(function () { if (pMname.x != v[2]) {
-                mMgoals2.ret(v[2] + v[3]);
-            } });
-            mMZ17.bnd(function () {
-                if (v[3] == 'no file') {
-                    mMtaskList.ret([]);
-                }
-                else {
-                    process(e.data);
-                }
-            });
-            mMZ18.bnd(function () { if (pMname == v[2])
-                playerMonad.run([v[3], v[4]]); });
-            mMZ19.bnd(function () {
-                sMplayers.clear();
-                var namesL = e.data.split("<br>");
-                var namesList = namesL.slice(1);
-                updateScoreboard2(namesList);
-                namesList.forEach(function (player) { return sMplayers.add(player.trim()); });
-                game2();
-                console.log('In mMZ19 <><><><><><> namesL, and namesList are ', namesL, namesList);
-            });
+    var messages$ = (sources.WS).map( e => {
+      mMtem.ret(e.data.split(',')).bnd( v => {
+        console.log('<><><><><><><><><><><><><><><><>  INCOMING  <><><><><><><> >>> In messages. e amd v are ', e, v);
+        mMZ10.bnd( () => mM1.ret(v.slice(3)).bnd(function (y) { return game([pMscore.x, pMgoals.x, y, mM3.x].concat(y))}));
+        mMZ11.bnd( () => socket.send('CG#$42,' + pMgroup.x + ',' + pMname.x + ',' + pMscore + ',' + pMgoals));
+        mMZ12.bnd( () => mM6.ret(v[2] + ' successfully logged in.'));
+        mMZ13.bnd( () => updateMessages(v));
+        mMZ14.bnd( () => mMgoals2.ret('The winner is ' + v[2]));
+        mMZ15.bnd( () => mMgoals2.ret('A player named ' + v[2] + ' is currently logged in. Page will refresh in 4 seconds.')
+        .bnd(refresh));
+        mMZ16.bnd( () => { if (pMname.x != v[2]) {
+            mMgoals2.ret(v[2] + v[3]);
+        } });
+        mMZ17.bnd( () => {
+            if (v[3] == 'no file') mMtaskList.ret([]);
+            else process(e.data);
         });
-        mMtemp.ret(e.data.split(',')[0])
-            .bnd(next, 'CA#$42', mMZ10)
-            .bnd(next, 'XX#$42', mMZ11)
-            .bnd(next, 'CC#$42', mMZ12)
-            .bnd(next, 'CD#$42', mMZ13)
-            .bnd(next, 'CE#$42', mMZ14)
-            .bnd(next, 'EE#$42', mMZ15)
-            .bnd(next, 'DE#$42', mMZ16)
-            .bnd(next, 'DD#$42', mMZ17)
-            .bnd(next, 'CG#$42', mMZ18)
-            .bnd(next, 'NN#$42', mMZ19);
+        mMZ18.bnd( () => { if (pMname == v[2]) playerMonad.run([v[3], v[4]]); });
+        mMZ19.bnd( () => {
+          sMplayers.clear();
+          var namesL = e.data.split("<br>");
+          var namesList = namesL.slice(1);
+          updateScoreboard2(namesList);
+          namesList.forEach(function (player) { return sMplayers.add(player.trim())});
+          game2();
+          console.log('In mMZ19 <><><><><><> namesL, and namesList are ', namesL, namesList);
+        });
+      });
+      mMtemp.ret(e.data.split(',')[0])
+      .bnd(next, 'CA#$42', mMZ10)
+      .bnd(next, 'XX#$42', mMZ11)
+      .bnd(next, 'CC#$42', mMZ12)
+      .bnd(next, 'CD#$42', mMZ13)
+      .bnd(next, 'CE#$42', mMZ14)
+      .bnd(next, 'EE#$42', mMZ15)
+      .bnd(next, 'DE#$42', mMZ16)
+      .bnd(next, 'DD#$42', mMZ17)
+      .bnd(next, 'CG#$42', mMZ18)
+      .bnd(next, 'NN#$42', mMZ19)
     });
+
     var updateScoreboard2 = function updateScoreboard(v) {
         var ar = [];
         for (var _i = 0, v_1 = v; _i < v_1.length; _i++) {
@@ -100,6 +96,7 @@ function main(sources) {
         ;
         return mMscoreboard.ret(ar);
     };
+
     var updateMessages = function updateMessages(ar) {
         console.log('8888888888888888888888888In updateMessages ar is >>>>>>>>>>>>>>', ar);
         var sender = ar[2];
@@ -109,6 +106,7 @@ function main(sources) {
             .bnd(function (v) { return mMmsg.bnd(unshift, h('div', sender + ': ' + v), mMmsg); });
         console.log('99999999999999999999999In updateMessages mMmsg is ', mMmsg);
     };
+
     var loginPress$ = sources.DOM
         .select('input#login').events('keypress');
     var loginPressAction$ = loginPress$.map(function (e) {
@@ -387,23 +385,28 @@ function main(sources) {
             updateCalc();
         }
     });
+
     var forwardClick$ = sources.DOM
         .select('#forward').events('click');
+
     var backClick$ = sources.DOM
         .select('#back').events('click');
+
     var forwardAction$ = forwardClick$.map(function () {
         if (mMindex.x < (mMhistory.x.length - 1)) {
-            mMindex.bnd(add, 1, mMindex)
-                .bnd(function (v) { return trav(v); });
+          mMindex.bnd(add, 1, mMindex)
+          .bnd(v => trav(v));
         }
     });
+
     var backAction$ = backClick$.map(function () {
         if (mMindex.x > 0) {
-            mMindex.bnd(add, -1, mMindex)
-                .bnd(function (v) { return trav(v); });
-            socket.send('DE#$42,' + pMgroup.x + ',' + pMname.x + ', clicked the BACK button. ');
+          mMindex.bnd(add, -1, mMindex)
+          .bnd(v => trav(v));
+          socket.send('DE#$42,' + pMgroup.x + ',' + pMname.x + ', clicked the BACK button. ');
         }
     });
+
     var game = function game(z) {
         var x = z.slice();
         mMindex.bnd(add, 1, mMindex)
@@ -415,6 +418,7 @@ function main(sources) {
         game2();
         cleanup('cow');
     };
+
     var game2 = function game2() {
         document.getElementById('sb1').innerHTML = 'Name: ' + pMname.x;
         document.getElementById('sb2').innerHTML = 'Group: ' + pMgroup.x;
@@ -563,23 +567,22 @@ function main(sources) {
         .select('input#factors_1').events('keydown');
 
     var factorsAction$ = factorsPress$.map(function (e) {
-        mMfactors.ret(e.target.value);
-        if (e.target.value == '') {
-            return;
+      if (e.keyCode == 13) {
+        var num = e.target.value
+        if (!num.match(/^[0-9]+$/)) {
+          document.getElementById('factors_3').innerHTML = 
+            'This works only if you enter a number.';
+          document.getElementById('factors_4').innerHTML = num + ' is not a number';
         }
-        ;
-        if (e.keyCode == 13 && (parseInt(e.target.value, 10) != null)) {
-            var message1;
-            var message2;
-            var factors = primesMonad.run([primesMonad.s[0], [], e.target.value, primesMonad.a])
-            .bnd(v => [prFactTransformer(v, e.target.value), prFactTransformer2(v, e.target.value)]);
-            // var m2 = primesMonad.run([primesMonad.s[0], [], e.target.value, primesMonad.a]).bnd(prFactTransformer2, e.target.value);
-            message1 = 'The distinct prime factors of ' + e.target.value + ' are ' + factors[0].s[0] ;
-            document.getElementById('factors_3').innerHTML = message1;
-          
-            message2 = 'All of the prime factors of ' + e.target.value + ' are ' + factors[1].s[0];
-            document.getElementById('factors_4').innerHTML = message2;
+        else {
+          var factors = primesMonad.run([primesMonad.s[0], [], num, primesMonad.a])
+          .bnd(v => [prFactTransformer(v, num), prFactTransformer2(v, num)]);
+          document.getElementById('factors_3').innerHTML = 
+            'The distinct prime factors of ' + num + ' are ' + factors[0].s[0] ;
+          document.getElementById('factors_4').innerHTML = 
+            'All of the prime factors of ' + num + ' are ' + factors[1].s[0];
         }
+      }
     });
     // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> ENDOM prime factors END
     // ?<>>><>><><><><>>>><><><  traversal  ><><><><><><>>><><><><><><><><><><><>< START traversal  

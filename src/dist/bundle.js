@@ -4808,7 +4808,7 @@
 
 	var driver = (0, _dom.h)('pre', '  var websocketsDriver = function () {\n      return create((add) => {\n        socket.onmessage = msg => add(msg)\n      })\n  };\n');
 
-	var messages = (0, _dom.h)('pre', '  const messages$ = (sources.WS).map(e => \n    mMtem.ret(e.data.split(\',\')).bnd(v => {\n    console.log(\'<><><><><><><><><><><><><><><><>  INCING  <><><><><><><> >>> In messages. v is \', v );\n    mMZ10.bnd(() => mM1.ret([v[3], v[4], v[5], v[6]]).bnd(ar => game(ar))) \n    mMZ11.bnd(() => socket.send(\'NN#$42,\' + pMgroup.x + \',\' + pMname.x))\n    mMZ12.bnd(() => mM6.ret(v[2] + \' successfully logged in.\'))\n    mMZ13.bnd(() => updateMessages(v))\n    mMZ14.bnd(() => mMgoals2.ret(\'The winner is \' + v[2] ))\n    mMZ15.bnd(() => mMgoals2.ret(\'A player named \' + v[2] + \' is currently logged in. Page will refresh in 4 seconds.\')\n    .bnd(refresh))\n    mMZ16.bnd(() => {if (pMname.x != v[2]) {mMgoals2.ret(v[2] + v[3])}})\n    mMZ17.bnd(() => {\n      if (v[3] == \'no file\') {\n        mMtaskList.ret([])\n      } \n      else {\n        process(e.data)\n      }\n    })\n    mMZ18.bnd(() => player(v))\n    mMZ19.bnd(() => {\n      var names = v.slice(3);\n      sMplayers.clear();\n      names.forEach(player => sMplayers.add(player.trim()))\n      game2();\n    }) })\n       mMtemp.ret(e.data.split(\',\')[0])\n      .bnd(next, \'CA#$42\', mMZ10)\n      .bnd(next, \'XX#$42\', mMZ11)\n      .bnd(next, \'CC#$42\', mMZ12)\n      .bnd(next, \'CD#$42\', mMZ13)\n      .bnd(next, \'CE#$42\', mMZ14)\n      .bnd(next, \'EE#$42\', mMZ15)\n      .bnd(next, \'DE#$42\', mMZ16)\n      .bnd(next, \'DD#$42\', mMZ17)\n      .bnd(next, \'CG#$42\', mMZ18)\n      .bnd(next, \'NN#$42\', mMZ19)\n  });  ');
+	var messages = (0, _dom.h)('pre', '  const messages$ = (sources.WS).map( e => {\n    mMtem.ret(e.data.split(\',\')).bnd( v => {\n      console.log(\'<><><><><><><><><><><><><><><><>  INCOMING  <><><><><><><> >>> In messages. e amd v are \', e, v);\n      mMZ10.bnd( () => mM1.ret(v.slice(3)).bnd(function (y) { return game([pMscore.x, pMgoals.x, y, mM3.x].concat(y))}));\n      mMZ11.bnd( () => socket.send(\'CG#$42,\' + pMgroup.x + \',\' + pMname.x + \',\' + pMscore + \',\' + pMgoals));\n      mMZ12.bnd( () => mM6.ret(v[2] + \' successfully logged in.\'));\n      mMZ13.bnd( () => updateMessages(v));\n      mMZ14.bnd( () => mMgoals2.ret(\'The winner is \' + v[2]));\n      mMZ15.bnd( () => mMgoals2.ret(\'A player named \' + v[2] + \' is currently logged in. Page will refresh in 4 seconds.\')\n      .bnd(refresh); );\n      mMZ16.bnd( () => { if (pMname.x != v[2]) mMgoals2.ret(v[2] + v[3])});\n      mMZ17.bnd( () => {\n        if (v[3] == \'no file\') mMtaskList.ret([])\n        else process(e.data)\n      });\n      mMZ18.bnd( () => { if (pMname == v[2]) playerMonad.run([v[3], v[4]])});\n      mMZ19.bnd( () => {\n          sMplayers.clear();\n          var namesL = e.data.split("<br>");\n          var namesList = namesL.slice(1);\n          updateScoreboard2(namesList);\n          namesList.forEach(function (player) { return sMplayers.add(player.trim())});\n          game2();\n          console.log(\'In mMZ19 <><><><><><> namesL, and namesList are \', namesL, namesList);\n      });\n    });\n    mMtemp.ret(e.data.split(\',\')[0])\n    .bnd(next, \'CA#$42\', mMZ10)\n    .bnd(next, \'XX#$42\', mMZ11)\n    .bnd(next, \'CC#$42\', mMZ12)\n    .bnd(next, \'CD#$42\', mMZ13)\n    .bnd(next, \'CE#$42\', mMZ14)\n    .bnd(next, \'EE#$42\', mMZ15)\n    .bnd(next, \'DE#$42\', mMZ16)\n    .bnd(next, \'DD#$42\', mMZ17)\n    .bnd(next, \'CG#$42\', mMZ18)\n    .bnd(next, \'NN#$42\', mMZ19)\n  });  ');
 
 	var MonadSet = (0, _dom.h)('pre', '  var MonadSet = function MonadSet(set, ID) {\n    this.s = set;\n    this.bnd = (func, ...args) => func(this.s, ...args);  \n    this.add = a => new MonadSet(s.add(a), this.id);\n    this.delete = a => new MonadSet(s.delete(a), this.id);\n    this.clear = () => new MonadSet(s.clear(), this.id);\n  };  ');
 
@@ -4856,7 +4856,7 @@
 
 	var seed = (0, _dom.h)('pre', '  mM$prime.ret([[2],3])  ');
 
-	var traverse = (0, _dom.h)('pre', '  const forwardClick$ = sources.DOM\n    .select(\'#forward\').events(\'click\');\n \n  const backClick$ = sources.DOM\n    .select(\'#back\').events(\'click\');\n \n  const forwardAction$ = forwardClick$.map(() => {\n    if (mMindex.x < (mMhistorymM1.x.length - 1)) {\n      mMindex.bnd(add, 1, mMindex)\n      .bnd(v => trav(v))\n    }\n  });\n \n  const backAction$ = backClick$.map(() => {\n    if (mMindex.x > 0) {\n      mMindex.bnd(add, -1, mMindex)\n      .bnd(v => trav(v))\n      socket.send(\'DE#$42,\' + pMgroup.x + \',\' + pMname.x + \', clicked the BACK button. \');\n    }\n  });\n\n  var game = function game (z) {  // Runs each time a number is clicked\n    var x = z.slice();\n        mMindex.bnd(add, 1, mMindex)\n          .bnd(i => mMhistorymM1.bnd(spliceAdd, i, x, mMhistorymM1)\n            .bnd(() => mMplayerArchive.bnd(spliceAdd, i, playerMonad.s, mMplayerArchive)) \n            .bnd(() => mMsetArchive.bnd(spliceAdd, i, sMplayers.s, mMsetArchive) ) \n      document.getElementById(\'0\').innerHTML = x[0];  \n      document.getElementById(\'1\').innerHTML = x[1];  \n      document.getElementById(\'2\').innerHTML = x[2];  \n      document.getElementById(\'3\').innerHTML = x[3]; \n      game2();\n      cleanup();\n  };\n\n  var game2 = function game2 () {\n      var ar = Array.from(sMplayers.s);\n      document.getElementById(\'sb1\').innerHTML = \'Name: \' +  pMname.x;  // kept current by playerMonad\n      document.getElementById(\'sb2\').innerHTML = \'Group: \' + pMgroup.x\n      document.getElementById(\'sb3\').innerHTML = \'Score: \' + pMscore.x\n      document.getElementById(\'sb4\').innerHTML = \'Goals: \' + pMgoals.x\n      document.getElementById(\'sb5\').innerHTML = \'Currently online: \';\n      document.getElementById(\'sb6\').innerHTML =  ar.join(\', \');\n      cleanup();\n  };\n \n  var trav = function trav (index) {       \n    document.getElementById(\'0\').innerHTML = mMhistorymM1.x[index][0]; \n    document.getElementById(\'1\').innerHTML = mMhistorymM1.x[index][1]; \n    document.getElementById(\'2\').innerHTML = mMhistorymM1.x[index][2]; \n    document.getElementById(\'3\').innerHTML = mMhistorymM1.x[index][3];\n    document.getElementById(\'sb3\').innerHTML = \'Score: \' + mMplayerArchive.x[index][2];\n    document.getElementById(\'sb4\').innerHTML = \'Goals: \' + mMplayerArchive.x[index][3];\n    if (pMgroup.x != \'solo\') {\n      document.getElementById(\'sb6\').innerHTML =  Array.from(mMsetArchive.x[index].s);\n    }\n    cleanup();\n  };  ');
+	var traverse = (0, _dom.h)('pre', '  const forwardClick$ = sources.DOM\n        .select(\'#forward\').events(\'click\');\n\n    var backClick$ = sources.DOM\n        .select(\'#back\').events(\'click\');\n\n    var forwardAction$ = forwardClick$.map(function () {\n        if (mMindex.x < (mMhistory.x.length - 1)) {\n          mMindex.bnd(add, 1, mMindex)\n          .bnd(v => trav(v));\n        }\n    });\n\n    var backAction$ = backClick$.map(function () {\n        if (mMindex.x > 0) {\n          mMindex.bnd(add, -1, mMindex)\n          .bnd(v => trav(v));\n          socket.send(\'DE#$42,\' + pMgroup.x + \',\' + pMname.x + \', clicked the BACK button. \');\n        }\n    });\n\n    var game = function game(z) {\n        var x = z.slice();\n        mMindex.bnd(add, 1, mMindex)\n            .bnd(function (i) { return mMhistory.bnd(spliceAdd, i, x, mMhistory); });\n        document.getElementById(\'0\').innerHTML = x[4];\n        document.getElementById(\'1\').innerHTML = x[5];\n        document.getElementById(\'2\').innerHTML = x[6];\n        document.getElementById(\'3\').innerHTML = x[7];\n        game2();\n        cleanup(\'cow\');\n    };\n\n    var game2 = function game2() {\n        document.getElementById(\'sb1\').innerHTML = \'Name: \' + pMname.x;\n        document.getElementById(\'sb2\').innerHTML = \'Group: \' + pMgroup.x;\n        document.getElementById(\'sb5\').innerHTML = \'Currently online: Name | score | goals\';\n        document.getElementById(\'sb6\').innerHTML = mMscoreboard.x;\n        cleanup(\'fred\');\n    };\n    var trav = function trav(index) {\n        document.getElementById(\'0\').innerHTML = mMhistory.x[index][4];\n        document.getElementById(\'1\').innerHTML = mMhistory.x[index][5];\n        document.getElementById(\'2\').innerHTML = mMhistory.x[index][6];\n        document.getElementById(\'3\').innerHTML = mMhistory.x[index][7];\n        var a = mMhistory.x[index];\n        mM1.ret(a[2]);\n        mM3.ret(a[3]);\n        socket.send(\'CG#$42,\' + mMgroup.x + \',\' + pMname.x + \',\' + a[0] + \',\' + a[1]);\n        mM8.ret(0);\n        cleanup(\'steve\');\n    };\n  };  ');
 
 	var MonadState = (0, _dom.h)('pre', '  const MonadState = function (g, state, value, p)  {\n  this.id = g;\n  this.s = state;\n  this.a = value;\n  this.process = p;\n  this.bnd = (func, ...args) => func(this.s, ...args);  \n  this.run = st => { \n    let s = this.process(st); \n    let a = s[3];\n    window[this.id] = new MonadState(this.id, s, a, this.process);\n    return window[this.id];\n  }\n}  ');
 
@@ -4874,7 +4874,7 @@
 
 	var factorsMonad = (0, _dom.h)('pre', '  var factorsMonad = new MonadState(\'factorsMonad\', [[], [], 2, []], [], factor_state);\n  var factorsMonad2 = new MonadState(\'factorsMonad2\', [[], [], 2, []], [], factor_state2);\n  \n  function factor_state(v) {\n      v[3].map(function (p) {\n          if (v[2] / p == Math.floor(v[2] / p)) {\n              v[0].push(p);\n          }\n      });\n      return v;\n  }\n  \n  function factor_state2(a) {\n      var v = a.slice();\n      var result;\n      func(v);\n      function func (v) {\n        for (let p of v[3]) {\n          if (v[2] / p == Math.floor(v[2] / p)) {\n              v[0].push(p);\n              func([v[0], v[1], v[2]/p, v[3]])\n              break;\n          };\n          result = v;\n        }; \n      }\n      return result;\n  }  ');
 
-	var factorsInput = (0, _dom.h)('pre', '  var factorsPress$ = sources.DOM\n      .select(\'input#factors_1\').events(\'keydown\');\n  var factorsAction$ = factorsPress$.map(function (e) {\n      mMfactors.ret(e.target.value);\n      if (e.target.value == \'\') {\n          return;\n      };\n\n      if (e.keyCode == 13 && (parseInt(e.target.value, 10) != null)) {\n          var message1;\n          var message2;\n          var factors = primesMonad.run([primesMonad.s[0], [], e.target.value, primesMonad.a])\n          .bnd(v => [prFactTransformer(v, e.target.value), prFactTransformer2(v, e.target.value)]);\n          message1 = \'The distinct prime factors of \' + e.target.value + \' are \' + factors[0].s[0] ;\n          message2 = \'All of the prime factors of \' + e.target.value + \' are \' + factors[1].s[0];\n          document.getElementById(\'factors_3\').innerHTML = message1;\n          document.getElementById(\'factors_4\').innerHTML = message2;\n      }\n  });  ');
+	var factorsInput = (0, _dom.h)('pre', '  var factorsPress$ = sources.DOM\n      .select(\'input#factors_1\').events(\'keydown\');\n\n    var factorsAction$ = factorsPress$.map(function (e) {\n      if (e.keyCode == 13) {\n        var num = e.target.value\n        if (!num.match(/^[0-9]+$/)) {\n          document.getElementById(\'factors_3\').innerHTML = \n            \'This works only if you enter a number.\';\n          document.getElementById(\'factors_4\').innerHTML = num + \' is not a number\';\n        }\n        else {\n          var factors = primesMonad.run([primesMonad.s[0], [], num, primesMonad.a])\n          .bnd(v => [prFactTransformer(v, num), prFactTransformer2(v, num)]);\n          document.getElementById(\'factors_3\').innerHTML = \n            \'The distinct prime factors of \' + num + \' are \' + factors[0].s[0] ;\n          document.getElementById(\'factors_4\').innerHTML = \n            \'All of the prime factors of \' + num + \' are \' + factors[1].s[0];\n        }\n      }\n    }\n  });  ');
 
 	var playerMonad = (0, _dom.h)('pre', '  var playerMonad = new MonadState(\'playerMonad\', [0,0], [0,0], player_state);\n\n  function player_state (v) {\n    var x = v.slice();\n    let ar = [ \n    pMscore.ret(x[0]),\n    pMgoals.ret(x[1]) ]\n    playerMonad.a = ar;\n    playerMonad.s = ar;  \n    return x; \n  };  ');
 
@@ -5125,11 +5125,7 @@
 	                }
 	            });
 	            mMZ17.bnd(function () {
-	                if (v[3] == 'no file') {
-	                    mMtaskList.ret([]);
-	                } else {
-	                    process(e.data);
-	                }
+	                if (v[3] == 'no file') mMtaskList.ret([]);else process(e.data);
 	            });
 	            mMZ18.bnd(function () {
 	                if (pMname == v[2]) playerMonad.run([v[3], v[4]]);
@@ -5148,6 +5144,7 @@
 	        });
 	        mMtemp.ret(e.data.split(',')[0]).bnd(next, 'CA#$42', mMZ10).bnd(next, 'XX#$42', mMZ11).bnd(next, 'CC#$42', mMZ12).bnd(next, 'CD#$42', mMZ13).bnd(next, 'CE#$42', mMZ14).bnd(next, 'EE#$42', mMZ15).bnd(next, 'DE#$42', mMZ16).bnd(next, 'DD#$42', mMZ17).bnd(next, 'CG#$42', mMZ18).bnd(next, 'NN#$42', mMZ19);
 	    });
+
 	    var updateScoreboard2 = function updateScoreboard(v) {
 	        var ar = [];
 	        for (var _i = 0, v_1 = v; _i < v_1.length; _i++) {
@@ -5157,6 +5154,7 @@
 	        ;
 	        return mMscoreboard.ret(ar);
 	    };
+
 	    var updateMessages = function updateMessages(ar) {
 	        console.log('8888888888888888888888888In updateMessages ar is >>>>>>>>>>>>>>', ar);
 	        var sender = ar[2];
@@ -5165,6 +5163,7 @@
 	        });
 	        console.log('99999999999999999999999In updateMessages mMmsg is ', mMmsg);
 	    };
+
 	    var loginPress$ = sources.DOM.select('input#login').events('keypress');
 	    var loginPressAction$ = loginPress$.map(function (e) {
 	        var v = e.target.value;
@@ -5414,8 +5413,11 @@
 	            updateCalc();
 	        }
 	    });
+
 	    var forwardClick$ = sources.DOM.select('#forward').events('click');
+
 	    var backClick$ = sources.DOM.select('#back').events('click');
+
 	    var forwardAction$ = forwardClick$.map(function () {
 	        if (mMindex.x < mMhistory.x.length - 1) {
 	            mMindex.bnd(add, 1, mMindex).bnd(function (v) {
@@ -5423,6 +5425,7 @@
 	            });
 	        }
 	    });
+
 	    var backAction$ = backClick$.map(function () {
 	        if (mMindex.x > 0) {
 	            mMindex.bnd(add, -1, mMindex).bnd(function (v) {
@@ -5431,6 +5434,7 @@
 	            socket.send('DE#$42,' + pMgroup.x + ',' + pMname.x + ', clicked the BACK button. ');
 	        }
 	    });
+
 	    var game = function game(z) {
 	        var x = z.slice();
 	        mMindex.bnd(add, 1, mMindex).bnd(function (i) {
@@ -5443,6 +5447,7 @@
 	        game2();
 	        cleanup('cow');
 	    };
+
 	    var game2 = function game2() {
 	        document.getElementById('sb1').innerHTML = 'Name: ' + pMname.x;
 	        document.getElementById('sb2').innerHTML = 'Group: ' + pMgroup.x;
@@ -5583,23 +5588,18 @@
 	    var factorsPress$ = sources.DOM.select('input#factors_1').events('keydown');
 
 	    var factorsAction$ = factorsPress$.map(function (e) {
-	        mMfactors.ret(e.target.value);
-	        if (e.target.value == '') {
-	            return;
-	        }
-	        ;
-	        if (e.keyCode == 13 && parseInt(e.target.value, 10) != null) {
-	            var message1;
-	            var message2;
-	            var factors = primesMonad.run([primesMonad.s[0], [], e.target.value, primesMonad.a]).bnd(function (v) {
-	                return [prFactTransformer(v, e.target.value), prFactTransformer2(v, e.target.value)];
-	            });
-	            // var m2 = primesMonad.run([primesMonad.s[0], [], e.target.value, primesMonad.a]).bnd(prFactTransformer2, e.target.value);
-	            message1 = 'The distinct prime factors of ' + e.target.value + ' are ' + factors[0].s[0];
-	            document.getElementById('factors_3').innerHTML = message1;
-
-	            message2 = 'All of the prime factors of ' + e.target.value + ' are ' + factors[1].s[0];
-	            document.getElementById('factors_4').innerHTML = message2;
+	        if (e.keyCode == 13) {
+	            var num = e.target.value;
+	            if (!num.match(/^[0-9]+$/)) {
+	                document.getElementById('factors_3').innerHTML = 'This works only if you enter a number.';
+	                document.getElementById('factors_4').innerHTML = num + ' is not a number';
+	            } else {
+	                var factors = primesMonad.run([primesMonad.s[0], [], num, primesMonad.a]).bnd(function (v) {
+	                    return [prFactTransformer(v, num), prFactTransformer2(v, num)];
+	                });
+	                document.getElementById('factors_3').innerHTML = 'The distinct prime factors of ' + num + ' are ' + factors[0].s[0];
+	                document.getElementById('factors_4').innerHTML = 'All of the prime factors of ' + num + ' are ' + factors[1].s[0];
+	            }
 	        }
 	    });
 	    // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> ENDOM prime factors END

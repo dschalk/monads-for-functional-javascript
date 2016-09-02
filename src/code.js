@@ -79,43 +79,43 @@ var driver = h('pre', `  var websocketsDriver = function () {
   };
 ` )
 
-var messages = h('pre', `  const messages$ = (sources.WS).map(e => 
-    mMtem.ret(e.data.split(',')).bnd(v => {
-    console.log('<><><><><><><><><><><><><><><><>  INCING  <><><><><><><> >>> In messages. v is ', v );
-    mMZ10.bnd(() => mM1.ret([v[3], v[4], v[5], v[6]]).bnd(ar => game(ar))) 
-    mMZ11.bnd(() => socket.send('NN#$42,' + pMgroup.x + ',' + pMname.x))
-    mMZ12.bnd(() => mM6.ret(v[2] + ' successfully logged in.'))
-    mMZ13.bnd(() => updateMessages(v))
-    mMZ14.bnd(() => mMgoals2.ret('The winner is ' + v[2] ))
-    mMZ15.bnd(() => mMgoals2.ret('A player named ' + v[2] + ' is currently logged in. Page will refresh in 4 seconds.')
-    .bnd(refresh))
-    mMZ16.bnd(() => {if (pMname.x != v[2]) {mMgoals2.ret(v[2] + v[3])}})
-    mMZ17.bnd(() => {
-      if (v[3] == 'no file') {
-        mMtaskList.ret([])
-      } 
-      else {
-        process(e.data)
-      }
-    })
-    mMZ18.bnd(() => player(v))
-    mMZ19.bnd(() => {
-      var names = v.slice(3);
-      sMplayers.clear();
-      names.forEach(player => sMplayers.add(player.trim()))
-      game2();
-    }) })
-       mMtemp.ret(e.data.split(',')[0])
-      .bnd(next, 'CA#$42', mMZ10)
-      .bnd(next, 'XX#$42', mMZ11)
-      .bnd(next, 'CC#$42', mMZ12)
-      .bnd(next, 'CD#$42', mMZ13)
-      .bnd(next, 'CE#$42', mMZ14)
-      .bnd(next, 'EE#$42', mMZ15)
-      .bnd(next, 'DE#$42', mMZ16)
-      .bnd(next, 'DD#$42', mMZ17)
-      .bnd(next, 'CG#$42', mMZ18)
-      .bnd(next, 'NN#$42', mMZ19)
+var messages = h('pre', `  const messages$ = (sources.WS).map( e => {
+    mMtem.ret(e.data.split(',')).bnd( v => {
+      console.log('<><><><><><><><><><><><><><><><>  INCOMING  <><><><><><><> >>> In messages. e amd v are ', e, v);
+      mMZ10.bnd( () => mM1.ret(v.slice(3)).bnd(function (y) { return game([pMscore.x, pMgoals.x, y, mM3.x].concat(y))}));
+      mMZ11.bnd( () => socket.send('CG#$42,' + pMgroup.x + ',' + pMname.x + ',' + pMscore + ',' + pMgoals));
+      mMZ12.bnd( () => mM6.ret(v[2] + ' successfully logged in.'));
+      mMZ13.bnd( () => updateMessages(v));
+      mMZ14.bnd( () => mMgoals2.ret('The winner is ' + v[2]));
+      mMZ15.bnd( () => mMgoals2.ret('A player named ' + v[2] + ' is currently logged in. Page will refresh in 4 seconds.')
+      .bnd(refresh); );
+      mMZ16.bnd( () => { if (pMname.x != v[2]) mMgoals2.ret(v[2] + v[3])});
+      mMZ17.bnd( () => {
+        if (v[3] == 'no file') mMtaskList.ret([])
+        else process(e.data)
+      });
+      mMZ18.bnd( () => { if (pMname == v[2]) playerMonad.run([v[3], v[4]])});
+      mMZ19.bnd( () => {
+          sMplayers.clear();
+          var namesL = e.data.split("<br>");
+          var namesList = namesL.slice(1);
+          updateScoreboard2(namesList);
+          namesList.forEach(function (player) { return sMplayers.add(player.trim())});
+          game2();
+          console.log('In mMZ19 <><><><><><> namesL, and namesList are ', namesL, namesList);
+      });
+    });
+    mMtemp.ret(e.data.split(',')[0])
+    .bnd(next, 'CA#$42', mMZ10)
+    .bnd(next, 'XX#$42', mMZ11)
+    .bnd(next, 'CC#$42', mMZ12)
+    .bnd(next, 'CD#$42', mMZ13)
+    .bnd(next, 'CE#$42', mMZ14)
+    .bnd(next, 'EE#$42', mMZ15)
+    .bnd(next, 'DE#$42', mMZ16)
+    .bnd(next, 'DD#$42', mMZ17)
+    .bnd(next, 'CG#$42', mMZ18)
+    .bnd(next, 'NN#$42', mMZ19)
   });  `  )
 
 var MonadSet = h('pre',  `  var MonadSet = function MonadSet(set, ID) {
@@ -668,62 +668,57 @@ var ret_add_cube = h('pre',  `  var ret = function ret(v, id = 'anonymous') {
 var seed = h('pre',  `  mM$prime.ret([[2],3])  `  )
 
 var traverse = h('pre',  `  const forwardClick$ = sources.DOM
-    .select('#forward').events('click');
- 
-  const backClick$ = sources.DOM
-    .select('#back').events('click');
- 
-  const forwardAction$ = forwardClick$.map(() => {
-    if (mMindex.x < (mMhistorymM1.x.length - 1)) {
-      mMindex.bnd(add, 1, mMindex)
-      .bnd(v => trav(v))
-    }
-  });
- 
-  const backAction$ = backClick$.map(() => {
-    if (mMindex.x > 0) {
-      mMindex.bnd(add, -1, mMindex)
-      .bnd(v => trav(v))
-      socket.send('DE#$42,' + pMgroup.x + ',' + pMname.x + ', clicked the BACK button. ');
-    }
-  });
+        .select('#forward').events('click');
 
-  var game = function game (z) {  // Runs each time a number is clicked
-    var x = z.slice();
+    var backClick$ = sources.DOM
+        .select('#back').events('click');
+
+    var forwardAction$ = forwardClick$.map(function () {
+        if (mMindex.x < (mMhistory.x.length - 1)) {
+          mMindex.bnd(add, 1, mMindex)
+          .bnd(v => trav(v));
+        }
+    });
+
+    var backAction$ = backClick$.map(function () {
+        if (mMindex.x > 0) {
+          mMindex.bnd(add, -1, mMindex)
+          .bnd(v => trav(v));
+          socket.send('DE#$42,' + pMgroup.x + ',' + pMname.x + ', clicked the BACK button. ');
+        }
+    });
+
+    var game = function game(z) {
+        var x = z.slice();
         mMindex.bnd(add, 1, mMindex)
-          .bnd(i => mMhistorymM1.bnd(spliceAdd, i, x, mMhistorymM1)
-            .bnd(() => mMplayerArchive.bnd(spliceAdd, i, playerMonad.s, mMplayerArchive)) 
-            .bnd(() => mMsetArchive.bnd(spliceAdd, i, sMplayers.s, mMsetArchive) ) 
-      document.getElementById('0').innerHTML = x[0];  
-      document.getElementById('1').innerHTML = x[1];  
-      document.getElementById('2').innerHTML = x[2];  
-      document.getElementById('3').innerHTML = x[3]; 
-      game2();
-      cleanup();
-  };
+            .bnd(function (i) { return mMhistory.bnd(spliceAdd, i, x, mMhistory); });
+        document.getElementById('0').innerHTML = x[4];
+        document.getElementById('1').innerHTML = x[5];
+        document.getElementById('2').innerHTML = x[6];
+        document.getElementById('3').innerHTML = x[7];
+        game2();
+        cleanup('cow');
+    };
 
-  var game2 = function game2 () {
-      var ar = Array.from(sMplayers.s);
-      document.getElementById('sb1').innerHTML = 'Name: ' +  pMname.x;  // kept current by playerMonad
-      document.getElementById('sb2').innerHTML = 'Group: ' + pMgroup.x
-      document.getElementById('sb3').innerHTML = 'Score: ' + pMscore.x
-      document.getElementById('sb4').innerHTML = 'Goals: ' + pMgoals.x
-      document.getElementById('sb5').innerHTML = 'Currently online: ';
-      document.getElementById('sb6').innerHTML =  ar.join(', ');
-      cleanup();
-  };
- 
-  var trav = function trav (index) {       
-    document.getElementById('0').innerHTML = mMhistorymM1.x[index][0]; 
-    document.getElementById('1').innerHTML = mMhistorymM1.x[index][1]; 
-    document.getElementById('2').innerHTML = mMhistorymM1.x[index][2]; 
-    document.getElementById('3').innerHTML = mMhistorymM1.x[index][3];
-    document.getElementById('sb3').innerHTML = 'Score: ' + mMplayerArchive.x[index][2];
-    document.getElementById('sb4').innerHTML = 'Goals: ' + mMplayerArchive.x[index][3];
-    if (pMgroup.x != 'solo') {
-      document.getElementById('sb6').innerHTML =  Array.from(mMsetArchive.x[index].s);
-    }
-    cleanup();
+    var game2 = function game2() {
+        document.getElementById('sb1').innerHTML = 'Name: ' + pMname.x;
+        document.getElementById('sb2').innerHTML = 'Group: ' + pMgroup.x;
+        document.getElementById('sb5').innerHTML = 'Currently online: Name | score | goals';
+        document.getElementById('sb6').innerHTML = mMscoreboard.x;
+        cleanup('fred');
+    };
+    var trav = function trav(index) {
+        document.getElementById('0').innerHTML = mMhistory.x[index][4];
+        document.getElementById('1').innerHTML = mMhistory.x[index][5];
+        document.getElementById('2').innerHTML = mMhistory.x[index][6];
+        document.getElementById('3').innerHTML = mMhistory.x[index][7];
+        var a = mMhistory.x[index];
+        mM1.ret(a[2]);
+        mM3.ret(a[3]);
+        socket.send('CG#$42,' + mMgroup.x + ',' + pMname.x + ',' + a[0] + ',' + a[1]);
+        mM8.ret(0);
+        cleanup('steve');
+    };
   };  `  )
 
 var MonadState = h('pre',  `  const MonadState = function (g, state, value, p)  {
@@ -838,22 +833,25 @@ var factorsMonad = h('pre',  `  var factorsMonad = new MonadState('factorsMonad'
 
 var factorsInput = h('pre',  `  var factorsPress$ = sources.DOM
       .select('input#factors_1').events('keydown');
-  var factorsAction$ = factorsPress$.map(function (e) {
-      mMfactors.ret(e.target.value);
-      if (e.target.value == '') {
-          return;
-      };
 
-      if (e.keyCode == 13 && (parseInt(e.target.value, 10) != null)) {
-          var message1;
-          var message2;
-          var factors = primesMonad.run([primesMonad.s[0], [], e.target.value, primesMonad.a])
-          .bnd(v => [prFactTransformer(v, e.target.value), prFactTransformer2(v, e.target.value)]);
-          message1 = 'The distinct prime factors of ' + e.target.value + ' are ' + factors[0].s[0] ;
-          message2 = 'All of the prime factors of ' + e.target.value + ' are ' + factors[1].s[0];
-          document.getElementById('factors_3').innerHTML = message1;
-          document.getElementById('factors_4').innerHTML = message2;
+    var factorsAction$ = factorsPress$.map(function (e) {
+      if (e.keyCode == 13) {
+        var num = e.target.value
+        if (!num.match(/^[0-9]+$/)) {
+          document.getElementById('factors_3').innerHTML = 
+            'This works only if you enter a number.';
+          document.getElementById('factors_4').innerHTML = num + ' is not a number';
+        }
+        else {
+          var factors = primesMonad.run([primesMonad.s[0], [], num, primesMonad.a])
+          .bnd(v => [prFactTransformer(v, num), prFactTransformer2(v, num)]);
+          document.getElementById('factors_3').innerHTML = 
+            'The distinct prime factors of ' + num + ' are ' + factors[0].s[0] ;
+          document.getElementById('factors_4').innerHTML = 
+            'All of the prime factors of ' + num + ' are ' + factors[1].s[0];
+        }
       }
+    }
   });  `  )
 
 var playerMonad = h('pre',  `  var playerMonad = new MonadState('playerMonad', [0,0], [0,0], player_state);
