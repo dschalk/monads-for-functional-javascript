@@ -136,6 +136,16 @@ var primes_state = function primes_state(x) {
     return v;
 };
 
+var mMplayer = new Monad([], 'mMplayer');
+var fibsMonad = new MonadState('fibsMonad', [0, 1, 3, [0, 1]], [0, 1], fibs_state);
+
+factor_state([[], [], 24, [2, 3, 5]]);
+
+factor_state2([[], [], 24, [2, 3, 5]]);
+
+var factorsMonad = new MonadState('factorsMonad', [[], [], 2, []], [], factor_state);
+var factorsMonad2 = new MonadState('factorsMonad2', [[], [], 2, []], [], factor_state2);
+
 function factor_state(v) {
     v[3].map(function (p) {
         if (v[2] / p == Math.floor(v[2] / p)) {
@@ -144,15 +154,6 @@ function factor_state(v) {
     });
     return v;
 }
-
-var mMplayer = new Monad([], 'mMplayer');
-var fibsMonad = new MonadState('fibsMonad', [0, 1, 3, [0, 1]], [0, 1], fibs_state);
-var factorsMonad = new MonadState('factorsMonad', [[], [], 2, []], [], factor_state);
-var factorsMonad2 = new MonadState('factorsMonad2', [[], [], 2, []], [], factor_state2);
-
-factor_state([[], [], 24, [2, 3, 5]]);
-
-factor_state2([[], [], 24, [2, 3, 5]]);
 
 function factor_state2(a) {
     var v = a.slice();

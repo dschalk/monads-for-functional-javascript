@@ -4874,7 +4874,7 @@
 
 	var factorsMonad = (0, _dom.h)('pre', '  var factorsMonad = new MonadState(\'factorsMonad\', [[], [], 2, []], [], factor_state);\n  var factorsMonad2 = new MonadState(\'factorsMonad2\', [[], [], 2, []], [], factor_state2);\n  \n  function factor_state(v) {\n      v[3].map(function (p) {\n          if (v[2] / p == Math.floor(v[2] / p)) {\n              v[0].push(p);\n          }\n      });\n      return v;\n  }\n  \n  function factor_state2(a) {\n      var v = a.slice();\n      var result;\n      func(v);\n      function func (v) {\n        for (let p of v[3]) {\n          if (v[2] / p == Math.floor(v[2] / p)) {\n              v[0].push(p);\n              func([v[0], v[1], v[2]/p, v[3]])\n              break;\n          };\n          result = v;\n        }; \n      }\n      return result;\n  }  ');
 
-	var factorsInput = (0, _dom.h)('pre', '  var factorsPress$ = sources.DOM\n      .select(\'input#factors_1\').events(\'keydown\');\n  var factorsAction$ = factorsPress$.map(function (e) {\n      mMfactors.ret(e.target.value);\n      if (e.target.value == \'\') {\n          return;\n      }\n      ;\n      if (e.keyCode == 13 && (parseInt(e.target.value, 10) != null)) {\n          var message1;\n          var message2;\n          var m = primesMonad.run([primesMonad.s[0], [], e.target.value, primesMonad.a])\n          .bnd(prFactTransformer, e.target.value);\n          message1 = \'The distinct prime factors of \' + e.target.value + \' are \' + m.s[0];\n          document.getElementById(\'factors_3\').innerHTML = message1;\n        \n          var m2 = primesMonad.run([primesMonad.s[0], [], e.target.value, primesMonad.a])\n          .bnd(prFactTransformer2, e.target.value);\n          message2 = \'All of the prime factors of \' + e.target.value + \' are \' + m2.s[0];\n          document.getElementById(\'factors_4\').innerHTML = message2;\n      }\n  });  ');
+	var factorsInput = (0, _dom.h)('pre', '  var factorsPress$ = sources.DOM\n      .select(\'input#factors_1\').events(\'keydown\');\n  var factorsAction$ = factorsPress$.map(function (e) {\n      mMfactors.ret(e.target.value);\n      if (e.target.value == \'\') {\n          return;\n      };\n\n      if (e.keyCode == 13 && (parseInt(e.target.value, 10) != null)) {\n          var message1;\n          var message2;\n          var factors = primesMonad.run([primesMonad.s[0], [], e.target.value, primesMonad.a])\n          .bnd(v => [prFactTransformer(v, e.target.value), prFactTransformer2(v, e.target.value)]);\n          message1 = \'The distinct prime factors of \' + e.target.value + \' are \' + factors[0].s[0] ;\n          message2 = \'All of the prime factors of \' + e.target.value + \' are \' + factors[1].s[0];\n          document.getElementById(\'factors_3\').innerHTML = message1;\n          document.getElementById(\'factors_4\').innerHTML = message2;\n      }\n  });  ');
 
 	var playerMonad = (0, _dom.h)('pre', '  var playerMonad = new MonadState(\'playerMonad\', [0,0], [0,0], player_state);\n\n  function player_state (v) {\n    var x = v.slice();\n    let ar = [ \n    pMscore.ret(x[0]),\n    pMgoals.ret(x[1]) ]\n    playerMonad.a = ar;\n    playerMonad.s = ar;  \n    return x; \n  };  ');
 
@@ -5581,6 +5581,7 @@
 	    // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> ENDOM basic prime END
 	    // <>>><>><><><><>>>><><><   prime factors   ><><><><><><>>><<><><><><><><>< START prime factors  
 	    var factorsPress$ = sources.DOM.select('input#factors_1').events('keydown');
+
 	    var factorsAction$ = factorsPress$.map(function (e) {
 	        mMfactors.ret(e.target.value);
 	        if (e.target.value == '') {
@@ -5590,12 +5591,14 @@
 	        if (e.keyCode == 13 && parseInt(e.target.value, 10) != null) {
 	            var message1;
 	            var message2;
-	            var m = primesMonad.run([primesMonad.s[0], [], e.target.value, primesMonad.a]).bnd(prFactTransformer, e.target.value);
-	            message1 = 'The distinct prime factors of ' + e.target.value + ' are ' + m.s[0];
+	            var factors = primesMonad.run([primesMonad.s[0], [], e.target.value, primesMonad.a]).bnd(function (v) {
+	                return [prFactTransformer(v, e.target.value), prFactTransformer2(v, e.target.value)];
+	            });
+	            // var m2 = primesMonad.run([primesMonad.s[0], [], e.target.value, primesMonad.a]).bnd(prFactTransformer2, e.target.value);
+	            message1 = 'The distinct prime factors of ' + e.target.value + ' are ' + factors[0].s[0];
 	            document.getElementById('factors_3').innerHTML = message1;
 
-	            var m2 = primesMonad.run([primesMonad.s[0], [], e.target.value, primesMonad.a]).bnd(prFactTransformer2, e.target.value);
-	            message2 = 'All of the prime factors of ' + e.target.value + ' are ' + m2.s[0];
+	            message2 = 'All of the prime factors of ' + e.target.value + ' are ' + factors[1].s[0];
 	            document.getElementById('factors_4').innerHTML = message2;
 	        }
 	    });

@@ -842,19 +842,16 @@ var factorsInput = h('pre',  `  var factorsPress$ = sources.DOM
       mMfactors.ret(e.target.value);
       if (e.target.value == '') {
           return;
-      }
-      ;
+      };
+
       if (e.keyCode == 13 && (parseInt(e.target.value, 10) != null)) {
           var message1;
           var message2;
-          var m = primesMonad.run([primesMonad.s[0], [], e.target.value, primesMonad.a])
-          .bnd(prFactTransformer, e.target.value);
-          message1 = 'The distinct prime factors of ' + e.target.value + ' are ' + m.s[0];
+          var factors = primesMonad.run([primesMonad.s[0], [], e.target.value, primesMonad.a])
+          .bnd(v => [prFactTransformer(v, e.target.value), prFactTransformer2(v, e.target.value)]);
+          message1 = 'The distinct prime factors of ' + e.target.value + ' are ' + factors[0].s[0] ;
+          message2 = 'All of the prime factors of ' + e.target.value + ' are ' + factors[1].s[0];
           document.getElementById('factors_3').innerHTML = message1;
-        
-          var m2 = primesMonad.run([primesMonad.s[0], [], e.target.value, primesMonad.a])
-          .bnd(prFactTransformer2, e.target.value);
-          message2 = 'All of the prime factors of ' + e.target.value + ' are ' + m2.s[0];
           document.getElementById('factors_4').innerHTML = message2;
       }
   });  `  )

@@ -4,7 +4,7 @@
   "description": "",
   "main": "src/main.js",
   "dependencies": {
-    "@cycle/dom": "^12.2.2",
+    "@cycle/dom": "^12.2.3",
     "@cycle/xstream-run": "^3.1.0",
     "@motorcycle/core": "^1.2.1",
     "@motorcycle/dom": "1.4.0",
@@ -20,7 +20,7 @@
     "npm": "^3.10.6",
     "trine": "0.1.1",
     "webpack": "^2.0.6-beta",
-    "xstream": "^2.4.2"
+    "xstream": "^2.6.2"
   },
   "devDependencies": {
     "@motorcycle/core": "1.2.1",
