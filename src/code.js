@@ -1014,16 +1014,21 @@ var e1 = h('pre',  `  var ret = function ret(v, id = 'anonymous') {
 var e2 = h('pre',  `  var c = m.ret(0).bnd(add,3).bnd(cube)
   .bnd(log,"m.x and a.x are  " + m.x + " and " + a.x + " respectively ")
   Output: In log. Entry:  m.x and a.x are  0 and 27 respectively 
-  Note: m.x keeps its initial value of 0.
+  Note: m.x keeps its initial value of 0 because each computation 
+        creates a fresh instance of Monad with id == "anonymous".
 
   m.bnd(() => add(0, 3).bnd(cube).bnd(m.ret).bnd(v => log("", "m.x is " + v))) 
   Output: In log. Entry:  m.x is 27
-  Note: It doesn\'t matter what m.x was at the beginning of the computation.
- 
-  ret(3).bnd(v => ret(v*v).bnd(v2 => log("", "a squared is " + v2).bnd(() => 
-  ret(4*4).bnd(v3 => log("", "a squared plus b squared is " + (v2 + v3), m)))))
-  Output: In log. Entry:  a squared is 9
-          In log. Entry:  a squared plus b squared is 25  `  )
+  Note: The value of m.x at the beginning of the computation is ignored. 
+        "m.ret" after the final computation creates a fresh instance of Monad 
+        with id == "m" and m.x == 27. If there is a reference to the original m, 
+        it will be preserved with its original value, otherwise it is subject to 
+        removal by the gargane collector.
+
+  m.ret(0).bnd(add,3,m2).bnd(cube,m3)
+  .bnd(log,"m.x and m2.x and m3.x are  " + m.x + ", " + m2.x + " and " + m3.x + " respectively ")
+  Output:  In log. Entry:  m.x and m2.x and m3.x are  0, 3 and 27 respectively
+  Note: This time, add got three arguments and cube got two.  ` )
 
 var equals = h('pre',  `    var equals = function equals (mon1, mon2) {
       if (mon1.id === mon2.id && mon1.x === mon2.x) return true;

@@ -1,5 +1,8 @@
 
 "use strict";
+// import xs from 'xstream';
+// import {run} from '@cycle/xstream-run';
+// import {makeDOMDriver} from '@cycle/dom';
 import Cycle from '@motorcycle/core';
 import {h, p, span, h1, h2, h3, br, div, label, input, hr, makeDOMDriver} from '@motorcycle/dom';
 import {just, create, merge, combine, fromEvent, periodic, observe, delay, filter, of} from 'most';
@@ -766,23 +769,24 @@ function main(sources) {
                     h('h1', 'The Monads'),
                     h('h3', ' Monad '),
                     code.monad,
-                    h('p', ' Monad instances are useful for chaining computations. Typically, the bnd() method provides its value to a computation that returns an instance of Monad. Here are some examples: '),
+                    h('p', ' In chains of computations, the arguments provided to each link\'s bnd() method are functions that return an instance of Monad. Here are some examples of functions that return instances of Monad: '),
                     code.e1,
                     h('p', ' These functions can be used with instances of Monad in many ways, for example: '),
                     code.e2,
-                    h('p', ' Each of the functions shown above can be used as a stand-alone function or as an argument to the bnd() method. Each monad in a chain of linked computations can do one of two things with the previous monad\s value: (1) It can ignore it, possibly letting it move past for use further down the chain or (2) use it, with the option of passing it on down the chain. Any computation can be inserted into the chain by giving it an additional first argument (which will be the previous monad\'s value), and having it return an instance of Monad. Say you have a function func(a,b,c) {...}. Put something ahead of a (it will have the previous monad\'s value) and return a monad. You can give the returned monad any value you like. For example, func\'(x,a,b,c) {...; return ret(x)} will work. Its bnd() method will pass along the value x, which is the previous monad\s value. '),
+                    h('p', ' Each of the functions shown above can be used as a stand-alone function or as an argument to the bnd() method. Each monad in a chain of linked computations can do one of two things with the previous monad\s value: (1) It can ignore it, possibly letting it move past for use further down the chain or (2) use it, with the option of passing it and/or the computation result on down the chain. ' ), 
+                    h('p', ' Any function can be made suitable for use in a chain of computations by adding a dummy variable as a first argument and the name of a monad as the last. Take, for example, (a,b) => a + b. (x,a,b,mon) => mon.ret(a + b) is a version suitable for use as an argument to bnd() in a chain of computations. '  ),
                     h('h3', ' The Monad Laws '),
                     h('p', ' In the following discussion, "x == y" signifies that x == y returns true. Let M be the collection of all instances of Monad, let J be the collection of all Javascript values, including functions, instances of Monad, etc, and let F be the collection of all functions mapping values in J to monads in M where the return values are the calling instance of Monad. For any m (with id == "m"), v, f, and f\' in M, J, F, and F, respectively, the following relationships hold: '),
                     h('h3', 'Left Identity ' ),
-                    h('pre.lb', `  equals( m.ret(v).bnd(f), f(v))   ` ), 
-                    h('pre.lb', `  Example: equals( m.ret(5).bnd(cube,m), cube(5,m))   ` ), 
+                    h('pre.lb', `  equals( m.ret(v).bnd(f), f(v) )   ` ), 
+                    h('pre.lb', `  Example: equals( m.ret(5).bnd(cube,m), cube(5,m) )   ` ), 
                     h('pre.lb', `  Haskell monad law: (return x) >>= f \u2261 f x  ` ),
                     h('h3', ' Right Identity  ' ),  
                     h('pre.lb', `  m.bnd(m.ret) === m    `  ),
                     h('pre.lb', `  Haskell monad law: m >>= return \u2261 m `  ),
                     h('h3', ' Commutivity  ' ),  
-                    h('pre.lb', `  equals( m.bnd(f).bnd(f'), m.bnd(v => f(v).bnd(f'))) ` ),
-                    h('pre.lb', `  Example:  equals(m.ret(0).bnd(add,1,m).bnd(cube,m), m.ret(0).bnd(v => add(v,1,m).bnd(cube,m))) ` ),
+                    h('pre.lb', `  equals( m.bnd(f).bnd(f'), m.bnd(v => f(v).bnd(f')) ) ` ),
+                    h('pre.lb', `  Example:  equals( m.ret(0).bnd(add,1,m).bnd(cube,m), m.ret(0).bnd(v => add(v,1,m).bnd(cube,m)) ) ` ),
                     h('pre.lb', `  Haskell monad law: (m >>= f) >>= g \u2261 m >>= ( \\x -> (f x >>= g) ) `),
                     h('p', ' where equals is defined as: '),
                     code.equals,
