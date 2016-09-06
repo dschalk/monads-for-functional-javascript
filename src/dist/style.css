@@ -16,6 +16,18 @@ input {
 
 .lb {color: lightblue;}
 
+.bh3 {
+ color: #00ffd8;
+ font-size: 24px;
+ margin-left: 2%;
+}
+
+h3 {
+ color: #f9dc90;
+ font-size: 26px;
+ margin-left: 2%;
+}
+
 #timeout2 {
   color: #F2650E;
   margin-left: 3%;
@@ -195,14 +207,9 @@ h2 {
   }
 
 h1 {
-  color: #ed07f9 
+  color: #abfcfb;
   text-align: center;
   }
-
-h3 {
-  text-align: left;
-  color: #b5f4ce;
-}
 
 #tog {
 }

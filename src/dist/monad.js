@@ -5,6 +5,7 @@ var name = "start";
 var group = "solo";
 var score = 0;
 var goals = 0;
+/*
 var Monad = function Monad(z) {
     var _this = this;
 
@@ -22,22 +23,55 @@ var Monad = function Monad(z) {
     this.ret = function (a) {
         return window[_this.id] = new Monad(a, _this.id);
     };
+};  */
+
+var Monad = function Monad(z) {
+    var _this = this;
+    var g = arguments.length <= 1 || arguments[1] === undefined ? 'anonymous' : arguments[1];
+    this.id = g;
+    this.x = z;
+    this.bnd = function (func, ...args) {
+    return func(_this.x, ...args)
 };
+    this.ret = function (a) {
+        return window[_this.id] = new Monad(a, _this.id);
+    };
+};
+
+var ret = function ret(v, id) {
+  if (arguments.length == 1) var id = "anonymous";
+  else var id = id;
+  window[id] = new Monad(v, id);
+  return window[id];
+};
+
+var equals = function equals(mon1, mon2) {
+    if (mon1.id === mon2.id && mon1.x === mon2.x)
+        return true;
+    else
+        return false;
+};
+
+var cube = function (v, mon) {
+    if (arguments.length === 2) {
+        return mon.ret(v * v * v);
+    }
+    return ret(v * v * v, 'fred');
+};
+
 var m = new Monad(3, 'm');
-console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>> testing m.bnd(m.ret) == m')
-console.log(m.bnd(m.ret) == m)
-m.bnd(function (x) {
-    return console.log(x);
-});
+console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>> testing m.bnd(m.ret) == m');
+console.log(m.bnd(m.ret) == m);
+
+console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>> testing equals(ret(3).bnd(cube), cube(3)) ' );
+console.log(equals(ret(3).bnd(cube), cube(3)));
+
 function fmap2(g, a, id) { return (new Monad(g(a.x), id)); }
-var ret = function ret(v, id = 'anonymous') {
-    window[id] = new Monad(v, id);
-    return window[id];
-};
-function fmap(x, g, id) { return (new Monad(g(x), id)); }
+
 function opM(a, op, b, id) {
     return (new Monad(a.x + op + b.x), id);
 }
+
 var MonadSet = function MonadSet(set) {
   var _this = this;
 
@@ -278,12 +312,6 @@ var testscore = function testscore(v) {
     return ret(v);
 };
 var expand = function expand(a, b) { return a + ', ' + b; };
-var cube = function (v, mon) {
-    if (arguments.length === 2) {
-        return mon.ret(v * v * v);
-    }
-    return ret(v * v * v, 'fred');
-};
 var p = function p(x) {
     if (x >= 0) {
         return ' + ' + x;
@@ -569,12 +597,6 @@ var calc = function calc(a, op, b) {
         default: 'major malfunction in calc.';
     }
     return result;
-};
-var equals = function equals(mon1, mon2) {
-    if (mon1.id === mon2.id && mon1.x === mon2.x)
-        return true;
-    else
-        return false;
 };
 var equals2 = function equals(x, mon1, mon2, mon3) {
     if (mon1.id === mon2.id && mon1.x === mon2.x) {
