@@ -22,7 +22,6 @@
   h('p', ' Tests in the JS-monads-mutableInstances branch at the Github repository produce results closer to what we would expect in mathematics. For example: m.ret(7) == m.ret(7) returns true in JS-monads-mutableIntances but false in JS-monads-stable, the master branch. But it would be folly to give up immutability for the sake of making unimportant comparisons come out "right". equals(m.ret(7), m.ret(7)) tells us that m.ret(7) is doing the same thing on both sides of the comparison, and that is all that is important. Similarly, equals(ret(3).bnd(cube), cube(3)) tells us that ret(3).bnd(cube) and cube(3) are doing the same thing; they can be substituted for one another. In Haskell, x ≡ y means that you can replace x with y and vice-versa, and the behaviour of your program will not change. That is what "equals(x, y)" means in the context of demonstrating that instances of Monad in M obey the Javascript equivalent of the Haskell monad laws. The behavior of Instances of Monad with ret() (the function and the method) and bnd() mirrors the behavior of Haskell monads with return and >>=. This doesn\'t prove anything, but I find it reassuring.  ' ),
                     h('span', ' Haskell monads are not category theory monads. They don\'t even exist in a category. See: ' ),                     
                     h('a', { props: { href:"http://math.andrej.com/2016/08/06/hask-is-not-a-category", target: "_blank" }}, ' Hask is not a category '),
-                    h(
   
   h('h3', ' Back to the master branch '),
   h('h3', ' fmap '),
