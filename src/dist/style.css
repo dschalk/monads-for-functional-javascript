@@ -125,6 +125,25 @@ h3 {
   font-size: 28px;
 }
 
+.turk {
+  margin: 1%;
+  color: #00e9ff;
+  font-size: 23px;
+}
+
+.turk2 {
+  margin: 1%;
+  color: #62f2f7;
+  font-size: 23px;
+}
+
+.turk3 {
+  margin: 1%;
+  color: #efa5eb;
+  font-size: 23px;
+}
+
+
 .content {
   font-size: 22px;
 } 

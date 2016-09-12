@@ -5,8 +5,7 @@ var name = "start";
 var group = "solo";
 var score = 0;
 var goals = 0;
-
-function num (x) {return (new Number (x))*1; }; 
+var ret = function ret(v, id) {
 
 function Monad(z) {
     var _this = this;
@@ -25,7 +24,8 @@ var a = 3;
 var b = 4;
 var c = a + b;
 
-var ret = function ret(v, id) {
+
+
   if (arguments.length == 1) var id = "anonymous";
   else var id = id;
   window[id] = new Monad(v, id);
@@ -70,57 +70,66 @@ function fmap(x, g, id) {
   return mon;
 }
 
+function fmapA(x, g, id) { 
+  var mon = (new Monad(x.map(g), id)); 
+  window[id] = mon;
+  return mon;
+}
+
 var isFunc = function isFunc (x) { return eval("typeof(" + x + ") == 'function'")};
 
 function nothing () {return new MonadMaybe('Nothing', 'nothing')}
+this.ret = function (a) { 
 
 var MonadMaybe = function MonadMaybe(z) {
   var _this = this;
-  var g = arguments.length <= 1 || arguments[1] === undefined ? 'anonymous' : arguments[1];
-  this.id = g;
-  this.x = z;
-  
-  this.bnd = function (a) {
-    console.log('<B><B><B>             Entering bnd()  <B><B><B>               The argument is ', a );
-    var result;
-    if (_this.x == 'Nothing' || a[1] == 'Nothing') {
-      console.log('<B><N><B>             In bnd()        <B><N><B>      Propagating Nothing from bnd()');
-      result = Nothing;
-      console.log('<$><$><$>             In bnd()        <$><$><$>      The result is ', result, '   result.x:', result.x);
-      return result;
-    }
-    if (a instanceof Function) return a();
+var g = arguments.length <= 1 || arguments[1] === undefined ? 'anonymous' : arguments[1];
+this.id = g;
+this.x = z;
+
+this.bnd = function (a) {
+  console.log('<B><B><B>             Entering bnd()  <B><B><B>               The argument is ', a );
+  var result;
+  if (_this.x == 'Nothing' || a[1] == 'Nothing') {
+    console.log('<B><N><B>             In bnd()        <B><N><B>      Propagating Nothing from bnd()');
+    result = Nothing;
+    console.log('<$><$><$>             In bnd()        <$><$><$>      The result is ', result, '   result.x:', result.x);
+  }
+  else if (a instanceof Function) return a();
+  else {
     var b = a.slice(1);
     var res = test([a[0],_this.x.toString(), ... b]);    
     result = res;
     console.log('<$><$><$>             In bnd()        <$><$><$>      The result is ', result, '   result.x:', result.x);
-    return result;
   }
-  this.ret = function(a) {  
-    var b = eval(`typeof(${a})`);
-    console.log('<@><@><@>             In ret()  <@><@><@>            Creating a new instance of MonadMaybe ___  id:', '"' +_this.id +'"', '     value:', a );
-    if (_this.x == 'Nothing') {
-      console.log('<N><N><N>    Still in ret()   <N><N><N>      Propagating Nothing from ret()');
-      return Nothing
-    }  
-    try {
-      if (a == undefined) throw '    ' + a + " is not defined"
-      return window[_this.id] = new MonadMaybe(a, _this.id);
-    }
-    catch(e) { 
-      console.log("<N><N><N>   Still in ret()  <N><N><N>  In a catch block ", a, 'is not defined.    ', e) 
-      return Nothing
-    };
-    try {
-      if (a == 'NaN') throw '    ' + a + " is not a number"
-      return window[_this.id] = new MonadMaybe(a, _this.id);
-    }
-    catch(e) { 
-      console.log("<N><N><N>   Still in ret()  <N><N><N>  In a catch block ", a, 'is not a number.   ', e) 
-      return Nothing
-    };
-  };
+  return result;
 }
+
+  var b = eval(`typeof(${a})`);
+  console.log('<@><@><@>             In ret()  <@><@><@>            Creating a new instance of MonadMaybe ___  id:', '"' +_this.id +'"', '     value:', a );
+  if (_this.x == 'Nothing') {
+    console.log('<N><N><N>    Still in ret()   <N><N><N>      Propagating Nothing from ret()');
+    return Nothing
+  }  
+  try {
+    if (a == undefined) throw '    ' + a + " is not defined"
+    return window[_this.id] = new MonadMaybe(a, _this.id);
+  }
+  catch(e) { 
+    console.log("<N><N><N>   Still in ret()  <N><N><N>  In a catch block ", a, 'is not defined.    ', e) 
+    return Nothing
+  };
+  try {
+    if (a == 'NaN') throw '    ' + a + " is not a number"
+    return window[_this.id] = new MonadMaybe(a, _this.id);
+  }
+  catch(e) { 
+    console.log("<N><N><N>   Still in ret()  <N><N><N>  In a catch block ", a, 'is not a number.   ', e) 
+    return Nothing
+  };
+};
+};
+
 var Nothing = new MonadMaybe('Nothing', 'Nothing');
 
 function run (x) {
@@ -164,43 +173,83 @@ function test (a) {
 }
 
 console.log("Calling test(['ad', '25', '17']) Result:", ` ${test(['ad', '25', '17'])}` );  
-/*
+
 var MonadMaybee = function MonadMaybe(z) {
 var _this = this;
 var g = arguments.length <= 1 || arguments[1] === undefined ? 'anonymous' : arguments[1];
 this.id = g;
 this.x = z;
-
 this.bnd = function (func, ...args) {
-    var mon = f([func, ...args])
-    try {
-      var m = func(_this.x, ...args);
-      var mon = m.toString();
-      if (mon == 'NaN' || 
-  if (ar.length == 2 && (ar[1].toString() || ar[2].toString()) == ('NaN' || 'undefined' )) throw "One or more of the  arguments is NaN or undefined"
-  if (ar.length == 3 && (ar[1].toString() || ar[2].toString() || ar[3].toString() ) == ('NaN' || 'undefined' )) throw "One or more of the argument is NaN or undefined"
-  if (ar.length == 1) mon = eval(ar[0])
-  if (ar.length == 2) mon = eval(ar[0] + "(" + ar[1] + ")")
-  if (ar.length == 3) mon = eval(ar[0] + "(" + ar[1] + "," + ar[2] + ")")
-  return mon;
+  var mon = f([func, ...args])
+  try {
+    var m = func(_this.x, ...args);
+    var mon = m.toString();
+    if (_this.x == 'Nothing' || mon == 'NaN' || mon == undefined) {
+      throw "NaN or not defined. returning mQnothing"
+    } 
+    return m;
   }
-  catch(e) { 
-    console.log("Bad data ", e) }
+  catch(e) {
+    console.log('Error in ', _this.id, ' in bnd ', e)
+    return window['mQnothing'] = new MonadMaybe('Nothing','mQnothing')
   }
+}
+this.ret = function (a) { 
+  try {
+    if (_this.x == 'Nothing' || a.toString() == 'NaN' || a.toString() == undefined) {
+      throw "NaN or not defined. returning mQnothing"
+    } 
+    return window[_this.id] = new Monad(a, _this.id);
   }
-    */
-    
-  var mQnothing = new MonadMaybe('Nothing', 'mMnothing')
-  var mQ1 = new MonadMaybe(0, 'mM1')
-  console.log("<><><><><><> Trying mQnothing.ret(['3'])");
-  mQnothing.ret('3');
-  console.log("<><><><><><> Trying mQnothing.bnd(['cuB', 'mQnothing'])");
-  mQnothing.bnd(['cuB', 'mQnothing']);
-  console.log("<><><><><><> Trying mQ1.ret(['cow'/2]))");
-  mQ1.ret("'cow'/2");
+  catch(e) {
+    console.log('Error in ', _this.id, ' in ret ', e)
+    return window['mQnothing'] = new MonadMaybe('Nothing','mQnothing')
+  }
+};
+};
 
-  console.log("<><><><><><> Trying mQ1.bnd(['aD','3', 'mQ1']).bnd(['cuB',' mQ1']");
-  mQ1.bnd(['aD', 3, 'mQ1']).bnd(['cuB', 'mQ1']);
+function f (ar) {
+try {
+var mon;  
+if (ar[0].toString == undefined) throw "The function is undefined"
+
+if (ar.length == 1 && ar[1].toString() == ('NaN' || 'undefined')) throw "The argument is NaN or undefined"
+if (ar.length == 2 && (ar[1].toString() || ar[2].toString()) == ('NaN' || 'undefined' )) throw "One or more of the  arguments is NaN or undefined"
+if (ar.length == 3 && (ar[1].toString() || ar[2].toString() || ar[3].toString() ) == ('NaN' || 'undefined' )) throw "One or more of the argument is NaN or undefined"
+if (ar.length == 1) mon = eval(ar[0])
+if (ar.length == 2) mon = eval(ar[0] + "(" + ar[1] + ")")
+if (ar.length == 3) mon = eval(ar[0] + "(" + ar[1] + "," + ar[2] + ")")
+return mon;
+}
+catch(e) { 
+  console.log("Bad data ", e) }
+}
+
+var mQnothing = new MonadMaybe('Nothing', 'mMnothing')
+var mQ1 = new MonadMaybe(0, 'mM1')
+console.log("<><><><><><> Trying mQnothing.ret(['3'])");
+mQnothing.ret('3');
+console.log("<><><><><><> Trying mQnothing.bnd(['cuB', 'mQnothing'])");
+mQnothing.bnd(['cuB', 'mQnothing']);
+console.log("<><><><><><> Trying mQ1.ret(['cow'/2]))");
+mQ1.ret("'cow'/2");
+
+console.log("<><><><><><> Trying mQ1.bnd(['aD','3', 'mQ1']).bnd(['cuB',' mQ1']");
+mQ1.bnd(['aD', 3, 'mQ1']).bnd(['cuB', 'mQ1']);
+
+function f (x) {console.log(x)}
+function g (x) {
+try {
+f(x)
+if (x == 'cow') {throw "cow error"}
+if (x.toString() == 'NaN') {throw "Not a number"} 
+if (x.toString() == undefined) {throw x + 'is not a number'}
+
+}
+catch(e) {
+console.log(e)
+}
+}
 
 function opM(a, op, b, id) {
   return (new Monad(a.x + op + b.x), id);
@@ -413,7 +462,6 @@ primesMonad.run([3, '', 5, [2]]);
 var CURRENT_ROLL = [];
 var emitevent;
 var data$;
-
 var MonadItter = function MonadItter() {
 var _this = this;
 this.p = function () {};
@@ -424,6 +472,7 @@ this.bnd = function (func) {
   return _this.p = func;
 };
 };
+
 function rang(n, m) {
   return Array.from(new Array(m - n), function (x, i) { return i + n; });
 }
@@ -553,7 +602,6 @@ var mMtemp = new Monad('temp', 'mMtemp');
 var mMtemp2 = new Monad('temp2', 'mMtemp2');
 var mMtemp3 = new Monad('temp3', 'mMtemp3');
 var mMtemp4 = new Monad('temp4', 'mMtemp4');
-var mMtemp5 = new Monad('temp5', 'mMtemp5');
 var mMte = new Monad(0, 'mMte');
 var mMid = new Monad('cow', 'mMid');
 var mMhelper = new Monad('helper', 'mMhelper');
@@ -649,219 +697,210 @@ var mMitterPrimeFibs = MI();
 var mMitterPF = MI();
 var mMitterPF2 = MI();
 
-
-mMZ1.bnd(v => mMt1.bnd(add, v, 'mMt1').bnd(cube, 'mMt2').bnd(() => mMt3.ret(mMt1.x + ' cubed is ' + mMt2.x, m3))) 
-
 function numProtect (x) {return (new Number (x))*1; }; 
 
 var qS1 = function qS1(a, b, c) {
-    var n = (b * (-1)) + (Math.sqrt(b * b - 4 * a * c));
-    if (n != n) {
-        return 0;
-    }
-    return n / (2 * a);
+  var n = (b * (-1)) + (Math.sqrt(b * b - 4 * a * c));
+  if (n != n) {
+      return 0;
+  }
+  return n / (2 * a);
 };
 var qS2 = function qS2(a, b, c) {
-    var n = (b * (-1)) - (Math.sqrt(b * b - 4 * a * c));
-    if (n != n) {
-        return 0;
-    }
-    return n / (2 * a);
+  var n = (b * (-1)) - (Math.sqrt(b * b - 4 * a * c));
+  if (n != n) {
+      return 0;
+  }
+  return n / (2 * a);
 };
 var qS3 = function qS3(a, b, c) {
-    return [qS1(a, b, c), qS2(a, b, c)];
+  return [qS1(a, b, c), qS2(a, b, c)];
 };
-    var qS4 = function qS4 ([x,y,z]) {
-      let [a,b,c] = [numProtect(x),numProtect(y),numProtect(z)]
-      return [qS1(a,b,c), qS2(a,b,c)]    
-    }  
+
+var qS4 = function qS4 ([x,y,z]) {
+  let [a,b,c] = [numProtect(x),numProtect(y),numProtect(z)]
+  return [qS1(a,b,c), qS2(a,b,c)]    
+}  
     
-var qS4 = function qS4(_a) {
-    var x = _a[0], y = _a[1], z = _a[2];
-    var _b = [x, y, z], a = _b[0], b = _b[1], c = _b[2];
-    return qS3(a, b, c);
-};
 var trim = function trim(str) {
-    return ret(str.trim(), 'fred');
+  return ret(str.trim(), 'fred');
 };
 var convertBack = function convertBack(str) {
-    var ar = str.split('$*$*$');
-    var s = str;
-    if (ar.length > 1) {
-        s = ar.reduce(function (a, b) { return a + ', ' + b; });
-    }
-    return s;
+  var ar = str.split('$*$*$');
+  var s = str;
+  if (ar.length > 1) {
+      s = ar.reduce(function (a, b) { return a + ', ' + b; });
+  }
+  return s;
 };
-
 var split = function split(x, mon) {
-    return mon.ret(x.split(','));
+  return mon.ret(x.split(','));
 };
 var stringify = function stringify(ob) {
-    var str = ob.task + ',' + ob.color + ',' + ob.textdecoration + ',' + ob.checked.tostring() +
-        ',' + ob.author + ',' + ob.responsible;
-    return str;
+  var str = ob.task + ',' + ob.color + ',' + ob.textdecoration + ',' + ob.checked.tostring() +
+      ',' + ob.author + ',' + ob.responsible;
+  return str;
 };
 var addString = function addString(x, str, mon) {
-    if (mon === void 0) { mon = mMtemp5; }
-    var s = str;
-    if (x.length > 4) {
-        s = x + ',' + str;
-    }
-    return mon.ret(s);
+  if (mon === void 0) { mon = mMtemp5; }
+  var s = str;
+  if (x.length > 4) {
+      s = x + ',' + str;
+  }
+  return mon.ret(s);
 };
 var intersection = function (a, b, mon) {
-    if (mon === void 0) { mon = mMtemp5; }
-    var ar3 = [];
-    for (var _i = 0, a_1 = a; _i < a_1.length; _i++) {
-        var x = a_1[_i];
-        for (var _a = 0, b_1 = b; _a < b_1.length; _a++) {
-            var y = b_1[_a];
-            if (x == y) {
-                ar3.push(x);
-            }
-        }
-    }
-    return mon.ret(ar3);
+  if (mon === void 0) { mon = mMtemp5; }
+  var ar3 = [];
+  for (var _i = 0, a_1 = a; _i < a_1.length; _i++) {
+      var x = a_1[_i];
+      for (var _a = 0, b_1 = b; _a < b_1.length; _a++) {
+          var y = b_1[_a];
+          if (x == y) {
+              ar3.push(x);
+          }
+      }
+  }
+  return mon.ret(ar3);
 };
 var calc = function calc(a, op, b) {
-    var result;
-    switch (op) {
-        case "add":
-            result = parseInt(a, 10) + parseInt(b, 10);
-            break;
-        case "subtract":
-            result = parseInt(a, 10) - parseInt(b, 10);
-            break;
-        case "mult":
-            result = parseInt(a, 10) * parseInt(b, 10);
-            break;
-        case "div":
-            result = parseInt(a, 10) / parseInt(b, 10);
-            break;
-        case "concat":
-            result = (a + b);
-            break;
-        default: 'major malfunction in calc.';
-    }
-    return result;
+  var result;
+  switch (op) {
+      case "add":
+          result = parseInt(a, 10) + parseInt(b, 10);
+          break;
+      case "subtract":
+          result = parseInt(a, 10) - parseInt(b, 10);
+          break;
+      case "mult":
+          result = parseInt(a, 10) * parseInt(b, 10);
+          break;
+      case "div":
+          result = parseInt(a, 10) / parseInt(b, 10);
+          break;
+      case "concat":
+          result = (a + b);
+          break;
+      default: 'major malfunction in calc.';
+  }
+  return result;
 };
 var equals2 = function equals(x, mon1, mon2, mon3) {
-    if (mon1.id === mon2.id && mon1.x === mon2.x) {
-        mon3.ret('true');
-    }
-    else
-        mon3.ret('false');
-    return ret(x, 'Mtemp3');
+  if (mon1.id === mon2.id && mon1.x === mon2.x) {
+      mon3.ret('true');
+  }
+  else
+      mon3.ret('false');
+  return ret(x, 'Mtemp3');
 };
 var pause = function (x, t, mon2) {
-    var time = t * 1000;
-    setTimeout(function () {
-        mon2.release();
-    }, time);
-    return mon2;
+  var time = t * 1000;
+  setTimeout(function () {
+      mon2.release();
+  }, time);
+  return mon2;
 };
 var wait = function wait(x, y, mon) {
-    if (mon === void 0) { mon = mMtemp5; }
-    if (x === y) {
-        mon.release();
-    }
-    return mon;
+  if (mon === void 0) { mon = mMtemp5; }
+  if (x === y) {
+      mon.release();
+  }
+  return mon;
 };
 var unshift = function unshift(x, y, mon) {
-    if (mon === void 0) { mon = ret(x, 'mMunshift'); }
-    var ar = x.slice();
-    ar.unshift(y);
-    return mon.ret(ar);
+  if (mon === void 0) { mon = ret(x, 'mMunshift'); }
+  var ar = x.slice();
+  ar.unshift(y);
+  return mon.ret(ar);
 };
 var toFloat = function toFloat(x) {
-    return ret(parseFloat(x));
+  return ret(parseFloat(x));
 };
 var push = function push(y, v, mon) {
-    if (mon === void 0) { mon = mMtemp5; }
-    var ar = y.slice();
-    ar.push(v);
-    return mon.ret(ar);
+  if (mon === void 0) { mon = mMtemp5; }
+  var ar = y.slice();
+  ar.push(v);
+  return mon.ret(ar);
 };
 var spliceRemove = function spliceRemove(x, index, location, mon) {
-    if (mon === void 0) { mon = mMtemp; }
-    if (Array.isArray(x)) {
-        var ar = x[index].slice();
-        console.log('In spliceRemove. ar is: ', ar);
-        ar.splice(location, 1);
-        return mon.ret(ar);
-    }
-    console.log('Major malfunction in spliceRemove. x, index, location, mon: ', x, index, location, mon);
+  if (mon === void 0) { mon = mMtemp; }
+  if (Array.isArray(x)) {
+      var ar = x[index].slice();
+      console.log('In spliceRemove. ar is: ', ar);
+      ar.splice(location, 1);
+      return mon.ret(ar);
+  }
+  console.log('Major malfunction in spliceRemove. x, index, location, mon: ', x, index, location, mon);
 };
-
 var spliceAdd = function spliceAdd(x, index, value, mon) {
-    if (mon === void 0) { mon = mMtemp5; }
-    var ar = x.slice();
-    ar.splice(index, 0, value);
-    return mon.ret(ar);
+  if (mon === void 0) { mon = mMtemp5; }
+  var ar = x.slice();
+  ar.splice(index, 0, value);
+  return mon.ret(ar);
 };
 var splice = function splice(x, start, howmany, mon) {
-    if (mon === void 0) { mon = mMtemp5; }
-    var ar = x.slice();
-    ar.splice(start, howmany);
-    return mon.ret(ar);
+  if (mon === void 0) { mon = mMtemp5; }
+  var ar = x.slice();
+  ar.splice(start, howmany);
+  return mon.ret(ar);
 };
 var slice = function splice(x, y, mon) {
-    if (mon === void 0) { mon = new Monad(x, 'mMslice'); }
-    var ar = x.slice(y);
-    return mon.ret(ar);
+  if (mon === void 0) { mon = new Monad(x, 'mMslice'); }
+  var ar = x.slice(y);
+  return mon.ret(ar);
 };
 var concat = function concat(x, v, mon) {
-    if (mon === void 0) { mon = mMtemp5; }
-    if (Array.isArray(v)) {
-        var ar = x.slice();
-        var ar2 = ar.concat(v);
-        mon.ret(ar2);
-    }
-    console.log('In concat. x and v are: ', x, v);
-    mon.ret(x + v);
+  if (mon === void 0) { mon = mMtemp5; }
+  if (Array.isArray(v)) {
+      var ar = x.slice();
+      var ar2 = ar.concat(v);
+      mon.ret(ar2);
+  }
+  console.log('In concat. x and v are: ', x, v);
+  mon.ret(x + v);
 };
 var sliceFront = function sliceFront(x, n, mon) {
-    if (mon === void 0) { mon = mMtemp5; }
-    if (Array.isArray(x)) {
-        var ar = x.slice(n);
-        return mon.ret(ar);
-    }
-    console.log('The value provided to sliceFront is not an array');
-    return ret(x);
+  if (mon === void 0) { mon = mMtemp5; }
+  if (Array.isArray(x)) {
+      var ar = x.slice(n);
+      return mon.ret(ar);
+  }
+  console.log('The value provided to sliceFront is not an array');
+  return ret(x);
 };
 var inc = function inc(x, mon) {
-    if (mon === void 0) { mon = mMtemp5; }
-    return mon.ret(x + 1);
+  if (mon === void 0) { mon = mMtemp5; }
+  return mon.ret(x + 1);
 };
 var dec = function dec(x, mon) {
-    if (mon === void 0) { mon = mMtemp5; }
-    return mon.ret(x - 1);
+  if (mon === void 0) { mon = mMtemp5; }
+  return mon.ret(x - 1);
 };
 var filter = function filter(x, condition) {
-    var ar = x.slice();
-    return ret(ar.filter(function (v) { return condition; }));
+  var ar = x.slice();
+  return ret(ar.filter(function (v) { return condition; }));
 };
 var map = function map(x, f, mon) {
-    if (mon === void 0) { mon = mMtemp; }
-    if (Array.isArray(x)) {
-        var ar = [];
-        var keys = Object.keys(x);
-        for (var k in keys) {
-            ar[k] = f(x[k]);
-            return mon.ret(ar);
-        }
-    }
-    console.log('The value provided to map is not an array');
-    return ret(x);
+  if (mon === void 0) { mon = mMtemp; }
+  if (Array.isArray(x)) {
+      var ar = [];
+      var keys = Object.keys(x);
+      for (var k in keys) {
+          ar[k] = f(x[k]);
+          return mon.ret(ar);
+      }
+  }
+  console.log('The value provided to map is not an array');
+  return ret(x);
 };
 var intersperse = function intersperse(x, mon) {
-    if (mon === void 0) { mon = ret(42, 'mMintersperse'); }
-    console.log('In intersperse ()()()()()()()()() x is ', x);
-    var ar = x.reduce(function (a, b) { return (a + ', ' + b); });
-    return mon.ret(ar);
+  if (mon === void 0) { mon = ret(42, 'mMintersperse'); }
+  console.log('In intersperse ()()()()()()()()() x is ', x);
+  var ar = x.reduce(function (a, b) { return (a + ', ' + b); });
+  return mon.ret(ar);
 };
-var addTest = function test(x, mon) {
-    console.log('>>>>>>>>>>>>>>>>>>> in addTest  x and mon are ', x, mon);
+var addTest = function addtest(x, mon) {
+  console.log('>>>>>>>>>>>>>>>>>>> in addTest  x and mon are ', x, mon);
     if (x % 5 == 0)
         return mon.ret(x + 5);
     else
@@ -966,12 +1005,23 @@ var promise = function promise(x, t, mon, args) {
     }));
 };
 
-var mMdisplay = new Monad('display', 'mMdisplay');
-
-var display = function display(x, id, string, mon = mMdisplay) {
+var display = function display(x, id, string, mon) {
     document.getElementById(id).innerHTML = string;
-    return mon.ret(x);
+    if (arguments.length == 4)
+        return mon(x);
+    else
+        return ret(x);
 };
+
+function spread (x) {return [...x]}
+
+
+
+
+
+
+
+
 
 
 

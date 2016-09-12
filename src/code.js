@@ -28,12 +28,12 @@ var Monad = function Monad(z) {
 
 var mMname = new Monad('Fred', 'mMname');
 
-const monad = h('pre', {style: {color: '#AFEEEE' }}, `  const Monad = function Monad(z, ID = 'anonymous') {
-    this.id = ID;
-    this.x = z;
-    this.bnd = (func, ...args) => func(this.x, ...args);
-    this.ret =  a => window[this.id] = new Monad(a,this.id);
-  }; ` )
+const monad = h('pre', {style: {color: '#AFEEEE' }}, `    const Monad = function Monad(z, ID = 'anonymous') {
+      this.id = ID;
+      this.x = z;
+      this.bnd = (func, ...args) => func(this.x, ...args);
+      this.ret =  a => window[this.id] = new Monad(a,this.id);
+    }; ` )
 
 const monadIt = h('pre', {style: {color: '#AFEEEE' }}, `  const MonadItter = () => {
     this.p = function () {};
@@ -80,42 +80,41 @@ var driver = h('pre', `  var websocketsDriver = function () {
 ` )
 
 var messages = h('pre', `  const messages$ = (sources.WS).map( e => {
-    mMtem.ret(e.data.split(',')).bnd( v => {
-      console.log('<><><><><><><><><><><><><><><><>  INCOMING  <><><><><><><> >>> In messages. e amd v are ', e, v);
-      mMZ10.bnd( () => mM1.ret(v.slice(3)).bnd(function (y) { return game([pMscore.x, pMgoals.x, y, mM3.x].concat(y))}));
-      mMZ11.bnd( () => socket.send('CG#$42,' + pMgroup.x + ',' + pMname.x + ',' + pMscore + ',' + pMgoals));
-      mMZ12.bnd( () => mM6.ret(v[2] + ' successfully logged in.'));
-      mMZ13.bnd( () => updateMessages(v));
-      mMZ14.bnd( () => mMgoals2.ret('The winner is ' + v[2]));
-      mMZ15.bnd( () => mMgoals2.ret('A player named ' + v[2] + ' is currently logged in. Page will refresh in 4 seconds.')
-      .bnd(refresh); );
-      mMZ16.bnd( () => { if (pMname.x != v[2]) mMgoals2.ret(v[2] + v[3])});
-      mMZ17.bnd( () => {
-        if (v[3] == 'no file') mMtaskList.ret([])
-        else process(e.data)
+
+function main(sources) {
+    mMindex.ret(0);
+    const messages$ = (sources.WS).map( e => {
+      mMtem.ret(e.data.split(',')).bnd( v => {
+        console.log('<><><><><><><><><><><><><><><><>  INCOMING  <><><><><><><> >>> In messages. e amd v are ', e, v);
+        mMZ10.bnd( () => mM1.ret(v.slice(3)).bnd(function (y) { return game([pMscore.x, pMgoals.x, y, mM3.x].concat(y))}));
+        mMZ11.bnd( () => socket.send('CG#$42,' + pMgroup.x + ',' + pMname.x + ',' + pMscore + ',' + pMgoals));
+        mMZ12.bnd( () => mM6.ret(v[2] + ' successfully logged in.'));
+        mMZ13.bnd( () => updateMessages(v));
+        mMZ14.bnd( () => mMgoals2.ret('The winner is ' + v[2]));
+        mMZ15.bnd( () => mMgoals2.ret('A player named ' + v[2] + ' is currently logged in. Page will refresh in 4 seconds.')
+        .bnd(refresh));
+        mMZ16.bnd( () => { if (pMname.x != v[2]) {
+            mMgoals2.ret(v[2] + v[3]);
+        } });
+        mMZ17.bnd( () => {
+            if (v[3] == 'no file') mMtaskList.ret([]);
+            else process(e.data);
+        });
+        mMZ18.bnd( () => { if (pMname == v[2]) playerMonad.run([v[3], v[4]]); });
+        mMZ19.bnd( () => updatePlayers(e.data));
       });
-      mMZ18.bnd( () => { if (pMname == v[2]) playerMonad.run([v[3], v[4]])});
-      mMZ19.bnd( () => {
-          sMplayers.clear();
-          var namesL = e.data.split("<br>");
-          var namesList = namesL.slice(1);
-          updateScoreboard2(namesList);
-          namesList.forEach(function (player) { return sMplayers.add(player.trim())});
-          game2();
-          console.log('In mMZ19 <><><><><><> namesL, and namesList are ', namesL, namesList);
-      });
+      mMtemp.ret(e.data.split(',')[0])
+      .bnd(next, 'CA#$42', mMZ10)
+      .bnd(next, 'XX#$42', mMZ11)
+      .bnd(next, 'CC#$42', mMZ12)
+      .bnd(next, 'CD#$42', mMZ13)
+      .bnd(next, 'CE#$42', mMZ14)
+      .bnd(next, 'EE#$42', mMZ15)
+      .bnd(next, 'DE#$42', mMZ16)
+      .bnd(next, 'DD#$42', mMZ17)
+      .bnd(next, 'CG#$42', mMZ18)
+      .bnd(next, 'NN#$42', mMZ19)
     });
-    mMtemp.ret(e.data.split(',')[0])
-    .bnd(next, 'CA#$42', mMZ10)
-    .bnd(next, 'XX#$42', mMZ11)
-    .bnd(next, 'CC#$42', mMZ12)
-    .bnd(next, 'CD#$42', mMZ13)
-    .bnd(next, 'CE#$42', mMZ14)
-    .bnd(next, 'EE#$42', mMZ15)
-    .bnd(next, 'DE#$42', mMZ16)
-    .bnd(next, 'DD#$42', mMZ17)
-    .bnd(next, 'CG#$42', mMZ18)
-    .bnd(next, 'NN#$42', mMZ19)
   });  `  )
 
 var MonadSet = h('pre',  `  var MonadSet = function MonadSet(set, ID) {
@@ -535,25 +534,25 @@ var cleanup = h('pre',  `  function cleanup (x) {
   });
 
   var solve = function solve () {
-    mMZ3.bnd(a => 
-    mMtemp.ret(a)           
+    mMZ3.bnd(a => ret(a)
     .bnd(display, 'quad4', '')         
     .bnd(display, 'quad6', '')         
     .bnd(display,'quad5', a + " * x * x ")
     .bnd(a => mMZ3    // Blocks here until new user input comes in.
-    .bnd(b =>  mMtemp.ret(b)
+    .bnd(b => ret(b)
     .bnd(display, 'quad6', b + ' * x ').bnd(b => mMZ3  // Blocks again.
-    .bnd(c => mMtemp.ret([a,b,c]).bnd(fmap, qS4, "mMtemp")
-    .bnd(v => {  
-      let x = v[0]
-      let y = v[1]
+    .bnd(c => mMtemp.ret([a,b,c]).bnd(fmap, qS4,'mMtemp2')
+    .bnd(result => {  
+      let x = result[0]
+      let y = result[1]
+      console.log('Here is x and y: ', x, y)
     mMtemp.bnd(display, 'quad4', "Results: " + x + " and  " + y)  
     .bnd(display, 'quad5', p(a).text + " * " + x + " * " + x + " + " + p(b).text + 
             " * " + x + " " + p(c).text + " = 0")
     .bnd(display, 'quad6', p(a).text + " * " + y + " * " + y + " + " + p(b).text + 
             " * " + y + " " + p(c).text + " = 0")   
     solve();  
-    } ) ) ) ) ) ) 
+    } )))))) 
   };
 
   var p = function p (x) { 
@@ -576,11 +575,12 @@ var cleanup = h('pre',  `  function cleanup (x) {
     }
     return n/(2*a);
   
-  function fmap (x, g, id) {
-    window[id] = new Monad(g(x), id); 
-    return window[id]
+  function fmap(x, g, id) { 
+    var mon = new Monad(g(x), id); 
+    window[id] = mon;
+    return mon;
   }
-  
+
   var display = function display (x, id, string) {
     document.getElementById(id).innerHTML = string;
     return ret(x);
@@ -986,7 +986,7 @@ var display = function display (x, id, string) {
   return ret(x);
 }  `  )
 
-var e1 = h('pre',  `  var ret = function ret(v, id = 'anonymous') {
+var e1 = h('pre.turk',  `  var ret = function ret(v, id = 'anonymous') {
     window[id] = new Monad(v, id);
     return window[id];
   }
@@ -1011,29 +1011,31 @@ var e1 = h('pre',  `  var ret = function ret(v, id = 'anonymous') {
     return ret(x);
   };  `  )
 
-var e2 = h('pre',  `  var c = m.ret(0).bnd(add,3).bnd(cube)
+var e2 = h('pre.turk3',  `  var c = m.ret(0).bnd(add,3).bnd(cube)
   .bnd(log,"m.x and a.x are  " + m.x + " and " + a.x + " respectively ")
-  Output: In log. Entry:  m.x and a.x are  0 and 27 respectively 
-  Note: m.x keeps its initial value of 0 because each computation 
-        creates a fresh instance of Monad with id == "anonymous".
+  Output: In log. Entry:  m.x and a.x are  0 and 27 respectively  ` )
 
-  m.bnd(() => add(0, 3).bnd(cube).bnd(m.ret).bnd(v => log("", "m.x is " + v))) 
-  Output: In log. Entry:  m.x is 27
-  Note: The value of m.x at the beginning of the computation is ignored. 
-        "m.ret" after the final computation creates a fresh instance of Monad 
-        with id == "m" and m.x == 27. If there is a reference to the original m, 
-        it will be preserved with its original value, otherwise it is subject to 
-        removal by the gargane collector.
+ var e3 = h('pre.turk2',  ` Note: m.x keeps its initial value of 0 because each computation 
+       creates a fresh instance of Monad with id == "anonymous".  ` )
+  
+ var e4 = h('pre.turk3',  `  m.bnd(() => add(0, 3).bnd(cube).bnd(m.ret).bnd(v => log("", "m.x is " + v))) 
+  Output: In log. Entry:  m.x is 27 ` )
 
-  m.ret(0).bnd(add,3,m2).bnd(cube,m3)
+ var e5 = h('pre.turk2',  ` Note: The value of m.x at the beginning of the computation is ignored. 
+       "m.ret" after the final computation creates a fresh instance of Monad 
+       with id == "m" and m.x == 27. If there is a reference to the original m, 
+       it will be preserved with its original value, otherwise it is subject to 
+       removal by the gargane collector.  ` )
+  
+ var e6 = h('pre.turk3',  `  m.ret(0).bnd(add,3,m2).bnd(cube,m3)
   .bnd(log,"m.x and m2.x and m3.x are  " + m.x + ", " + m2.x + " and " + m3.x + " respectively ")
+
   Output:  In log. Entry:  m.x and m2.x and m3.x are  0, 3 and 27 respectively
   Note: This time, add got three arguments and cube got two.  ` )
 
 var equals = h('pre',  `    var equals = function equals (mon1, mon2) {
-      if (mon1.id === mon2.id && mon1.x === mon2.x) return true;
-      else return false
-    }  `  )
+    if (mon1.id === mon2.id && mon1.x === mon2.x) return true;
+    else return false  }  `  )
 
 var fmap = h('pre',  `    function fmap (x, g, id) {window[id] = new Monad(g(x), id); return window[id]}
   
@@ -1075,11 +1077,127 @@ var opM = h('pre',  `    function opM (a, op, b, id) {
 
     opM(m1, "+", m2, "ok").bnd(lg)  logs 49  `  )
 
+var fmapA = h('pre',  `  function fmapA(x, g, id) { 
+    var mon = (new Monad(x.map(g), id)); 
+    window[id] = mon;
+    return mon;
+}  
+
+  m.ret([1,2,3,4,5]).bnd(fmapA, (x => x*x*x), 'm2')
+  
+  m2.x == [1,8,27,64,125]  tested and verified.  `  )
+
+var a = 'acorn'
+
+var MonadMaybe = h('pre',  `  var MonadMaybe = function MonadMaybe(z) {
+  var _this = this;
+  var g = arguments.length <= 1 || arguments[1] === undefined ? 'anonymous' : arguments[1];
+  this.id = g;
+  this.x = z;
+  
+  this.bnd = function (a) {
+    console.log('<B><B><B>             Entering bnd()  <B><B><B>               The argument is ', a );
+    var result;
+    if (_this.x == 'Nothing' || a[1] == 'Nothing') {
+      console.log('<B><N><B>             In bnd()        <B><N><B>      Propagating Nothing from bnd()');
+      result = Nothing;
+      console.log('<$><$><$>             In bnd()        <$><$><$>      The result is ', result, '   result.x:', result.x);
+    }
+    else if (a instanceof Function) return a();
+    else {
+      var b = a.slice(1);
+      var res = test([a[0],_this.x.toString(), ... b]);    
+      result = res;
+      console.log('<$><$><$>             In bnd()        <$><$><$>      The result is ', result, '   result.x:', result.x);
+    }
+    return result;
+  }
+  
+  this.ret = function (a) { 
+    var b = eval(\`typeof(${a})\`);
+    console.log('<@><@><@>             In ret()  <@><@><@>            Creating a new instance of MonadMaybe ___  id:', '"' +_this.id +'"', '     value:', a );
+    if (_this.x == 'Nothing') {
+      console.log('<N><N><N>    Still in ret()   <N><N><N>      Propagating Nothing from ret()');
+      return Nothing
+    }  
+    try {
+      if (a == undefined) throw '    ' + a + " is not defined"
+      return window[_this.id] = new MonadMaybe(a, _this.id);
+    }
+    catch(e) { 
+      console.log("<N><N><N>   Still in ret()  <N><N><N>  In a catch block ", a, 'is not defined.    ', e) 
+      return Nothing
+    };
+    try {
+      if (a == 'NaN') throw '    ' + a + " is not a number"
+      return window[_this.id] = new MonadMaybe(a, _this.id);
+    }
+    catch(e) { 
+      console.log("<N><N><N>   Still in ret()  <N><N><N>  In a catch block ", a, 'is not a number.   ', e) 
+      return Nothing
+    };
+  };
+};
+  
+  var Nothing = new MonadMaybe('Nothing', 'Nothing');
+  
+  function run (x) {
+    console.log('<O><O><O>  Left test(), now at the start of run()  <O><O><O>  The argument is ', x);  
+    var f = eval(x[0]);
+    var b = x.slice(1)
+    return f(... b)
+  }
+  
+function test (a) {
+
+  console.log('<T><T><T>  Left bnd(); now at the start of test()  <T><T><T>  The argument is ', a );
+  
+  for (let c of a) {
+    try {if (eval(c).toString == undefined) {
+      throw "Error " + c + "is not defined"}
+    } 
+    catch(e) {
+      console.log("<E><E><E>             In test()       <E><E><E>      " + c + " is not defined");
+      console.log("<T><N><T>             In test()       <T><N><T>      Propagating Nothing from test()");
+      return Nothing;
+    }
+    try {if ((eval(c).toString()) == 'NaN') {
+      throw "Error " + c + " is not a number"}
+    } 
+    catch(e) {
+      console.log('<E><E><E>             In test()       <E><E><E>      " + c + " is not a number' );
+      console.log("<T><N><T>             In test()       <T><N><T>      Propagating Nothing from test()");
+      return Nothing;
+    }
+    try {if (a[1] == 'Nothing') {
+      throw "Error The value of the argument\'s x attribute is 'Nothing' " }
+    } 
+    catch(e) {
+      console.log('<E><E><E>             In test()       <E><E><E>      The substrate monad\'s x attribute is "Nothing' );
+      console.log("<T><N><T>             In test()       <T><N><T>      Propagating Nothing from test()");
+      return Nothing;
+    }
+  return run(a);
+  }  `  )
+
+var p3 = h('pre',  `  
+`  )
+
+var p4 = h('pre',  `  
+`  )
+
+var p5 = h('pre',  `  
+`  )
+
+var p6 = h('pre',  `  
+`  )
+
 var p7 = h('pre',  `  
 `  )
 
 
-  export default {monad, equals, fmap, opM, e1, e2, fib, driver, messages, next, monadIt, MonadSet, updateCalc, arrayFuncs, travel, nums, cleanup, ret, C42, newTask, process, mM$task, addString, colorClick, edit, testZ, quad, mdem1, runTest, todoStream, inc, ret_add_cube, seed,  add, traverse, MonadState, primesMonad, fibsMonad, primeFibInterface, tr3, fpTransformer, innerHTML, factorsMonad, factorsInput, playerMonad, promise, promiseSnippet, timeout, timeoutSnippet, examples, examples2, async }
+  export default { MonadMaybe, fmapA, monad, equals, fmap, opM, e1, e2, e3, e4, e5, e6, fib, driver, messages, next, monadIt, MonadSet, updateCalc, arrayFuncs, travel, nums, cleanup, ret, C42, newTask, process, mM$task, addString, colorClick, edit, testZ, quad, mdem1, runTest, todoStream, inc, ret_add_cube, seed,  add, traverse, MonadState, primesMonad, fibsMonad, primeFibInterface, tr3, fpTransformer, innerHTML, factorsMonad, factorsInput, playerMonad, promise, promiseSnippet, timeout, timeoutSnippet, examples, examples2, async }
+ 
 
 
 
