@@ -353,6 +353,140 @@ I didn\'t provide for error handling. There doesn't seem to be any need for it i
 Composition with Promises involves chains of ".then" statements. Using MonadItter, composition can be accomplished with Monad's bnd() and ret() methods, just as we have done throughout this presentation.
 
 ``` 
+
+
+##MonadMaybe
+
+When sequences of computations are performed inside of MonadMaybe, the inadvertent creation of variables with the values NaN or undefined can halt further computation while the sequence rapidly runs to completion. In this demonstration, an udefined variable and a variable with value NaN appear in the middle of a middle of a sequence of computations. Scren shots of the Chrome console show what happens. First, here are the most relevant definitions:
+```javascript
+  var MonadMaybe = function MonadMaybe(z) {
+  var _this = this;
+  var g = arguments.length <= 1 || arguments[1] === undefined ? 'anonymous' : arguments[1];
+  this.id = g;
+  this.x = z;
+  
+  this.bnd = function (a) {
+    console.log('<B><B><B>             Entering bnd()  <B><B><B>               The argument is ', a );
+    var result;
+    if (_this.x == 'Nothing' || a[1] == 'Nothing') {
+      console.log('<B><N><B>             In bnd()        <B><N><B>      Propagating Nothing from bnd()');
+      result = Nothing;
+      console.log('<$><$><$>             In bnd()        <$><$><$>      The result is ', result, '   result.x:', result.x);
+    }
+    else if (a instanceof Function) return a();
+    else {
+      var b = a.slice(1);
+      var res = test([a[0],_this.x.toString(), ... b]);    
+      result = res;
+      console.log('<$><$><$>             In bnd()        <$><$><$>      The result is ', result, '   result.x:', result.x);
+    }
+    return result;
+  }
+  
+  this.ret = function (a) { 
+    var b = eval(`typeof(acorn)`);
+    console.log('<@><@><@>             In ret()  <@><@><@>            Creating a new instance of MonadMaybe ___  id:', '"' +_this.id +'"', '     value:', a );
+    if (_this.x == 'Nothing') {
+      console.log('<N><N><N>    Still in ret()   <N><N><N>      Propagating Nothing from ret()');
+      return Nothing
+    }  
+    try {
+      if (a == undefined) throw '    ' + a + " is not defined"
+      return window[_this.id] = new MonadMaybe(a, _this.id);
+    }
+    catch(e) { 
+      console.log("<N><N><N>   Still in ret()  <N><N><N>  In a catch block ", a, 'is not defined.    ', e) 
+      return Nothing
+    };
+    try {
+      if (a == 'NaN') throw '    ' + a + " is not a number"
+      return window[_this.id] = new MonadMaybe(a, _this.id);
+    }
+    catch(e) { 
+      console.log("<N><N><N>   Still in ret()  <N><N><N>  In a catch block ", a, 'is not a number.   ', e) 
+      return Nothing
+    };
+  };
+};
+  
+  var Nothing = new MonadMaybe('Nothing', 'Nothing');
+  
+  function run (x) {
+    console.log('<O><O><O>  Left test(), now at the start of run()  <O><O><O>  The argument is ', x);  
+    var f = eval(x[0]);
+    var b = x.slice(1)
+    return f(... b)
+  }
+  
+function test (a) {
+
+  console.log('<T><T><T>  Left bnd(); now at the start of test()  <T><T><T>  The argument is ', a );
+  
+  for (let c of a) {
+    try {if (eval(c).toString == undefined) {
+      throw "Error " + c + "is not defined"}
+    } 
+    catch(e) {
+      console.log("<E><E><E>             In test()       <E><E><E>      " + c + " is not defined");
+      console.log("<T><N><T>             In test()       <T><N><T>      Propagating Nothing from test()");
+      return Nothing;
+    }
+    try {if ((eval(c).toString()) == 'NaN') {
+      throw "Error " + c + " is not a number"}
+    } 
+    catch(e) {
+      console.log('<E><E><E>             In test()       <E><E><E>      " + c + " is not a number' );
+      console.log("<T><N><T>             In test()       <T><N><T>      Propagating Nothing from test()");
+      return Nothing;
+    }
+    try {if (a[1] == 'Nothing') {
+      throw "Error The value of the argument's x attribute is 'Nothing' " }
+    } 
+    catch(e) {
+      console.log('<E><E><E>             In test()       <E><E><E>      The substrate monad's x attribute is "Nothing' );
+      console.log("<T><N><T>             In test()       <T><N><T>      Propagating Nothing from test()");
+      return Nothing;
+    }
+  return run(a);
+  }  
+```  
+And here are the screenshots of what was logged after calling a sequence of computations that executed properly and then two variations that failed. First, the version that succeeded:
+![success]/src/images/success.png)
+Format: ![Alt Text](url)
+Next, the undefined variable ox appears halfway through the sequence of computations. What happened and where it happened are immediately apparent in the screenshot. Just look for the first appearance of
+MonadMaybe  {id: "Nothing, x: "Nothing"    result.x Nothing  
+![undefined]/src/images/ox.png)
+Format: ![Alt Text](url)
+And finally, 0/0 causes mQ1.x == NaN.
+![NaN]/src/images/div0.png)
+Format: ![Alt Text](url)
+After NaN was encountered, the sequence ran smoothly and rapidly through the final stages without attempting to do the specified work. In other scenarios, the savings in resources might be significant, a system crash might be averted, or a silently-produced bug causing incorrect results might have been avoided. And if I hadn't intentionally caused the failure, trouble-shooting would have been a no-brainer. In production, I would log only code pertaining to Nothing in order to be notified of problems that slipped past me during testing, but for this demonstration I logged messages from each stage of the computation, which might be a good thing to do during development. An operation in the middle of a sequence of operations might pause to obtain data from a remote resouse based on information received from the previous MonadMaybe instance. MonadMaybe could be modified to throw for more that undefined and NaN.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ### The Haskell Wai Websockets Back End
 This project isn't an exposition of the modified Haskell Wai Websockets server, but I want to point out the similarity between the way the server holds the application's state in a TMVar and the way the front end holds state in an object. The application's state is always changing, so it\'s a pretty safe bet that something is mutating somewhere. The Haskell server for the online demonstration at [JS-monads-stable](http://schalk.net:3055) keeps the ever-changing state of the application in the ServerState list of tupples. It is defined as follows: 
 ```haskell
