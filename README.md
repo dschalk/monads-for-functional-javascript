@@ -452,8 +452,7 @@ function test (a) {
 ```  
 And here are the screenshots of what was logged after calling a sequence of computations that executed properly and then two variations that failed. First, the version that succeeded:
 ![success](src/images/success.png)
-Next, the undefined variable ox appears halfway through the sequence of computations. What happened and where it happened are immediately apparent in the screenshot. Just look for the first appearance of
-MonadMaybe  {id: "Nothing, x: "Nothing"    result.x Nothing  
+Next, the undefined variable ox appears halfway through the sequence of computations. What happened and where it happened are readily apparent in the screenshot. Just scan for the first appearance of MonadMaybe  {id: "Nothing, x: "Nothing"}     result.x Nothing, then look above it. Two lines up it says "ox is not defined". Here is the screenshot:  
 ![undefined](/src/images/ox.png)
 And finally, 0/0 causes mQ1.x == NaN.
 ![NaN](src/images/div0.png)
@@ -526,7 +525,7 @@ MonadItter instances are net monadic in any sense of the word. "Monad" is more l
 ##[The Online Demonstration](http://schalk.net:3055)
 The online demonstration features a game with a traversible dice-roll history; group chat rooms; and a persistent, multi-user todo list. People in the same group share the game, chat messages, and whatever todo list they might have. Updating, adding, removing, or checking "Complete" by any member causes every member 's todo list to update. The Haskell websockets server preserves a unique text file for each group's todo list. Restarting the server does not affect the lists. Restarting or refreshing the browser window causes the list display to disappear, but signing in and re-joining the old group brings it back. If the final task is removed, the server deletes the group's todo text file. 
 
-With Motorcycle.js, the application runs smoothly and is easy to understand and maintain. I say "easy to understand", but for people coming from an imperitive programming background, some effort must first be invested into getting used to functions that take functions as arguments, which are at the heart of Motorcycle and JS-monads-stable. After that, seeing how the monads work is a matter of contemplating their definitions and experimenting a little. Most of the monads and the functions they use in this demonstration are immediately available in the browser console. If you have the right dev tools in Chrome or Firefox, just load [http://schalk.net:3055](http://schalk.net:3055) and press F12 and then Ctrl-R to re-load with access to the monad.js script. I do this to troubleshoot and experiment. Try mM25.bnd(mM25.ret).x == mM25.x and see that it returns true.
+With Motorcycle.js, the application runs smoothly and is easy to understand and maintain. I say "easy to understand", but for people coming from an imperitive programming background, some effort must first be invested into getting used to functions that take functions as arguments, which are at the heart of Motorcycle and JS-monads-stable. After that, seeing how the monads work is a matter of contemplating their definitions and experimenting a little. Most of the monads and the functions they use in this demonstration are readily available in the browser console. If you have the right dev tools in Chrome or Firefox, just load [http://schalk.net:3055](http://schalk.net:3055) and press F12 and then Ctrl-R to re-load with access to the monad.js script. I do this to troubleshoot and experiment. Try mM25.bnd(mM25.ret).x == mM25.x and see that it returns true.
 
 .
 .
