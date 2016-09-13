@@ -452,14 +452,11 @@ function test (a) {
 ```  
 And here are the screenshots of what was logged after calling a sequence of computations that executed properly and then two variations that failed. First, the version that succeeded:
 ![success](src/images/success.png)
-Format: ![Alt Text](url)
 Next, the undefined variable ox appears halfway through the sequence of computations. What happened and where it happened are immediately apparent in the screenshot. Just look for the first appearance of
 MonadMaybe  {id: "Nothing, x: "Nothing"    result.x Nothing  
 ![undefined](/src/images/ox.png)
-Format: ![Alt Text](url)
 And finally, 0/0 causes mQ1.x == NaN.
-![NaN]/(src/images/div0.png)
-Format: ![Alt Text](url)
+![NaN](src/images/div0.png)
 After NaN was encountered, the sequence ran smoothly and rapidly through the final stages without attempting to do the specified work. In other scenarios, the savings in resources might be significant, a system crash might be averted, or a silently-produced bug causing incorrect results might have been avoided. And if I hadn't intentionally caused the failure, trouble-shooting would have been a no-brainer. In production, I would log only code pertaining to Nothing in order to be notified of problems that slipped past me during testing, but for this demonstration I logged messages from each stage of the computation, which might be a good thing to do during development. An operation in the middle of a sequence of operations might pause to obtain data from a remote resouse based on information received from the previous MonadMaybe instance. MonadMaybe could be modified to throw for more that undefined and NaN.
 
 
