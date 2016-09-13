@@ -452,7 +452,7 @@ function test (a) {
 ```  
 And here are the screenshots of what was logged after calling a sequence of computations that executed properly and then two variations that failed. First, the version that succeeded:
 ![success](src/images/success.png)
-Next, the undefined variable ox appears halfway through the sequence of computations. What happened and where it happened are readily apparent in the screenshot. Just scan for the first appearance of MonadMaybe  {id: "Nothing, x: "Nothing"}     result.x Nothing, then look above it. Two lines up it says "ox is not defined". Here is the screenshot:  
+Next, the undefined variable ox appears halfway through the sequence of computations. What happened and where it happened are readily apparent in the screenshot. Just scan for the first appearance of MonadMaybe  {id: "Nothing, x: "Nothing"}     result.x Nothing, then look above it. Two lines up it says "ox is not defined". Directly above that we see that the undefined variable was introduced in the file named "test". Two lines above that we see that mQ1 has the value ox. Here is the screenshot:  
 ![undefined](/src/images/ox.png)
 And finally, 0/0 causes mQ1.x == NaN.
 ![NaN](src/images/div0.png)
