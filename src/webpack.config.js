@@ -15,8 +15,7 @@ module.exports = {
         }
     ],
     query: {
-      plugins: ["transform-decorators-legacy"],
-      presets: ['es2015', 'stage-0']
+      presets: ['es2015']
     }
   }
 }

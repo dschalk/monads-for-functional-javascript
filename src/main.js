@@ -4,10 +4,10 @@
 // import {run} from '@cycle/xstream-run';
 // import {makeDOMDriver} from '@cycle/dom';
 import Cycle from '@motorcycle/core';
-import {h, p, span, h1, h2, h3, br, div, label, input, hr, makeDOMDriver} from '@motorcycle/dom';
-import {just, create, merge, combine, fromEvent, periodic, observe, delay, filter, of} from 'most';
+import {h, p, span, h1, h2, h3, pre, br, div, label, input, hr, makeDOMDriver} from '@motorcycle/dom';
+import { create, merge, filter} from 'most';
 import code from './code.js';
-
+console.log(pre);
 var Greeter = (function () {
     function Greeter(message) {
         this.greeting = message;
