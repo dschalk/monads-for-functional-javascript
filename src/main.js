@@ -316,9 +316,9 @@ function main(sources) {
         var factors = primesMonad.run([primesMonad.s[0], [], num, primesMonad.a])
         .bnd(v => [prFactTransformer(v, num), prFactTransformer2(v, num)]);
         document.getElementById('factors_3').innerHTML = 
-          'The distinct prime factors of ' + num + ' are ' + factors[0].s[0] ;
-        document.getElementById('factors_4').innerHTML = 
-          'All of the prime factors of ' + num + ' are ' + factors[1].s[0];
+          'The prime factors of ' + num + ' are ' + factors[0].s[0] ;
+        // document.getElementById('factors_4').innerHTML = 
+        //   'All of the prime factors of ' + num + ' are ' + factors[1].s[0];
       }
     }
   });
