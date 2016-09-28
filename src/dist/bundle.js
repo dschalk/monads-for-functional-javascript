@@ -4921,7 +4921,7 @@
 
 	var mMname = new Monad('Fred', 'mMname');
 
-	var monad = (0, _dom.h)('pre', { style: { color: '#AFEEEE' } }, '    const Monad = function Monad(z, ID = \'anonymous\') {\n      this.id = ID;\n      this.x = z;\n      this.bnd = (func, ...args) => func(this.x, ...args);\n      this.ret =  a => window[this.id] = new Monad(a,this.id);\n    }; ');
+	var monad = (0, _dom.h)('pre', { style: { color: '#AFEEEE' } }, '    function Monad (z, ID = \'default\') {\n        var x = z;\n        var ob = {\n        id: ID,\n        bnd: function (func, ...args) {\n          return func(x, ...args)\n        },\n        ret: function (a) {\n          return window[ob.id] = new Monad(a, ob.id);\n        }\n      };\n      return window[ob.id] = ob\n    }\n\n    function get (m) {    // Getter for the x attribute, which is not exposed.\n      let v = m.bnd(x => x);\n      return v;\n    }; ');
 
 	var monadIt = (0, _dom.h)('pre', { style: { color: '#AFEEEE' } }, '  const MonadItter = () => {\n    this.p = function () {};\n    this.release = (...args) => this.p(...args);\n    this.bnd = func => this.p = func;\n  }; ');
 
@@ -5041,9 +5041,9 @@
 
 	var MonadMaybe = (0, _dom.h)('pre', '  var MonadMaybe = function MonadMaybe(z) {\n  var _this = this;\n  var g = arguments.length <= 1 || arguments[1] === undefined ? \'anonymous\' : arguments[1];\n  this.id = g;\n  this.x = z;\n  \n  this.bnd = function (a) {\n    console.log(\'<B><B><B>             Entering bnd()  <B><B><B>               The argument is \', a );\n    var result;\n    if (_this.x == \'Nothing\' || a[1] == \'Nothing\') {\n      console.log(\'<B><N><B>             In bnd()        <B><N><B>      Propagating Nothing from bnd()\');\n      result = Nothing;\n      console.log(\'<$><$><$>             In bnd()        <$><$><$>      The result is \', result, \'   result.x:\', result.x);\n    }\n    else if (a instanceof Function) return a();\n    else {\n      var b = a.slice(1);\n      var res = test([a[0],_this.x.toString(), ... b]);    \n      result = res;\n      console.log(\'<$><$><$>             In bnd()        <$><$><$>      The result is \', result, \'   result.x:\', result.x);\n    }\n    return result;\n  }\n  \n  this.ret = function (a) { \n    var b = eval(`typeof(' + a + ')`);\n    console.log(\'<@><@><@>             In ret()  <@><@><@>            Creating a new instance of MonadMaybe ___  id:\', \'"\' +_this.id +\'"\', \'     value:\', a );\n    if (_this.x == \'Nothing\') {\n      console.log(\'<N><N><N>    Still in ret()   <N><N><N>      Propagating Nothing from ret()\');\n      return Nothing\n    }  \n    try {\n      if (a == undefined) throw \'    \' + a + " is not defined"\n      return window[_this.id] = new MonadMaybe(a, _this.id);\n    }\n    catch(e) { \n      console.log("<N><N><N>   Still in ret()  <N><N><N>  In a catch block ", a, \'is not defined.    \', e) \n      return Nothing\n    };\n    try {\n      if (a == \'NaN\') throw \'    \' + a + " is not a number"\n      return window[_this.id] = new MonadMaybe(a, _this.id);\n    }\n    catch(e) { \n      console.log("<N><N><N>   Still in ret()  <N><N><N>  In a catch block ", a, \'is not a number.   \', e) \n      return Nothing\n    };\n  };\n};\n  \n  var Nothing = new MonadMaybe(\'Nothing\', \'Nothing\');\n  \n  function run (x) {\n    console.log(\'<O><O><O>  Left test(), now at the start of run()  <O><O><O>  The argument is \', x);  \n    var f = eval(x[0]);\n    var b = x.slice(1)\n    return f(... b)\n  }\n  \nfunction test (a) {\n\n  console.log(\'<T><T><T>  Left bnd(); now at the start of test()  <T><T><T>  The argument is \', a );\n  \n  for (let c of a) {\n    try {if (eval(c).toString == undefined) {\n      throw "Error " + c + "is not defined"}\n    } \n    catch(e) {\n      console.log("<E><E><E>             In test()       <E><E><E>      " + c + " is not defined");\n      console.log("<T><N><T>             In test()       <T><N><T>      Propagating Nothing from test()");\n      return Nothing;\n    }\n    try {if ((eval(c).toString()) == \'NaN\') {\n      throw "Error " + c + " is not a number"}\n    } \n    catch(e) {\n      console.log(\'<E><E><E>             In test()       <E><E><E>      " + c + " is not a number\' );\n      console.log("<T><N><T>             In test()       <T><N><T>      Propagating Nothing from test()");\n      return Nothing;\n    }\n    try {if (a[1] == \'Nothing\') {\n      throw "Error The value of the argument\'s x attribute is \'Nothing\' " }\n    } \n    catch(e) {\n      console.log(\'<E><E><E>             In test()       <E><E><E>      The substrate monad\'s x attribute is "Nothing\' );\n      console.log("<T><N><T>             In test()       <T><N><T>      Propagating Nothing from test()");\n      return Nothing;\n    }\n  return run(a);\n  }  ');
 
-	var p3 = (0, _dom.h)('pre', '  \n');
+	var messageMonad = (0, _dom.h)('pre', '    var messageMonad = new MonadState(\'messageMonad\', messages, messages, message_state); \n\n    function message_state(v) {\n      var ar = v[0].concat(v[3]);\n      return [ v[0], [], [], ar ];\n    };  ');
 
-	var p4 = (0, _dom.h)('pre', '  \n');
+	var updateMessages = (0, _dom.h)('pre', '    var updateMessages = function updateMessages(e) {\n        var ar = e.split(\',\');\n        var sender = ar[2];\n        ar.splice(0,3);\n        var str = ar.join(\',\');\n        messageMonad.run([ [h(\'br\'), sender + \': \' + str], [], [], messageMonad.s[3] ]);\n    }  ;  ');
 
 	var p5 = (0, _dom.h)('pre', '  \n');
 
@@ -5622,14 +5622,12 @@
 	        }
 	    });
 
-	    var updateMessages = function updateMessages(e) {
+	    var updatemessages = function updatemessages(e) {
 	        var ar = e.split(',');
 	        var sender = ar[2];
 	        ar.splice(0, 3);
 	        var str = ar.join(',');
-	        console.log('messageMonad ***** ', messageMonad);
-	        messageMonad.run([[(0, _dom.h)('br'), sender + ': ' + str], [], [], messageMonad.s[3]]);
-	        //  h('div', ['this', h('br'), 'is', h('br'),  'it'] ),
+	        messagemonad.run([[(0, _dom.h)('br'), sender + ': ' + str], [], [], messagemonad.s[3]]);
 	    };
 
 	    var task2 = function task2(str) {

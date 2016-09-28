@@ -28,11 +28,23 @@ var Monad = function Monad(z) {
 
 var mMname = new Monad('Fred', 'mMname');
 
-const monad = h('pre', {style: {color: '#AFEEEE' }}, `    const Monad = function Monad(z, ID = 'anonymous') {
-      this.id = ID;
-      this.x = z;
-      this.bnd = (func, ...args) => func(this.x, ...args);
-      this.ret =  a => window[this.id] = new Monad(a,this.id);
+const monad = h('pre', {style: {color: '#AFEEEE' }}, `    function Monad (z, ID = 'default') {
+        var x = z;
+        var ob = {
+        id: ID,
+        bnd: function (func, ...args) {
+          return func(x, ...args)
+        },
+        ret: function (a) {
+          return window[ob.id] = new Monad(a, ob.id);
+        }
+      };
+      return window[ob.id] = ob
+    }
+
+    function get (m) {    // Getter for the x attribute, which is not exposed.
+      let v = m.bnd(x => x);
+      return v;
     }; ` )
 
 const monadIt = h('pre', {style: {color: '#AFEEEE' }}, `  const MonadItter = () => {
@@ -1180,11 +1192,20 @@ function test (a) {
   return run(a);
   }  `  )
 
-var p3 = h('pre',  `  
-`  )
+var messageMonad = h('pre',  `    var messageMonad = new MonadState('messageMonad', messages, messages, message_state); 
 
-var p4 = h('pre',  `  
-`  )
+    function message_state(v) {
+      var ar = v[0].concat(v[3]);
+      return [ v[0], [], [], ar ];
+    };  `  )
+
+var updateMessages = h('pre',  `    var updateMessages = function updateMessages(e) {
+        var ar = e.split(',');
+        var sender = ar[2];
+        ar.splice(0,3);
+        var str = ar.join(',');
+        messageMonad.run([ [h('br'), sender + ': ' + str], [], [], messageMonad.s[3] ]);
+    }  ;  `  )
 
 var p5 = h('pre',  `  
 `  )

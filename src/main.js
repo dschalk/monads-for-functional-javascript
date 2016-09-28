@@ -397,14 +397,12 @@ function main(sources) {
       }
   });
 
-    var updateMessages = function updateMessages(e) {
+    var updatemessages = function updatemessages(e) {
       var ar = e.split(',');
       var sender = ar[2];
       ar.splice(0,3);
       var str = ar.join(',');
-      console.log('messageMonad ***** ', messageMonad );
-      messageMonad.run([ [h('br'), sender + ': ' + str], [], [], messageMonad.s[3] ]);
-             //  h('div', ['this', h('br'), 'is', h('br'),  'it'] ),
+      messagemonad.run([ [h('br'), sender + ': ' + str], [], [], messagemonad.s[3] ]);
     };
 
     var task2 = function task2(str) {
