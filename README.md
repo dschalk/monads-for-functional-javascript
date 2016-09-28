@@ -13,12 +13,24 @@ This is a [Motorcycle.js](https://github.com/motorcyclejs) application. Motorcyc
 ## Basic Monad    
 
 ```javascript    
-  const Monad = function Monad(z, ID = 'anonymous') {
-    this.id = ID;
-    this.x = z;
-    this.bnd = (func, ...args) => func(this.x, ...args);
-    this.ret =  a => window[this.id] = new Monad(a,this.id);
-  }; 
+function Monad (z, ID = 'default') {
+    var x = z;
+    var ob = {
+    id: ID,
+    bnd: function (func, ...args) {
+      return func(x, ...args)
+    },
+    ret: function (a) {
+      return window[ob.id] = new Monad(a, ob.id);
+    }
+  };
+  return window[ob.id] = ob
+};
+
+function get (m) {    // Getter for the x attribute, which is not exposed.
+  let v = m.bnd(x => x);
+  return v;
+}  
 ```
 In chains of computations, the arguments provided to each link's bnd() method are functions that return an instance of Monad. Here are some examples of functions that return instances of Monad:
 ```javascript
@@ -136,6 +148,27 @@ const MonadState = function (g, state, value, p)  {
     return window[this.id];
   }
 }
+```
+## messageMonad
+The following code supports the group chat feature:
+```javascript
+    var messageMonad = new MonadState('messageMonad', messages, messages, message_state); 
+    
+    function message_state(v) {
+      var ar = v[0].concat(v[3]);
+      return [ v[0], [], [], ar ];
+    };
+
+    var updateMessages = function updateMessages(e) {
+      var ar = e.split(',');
+      var sender = ar[2];
+      ar.splice(0,3);
+      var str = ar.join(',');
+      messageMonad.run([ [h('br'), sender + ': ' + str], [], [], messageMonad.s[3] ]);
+             //  h('div', ['this', h('br'), 'is', h('br'),  'it'] ),
+    };
+```
+messageMonad.s[3] rests permantly in the virtual DOM. Whenever it changes, the Snabbdom diff and render procedure executes and online browsers see the update.
 ```
 ## Stand alone ret()
 ```javascript
