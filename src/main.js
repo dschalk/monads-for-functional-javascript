@@ -336,8 +336,18 @@ function main(sources) {
     document.getElementById('login').focus(); 
   };
   // <>>><>><><><><>>>><><><  traversal  ><><><><><><>>><><><><><><><><><><><>< ENDOM traversal  
-  // <>>><>><><><><>>>><><><  traversal  ><><><><><><>>><><><><><><><><><><><>< START Itterator  
-  mMZ2.bnd(function (v) { return cube(v, mMtemp5).bnd(function (w) { return mMt3.ret(v + ' cubed is ' + w); }); });
+  // <>>><>><><><><>>>><><><  traversal  ><><><><><><>>><><><><><><><><><><><>< START Itterator 
+  
+
+   mMZ1.bnd(v => mMt1
+  .bnd(add,v).bnd(w => {
+    mMt1.ret(w)
+    .bnd(cube)
+    .bnd(x => mMt3VAL = w + ' cubed is ' + x)}));  
+  
+  mMZ2.bnd(v => cube(v)
+  .bnd(w => mMt3VAL = v + ' cubed is ' + w));
+
   var testZ = sources.DOM
       .select('#testZ').events('click');
 
@@ -348,11 +358,14 @@ function main(sources) {
   
   var testQ = sources.DOM
       .select('#testQ').events('click');
-  var testQAction$ = testQ.map(function () {
-      mMt1.ret(0).bnd(function (v) { return mMZ2.release(v); });
-  });
+
+  var testQAction$ = testQ.map(() => {
+    mMt1.ret(0)
+    .bnd(v => mMZ2.release(v))});
+
   var testW = sources.DOM
       .select('#testW').events('keypress');
+
   var testWAction$ = testW.map(function (e) {
       if (e.keyCode == 13) {
           mMZ2.release(e.target.value);
@@ -397,12 +410,12 @@ function main(sources) {
       }
   });
 
-    var updatemessages = function updatemessages(e) {
+    var updateMessages = function updateMessages(e) {
       var ar = e.split(',');
       var sender = ar[2];
       ar.splice(0,3);
       var str = ar.join(',');
-      messagemonad.run([ [h('br'), sender + ': ' + str], [], [], messagemonad.s[3] ]);
+      messageMonad.run([ [h('br'), sender + ': ' + str], [], [], messageMonad.s[3] ]);
     };
 
     var task2 = function task2(str) {
@@ -837,7 +850,7 @@ h('p', ' As shown later on this page, MonadItter instances control the routing o
 h('h3#itterLink', ' A Basic Itterator '),
 h('p', 'The following example illustrates the use of release() with an argument. It also shows a lambda expressions being provided as an argument for the method mMZ1.bnd() (thereby becoming the value of mMZ1.p) and then mMZ1.release providing an arguments for the function mMZ1.p. The code is shown beneith the following two buttons. '),
 h('button#testZ', 'mMZ1.release(1)'),
-h('p.code2', mMt3.x),
+h('p.code2', mMt3VAL),
 h('span', 'Refresh button: '),
 h('button#testQ', 'mMt1.ret(0).bnd(v => mMZ2.release(v)) '),
 h('br'),
