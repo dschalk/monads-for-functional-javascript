@@ -22,6 +22,11 @@ input {
  margin-left: 2%;
 }
 
+.game {
+  color: #00ffdd;
+  font-size: 20px;
+}
+
 h3 {
  color: #f9dc90;
  font-size: 26px;

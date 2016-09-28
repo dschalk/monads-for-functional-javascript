@@ -1,4 +1,3 @@
-
 "use strict";
 // import xs from 'xstream';
 // import {run} from '@cycle/xstream-run';
@@ -17,6 +16,7 @@ var Greeter = (function () {
     };
     return Greeter;
 })();
+
 var greeter;
 greeter = new Greeter("world");
 console.log(greeter.greet());
@@ -34,9 +34,7 @@ var socket = createWebSocket('/');
 console.log('########## socket: ', socket);
 
 const websocketsDriver = function () {
-    return create((add) => {
-      socket.onmessage = msg => add(msg)
-    })
+    return create((add) => socket.onmessage = msg => add(msg))
 }
 
 socket.onmessage = function (event) {
@@ -44,484 +42,218 @@ socket.onmessage = function (event) {
 };
 
 socket.onclose = function (event) {
-    console.log(event);
+    console.log('<><><> New message <><><> ', event);
 };
 
+function updateElms (style, nums) {
+  elms = [
+    h('button#0.num', {style: {display: style[0]}}, nums[0] ),
+    h('button#1.num', {style: {display: style[1]}}, nums[1] ),
+    h('button#2.num', {style: {display: style[2]}}, nums[2] ),
+    h('button#3.num', {style: {display: style[3]}}, nums[3] ), ]  
+};
+
+function updateTasks (obArray) {
+  var todoData = [];
+  for (let ob of obArray) {  
+  todoData = todoData.concat([ 
+    h('span.task3', `{ style: { color: ${ob.color}, textDecoration: ${ob.textDecoration} } }, 'Task: ' + ${ob.task}`),
+    h('br'),
+    h('button#edit1', 'Edit'),
+    h('input#edit2', `{ props: { type: textarea, value: ${ob.task}}}`),
+    h('span#author.tao', `Author: ${ob.author}  /  Responsibility: ${ob.responsible}`),
+    h('br'),
+    h('input#cb', `{ props: { type: 'checkbox', checked: ${ob.checked }}}, 
+           {style: { color: ${ob.color}, textDecoration: ${ob.textDecoration}}}` ),
+    h('label.cbox',   { props: { for: '#cb' } }, 'Completed'   ),
+    h('button.delete', 'Delete'),
+    h('br'),
+    h('hr') ])   
+    }
+    console.log('In updateTasks uuuuuuuuuuuuuuuuuu  todoData ', todoData );
+}; 
+
+
 function main(sources) {
-    mMindex.ret(0);
-    const messages$ = (sources.WS).map( e => {
-      mMtem.ret(e.data.split(',')).bnd( v => {
-        console.log('<><><><><><><><><><><><><><><><>  INCOMING  <><><><><><><> >>> In messages. e amd v are ', e, v);
-        mMZ10.bnd( () => mM1.ret(v.slice(3)).bnd(function (y) { return game([pMscore.x, pMgoals.x, y, mM3.x].concat(y))}));
-        mMZ11.bnd( () => socket.send('CG#$42,' + pMgroup.x + ',' + pMname.x + ',' + pMscore + ',' + pMgoals));
-        mMZ12.bnd( () => mM6.ret(v[2] + ' successfully logged in.'));
-        mMZ13.bnd( () => updateMessages(v));
-        mMZ14.bnd( () => mMgoals2.ret('The winner is ' + v[2]));
-        mMZ15.bnd( () => mMgoals2.ret('A player named ' + v[2] + ' is currently logged in. Page will refresh in 4 seconds.')
-        .bnd(refresh));
-        mMZ16.bnd( () => { if (pMname.x != v[2]) {
-            mMgoals2.ret(v[2] + v[3]);
-        } });
-        mMZ17.bnd( () => {
-            if (v[3] == 'no file') mMtaskList.ret([]);
-            else process(e.data);
-        });
-        mMZ18.bnd( () => { if (pMname == v[2]) playerMonad.run([v[3], v[4]]); });
-        mMZ19.bnd( () => updatePlayers(e.data));
-      });
-      mMtemp.ret(e.data.split(',')[0])
-      .bnd(next, 'CA#$42', mMZ10)
-      .bnd(next, 'XX#$42', mMZ11)
-      .bnd(next, 'CC#$42', mMZ12)
-      .bnd(next, 'CD#$42', mMZ13)
-      .bnd(next, 'CE#$42', mMZ14)
-      .bnd(next, 'EE#$42', mMZ15)
-      .bnd(next, 'DE#$42', mMZ16)
-      .bnd(next, 'DD#$42', mMZ17)
-      .bnd(next, 'CG#$42', mMZ18)
-      .bnd(next, 'NN#$42', mMZ19)
-    });
+  var newTasks = [];
+  const messages$ = (sources.WS).map( e => {
+  mMtem.ret(e.data.split(',')).bnd( v => {
+  var name = get(pMname);
+  var group = get(pMgroup);
+  var score = get(pMscore);
+  var goals = get(pMgoals);
+  // updateElms(get(mMstyle), get(mMnums));  
+  console.log('<><><><><><><><><><><><><><><><>  INCOMING  <><><><><><><> >>> In messages. e amd v are ', e, v);
+  mMZ10.bnd( () => mMnums.ret([v[3], v[4], v[5], v[6]]).bnd(newR))
+  mMZ11.bnd( () => socket.send(`CG#$42,${get(pMgroup)},${get(pMname)},${get(score)},${get(goals)}l`));
+  mMZ12.bnd( () => mM6.ret(v[2] + ' successfully logged in.'));
+  mMZ13.bnd( () => updateMessages(e.data));
+  mMZ14.bnd( () => mMgoals2.ret('The winner is ' + v[2]));
+  mMZ15.bnd( () => {
+    mMgoals2.ret('A player named ' + v[2] + ' is currently logged in. Page will refresh in 4 seconds.')
+    refresh() });
+  mMZ17.bnd( () => {
+    if (group != 'solo' || group == 'solo' &&  name == v[2]) {   
+      if (v[3] == 'no file') mMtaskList.ret([]);
+      else process(e.data)  
+    } 
+  })
+    mMZ18.bnd( () => {if (group != 'solo' || name == v[2]) {updatePlayers(e.data) } });
+  })       
+  mMtemp.ret(e.data.split(',')[0])
+  .bnd(next, 'CA#$42', mMZ10)
+  .bnd(next, 'XX#$42', mMZ11)
+  .bnd(next, 'CD#$42', mMZ13)
+  .bnd(next, 'CE#$42', mMZ14)
+  .bnd(next, 'EE#$42', mMZ15)
+  .bnd(next, 'DD#$42', mMZ17)
+  .bnd(next, 'NN#$42', mMZ18)
+  });
+        
+  function newR (ar) {
+    mM3.ret([]);
+    mM8.ret(0);   
+    mMnums.ret(ar);
+    mMstyle.ret(['inline', 'inline', 'inline', 'inline']);
+    updateElms(['inline', 'inline', 'inline', 'inline'],ar);
+    return ret(ar);
+  };
 
-    var updatePlayers = function updatePlayers (data) { 
-          sMplayers.clear();
-          var namesL = data.split("<br>");
-          var namesList = namesL.slice(1);
-          updateScoreboard2(namesList);
-          namesList.forEach(function (player) { return sMplayers.add(player.trim())});
-          game2();
-          console.log('In mMZ19 <><><><><><> namesL, and namesList are ', namesL, namesList);
+  var loginPress$ = sources.DOM
+      .select('input#login').events('keypress');
+
+  var loginPressAction$ = loginPress$.map(e => {
+    var v = e.target.value;
+    if (e.keyCode == 13) {
+      pMname.ret(v);
+      socket.send(`CC#$42${v}`);
+      console.log('33333333333333333333333333333333333333 login e.target.value ', e.target.value);
+      mM3.ret([]).bnd(mMnums.ret);
+      // socket.send(`CO#$42,solo,${v},solo`);
+      document.getElementById('dice').style.display = 'block';
+      document.getElementById('rightPanel').style.display = 'block';
+      document.getElementById('log1').style.display = 'none';
+      document.getElementById('log2').style.display = 'block';
+      document.getElementById('gameDiv2').style.display = 'block';
+      socket.send(`CG#$42,solo,${v},0,0`);
+      document.getElementById('login').blur(); 
+      document.getElementById('group').focus(); 
     }
+  });
 
-    var updateScoreboard2 = function updateScoreboard(v) {
-        var ar = [];
-        for (var _i = 0, v_1 = v; _i < v_1.length; _i++) {
-            var k = v_1[_i];
-            ar.push(['  ' + k]);
-        }
-        ;
-        return mMscoreboard.ret(ar);
-    };
+  var groupPress$ = sources.DOM
+      .select('input#group').events('keypress');
 
-    var updateMessages = function updateMessages(ar) {
-        console.log('8888888888888888888888888In updateMessages ar is >>>>>>>>>>>>>>', ar);
-        var sender = ar[2];
-        mMhelper.ret(ar)
-            .bnd(slice, 3, mMtemp3)
-            .bnd(intersperse, mMtemp4)
-            .bnd(function (v) { return mMmsg.bnd(unshift, h('div', sender + ': ' + v), mMmsg); });
-        console.log('99999999999999999999999In updateMessages mMmsg is ', mMmsg);
-    };
-
-    var loginPress$ = sources.DOM
-        .select('input#login').events('keypress');
-    var loginPressAction$ = loginPress$.map(function (e) {
-        var v = (e.target.value);
-        if (v == '') {
-            return;
-        }
-        if (e.keyCode == 13) {
-            socket.send("CC#$42" + e.target.value);
-            pMname.ret(e.target.value);
-            console.log('33333333333333333333333333333333333333 login e.target.value ', e.target.value);
-            game2();
-            mM3.ret([]);
-            document.getElementById('dice').style.display = 'block';
-            document.getElementById('rightPanel').style.display = 'block';
-            document.getElementById('log1').style.display = 'none';
-            document.getElementById('log2').style.display = 'block';
-            document.getElementById('gameDiv2').style.display = 'block';
-            console.log('In loginPressAction$ ', socket.readyState);
-        }
-    });
-    var groupPress$ = sources.DOM
-        .select('input#group').events('keypress');
-    var groupPressAction$ = groupPress$.map(function (e) {
-        if (e.keyCode == 13) {
-            pMgroup.ret(e.target.value);
-            playerMonad.run([0, 0]);
-            socket.send('CO#$42,' + pMgroup.x + ',' + pMname.x + ',' + e.target.value);
-            game2();
-            console.log('In groupPressAction$ ', socket.readyState);
-            socket.send('CG#$42,' + pMgroup.x + ',' + pMname.x + ',' + 0 + ',' + 0);
-        }
-    });
-    var messagePress$ = sources.DOM
-        .select('input.inputMessage').events('keydown');
-    var messagePressAction$ = messagePress$.map(function (e) {
-        if (e.keyCode == 13) {
-            socket.send("CD#$42," + pMgroup.x + "," + pMname.x + "," + e.target.value);
-            e.target.value = '';
-            console.log('In messagePressAction$ ', socket.readyState);
-        }
-    });
-    var task2 = function task2(str) {
-        console.log('In taskAction$. str is: ', str);
-        socket.send('TD#$42' + ',' + pMgroup.x + ',' + pMname.x + ',' + '@' + str);
-    };
-    var newTask$ = sources.DOM
-        .select('input.newTask').events('keydown');
-    var newTaskAction$ = newTask$.map(function (e) {
-        var ob = {};
-        var alert = '';
-        var task = '';
-        if (e.keyCode == 13) {
-            var ar = e.target.value.split(',');
-            if (ar.length < 3) {
-                alert = 'You should enter "author, responsible party, task" separated by commas';
-                document.getElementById('alert').innerHTML = alert;
-            }
-            var ar2 = ar.slice(2);
-            console.log('*************  newTaskAction$  ************************$$$$$$$$$$$  ar ', ar);
-            if (ar2.length == 1) {
-                task = ar[2];
-            }
-            if (ar2.length > 1) {
-                task = ar2.reduce(function (a, b) { return a + '$*$*$' + b; });
-            }
-            if ((mMar2.x.filter(function (v) { return (v.task == task); }).length) > 0) {
-                document.getElementById('alert').innerHTML = task + " is already listed.";
-            }
-            else if (ar.length > 2) {
-                mMcurrentList.bnd(addString, task + ',yellow, none, false,' + ar[0] + ',' + ar[1], mMcurrentList);
-                task2(mMcurrentList.x);
-                e.target.value = '';
-                document.getElementById('alert').innerHTML = '';
-            }
-        }
-    });
-    var process = function (str) {
-        var a = str.split(",");
-        if (a == undefined) {
-            return;
-        }
-        ;
-        if (a.length < 9) {
-            return;
-        }
-        ;
-        var ob = {};
-        var ar = a.slice(3);
-        var s = ar.reduce(function (a, b) { return a + ',' + b; });
-        console.log('2323232323232323232323232323232 In process. ar and s are: ', ar, s);
-        var tempArray = [];
-        if (ar.length < 6) {
-            return;
-        }
-        ;
-        if ((ar.length % 6) !== 0) {
-            document.getElementById('alert').innerHTML = 'Error: array length is: ' + length;
-        }
-        mMcurrentList.ret(s);
-        process3(ar);
-    };
-    var process3 = function (a) {
-        console.log('77766677766677766677766676767676 In process3. a is ', a);
-        if (a.length > 0 && (a.length % 6) == 0) {
-            var ar5 = [];
-            var keys = rang(0, a.length / 6);
-            keys.map(function (_) {
-                ar5.push({
-                    task: convertBack(a.shift()),
-                    color: a.shift(),
-                    textDecoration: a.shift(),
-                    checked: a.shift() === 'true',
-                    author: a.shift(),
-                    responsible: a.shift()
-                });
-            });
-            mMar2.ret(ar5);
-            process4(ar5);
-        }
-        else {
-            document.getElementById('alert2').innerHTML = 'The length of the game array is either 0 or is not divisible by 6';
-        }
-    };
-    var process4 = function (a) {
-        var tempArray = [];
-        var keys = Object.keys(a);
-        for (var k in keys) {
-            tempArray.push(h('div.todo', [
-                h('span.task3', { style: { color: a[k].color, textDecoration: a[k].textDecoration } }, 'Task: ' + a[k].task),
-                h('br'),
-                h('button#edit1', 'Edit'),
-                h('input#edit2', { props: { type: 'textarea', value: a[k].task }, style: { display: 'none' } }),
-                h('span#author.tao', 'Author: ' + a[k].author + ' / ' + 'Responsibility: ' + a[k].responsible),
-                h('br'),
-                h('input#cb', { props: { type: 'checkbox', checked: a[k].checked }, style: { color: a[k].color,
-                        textDecoration: a[k].textDecoration } }),
-                h('label.cbox', { props: { for: '#cb' } }, 'Completed'),
-                h('button.delete', 'Delete'),
-                h('br'),
-                h('hr')]));
-        }
-        mMtaskList.ret(tempArray);
-    };
-    var colorClick$ = sources.DOM
-        .select('#cb').events('click');
-    var colorAction$ = colorClick$.map(function (e) {
-        var ind = getIndex(e);
-        var index = parseInt(ind, 10);
-        var s = mMcurrentList.x;
-        var ar = s.split(',');
-        var n = 6 * index + 3;
-        var j = 6 * index + 2;
-        var k = 6 * index + 1;
-        var checked = ar[n];
-        if (checked == 'true') {
-            ar[n] = 'false';
-            ar[k] = 'yellow';
-            ar[j] = 'none';
-        }
-        else {
-            ar[n] = 'true';
-            ar[k] = 'lightGreen';
-            ar[j] = 'line-through';
-        }
-        task2(ar.reduce(function (a, b) { return a + ',' + b; }));
-    });
-    var edit1$ = sources.DOM
-        .select('#edit1').events('click');
-    var edit1Action$ = edit1$.map(function (e) {
-        var index = getIndex2(e);
-        mMtaskList.x[index].children[3].elm.style.display = 'block';
-    });
-    var edit2$ = sources.DOM
-        .select('#edit2').events('keypress');
-    var edit2Action$ = edit2$.map(function (e) {
-        var v = e.target.value;
-        var index = getIndex2(e);
-        if (e.keyCode == 13) {
-            process2(v, index);
-            mMtaskList.x[index].children[3].elm.style.display = 'none';
-        }
-    });
-    var process2 = function (str, index) {
-        var a = mMcurrentList.x.split(',');
-        a[6 * index] = str;
-        var b = a.reduce(function (a, b) { return a + ',' + b; });
-        task2(b);
-    };
-    var deleteClick$ = sources.DOM
-        .select('.delete').events('click');
-    var deleteAction$ = deleteClick$.map(function (e) {
-        var index = parseInt(getIndex(e), 10);
-        var s = mMcurrentList.x;
-        var ar = s.split(',');
-        var str = '';
-        ar.splice(index * 6, 6);
-        if (ar.length > 0) {
-            task2(ar.reduce(function (a, b) { return a + ',' + b; }));
-        }
-        else {
-            socket.send('TX#$42' + ',' + pMgroup.x + ',' + pMname.x);
-            mMtaskList.ret('');
-        }
-    });
-    var timeoutClicks$ = sources.DOM.select('#timeout').events('click');
-    var timeoutAction$ = timeoutClicks$.map(function () {
-        document.getElementById('timeout2').innerHTML = '';
-        document.getElementById('timeout3').innerHTML = '';
-        m.ret(3, 'm')
-            .bnd(timeout2, 1, m, [function () { return m
-                .bnd(cube, m)
-                .bnd(display, 'timeout2', 'm.x is ' + ' ' + m.x, m)
-                .bnd(timeout2, 2, m, [function () { return m
-                    .bnd(add, 15, m)
-                    .bnd(display, 'timeout2', 'm.x is ' + ' ' + m.x, m)
-                    .bnd(display, 'timeout3', 'The meaning of everything was computed to be' + ' ' + m.x, m); }
-            ]); }]);
-    });
-    var chatClick$ = sources.DOM
-        .select('#chat2').events('click');
-    var chatClickAction$ = chatClick$.map(function () {
-        var el = document.getElementById('chatDiv');
-        (el.style.display == 'none') ?
-            el.style.display = 'inline' :
-            el.style.display = 'none';
-    });
-    var captionClick$ = sources.DOM
-        .select('#caption').events('click');
-    var captionClickAction$ = captionClick$.map(function () {
-        var el = document.getElementById('captionDiv');
-        (el.style.display == 'none') ?
-            el.style.display = 'inline' :
-            el.style.display = 'none';
-    });
-    // **************************************   GAME   *********************************************** GAME START
-    var gameClick$ = sources.DOM
-        .select('#game').events('click');
-    var gameClickAction$ = gameClick$.map(function () {
-        var el = document.getElementById('gameDiv');
-        (el.style.display == 'none') ?
-            el.style.display = 'inline' :
-            el.style.display = 'none';
-        var el2 = document.getElementById('gameDiv2');
-        (el2.style.display == 'none') ?
-            el2.style.display = 'inline' :
-            el2.style.display = 'none';
-    });
-    var rollClick$ = sources.DOM
-        .select('.roll').events('click');
-    var rollClickAction$ = rollClick$.map(function (e) {
-        socket.send('CA#$42,' + pMgroup.x + ',' + pMname.x + ',6,6,12,20');
-        mM3.ret([]);
-        playerMonad.run([pMscore.bnd(add, -1, pMscore).x, pMgoals.x]);
-        socket.send('CG#$42,' + pMgroup.x + ',' + pMname.x + ',' + pMscore.x + ',' + mMgoals.x);
-    });
-    var numClick$ = sources.DOM
-        .select('.num').events('click');
-    var numClickAction$ = numClick$.map(function (e) {
-        if (mM3.x.length < 2) {
-            mM3.bnd(push, e.target.innerHTML, mM3).bnd(function (nums) {
-                return mM1.bnd(splice, e.target.id, 1, mM1).bnd(function (nums2) {
-                    return game([pMscore.x, pMgoals.x, nums2, nums].concat(nums2));
-                });
-            });
-        }
-        if (mM3.x.length === 2 && mM8.x !== 0) {
-            updateCalc();
-        }
-    }).startWith([0, 0, 0, 0]);
-    var opClick$ = sources.DOM
-        .select('.op').events('click');
-    var opClickAction$ = opClick$.map(function (e) {
-        mM8.ret(e.target.textContent);
-        if (mM3.x.length === 2) {
-            updateCalc();
-        }
-    });
-
-    var forwardClick$ = sources.DOM
-        .select('#forward').events('click');
-
-    var backClick$ = sources.DOM
-        .select('#back').events('click');
-
-    var forwardAction$ = forwardClick$.map(function () {
-        if (mMindex.x < (mMhistory.x.length - 1)) {
-          mMindex.bnd(add, 1, mMindex)
-          .bnd(v => trav(v));
-        }
-    });
-
-    var backAction$ = backClick$.map(function () {
-        if (mMindex.x > 0) {
-          mMindex.bnd(add, -1, mMindex)
-          .bnd(v => trav(v));
-          socket.send('DE#$42,' + pMgroup.x + ',' + pMname.x + ', clicked the BACK button. ');
-        }
-    });
-
-    var game = function game(z) {
-        var x = z.slice();
-        mMindex.bnd(add, 1, mMindex)
-            .bnd(function (i) { return mMhistory.bnd(spliceAdd, i, x, mMhistory); });
-        document.getElementById('0').innerHTML = x[4];
-        document.getElementById('1').innerHTML = x[5];
-        document.getElementById('2').innerHTML = x[6];
-        document.getElementById('3').innerHTML = x[7];
-        game2();
-        cleanup('cow');
-    };
-
-    var game2 = function game2() {
-        document.getElementById('sb1').innerHTML = 'Name: ' + pMname.x;
-        document.getElementById('sb2').innerHTML = 'Group: ' + pMgroup.x;
-        document.getElementById('sb5').innerHTML = 'Currently online: Name | score | goals';
-        document.getElementById('sb6').innerHTML = mMscoreboard.x;
-        cleanup('fred');
-    };
-    var trav = function trav(index) {
-        document.getElementById('0').innerHTML = mMhistory.x[index][4];
-        document.getElementById('1').innerHTML = mMhistory.x[index][5];
-        document.getElementById('2').innerHTML = mMhistory.x[index][6];
-        document.getElementById('3').innerHTML = mMhistory.x[index][7];
-        var a = mMhistory.x[index];
-        mM1.ret(a[2]);
-        mM3.ret(a[3]);
-        socket.send('CG#$42,' + mMgroup.x + ',' + pMname.x + ',' + a[0] + ',' + a[1]);
-        mM8.ret(0);
-        cleanup('steve');
-    };
-    function changeS(ar, name) {
-        var x = ar.filter(function (v) { return v.split("|")[0].trim() != pMname.x; });
-        return x;
-    }
-    function updateCalc() {
-        mM3.bnd(function (x) {
-            return mM7.ret(calc(x[0], mM8.x, x[1])).bnd(function (result) {
-                mM1.bnd(push, result, mM1)
-                    .bnd(function (nums) { return game([pMscore.x, pMgoals.x, nums, []].concat(nums)); });
-                if (result == 20) {
-                    score(pMscore.x * 1 + 1);
-                }
-                if (result == 18) {
-                    score(pMscore.x * 1 + 3);
-                }
-            });
-        });
-        reset();
-    }
-    ;
-    function cleanup(x) {
-        var target0 = document.getElementById('0');
-        var target1 = document.getElementById('1');
-        var target2 = document.getElementById('2');
-        var target3 = document.getElementById('3');
-        var targetAr = [target0, target1, target2, target3];
-        [0, 1, 2, 3].map(function (i) {
-            if (targetAr[i].innerHTML == 'undefined') {
-                targetAr[i].style.display = 'none';
-            }
-            else {
-                targetAr[i].style.display = 'inline';
-            }
-        });
-        return ret(x);
-    }
-    ;
-    var score = function score(x) {
-        socket.send('CA#$42,' + pMgroup.x + ',' + pMname.x + ',6,6,12,20');
-        if (x !== 20) {
-            console.log('In score *******<><><><><><><><><><><>********4444444444444444 x and pMscore.x is ', x, pMscore.x);
-            pMscore.ret(x).bnd(addTest, pMscore).bnd(function (v) {
-                playerMonad.run([v, pMgoals.x]);
-                socket.send('CG#$42,' + pMgroup.x + ',' + pMname.x + ',' + v + ',' + mMgoals.x);
-            });
-        }
-      else {
-          mMplayer.ret([]);
-          mM13.ret(0);
-          mMgoals.bnd(add, 1, mMgoals).bnd(function (v) {
-              if (v == 3) {
-                  socket.send('CE#$42,' + pMgroup.x + ',' + pMname.x + ',nothing ');
-                  mMgoals.ret(0).bnd(mMindex.ret);
-                  mMhistory.ret([0, 0, 0, 0]);
-                  playerMonad.run([0, 0]);
-                  socket.send('CG#$42,' + pMgroup.x + ',' + pMname.x + ',' + 0 + ',' + 0);
-              }
-              else {
-                  var g = pMgoals.x * 1 + 1;
-                  playerMonad.run([0, g]);
-                  socket.send('CG#$42,' + pMgroup.x + ',' + pMname.x + ',' + 0 + ',' + g);
-              }
-              ;
-          });
+  var groupPressAction$ = groupPress$.map(e => {
+      if (e.keyCode == 13) {
+          var oldGroup = get(pMgroup);
+          var gr = e.target.value;
+          pMgroup.ret(gr);
+          playerMonad.run([0, 0]);
+          socket.send(`CO#$42,${gr},${get(pMname)},${gr},`);
+          socket.send(`CG#$42,${gr},${get(pMname)},0,0`);
       }
+  });
+
+  var messagePress$ = sources.DOM
+      .select('input.inputMessage').events('keydown');
+
+  var messagePressAction$ = messagePress$.map(function (e) {
+      if (e.keyCode == 13) {
+          socket.send(`CD#$42,${get(pMgroup)},${get(pMname)},${e.target.value}`);
+          e.target.value = '';
+          console.log('In messagePressAction$ ', socket.readyState);
+      }
+  });
+
+  var updatePlayers = function updatePlayers (data) { 
+        sMplayers.clear();
+        var namesL = data.split("<br>");
+        var namesList = namesL.slice(1);
+        updateScoreboard2(namesList);
+        namesList.forEach(player => sMplayers.add(player.trim()));
+        console.log('In mMZ19 <><><><><><> namesL, sMplayers.s, and namesList are ', namesL, sMplayers.s, namesList);
+  }
+
+  var updateScoreboard2 = function updateScoreboard2(v) {
+    var ar = [];
+    for (let k of v) {
+        ar.push(['  ' + k]);
+    };
+    pMdata.ret(ar);
   };
-  var reset = function reset() {
-      mM3.ret([])
-          .bnd(function () { return mM4.ret(0)
-          .bnd(mM8.ret)
-          .bnd(cleanup); });
-      mMgoals2.ret('');
-  };
-  var updateScoreboard = function updateScoreboard(v) {
-      mMscoreboard.push(h('div', v));
-  };
-  //**************************************   GAME   *********************************************** GAME END
+
+  var numClick$ = sources.DOM
+      .select('.num').events('click'); 
+
+  var numClickAction$ = numClick$.map(e => {
+    var ar = get(mMnums.bnd(spliceM, e.target.id, 1).bnd(mMnums.ret));
+    updateElms(test2(get(mMstyle), ar), ar); 
+    var ar2 = get(mM3.bnd(push, e.target.innerHTML).bnd(mM3.ret));
+    if (ar2.length == 2 && get(mM8) != 0) {
+      updateCalc(v, get(mM8)) 
+    }
+  }).startWith([0, 0, 0, 0]);
+
+  var opClick$ = sources.DOM
+      .select('.op').events('click');
+
+  var opClickAction$ = opClick$.map(e => {
+    mM8.ret(e.target.innerHTML).bnd(v => { 
+      var ar = get(mM3)
+      if (ar.length === 2) {
+        updateCalc(ar, v)
+      }
+      console.log('In opClickAction$ wwwwwwwwwwwwwwwwwwww   ar, v, result ', ar, v );
+    }) 
+  });
+
+  function updateCalc(ar, op) {
+    var result = calc(ar[0], op, ar[1])
+    console.log('In updateCalc vvvvvvvvvvvvvvvvvvvvvvvv    ar, op ', ar, op, result );
+    if (result == 20) { 
+      pMscore.bnd(add,1).bnd(tscore).bnd(pMscore.ret).bnd(a => score2(a));
+      return; 
+    } 
+    else if (result == 18) { 
+      pMscore.bnd(add,3).bnd(tscore).bnd(pMscore.ret).bnd(a => score2(a));
+      return;
+    }
+    else {
+      mMnums.bnd(push,result).bnd(mMnums.ret).bnd(x =>
+      updateElms(test2(get(mMstyle), x), x)) 
+      mM8.ret(0);
+      mM3.ret([]);
+    }
+  };  
+
+  function score2(scor) {
+    console.log('In score2 ZZZZZZZZZZZZZZZ  scor, get(mMnums) ', scor, get(mMnums) );
+    if (scor != 25) {
+      mMnums.bnd(push, scor).bnd(mMnums.ret).bnd(ar => {
+        updateElms(test2(get(mMstyle), ar), ar)
+      });
+      socket.send(`CG#$42,${get(pMgroup)},${get(pMname)},${scor},${get(pMgoals)}` );
+    }
+    else if (get(pMgoals) == 2) {
+        pMgoals.ret(0);
+        socket.send(`CE#$42,${get(pMgroup)},${get(pMname)},nothing`);
+        mMhistory.ret([0, 0, 0, 0, 0, 0]);
+        playerMonad.run([[0, 0]]);
+        socket.send(`CG#$42,${get(pMgroup)},${get(pMname)},0,0`);
+    }
+    else {
+      playerMonad.run([get(pMgoals), get(pMgoals.bnd(add, 1))]).bnd(s => {
+        socket.send(`CG#$42,${get(pMgroup)},${get(pMname)},0,${s[3][1]}`);
+        console.log('&&&&&&&777777777&&  in score2/else v, playerMonad.s.slice()  ', s, playerMonad.s.slice() );
+      });  
+    };
+    socket.send(`CA#$42,${get(pMgroup)},${get(pMname)},6,6,12,20`);
+     }
+
   var todoClick$ = sources.DOM
       .select('#todoButton').events('click');
+
   var todoClickAction$ = todoClick$.map(function (e) {
       var el = document.getElementById('todoDiv');
       (el.style.display == 'none') ?
@@ -593,8 +325,15 @@ function main(sources) {
   // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> ENDOM prime factors END
   // ?<>>><>><><><><>>>><><><  traversal  ><><><><><><>>><><><><><><><><><><><>< START traversal  
   document.onload = function (event) {
-      console.log('onload event: ', event);
-      mMitterfib5.release(200);
+    console.log('onload event: ', event);
+    mMitterfib5.release(200);
+
+    var change = (a,b) => {
+      document.getElementById(a).blur(); 
+      document.getElementById(b).focus(); 
+    };
+
+    document.getElementById('login').focus(); 
   };
   // <>>><>><><><><>>>><><><  traversal  ><><><><><><>>><><><><><><><><><><><>< ENDOM traversal  
   // <>>><>><><><><>>>><><><  traversal  ><><><><><><>>><><><><><><><><><><><>< START Itterator  
@@ -620,33 +359,33 @@ function main(sources) {
       }
   });
 
-var solve = function solve () {
-  mMZ3.bnd(a => ret(a)
-  .bnd(display, 'quad4', '')         
-  .bnd(display, 'quad6', '')         
-  .bnd(display,'quad5', a + " * x * x ")
-  .bnd(a => mMZ3    // Blocks here until new user input comes in.
-  .bnd(b => ret(b)
-  .bnd(display, 'quad6', b + ' * x ').bnd(b => mMZ3  // Blocks again.
-  .bnd(c => mMtemp.ret([a,b,c]).bnd(fmap, qS4,'mMtemp2')
-  .bnd(result => {  
-    let x = result[0]
-    let y = result[1]
-    if (x == 0) {mMtemp.bnd(display, 'quad5', 'No solution', mMtemp)
-       .bnd(display, 'quad6', ' ', mMtemp); solve(); return;}
-    if (y == 0) {mMtemp.bnd(display, 'quad5', 'No solution', mMtemp)
-       .bnd(display, 'quad6', ' ', mMtemp)   
-       solve(); return;};
-  mMtemp.bnd(display, 'quad4', "Results: " + x + " and  " + y)  
-  .bnd(display, 'quad5', p(a).text + " * " + x + " * " + x + " + " + p(b).text + 
-          " * " + x + " " + p(c).text + " = 0")
-  .bnd(display, 'quad6', p(a).text + " * " + y + " * " + y + " + " + p(b).text + 
-          " * " + y + " " + p(c).text + " = 0")   
-  solve();  
-  } )))))) 
-};
-
-  solve();
+  var solve = function solve () {
+    mMZ3.bnd(a => ret(a)
+    .bnd(display, 'quad4', '')         
+    .bnd(display, 'quad6', '')         
+    .bnd(display,'quad5', a + " * x * x ")
+    .bnd(a => mMZ3    // Blocks here until new user input comes in.
+    .bnd(b => ret(b)
+    .bnd(display, 'quad6', b + ' * x ').bnd(b => mMZ3  // Blocks again.
+    .bnd(c => mMtemp.ret([a,b,c]).bnd(fmap, qS4,'mMtemp2')
+    .bnd(result => {  
+      let x = result[0]
+      let y = result[1]
+      if (x == 0) {mMtemp.bnd(display, 'quad5', 'No solution', mMtemp)
+         .bnd(display, 'quad6', ' ', mMtemp); solve(); return;}
+      if (y == 0) {mMtemp.bnd(display, 'quad5', 'No solution', mMtemp)
+         .bnd(display, 'quad6', ' ', mMtemp)   
+         solve(); return;};
+    mMtemp.bnd(display, 'quad4', "Results: " + x + " and  " + y)  
+    .bnd(display, 'quad5', p(a).text + " * " + x + " * " + x + " + " + p(b).text + 
+            " * " + x + " " + p(c).text + " = 0")
+    .bnd(display, 'quad6', p(a).text + " * " + y + " * " + y + " + " + p(b).text + 
+            " * " + y + " " + p(c).text + " = 0")   
+    solve();  
+    } )))))) 
+  };
+  
+    solve();
 
   var quad$ = sources.DOM
       .select('#quad').events('keypress');
@@ -657,7 +396,272 @@ var solve = function solve () {
           document.getElementById('quad').value = null;
       }
   });
-  var calcStream$ = merge(timeoutAction$, factorsAction$, forwardAction$, backAction$, primeFib$, fibPressAction$, quadAction$, testWAction$, testZAction$, testQAction$, edit1Action$, edit2Action$, colorAction$, deleteAction$, newTaskAction$, chatClickAction$, gameClickAction$, todoClickAction$, captionClickAction$, groupPressAction$, rollClickAction$, messagePressAction$, loginPressAction$, messages$, numClickAction$, opClickAction$);
+
+    var updateMessages = function updateMessages(e) {
+      var ar = e.split(',');
+      var sender = ar[2];
+      ar.splice(0,3);
+      var str = ar.join(',');
+      console.log('messageMonad ***** ', messageMonad );
+      messageMonad.run([ [h('br'), sender + ': ' + str], [], [], messageMonad.s[3] ]);
+             //  h('div', ['this', h('br'), 'is', h('br'),  'it'] ),
+    };
+
+    var task2 = function task2(str) {
+        console.log('In taskAction$. str is: ', str);
+        socket.send(`TD#$42,${get(pMgroup)},${get(pMname)},@${str}`)  
+    };
+
+    var newTask$ = sources.DOM
+        .select('input.newTask').events('keydown');
+
+    var newTaskAction$ = newTask$.map(function (e) {
+        var ob = {};
+        var alert = '';
+        var task = '';
+        if (e.keyCode == 13) {
+            var ar = e.target.value.split(',');
+            if (ar.length < 3) {
+                alert = 'You should enter "author, responsible party, task" separated by commas';
+                document.getElementById('alert').innerHTML = alert;
+            }
+            var ar2 = ar.slice(2);
+            console.log('*************  newTaskAction$  ************************$$$$$$$$$$$  ar ', ar);
+            if (ar2.length == 1) {
+                task = ar[2];
+            }
+            if (ar2.length > 1) {
+                task = ar2.reduce(function (a, b) { return a + '$*$*$' + b; });
+            }
+            if ((get(mMar2).filter(function (v) { return (v.task == task); }).length) > 0) {
+                document.getElementById('alert').innerHTML = task + " is already listed.";
+            }
+            else if (ar.length > 2) {
+                mMcurrentList.bnd(addString, task + ',yellow, none, false,' + ar[0] + ',' + ar[1], mMcurrentList);
+                task2(get(mMcurrentList));
+                e.target.value = '';
+                document.getElementById('alert').innerHTML = '';
+            }
+        }
+    });
+
+    var process = function (str) {
+      console.log('In process ppppppppppppppppp  str ', str);
+        var a = str.split(",");
+        if (a == undefined) {
+            return;
+        }
+        ;
+        if (a.length < 9) {
+            return;
+        }
+        ;
+        var ar = a.slice(3);
+        var s = ar.reduce(function (a, b) { return a + ',' + b; });
+        console.log('2323232323232323232323232323232 In process. ar and s are: ', ar, s);
+        var tempArray = [];
+        if (ar.length < 6) {
+            return;
+        }
+        ;
+        if ((ar.length % 6) !== 0) {
+            document.getElementById('alert').innerHTML = 'Error: array length is: ' + length;
+        }
+        mMcurrentList.ret(s);
+        process3(ar);
+    };
+
+    var process3 = function (a) {
+      console.log('Entering process3  33333333333333333 a is ', a );
+      if (a.length > 0 && (a.length % 6) == 0) {
+          var ar5 = [];
+          var keys = rang(0, a.length / 6);
+          keys.map(function (_) {
+            ar5.push({
+              task: convertBack(a.shift()),
+              color: a.shift(),
+              textDecoration: a.shift(),
+              checked: a.shift() === 'true',
+              author: a.shift(),
+              responsible: a.shift()
+            });
+          });
+          mMar2.ret(ar5);
+          process4(ar5);
+        console.log('In process3  33333333333333333 a, ar5 is ', a, ar5 );
+      }
+        else {
+            document.getElementById('alert2').innerHTML = 'The length of the game array is either 0 or is not divisible by 6';
+        }
+    };
+
+    var process4 = function (a) {
+        var tempArray = [];
+        var keys = Object.keys(a);
+        for (var k in keys) {
+            tempArray.push(h('div.todo', [
+                h('span.task3', { style: { color: a[k].color, textDecoration: a[k].textDecoration } }, 'Task: ' + a[k].task),
+                h('br'),
+                h('button#edit1', 'Edit'),
+                h('input#edit2', { props: { type: 'textarea', value: a[k].task }, style: { display: 'none' } }),
+                h('span#author.tao', 'Author: ' + a[k].author + ' / ' + 'Responsibility: ' + a[k].responsible),
+                h('br'),
+                h('input#cb', { props: { type: 'checkbox', checked: a[k].checked }, style: { color: a[k].color,
+                        textDecoration: a[k].textDecoration } }),
+                h('label.cbox', { props: { for: '#cb' } }, 'Completed'),
+                h('button.delete', 'Delete'),
+                h('br'),
+                h('hr')]));
+        }
+
+        mMtaskList.ret(tempArray);
+        taskL = tempArray;
+    };
+
+    var colorClick$ = sources.DOM
+        .select('#cb').events('click');
+
+    var colorAction$ = colorClick$.map(function (e) {
+        var ind = getIndex(e);
+        var index = parseInt(ind, 10);
+        var s = get(mMcurrentList);
+        var ar = s.split(',');
+        var n = 6 * index + 3;
+        var j = 6 * index + 2;
+        var k = 6 * index + 1;
+        var checked = ar[n];
+        if (checked == 'true') {
+            ar[n] = 'false';
+            ar[k] = 'yellow';
+            ar[j] = 'none';
+        }
+        else {
+            ar[n] = 'true';
+            ar[k] = 'lightGreen';
+            ar[j] = 'line-through';
+        }
+        task2(ar.reduce(function (a, b) { return a + ',' + b; }));
+    });
+
+    var edit1$ = sources.DOM
+        .select('#edit1').events('click');
+
+    var edit1Action$ = edit1$.map(function (e) {
+        var index = getIndex2(e);
+        get(mMtaskList)[index].children[3].elm.style.display = 'block';
+    });
+
+    var edit2$ = sources.DOM
+        .select('#edit2').events('keypress');
+
+    var edit2Action$ = edit2$.map(function (e) {
+        var v = e.target.value;
+        var index = getIndex2(e);
+        if (e.keyCode == 13) {
+            process2(v, index);
+            get(mMtaskList)[index].children[3].elm.style.display = 'none';
+        }
+    });
+
+    var process2 = function (str, index) {
+        var a = get(mMcurrentList).split(',');
+        a[6 * index] = str;
+        var b = a.reduce(function (a, b) { return a + ',' + b; });
+        task2(b);
+    };
+    var deleteClick$ = sources.DOM
+        .select('.delete').events('click');
+
+    var deleteAction$ = deleteClick$.map(function (e) {
+        var index = parseInt(getIndex(e), 10);
+        var s = get(mMcurrentList);
+        var ar = s.split(',');
+        var str = '';
+        ar.splice(index * 6, 6);
+        if (ar.length > 0) {
+            task2(ar.reduce(function (a, b) { return a + ',' + b; }));
+        }
+        else {var u = 'TX#$42'
+            mMtaskList.ret('');
+        }
+    });
+
+    var timeoutClicks$ = sources.DOM.select('#timeout').events('click');
+
+    var timeoutAction$ = timeoutClicks$.map(function () {
+        document.getElementById('timeout2').innerHTML = '';
+        document.getElementById('timeout3').innerHTML = '';
+        m.ret(3, 'm')
+            .bnd(timeout2, 1, m, [function () { return m
+                .bnd(cube, m)
+                .bnd(display, 'timeout2', 'get(m) is ' + ' ' + get(m), m)
+                .bnd(timeout2, 2, m, [function () { return m
+                    .bnd(add, 15, m)
+                    .bnd(display, 'timeout2', 'get(m) is ' + ' ' + get(m), m)
+                    .bnd(display, 'timeout3', 'The meaning of everything was computed to be' + ' ' + get(m), m); }
+            ]); }]);
+    });
+
+    var chatClick$ = sources.DOM
+        .select('#chat2').events('click');
+    var chatClickAction$ = chatClick$.map(function () {
+        var el = document.getElementById('chatDiv');
+        (el.style.display == 'none') ?
+            el.style.display = 'inline' :
+            el.style.display = 'none';
+    });
+
+    var captionClick$ = sources.DOM
+        .select('#caption').events('click');
+    var captionClickAction$ = captionClick$.map(function () {
+        var el = document.getElementById('captionDiv');
+        (el.style.display == 'none') ?
+            el.style.display = 'inline' :
+            el.style.display = 'none';
+    });
+    // **************************************   GAME   *********************************************** GAME START
+    var gameClick$ = sources.DOM
+        .select('#game').events('click');
+
+    var gameClickAction$ = gameClick$.map(function () {
+        var el = document.getElementById('gameDiv');
+        (el.style.display == 'none') ?
+            el.style.display = 'inline' :
+            el.style.display = 'none';
+        var el2 = document.getElementById('gameDiv2');
+        (el2.style.display == 'none') ?
+            el2.style.display = 'inline' :
+            el2.style.display = 'none';
+    });
+
+    var rollClick$ = sources.DOM
+        .select('.roll').events('click');
+
+    var rollClickAction$ = rollClick$.map(() => {
+        socket.send(`CA#$42,${get(pMgroup)},${get(pMname)},6,6,12,20`);
+        pMscore.bnd(add,-1).bnd(pMscore.ret).bnd(v =>
+          socket.send(`CG#$42,${get(pMgroup)},${get(pMname)},${v},${get(pMgoals)}` ));
+    });
+
+    var forwardClick$ = sources.DOM
+        .select('#forward').events('click');
+
+    var backClick$ = sources.DOM
+        .select('#back').events('click');
+
+    var forwardAction$ = forwardClick$.map(function () {
+        if (get(mMindex) < (get(mMhistory).length - 1)) {
+          mMindex.bnd(add, 1, mMindex)
+          .bnd(v => trav(v));
+        }
+    });
+
+
+
+
+
+
+  var calcStream$ = merge( factorsAction$, primeFib$, fibPressAction$, quadAction$, edit1Action$, edit2Action$, testWAction$, testZAction$, testQAction$, colorAction$, deleteAction$, newTaskAction$, chatClickAction$, gameClickAction$, todoClickAction$, captionClickAction$, groupPressAction$, rollClickAction$, messagePressAction$, loginPressAction$, messages$, numClickAction$, opClickAction$);
   return {
   DOM: calcStream$.map(function () {
   return h('div.content', [
@@ -675,21 +679,32 @@ var solve = function solve () {
       h('br'),
       h('br'),
       h('br'),
+      h('br'),
+      h('br'),
+      h('br'),
+      h('br'),
+      h('br'),
+      h('br'),
+      h('br'),
+      h('br'),
       h('div#gameDiv', [
-          h('span#sb1'),
-          h('br'),
-          h('span#sb2'),
-          h('br'),
-          h('span#sb5'),
-          h('br'),
-          h('span#sb6')]),
+      h('div.game', `Name: ${get(pMname)}`),
+      h('div.game', `Group: ${get(pMgroup)}`),
+      h('div.game', `Currently online: Name score | goals`  ),
+      h('div.game', `${get(pMdata)}`) ]),  
       h('br'),
       h('br'),
       h('br'),
       h('div#todoDiv', [
-          h('div#taskList', mMtaskList.x),
+          h('div#taskList', taskL  ),
           h('span', 'Author, Responsible Person, Task: '),
-          h('input.newTask')]),
+          h('input.newTask') ]),
+      h('br'),
+      h('span#alert'),
+      h('br'),
+      h('span#alert2'),
+      h('br'),
+      h('br'),
       h('br'),
       h('span#alert'),
       h('br'),
@@ -700,9 +715,8 @@ var solve = function solve () {
           h('div#messages', [
               h('span', 'Message: '),
               h('input.inputMessage'),
-              h('div', mMmsg.x)])])
-  ]),
-  h('div#leftPanel', [
+              h('div', messageMonad.s[3] ) ])  ]) ]),
+  h('div#leftPanel', [  
       h('br'),
       h('a.tao', { props: { href: '#async' } }, 'Asyc'),
       h('a.tao', { props: { href: '#monaditter' } }, 'MonadItter'),
@@ -711,6 +725,7 @@ var solve = function solve () {
       h('a.tao', { props: { href: '#monadmaybe' } }, 'Maybe Monad'),
       // h('a.tao', {props: {href: '#monads'}}, 'Why Call Them Monads'   ),  
       h('div#captionDiv', [
+          h('h3', 'Game traversal temporarily out of service during drastic refactoring' ),
           h('h1', 'Motorcycle.js With JS-monads'),
           h('span.tao1', ' Persisternt todo lists. '),
           h('br'),
@@ -730,17 +745,13 @@ var solve = function solve () {
       h('span', ' and '),
       h('a', { props: { href: "https://github.com/paldepind/snabbdom", target: "_blank" } }, 'Snabbdom'),
       h('span', ' instead of RxJS and virtual-dom.  The code for this repository is at '),
-      h('a', { props: { href: "https://github.com/dschalk/JS-monads-stable", target: "_blank" } }, 'JS-monads-stable'),
+      h('a', { props: { href: "https://github.com/dschalk/JS-monads-stable", target: "_blank" } }, 'JS-monads-stable'),  
       h('div#gameDiv2', { style: { display: 'none' } }, [
           h('br'),
-          h('p.red8', mMgoals2.x),
+          h('p.red8', `${get(mMgoals2)}`),
           h('span', ' Here are the basic rules:'),
           h('p', 'RULES: If clicking two numbers and an operator (in any order) results in 20 or 18, the score increases by 1 or 3, respectively. If the score becomes 0 or is evenly divisible by 5, 5 points are added. A score of 25 results in one goal. That can only be achieved by arriving at a score of 20, which jumps the score to 25. Directly computing 25 results in a score of 30, and no goal. Each time RL is clicked, one point is deducted. Three goals wins the game. '),
-          h('button#0.num'),
-          h('button#1.num'),
-          h('button#2.num'),
-          h('button#3.num'),
-          h('br'),
+          h('div', elms  ),
           h('button#4.op', 'add'),
           h('button#5.op', 'subtract'),
           h('button#5.op', 'mult'),
@@ -756,11 +767,11 @@ h('div#log1', [
 h('p', 'IN ORDER TO SEE THE GAME, TODOLIST, AND CHAT DEMONSTRATIONS, YOU MUST ENTER SOMETHING .'),
 h('span', 'Name: '),
 h('input#login', { props: { placeholder: "focus on; start typing" } })]),
-h('p', mM6.x),
+h('p', `${get(mM6)}`),
 h('div#log2', { style: { display: 'none' } }, [
     h('span', 'Change group: '),
     h('input#group')]),
-h('p', mMsoloAlert.x),
+h('p', `${get(mMsoloAlert)}`),
 h('p', 'People who are in the same group, other than solo, share the same todo list, messages, and simulated dice game. In order to see any of these, you must establish an identity on the server by logging in. The websockets connection terminates if the first message the server receives does not come from the sign in form. You can enter any random numbers or letters you like. The only check is to make sure someone hasn\t already signed in with whatever you have selected. If you log in with a name that is already in use, a message will appear and this page will be re-loaded in the browser after a four-second pause. '),
 h('p', ' Data for the traversable game history accumulates until a player scores. The data array is then re-set to [], the empty array. When a player clicks the BACK button, other group members are notified. It is up to the group to decide whether clicking the BACK button disqualifies a player. '),
 h('hr'),
@@ -927,7 +938,7 @@ h('a', { props: { href: '#top' } }, 'Back To The Top'),
 //************************************************************************** ENDOM Promises
 h('h2', 'Immutable Data And The State Object " '),
 h('h3', ' Mutations   '),
-h('p', ' Mutations in this application are confined to MonadItter instances and internal function operations. Functions in this application do not have side effects. If a function argument is an array, say "ar", I make a clone by calling "var ar = ar.slice()" or "let ar2 = ar.slice()" before mutating ar or ar2 inside the function. That way, the original ar remains unaffected. MonadItter instances don\'t have monadic properties. When their bnd() method is called, they sit idly until their release() method is called. I don\t see any reason to make a clone each time bnd() or release() is called. As demonstrated below, a MonadItter instance can hold several different expressions simultaneously, executing them one at a time in the order in which they appear in the code, once each time the release() method is called, In the quadratic equation demonstration, the second call to release() takes the result from the first call  '),
+h('p', ' Mutations in this application are confined to MonadItter instances and internal function operations. Functions in this application do not have side effects. If a function argument is an array, say "ar", I make a clone by calling "var ar = ar.sliceM()" or "let ar2 = ar.sliceM()" before mutating ar or ar2 inside the function. That way, the original ar remains unaffected. MonadItter instances don\'t have monadic properties. When their bnd() method is called, they sit idly until their release() method is called. I don\t see any reason to make a clone each time bnd() or release() is called. As demonstrated below, a MonadItter instance can hold several different expressions simultaneously, executing them one at a time in the order in which they appear in the code, once each time the release() method is called, In the quadratic equation demonstration, the second call to release() takes the result from the first call  '),
 h('h3', ' The simulated dice game '),
 h('p', ' A score increases by 1 or 3 if the result of a computation is 20 or 18, respectively. 5 additional points are added each time the result is a multiple of 5. A computation that results in a score of 25 earns 1 goal. So if a score is 17 and a player multiplies 3 * 6, 3 points are awarded resulting in 20 + 5 = 25 points. Goal! When a goal is earned, the traversable history is deleted and prepared for a fresh start. Here is the code involved in the simulated dice game: '),
 code.updateCalc,
@@ -1013,34 +1024,19 @@ h('img', {props: {src: "/images/div0.png" }},  ),
   h('p'),
   h('p'),
   h('p')
-
+    
        ])
-    ]);
- })};
+    ])
+  })     
 }
-  
-var displayf = function displayf(x, a) {
-    document.getElementById(a).style.display = 'none';
-    return ret(x);
-};
-var displayInline = function displayInline(x, a) {
-    if (document.getElementById(a))
-        document.getElementById(a).style.display = 'inline';
-    return ret(x);
-};
-var newRoll = function (v) {
-    socket.send('CA#$42,' + pMgroup.x + ',' + pMname.x + ',6,6,12,20');
-    return ret(v);
-};
-var refresh = function () {
-    setTimeout(function () {
-    document.location.reload(false);
-    }, 4000);
-};
+}
+setTimeout( function () {
+  document.getElementById('login').focus(); 
+},1500 );
 
-   const sources = {
-    DOM: makeDOMDriver('#main-container'),
-    WS: websocketsDriver,
-  }
+const sources = {
+  DOM: makeDOMDriver('#main-container'),
+  WS: websocketsDriver,
+}
 
 Cycle.run(main, sources);

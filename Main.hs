@@ -75,7 +75,7 @@ bcast message clients = do
     forM_ clients $ \(_ ,_, _, _, conn) -> WS.sendTextData conn message
 
 textState :: (Show a1, Show a) => [(Text, a, a1, t, t1)] -> [Text]
-textState s = [ a `mappend` " | "  `mappend` T.pack (show b) `mappend` " | " `mappend` " | "  `mappend` T.pack (show c) `mappend` " | "  | (a,b,c,_,_) <- s]
+textState s = [ a  `mappend` " " `mappend` T.pack (show b) `mappend` " | " `mappend` T.pack (show c) `mappend` " | "  | (a,b,c,_,_) <- s]
 
 newGroup :: Text -> Text -> Client -> Client
 newGroup name group (a, b, c, d, e)   | name == a  = (a, 0, 0, group, e)
@@ -240,22 +240,11 @@ talk conn state (_, _, _, _, _) = forever $ do
                 old <- atomically $ takeTMVar state
                 let new = changeGroup sender extra old
                 atomically $ putTMVar state new
-                let subState1 = subState sender group new
-                let subState2 = subState sender extra new
+                let subSt = subState sender extra new
                 tasks <- liftIO $ read2 (msgArray !! 1)
-                let nam = groupNames group subState2
-                let names = T.intercalate (", " :: Text) nam
-                let x = "CB#$42," `mappend` group `mappend` "," `mappend` sender `mappend` "," `mappend` T.concat (intersperse "<br>" (textState subState1))
-                let y = "AA#$42," `mappend` extra `mappend` "," `mappend` sender `mappend` " ,joined"
-                let z = "DD#$42," `mappend` extra `mappend` "," `mappend` sender `mappend` "," `mappend` tasks
-                broadcast ("NN#$42," `mappend` group `mappend` "," `mappend` sender `mappend` "," `mappend` names) subState2
-                broadcast y subState2
-                broadcast z subState2
-                if (group /= "solo")
-                   then
-                   broadcast x subState1
-                else
-                  return ()
+                st <- atomically $ readTMVar state
+                let subSt = subState sender group st
+                broadcast ("DD#$42," `mappend` group `mappend` "," `mappend` sender `mappend` "," `mappend` tasks) subSt
 
     else if "HQ#$42" `T.isPrefixOf` msg
         then
@@ -274,9 +263,11 @@ talk conn state (_, _, _, _, _) = forever $ do
                 atomically $ putTMVar state new
                 st <- atomically $ readTMVar state
                 let subSt = subState sender group st
+                broadcast ("CG#$42," `mappend` group `mappend` "," `mappend` sender `mappend` "," 
+                    `mappend` extra `mappend` "," `mappend` extra2) subSt
                 broadcast ("NN#$42," `mappend` group `mappend` "," `mappend` sender `mappend` "," 
                     `mappend` (T.pack "<br>") `mappend` T.concat (intersperse "<br>" (textState subSt))) subSt
-                broadcast ("CG#$42," `mappend` group `mappend` "," `mappend` sender `mappend` "," `mappend` extra `mappend` "," `mappend` extra2) subSt
+
 
     else if "DD#$42" `T.isPrefixOf` msg
             then do
@@ -284,14 +275,6 @@ talk conn state (_, _, _, _, _) = forever $ do
                 st <- atomically $ readTMVar state
                 let subSt = subState sender group st
                 broadcast ("DD#$42," `mappend` group `mappend` "," `mappend` sender `mappend` "," `mappend` tasks) subSt
-
-    else if "NN#$42" `T.isPrefixOf` msg
-            then do
-                st <- atomically $ readTMVar state
-                let subSt = subState sender group st
-                let nam = groupNames group subSt
-                let names = T.intercalate ("<br>" :: Text) nam
-                broadcast ("NN#$42," `mappend` group `mappend` "," `mappend` sender `mappend` "," `mappend` names) subSt
 
     else if "TD#$42" `T.isPrefixOf` msg
         then
@@ -301,8 +284,7 @@ talk conn state (_, _, _, _, _) = forever $ do
                 save (msgArray !! 1) $ tasks
                 st <- atomically $ readTMVar state
                 let subSt = subState sender group st
-                broadcast ("DD#$42," `mappend` group `mappend` ","
-                    `mappend` sender `mappend` "," `mappend` tasks) subSt
+                broadcast ("DD#$42," `mappend` group `mappend` "," `mappend` sender `mappend` "," `mappend` tasks) subSt
 
     else if "TX#$42" `T.isPrefixOf` msg
         then
