@@ -30,32 +30,31 @@ The running version of [JS-monads-stable @http://schalk.net:3055](http://schalk.
       return v;
     }  
 ```
-In most chains of computations, the arguments provided to each link's bnd() method are functions that return instances of Monad. Here are some examples of functions that return instances of Monad:
+In most chains of computations, the arguments provided to each link's bnd() method are functions that return instances of Monad. The stand-alone ret() function does only one thing; it creates new Monad instances. Here are some examples of functions that return instances of Monad:
 ```javascript
-  var ret = function ret(v, id = 'anonymous') {
-    window[id] = new Monad(v, id);
-    return window[id];
-  }
-  
-  var cube = function(v,mon) {
-    if (arguments.length === 2) {
-      return mon.ret(v*v*v);
+    function ret(v, id = 'default') {
+      return window[id] = (new Monad(v, id));
+    } 
+
+    var cube = function(v,mon) {
+      if (arguments.length === 2) {
+        return mon.ret(v*v*v);
+      }
+      return ret(v*v*v);
     }
-    return ret(v*v*v);
-  }
-  
-  var add = function(x,b,mon) {
-    if (arguments.length === 3) {
-      return mon.ret(x + b);
+    
+    var add = function(x,b,mon) {
+      if (arguments.length === 3) {
+        return mon.ret(x + b);
+      }
+      return ret(x+b);
     }
-    return ret(x+b);
-  }
-  
-  var log = function log(x, message, mon) {
-    console.log('In log. Entry: ', message);
-    if (arguments.length === 3) return mon
-    return ret(x);
-  };  
+    
+    var log = function log(x, message, mon) {
+      console.log('In log. Entry: ', message);
+      if (arguments.length === 3) return mon
+      return ret(x);
+    };  
 ```
 These functions can be used with instances of Monad in many ways, for example:
 ```javascript
@@ -166,8 +165,8 @@ The following code supports the group chat feature:
     };
 ```
 messageMonad.s[3] rests permantly in the virtual DOM. The message handler sends a string to the websockets server which broadcasts it to group members. The incoming websockets message handler is a stream which is merged into the stream that feeds the virtual DOM, triggering the Snabbdom diff anad render algorithm.
-```
-## The stand-alone ret() function creates new Monad instances. Here is its definition:
+
+The stand-alone ret() function creates new Monad instances. Here is its definition:
 ```javascript
     function ret(v, id = 'default') {
       return window[id] = (new Monad(v, id));
