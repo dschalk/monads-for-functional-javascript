@@ -56,31 +56,6 @@ In most chains of computations, the arguments provided to each link's bnd() meth
       return ret(x);
     };  
 ```
-These functions can be used with instances of Monad in many ways, for example:
-```javascript
-  var c = m.ret(0).bnd(add,3).bnd(cube)
-  .bnd(log,"m.x and a.x are  " + m.x + " and " + a.x + " respectively ")
-  Output: In log. Entry:  m.x and a.x are  0 and 27 respectively 
-  Note: m.x keeps its initial value of 0 because each computation 
-        creates a fresh instance of Monad with id == "anonymous".
-
-  m.bnd(() => add(0, 3).bnd(cube).bnd(m.ret).bnd(v => log("", "m.x is " + v))) 
-  Output: In log. Entry:  m.x is 27
-  Note: The value of m.x at the beginning of the computation is ignored. 
-        "m.ret" after the final computation creates a fresh instance of Monad 
-        with id == "m" and m.x == 27. If there is a reference to the original m, 
-        it will be preserved with its original value, otherwise it is subject to 
-        removal by the gargane collector.
-
-  m.ret(0).bnd(add,3,m2).bnd(cube,m3)
-  .bnd(log,"m.x and m2.x and m3.x are  " + m.x + ", " + m2.x + " and " + m3.x + " respectively ")
-  Output:  In log. Entry:  m.x and m2.x and m3.x are  0, 3 and 27 respectively
-  Note: This time, add got three arguments and cube got two.  
-```
-Just adding the suffix ".x" to an instance of Monad exposes its value. Doing that and running ret() on the return value is all that is needed for performing computations with ordinary functions and wrapping the results in instances of Monad. fmap is non-essential syntactic sugar. This is very different from Haskell, where fmap is an essential component of monadic computation.
-
-Each of the functions shown above can be used as a stand-alone function or as an argument to the bnd() method. Each monad in a chain of linked computations can do one of two things with the previous monads value: (1) It can ignore it, possibly letting it move past for use further down the chain or (2) use it, with the option of passing it and/or the computation result on down the chain.
-The Monad Laws
 
 In the following discussion, "x == y" signifies that x == y returns true. Let J be the collection of all Javascript values, including functions, instances of Monad, etc, and let F be the collection of all functions mapping values in J to instances of Monad m with references matching their ids; that is, with m[id] == m.id. M is defined as the collection of all such instances of Monad along and all of the functions in F. We speculate that there is a one to one correspondence between monads in Hask (The For any m (with id == "m"), f, and f' in M, J, F, and F, respectively, the following relationships hold:
 ```javascript
@@ -96,7 +71,7 @@ Right Identity
 
   m.bnd(m.ret) === m      Tested and verified 
   m.bnd(ret, "m") === m   Tested and verified
-  equals(m.bnd(ret), m)   Tested and verified
+  equals(m.bnd(m.ret), m)   Tested and verified
   Haskell monad law: m >>= return ≡ m 
 
 Commutivity
@@ -109,7 +84,7 @@ Commutivity
 where equals is defined as:
 ```javascript
     var equals = function equals (mon1, mon2) {
-      if (mon1.id === mon2.id && mon1.x === mon2.x) return true;
+      if (mon1.id === mon2.id && get(mon1) === get(mon2)) return true;
       else return false
     }  
 ```
@@ -337,7 +312,7 @@ Using the ES2015 Promises API inside of monads is easy. For example, consider th
     }));
   };
 ```
-Running the following code causes m.x == 42 after two seconds.
+Running the following code causes get(m) == 42 after two seconds.
 ```javascript
   m.ret(3).bnd(promise, 2, m, "cube").then(data => m.ret(data.x).bnd(add, 15, m))  
 ```
@@ -475,9 +450,9 @@ function test (a) {
 ```  
 And here are the screenshots of what was logged after calling a sequence of computations that executed properly and then two variations that failed. First, the version that succeeded:
 ![success](src/images/success.png)
-Next, the undefined variable ox appears halfway through the sequence of computations. What happened and where it happened are readily apparent in the screenshot. Just scan for the first appearance of MonadMaybe  {id: "Nothing, x: "Nothing"}     result.x Nothing, then look above it. Two lines up it says "ox is not defined". Directly above that we see that the undefined variable was introduced in the file named "test". Two lines above that we see that mQ1 has the value ox. Here is the screenshot:  
+Next, the undefined variable ox appears halfway through the sequence of computations. What happened and where it happened are readily apparent in the screenshot. Just scan for the first appearance of MonadMaybe  {id: "Nothing, x: "Nothing"} result.x Nothing, then look above it. Two lines up it says "ox is not defined". Directly above that we see that the undefined variable was introduced in the file named "test". Two lines above that we see that mQ1 has the value ox. Here is the screenshot:  
 ![undefined](/src/images/ox.png)
-And finally, 0/0 causes mQ1.x == NaN.
+And finally, 0/0 causes get(mQ1) == NaN.
 ![NaN](src/images/div0.png)
 After NaN was encountered, the sequence ran smoothly and rapidly through the final stages without attempting to do the specified work. In other scenarios, the savings in resources might be significant, a system crash might be averted, or a silently-produced bug causing incorrect results might have been avoided. And if I hadn't intentionally caused the failure, trouble-shooting would have been a no-brainer. In production, I would log only code pertaining to Nothing in order to be notified of problems that slipped past me during testing, but for this demonstration I logged messages from each stage of the computation, which might be a good thing to do during development. An operation in the middle of a sequence of operations might pause to obtain data from a remote resouse based on information received from the previous MonadMaybe instance. MonadMaybe could be modified to throw for more that undefined and NaN.
 
@@ -538,8 +513,6 @@ else if "CG#$42" `T.isPrefixOf` msg
 ```
 You don't need to be a Haskell programmer to see that state is pulled out of the TMVar and given the name "old". "new" is the state after changeScore sender extraNum extraNum2 old executes. "atomically $ putTMVar state new" replaces "old" in the TMVar with "new".
 
-In the browser, when an instance of Monad, say "m" with m.x == oldValue, executes its ret() method on some reference to a value, let's call it "newValue", O's m attribute points to a fresh Monad instance. m.x == oldValue becomes false and m.x == newValue becomes true. The Monad instance with m.x == oldValue still exists, and if there is a reference to it, it won't be destroyed by the garbage collector.
-
 In the server, replacing state in the TMVar takes place inside the Imonad, which scupulously protects the application from side effects. But the fact remains that the TMVar ServerState list of clients is not what it used to be after a score change. Some client in the ServerState list has been replaced by a client with the same name, goal, group, and websockets connection but a different score.
 
 ### MonadItter
@@ -548,7 +521,7 @@ MonadItter instances are net monadic in any sense of the word. "Monad" is more l
 ##[The Online Demonstration](http://schalk.net:3055)
 The online demonstration features a game with a traversible dice-roll history; group chat rooms; and a persistent, multi-user todo list. People in the same group share the game, chat messages, and whatever todo list they might have. Updating, adding, removing, or checking "Complete" by any member causes every member 's todo list to update. The Haskell websockets server preserves a unique text file for each group's todo list. Restarting the server does not affect the lists. Restarting or refreshing the browser window causes the list display to disappear, but signing in and re-joining the old group brings it back. If the final task is removed, the server deletes the group's todo text file. 
 
-With Motorcycle.js, the application runs smoothly and is easy to understand and maintain. I say "easy to understand", but for people coming from an imperitive programming background, some effort must first be invested into getting used to functions that take functions as arguments, which are at the heart of Motorcycle and JS-monads-stable. After that, seeing how the monads work is a matter of contemplating their definitions and experimenting a little. Most of the monads and the functions they use in this demonstration are readily available in the browser console. If you have the right dev tools in Chrome or Firefox, just load [http://schalk.net:3055](http://schalk.net:3055) and press F12 and then Ctrl-R to re-load with access to the monad.js script. I do this to troubleshoot and experiment. Try mM25.bnd(mM25.ret).x == mM25.x and see that it returns true.
+With Motorcycle.js, the application runs smoothly and is easy to understand and maintain. I say "easy to understand", but for people coming from an imperitive programming background, some effort must first be invested into getting used to functions that take functions as arguments, which are at the heart of Motorcycle and JS-monads-stable. After that, seeing how the monads work is a matter of contemplating their definitions and experimenting a little. Most of the monads and the functions they use in this demonstration are readily available in the browser console. If you have the right dev tools in Chrome or Firefox, just load [http://schalk.net:3055](http://schalk.net:3055) and press F12 and then Ctrl-R to re-load with access to the monad.js script. I do this to troubleshoot and experiment. Try mM25.bnd(mM25.ret).x == get(mM25) and see that it returns true.
 
 .
 .

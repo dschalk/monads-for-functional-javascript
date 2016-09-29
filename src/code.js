@@ -53,10 +53,9 @@ const monadIt = h('pre', {style: {color: '#AFEEEE' }}, `  const MonadItter = () 
     this.bnd = func => this.p = func;
   }; ` )
 
-const ret = h('pre', {style: {color: '#AFEEEE' }}, `  var ret = function ret(v, id = "anonymous") {
-    window[id] = new Monad(v, id);
-    return window[id];
-  }; ` )
+const ret = h('pre', {style: {color: '#AFEEEE' }}, `    function ret(v, id = 'default') {
+      return window[id] = (new Monad(v, id));
+    } ` )
 
 var fib = h('pre', `  mM$fib.stream.addListener({
     next: v => {
@@ -1046,8 +1045,9 @@ var e2 = h('pre.turk3',  `  var c = m.ret(0).bnd(add,3).bnd(cube)
   Note: This time, add got three arguments and cube got two.  ` )
 
 var equals = h('pre',  `    var equals = function equals (mon1, mon2) {
-    if (mon1.id === mon2.id && mon1.x === mon2.x) return true;
-    else return false  }  `  )
+      if (mon1.id === mon2.id && get(mon1) === get(mon2)) return true;
+      else return false
+    }  `  )
 
 var fmap = h('pre',  `    function fmap (x, g, id) {window[id] = new Monad(g(x), id); return window[id]}
   

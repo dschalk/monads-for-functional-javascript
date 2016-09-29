@@ -4925,7 +4925,7 @@
 
 	var monadIt = (0, _dom.h)('pre', { style: { color: '#AFEEEE' } }, '  const MonadItter = () => {\n    this.p = function () {};\n    this.release = (...args) => this.p(...args);\n    this.bnd = func => this.p = func;\n  }; ');
 
-	var ret = (0, _dom.h)('pre', { style: { color: '#AFEEEE' } }, '  var ret = function ret(v, id = "anonymous") {\n    window[id] = new Monad(v, id);\n    return window[id];\n  }; ');
+	var ret = (0, _dom.h)('pre', { style: { color: '#AFEEEE' } }, '    function ret(v, id = \'default\') {\n      return window[id] = (new Monad(v, id));\n    } ');
 
 	var fib = (0, _dom.h)('pre', '  mM$fib.stream.addListener({\n    next: v => {\n      if (v[2] > 1) {mM$fib.ret([v[1], v[0] + v[1], v[2] -1])}\n      else {\n        mM19.ret(v[1]);\n      }\n    },\n    error: err => console.error(err),\n    complete: () => console.log(\'completed\')\n  });\n\n  const fibPress$ = sources.DOM\n    .select(\'input#code\').events(\'keydown\');\n\n  const fibPressAction$ = fibPress$.map(e => {\n    if (e.target.value == \'\') {return};\n    if( e.keyCode == 13 && Number.isInteger(e.target.value*1) ) {\n      mM21.ret(e.target.value);\n      mM$fib.ret([0, 1, e.target.value]);\n    }\n    if( e.keyCode == 13 && !Number.isInteger(e.target.value*1 )) {\n      mM19.ret("You didn\'t provide an integer");\n    }\n  });  ');
 
@@ -5029,7 +5029,7 @@
 
 	var e6 = (0, _dom.h)('pre.turk3', '  m.ret(0).bnd(add,3,m2).bnd(cube,m3)\n  .bnd(log,"m.x and m2.x and m3.x are  " + m.x + ", " + m2.x + " and " + m3.x + " respectively ")\n\n  Output:  In log. Entry:  m.x and m2.x and m3.x are  0, 3 and 27 respectively\n  Note: This time, add got three arguments and cube got two.  ');
 
-	var equals = (0, _dom.h)('pre', '    var equals = function equals (mon1, mon2) {\n    if (mon1.id === mon2.id && mon1.x === mon2.x) return true;\n    else return false  }  ');
+	var equals = (0, _dom.h)('pre', '    var equals = function equals (mon1, mon2) {\n      if (mon1.id === mon2.id && get(mon1) === get(mon2)) return true;\n      else return false\n    }  ');
 
 	var fmap = (0, _dom.h)('pre', '    function fmap (x, g, id) {window[id] = new Monad(g(x), id); return window[id]}\n  \n    var qS1 = function qS1 (a, b, c) {\n      let n = (b*(-1)) + (Math.sqrt(b*b - 4*a*c));\n      if (n != n) {\n        return "No solution";\n      }\n      return n/(2*a);\n    }\n  \n    var qS2 = function qS2 (a, b, c) {\n      let n = (b*(-1)) - (Math.sqrt(b*b - 4*a*c));\n      if (n != n) {\n        return "No solution";\n      }\n      return n/(2*a);\n    }\n  \n    var qS4 = function qS4 ([x,y,z]) {\n      let [a,b,c] = [x,y,z]\n      return [qS1(a,b,c), qS2(a,b,c)]    \n    }  \n    \n    m.ret([12,12,-144])\n  \n    m.bnd(fmap, qS4, "temp").bnd(lg)   logs [3, -4] ');
 
