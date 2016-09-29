@@ -1,38 +1,36 @@
 #JS-monads-stable 
-The executable file running at [JS-monads-stable](http://schalk.net:3055) was prepared in two stages. In the client directory, I ran webpack. Then in the root directory I ran stack build. This was done in the Ubuntu 16.04 operating system. 
+The executable file running at [JS-monads-stable](http://schalk.net:3055) was prepared in two stages. In the src directory, I ran webpack. Then, in the root directory, I ran stack install and uploaded the executable that was placed in ~/.local/bin to my Digital Ocean "droplet". My operating system is for development is Ubuntu 16.04. It is Ubuntu 14.04 in the droplet.
 
-In this version, the global object "O" has been removed. The branch named "using_object_O" preserved the most recent version. I don\'t anticipate doing any further development with it. 
+In this version, I place deep clones with duplicated references (names) on the window object rather than the global object "O". The branch named "using_object_O" preserved the most recent version using the deprecated policy. I don\'t anticipate doing any further development with it and it really is a half-baked stage in the development process. 
 
-Monad instances now exist on window intead of O. MonadStream was dropped some time ago because it didn\'t add any value to the project. Simple function calls are now doing what MonadStream instances were doing in the simulated dice game and persistent, shared todo list. 
+The JS-monads-mutatingInstances branch, where the Monad, MonadSet, and MonadState methods' bnd and ret cause instances to mutate rather than create deep clones, is occasionally brought up to date with this, the master branch. It is easy to do since they differ only in the definitions of Monad, MonadSet, and MonadState.  
 
-The branch JS-monads-mutatingInstances is being kept up to date with this, the master branch, because they can share the same main.js and code.js files. Only monad.js differs. As the name implies, JS-monads-mutatingInstances Monad, MonadSet, and MonadStateinstances methods mutate internal attributes rather than create a fresh instances with new values. 
+This is a [Motorcycle.js](https://github.com/motorcyclejs) application. Motorcycle.js is essentially [Cycle.js](https://github.com/cyclejs/core) only it uses [Most](https://github.com/cujojs/most) and [Snabbdom](https://github.com/paldepind/snabbdom) instead of RxJS and "virtual-dom".  
 
-This is a [Motorcycle.js](https://github.com/motorcyclejs) application. Motorcycle.js is [Cycle.js](https://github.com/cyclejs/core) using [Most](https://github.com/cujojs/most) and [Snabbdom](https://github.com/paldepind/snabbdom) instead of RxJS and "virtual-dom".  
-
-[JS-monads-stable](http://schalk.net:3055) features explanations and demonstrations of a shared, persistent todo list; an interactive simulated dice game with a traversable history of number displays, chat rooms shared among members of each group that is formed to play the game or just to chat.
+The running version of [JS-monads-stable @http://schalk.net:3055](http://schalk.net:3055) features explanations and demonstrations of a shared, persistent todo list; an interactive simulated dice game with a traversable history of number displays; chat rooms shared among members of each group that is formed to play the game or just to just exchange text messages, and interactive demonstrations involving prime numbers and the Fibonacci series.
 ## Basic Monad    
 
 ```javascript    
-function Monad (z, ID = 'default') {
-    var x = z;
-    var ob = {
-    id: ID,
-    bnd: function (func, ...args) {
-      return func(x, ...args)
-    },
-    ret: function (a) {
-      return window[ob.id] = new Monad(a, ob.id);
-    }
-  };
-  return window[ob.id] = ob
-};
-
-function get (m) {    // Getter for the x attribute, which is not exposed.
-  let v = m.bnd(x => x);
-  return v;
-}  
+    function Monad (z, ID = 'default') {
+        var x = z;
+        var ob = {
+        id: ID,
+        bnd: function (func, ...args) {
+          return func(x, ...args)
+        },
+        ret: function (a) {
+          return window[ob.id] = new Monad(a, ob.id);
+        }
+      };
+      return window[ob.id] = ob
+    };
+    
+    function get (m) {    // Getter for the x attribute, which is not exposed.
+      let v = m.bnd(x => x);
+      return v;
+    }  
 ```
-In chains of computations, the arguments provided to each link's bnd() method are functions that return an instance of Monad. Here are some examples of functions that return instances of Monad:
+In most chains of computations, the arguments provided to each link's bnd() method are functions that return instances of Monad. Here are some examples of functions that return instances of Monad:
 ```javascript
   var ret = function ret(v, id = 'anonymous') {
     window[id] = new Monad(v, id);
@@ -165,20 +163,15 @@ The following code supports the group chat feature:
       ar.splice(0,3);
       var str = ar.join(',');
       messageMonad.run([ [h('br'), sender + ': ' + str], [], [], messageMonad.s[3] ]);
-             //  h('div', ['this', h('br'), 'is', h('br'),  'it'] ),
     };
 ```
-messageMonad.s[3] rests permantly in the virtual DOM. Whenever it changes, the Snabbdom diff and render procedure executes and online browsers see the update.
+messageMonad.s[3] rests permantly in the virtual DOM. The message handler sends a string to the websockets server which broadcasts it to group members. The incoming websockets message handler is a stream which is merged into the stream that feeds the virtual DOM, triggering the Snabbdom diff anad render algorithm.
 ```
-## Stand alone ret()
+## The stand-alone ret() function creates new Monad instances. Here is its definition:
 ```javascript
-  var ret = function ret(v, id) {
-    if (arguments.length === 1) {
-      return (new Monad(v, 'anonymous'));
+    function ret(v, id = 'default') {
+      return window[id] = (new Monad(v, id));
     }
-    window[id] = new Monad(v, id);
-    return window[id];
-  }
 ```
 ## MonadSet
 ```javascript
@@ -386,8 +379,6 @@ I didn\'t provide for error handling. There doesn't seem to be any need for it i
 Composition with Promises involves chains of ".then" statements. Using MonadItter, composition can be accomplished with Monad's bnd() and ret() methods, just as we have done throughout this presentation.
 
 ``` 
-
-
 ##MonadMaybe
 
 When sequences of computations are performed inside of MonadMaybe, the inadvertent creation of variables with the values NaN or undefined can halt further computation while the sequence rapidly runs to completion. In this demonstration, an udefined variable and a variable with value NaN appear in the middle of a middle of a sequence of computations. Scren shots of the Chrome console show what happens. First, here are the most relevant definitions:
