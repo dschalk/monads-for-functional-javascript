@@ -4,21 +4,6 @@ var taskL = [];
 var MESSAGES = [];
 function tst (x) {return x};
 
-
-function MonadLegacy(z,g = 'anonymous') {
-    var ob = {
-      id: g,
-      x: z,
-      bnd: function (func, ...args) {
-        return func(ob.x, ...args)
-      },
-      ret: function (a) {
-        return window[ob.id] = new Monad(a, ob.id)
-      }
-    };
-    return window[ob.id] = ob;
-};
-
 function Monad (z, ID = 'default') {
     var x = z;
     var ob = {
@@ -60,17 +45,9 @@ var a = 3;
 var b = 4;
 var c = a + b;
 
-function ret (v, id) {
-  if (arguments.length == 1) var id = "anonymous";
-  else var id = id;
-  return window[id] = new Monad(v, id);
-};
-
-function ret2 (v, id) {
-  if (arguments.length == 1) var id = "anonymous";
-  else var id = id;
-  return window[id] = new Monad(v, id);
-};
+function ret(v, id = 'default') {
+  return window[id] = (new Monad(v, id));
+}
 
 var equals = function equals(mon1, mon2) {
     if (mon1.id === mon2.id && get(mon1) === get(mon2))
