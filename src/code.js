@@ -927,19 +927,20 @@ var promise = h('pre',  `      var promise = function promise(x, t, mon, args) {
 var promiseSnippet = h('pre',  `  m.ret(3).bnd(promise, 2, m, "cube").then(data => m.ret(data.x).bnd(add, 15, m))  `  )
 
 var timeoutSnippet = h('pre',  `  const timeoutClicks$ = sources.DOM.select('#timeout').events('click')
-
-  const timeoutAction$ = timeoutClicks$.map(() => {
-    document.getElementById('timeout2').innerHTML = ''
-    m.ret(3, 'm')
-      .bnd(timeout2, 1, m, [() => m
-      .bnd(cube, m)
-      .bnd(display, 'timeout2', 'm.x is ' + ' ' + m.x, m)
-      .bnd(timeout2, 2, m, [() => m
-      .bnd(add, 15, m)
-      .bnd(display, 'timeout2',  'm.x is ' + ' ' + m.x, m)
-      /* Continue chaining from here */
-      .bnd(display, 'timeout3', 'The meaning of everything was computed to be' + ' ' + m.x, m)   
-    ])]);  
+    const timeoutAction$ = timeoutClicks$.map(() => {
+      document.getElementById('timeout2').innerHTML = ''
+      document.getElementById('timeout3').innerHTML = ''
+      m.ret(3).bnd(m.ret)
+        .bnd(display, 'timeout2', 'get(m) is ' + ' ' + get(m)).bnd(m.ret)
+        .bnd(timeout2, 1, m, [() => m
+        .bnd(cube).bnd(m.ret)
+        .bnd(display, 'timeout2', 'get(m) is ' + ' ' + get(m)).bnd(m.ret)
+        .bnd(timeout2, 2, m, [() => m
+        .bnd(add, 15).bnd(m.ret)
+        .bnd(display, 'timeout2',  'get(m) is ' + ' ' + get(m)).bnd(m.ret)
+        .bnd(display, 'timeout3', 'The meaning of everything was computed to be' + ' ' + get(m))   
+      ])]);  
+    });  
   });  `  )
 
 var timeout = h('pre',  `  var timeout2 = function timeout (x, t, m, args) {

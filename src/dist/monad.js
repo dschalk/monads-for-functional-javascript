@@ -49,7 +49,11 @@ function ret(v, id = 'default') {
   return window[id] = (new Monad(v, id));
 }
 
-var equals = function equals(mon1, mon2) {
+    var equals = function equals (mon1, mon2) {
+      if (mon1.id === mon2.id && get(mon1) === get(mon2)) return true;
+      else return false
+    }  
+var eaaquals = function equals(mon1, mon2) {
     if (mon1.id === mon2.id && get(mon1) === get(mon2))
         return true;
     else

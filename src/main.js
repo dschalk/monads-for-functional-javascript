@@ -4,7 +4,7 @@
 // import {makeDOMDriver} from '@cycle/dom';
 import Cycle from '@motorcycle/core';
 import {h, p, span, h1, h2, h3, pre, br, div, label, input, hr, makeDOMDriver} from '@motorcycle/dom';
-import { create, merge, filter} from 'most';
+import { create, merge, filter, just, delay} from 'most';
 import code from './code.js';
 console.log(pre);
 var Greeter = (function () {
@@ -596,22 +596,23 @@ function main(sources) {
             mMtaskList.ret('');
         }
     });
-
+                       
     var timeoutClicks$ = sources.DOM.select('#timeout').events('click');
-
-    var timeoutAction$ = timeoutClicks$.map(function () {
-        document.getElementById('timeout2').innerHTML = '';
-        document.getElementById('timeout3').innerHTML = '';
-        m.ret(3, 'm')
-            .bnd(timeout2, 1, m, [function () { return m
-                .bnd(cube, m)
-                .bnd(display, 'timeout2', 'get(m) is ' + ' ' + get(m), m)
-                .bnd(timeout2, 2, m, [function () { return m
-                    .bnd(add, 15, m)
-                    .bnd(display, 'timeout2', 'get(m) is ' + ' ' + get(m), m)
-                    .bnd(display, 'timeout3', 'The meaning of everything was computed to be' + ' ' + get(m), m); }
-            ]); }]);
-    });
+  
+    const timeoutAction$ = timeoutClicks$.map(() => {
+      document.getElementById('timeout2').innerHTML = ''
+      document.getElementById('timeout3').innerHTML = ''
+      m.ret(3).bnd(m.ret)
+        .bnd(display, 'timeout2', 'get(m) is ' + ' ' + get(m)).bnd(m.ret)
+        .bnd(timeout2, 1, m, [() => m
+        .bnd(cube).bnd(m.ret)
+        .bnd(display, 'timeout2', 'get(m) is ' + ' ' + get(m)).bnd(m.ret)
+        .bnd(timeout2, 2, m, [() => m
+        .bnd(add, 15).bnd(m.ret)
+        .bnd(display, 'timeout2',  'get(m) is ' + ' ' + get(m)).bnd(m.ret)
+        .bnd(display, 'timeout3', 'The meaning of everything was computed to be' + ' ' + get(m))   
+      ])]);  
+    });  
 
     var chatClick$ = sources.DOM
         .select('#chat2').events('click');
@@ -667,12 +668,7 @@ function main(sources) {
         }
     });
 
-
-
-
-
-
-  var calcStream$ = merge( factorsAction$, primeFib$, fibPressAction$, quadAction$, edit1Action$, edit2Action$, testWAction$, testZAction$, testQAction$, colorAction$, deleteAction$, newTaskAction$, chatClickAction$, gameClickAction$, todoClickAction$, captionClickAction$, groupPressAction$, rollClickAction$, messagePressAction$, loginPressAction$, messages$, numClickAction$, opClickAction$);
+  var calcStream$ = merge( timeoutAction$, factorsAction$, primeFib$, fibPressAction$, quadAction$, edit1Action$, edit2Action$, testWAction$, testZAction$, testQAction$, colorAction$, deleteAction$, newTaskAction$, chatClickAction$, gameClickAction$, todoClickAction$, captionClickAction$, groupPressAction$, rollClickAction$, messagePressAction$, loginPressAction$, messages$, numClickAction$, opClickAction$);
   return {
   DOM: calcStream$.map(function () {
   return h('div.content', [
@@ -937,12 +933,12 @@ code.promiseSnippet,
 h('p', ' After a two-second delay, the Promise returns an anonymous monad with a value of 27 (anonymous.x == 27). The then statement passes 27 to m and adds 15 to it, resulting in m.x == 42. This pattern can be used to define less trivial functions that handle database calls, functions that don\'t return immediately, etc. And, of course, ES2015 Promises API error handling can be added. '),
 h('p', ' The same result can be achieved with MonadItter and the following function '),
 code.timeout,
-h('p', ' If you click RUN, "m.x is 27" appears after one second. Two seconds later, "m.x is 42" is displayed along with a blurb. The blurb confirms the chain can continue, without the encumbrance and limitations of "then" clauses, after the delayed computations complete. '),
+h('p', ' If you click RUN, "get(m) is 27" appears after one second. Two seconds later, "get(m) is 42" is displayed along with a blurb. The blurb confirms the chain can continue, without the encumbrance and limitations of "then" clauses, after the delayed computations complete. '),
+
 code.timeoutSnippet,
-h('p', ' '),
+h('p#timeout2', ),    
+h('p#timeout3', ),    
 h('button#timeout', ' Run '),
-h('span#timeout2'),
-h('span#timeout3'),
 h('p', ' The final blurb confirms that the chained code waits for completion of the asynchronous code. Similar code could be made to wait for database calls, Ajax requests, or long-running processes to return before running subsequent chained code. In fact, messages$, the stream that handles incoming websockets messages, does just that. When a message is sent to the server, messages$ listens for the response. The functions waiting in MonadItter bnd() expressions are released according to the prefix of the incoming message from the server. Essentially, messages$ contains callbacks. MonadItter provides an uncluttered alternative to "if - then" or "case" blocks of code, separating the code to be executed from the listening code.'),
 h('p', ' I could have provided for error handling but therehere doesn\'t seem to be any need for it. If I were getting information from a remote database or Ajax server, I would handle errors with "window.addEventListener("error", function (e) { ...".'),
 h('a', { props: { href: '#top' } }, 'Back To The Top'),
