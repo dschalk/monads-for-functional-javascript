@@ -597,27 +597,6 @@ var cleanup = h('pre',  `  function cleanup (x) {
     return ret(x);
   }  `  )
 
-  var mdem1 = h('pre',  `  var equals = function equals (x, mon1, mon2, mon3) {
-    if (mon1.id === mon2.id && mon1.x === mon2.x) {
-      mon3.ret('true');
-    } else mon3.ret('false');
-    return ret(x);
-  }
-  
-  var add = function(x,b,mon) {
-    if (arguments.length === 3) {
-      return mon.ret(x + b);
-    }
-    return ret(x+b);
-  }
-
-  var cube = function(v,mon) {
-    if (arguments.length === 2) {
-      return mon.ret(v*v*v);
-    }
-    return ret(v*v*v);
-  }  `  )
-
   var runTest = h('pre',  `  var runTest = function monTest () {
   mM5.bnd( equals,  
     m.ret(0).bnd(v => add(v, 3, m).bnd(cube)), 
@@ -657,25 +636,6 @@ var add = h('pre',  `  var add = function(x,b,mon) {
     return ret(x+b);  
   }; ` )
   
-var ret_add_cube = h('pre',  `  var ret = function ret(v, id = 'anonymous') {
-    window[id] = new Monad(v, id);
-    return window[id];
-  }  
-
-  var add = function(x,b,mon) {
-    if (arguments.length === 3) {
-      return mon.ret(x + b);
-    }
-    return ret(x+b);
-  };
-
-  var cube = function(v,mon) {
-    if (arguments.length === 2) {
-      return mon.ret(v*v*v);
-    }
-    return ret(v*v*v);
-}  `  )
-
 var seed = h('pre',  `  mM$prime.ret([[2],3])  `  )
 
 var traverse = h('pre',  `  const forwardClick$ = sources.DOM
@@ -1003,47 +963,35 @@ var e1 = h('pre.turk',  `  var ret = function ret(v, id = 'anonymous') {
     return window[id];
   }
   
-  var cube = function(v,mon) {
-    if (arguments.length === 2) {
-      return mon.ret(v*v*v);
-    }
-    return ret(v*v*v);
-  }
+  var add = function add (x, b) {
+      return ret(parseInt(x,10) + parseInt(b,10) );
+  };
   
-  var add = function(x,b,mon) {
-    if (arguments.length === 3) {
-      return mon.ret(x + b);
-    }
-    return ret(x+b);
-  }
-  
+  var cube = function cube (v, id = 'anonymous') {
+      return ret(v * v * v, id);
+  };
+
   var log = function log(x, message, mon) {
-    console.log('In log. Entry: ', message);
-    if (arguments.length === 3) return mon
-    return ret(x);
+      console.log("From " + mon + ' ' + message);
+      return ret(x);
   };  `  )
 
-var e2 = h('pre.turk3',  `  var c = m.ret(0).bnd(add,3).bnd(cube)
-  .bnd(log,"m.x and a.x are  " + m.x + " and " + a.x + " respectively ")
-  Output: In log. Entry:  m.x and a.x are  0 and 27 respectively  ` )
+var e2 = h('pre.turk',  `  var c = m.ret(0).bnd(add,3).bnd(cube).bnd(log, "The values m\'s and c\'s 
+  x attributes are " + get(m) + " and " + get(c) + " respectively.",  "m"  )   ` )   
 
- var e3 = h('pre.turk2',  ` Note: m.x keeps its initial value of 0 because each computation 
-       creates a fresh instance of Monad with id == "anonymous".  ` )
+var e2x = h('pre', `   Output: From m: The values m\'s and c\'s x attributes are 0 and 27 respectively.  ` )
+
+   var e3 = h('p',  ' Note: m\'s x attribute keeps its initial value of 0 because each computation creates a fresh instance of Monad with id == "default". In the next example, m\'s x attribute becomes the computation result due to the addition of ".bnd(m.ret)". '  )   
   
- var e4 = h('pre.turk3',  `  m.bnd(() => add(0, 3).bnd(cube).bnd(m.ret).bnd(v => log("", "m.x is " + v))) 
-  Output: In log. Entry:  m.x is 27 ` )
+ var e4 = h('pre.turk',  `  var c = m.ret(0).bnd(add,3).bnd(cube).bnd(m.ret).bnd(log, 
+   "The values m\'s and c\'s x attributes are " + get(m) + " and " + get(c) + " respectively.",  "m") ` )
 
- var e5 = h('pre.turk2',  ` Note: The value of m.x at the beginning of the computation is ignored. 
-       "m.ret" after the final computation creates a fresh instance of Monad 
-       with id == "m" and m.x == 27. If there is a reference to the original m, 
-       it will be preserved with its original value, otherwise it is subject to 
-       removal by the gargane collector.  ` )
-  
- var e6 = h('pre.turk3',  `  m.ret(0).bnd(add,3,m2).bnd(cube,m3)
-  .bnd(log,"m.x and m2.x and m3.x are  " + m.x + ", " + m2.x + " and " + m3.x + " respectively ")
+ var e4x = h('pre', `  Output: From m: The values m\'s and c\'s x attributes are 27 and 27 respectively.  ` )
 
-  Output:  In log. Entry:  m.x and m2.x and m3.x are  0, 3 and 27 respectively
-  Note: This time, add got three arguments and cube got two.  ` )
+ var e6 = h('pre.turk',  `  m.ret(0).bnd(add,3).bnd(m2.ret).bnd(cube,m3).bnd(m3.ret)
+  .bnd(log,"get(m) and get(m2) and get(m3) are  " + get(m) + ", " + get(m2) + " and " + 
+  get(m3) + " respectively. ", 'm'); ` )
+var e6x = h('pre', `  Output: From m: get(m) and get(m2) and get(m3) are  0, 3 and 27 respectively.  ` )
 
 var equals = h('pre',  `    var equals = function equals (mon1, mon2) {
       if (mon1.id === mon2.id && get(mon1) === get(mon2)) return true;
@@ -1218,7 +1166,7 @@ var p7 = h('pre',  `
 `  )
 
 
-  export default { MonadMaybe, fmapA, monad, equals, fmap, opM, e1, e2, e3, e4, e5, e6, fib, driver, messages, next, monadIt, MonadSet, updateCalc, arrayFuncs, travel, nums, cleanup, ret, C42, newTask, process, mM$task, addString, colorClick, edit, testZ, quad, mdem1, runTest, todoStream, inc, ret_add_cube, seed,  add, traverse, MonadState, primesMonad, fibsMonad, primeFibInterface, tr3, fpTransformer, innerHTML, factorsMonad, factorsInput, playerMonad, promise, promiseSnippet, timeout, timeoutSnippet, examples, examples2, async }
+  export default { MonadMaybe, fmapA, monad, equals, fmap, opM, e1, e2, e2x, e3, e4, e4x, e6, e6x, fib, driver, messages, next, monadIt, MonadSet, updateCalc, arrayFuncs, travel, nums, cleanup, ret, C42, newTask, process, mM$task, addString, colorClick, edit, testZ, quad, runTest, todoStream, inc, seed,  add, traverse, MonadState, primesMonad, fibsMonad, primeFibInterface, tr3, fpTransformer, innerHTML, factorsMonad, factorsInput, playerMonad, promise, promiseSnippet, timeout, timeoutSnippet, examples, examples2, async }
  
 
 

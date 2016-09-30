@@ -938,7 +938,7 @@ var mult = function mult(x, y) {
     }
 
 var log = function log(x, message, mon) {
-    console.log("From " + mon + ' ' + message);
+    console.log("From " + mon + ': ' + message);
     return ret(x);
 };
 var log2 = function log2(x) {

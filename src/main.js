@@ -604,13 +604,13 @@ function main(sources) {
       document.getElementById('timeout3').innerHTML = ''
       m.ret(3).bnd(m.ret)
         .bnd(display, 'timeout2', 'get(m) is ' + ' ' + get(m)).bnd(m.ret)
-        .bnd(timeout2, 1, m, [() => m
+        .bnd(timeout2, 1.5, m, [() => m
         .bnd(cube).bnd(m.ret)
         .bnd(display, 'timeout2', 'get(m) is ' + ' ' + get(m)).bnd(m.ret)
         .bnd(timeout2, 2, m, [() => m
         .bnd(add, 15).bnd(m.ret)
         .bnd(display, 'timeout2',  'get(m) is ' + ' ' + get(m)).bnd(m.ret)
-        .bnd(display, 'timeout3', 'The meaning of everything was computed to be' + ' ' + get(m))   
+        .bnd(display, 'timeout3', `The meaning of everything was computed to be ${get(m)}.`)   
       ])]);  
     });  
 
@@ -780,38 +780,28 @@ h('div#log2', { style: { display: 'none' } }, [
     h('input#group')]),
 h('p', `${get(mMsoloAlert)}`),
 h('p', 'People who are in the same group, other than solo, share the same todo list, messages, and simulated dice game. In order to see any of these, you must establish an identity on the server by logging in. The websockets connection terminates if the first message the server receives does not come from the sign in form. You can enter any random numbers or letters you like. The only check is to make sure someone hasn\t already signed in with whatever you have selected. If you log in with a name that is already in use, a message will appear and this page will be re-loaded in the browser after a four-second pause. '),
-h('p', ' Data for the traversable game history accumulates until a player scores. The data array is then re-set to [], the empty array. When a player clicks the BACK button, other group members are notified. It is up to the group to decide whether clicking the BACK button disqualifies a player. '),
+h('p', ' Data for the traversable gameC history accumulates until a player scores. The data array is then re-set to [], the empty array. When a player clicks the BACK button, other group members are notified. It is up to the group to decide whether clicking the BACK button disqualifies a player. '),
 h('hr'),
 h('h1', 'The Monads'),
 h('h3', ' Monad '),
 code.monad,
-h('p', ' Eventually, the x and id attributes will be hidden in a closure that returns an object containing bnd() and ret(). That way, updating x would not mutate the instance of Monad that called bnd() or ret() to cause the update. After calling bnd() or ret(), and instance of Monad freezes and is subject to garbage collection unless there is a reference to it. A reference will not be affected by subsequent calls to bnd() and ret(). ' ),
-h('pre.turk',  `   var p = m.ret(0);
-   var q = m.ret{[3,4,5]);  
-   m.x == [3,4,5]  returns true
-   q.x == [3,4,5]  returns true  
-   p.x == [3,4,5]  returns false
-   p.x == 0;       returns true  ` ),
-h('p', ' Because p and q have different addresses in memory, their operations don\'t affect one another.  ' ),  
-  
 
-
-
-
-
-h('p', ' In sequences of operationns, the arguments provided to each link\'s bnd() method are functions that return an instance of Monad. Here are some examples of functions that return instances of Monad: '),
+h('p', ' In most sequences of operationns, the arguments provided to each link\'s bnd() method are functions that return an instance of Monad. Here are some examples of functions that return instances of Monad: '),
 code.e1,
 h('p', ' These functions can be used with instances of Monad in many ways, for example: '),
 code.e2,
-code.e3,
+code.e2x,
+h('p', '     Note: m\'s x attribute keeps its initial value of 0 because each computation creates a fresh instance of Monad with id == "default". In the next example, m\'s x attribute becomes the computation result due to the addition of ".bnd(m.ret)". ' ),  
 code.e4,
-code.e5,
+code.e4x,
 code.e6,
-h('p', ' Just adding the suffix ".x" to an instance of Monad exposes its value. Doing that and running ret() on the return value is all that is needed for performing computations with ordinary functions and wrapping the results in instances of Monad. fmap is non-essential syntactic sugar. This is very different from Haskell, where fmap is an essential component of monadic computation. '),
+code.e6x,
 
-h('p', ' Each of the functions shown above can be used as a stand-alone function or as an argument to the bnd() method. Each monad in a chain of linked computations can do one of two things with the previous monad\s value: (1) It can ignore it, possibly letting it move past for use further down the chain or (2) use it, with the option of passing it and/or the computation result on down the chain. ' ), 
-h('h3', ' The Monad Laws '), h('p', ' In the following discussion, "x == y" signifies that x == y returns true. Let J be the collection of all Javascript values, including functions, instances of Monad, etc, and let F be the collection of all functions mapping values in J to instances of Monad m with references matching their ids; that is, with m[id] == m.id. M is defined as the collection of all such instances of Monad along and all of the functions in F. We speculate that there is a one to one correspondence between monads in Hask (The  For any m (with id == "m"), f, and f\' in M, J, F, and F, respectively, the following relationships hold: '), h('dib.bh3', 'Left Identity ' ),
-h('pre.turk', `    equals( m.ret(v).bnd(f), f(v) )   
+h('p', ' Each of the functions shown above can be used as a stand-alone function or as an argument to the bnd() method. Each monad in a chain of linked computations can either use the previous monad\'s value (the value of the x attribute) or ignore it, possibly letting it pass on down the chain. ' ), 
+h('h3', ' The Monad Laws '), 
+h('p', ' In the following discussion, "x == y" signifies that x == y returns true. Let J be the collection of all Javascript values, including functions, instances of Monad, etc, and let F be the collection of all functions mapping values in J to instances of Monad m with references matching their ids; that is, with m[id] == m.id. M is defined as the collection of all such instances of Monad along and all of the functions in F. We speculate that there is a one to one correspondence between monads in Hask (The  For any m (with id == "m"), f, and f\' in M, J, F, and F, respectively, the following relationships hold: '), 
+h('dib.bh3', 'Left Identity ' ),
+h('pre.turk', `    equals( m.ret(v).bnd(f), f(v)     
     equals( ret(v).bnd(f), f(v) ) 
     Examples: equals( m.ret(3).bnd(cube), cube(3) )  Tested and verified  
     equals( ret(3).bnd(cube), cube(3)      Tested and verified
