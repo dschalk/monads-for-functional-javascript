@@ -22,7 +22,7 @@ The running version of [JS-monads-stable @http://schalk.net:3055](http://schalk.
           return window[ob.id] = new Monad(a, ob.id);
         }
       };
-      return window[ob.id] = ob
+      return ob
     };
     
     function get (m) {    // Getter for the x attribute, which is not exposed.
@@ -33,7 +33,7 @@ The running version of [JS-monads-stable @http://schalk.net:3055](http://schalk.
 In most chains of computations, the arguments provided to each link's bnd() method are functions that return instances of Monad. The stand-alone ret() function does only one thing; it creates new Monad instances. Here are some examples of functions that return instances of Monad:
 ```javascript
     function ret(v, id = 'default') {
-      return window[id] = (new Monad(v, id));
+      return new Monad(v, id);
     } 
 
     var cube = function(v,mon) {
@@ -144,7 +144,7 @@ messageMonad.s[3] rests permantly in the virtual DOM. The message handler sends 
 The stand-alone ret() function creates new Monad instances. Here is its definition:
 ```javascript
     function ret(v, id = 'default') {
-      return window[id] = (new Monad(v, id));
+      return new Monad(v, id);
     }
 ```
 ## MonadSet

@@ -39,7 +39,7 @@ const monad = h('pre', {style: {color: '#AFEEEE' }}, `    function Monad (z, ID 
           return window[ob.id] = new Monad(a, ob.id);
         }
       };
-      return window[ob.id] = ob
+      return ob;
     }
 
     function get (m) {    // Getter for the x attribute, which is not exposed.
@@ -979,17 +979,17 @@ var e1 = h('pre.turk',  `  var ret = function ret(v, id = 'anonymous') {
 var e2 = h('pre.turk',  `  var c = m.ret(0).bnd(add,3).bnd(cube).bnd(log, "The values m\'s and c\'s 
   x attributes are " + get(m) + " and " + get(c) + " respectively.",  "m"  )   ` )   
 
-var e2x = h('pre', `   Output: From m: The values m\'s and c\'s x attributes are 0 and 27 respectively.  ` )
+var e2x = h('pre', `   Output: From m: The values of m\'s and c\'s x attributes are 0 and 27 respectively.  ` )
 
    var e3 = h('p',  ' Note: m\'s x attribute keeps its initial value of 0 because each computation creates a fresh instance of Monad with id == "default". In the next example, m\'s x attribute becomes the computation result due to the addition of ".bnd(m.ret)". '  )   
   
  var e4 = h('pre.turk',  `  var c = m.ret(0).bnd(add,3).bnd(cube).bnd(m.ret).bnd(log, 
    "The values m\'s and c\'s x attributes are " + get(m) + " and " + get(c) + " respectively.",  "m") ` )
 
- var e4x = h('pre', `  Output: From m: The values m\'s and c\'s x attributes are 27 and 27 respectively.  ` )
+ var e4x = h('pre', `  Output: From m: The values of m\'s and c\'s x attributes are 27 and 27 respectively.  ` )
 
  var e6 = h('pre.turk',  `  m.ret(0).bnd(add,3).bnd(m2.ret).bnd(cube,m3).bnd(m3.ret)
-  .bnd(log,"get(m) and get(m2) and get(m3) are  " + get(m) + ", " + get(m2) + " and " + 
+  .bnd(log,"get(m), get(m2), and get(m3) are  " + get(m) + ", " + get(m2) + " and " + 
   get(m3) + " respectively. ", 'm'); ` )
 var e6x = h('pre', `  Output: From m: get(m) and get(m2) and get(m3) are  0, 3 and 27 respectively.  ` )
 

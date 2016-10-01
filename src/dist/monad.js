@@ -1,9 +1,9 @@
 'use strict';
-var elms, todoData, mMt3VAL; 
+var todoData, mMt3VAL; 
 var taskL = [];
 var MESSAGES = [];
 function tst (x) {return x};
-
+// just a horse and rabbit
 function Monad (z, ID = 'default') {
     var x = z;
     var ob = {
@@ -15,13 +15,19 @@ function Monad (z, ID = 'default') {
       return window[ob.id] = new Monad(a, ob.id);
     }
   };
-  return window[ob.id] = ob
+  return ob;
 }
 
 function get (m) {
   let v = m.bnd(x => x);
   return v;
 }  
+
+var pMname = new Monad('1v65n$%pqw3*@#9', 'pMname');
+var pMgroup = new Monad('solo', 'pMgroup');
+var pMscore = new Monad(0, 'pMscore');
+var pMgoals = new Monad(0, 'pMgoals');
+var pMdata = new Monad([], 'pMdata');
 
 var mMnums = new Monad([0,0,0,0], 'mMnums');
 var mMnumEls = new Monad([], 'mMnumEls');
@@ -46,7 +52,7 @@ var b = 4;
 var c = a + b;
 
 function ret(v, id = 'default') {
-  return window[id] = (new Monad(v, id));
+  return new Monad(v, id);
 }
 
     var equals = function equals (mon1, mon2) {
@@ -66,7 +72,7 @@ var add = function add (x, b) {
     return ret(parseInt(x,10) + parseInt(b,10) );
 };
 
-var cube = function cube (v, id = 'anonymous') {
+var cube = function cube (v, id = 'default') {
     return ret(v * v * v, id);
 };
 
@@ -74,7 +80,7 @@ var aD = function (x, b, id = 'mQfred') {
   return window[id] = new MonadMaybe (parseInt(x,10) + parseInt(b,10), id);
 };
 
-var cuB = function (v, id = 'anonymous') {
+var cuB = function (v, id = 'default') {
   return window[id] = new MonadMaybe (v * v * v, id);
 };
 
@@ -97,7 +103,7 @@ function nothing () {return new MonadMaybe('Nothing', 'nothing')}
 
 var MonadMaybe = function MonadMaybe(z) {
   var _this = this;
-  var g = arguments.length <= 1 || arguments[1] === undefined ? 'anonymous' : arguments[1];
+  var g = arguments.length <= 1 || arguments[1] === undefined ? 'default' : arguments[1];
   this.id = g;
   this.x = z;
   
@@ -185,48 +191,23 @@ function test (a) {
 }
 
 console.log("Calling test(['ad', '25', '17']) Result:", ` ${test(['ad', '25', '17'])}` );  
-/*
-var MonadMaybee = function MonadMaybe(z) {
-var _this = this;
-var g = arguments.length <= 1 || arguments[1] === undefined ? 'anonymous' : arguments[1];
-this.id = g;
-this.x = z;
-
-this.bnd = function (func, ...args) {
-    var mon = f([func, ...args])
-    try {
-      var m = func(_this.x, ...args);
-      var mon = m.toString();
-      if (mon == 'NaN' || 
-  if (ar.length == 2 && (ar[1].toString() || ar[2].toString()) == ('NaN' || 'undefined' )) throw "One or more of the  arguments is NaN or undefined"
-  if (ar.length == 3 && (ar[1].toString() || ar[2].toString() || ar[3].toString() ) == ('NaN' || 'undefined' )) throw "One or more of the argument is NaN or undefined"
-  if (ar.length == 1) mon = eval(ar[0])
-  if (ar.length == 2) mon = eval(ar[0] + "(" + ar[1] + ")")
-  if (ar.length == 3) mon = eval(ar[0] + "(" + ar[1] + "," + ar[2] + ")")
-  return mon;
-  }
-  catch(e) { 
-    console.log("Bad data ", e) }
-  }
-  }
-    */
     
-  var mQnothing = new MonadMaybe('Nothing', 'mMnothing')
-  var mQ1 = new MonadMaybe(0, 'mM1')
-  console.log("<><><><><><> Trying mQnothing.ret(['3'])");
-  mQnothing.ret('3');
-  console.log("<><><><><><> Trying mQnothing.bnd(['cuB', 'mQnothing'])");
-  mQnothing.bnd(['cuB', 'mQnothing']);
-  console.log("<><><><><><> Trying mQ1.ret(['cow'/2]))");
-  mQ1.ret("'cow'/2");
+var mQnothing = new MonadMaybe('Nothing', 'mMnothing')
+var mQ1 = new MonadMaybe(0, 'mM1')
+console.log("<><><><><><> Trying mQnothing.ret(['3'])");
+mQnothing.ret('3');
+console.log("<><><><><><> Trying mQnothing.bnd(['cuB', 'mQnothing'])");
+mQnothing.bnd(['cuB', 'mQnothing']);
+console.log("<><><><><><> Trying mQ1.ret(['cow'/2]))");
+mQ1.ret("'cow'/2");
 
-  console.log("<><><><><><> Trying mQ1.bnd(['aD','3', 'mQ1']).bnd(['cuB',' mQ1']");
-  mQ1.bnd(['aD', 3, 'mQ1']).bnd(['cuB', 'mQ1']);
+console.log("<><><><><><> Trying mQ1.bnd(['aD','3', 'mQ1']).bnd(['cuB',' mQ1']");
+mQ1.bnd(['aD', 3, 'mQ1']).bnd(['cuB', 'mQ1']);
 
 var MonadSet = function MonadSet(set) {
 var _this = this;
 
-var ID = arguments.length <= 1 || arguments[1] === undefined ? 'anonymous' : arguments[1];
+var ID = arguments.length <= 1 || arguments[1] === undefined ? 'default' : arguments[1];
 
 this.s = set;
 this.bnd = function (func) {
@@ -248,23 +229,22 @@ this.clear = function () {
 };
 
 var s = new Set();
+
 var sMplayers = new MonadSet(s, 'sMplayers'); // holds currently online players
 
-
 var MonadState = function MonadState(g, state, value, p) {
-var _this = this;
-
-this.id = g;
-this.s = state;
-this.a = value;
-this.process = p;
-this.bnd = (func, ...args) => func(this.s, ...args);  
-this.run = function (st) {
-  var s = _this.process(st);
-  var a = s[3];
-  window[_this.id] = new MonadState(_this.id, s, a, _this.process);
-  return window[_this.id];
-};
+  var _this = this;
+  this.id = g;
+  this.s = state;
+  this.a = value;
+  this.process = p;
+  this.bnd = (func, ...args) => func(this.s, ...args);  
+  this.run = function (st) {
+    var s = _this.process(st);
+    var a = s[3];
+    window[_this.id] = new MonadState(_this.id, s, a, _this.process);
+    return window[_this.id];
+  };
 };
 
 var tr4 = function tr4(state) {
@@ -362,12 +342,6 @@ var prFactTransformer2 = function prFactTransformer2(s, n) {
   return factorsMonad.run([[], [], n, s[3]]);
 };
 
-var pMname = new Monad('1v65n$%pqw3*@#9', 'pMname');
-var pMgroup = new Monad('solo', 'pMgroup');
-var pMscore = new Monad(0, 'pMscore');
-var pMgoals = new Monad(0, 'pMgoals');
-var pMdata = new Monad([], 'pMdata');
-
 console.log('VVVVVVVVVVVVVVVVVVVVVVVVVVVV  get(pMname) and typeof get(pMname) ', get(pMname), typeof get(pMname) );
 pMname.ret('Fred');
 console.log('VVVVVVVVVVVVVVVVVVVVVVVVVVVV get(pMname) and typeof get(pMname) ', get(pMname), typeof get(pMname) );
@@ -386,18 +360,29 @@ console.log('messageMonad ', messageMonad )
 console.log('Array.isArray(messageMonad.a) ', Array.isArray(messageMonad.a) );
 console.log('Array.isArray(messageMonad.s) ', Array.isArray(messageMonad.s) );
 
+
+var playerMonad = new MonadState('playerMMMnad', [0,0,[[]]], [[0,0,0,0]], player_state);
+
+playerMonad.s = [ 0, 0, 0, [[0,0,0,0]] ]   
+
+var elms = [0,0,0,0];
+
+function player_state (score, goals, elms) {
+  pMscore.ret(a);
+  pMgoals.ret(b);
+  // var ar = playerMonad.s[3[0]].slice();
+  var history = playerMonad.s[3].unshift(a);
+  var uptick = mMindex.bnd(add,1).bnd(mMindex.ret).bnd(v => v)
+  return [a, b, uptick, [a,b,history]];     
+}
+
+console.log('________________________ playerMonad ', playerMonad);
+
 function message_state(v) {
   var ar = v[0].concat(v[3]);
   return [ v[0], [], [], ar ];
 };
 
-function player_state(v) {
-  var ar = v.slice();
-  return [ ar[0], ar[1], , [get(pMscore.ret(ar[0])), get(pMgoals.ret(ar[1]))]];
-};
-
-var playerMonad = new MonadState('playerMonad', [0, 0], [0, 0], player_state);
-playerMonad.run([0, 0]);
 var mMplayerArchive = new Monad(['start', 'solo', 0, 0], 'mMplayerArchive');
 mMplayerArchive.ret(get(mMplayerArchive));
 var mMsetArchive = new Monad([], 'mMsetArchive');

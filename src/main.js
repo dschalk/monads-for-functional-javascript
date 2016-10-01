@@ -45,14 +45,17 @@ socket.onclose = function (event) {
     console.log('<><><> New message <><><> ', event);
 };
 
-function updateElms (style, nums) {
+function updateElms (style, nums, sc, gl) {
   elms = [
     h('button#0.num', {style: {display: style[0]}}, nums[0] ),
     h('button#1.num', {style: {display: style[1]}}, nums[1] ),
     h('button#2.num', {style: {display: style[2]}}, nums[2] ),
     h('button#3.num', {style: {display: style[3]}}, nums[3] ), ]  
+  var ar = playerMonad.s[3].slice();
+  ar.unshift(elms);
+  playerMonad.run(sc, gl, ar) 
 };
-
+ 
 function updateTasks (obArray) {
   var todoData = [];
   for (let ob of obArray) {  
@@ -73,6 +76,8 @@ function updateTasks (obArray) {
     console.log('In updateTasks uuuuuuuuuuuuuuuuuu  todoData ', todoData );
 }; 
 
+playerMonad.run( get(pMscore), get(pMgoals), elms )
+
 
 function main(sources) {
   var newTasks = [];
@@ -85,7 +90,7 @@ function main(sources) {
   // updateElms(get(mMstyle), get(mMnums));  
   console.log('<><><><><><><><><><><><><><><><>  INCOMING  <><><><><><><> >>> In messages. e amd v are ', e, v);
   mMZ10.bnd( () => mMnums.ret([v[3], v[4], v[5], v[6]]).bnd(newR))
-  mMZ11.bnd( () => socket.send(`CG#$42,${get(pMgroup)},${get(pMname)},${get(score)},${get(goals)}l`));
+  mMZ11.bnd( () => socket.send(`CG#$42,${get(pMgroup)},${get(pMname)},${get(pMscore)},${getpM(goals)}l`));
   mMZ12.bnd( () => mM6.ret(v[2] + ' successfully logged in.'));
   mMZ13.bnd( () => updateMessages(e.data));
   mMZ14.bnd( () => mMgoals2.ret('The winner is ' + v[2]));
@@ -149,7 +154,7 @@ function main(sources) {
           var oldGroup = get(pMgroup);
           var gr = e.target.value;
           pMgroup.ret(gr);
-          playerMonad.run([0, 0]);
+          playerMonad.run(0, 0, []);
           socket.send(`CO#$42,${gr},${get(pMname)},${gr},`);
           socket.send(`CG#$42,${gr},${get(pMname)},0,0`);
       }
@@ -221,7 +226,7 @@ function main(sources) {
     }
     else {
       mMnums.bnd(push,result).bnd(mMnums.ret).bnd(x =>
-      updateElms(test2(get(mMstyle), x), x)) 
+      updateElms(test2(get(mMstyle), x), x, get(pMscore), get(pMgoals))) 
       mM8.ret(0);
       mM3.ret([]);
     }
@@ -231,21 +236,22 @@ function main(sources) {
     console.log('In score2 ZZZZZZZZZZZZZZZ  scor, get(mMnums) ', scor, get(mMnums) );
     if (scor != 25) {
       mMnums.bnd(push, scor).bnd(mMnums.ret).bnd(ar => {
-        updateElms(test2(get(mMstyle), ar), ar)
+      updateElms(test2(get(mMstyle), x), x, get(pMscore), get(pMgoals)) 
       });
       socket.send(`CG#$42,${get(pMgroup)},${get(pMname)},${scor},${get(pMgoals)}` );
     }
     else if (get(pMgoals) == 2) {
         pMgoals.ret(0);
         socket.send(`CE#$42,${get(pMgroup)},${get(pMname)},nothing`);
-        mMhistory.ret([0, 0, 0, 0, 0, 0]);
-        playerMonad.run([[0, 0]]);
+        mMhistory.ret([0, r, 0, 0, 0, 0]);
+        mMindex.ret(0);
+        playerMonad.run(0, 0, []);
         socket.send(`CG#$42,${get(pMgroup)},${get(pMname)},0,0`);
     }
     else {
-      playerMonad.run([get(pMgoals), get(pMgoals.bnd(add, 1))]).bnd(s => {
+      playerMonad.run(get(pMscore), get(pMgoals.bnd(add, 1).bnd(pMgoals.ret), elms)).bnd(s => {
         socket.send(`CG#$42,${get(pMgroup)},${get(pMname)},0,${s[3][1]}`);
-        console.log('&&&&&&&777777777&&  in score2/else v, playerMonad.s.slice()  ', s, playerMonad.s.slice() );
+        console.log('&&&&&&&777777777&&  in score2/else v, playerMonad.s  ', s, playerMonad.s );
       });  
     };
     socket.send(`CA#$42,${get(pMgroup)},${get(pMname)},6,6,12,20`);
@@ -732,7 +738,8 @@ function main(sources) {
       h('a.tao', { props: { href: '#monadmaybe' } }, 'Maybe Monad'),
       // h('a.tao', {props: {href: '#monads'}}, 'Why Call Them Monads'   ),  
       h('div#captionDiv', [
-          h('h3', 'Game traversal temporarily out of service during drastic refactoring' ),
+          h('h3', 'Game traversal is temporarily out of service during refactoring. The rest of the examples are working. ' ),
+          h('h3', 'Some of the commentary below is out of date. Monad instance\'s x attribute is no longer exposed, so references to "m.x" are being replaced by get(m). In the process of adapting to the new definition of Monad, some of the code examples are being drastically revised. ' ), 
           h('h1', 'Motorcycle.js With JS-monads'),
           h('span.tao1', ' Persisternt todo lists. '),
           h('br'),
@@ -799,28 +806,28 @@ code.e6x,
 
 h('p', ' Each of the functions shown above can be used as a stand-alone function or as an argument to the bnd() method. Each monad in a chain of linked computations can either use the previous monad\'s value (the value of the x attribute) or ignore it, possibly letting it pass on down the chain. ' ), 
 h('h3', ' The Monad Laws '), 
-h('p', ' In the following discussion, "x == y" signifies that x == y returns true. Let J be the collection of all Javascript values, including functions, instances of Monad, etc, and let F be the collection of all functions mapping values in J to instances of Monad m with references matching their ids; that is, with m[id] == m.id. M is defined as the collection of all such instances of Monad along and all of the functions in F. We speculate that there is a one to one correspondence between monads in Hask (The  For any m (with id == "m"), f, and f\' in M, J, F, and F, respectively, the following relationships hold: '), 
-h('dib.bh3', 'Left Identity ' ),
-h('pre.turk', `    equals( m.ret(v).bnd(f), f(v)     
-    equals( ret(v).bnd(f), f(v) ) 
+h('p', ' In the following discussion, "x == y" signifies that the expression x == y returns true. Let J be the collection of all Javascript values, including functions, instances of Monad, etc, and let F be the collection of all functions mapping values in J to instances of Monad with references matching their ids; that is, with m[id] == m.id for some id which is a valid es2015 variable name. The collection of all such instances of Monad along and all of the functions in F is called "M". For any instances of Monad m, m1, and m2 in M and any function f in F, the following relationships follow easily from the definition of Monad: '), 
+h('div.bh3', 'Left Identity ' ),
+h('pre.turk', `    equals( m.ret(v, ...args).bnd(f, ...args), f(v, ...args) )    
+    equals( ret(v, ...args).bnd(f, ...args), f(v, ...args) ) 
     Examples: equals( m.ret(3).bnd(cube), cube(3) )  Tested and verified  
-    equals( ret(3).bnd(cube), cube(3)      Tested and verified
+    equals( ret(3).bnd(cube), cube(3) )     Tested and verified
     Haskell monad law: (return x) >>= f \u2261 f x  ` ),
-              h('div.bh3', ' Right Identity  ' ),  
+h('div.bh3', ' Right Identity  ' ),  
 h('pre.turk', `    m.bnd(m.ret) === m      Tested and verified 
     m.bnd(ret, "m") === m   Tested and verified
     equals(m.bnd(ret), m)   Tested and verified
     Haskell monad law: m >>= return \u2261 m `  ),
-                  h('div.bh3', ' Commutivity  ' ),  
-                  h('pre.turk', `    equals( m.bnd(f1).bnd(f2), m.bnd(v => f1(v).bnd(f2)) ) 
+    h('div.bh3', ' Commutivity  ' ),  
+    h('pre.turk', `    equals( m.bnd(f1, ...args).bnd(f2, ...args), m.bnd(v => f1(v, ...args).bnd(f2, ...args)) ) 
     Example: equals( m.ret(0).bnd(add, 3).bnd(cube), 
     m.ret(0).bnd(v => add(v,3).bnd(cube)) )  Tested amd verified
     Haskell monad law: (m >>= f) >>= g \u2261 m >>= ( \\x -> (f x >>= g) ) `),
-                  h('p', ' where equals is defined as: '),
-                  code.equals,
-                  h('p', ' The function equals() was used because the == and === operators on objects check for location in memory, not equality of attributes and equivalence of methods. If the left and right sides of predicates create new instances of m, then the left side m and the right side m wind up in different locations in memory and the == operator returns false. So we expect m.ret(3) == m.ret(3) to return false. What concerns us is the equivalence of both sides of a comparison; that is, can the left side be substituted for the right side and vice versa.  '),
-h('p', ' Tests in the JS-monads-mutableInstances branch at the Github repository produce results closer to what we would expect in mathematics. For example: m.ret(7) == m.ret(7) returns true in JS-monads-mutableIntances but false in JS-monads-stable, the master branch. But it would be folly to give up immutability for the sake of making unimportant comparisons come out "right". equals(m.ret(7), m.ret(7)) tells us that m.ret(7) is doing the same thing on both sides of the comparison, and that is all that is important. Similarly, equals(ret(3).bnd(cube), cube(3)) tells us that ret(3).bnd(cube) and cube(3) are doing the same thing; they can be substituted for one another. ' ),
-h('p', ' In Haskell, x ≡ y means that you can replace x with y and vice-versa, and the behaviour of your program will not change. That is what "equals(x, y)" means in the context of demonstrating that instances of Monad in M obey the Javascript equivalent of the Haskell monad laws. The behavior of Instances of Monad with ret() (the function and the method) and bnd() mirrors the behavior of Haskell monads with return and >>=. The laws to which both of them conform are the ' ),
+    h('p', ' where equals is defined as: '),
+    code.equals,
+                  h('p', ' The function equals() was used because the == and === operators on objects check for location in memory, not equality of attributes and equivalence of methods. If the left and right sides of predicates create new instances of m, then the left side m and the right side m wind up in different locations in memory and the == operator returns false. So we expect m.ret(3) == m.ret(3) to return false, and it does. The question we want answered is this: Can the left side be substituted for the right side and vice versa? That question is answered by equals().   '),
+h('p', ' Using the JS-monads-mutableInstances branch at the Github repository we see that m.ret(7) == m.ret(7) returns true. That is because m is permanently seated in memory at its original location.  But it would be folly to give up immutability for the sake of making unimportant comparisons come out "right". ' ),
+h('p', ' In Haskell, x ≡ y means that you can replace x with y and vice-versa, and the behaviour of your program will not change. That is what "equals(x, y)" means in Javascript. The behavior of Instances of Monad with ret() (the function and the method) and bnd() mirrors the behavior of Haskell monads with return and >>=. ' ),
 h('span', ' Haskell monads are not category theory monads. To begin with, they don\'t even reside in a category. See: ' ),                     
 h('a', { props: { href:"http://math.andrej.com/2016/08/06/hask-is-not-a-category", target: "_blank" }}, ' Hask is not a category '),
 h('span', ' Nevertheless, blogs abound perpetuating the Haskell mystique that, as one blogger wrote, "There exists a "Haskell category", of which the objects are Haskell types, and the morphisms from types a to b are Haskell functions of type a -> b." The nLab wiki page states "There is a category, Hask, whose objects are Haskell types and whose morphisms are extensionally identified Haskell functions.", and the first line of the Haskell Wiki ' ),
