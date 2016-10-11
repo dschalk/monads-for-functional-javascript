@@ -98,29 +98,69 @@ Haskell monads are not category theory monads. To begin with, they don't even re
 
 It is true that Haskell monads obey rules that are Haskell translations of the structure-preserving rules about functors and natural transformations in the category-theoretic monad. I have demonstrated that the elements of M (defined above) obey a Javascript interpretation of these same rules. This suggests that instances of Monad can be expected to be versitile and robust in production. The smoothly functioning game and todo list, along with the demonstratons that appear later on this page, reinforce this expectation.
 ##MonadItter
+
+MonadItter instances do not have monadic properties, but they facilitate the work of monads. Here's how they work:
+
+For any instance of MonadItter, say "it", "it.bnd(func)" causes it.p == func. Calling the method "it.release(...args)" causes p(...args) to run, possibly with arguments supplied by the caller. Here is the definition:
 ```javascript
 const MonadItter = function ()  {
   this.p = function () {};
   this.release = (...args) => this.p(...args);
   this.bnd = func => this.p = func;
 };
-```
+
+As shown later in the online demonstration, MonadItter instances control the routing of incoming websockets messages and the flow of action in the simulated dice game. In one of the demonstrations, they behave much like ES2015 iterators. I prefer them over ES2015 iterators. They can also help to provide promises-like functionality without promises.
+
 ## MonadState
 ```javascript
-const MonadState = function (g, state, value, p)  {
-  this.id = g;
-  this.s = state;
-  this.a = value;
-  this.process = p;
-  this.bnd = (func, ...args) => func(this.s, ...args);  
-  this.run = st => { 
-    let s = this.process(st); 
-    let a = s[3];
-    window[this.id] = new MonadState(this.id, s, a, this.process);
-    return window[this.id];
+  function MonadState(g, state, p) {
+    var ob = {
+      id: g,
+      s: state,
+      a: s[3],
+      process: p,
+      bnd: (func, ...args) => func(ob.s, ...args),  
+      run: function (ar) {
+        var ar2 = ob.process(ar);
+        ob.s = ar2;
+        ob.a = ar2[3];
+        window[ob.id] = ob;
+        return window[ob.id];
+      }
+    };
+    return ob;
+  };
+MonadState reproduces some of the functionality found in the Haskell Module "Control.Monad.State.Lazy", inspired by the paper "Functional Programming with erloading and Higher-der Polymorphism", Mark P Jones (http://web.cecs.pdx.edu/~mpj/) Advanced School of Functional Programming, 1995. The following demonstrations use the MonadState instances fibsMonad and primesMonad to create and store arrays of Fibonacci numbers and arrays of prime numbers, respectively. fibsMonad and primesMonad provide a simple way to compute lists of prime Fibonacci numbers. Because the results of computations are stored in the a and s attributes of MonadState instances, it was easy to make sure that no prime number had to be computed more than once in the prime Fibonacci demonstration.
+
+Here is the definition of fibsMonad, along with the definition of the function that becomes fibsMonad.process.
+```javascript
+  var fibsMonad = new MonadState('fibsMonad', [0, 1, 3, [0,1]], [0,1], fibs_state); 
+  
+  var fibs_state = function fibs_state(ar) {
+    var a = ar.slice();
+    while (a[3].length < a[2]) {
+      a = [a[1], a[0] + a[1], a[2], a[3].concat(a[0])];
+    }
+    return a;
   }
-}
+Another MonadState instance used in the online demonstration is primesMonad. Here is its definition along with the function that becomes primesMonad.process:
+### primesMonad
+```javascript
+  var primesMonad = new MonadState('primesMonad', [3, 2, 'primesMonad', [2]], [2],  primes_state)  
+
+  var primes_state = function primes_state(x) {
+    var v = x.slice();
+      while (2 == 2) {
+        if (v[3].every(e => ((v[0]/e) != Math.floor(v[0]/e)))) {
+          v[3].push(v[0]);
+        }
+        if (v[3][v[3].length - 1] > v[2]) { break };     // Not an infinite loop afterall.
+        v[0]+=2;
+      }
+    return v;
+  }
 ```
+primesMonad keeps a cash of computed primes in primesMonad.a and primesMonad.s[3]. It never performs a computation to generate a prime number more than once during a browser session.
 ## messageMonad
 The following code supports the group chat feature:
 ```javascript
@@ -226,35 +266,6 @@ var display = function display (x, id, string) {
 ## MonadState Transformer Example
 MonadState instances are used to create a list of prime Fibonacci number. More commentary is available at [Demonstration](http://schalk.net:3055). Here are the definitions of fibsMonad and its helper functions:
 
-### fibsMonad
-```javascript
-  var fibsMonad = new MonadState('fibsMonad', [0, 1, 3, [0,1]], [0,1], fibs_state); 
-  
-  var fibs_state = function fibs_state(ar) {
-    var a = ar.slice();
-    while (a[3].length < a[2]) {
-      a = [a[1], a[0] + a[1], a[2], a[3].concat(a[0])];
-    }
-    return a;
-  }
-```
-And here are the definitions of primesMonad and its helper functions:
-### primesMonad
-```javascript
-  var primesMonad = new MonadState('primesMonad', [3, 2, 'primesMonad', [2]], [2],  primes_state)  
-
-  var primes_state = function primes_state(x) {
-    var v = x.slice();
-      while (2 == 2) {
-        if (v[3].every(e => ((v[0]/e) != Math.floor(v[0]/e)))) {
-          v[3].push(v[0]);
-        }
-        if (v[3][v[3].length - 1] > v[2]) { break };     // Not an infinite loop afterall.
-        v[0]+=2;
-      }
-    return v;
-  }
-```
 ### MonadState Transformers
 Transformers take instances of MonadState and return different instances of MonadState, possibly in a modified state. The method call "fibsMonad.bnd(pfTransformer, primesMonad)" returns primesMonad. Here is the definition of pfTransformer:
 ```javascript
@@ -354,7 +365,6 @@ Composition with Promises involves chains of ".then" statements. Using MonadItte
 
 ``` 
 ##MonadMaybe
-
 When sequences of computations are performed inside of MonadMaybe, the inadvertent creation of variables with the values NaN or undefined can halt further computation while the sequence rapidly runs to completion. In this demonstration, an udefined variable and a variable with value NaN appear in the middle of a middle of a sequence of computations. Scren shots of the Chrome console show what happens. First, here are the most relevant definitions:
 ```javascript
   var MonadMaybe = function MonadMaybe(z) {
@@ -455,32 +465,6 @@ Next, the undefined variable ox appears halfway through the sequence of computat
 And finally, 0/0 causes get(mQ1) == NaN.
 ![NaN](src/images/div0.png)
 After NaN was encountered, the sequence ran smoothly and rapidly through the final stages without attempting to do the specified work. In other scenarios, the savings in resources might be significant, a system crash might be averted, or a silently-produced bug causing incorrect results might have been avoided. And if I hadn't intentionally caused the failure, trouble-shooting would have been a no-brainer. In production, I would log only code pertaining to Nothing in order to be notified of problems that slipped past me during testing, but for this demonstration I logged messages from each stage of the computation, which might be a good thing to do during development. An operation in the middle of a sequence of operations might pause to obtain data from a remote resouse based on information received from the previous MonadMaybe instance. MonadMaybe could be modified to throw for more that undefined and NaN.
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 ### The Haskell Wai Websockets Back End
 This project isn't an exposition of the modified Haskell Wai Websockets server, but I want to point out the similarity between the way the server holds the application's state in a TMVar and the way the front end holds state in an object. The application's state is always changing, so it\'s a pretty safe bet that something is mutating somewhere. The Haskell server for the online demonstration at [JS-monads-stable](http://schalk.net:3055) keeps the ever-changing state of the application in the ServerState list of tupples. It is defined as follows: 
 ```haskell

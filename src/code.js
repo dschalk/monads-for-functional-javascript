@@ -666,19 +666,24 @@ var traverse = h('pre',  `  const forwardClick$ = sources.DOM
     };
   };  `  )
 
-var MonadState = h('pre',  `  const MonadState = function (g, state, value, p)  {
-  this.id = g;
-  this.s = state;
-  this.a = value;
-  this.process = p;
-  this.bnd = (func, ...args) => func(this.s, ...args);  
-  this.run = st => { 
-    let s = this.process(st); 
-    let a = s[3];
-    window[this.id] = new MonadState(this.id, s, a, this.process);
-    return window[this.id];
-  }
-}  `  )
+var MonadState = h('pre',  `  
+  function MonadState(g, state, p) {
+    var ob = {
+      id: g,
+      s: state,
+      a: s[3],
+      process: p,
+      bnd: (func, ...args) => func(ob.s, ...args),  
+      run: function (ar) {
+        var ar2 = ob.process(ar);
+        ob.s = ar2;
+        ob.a = ar2[3];
+        window[ob.id] = ob;
+        return window[ob.id];
+      }
+    };
+    return ob;
+  };  `  )
 
 var primesMonad = h('pre',  `  var primesMonad = new MonadState('primesMonad', [2, '', 3, [2]], [2],  primes_state) 
 

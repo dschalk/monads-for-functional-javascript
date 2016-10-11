@@ -155,7 +155,6 @@ function MonadState(g, state, p) {
     process: p,
     bnd: (func, ...args) => func(ob.s, ...args),  
     run: function (ar) {
-      console.log('In Monad Stater+++++++!!!!!!!!!++++++++  ', ar );
       var ar2 = ob.process(ar);
       ob.s = ar2;
       ob.a = ar2[3];

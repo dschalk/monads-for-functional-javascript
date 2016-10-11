@@ -340,7 +340,7 @@ function main(sources) {
   // <>>><>><><><><>>>><><><   prime factors   ><><><><><><>>><<><><><><><><>< START prime factors  
   var factorsPress$ = sources.DOM
       .select('input#factors_1').events('keydown');
-
+  var factors = [];
   var factorsAction$ = factorsPress$.map(function (e) {
     if (e.keyCode == 13) {
       var num = e.target.value
@@ -350,12 +350,9 @@ function main(sources) {
         document.getElementById('factors_4').innerHTML = num + ' is not a number';
       }
       else {
-        var factors = primesMonad.run([primesMonad.s[0], [], num, primesMonad.a])
+        factors = primesMonad.run([primesMonad.s[0], [], num, primesMonad.a])
         .bnd(s => prFactTransformer3(s, num));
-        document.getElementById('factors_3').innerHTML = 
-          'The prime factors of ' + num + ' are ' + factors;
-        // document.getElementById('factors_4').innerHTML = 
-        //   'All of the prime factors of ' + num + ' are ' + factors[1].s[0];
+        mMfactors.ret("The prime factors of " + num + " are " + factors.join(', '));
       }
     }
   });
@@ -787,7 +784,6 @@ function display(x, id, string, mon = mMdisplay) {
       h('a', { props: { href: "https://github.com/dschalk/JS-monads-stable", target: "_blank" } }, 'JS-monads-stable'),  
       h('div#gameDiv2', { style: { display: 'none' } }, [
           h('br'),
-          h('p.red8', `${get(mMgoals2)}`),
           h('span', ' Here are the basic rules:'),
           h('p', 'RULES: If clicking two numbers and an operator (in any order) results in 20 or 18, the score increases by 1 or 3, respectively. If the score becomes 0 or is evenly divisible by 5, 5 points are added. A score of 25 results in one goal. That can only be achieved by arriving at a score of 20, which jumps the score to 25. Directly computing 25 results in a score of 30, and no goal. Each time RL is clicked, one point is deducted. Three goals wins the game. '),
           numsDisplay[0],
@@ -938,12 +934,7 @@ h('span#primeFibs.turk'),
 h('p', ' The next demonstration uses two instances of MonadState to find the prime factors of numbers. Each prime factor is listed once.  my desktop computer, it took several seconds to verify that 514229 is a prime number. After that, due to persistent (until the web page closes) memoization, numbers below 514229 or not too far above it evaluated rapidly. Here\'s where you can enter a number to see its prime factors: '),
 h('input#factors_1'),
 h('br'),
-h('span#factors_2.red6'),
-h('br'),
-h('span#factors_3.turk'),
-h('br'),
-h('span#factors_4.turk'),
-h('br'),
+h('p.turk',get(mMfactors) ),    
 h('p', ' The demonstration uses primesMonad and factorsMonad. Here are the definitions of factosMonad and factor_state, the function that is factorsMonad.process: '),
 code.factorsMonad,
 h('p#async', ' And this is how user input is handled: '),
