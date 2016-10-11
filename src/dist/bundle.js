@@ -5552,15 +5552,16 @@
 	                document.getElementById('factors_3').innerHTML = 'This works only if you enter a number.';
 	                document.getElementById('factors_4').innerHTML = num + ' is not a number';
 	            } else {
-	                var factors = primesMonad.run([primesMonad.s[0], [], num, primesMonad.a]).bnd(function (v) {
-	                    return [prFactTransformer(v, num), prFactTransformer2(v, num)];
+	                var factors = primesMonad.run([primesMonad.s[0], [], num, primesMonad.a]).bnd(function (s) {
+	                    return prFactTransformer3(s, num);
 	                });
-	                document.getElementById('factors_3').innerHTML = 'The prime factors of ' + num + ' are ' + factors[0].s[0];
+	                document.getElementById('factors_3').innerHTML = 'The prime factors of ' + num + ' are ' + factors;
 	                // document.getElementById('factors_4').innerHTML = 
 	                //   'All of the prime factors of ' + num + ' are ' + factors[1].s[0];
 	            }
 	        }
 	    });
+
 	    // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> ENDOM prime factors END
 	    // ?<>>><>><><><><>>>><><><  traversal  ><><><><><><>>><><><><><><><><><><><>< START traversal  
 	    document.onload = function (event) {

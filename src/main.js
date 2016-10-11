@@ -351,14 +351,15 @@ function main(sources) {
       }
       else {
         var factors = primesMonad.run([primesMonad.s[0], [], num, primesMonad.a])
-        .bnd(v => [prFactTransformer(v, num), prFactTransformer2(v, num)]);
+        .bnd(s => prFactTransformer3(s, num));
         document.getElementById('factors_3').innerHTML = 
-          'The prime factors of ' + num + ' are ' + factors[0].s[0] ;
+          'The prime factors of ' + num + ' are ' + factors;
         // document.getElementById('factors_4').innerHTML = 
         //   'All of the prime factors of ' + num + ' are ' + factors[1].s[0];
       }
     }
   });
+
   // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> ENDOM prime factors END
   // ?<>>><>><><><><>>>><><><  traversal  ><><><><><><>>><><><><><><><><><><><>< START traversal  
   document.onload = function (event) {

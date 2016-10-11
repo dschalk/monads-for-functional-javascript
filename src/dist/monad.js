@@ -223,7 +223,6 @@ function factor_state(v) {
 function factor_state2(a) {
   var v = a.slice();
   var result;
-  func(v);
   function func (v) {
     for (let p of v[3]) {
       if (v[2] / p == Math.floor(v[2] / p)) {
@@ -246,6 +245,34 @@ var prFactTransformer = function prFactTransformer(s, n) {
 var prFactTransformer2 = function prFactTransformer2(s, n) {
   return factorsMonad.run([[], [], n, s[3]]);
 };
+
+function prFactTransformer3(s, n) {
+  return factors_state3([[], [], n, s[3]]);
+};
+
+function factors_state3(a) {
+  var b = a.slice();
+  var result;
+  func(b);
+  function func (v) {
+    for (let p of v[3]) {
+      if (v[2] / p == Math.floor(v[2] / p)) {
+        v[1].push(p);
+        v[2] = v[2]/p;
+        if (v[2] != 1) {
+          func(v);
+          console.log(v[2], v[1].slice());
+        }
+      };
+      v[1].sort(function(a, b) {
+        return a - b;
+      });
+      result = v[1];
+    }; 
+  }
+  return result;
+}
+
 function checkpM () {
 
 console.log('VVVVVVVVVVVVVVVVVVVVVVVVVVVV  get(pMscore) and typeof get(pMscore) ', get(pMscore), typeof get(pMscore) );
