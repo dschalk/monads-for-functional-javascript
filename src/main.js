@@ -6,7 +6,12 @@ import Cycle from '@motorcycle/core';
 import {h, p, span, h1, h2, h3, pre, br, div, label, input, hr, makeDOMDriver} from '@motorcycle/dom';
 import { create, merge, filter, just, delay} from 'most';
 import code from './code.js';
-console.log(pre);
+
+var next = function next () {
+  console.log('7777777777777777 I exis! ' );
+  return 42;
+};
+console.log('I cannot explain it XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX ');
 var Greeter = (function () {
     function Greeter(message) {
         this.greeting = message;
@@ -45,17 +50,8 @@ socket.onclose = function (event) {
     console.log('<><><> New message <><><> ', event);
 };
 
-function updateElms (style, nums, sc, gl) {
-  elms = [
-    h('button#0.num', {style: {display: style[0]}}, nums[0] ),
-    h('button#1.num', {style: {display: style[1]}}, nums[1] ),
-    h('button#2.num', {style: {display: style[2]}}, nums[2] ),
-    h('button#3.num', {style: {display: style[3]}}, nums[3] ), ]  
-  var ar = playerMonad.s[3].slice();
-  ar.unshift(elms);
-  playerMonad.run(sc, gl, ar) 
-};
- 
+var messageMonad = new MonadState('messageMonad', [], message_state); 
+
 function updateTasks (obArray) {
   var todoData = [];
   for (let ob of obArray) {  
@@ -76,20 +72,25 @@ function updateTasks (obArray) {
     console.log('In updateTasks uuuuuuuuuuuuuuuuuu  todoData ', todoData );
 }; 
 
-playerMonad.run( get(pMscore), get(pMgoals), elms )
-
-
 function main(sources) {
+
+  var numsDisplay = [4,4,4,4];
+
   var newTasks = [];
+
   const messages$ = (sources.WS).map( e => {
+
   mMtem.ret(e.data.split(',')).bnd( v => {
-  var name = get(pMname);
-  var group = get(pMgroup);
-  var score = get(pMscore);
-  var goals = get(pMgoals);
-  // updateElms(get(mMstyle), get(mMnums));  
   console.log('<><><><><><><><><><><><><><><><>  INCOMING  <><><><><><><> >>> In messages. e amd v are ', e, v);
-  mMZ10.bnd( () => mMnums.ret([v[3], v[4], v[5], v[6]]).bnd(newR))
+  mMZ10.bnd( () => {
+    pMnums.ret([v[3], v[4], v[5], v[6]])
+    .bnd(w => 
+    test3(w)
+    .bnd(pMstyle.ret)
+    .bnd(x => 
+      numsDisplay = displayNums(x, w)))
+    pMscore.ret(v[7]);
+    pMgoals.ret(v[8]) }); 
   mMZ11.bnd( () => socket.send(`CG#$42,${get(pMgroup)},${get(pMname)},${get(pMscore)},${getpM(goals)}l`));
   mMZ12.bnd( () => mM6.ret(v[2] + ' successfully logged in.'));
   mMZ13.bnd( () => updateMessages(e.data));
@@ -98,31 +99,43 @@ function main(sources) {
     mMgoals2.ret('A player named ' + v[2] + ' is currently logged in. Page will refresh in 4 seconds.')
     refresh() });
   mMZ17.bnd( () => {
-    if (group != 'solo' || group == 'solo' &&  name == v[2]) {   
+    if (get(pMgroup) != 'solo' || get(pMgroup) == 'solo' &&  get(pMname) == v[2]) {   
       if (v[3] == 'no file') mMtaskList.ret([]);
       else process(e.data)  
     } 
   })
-    mMZ18.bnd( () => {if (group != 'solo' || name == v[2]) {updatePlayers(e.data) } });
+    mMZ18.bnd( () => {if (get(pMgroup) != 'solo' || get(pMname) == v[2]) {updatePlayers(e.data) } });
   })       
   mMtemp.ret(e.data.split(',')[0])
-  .bnd(next, 'CA#$42', mMZ10)
-  .bnd(next, 'XX#$42', mMZ11)
-  .bnd(next, 'CD#$42', mMZ13)
-  .bnd(next, 'CE#$42', mMZ14)
-  .bnd(next, 'EE#$42', mMZ15)
-  .bnd(next, 'DD#$42', mMZ17)
-  .bnd(next, 'NN#$42', mMZ18)
+  .bnd(cow, 'CA#$42', mMZ10)
+  .bnd(cow, 'XX#$42', mMZ11)
+  .bnd(cow, 'CD#$42', mMZ13)
+  .bnd(cow, 'CE#$42', mMZ14)
+  .bnd(cow, 'EE#$42', mMZ15)
+  .bnd(cow, 'DD#$42', mMZ17)
+  .bnd(cow, 'NN#$42', mMZ18)
   });
         
-  function newR (ar) {
-    mM3.ret([]);
-    mM8.ret(0);   
-    mMnums.ret(ar);
-    mMstyle.ret(['inline', 'inline', 'inline', 'inline']);
-    updateElms(['inline', 'inline', 'inline', 'inline'],ar);
-    return ret(ar);
+  function cow(x, y, instance) {
+    if (x == y) {
+        instance.release();
+    }
+    return ret(x);
   };
+  
+  function displayNums (a, b) {
+    numsDisplay = [
+      h('button#0.num',  { style: { display: a[0] }}, b[0] ),
+      h('button#1.num',  { style: { display: a[1] }}, b[1] ),
+      h('button#2.num',  { style: { display: a[2] }}, b[2] ),
+      h('button#3.num',  { style: { display: a[3] }}, b[3] ),
+    ];
+    return numsDisplay;
+  };
+
+  function newRoll (a,b) {
+    socket.send(`CA#$42,${get(pMgroup)},${get(pMname)},6,6,12,20,${a},${b}`);
+  }
 
   var loginPress$ = sources.DOM
       .select('input#login').events('keypress');
@@ -133,16 +146,15 @@ function main(sources) {
       pMname.ret(v);
       socket.send(`CC#$42${v}`);
       console.log('33333333333333333333333333333333333333 login e.target.value ', e.target.value);
-      mM3.ret([]).bnd(mMnums.ret);
-      // socket.send(`CO#$42,solo,${v},solo`);
+      mM3.ret([]);
       document.getElementById('dice').style.display = 'block';
       document.getElementById('rightPanel').style.display = 'block';
       document.getElementById('log1').style.display = 'none';
       document.getElementById('log2').style.display = 'block';
       document.getElementById('gameDiv2').style.display = 'block';
-      socket.send(`CG#$42,solo,${v},0,0`);
       document.getElementById('login').blur(); 
       document.getElementById('group').focus(); 
+      newRoll(0,0);
     }
   });
 
@@ -153,10 +165,11 @@ function main(sources) {
       if (e.keyCode == 13) {
           var oldGroup = get(pMgroup);
           var gr = e.target.value;
-          pMgroup.ret(gr);
-          playerMonad.run(0, 0, []);
-          socket.send(`CO#$42,${gr},${get(pMname)},${gr},`);
-          socket.send(`CG#$42,${gr},${get(pMname)},0,0`);
+          socket.send(`CO#$42,${gr},${get(pMname)},${gr}`);
+          pMgroup.ret(gr)
+          .bnd(pMgroup.ret)
+          .bnd(v => 
+          socket.send(`CA#$42,${v},${get(pMname)},6,6,12,20,0,0`));
       }
   });
 
@@ -177,7 +190,7 @@ function main(sources) {
         var namesList = namesL.slice(1);
         updateScoreboard2(namesList);
         namesList.forEach(player => sMplayers.add(player.trim()));
-        console.log('In mMZ19 <><><><><><> namesL, sMplayers.s, and namesList are ', namesL, sMplayers.s, namesList);
+        console.log('In mMZ19 <><><>OOO<><><> namesL, sMplayers.s, and namesList are ', namesL, sMplayers.s, namesList);
   }
 
   var updateScoreboard2 = function updateScoreboard2(v) {
@@ -188,16 +201,34 @@ function main(sources) {
     pMdata.ret(ar);
   };
 
+  var rollClick$ = sources.DOM
+    .select('.roll').events('click');
+
+  var rollClickAction$ = rollClick$.map(() => {
+    var a = get(pMscore) - 1;
+    var b = get(pMgoals);
+    newRoll(a,b);
+  }); 
+
   var numClick$ = sources.DOM
       .select('.num').events('click'); 
 
   var numClickAction$ = numClick$.map(e => {
-    var ar = get(mMnums.bnd(spliceM, e.target.id, 1).bnd(mMnums.ret));
-    updateElms(test2(get(mMstyle), ar), ar); 
-    var ar2 = get(mM3.bnd(push, e.target.innerHTML).bnd(mM3.ret));
-    if (ar2.length == 2 && get(mM8) != 0) {
+    pMnums    
+    .bnd(spliceM, e.target.id, 1)
+    .bnd(pMnums.ret)
+    .bnd(x => 
+    test3(x)
+    .bnd(pMstyle.ret)
+    .bnd(y => 
+      numsDisplay = displayNums(y,x)));  
+    mM3
+    .bnd(push, e.target.innerHTML)
+    .bnd(mM3.ret)
+    .bnd(v => {
+    if (v.length == 2 && get(mM8) != 0) {
       updateCalc(v, get(mM8)) 
-    }
+    } });
   }).startWith([0, 0, 0, 0]);
 
   var opClick$ = sources.DOM
@@ -209,53 +240,50 @@ function main(sources) {
       if (ar.length === 2) {
         updateCalc(ar, v)
       }
-      console.log('In opClickAction$ wwwwwwwwwwwwwwwwwwww   ar, v, result ', ar, v );
     }) 
   });
 
   function updateCalc(ar, op) {
-    var result = calc(ar[0], op, ar[1])
-    console.log('In updateCalc vvvvvvvvvvvvvvvvvvvvvvvv    ar, op ', ar, op, result );
+    var result = calc(ar[0], op, ar[1]);
+    mM3.ret([]);
+    mM8.ret(0)
     if (result == 20) { 
-      pMscore.bnd(add,1).bnd(tscore).bnd(pMscore.ret).bnd(a => score2(a));
+      pMscore.bnd(add,1)
+      .bnd(testscore)
+      .bnd(pMscore.ret)
+      .bnd(v => score(v));
       return; 
     } 
     else if (result == 18) { 
-      pMscore.bnd(add,3).bnd(tscore).bnd(pMscore.ret).bnd(a => score2(a));
-      return;
+      pMscore.bnd(add,3)
+      .bnd(testscore)
+      .bnd(pMscore.ret)
+      .bnd(v => score(v));
+      return; 
     }
     else {
-      mMnums.bnd(push,result).bnd(mMnums.ret).bnd(x =>
-      updateElms(test2(get(mMstyle), x), x, get(pMscore), get(pMgoals))) 
+      pMnums.bnd(push,result)
+      .bnd(pMnums.ret)
+      .bnd(x => {
+      test3(x)
+      .bnd(pMstyle.ret)
+      .bnd(y => numsDisplay = displayNums(y,x)) })
       mM8.ret(0);
       mM3.ret([]);
+      console.log('in updateCalc 1111111111111111111111111111111111 numsDisplay ', numsDisplay );
     }
   };  
 
-  function score2(scor) {
-    console.log('In score2 ZZZZZZZZZZZZZZZ  scor, get(mMnums) ', scor, get(mMnums) );
+  function score(scor) {
+    console.log('In score 22222222222222222222222222222222222222222 scor ', scor );
     if (scor != 25) {
-      mMnums.bnd(push, scor).bnd(mMnums.ret).bnd(ar => {
-      updateElms(test2(get(mMstyle), x), x, get(pMscore), get(pMgoals)) 
-      });
-      socket.send(`CG#$42,${get(pMgroup)},${get(pMname)},${scor},${get(pMgoals)}` );
+      newRoll(scor, get(pMgoals))
     }
     else if (get(pMgoals) == 2) {
-        pMgoals.ret(0);
-        socket.send(`CE#$42,${get(pMgroup)},${get(pMname)},nothing`);
-        mMhistory.ret([0, r, 0, 0, 0, 0]);
-        mMindex.ret(0);
-        playerMonad.run(0, 0, []);
-        socket.send(`CG#$42,${get(pMgroup)},${get(pMname)},0,0`);
+      newRoll(0,0)
     }
-    else {
-      playerMonad.run(get(pMscore), get(pMgoals.bnd(add, 1).bnd(pMgoals.ret), elms)).bnd(s => {
-        socket.send(`CG#$42,${get(pMgroup)},${get(pMname)},0,${s[3][1]}`);
-        console.log('&&&&&&&777777777&&  in score2/else v, playerMonad.s  ', s, playerMonad.s );
-      });  
-    };
-    socket.send(`CA#$42,${get(pMgroup)},${get(pMname)},6,6,12,20`);
-     }
+    else {pMgoals.bnd(add, 1).bnd(pMgoals.ret).bnd(g => newRoll(0, g))};
+  };
 
   var todoClick$ = sources.DOM
       .select('#todoButton').events('click');
@@ -294,12 +322,15 @@ function main(sources) {
       .select('input#fib92').events('keydown');
 
   var primeFib$ = fibKeyPress5$.map(function (e) {
+    console.log('In primeFib$ VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV primesMonad.s, primesMonad.a ', primesMonad.s, primesMonad.a );
+    console.log('In primeFib$ VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV fibsMonad.s, fibsMonad.a ', fibsMonad.s, fibsMonad.a );
       if (e.keyCode == 13) {
           var res = fibsMonad
-              .run([0, 1, e.target.value, []])
-              .bnd(function (fibsState) { return fibsMonad
+              .run([1, 2 ,e.target.value, [0,1]])
+              .bnd(fibsState => 
+              fibsMonad
               .bnd(fpTransformer, primesMonad)
-              .bnd(function (primesState) { return tr3(fibsState[3], primesState[3]); }); });
+              .bnd(primesState => tr3(fibsState[3], primesState[3]) ) );
           document.getElementById('PF_9').innerHTML = res[0];
           document.getElementById('PF_22').innerHTML = res[1];
           document.getElementById('primeFibs').innerHTML = res[2];
@@ -652,15 +683,6 @@ function main(sources) {
             el2.style.display = 'none';
     });
 
-    var rollClick$ = sources.DOM
-        .select('.roll').events('click');
-
-    var rollClickAction$ = rollClick$.map(() => {
-        socket.send(`CA#$42,${get(pMgroup)},${get(pMname)},6,6,12,20`);
-        pMscore.bnd(add,-1).bnd(pMscore.ret).bnd(v =>
-          socket.send(`CG#$42,${get(pMgroup)},${get(pMname)},${v},${get(pMgoals)}` ));
-    });
-
     var forwardClick$ = sources.DOM
         .select('#forward').events('click');
 
@@ -673,6 +695,11 @@ function main(sources) {
           .bnd(v => trav(v));
         }
     });
+
+function display(x, id, string, mon = mMdisplay) {
+    document.getElementById(id).innerHTML = string;
+    return mon.ret(x);
+};
 
   var calcStream$ = merge( timeoutAction$, factorsAction$, primeFib$, fibPressAction$, quadAction$, edit1Action$, edit2Action$, testWAction$, testZAction$, testQAction$, colorAction$, deleteAction$, newTaskAction$, chatClickAction$, gameClickAction$, todoClickAction$, captionClickAction$, groupPressAction$, rollClickAction$, messagePressAction$, loginPressAction$, messages$, numClickAction$, opClickAction$);
   return {
@@ -700,6 +727,12 @@ function main(sources) {
       h('br'),
       h('br'),
       h('br'),
+      h('br'),
+      h('br'),
+      h('br'),
+      h('br'),
+      h('br'),
+      h('br'),
       h('div#gameDiv', [
       h('div.game', `Name: ${get(pMname)}`),
       h('div.game', `Group: ${get(pMgroup)}`),
@@ -707,28 +740,20 @@ function main(sources) {
       h('div.game', `${get(pMdata)}`) ]),  
       h('br'),
       h('br'),
-      h('br'),
       h('div#todoDiv', [
-          h('div#taskList', taskL  ),
-          h('span', 'Author, Responsible Person, Task: '),
-          h('input.newTask') ]),
+        h('div#taskList', taskL  ),
+        h('span', 'Author, Responsible Person, Task: '),
+        h('input.newTask') ]),
       h('br'),
       h('span#alert'),
       h('br'),
       h('span#alert2'),
-      h('br'),
-      h('br'),
-      h('br'),
-      h('span#alert'),
-      h('br'),
-      h('span#alert2'),
-      h('br'),
       h('br'),
       h('div#chatDiv', [
-          h('div#messages', [
-              h('span', 'Message: '),
-              h('input.inputMessage'),
-              h('div', messageMonad.s[3] ) ])  ]) ]),
+        h('div#messages', [
+          h('span', 'Message: '),
+          h('input.inputMessage'),
+          h('div', messageMonad.s[3] ) ])  ]) ]),
   h('div#leftPanel', [  
       h('br'),
       h('a.tao', { props: { href: '#async' } }, 'Asyc'),
@@ -739,15 +764,14 @@ function main(sources) {
       // h('a.tao', {props: {href: '#monads'}}, 'Why Call Them Monads'   ),  
       h('div#captionDiv', [
           h('h3', 'Game traversal is temporarily out of service during refactoring. The rest of the examples are working. ' ),
-          h('h3', 'Some of the commentary below is out of date. Monad instance\'s x attribute is no longer exposed, so references to "m.x" are being replaced by get(m). In the process of adapting to the new definition of Monad, some of the code examples are being drastically revised. ' ), 
-          h('h1', 'Motorcycle.js With JS-monads'),
-          h('span.tao1', ' Persisternt todo lists. '),
+          h('h3', 'Obsolete commentary is being revised' ),
+          h('h1', 'Motorcycle.js With JS-monads') ]),
+          h('span.tao1', ' The demonstrations include Persisternt todo lists. '),
           h('br'),
           h('span.tao1', ' An interactive simulated dice game with a traversable history. '),
           h('br'),
-          h('span.tao1', ' Chat rooms in which members can play the game and share a project todo list. '),
+          h('span.tao1', ' Chat rooms where members can play the game, chat, and share a project todo list. '),
           h('br'),
-          h('span.tao2', ' These, along other demonstrations, are presented here to how front-end website development can be facilitated through the use of Cycle.js and JS-monads.  ') ]),
       h('br'),
       h('span.tao', 'This is a '),
       h('a', { props: { href: "https://github.com/motorcyclejs", target: "_blank" } }, 'Motorcycle.js'),
@@ -765,7 +789,11 @@ function main(sources) {
           h('p.red8', `${get(mMgoals2)}`),
           h('span', ' Here are the basic rules:'),
           h('p', 'RULES: If clicking two numbers and an operator (in any order) results in 20 or 18, the score increases by 1 or 3, respectively. If the score becomes 0 or is evenly divisible by 5, 5 points are added. A score of 25 results in one goal. That can only be achieved by arriving at a score of 20, which jumps the score to 25. Directly computing 25 results in a score of 30, and no goal. Each time RL is clicked, one point is deducted. Three goals wins the game. '),
-          h('div', elms  ),
+          numsDisplay[0],
+          numsDisplay[1],
+          numsDisplay[2],
+          numsDisplay[3],
+          h('br'),
           h('button#4.op', 'add'),
           h('button#5.op', 'subtract'),
           h('button#5.op', 'mult'),
@@ -947,10 +975,10 @@ h('h3', ' The simulated dice game '),
 h('p', ' A score increases by 1 or 3 if the result of a computation is 20 or 18, respectively. 5 additional points are added each time the result is a multiple of 5. A computation that results in a score of 25 earns 1 goal. So if a score is 17 and a player multiplies 3 * 6, 3 points are awarded resulting in 20 + 5 = 25 points. Goal! When a goal is earned, the traversable history is deleted and prepared for a fresh start. Here is the code involved in the simulated dice game: '),
 code.updateCalc,
 h('p', ' The history of the number display and scoreboard in the game can be traversed in either direction until a player scores a goal. After that, the traversable history is deleted and then builds up until another goal is achieves. Players can score points using historical displays, so to keep competition fair, group members are notified when another member clicks the BACK button. The code is shown below, in the MonadSet section; but first, here is some background. '),
-h('h3', ' playerMonad '),
-h('p', ' playerMonad and its process attribute are defined as follows: '),
-code.playerMonad,
-h('p#monadset', ' As you see, playerMonad.run does one simple thing; it updates the four monads in the player_state function. There are various ways of achieving the same result, but MonadState provides a convenient alternative. Next, I will show how the list of currently online group members is maintained through the use of an instance of MonadSet. '),
+h('h3', ' rollMonad '),
+h('p', ' rollMonad and its process attribute are defined as follows: '),
+code.rollMonad,
+h('p#monadset', ' As you see, rollMonad.run does one simple thing; it updates the four monads in the player_state function. There are various ways of achieving the same result, but MonadState provides a convenient alternative. Next, I will show how the list of currently online group members is maintained through the use of an instance of MonadSet. '),
 h('h2', ' MonadSet '),
 h('p', ' The list of online group members at the bottom of the scoreboard is very responsive to change. When someone joins the group, a message prefixed by NN#$42 prompts the server to send out the current list of group members. When someone closes their browser window, the server is programmed to send out the new list of group members. All updating is done in the websockets messages function. MonadSet\'s add and delete methods provide convenient alternatives to using Monad\'s bnd method with the push and splice functions. Here are the definitions of MonadSet and the MonadSet instance sMplayers '),
 code.MonadSet,
@@ -958,20 +986,6 @@ h('p#monadmaybe', ' Because sMplayerss is immutable, its most recent state can b
 code.traverse,
 h('p', ' You must log in and enter something in the "Change group" box in order to see currently online members. You can open this page in more windows and see how promptly additions and exits show up in the scoreboard. '),
 h('a', { props: { href: '#top' } }, 'Back To The Top'),
-h('h2', ' MonadMaybe ' ),
-h('p', '  When sequences of computations are performed inside of MonadMaybe, the inadvertent creation of variables with the values NaN or undefined can halt further computation while the sequence rapidly runs to completion. In this demonstration, an udefined variable and a variable with value NaN appear in the middle of a middle of a sequence of computations. Scren shots of the Chrome console show what happens. First, here are the most relevant definitions:    '),
-h('a', { props: { href: '#top' } }, 'Back To The Top'),
-  code.MonadMaybe,
-h('p', ' And here are the screenshots of what was logged after calling a sequence of computations that executed properly and then two variations that failed.  First, the version that succeeded:  ' ),
-h('img', {props: {src: "/images/success.png" }},  ),    
-
-h('p', ' Next, the undefined variable ox appears halfway through the sequence of computations. What happened and where it happened are readily apparent in the screenshot. Just scan for the first appearance of MonadMaybe {id: "Nothing, x: "Nothing"} result.x Nothing, then look above it. Two lines up it says "ox is not defined". Directly above that we see that the undefined variable was introduced in the file named "test". Two lines above that we see that mQ1 has the value ox. Here is the screenshot: ' ),
-h('br' ),    
-h('img', {props: {src: "/images/ox.png" }},  ),    
-h('p', ' And finally, 0/0 causes mQ1.x == NaN. ' ),
-h('img', {props: {src: "/images/div0.png" }},  ),    
-  h('p', ' After NaN was encountered, the sequence ran smoothly and rapidly through the final stages without attempting to do the specified work. In other scenarios, the savings in resources might be significant, a system crash might be averted, or a silently-produced bug causing incorrect results might have been avoided.  And if I hadn\'t intentionally caused the failure, trouble-shooting would have been a no-brainer. In  production, I would log only code pertaining to Nothing in order to be notified of problems that slipped past me during testing, but for this demonstration I logged messages from each stage of the computation, which might be a good thing to do during development. An operation in the middle of a sequence of operations might pause to obtain data from a remote resouse based on information received from the previous MonadMaybe instance. MonadMaybe could be modified to throw for more that undefined and NaN.  ' ),
-      
   h('h2', 'Updating the DOM'),
   h('p', ' Two general methods work in Motorcycle. Sometimes I keep m.x in the virtual DOM code for some monad m. If a user performs some action that cause m.x to have a new value, that information is fed into the stream that updates the virtual DOM. The name Cycle is very fitting. Other times I respond to user input or websockes messages by from inside a stream that is merged into the virtual DOM by using document.getElementById("someId").innerHTML = newValue. '),
   h('br'),

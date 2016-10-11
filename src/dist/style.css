@@ -1,13 +1,13 @@
 body {
   background-color: #000;
   color: #FFE4C4;
-  font-size: 24px;
+  font-size: 16px;
 }
 
 input {
   background-color: #EFECB1;
   color: #0000FF;
-  font-size: 19px;
+  font-size: 16px;
 }
 
 .tao {
@@ -18,7 +18,7 @@ input {
 
 .bh3 {
  color: #00ffd8;
- font-size: 24px;
+ font-size: 16px;
  margin-left: 2%;
 }
 
@@ -29,20 +29,20 @@ input {
 
 h3 {
  color: #f9dc90;
- font-size: 26px;
+ font-size: 20px;
  margin-left: 2%;
 }
 
 #timeout2 {
   color: #F2650E;
   margin-left: 3%;
-  font-size: 28px;
+  font-size: 16px;
 }
 
 #timeout3 {
   color: #ffaa00;
   margin-left: 3%;
-  font-size: 28px;
+  font-size: 16px;
 }
 
 .td1 {
@@ -71,13 +71,13 @@ h3 {
 .tao1 {
   margin-left: 3%;
   color: #b5f4ce;
-  font-size: 28px;
+  font-size: 16px;
 }
 
 .tao2 {
   margin-left: 6%;
   color: #b5f4ce;
-  font-size: 28px;
+  font-size: 16px;
 }
 
 #testW {
@@ -86,71 +86,71 @@ h3 {
 
 .green {
   color: #00ffa5;
-  font-size: 26px;
+  font-size: 16x;
 }
 
 .red {
   color: #FF0000;
-  font-size: 28px;
+  font-size: 16px;
 }
 
 .red2 {
   margin: 1.5%;
   color: #FF0000;
-  font-size: 28px;
+  font-size: 16px;
 }
 
 .red3 {
   margin: 1%;
   color: #ffa100;
-  font-size: 28px;
+  font-size: 16px;
 }
 
 .red4 {
   margin: 1.5%;
   color: #ff9a20;
-  font-size: 23px;
+  font-size: 16px;
 }
 
 .red6 {
   margin: 1%;
   color: #ff9a20;
-  font-size: 21px;
+  font-size: 16px;
 }
 
 .red7 {
   margin: 1%;
   color: #ff0000;
-  font-size: 23px;
+  font-size: 16px;
 }
 
 .red8 {
   margin: 3.5%;
   color: #ff0000;
-  font-size: 28px;
+  font-size: 16px;
 }
 
 .turk {
   margin: 1%;
   color: #00e9ff;
-  font-size: 23px;
+  font-size: 16px;
 }
 
 .turk2 {
   margin: 1%;
   color: #62f2f7;
-  font-size: 23px;
+  font-size: 16px;
 }
 
 .turk3 {
   margin: 1%;
   color: #efa5eb;
-  font-size: 23px;
+  font-size: 16px;
 }
 
 
 .content {
-  font-size: 22px;
+  font-size: 16px;
 } 
 
 .codeColor {
@@ -158,7 +158,7 @@ h3 {
 }
 
 .caption {
-  font-size: 36px;
+  font-size: 24px;
   color: #ffb600;
   text-align: center
 }
@@ -203,7 +203,7 @@ button {
 }
 
 pre {
-  font-size: 21px;
+  font-size: 16px;
   color: #a5f7a5;
 }
 
@@ -214,7 +214,7 @@ pre {
 
 .winner {
   color: #FF0000;
-  font-size: 27px;
+  font-size: 16px;
 }
 
 p {
@@ -267,19 +267,19 @@ h1 {
 
 .code2 {
   margin-left: 1%;
-  font-size: 28px;
+  font-size: 16px;
   color: #FF0000;
 }
 
 #add {
   color: #FF0000;
-  font-size: 24px;
+  font-size: 16px;
   font-style: bold;
 }
 
 #addA {
   width: 80px;
-  font-size: 24px;
+  font-size: 16px;
   color: #0000FF;
   font-style: bold;
 }
@@ -290,21 +290,21 @@ a {
 
 #addB {
   width: 80px;
-  font-size: 24px;
+  font-size: 16px;
   color: #0000FF;
   font-style: bold;
 }
 
 #addC {
   width: 80px;
-  font-size: 24px;
+  font-size: 16px;
   color: #0000FF;
   font-style: bold;
 }
 
 #addD {
   width: 80px;
-  font-size: 24px;
+  font-size: 16px;
   color: #0000FF;
   font-style: bold;
 }
@@ -314,15 +314,15 @@ a {
 }
 
 #author {
-  font-size: 16px;
+  font-size: 14px;
 }
 
 #responsibility {
-  font-size: 16px;
+  font-size: 14px;
 }
 
 #delete {
-  font-size: 18px;
+  font-size: 16px;
 }
 
 

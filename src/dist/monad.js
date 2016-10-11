@@ -27,26 +27,43 @@ var pMname = new Monad('1v65n$%pqw3*@#9', 'pMname');
 var pMgroup = new Monad('solo', 'pMgroup');
 var pMscore = new Monad(0, 'pMscore');
 var pMgoals = new Monad(0, 'pMgoals');
+var pMnums = new Monad([8,8,8,8], 'pMnums');
 var pMdata = new Monad([], 'pMdata');
+var pMelms = new Monad( [0,0,0,0], 'pMelms' );
+var pMstyle = new Monad( ['inline','inline','inline','inline'], 'pMstyle' );
 
 var mMnums = new Monad([0,0,0,0], 'mMnums');
 var mMnumEls = new Monad([], 'mMnumEls');
 var mMstyle = new Monad(['inline', 'inline', 'inline', 'inline'], 'mMstyle')
 
+function setStyle (ar) {
+  var style = [];
+  for(let i of [1,2,3,4]) {
+    Array.isArray(ar[i]) 
+      style[i] = 'inline' 
+      style[i] = 'none';
+  }; 
+  return ret(style);
+};
+ 
 function test2 (ar1, ar2) {
   var a = ar1.slice();
   var b = ar2.slice();
-  for (let i of ['0','1','2','3']) {
+  for (let i of [0,1,2,3]) {
     a[i] = (b[i] == undefined) ? 'none' : 'inline'
   }
   return a;;
 }
 
-/*
-console.log('aaaaaaaaaaaaaaaaaaaaaaaaaaaa   get(mMstyle) after test2 ', get(mMstyle) );
-mMstyle.ret(test2(get(mMstyle), get(mMnums)));
-console.log('bbbbbbbbbbbbbbbbbbbbbbbbbbbb   get(mMstyle) after test2 ', get(mMstyle) ); 
-*/
+function test3 (x) {
+  var a = x.slice();
+  var b = [];
+  for (let i of [0,1,2,3]) {
+    b[i] = (a[i] == undefined) ? 'none' : 'inline'
+  }
+  return ret(b);
+}
+
 var a = 3;
 var b = 4;
 var c = a + b;
@@ -59,7 +76,7 @@ function ret(v, id = 'default') {
       if (mon1.id === mon2.id && get(mon1) === get(mon2)) return true;
       else return false
     }  
-var eaaquals = function equals(mon1, mon2) {
+function equals(mon1, mon2) {
     if (mon1.id === mon2.id && get(mon1) === get(mon2))
         return true;
     else
@@ -85,11 +102,6 @@ var cuB = function (v, id = 'default') {
 };
 
 var m = new Monad(3, 'm');
-console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>> testing m.bnd(m.ret) == m');
-console.log(m.bnd(m.ret) == m);
-
-console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>> testing equals(ret(3).bnd(cube), cube(3)) ' );
-console.log(equals(ret(3).bnd(cube), cube(3)));
 
 function fmap(x, g, id) { 
   var mon = new Monad(g(x), id); 
@@ -99,110 +111,13 @@ function fmap(x, g, id) {
 
 var isFunc = function isFunc (x) { return eval("typeof(" + x + ") == 'function'")};
 
-function nothing () {return new MonadMaybe('Nothing', 'nothing')}
-
-var MonadMaybe = function MonadMaybe(z) {
-  var _this = this;
-  var g = arguments.length <= 1 || arguments[1] === undefined ? 'default' : arguments[1];
-  this.id = g;
-  this.x = z;
-  
-  this.bnd = function (a) {
-    console.log('<B><B><B>             Entering bnd()  <B><B><B>               The argument is ', a );
-    var result;
-    if (_this.x == 'Nothing' || a[1] == 'Nothing') {
-      console.log('<B><N><B>             In bnd()        <B><N><B>      Propagating Nothing from bnd()');
-      result = Nothing;
-      console.log('<$><$><$>             In bnd()        <$><$><$>      The result is ', result, '   result.x:', result.x);
-      return result;
-    }
-    if (a instanceof Function) return a();
-    var b = a.slice(1);
-    var res = test([a[0],_this.x.toString(), ... b]);    
-    result = res;
-    console.log('<$><$><$>             In bnd()        <$><$><$>      The result is ', result, '   result.x:', result.x);
-    return result;
-  }
-  this.ret = function(a) {  
-    var b = eval(`typeof(${a})`);
-    console.log('<@><@><@>             In ret()  <@><@><@>            Creating a new instance of MonadMaybe ___  id:', '"' +_this.id +'"', '     value:', a );
-    if (_this.x == 'Nothing') {
-      console.log('<N><N><N>    Still in ret()   <N><N><N>      Propagating Nothing from ret()');
-      return Nothing
-    }  
-    try {
-      if (a == undefined) throw '    ' + a + " is not defined"
-      return window[_this.id] = new MonadMaybe(a, _this.id);
-    }
-    catch(e) { 
-      console.log("<N><N><N>   Still in ret()  <N><N><N>  In a catch block ", a, 'is not defined.    ', e) 
-      return Nothing
-    };
-    try {
-      if (a == 'NaN') throw '    ' + a + " is not a number"
-      return window[_this.id] = new MonadMaybe(a, _this.id);
-    }
-    catch(e) { 
-      console.log("<N><N><N>   Still in ret()  <N><N><N>  In a catch block ", a, 'is not a number.   ', e) 
-      return Nothing
-    };
+ function newR (ar) {
+    mMnums.ret(ar[0]);
+    mM3.ret([]);
+    mM8.ret(0);   
+    rollMonad.run(ar[0],ar[1],ar[2]);
+    return ret(ar);
   };
-}
-var Nothing = new MonadMaybe('Nothing', 'Nothing');
-
-function run (x) {
-  console.log('<O><O><O>  Left test(), now at the start of run()  <O><O><O>  The argument is ', x);  
-  var f = eval(x[0]);
-  var b = x.slice(1)
-  return f(... b)
-}
-
-function test (a) {
-
-  console.log('<T><T><T>  Left bnd(); now at the start of test()  <T><T><T>  The argument is ', a );
-  
-  for (let c of a) {
-    try {if (eval(c).toString == undefined) {
-      throw "Error " + c + "is not defined"}
-    } 
-    catch(e) {
-      console.log("<E><E><E>             In test()       <E><E><E>      " + c + " is not defined");
-      console.log("<T><N><T>             In test()       <T><N><T>      Propagating Nothing from test()");
-      return Nothing;
-    }
-    try {if ((eval(c).toString()) == 'NaN') {
-      throw "Error " + c + " is not a number"}
-    } 
-    catch(e) {
-      console.log('<E><E><E>             In test()       <E><E><E>      " + c + " is not a number' );
-      console.log("<T><N><T>             In test()       <T><N><T>      Propagating Nothing from test()");
-      return Nothing;
-    }
-    try {if (a[1] == 'Nothing') {
-      throw "Error The value of the argument\'s x attribute is 'Nothing' " }
-    } 
-    catch(e) {
-      console.log('<E><E><E>             In test()       <E><E><E>      The substrate monad\'s x attribute is "Nothing' );
-      console.log("<T><N><T>             In test()       <T><N><T>      Propagating Nothing from test()");
-      return Nothing;
-    }
-  }
-  return run(a);
-}
-
-console.log("Calling test(['ad', '25', '17']) Result:", ` ${test(['ad', '25', '17'])}` );  
-    
-var mQnothing = new MonadMaybe('Nothing', 'mMnothing')
-var mQ1 = new MonadMaybe(0, 'mM1')
-console.log("<><><><><><> Trying mQnothing.ret(['3'])");
-mQnothing.ret('3');
-console.log("<><><><><><> Trying mQnothing.bnd(['cuB', 'mQnothing'])");
-mQnothing.bnd(['cuB', 'mQnothing']);
-console.log("<><><><><><> Trying mQ1.ret(['cow'/2]))");
-mQ1.ret("'cow'/2");
-
-console.log("<><><><><><> Trying mQ1.bnd(['aD','3', 'mQ1']).bnd(['cuB',' mQ1']");
-mQ1.bnd(['aD', 3, 'mQ1']).bnd(['cuB', 'mQ1']);
 
 var MonadSet = function MonadSet(set) {
 var _this = this;
@@ -232,23 +147,23 @@ var s = new Set();
 
 var sMplayers = new MonadSet(s, 'sMplayers'); // holds currently online players
 
-var MonadState = function MonadState(g, state, value, p) {
-  var _this = this;
-  this.id = g;
-  this.s = state;
-  this.a = value;
-  this.process = p;
-  this.bnd = (func, ...args) => func(this.s, ...args);  
-  this.run = function (st) {
-    var s = _this.process(st);
-    var a = s[3];
-    window[_this.id] = new MonadState(_this.id, s, a, _this.process);
-    return window[_this.id];
+function MonadState(g, state, p) {
+  var ob = {
+    id: g,
+    s: state,
+    a: s[3],
+    process: p,
+    bnd: (func, ...args) => func(ob.s, ...args),  
+    run: function (ar) {
+      console.log('In Monad Stater+++++++!!!!!!!!!++++++++  ', ar );
+      var ar2 = ob.process(ar);
+      ob.s = ar2;
+      ob.a = ar2[3];
+      window[ob.id] = ob;
+      return window[ob.id];
+    }
   };
-};
-
-var tr4 = function tr4(state) {
-  return state[1];
+  return ob;
 };
 
 var fpTransformer = function transformer(s, m) {
@@ -273,6 +188,7 @@ var tr3 = function tr3(fibsArray, primesArray) {
   });
   return [fibsArray, primes, ar];
 };
+
 var fibs_state = function fibs_state(ar) {
   var a = ar.slice();
   while (a[3].length < a[2]) {
@@ -280,31 +196,20 @@ var fibs_state = function fibs_state(ar) {
   }
   return a;
 };
-var primes_state = function primes_state(x) {
-  var v = x.slice();
-  while (2 == 2) {
-      if (v[3].every(function (e) { return ((v[0] / e) != Math.floor(v[0] / e)); })) {
-          v[3].push(v[0]);
-      }
-      if (v[3][v[3].length - 1] > v[2]) {
-          break;
-      }
-      ;
-      v[0] += 2;
-  }
-  return v;
-};
 
-var mMplayer = new Monad([], 'mMplayer');
+var mMroll = new Monad([0,0,0,0], 'rollMonad');
 
-var fibsMonad = new MonadState('fibsMonad', [0, 1, 3, [0, 1]], [0, 1], fibs_state);
+var mMplayer = new Monad([0,0,0,0], 'mMplayer');
+
+var fibsMonad = new MonadState('fibsMonad', [0, 1, 2, [0]], fibs_state);
+
+fibsMonad.run([1, 2 ,7, [0,1]]);
 
 factor_state([[], [], 24, [2, 3, 5]]);
 
 factor_state2([[], [], 24, [2, 3, 5]]);
 
-var factorsMonad = new MonadState('factorsMonad', [[], [], 2, []], [], factor_state);
-var factorsMonad = new MonadState('factorsMonad', [[], [], 2, []], [], factor_state2);
+var factorsMonad = new MonadState('factorsMonad', [[], [], 2, []], factor_state);
 
 function factor_state(v) {
   v[3].map(function (p) {
@@ -341,67 +246,40 @@ var prFactTransformer = function prFactTransformer(s, n) {
 var prFactTransformer2 = function prFactTransformer2(s, n) {
   return factorsMonad.run([[], [], n, s[3]]);
 };
-
-console.log('VVVVVVVVVVVVVVVVVVVVVVVVVVVV  get(pMname) and typeof get(pMname) ', get(pMname), typeof get(pMname) );
-pMname.ret('Fred');
-console.log('VVVVVVVVVVVVVVVVVVVVVVVVVVVV get(pMname) and typeof get(pMname) ', get(pMname), typeof get(pMname) );
+function checkpM () {
 
 console.log('VVVVVVVVVVVVVVVVVVVVVVVVVVVV  get(pMscore) and typeof get(pMscore) ', get(pMscore), typeof get(pMscore) );
-pMname.ret('Fred');
-console.log('VVVVVVVVVVVVVVVVVVVVVVVVVVVV get(pMscore) and typeof get(pMscore) ', get(pMscore), typeof get(pMscore) );
+console.log('VVVVVVVVVVVVVVVVVVVVVVVVVVVV get(pMgoals) and typeof get(pMgoals) ', get(pMgoals), typeof get(pMgoals) );
+};
 
-var messages = [];
+checkpM();
 
-var messageMonad = new MonadState('messageMonad', messages, messages, message_state); 
-
-// messageMonad.run([messageMonad.s[3],[]]);
-
-console.log('messageMonad ', messageMonad )
-console.log('Array.isArray(messageMonad.a) ', Array.isArray(messageMonad.a) );
-console.log('Array.isArray(messageMonad.s) ', Array.isArray(messageMonad.s) );
-
-
-var playerMonad = new MonadState('playerMMMnad', [0,0,[[]]], [[0,0,0,0]], player_state);
-
-playerMonad.s = [ 0, 0, 0, [[0,0,0,0]] ]   
-
-var elms = [0,0,0,0];
-
-function player_state (score, goals, elms) {
-  pMscore.ret(a);
-  pMgoals.ret(b);
-  // var ar = playerMonad.s[3[0]].slice();
-  var history = playerMonad.s[3].unshift(a);
-  var uptick = mMindex.bnd(add,1).bnd(mMindex.ret).bnd(v => v)
-  return [a, b, uptick, [a,b,history]];     
-}
-
-console.log('________________________ playerMonad ', playerMonad);
+function primes_state(x) {
+  var v = x.slice();
+  while (2 == 2) {
+      if ( v[3].every(e =>  (v[0] / e) != Math.floor(v[0] / e)) ) {
+          v[3].push(v[0]);
+      }
+      if (v[3][v[3].length - 1] > v[2]) {
+          break;
+      };
+      v[0] += 2;
+  }
+  return v;
+};
 
 function message_state(v) {
   var ar = v[0].concat(v[3]);
   return [ v[0], [], [], ar ];
 };
 
-var mMplayerArchive = new Monad(['start', 'solo', 0, 0], 'mMplayerArchive');
-mMplayerArchive.ret(get(mMplayerArchive));
 var mMsetArchive = new Monad([], 'mMsetArchive');
 mMsetArchive.ret([]);
 var clean = function clean(x, mon) {
   if (mon === void 0) { mon = mMtemp; }
   mon.ret([]);
 };
-var runPrime = function runPrime(x) {
-  var l = primesMonad.a[primesMonad.a.length - 1];
-  if (l >= x + 1) {
-      var ar = primesMonad.a.filter(function (e) { return e <= x + 1; });
-      return (ar);
-  }
-  primesMonad.run([primesMonad.s[0], '', x + 1, primesMonad.a]);
-  var prms = primesMonad.a;
-  return prms;
-};
-// runPrime([Math.round(Math.sqrt(fibMonad.run([fibMonad.s[0], fibsMonad.s[1], 23, fibsMonad.a]).s[0]))])
+
 var runFib = function runFib(x) {
   if (fibsMonad.a.length >= x) {
       var ar = fibsMonad.a.slice();
@@ -411,7 +289,9 @@ var runFib = function runFib(x) {
   fibsMonad.run([fibsMonad.s[0], fibsMonad.s[1], x, fibsMonad.a]);
   return fibsMonad.a;
 };
-var primesMonad = new MonadState('primesMonad', [2, '', 3, [2]], [2], primes_state);
+var primesMonad = new MonadState('primesMonad', [3, '', 3, [2,3]], primes_state);
+primesMonad.run([3, '', 12, [2, 3]]);
+console.log('UUUUUUUUUU primesMonad initiated - - - primesMonad.a, primesMonad.s ', primesMonad.a, primesMonad.s );
 function pFib(fibs, primes) {
   console.log('Hello from pFib fibs, primes: ', fibs, primes);
   var ar = [];
@@ -422,10 +302,8 @@ function pFib(fibs, primes) {
           ar.push(f);
   });
   return ar;
-}
-;
-fibsMonad.run([0, 1, 5, []]);
-primesMonad.run([3, '', 5, [2]]);
+};
+
 var CURRENT_ROLL = [];
 var emitevent;
 var data$;
@@ -444,6 +322,7 @@ function rang(n, m) {
   return Array.from(new Array(m - n), function (x, i) { return i + n; });
 }
 
+
 function ad (a, b) { return parseInt(a,10) + parseInt(b,10); };
 
 function cu (a) { return a * a * a; };
@@ -459,8 +338,8 @@ function primes(n, ar) {
 }
 
   var testscore = function testscore(v) {
-    if ((v % 5) === 0) return v+5
-    else return v;
+    if ((v % 5) === 0) return ret(v+5)
+    else return ret(v);
   };
 
   var tscore = function tcore(v) {
@@ -844,7 +723,8 @@ function primes(n, ar) {
 
   var spliceM = function spliceM(x, start, how_many) {
       var ar = x.slice();
-      ar.splice(start, how_many);
+      ar.splice(start, how_many)
+      console.log('In spliceM HHHHHHHHHHHHHHHHHHHHHHHHH x, start, how_many, ar ', x, start, how_many, ar );
       return ret(ar);
   };
 
@@ -889,26 +769,6 @@ function primes(n, ar) {
           return ret2(x + 5);
       else
           return ret2(x);
-  };
-
-  var next = function next(x, y, instance) {
-      if (x == y) {
-          instance.release();
-      }
-      return ret(x);
-  };
-  var next2 = function next(x, condition, mon2) {
-      if (condition) {
-          mon2.release();
-      }
-      return ret(x);
-  };
-  var next3 = function next(x, y, z, mon2) {
-      if (x === y) {
-          mon2.ret(z);
-          mon2.release();
-      }
-      return ret(x);
   };
 
   var double = function double(v, mon) {
@@ -970,21 +830,13 @@ var timeout2 = function timeout(x, t, m, args) {
     }, t * 1000);
     return mMZ9.bnd(function () { return m.bnd.apply(m, args); });
 };
-var promise = function promise(x, t, mon, args) {
-    return (new Promise(function (resolve) {
-        setTimeout(function () {
-            resolve(eval("mon.ret(x).bnd(" + args + ")"));
-        }, t * 1000);
-    }));
-};
 
 var mMdisplay = new Monad('display', 'mMdisplay');
 
-var display = function display(x, id, string, mon = mMdisplay) {
-    document.getElementById(id).innerHTML = string;
-    return mon.ret(x);
+function refresh () {
+    setTimeout(function () {
+    document.location.reload(false);
+    }, 4000);
 };
-
-
 
 

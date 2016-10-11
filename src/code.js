@@ -57,32 +57,6 @@ const ret = h('pre', {style: {color: '#AFEEEE' }}, `    function ret(v, id = 'de
       return window[id] = (new Monad(v, id));
     } ` )
 
-var fib = h('pre', `  mM$fib.stream.addListener({
-    next: v => {
-      if (v[2] > 1) {mM$fib.ret([v[1], v[0] + v[1], v[2] -1])}
-      else {
-        mM19.ret(v[1]);
-      }
-    },
-    error: err => console.error(err),
-    complete: () => console.log('completed')
-  });
-
-  const fibPress$ = sources.DOM
-    .select('input#code').events('keydown');
-
-  const fibPressAction$ = fibPress$.map(e => {
-    if (e.target.value == '') {return};
-    if( e.keyCode == 13 && Number.isInteger(e.target.value*1) ) {
-      mM21.ret(e.target.value);
-      mM$fib.ret([0, 1, e.target.value]);
-    }
-    if( e.keyCode == 13 && !Number.isInteger(e.target.value*1 )) {
-      mM19.ret("You didn't provide an integer");
-    }
-  });  ` )  
-
-
 var driver = h('pre', `  var websocketsDriver = function () {
       return create((add) => {
         socket.onmessage = msg => add(msg)
@@ -1050,97 +1024,6 @@ var fmapA = h('pre',  `  function fmapA(x, g, id) {
 
 var a = 'acorn'
 
-var MonadMaybe = h('pre',  `  var MonadMaybe = function MonadMaybe(z) {
-  var _this = this;
-  var g = arguments.length <= 1 || arguments[1] === undefined ? 'anonymous' : arguments[1];
-  this.id = g;
-  this.x = z;
-  
-  this.bnd = function (a) {
-    console.log('<B><B><B>             Entering bnd()  <B><B><B>               The argument is ', a );
-    var result;
-    if (_this.x == 'Nothing' || a[1] == 'Nothing') {
-      console.log('<B><N><B>             In bnd()        <B><N><B>      Propagating Nothing from bnd()');
-      result = Nothing;
-      console.log('<$><$><$>             In bnd()        <$><$><$>      The result is ', result, '   result.x:', result.x);
-    }
-    else if (a instanceof Function) return a();
-    else {
-      var b = a.slice(1);
-      var res = test([a[0],_this.x.toString(), ... b]);    
-      result = res;
-      console.log('<$><$><$>             In bnd()        <$><$><$>      The result is ', result, '   result.x:', result.x);
-    }
-    return result;
-  }
-  
-  this.ret = function (a) { 
-    var b = eval(\`typeof(${a})\`);
-    console.log('<@><@><@>             In ret()  <@><@><@>            Creating a new instance of MonadMaybe ___  id:', '"' +_this.id +'"', '     value:', a );
-    if (_this.x == 'Nothing') {
-      console.log('<N><N><N>    Still in ret()   <N><N><N>      Propagating Nothing from ret()');
-      return Nothing
-    }  
-    try {
-      if (a == undefined) throw '    ' + a + " is not defined"
-      return window[_this.id] = new MonadMaybe(a, _this.id);
-    }
-    catch(e) { 
-      console.log("<N><N><N>   Still in ret()  <N><N><N>  In a catch block ", a, 'is not defined.    ', e) 
-      return Nothing
-    };
-    try {
-      if (a == 'NaN') throw '    ' + a + " is not a number"
-      return window[_this.id] = new MonadMaybe(a, _this.id);
-    }
-    catch(e) { 
-      console.log("<N><N><N>   Still in ret()  <N><N><N>  In a catch block ", a, 'is not a number.   ', e) 
-      return Nothing
-    };
-  };
-};
-  
-  var Nothing = new MonadMaybe('Nothing', 'Nothing');
-  
-  function run (x) {
-    console.log('<O><O><O>  Left test(), now at the start of run()  <O><O><O>  The argument is ', x);  
-    var f = eval(x[0]);
-    var b = x.slice(1)
-    return f(... b)
-  }
-  
-function test (a) {
-
-  console.log('<T><T><T>  Left bnd(); now at the start of test()  <T><T><T>  The argument is ', a );
-  
-  for (let c of a) {
-    try {if (eval(c).toString == undefined) {
-      throw "Error " + c + "is not defined"}
-    } 
-    catch(e) {
-      console.log("<E><E><E>             In test()       <E><E><E>      " + c + " is not defined");
-      console.log("<T><N><T>             In test()       <T><N><T>      Propagating Nothing from test()");
-      return Nothing;
-    }
-    try {if ((eval(c).toString()) == 'NaN') {
-      throw "Error " + c + " is not a number"}
-    } 
-    catch(e) {
-      console.log('<E><E><E>             In test()       <E><E><E>      " + c + " is not a number' );
-      console.log("<T><N><T>             In test()       <T><N><T>      Propagating Nothing from test()");
-      return Nothing;
-    }
-    try {if (a[1] == 'Nothing') {
-      throw "Error The value of the argument\'s x attribute is 'Nothing' " }
-    } 
-    catch(e) {
-      console.log('<E><E><E>             In test()       <E><E><E>      The substrate monad\'s x attribute is "Nothing' );
-      console.log("<T><N><T>             In test()       <T><N><T>      Propagating Nothing from test()");
-      return Nothing;
-    }
-  return run(a);
-  }  `  )
-
 var messageMonad = h('pre',  `    var messageMonad = new MonadState('messageMonad', messages, messages, message_state); 
 
     function message_state(v) {
@@ -1166,7 +1049,8 @@ var p7 = h('pre',  `
 `  )
 
 
-  export default { MonadMaybe, fmapA, monad, equals, fmap, opM, e1, e2, e2x, e3, e4, e4x, e6, e6x, fib, driver, messages, next, monadIt, MonadSet, updateCalc, arrayFuncs, travel, nums, cleanup, ret, C42, newTask, process, mM$task, addString, colorClick, edit, testZ, quad, runTest, todoStream, inc, seed,  add, traverse, MonadState, primesMonad, fibsMonad, primeFibInterface, tr3, fpTransformer, innerHTML, factorsMonad, factorsInput, playerMonad, promise, promiseSnippet, timeout, timeoutSnippet, examples, examples2, async }
+
+  export default { fmapA, monad, equals, fmap, opM, e1, e2, e2x, e3, e4, e4x, e6, e6x, driver, messages, monadIt, MonadSet, updateCalc, arrayFuncs, travel, nums, cleanup, ret, C42, newTask, process, mM$task, addString, colorClick, edit, testZ, quad, runTest, todoStream, inc, seed,  add, traverse, MonadState, primesMonad, fibsMonad, primeFibInterface, tr3, fpTransformer, innerHTML, factorsMonad, factorsInput, playerMonad, promise, promiseSnippet, timeout, timeoutSnippet, examples, examples2, async }
  
 
 

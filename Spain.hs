@@ -26,7 +26,6 @@ import System.Directory
 
 solo :: Text
 solo = "solo"
-com = T.pack ","
 
 type Name = Text
 type Score = Int
@@ -45,20 +44,12 @@ getConn :: Client -> WS.Connection
 getConn (_,_,_,_,e) = e
 
 get4 :: [String] -> [Int]
-get4 [_,_,_,a,b,c,d,_,_] = fmap read [a,b,c,d]
+get4 [_,_,_,a,b,c,d] = fmap read [a,b,c,d]
 get4 _ = [-1,-1,-1,-1]
 
 get5 :: [String] -> [Double]
 get5 [_,_,_,a,b,c,d,e] = fmap read [a,b,c,d,e]
 get5 _ = [-1,-1,-1,-1,-1]
-
-get2 :: [String] -> Text
-get2 [_,_,_,_,_,_,_,e,f] = T.intercalate com (fmap T.pack [e,f])
-get2 _ = T.pack "error in get2"
-
-get2G :: [String] -> [Int]
-get2G [_,_,_,_,_,_,_,e,f] = fmap read [e,f]
-get2G _ = [8888, 8888]
 
 subState :: Text -> Text -> [(Text,Int,Int,Text,WS.Connection)] -> [(Text,Int,Int,Text,WS.Connection)]
 subState name gr state  | gr /= solo  = [ (a,b,c,d,e) | (a,b,c,d,e) <- state, gr == d ]
@@ -104,15 +95,8 @@ changeS :: Text -> Int -> Int -> Client -> Client
 changeS x y z (a, b, c, d, e) | x == a    = (a, y, z, d, e)
                          | otherwise = (a, b, c, d, e)
 
-chg6 :: Text -> Int -> Int -> Client -> Client
-chg6 x y z (a, b, c, d, e) | x == a    = (a, y, z, d, e)
-                         | otherwise = (a, b, c, d, e)
-
 changeScore :: Text -> Int -> Int -> ServerState -> ServerState
 changeScore name k q = map (changeS name k q)
- 
-chgScore :: Text -> Int -> Int -> ServerState -> ServerState
-chgScore name k q = map (chg6 name k q)
  
 newServerState :: ServerState
 newServerState = []
@@ -213,20 +197,11 @@ talk conn state (_, _, _, _, _) = forever $ do
     if "CA#$42" `T.isPrefixOf` msg
         then
             do
-                old <- atomically $ takeTMVar state
-                let sg = get2G msgArray
-                let new = chgScore sender (sg !! 0) (sg !! 1) old
-                atomically $ putTMVar state new
                 st <- atomically $ readTMVar state
-                let subSt = subState sender group st
-                broadcast ("NN#$42," `mappend` group `mappend` "," `mappend` sender `mappend` "," 
-                    `mappend` (T.pack "<br>") `mappend` T.concat (intersperse "<br>" (textState subSt))) subSt
                 z <- rText $ get4 msgArray
-                let x = get2 msgArray
-                print $ show z
-                print $ show x
+                let subSt = subState sender group st
                 broadcast ("CA#$42," `mappend` group `mappend` ","
-                    `mappend` sender `mappend` "," `mappend` z `mappend` "," `mappend` x ) subSt
+                    `mappend` sender `mappend` "," `mappend` z) subSt
 
     else if "CZ#$42" `T.isPrefixOf` msg
             then do
@@ -288,6 +263,8 @@ talk conn state (_, _, _, _, _) = forever $ do
                 atomically $ putTMVar state new
                 st <- atomically $ readTMVar state
                 let subSt = subState sender group st
+                broadcast ("CG#$42," `mappend` group `mappend` "," `mappend` sender `mappend` "," 
+                    `mappend` extra `mappend` "," `mappend` extra2) subSt
                 broadcast ("NN#$42," `mappend` group `mappend` "," `mappend` sender `mappend` "," 
                     `mappend` (T.pack "<br>") `mappend` T.concat (intersperse "<br>" (textState subSt))) subSt
 
@@ -307,8 +284,7 @@ talk conn state (_, _, _, _, _) = forever $ do
                 save (msgArray !! 1) $ tasks
                 st <- atomically $ readTMVar state
                 let subSt = subState sender group st
-                broadcast ("DD#$42," `mappend` group `mappend` "," 
-                    `mappend` sender `mappend` "," `mappend` tasks) subSt
+                broadcast ("DD#$42," `mappend` group `mappend` "," `mappend` sender `mappend` "," `mappend` tasks) subSt
 
     else if "TX#$42" `T.isPrefixOf` msg
         then
