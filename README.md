@@ -1,15 +1,11 @@
 #JS-monads-stable 
-The executable file running at [JS-monads-stable](http://schalk.net:3055) was prepared in two stages. In the src directory, I ran webpack. Then, in the root directory, I ran stack install and uploaded the executable that was placed in ~/.local/bin to my Digital Ocean "droplet". My operating system for development is Ubuntu 16.04. The droplet's operating system is Ubuntu 14.04.
+This is the repository for a [Motorcycle.js](https://github.com/motorcyclejs) application running online at [JS-monads-stable](http://schalk.net:3055). Motorcycle.js is essentially [Cycle.js](href: "https://github.com/cyclejs/core) using [Most](https://github.com/cujojs/most) and [Snabbdom](https://github.com/paldepind/snabbdom) instead of RxJS and virtual-dom.
 
-In this version, the Monad ret() method replaces the x values of Monad instances by placing deep clones with the new values on the window object. The replaced instances with the same identifiers (variable names) still exists, and will persist if there is a reference them. This is differenct from the previous versions, which placed the clones on an object named "O". The branch named "using_object_O" preserved the most recent version using the deprecated policy. I don\'t anticipate doing any further development with it and it really is a half-baked stage in the development process. 
+Motorcycle is an ideal host for my JS-monads project, which is an exposition of functional programming using instances of convenient constructs named "Monad", "MonadState", "MonadSet", and "MonadItter".
+The server is a modified clone of the Haskell Wai Websockets server. Haskell pattern matching and list comprehension made it easy to configure to broadcast selectively to members of groups, who share the dice game, todo list, and chat room. I use Babel and Webpack to prepare the front end and Stack to compile everything into a single executable which I upload to my Digital Ocean "droplet". 
 
-The JS-monads-mutatingInstances branch, where the Monad, MonadSet, and MonadState methods' ret methods cause instances to mutate rather than create deep clones, is occasionally brought up to date with this, the master branch. It is easy to do since they differ only in the definitions of Monad, MonadSet, and MonadState. Functions that work on one also work on the other.
-
-This is a [Motorcycle.js](https://github.com/motorcyclejs) application. Motorcycle.js is essentially [Cycle.js](https://github.com/cyclejs/core) only it uses [Most](https://github.com/cujojs/most) and [Snabbdom](https://github.com/paldepind/snabbdom) instead of RxJS and "virtual-dom".  
-
-The running version of [JS-monads-stable @http://schalk.net:3055](http://schalk.net:3055) features explanations and demonstrations of a shared, persistent todo list; an interactive simulated dice game with a traversable history of number displays; chat rooms shared among members of each group that is formed to play the game or just to just exchange text messages, and interactive demonstrations involving prime numbers and the Fibonacci series.
+The code here is not annotated, but detailed examinations of the code behind the multiplayer simulated dice game, persistent todo list, chat feature, and several other demonstrations can be found at [http://schalk.net:3055](http://schalk.net:3055), where the code is running online. 
 ## Basic Monad    
-
 ```javascript    
     function Monad (z, ID = 'default') {
         var x = z;

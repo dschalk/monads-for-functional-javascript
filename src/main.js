@@ -214,20 +214,25 @@ function main(sources) {
       .select('.num').events('click'); 
 
   var numClickAction$ = numClick$.map(e => {
+    var muns;
+    var styles;
     pMnums    
     .bnd(spliceM, e.target.id, 1)
     .bnd(pMnums.ret)
     .bnd(x => 
     test3(x)
     .bnd(pMstyle.ret)
-    .bnd(y => 
-      numsDisplay = displayNums(y,x)));  
+    .bnd(y => {
+      nums = x;
+      style = y;
+      numsDisplay = displayNums(y,x)}));  
     mM3
     .bnd(push, e.target.innerHTML)
     .bnd(mM3.ret)
     .bnd(v => {
     if (v.length == 2 && get(mM8) != 0) {
-      updateCalc(v, get(mM8)) 
+      travMonad.run(nums, styles,  
+      uupdateCalc(v, get(mM8)) 
     } });
   }).startWith([0, 0, 0, 0]);
 

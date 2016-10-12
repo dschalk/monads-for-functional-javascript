@@ -165,6 +165,18 @@ function MonadState(g, state, p) {
   return ob;
 };
 
+var travMonad = new MonadState("travMonad", [ [], 0, []. [ [], 0, 0, [] ] ], trav_state)
+
+function trav_state (nums, styles, score, goals, m3) {
+  var next = travMonad.s;
+  var tick = travMonad.s[1] + 1;
+  var ar = [nums, styles, score, goals, tick];
+  next[0] = nums;
+  next[1] = tick;
+  next[3] = next[3].unshift(ar);
+  return next;
+}
+
 var fpTransformer = function transformer(s, m) {
   var bound = Math.ceil(Math.sqrt(s[3][s[3].length - 1]));
   if (bound > m.a[m.a.length - 1]) {
