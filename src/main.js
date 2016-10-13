@@ -141,7 +141,7 @@ function main(sources) {
       document.getElementById('log2').style.display = 'block';
       document.getElementById('gameDiv2').style.display = 'block';
       document.getElementById('login').blur(); 
-      document.getElementById('group').focus(); 
+      // document.getElementById('group').focus(); 
       newRoll(0,0);
     }
   });
@@ -359,7 +359,7 @@ function main(sources) {
       document.getElementById(b).focus(); 
     };
 
-    document.getElementById('login').focus(); 
+    // document.getElementById('login').focus(); 
   };
   // <>>><>><><><><>>>><><><  traversal  ><><><><><><>>><><><><><><><><><><><>< ENDOM traversal  
   // <>>><>><><><><>>>><><><  traversal  ><><><><><><>>><><><><><><><><><><><>< START Itterator 
@@ -816,7 +816,7 @@ function display(x, id, string, mon = mMdisplay) {
 h('div#log1', [
 h('p', 'IN ORDER TO SEE THE GAME, TODOLIST, AND CHAT DEMONSTRATIONS, YOU MUST ENTER SOMETHING .'),
 h('span', 'Name: '),
-h('input#login', { props: { placeholder: "focus on; start typing" } })]),
+h('input#login', )]),
 h('p', `${get(mM6)}`),
 h('div#log2', { style: { display: 'none' } }, [
     h('span', 'Change group: '),
@@ -1051,9 +1051,6 @@ h('a', { props: { href: '#top' } }, 'Back To The Top'),
   })     
 }
 }
-setTimeout( function () {
-  document.getElementById('login').focus(); 
-},1500 );
 
 const sources = {
   DOM: makeDOMDriver('#main-container'),
