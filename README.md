@@ -32,25 +32,18 @@ In most chains of computations, the arguments provided to each link's bnd() meth
       return new Monad(v, id);
     } 
 
-    var cube = function(v,mon) {
-      if (arguments.length === 2) {
-        return mon.ret(v*v*v);
-      }
-      return ret(v*v*v);
-    }
+    var add = function add (x, b) {
+        return ret(parseInt(x,10) + parseInt(b,10) );
+    };
     
-    var add = function(x,b,mon) {
-      if (arguments.length === 3) {
-        return mon.ret(x + b);
-      }
-      return ret(x+b);
-    }
-    
-    var log = function log(x, message, mon) {
-      console.log('In log. Entry: ', message);
-      if (arguments.length === 3) return mon
-      return ret(x);
-    };  
+    var cube = function cube (v, id = 'default') {
+        return ret(v * v * v, id);
+    };
+
+    var log = function log(x, message) {
+        console.log(message);
+        return ret(x);
+    };
 ```
 
 In the following discussion, "x == y" signifies that x == y returns true. Let J be the collection of all Javascript values, including functions, instances of Monad, etc, and let F be the collection of all functions mapping values in J to instances of Monad m with references matching their ids; that is, with m[id] == m.id. M is defined as the collection of all such instances of Monad along and all of the functions in F. We speculate that there is a one to one correspondence between monads in Hask (The For any m (with id == "m"), f, and f' in M, J, F, and F, respectively, the following relationships hold:
@@ -86,13 +79,13 @@ where equals is defined as:
 ```
 The function equals() was used because the == and === operators on objects check for location in memory, not equality of attributes and equivalence of methods. If the left and right sides of predicates create new instances of m, then the left side m and the right side m wind up in different locations in memory and the == operator returns false. So we expect m.ret(3) == m.ret(3) to return false. What concerns us is the equivalence of both sides of a comparison; that is, can the left side be substituted for the right side and vice versa.
 
-Tests in the JS-monads-mutableInstances branch at the Github repository produce results closer to what we would expect in mathematics. For example: m.ret(7) == m.ret(7) returns true in JS-monads-mutableIntances but false in JS-monads-stable, the master branch. But it would be folly to give up immutability for the sake of making unimportant comparisons come out "right". equals(m.ret(7), m.ret(7)) tells us that m.ret(7) is doing the same thing on both sides of the comparison, and that is all that is important. Similarly, equals(ret(3).bnd(cube), cube(3)) tells us that ret(3).bnd(cube) and cube(3) are doing the same thing; they can be substituted for one another.
+Tests in the JS-monads-mutableInstances branch at the Github repository produce results closer to what we would expect in mathematics. For example: m.ret(7) == m.ret(7) returns true in JS-monads-mutableIntances but false in JS-monads-stable, the master branch. But it would be folly to give up immutability for the sake of making unimportant comparisons come out "right". equals(m.ret(7), m.ret(7)) tells us that m.ret(7) will yield a result that performs consistenly any time it is executed. and that is all that is important. Similarly, equals(ret(3).bnd(cube), cube(3)) tells us that ret(3).bnd(cube) and cube(3) yield results that will perform identically, so they can be substituted for one another.
 
-In Haskell, x ≡ y means that you can replace x with y and vice-versa, and the behaviour of your program will not change. That is what "equals(x, y)" means in the context of demonstrating that instances of Monad in M obey the Javascript equivalent of the Haskell monad laws. The behavior of Instances of Monad with ret() (the function and the method) and bnd() mirrors the behavior of Haskell monads with return and >>=. The laws to which both of them conform are the
+In Haskell, x ≡ y means that you can replace x with y and vice-versa, and the behaviour of your program will not change. That is what "equals(x, y)" means in the context of demonstrating that instances of Monad in M obey the Javascript equivalent of the Haskell monad laws. The Monad ret() (the function and the method) and bnd() methods provide functionality similar to the Haskell monad return function and >>= operator. 
 
-Haskell monads are not category theory monads. To begin with, they don't even reside in a category. See: http://math.andrej.com/2016/08/06/hask-is-not-a-category. Nevertheless, blogs abound perpetuating the Haskell mystique that, as one blogger wrote, "There exists a "Haskell category", of which the objects are Haskell types, and the morphisms from types a to b are Haskell functions of type a -> b." The nLab wiki page states "There is a category, Hask, whose objects are Haskell types and whose morphisms are extensionally identified Haskell functions.", and the first line of the Haskell Wiki https://wiki.haskell.org/Hask states "Hask is the category of Haskell types and functions." but at least it goes on to demonstrate that Hask really isn't a category.
+Haskell monads are not category theory monads. To begin with, they don't even reside in a category. See: http://math.andrej.com/2016/08/06/hask-is-not-a-category. Nevertheless, blogs abound perpetuating the Haskell mystique that, as one blogger wrote, "There exists a "Haskell category", of which the objects are Haskell types, and the morphisms from types a to b are Haskell functions of type a -> b." The nLab wiki page states "There is a category, Hask, whose objects are Haskell types and whose morphisms are extensionally identified Haskell functions.", and the first line of the Haskell Wiki https://wiki.haskell.org/Hask states "Hask is the category of Haskell types and functions." but at least it goes on to demonstrate that Hask is not a category theory category.
 
-It is true that Haskell monads obey rules that are Haskell translations of the structure-preserving rules about functors and natural transformations in the category-theoretic monad. I have demonstrated that the elements of M (defined above) obey a Javascript interpretation of these same rules. This suggests that instances of Monad can be expected to be versitile and robust in production. The smoothly functioning game and todo list, along with the demonstratons that appear later on this page, reinforce this expectation.
+It is true that Haskell monads obey rules that are Haskell translations of the structure-preserving rules about functors and natural transformations in the category-theoretic monad. I have demonstrated that the elements of M (defined above) obey a Javascript version of these same rules. This suggests that instances of Monad can be expected to be versitile and robust in production. The smoothly functioning game and todo list, along with the demonstratons that appear later on this page, reinforce this expectation.
 ##MonadItter
 
 MonadItter instances do not have monadic properties, but they facilitate the work of monads. Here's how they work:
@@ -104,6 +97,7 @@ const MonadItter = function ()  {
   this.release = (...args) => this.p(...args);
   this.bnd = func => this.p = func;
 };
+```
 
 As shown later in the online demonstration, MonadItter instances control the routing of incoming websockets messages and the flow of action in the simulated dice game. In one of the demonstrations, they behave much like ES2015 iterators. I prefer them over ES2015 iterators. They can also help to provide promises-like functionality without promises.
 
@@ -126,7 +120,8 @@ As shown later in the online demonstration, MonadItter instances control the rou
     };
     return ob;
   };
-MonadState reproduces some of the functionality found in the Haskell Module "Control.Monad.State.Lazy", inspired by the paper "Functional Programming with erloading and Higher-der Polymorphism", Mark P Jones (http://web.cecs.pdx.edu/~mpj/) Advanced School of Functional Programming, 1995. The following demonstrations use the MonadState instances fibsMonad and primesMonad to create and store arrays of Fibonacci numbers and arrays of prime numbers, respectively. fibsMonad and primesMonad provide a simple way to compute lists of prime Fibonacci numbers. Because the results of computations are stored in the a and s attributes of MonadState instances, it was easy to make sure that no prime number had to be computed more than once in the prime Fibonacci demonstration.
+```
+MonadState reproduces some of the functionality found in the Haskell Module "Control.Monad.State.Lazy", inspired by the paper "Functional Programming with erloading and Higher-der Polymorphism", Mark P Jones (http://web.cecs.pdx.edu/~mpj/) Advanced School of Functional Programming, 1995. The following demonstrations use the MonadState instances fibsMonad and primesMonad to create and store arrays of Fibonacci numbers and arrays of prime numbers, respectively. fibsMonad and primesMonad provide a simple way to compute lists of prime Fibonacci numbers. Because the results of computations are stored in the a and s attributes of MonadState instances, it was easy to make sure that no prime number had to be computed more than once in the prime Fibonacci demonstration and the "display the prime factors" demonstrations.
 
 Here is the definition of fibsMonad, along with the definition of the function that becomes fibsMonad.process.
 ```javascript
@@ -139,6 +134,7 @@ Here is the definition of fibsMonad, along with the definition of the function t
     }
     return a;
   }
+```
 Another MonadState instance used in the online demonstration is primesMonad. Here is its definition along with the function that becomes primesMonad.process:
 ### primesMonad
 ```javascript
@@ -156,7 +152,7 @@ Another MonadState instance used in the online demonstration is primesMonad. Her
     return v;
   }
 ```
-primesMonad keeps a cash of computed primes in primesMonad.a and primesMonad.s[3]. It never performs a computation to generate a prime number more than once during a browser session.
+More code and interactive demonstrations are available online at [http://schalk.net:3055](http://schalk.net:3055). 
 ## messageMonad
 The following code supports the group chat feature:
 ```javascript
@@ -176,14 +172,8 @@ The following code supports the group chat feature:
     };
 ```
 messageMonad.s[3] rests permantly in the virtual DOM. The message handler sends a string to the websockets server which broadcasts it to group members. The incoming websockets message handler is a stream which is merged into the stream that feeds the virtual DOM, triggering the Snabbdom diff anad render algorithm.
-
-The stand-alone ret() function creates new Monad instances. Here is its definition:
-```javascript
-    function ret(v, id = 'default') {
-      return new Monad(v, id);
-    }
-```
 ## MonadSet
+An instance of MonadSet supports the browser display of all currently online group members.
 ```javascript
 const MonadSet = function (set, ID = 'anonymous')  {
   this.s = set;
@@ -196,6 +186,22 @@ const MonadSet = function (set, ID = 'anonymous')  {
 var s = new Set();
 
 var sMplayers = new MonadSet(s, 'sMplayers')  // holds currently online players
+
+  var updatePlayers = function updatePlayers (data) { 
+    sMplayers.clear();
+    var namesL = data.split("<br>");
+    var namesList = namesL.slice(1);
+    updateScoreboard2(namesList);
+    namesList.forEach(player => sMplayers.add(player.trim()));
+  }
+
+  var updateScoreboard2 = function updateScoreboard2(v) {
+    var ar = [];
+    for (let k of v) {
+        ar.push(['  ' + k]);
+    };
+    pMdata.ret(ar);
+  };
 ```
 ## MonadItter example
 MonadItter instance mMZ3 calls its bnd() method three times. User input releases it three times, each time supplying a number to the quadratic equation `a*x*x + b*x + c = 0 `. When mMZ3 is released the third time, an attempt is made to find solutions using the quadratic formula. Here is the code:

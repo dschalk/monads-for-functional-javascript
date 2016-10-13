@@ -28,9 +28,11 @@ var pMgroup = new Monad('solo', 'pMgroup');
 var pMscore = new Monad(0, 'pMscore');
 var pMgoals = new Monad(0, 'pMgoals');
 var pMnums = new Monad([8,8,8,8], 'pMnums');
+var pMindex = new Monad(1, 'pMindex');
 var pMdata = new Monad([], 'pMdata');
 var pMelms = new Monad( [0,0,0,0], 'pMelms' );
 var pMstyle = new Monad( ['inline','inline','inline','inline'], 'pMstyle' );
+var pMdisplay = new Monad([], 'pMdisplay');
 
 var mMnums = new Monad([0,0,0,0], 'mMnums');
 var mMnumEls = new Monad([], 'mMnumEls');
@@ -55,8 +57,7 @@ function test2 (ar1, ar2) {
   return a;;
 }
 
-function test3 (x) {
-  var a = x.slice();
+function test3 (a) {
   var b = [];
   for (let i of [0,1,2,3]) {
     b[i] = (a[i] == undefined) ? 'none' : 'inline'
@@ -165,15 +166,45 @@ function MonadState(g, state, p) {
   return ob;
 };
 
-var travMonad = new MonadState("travMonad", [ [], 0, []. [ [], 0, 0, [] ] ], trav_state)
+function MonadState2(g, state, p) {
+  var ob = {
+    id: g,
+    s: state,
+    a: s[3],
+    process: p,
+    bnd: (func, ...args) => func(ob.s, ...args),  
+    run: function (ar) {
+      var ar2 = ob.process(ar);
+      ob.s = ar2;
+      ob.s[3][2] = ar2[0][2]
+      ob.s[3][3] = ar2[0][3]
+      ob.s[2] = ar2[0][2]
+      ob.s[3] = ar2[0][3]
+      ob.a = s[0][3];
+      window[ob.id] = ob;
+      return window[ob.id];
+    }
+  };
+  return ob;
+};
 
-function trav_state (nums, styles, score, goals, m3) {
-  var next = travMonad.s;
-  var tick = travMonad.s[1] + 1;
-  var ar = [nums, styles, score, goals, tick];
+var travMonad = new MonadState("travMonad", [[8,8,8,8], 0, 7, [ [ [], 0, 0 ] ] ], trav_state)
+console.log('travMonad.s.slice() >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>. ', travMonad.s.slice() );
+
+function trav_state (ar) {
+  pMindex.bnd(add,1).bnd(pMindex.ret);
+  var nums = ar[0];
+  var score = ar[1];
+  var goals = ar[2];
+  console.log('Early in trav_state.s.slice() <<<0000000<<< nums, score, goals', nums, score, goals );
+  var next = travMonad.s.slice();
+  console.log('Early in trav_state.s.slice() <<<1111111<<< next, get(pMindex)  ', next, get(pMindex) );
+  var ar = [nums, score, goals];
   next[0] = nums;
-  next[1] = tick;
-  next[3] = next[3].unshift(ar);
+  next[1] = score;
+  next[2] = goals;
+  next[3].unshift(ar);
+  console.log('Later in trav_state.s.slice() <<<<2222222<<< next, get(pMindex)  ', next, get(pMindex) );
   return next;
 }
 

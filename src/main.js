@@ -83,15 +83,13 @@ function main(sources) {
   mMtem.ret(e.data.split(',')).bnd( v => {
   console.log('<><><><><><><><><><><><><><><><>  INCOMING  <><><><><><><> >>> In messages. e amd v are ', e, v);
   mMZ10.bnd( () => {
-    pMnums.ret([v[3], v[4], v[5], v[6]])
-    .bnd(w => 
-    test3(w)
-    .bnd(pMstyle.ret)
-    .bnd(x => 
-      numsDisplay = displayNums(x, w)))
+    pMnums.ret([v[3], v[4], v[5], v[6]]).bnd(test3).bnd(pMstyle.ret)
+    travMonad.run([ [v[3], v[4], v[5], v[6]], v[7], v[8] ]);
+    console.log('In message $$$$$$$$$$$$$$ [v[3], v[4], v[5], v[6]],, v[7], [8] ', [v[3], v[4], v[5], v[6]],  v[7], v[8] );
+    console.log('In message $$$$$$$$$$$$$$ travMonad.a.slice() ', travMonad.a.slice() );
     pMscore.ret(v[7]);
     pMgoals.ret(v[8]) }); 
-  mMZ11.bnd( () => socket.send(`CG#$42,${get(pMgroup)},${get(pMname)},${get(pMscore)},${getpM(goals)}l`));
+  mMZ11.bnd( () => socket.send(`CG#$42,${get(pMgroup)},${get(pMname)},${get(pMscore)},${get(pMgoals)}`));
   mMZ12.bnd( () => mM6.ret(v[2] + ' successfully logged in.'));
   mMZ13.bnd( () => updateMessages(e.data));
   mMZ14.bnd( () => mMgoals2.ret('The winner is ' + v[2]));
@@ -123,16 +121,6 @@ function main(sources) {
     return ret(x);
   };
   
-  function displayNums (a, b) {
-    numsDisplay = [
-      h('button#0.num',  { style: { display: a[0] }}, b[0] ),
-      h('button#1.num',  { style: { display: a[1] }}, b[1] ),
-      h('button#2.num',  { style: { display: a[2] }}, b[2] ),
-      h('button#3.num',  { style: { display: a[3] }}, b[3] ),
-    ];
-    return numsDisplay;
-  };
-
   function newRoll (a,b) {
     socket.send(`CA#$42,${get(pMgroup)},${get(pMname)},6,6,12,20,${a},${b}`);
   }
@@ -214,27 +202,24 @@ function main(sources) {
       .select('.num').events('click'); 
 
   var numClickAction$ = numClick$.map(e => {
+    console.log('In numClickAction$ XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX e.target.id is ', e.target.id );
+    if (get(mM3).length == 2) {return};
     var muns;
     var styles;
     pMnums    
     .bnd(spliceM, e.target.id, 1)
     .bnd(pMnums.ret)
-    .bnd(x => 
-    test3(x)
+    .bnd(test3)
     .bnd(pMstyle.ret)
-    .bnd(y => {
-      nums = x;
-      style = y;
-      numsDisplay = displayNums(y,x)}));  
     mM3
     .bnd(push, e.target.innerHTML)
     .bnd(mM3.ret)
     .bnd(v => {
-    if (v.length == 2 && get(mM8) != 0) {
-      travMonad.run(nums, styles,  
-      uupdateCalc(v, get(mM8)) 
-    } });
-  }).startWith([0, 0, 0, 0]);
+      if (v.length == 2 && get(mM8) != 0) {
+        updateCalc(v, get(mM8)) 
+      }
+    })
+    }).startWith([0, 0, 0, 0]);
 
   var opClick$ = sources.DOM
       .select('.op').events('click');
@@ -269,13 +254,14 @@ function main(sources) {
     else {
       pMnums.bnd(push,result)
       .bnd(pMnums.ret)
-      .bnd(x => {
-      test3(x)
-      .bnd(pMstyle.ret)
-      .bnd(y => numsDisplay = displayNums(y,x)) })
+      .bnd(v => {
+        travMonad.run([v, get(pMscore), get(pMgoals)])
+        test3(v)
+        .bnd(pMstyle.ret)
+      }); 
       mM8.ret(0);
       mM3.ret([]);
-      console.log('in updateCalc 1111111111111111111111111111111111 numsDisplay ', numsDisplay );
+      console.log('in updateCalc 1111111111 get(pMnums), get(pMstyle) ', get(pMnums), get(pMstyle) );
     }
   };  
 
@@ -321,7 +307,7 @@ function main(sources) {
           fib2([0, 1, e.target.value]);
       }
   });
-  // ************************************************************************* ENDOM iginal Fibonacci END
+  // *******************************************n****************************** ENDOM iginal Fibonacci END
   // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> START PRIME FIB  
   var fibKeyPress5$ = sources.DOM
       .select('input#fib92').events('keydown');
@@ -691,12 +677,31 @@ function main(sources) {
 
     var backClick$ = sources.DOM
         .select('#back').events('click');
+  
+    var backAction$ = backClick$.map(() => {
+      if (get(pMindex) > 1) {
+        let a = travMonad.a[travMonad.a.length + 1 - get(pMindex) ];
+        pMnums.ret(a[0]).bnd(test3).bnd(pMstyle.ret);
+        pMscore.ret(a[1]);
+        pMgoals.ret(a[2]);
+        pMindex.bnd(add,-1).bnd(pMindex.ret);
+        if (get(pMnums).length == 4) {
+          socket.send(`CG#$42,${get(pMgroup)},${get(pMname)},${get(pMscore)},${get(pMgoals)}`);
+        }
+      }
+    });
 
     var forwardAction$ = forwardClick$.map(function () {
-        if (get(mMindex) < (get(mMhistory).length - 1)) {
-          mMindex.bnd(add, 1, mMindex)
-          .bnd(v => trav(v));
+      if (get(pMindex) < travMonad.a.length) {
+        let a = travMonad.a[travMonad.a.length - get(pMindex) -1 ]
+        pMnums.ret(a[0]).bnd(test3).bnd(pMstyle.ret);
+        pMscore.ret(a[1]);
+        pMgoals.ret(a[2]);
+        pMindex.bnd(add,1).bnd(pMindex.ret);
+        if (get(pMnums).length == 4) {
+          socket.send(`CG#$42,${get(pMgroup)},${get(pMname)},${get(pMscore)},${get(pMgoals)}`);
         }
+      }
     });
 
 function display(x, id, string, mon = mMdisplay) {
@@ -704,7 +709,7 @@ function display(x, id, string, mon = mMdisplay) {
     return mon.ret(x);
 };
 
-  var calcStream$ = merge( timeoutAction$, factorsAction$, primeFib$, fibPressAction$, quadAction$, edit1Action$, edit2Action$, testWAction$, testZAction$, testQAction$, colorAction$, deleteAction$, newTaskAction$, chatClickAction$, gameClickAction$, todoClickAction$, captionClickAction$, groupPressAction$, rollClickAction$, messagePressAction$, loginPressAction$, messages$, numClickAction$, opClickAction$);
+  var calcStream$ = merge(  backAction$, forwardAction$, timeoutAction$, factorsAction$, primeFib$, fibPressAction$, quadAction$, edit1Action$, edit2Action$, testWAction$, testZAction$, testQAction$, colorAction$, deleteAction$, newTaskAction$, chatClickAction$, gameClickAction$, todoClickAction$, captionClickAction$, groupPressAction$, rollClickAction$, messagePressAction$, loginPressAction$, messages$, numClickAction$, opClickAction$);
   return {
   DOM: calcStream$.map(function () {
   return h('div.content', [
@@ -766,14 +771,15 @@ function display(x, id, string, mon = mMdisplay) {
       h('a.tao', { props: { href: '#monadmaybe' } }, 'Maybe Monad'),
       // h('a.tao', {props: {href: '#monads'}}, 'Why Call Them Monads'   ),  
       h('div#captionDiv', [
-          h('h3', 'Game traversal is temporarily out of service during refactoring. The rest of the examples are working. ' ),
           h('h3', 'Obsolete commentary is being revised' ),
           h('h1', 'Motorcycle.js With JS-monads') ]),
-          h('span.tao1', ' The demonstrations include Persisternt todo lists. '),
+          h('span.tao1', ' The demonstrations include Persisternt, shared todo lists. '),
           h('br'),
-          h('span.tao1', ' An interactive simulated dice game with a traversable history. '),
+          h('span.tao1', ' An interactive simulated dice game with a traversable history. All group members see your score decrease or increase as you navegate backwards. '),
           h('br'),
           h('span.tao1', ' Chat rooms where members can play the game, chat, and share a project todo list. '),
+          h('br'),
+          h('span.tao1', ' Along with demonstrations of the power and convenience of JS-monads in a Motorcycle application.  '),
           h('br'),
       h('br'),
       h('span.tao', 'This is a '),
@@ -791,10 +797,10 @@ function display(x, id, string, mon = mMdisplay) {
           h('br'),
           h('span', ' Here are the basic rules:'),
           h('p', 'RULES: If clicking two numbers and an operator (in any order) results in 20 or 18, the score increases by 1 or 3, respectively. If the score becomes 0 or is evenly divisible by 5, 5 points are added. A score of 25 results in one goal. That can only be achieved by arriving at a score of 20, which jumps the score to 25. Directly computing 25 results in a score of 30, and no goal. Each time RL is clicked, one point is deducted. Three goals wins the game. '),
-          numsDisplay[0],
-          numsDisplay[1],
-          numsDisplay[2],
-          numsDisplay[3],
+          h('button#0.num',  { style: { display: `${get(pMstyle)[0]}` }}, `${get(pMnums)[0]}` ),
+          h('button#1.num',  { style: { display: `${get(pMstyle)[1]}` }}, `${get(pMnums)[1]}` ),
+          h('button#2.num',  { style: { display: `${get(pMstyle)[2]}` }}, `${get(pMnums)[2]}` ),
+          h('button#3.num',  { style: { display: `${get(pMstyle)[3]}` }}, `${get(pMnums)[3]}` ),
           h('br'),
           h('button#4.op', 'add'),
           h('button#5.op', 'subtract'),
