@@ -932,45 +932,45 @@ var examples2 = h('pre',  `
     }
   });
 
-var display = function display (x, id, string) {
-  document.getElementById(id).innerHTML = string;
-  return ret(x);
-}  `  )
+  var display = function display (x, id, string) {
+    document.getElementById(id).innerHTML = string;
+    return ret(x);
+  }  `  )
 
-var e1 = h('pre.turk',  `  var ret = function ret(v, id = 'anonymous') {
+var e1 = h('pre.turk',  `  function ret(v, id = 'default') {
     window[id] = new Monad(v, id);
     return window[id];
   }
   
-  var add = function add (x, b) {
-      return ret(parseInt(x,10) + parseInt(b,10) );
-  };
-  
-  var cube = function cube (v, id = 'anonymous') {
-      return ret(v * v * v, id);
+  function cube (v, id) {
+    return ret(v * v * v);
   };
 
-  var log = function log(x, message, mon) {
-      console.log("From " + mon + ' ' + message);
-      return ret(x);
+  function add (x, b) {
+    return ret(parseInt(x,10) + parseInt(b,10) );
+  };
+
+  function log(x, message) {
+    console.log(message);
+    return ret(x);
   };  `  )
 
-var e2 = h('pre.turk',  `  var c = m.ret(0).bnd(add,3).bnd(cube).bnd(log, "The values m\'s and c\'s 
-  x attributes are " + get(m) + " and " + get(c) + " respectively.",  "m"  )   ` )   
+var e2 = h('pre.turk',  `  var c = m.ret(0).bnd(add,3).bnd(cube).bnd(log, "The values of m\'s and c\'s 
+  x attributes are " + get(m) + " and " + get(c) + " respectively." )   ` )   
 
-var e2x = h('pre', `   Output: From m: The values of m\'s and c\'s x attributes are 0 and 27 respectively.  ` )
+var e2x = h('pre', `   Output: The values of m\'s and c\'s x attributes are 0 and 27 respectively.  ` )
 
    var e3 = h('p',  ' Note: m\'s x attribute keeps its initial value of 0 because each computation creates a fresh instance of Monad with id == "default". In the next example, m\'s x attribute becomes the computation result due to the addition of ".bnd(m.ret)". '  )   
   
  var e4 = h('pre.turk',  `  var c = m.ret(0).bnd(add,3).bnd(cube).bnd(m.ret).bnd(log, 
-   "The values m\'s and c\'s x attributes are " + get(m) + " and " + get(c) + " respectively.",  "m") ` )
+   "The values m\'s and c\'s x attributes are " + get(m) + " and " + get(c) + " respectively.") ` )
 
- var e4x = h('pre', `  Output: From m: The values of m\'s and c\'s x attributes are 27 and 27 respectively.  ` )
+ var e4x = h('pre', `   Output: The values of m\'s and c\'s x attributes are 27 and 27 respectively.  ` )
 
  var e6 = h('pre.turk',  `  m.ret(0).bnd(add,3).bnd(m2.ret).bnd(cube,m3).bnd(m3.ret)
   .bnd(log,"get(m), get(m2), and get(m3) are  " + get(m) + ", " + get(m2) + " and " + 
-  get(m3) + " respectively. ", 'm'); ` )
-var e6x = h('pre', `  Output: From m: get(m) and get(m2) and get(m3) are  0, 3 and 27 respectively.  ` )
+  get(m3) + " respectively. "); ` )
+var e6x = h('pre', `   Output: get(m) and get(m2) and get(m3) are  0, 3 and 27 respectively.  ` )
 
 var equals = h('pre',  `    var equals = function equals (mon1, mon2) {
       if (mon1.id === mon2.id && get(mon1) === get(mon2)) return true;
@@ -1017,16 +1017,6 @@ var opM = h('pre',  `    function opM (a, op, b, id) {
 
     opM(m1, "+", m2, "ok").bnd(lg)  logs 49  `  )
 
-var fmapA = h('pre',  `  function fmapA(x, g, id) { 
-    var mon = (new Monad(x.map(g), id)); 
-    window[id] = mon;
-    return mon;
-}  
-
-  m.ret([1,2,3,4,5]).bnd(fmapA, (x => x*x*x), 'm2')
-  
-  m2.x == [1,8,27,64,125]  tested and verified.  `  )
-
 var a = 'acorn'
 
 var messageMonad = h('pre',  `    var messageMonad = new MonadState('messageMonad', messages, messages, message_state); 
@@ -1044,18 +1034,129 @@ var updateMessages = h('pre',  `    var updateMessages = function updateMessages
         messageMonad.run([ [h('br'), sender + ': ' + str], [], [], messageMonad.s[3] ]);
     }  ;  `  )
 
-var p5 = h('pre',  `  
+var travMonad = h('pre',  `  var travMonad = new MonadState("travMonad", [[8,8,8,8], 0, 7, [ [ [], 0, 0 ] ] ], trav_state)
+  
+  function trav_state (ar) {
+    pMindex.bnd(add,1).bnd(pMindex.ret);
+    var nums = ar[0];
+    var score = ar[1];
+    var goals = ar[2];
+    var next = travMonad.s.slice();
+    var ar = [nums, score, goals];
+    next[0] = nums;
+    next[1] = score;
+    next[2] = goals;
+    next[3].unshift(ar);
+    return next;
+  }  `  )
+
+
+
+var test3 = h('pre',  `  function test3 (a) {
+    var b = [];
+    for (let i of [0,1,2,3]) {
+      b[i] = (a[i] == undefined) ? 'none' : 'inline'
+    }
+    return ret(b);
+  }  
+  
+  pMnums.bnd(test3).bnd(pMstyle.ret);  `  )
+
+var mMZ10 = h('pre',  `  mMZ10.bnd( () => {
+    pMnums.ret([v[3], v[4], v[5], v[6]]).bnd(test3).bnd(pMstyle.ret)
+    travMonad.run([ [v[3], v[4], v[5], v[6]], v[7], v[8] ]);
+    pMscore.ret(v[7]);
+    pMgoals.ret(v[8]) });  `  )
+
+var numClick = h('pre',  `  var numClick$ = sources.DOM
+      .select('.num').events('click'); 
+
+  var numClickAction$ = numClick$.map(e => {
+    if (get(mM3).length == 2) {return};
+    pMnums    
+    .bnd(spliceM, e.target.id, 1)
+    .bnd(pMnums.ret)
+    .bnd(test3)
+    .bnd(pMstyle.ret)
+    mM3
+    .bnd(push, e.target.innerHTML)
+    .bnd(mM3.ret)
+    .bnd(v => {
+      if (v.length == 2 && get(mM8) != 0) {
+        updateCalc(v, get(mM8)) 
+      }
+    })
+    }).startWith([0, 0, 0, 0]);
+
+  var opClick$ = sources.DOM
+      .select('.op').events('click');
+
+  var opClickAction$ = opClick$.map(e => {
+    mM8.ret(e.target.innerHTML).bnd(v => { 
+      var ar = get(mM3)
+      if (ar.length === 2) {
+        updateCalc(ar, v)
+      }
+    }) 
+  });
+
+  function updateCalc(ar, op) {
+    var result = calc(ar[0], op, ar[1]);
+    mM3.ret([]);
+    mM8.ret(0)
+    if (result == 20) { 
+      pMscore.bnd(add,1)
+      .bnd(testscore)
+      .bnd(pMscore.ret)
+      .bnd(v => score(v));
+      return; 
+    } 
+    else if (result == 18) { 
+      pMscore.bnd(add,3)
+      .bnd(testscore)
+      .bnd(pMscore.ret)
+      .bnd(v => score(v));
+      return; 
+    }
+    else {
+      pMnums.bnd(push,result)
+      .bnd(pMnums.ret)
+      .bnd(v => {
+        travMonad.run([v, get(pMscore), get(pMgoals)])
+        test3(v)
+        .bnd(pMstyle.ret)
+      }); 
+      mM8.ret(0);
+      mM3.ret([]);
+      console.log('in updateCalc 1111111111 get(pMnums), get(pMstyle) ', get(pMnums), get(pMstyle) );
+    }
+  };  
+
+  var testscore = function testscore(v) {
+    if ((v % 5) === 0) return ret(v+5)
+    else return ret(v);
+  };
+
+  function score(scor) {
+    console.log('In score 22222222222222222222222222222222222222222 scor ', scor );
+    if (scor != 25) {
+      newRoll(scor, get(pMgoals))
+    }
+    else if (get(pMgoals) == 2) {
+      newRoll(0,0)
+    }
+    else {pMgoals.bnd(add, 1).bnd(pMgoals.ret).bnd(g => newRoll(0, g))};
+  };  `  )
+
+var p3 = h('pre',  `  
 `  )
 
-var p6 = h('pre',  `  
-`  )
-
-var p7 = h('pre',  `  
+var p2 = h('pre',  `  
 `  )
 
 
 
-  export default { fmapA, monad, equals, fmap, opM, e1, e2, e2x, e3, e4, e4x, e6, e6x, driver, messages, monadIt, MonadSet, updateCalc, arrayFuncs, travel, nums, cleanup, ret, C42, newTask, process, mM$task, addString, colorClick, edit, testZ, quad, runTest, todoStream, inc, seed,  add, traverse, MonadState, primesMonad, fibsMonad, primeFibInterface, tr3, fpTransformer, innerHTML, factorsMonad, factorsInput, playerMonad, promise, promiseSnippet, timeout, timeoutSnippet, examples, examples2, async }
+  export default { numClick, mMZ10, test3, travMonad, monad, equals, fmap, opM, e1, e2, e2x, e3, e4, e4x, e6, e6x, driver, messages, monadIt, MonadSet, updateCalc, arrayFuncs, travel, nums, cleanup, ret, C42, newTask, process, mM$task, addString, colorClick, edit, testZ, quad, runTest, todoStream, inc, seed,  add, traverse, MonadState, primesMonad, fibsMonad, primeFibInterface, tr3, fpTransformer, innerHTML, factorsMonad, factorsInput, playerMonad, promise, promiseSnippet, timeout, timeoutSnippet, examples, examples2, async }
  
 
 

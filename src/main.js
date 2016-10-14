@@ -85,8 +85,6 @@ function main(sources) {
   mMZ10.bnd( () => {
     pMnums.ret([v[3], v[4], v[5], v[6]]).bnd(test3).bnd(pMstyle.ret)
     travMonad.run([ [v[3], v[4], v[5], v[6]], v[7], v[8] ]);
-    console.log('In message $$$$$$$$$$$$$$ [v[3], v[4], v[5], v[6]],, v[7], [8] ', [v[3], v[4], v[5], v[6]],  v[7], v[8] );
-    console.log('In message $$$$$$$$$$$$$$ travMonad.a.slice() ', travMonad.a.slice() );
     pMscore.ret(v[7]);
     pMgoals.ret(v[8]) }); 
   mMZ11.bnd( () => socket.send(`CG#$42,${get(pMgroup)},${get(pMname)},${get(pMscore)},${get(pMgoals)}`));
@@ -96,12 +94,7 @@ function main(sources) {
   mMZ15.bnd( () => {
     mMgoals2.ret('A player named ' + v[2] + ' is currently logged in. Page will refresh in 4 seconds.')
     refresh() });
-  mMZ17.bnd( () => {
-    if (get(pMgroup) != 'solo' || get(pMgroup) == 'solo' &&  get(pMname) == v[2]) {   
-      if (v[3] == 'no file') mMtaskList.ret([]);
-      else process(e.data)  
-    } 
-  })
+  mMZ17.bnd( () => testTask(v[2], v[3], e.data) ); 
     mMZ18.bnd( () => {if (get(pMgroup) != 'solo' || get(pMname) == v[2]) {updatePlayers(e.data) } });
   })       
   mMtemp.ret(e.data.split(',')[0])
@@ -119,6 +112,17 @@ function main(sources) {
         instance.release();
     }
     return ret(x);
+  };
+  
+  function testTask (v2, v3, data)  {
+    if (v3 == 'no file' || v3 == 'empty') {
+      mMtaskList.ret([]);
+      taskL = h('span' ); 
+      return;
+    }
+    if (get(pMgroup) != 'solo' || get(pMgroup) == 'solo' &&  get(pMname) == v2) {   
+      process(data);  
+    } 
   };
   
   function newRoll (a,b) {
@@ -202,7 +206,6 @@ function main(sources) {
       .select('.num').events('click'); 
 
   var numClickAction$ = numClick$.map(e => {
-    console.log('In numClickAction$ XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX e.target.id is ', e.target.id );
     if (get(mM3).length == 2) {return};
     var muns;
     var styles;
@@ -613,14 +616,14 @@ function main(sources) {
         var index = parseInt(getIndex(e), 10);
         var s = get(mMcurrentList);
         var ar = s.split(',');
+        if (ar.length < 7) {
+          task2('empty');
+          socket.send( `TX#$42,${get(pMgroup)},${get(pMname)}` );
+          return;
+        }
         var str = '';
         ar.splice(index * 6, 6);
-        if (ar.length > 0) {
-            task2(ar.reduce(function (a, b) { return a + ',' + b; }));
-        }
-        else {var u = 'TX#$42'
-            mMtaskList.ret('');
-        }
+        task2(ar.reduce(function (a, b) { return a + ',' + b; }));
     });
                        
     var timeoutClicks$ = sources.DOM.select('#timeout').events('click');
@@ -823,12 +826,11 @@ h('div#log2', { style: { display: 'none' } }, [
     h('input#group')]),
 h('p', `${get(mMsoloAlert)}`),
 h('p', 'People who are in the same group, other than solo, share the same todo list, messages, and simulated dice game. In order to see any of these, you must establish an identity on the server by logging in. The websockets connection terminates if the first message the server receives does not come from the sign in form. You can enter any random numbers or letters you like. The only check is to make sure someone hasn\t already signed in with whatever you have selected. If you log in with a name that is already in use, a message will appear and this page will be re-loaded in the browser after a four-second pause. '),
-h('p', ' Data for the traversable gameC history accumulates until a player scores. The data array is then re-set to [], the empty array. When a player clicks the BACK button, other group members are notified. It is up to the group to decide whether clicking the BACK button disqualifies a player. '),
+h('p', ' Data for the traversable game history accumulates until a player scores three goals and wins. The data array is then erased and the application is ready to start accumulating a new history. '),
 h('hr'),
 h('h1', 'The Monads'),
 h('h3', ' Monad '),
 code.monad,
-
 h('p', ' In most sequences of operationns, the arguments provided to each link\'s bnd() method are functions that return an instance of Monad. Here are some examples of functions that return instances of Monad: '),
 code.e1,
 h('p', ' These functions can be used with instances of Monad in many ways, for example: '),
@@ -842,7 +844,7 @@ code.e6x,
 
 h('p', ' Each of the functions shown above can be used as a stand-alone function or as an argument to the bnd() method. Each monad in a chain of linked computations can either use the previous monad\'s value (the value of the x attribute) or ignore it, possibly letting it pass on down the chain. ' ), 
 h('h3', ' The Monad Laws '), 
-h('p', ' In the following discussion, "x == y" signifies that the expression x == y returns true. Let J be the collection of all Javascript values, including functions, instances of Monad, etc, and let F be the collection of all functions mapping values in J to instances of Monad with references matching their ids; that is, with m[id] == m.id for some id which is a valid es2015 variable name. The collection of all such instances of Monad along and all of the functions in F is called "M". For any instances of Monad m, m1, and m2 in M and any function f in F, the following relationships follow easily from the definition of Monad: '), 
+h('p', ' In the following discussion, "x == y" signifies that the expression x == y returns true. Let J be the collection of all Javascript values, including functions, instances of Monad, etc, and let F be the collection of all functions mapping values in J to instances of Monad with references (names) matching their ids; that is, with window[id] == m.id for some id which is a valid es2015 variable name. The collection of all such instances of Monad along and all of the functions in F is called "M". For any instances of Monad m, m1, and m2 in M and any functions f and gin F, the following relationships follow easily from the definition of Monad: '), 
 h('div.bh3', 'Left Identity ' ),
 h('pre.turk', `    equals( m.ret(v, ...args).bnd(f, ...args), f(v, ...args) )    
     equals( ret(v, ...args).bnd(f, ...args), f(v, ...args) ) 
@@ -850,9 +852,9 @@ h('pre.turk', `    equals( m.ret(v, ...args).bnd(f, ...args), f(v, ...args) )
     equals( ret(3).bnd(cube), cube(3) )     Tested and verified
     Haskell monad law: (return x) >>= f \u2261 f x  ` ),
 h('div.bh3', ' Right Identity  ' ),  
-h('pre.turk', `    m.bnd(m.ret) === m      Tested and verified 
-    m.bnd(ret, "m") === m   Tested and verified
-    equals(m.bnd(ret), m)   Tested and verified
+h('pre.turk', `    equals(m.bnd(m.ret), m)      Tested and verified 
+    m.bnd(m.ret) === m   Tested and verified
+    equals(m.bnd(ret, 'm'), m)  Tested and verified
     Haskell monad law: m >>= return \u2261 m `  ),
     h('div.bh3', ' Commutivity  ' ),  
     h('pre.turk', `    equals( m.bnd(f1, ...args).bnd(f2, ...args), m.bnd(v => f1(v, ...args).bnd(f2, ...args)) ) 
@@ -863,19 +865,19 @@ h('pre.turk', `    m.bnd(m.ret) === m      Tested and verified
     code.equals,
                   h('p', ' The function equals() was used because the == and === operators on objects check for location in memory, not equality of attributes and equivalence of methods. If the left and right sides of predicates create new instances of m, then the left side m and the right side m wind up in different locations in memory and the == operator returns false. So we expect m.ret(3) == m.ret(3) to return false, and it does. The question we want answered is this: Can the left side be substituted for the right side and vice versa? That question is answered by equals().   '),
 h('p', ' Using the JS-monads-mutableInstances branch at the Github repository we see that m.ret(7) == m.ret(7) returns true. That is because m is permanently seated in memory at its original location.  But it would be folly to give up immutability for the sake of making unimportant comparisons come out "right". ' ),
-h('p', ' In Haskell, x ≡ y means that you can replace x with y and vice-versa, and the behaviour of your program will not change. That is what "equals(x, y)" means in Javascript. The behavior of Instances of Monad with ret() (the function and the method) and bnd() mirrors the behavior of Haskell monads with return and >>=. ' ),
+h('p', ' In Haskell, x ≡ y means that you can replace x with y and vice-versa, and the behaviour of your program will not change. That is precisely what "equals(x, y)" tells us about Javascript expressions x and y. The behavior of Instances of Monad with ret() (the function and the method) and bnd() corresponds, in a somewhat vague manner, to the behavior of Haskell monads with return and >>=. ' ),
 h('span', ' Haskell monads are not category theory monads. To begin with, they don\'t even reside in a category. See: ' ),                     
 h('a', { props: { href:"http://math.andrej.com/2016/08/06/hask-is-not-a-category", target: "_blank" }}, ' Hask is not a category '),
 h('span', ' Nevertheless, blogs abound perpetuating the Haskell mystique that, as one blogger wrote, "There exists a "Haskell category", of which the objects are Haskell types, and the morphisms from types a to b are Haskell functions of type a -> b." The nLab wiki page states "There is a category, Hask, whose objects are Haskell types and whose morphisms are extensionally identified Haskell functions.", and the first line of the Haskell Wiki ' ),
 h('a', { props: { hret: "https://wiki.haskell.org/Hask", target: "_blank" }}, ' https://wiki.haskell.org/Hask' ),  
 h('span', ' states "Hask is the category of Haskell types and functions." but at least it goes on to demonstrate that Hask really isn\'t a category. ' ),
-h('p', ' It is true that Haskell monads obey rules that are Haskell translations of the structure-preserving rules about functors and natural transformations in the category-theoretic monad. I have demonstrated that the elements of M (defined above) obey a Javascript interpretation of these same rules. This suggests that instances of Monad can be expected to be versitile and robust in production. The smoothly functioning game and todo list, along with the demonstratons that appear later on this page, reinforce this expectation. ' ),    
+h('p', ' It is true that Haskell monads obey rules that are Haskell translations of the structure-preserving rules about functors and natural transformations in the category-theoretic monad. I have demonstrated that the elements of M (defined above) obey a Javascript translation of these same rules. This suggests that instances of Monad can be expected to be versitile and robust in production. The smoothly functioning game and todo list, along with the demonstratons that appear later on this page, reinforce this expectation. ' ),    
  // **************************************************************************** END MONAD       START MonadItter   
 h('h2', 'MonadItter'),
 code.monadIt,
 h('p', ' MonadItter instances do not have monadic properties, but they facilitate the work of monads. Here\'s how they work: '),
-h('p', 'For any instance of MonadItter, say "it", "it.bnd(func)" causes it.p == func. Calling the method "it.release(...args)" causes p(...args) to run, possibly with arguments supplied by the caller. Here is the definition: '),
-h('p', ' As shown later on this page, MonadItter instances control the routing of incoming websockets messages and the flow of action in the simulated dice game. In one of the demonstrations below, they behave much like ES2015 iterators. I prefer them over ES2015 iterators. They also provide promises-like functionality'),
+h('p', 'For any instance of MonadItter, say "it", "it.bnd(func)" causes it.p == func. Calling the method "it.release(...args)" causes p(...args) to run, possibly with arguments supplied by the caller. '),
+h('p', ' As shown later on this page, MonadItter instances control the routing of incoming websockets messages. In one of the demonstrations below, they behave much like ES2015 iterators. I prefer them over ES2015 iterators.'),
 h('h3#itterLink', ' A Basic Itterator '),
 h('p', 'The following example illustrates the use of release() with an argument. It also shows a lambda expressions being provided as an argument for the method mMZ1.bnd() (thereby becoming the value of mMZ1.p) and then mMZ1.release providing an arguments for the function mMZ1.p. The code is shown beneith the following two buttons. '),
 h('button#testZ', 'mMZ1.release(1)'),
@@ -899,10 +901,7 @@ h('p', 'Run mMZ3.release(v) three times for three numbers. The numbers are a, b,
 h('input#quad'),
 h('p', 'Here is the code:'),
 code.quad,
-h('p', ' fmap (above) facilitated using qS4 in a monadic sequence. qS4 returns an array, not an instance of Monad, but fmap lifts qS4 into the monadic sequence. fmapA is a similar function that operates on arrays. Here is the definition and an example: '),
- code.fmapA,    
-    
-
+h('p', ' fmap (above) facilitated using qS4 in a monadic sequence. qS4 returns an array, not an instance of Monad, but fmap lifts qS4 into the monadic sequence. '),
   
 // ************************************************************************** START MonadState
 h('p#monadstate'),
@@ -912,7 +911,7 @@ code.MonadState,
 h('p', ' MonadState reproduces some of the functionality found in the Haskell Module "Control.Monad.State.Lazy", inspired by the paper "Functional Programming with erloading and Higher-der Polymorphism", Mark P Jones (http://web.cecs.pdx.edu/~mpj/) Advanced School of Functional Programming, 1995. The following demonstrations use the MonadState instances fibsMonad and primesMonad to create and store arrays of Fibonacci numbers and arrays of prime numbers, respectively. fibsMonad and primesMonad provide a simple way to compute lists of prime Fibonacci numbers.  Because the results of computations are stored in the a and s attributes of MonadState instances, it was easy to make sure that no prime number had to be computed more than once in the prime Fibonacci demonstration. '),
 h('p', ' Here is the definition of fibsMonad, along with the definition of the function that becomes fibsMonad.process. '),
 code.fibsMonad,
-h('p', ' The other MonadState instance used in this demonstration is primesMonad. Here is its definition along with the function that becomes primesMonad.process:  '),
+h('p', ' Another MonadState instance used in this demonstration is primesMonad. Here is its definition along with the function that becomes primesMonad.process:  '),
 code.primesMonad,
 h('h3', ' MonadState transformers '),
 h('p', ' Transformers take instances of MonadState and return different instances of MonadState, possibly in a modified state. The method call "fibsMonad.bnd(fpTransformer, primesMonad)" returns primesMonad. Here is the definition of fpTransformer: '),
@@ -951,6 +950,21 @@ code.factorsMonad,
 h('p#async', ' And this is how user input is handled: '),
 code.factorsInput,
 h('a', { props: { href: '#top' } }, 'Back To The Top'),
+h('h3', ' Traversal of the dice game history. ' ),
+h('p', ' MonadState instance travMonad facilitates traversal of the game history. travMonad.s is a four member array holding the current number, current score, current goals, and an array of arrays containing numbers, score, and goals. Here is the definition of travMonad and its auxiliary function:' ),
+  code.travMonad,
+h('p', ' The number display is created by four virtual button nodes resting in the virtual DOM. The displays are either "none" or "inline" according the values of the elements of the get(pMstyle) array. The dice roll number displays are text attributes which update whenever the array get(pMnums) changes. '),
+h('p', ' After a dice roll, numbers are removed from the nodes as players try to score points. The function test3 keeps up appearances by hiding occurences of undefined: ' ),
+  code.test3,
+h('p', ' New dice rolls always correspond to score changes. One point is lost each time a player clicke ROLL. Scores increase whenever a player puts together an expression that returns 18 or 20, and that automatically results in a new dice roll. So calls to the server for a new dice roll always include two extra number, the new score and the current goals. The server updates its ServerState TMVar accordingly and distributes the update to all group members, prefixed by CA#$42. The message$ stream catches the message and acts as follows: ' ),
+  code.mMZ10,  
+h('p', ' The numbers displays in group members\' browsers are immediately updated by the change in pMstyle and pMnums. travMonad.a and travMonad.s[3] hold the history of prior values of get(pMnums), get(pMscore), and get(pMgoals) in three member arrays nested in an array. [v[3], v[4], v[5], v[6]], v[7]. v[8]] is added to travMonad.s[3] which automatically adds it to travMonad.a as required by definition of MonadState. ' ),
+h('h3', ' Updating the numbers ' ),
+h('p', ' The previous discusion was about traversal of the game history. This is a good place to look at the algorith for generating new numbers when player click on the number buttons. Here is the code: ' ),  
+    code.numClick,
+h('p', ' The clicked number is removed from pMnums and added to mM3 in the numClickAction$ stream. If two numbers and an operator have been selected, numClickAction$ and opClickAction$ call updateCalc, giving it the two member array (which is held in mM3) of selected numbers and the selected operator. After each roll, mM8 is given the value 0 so get(mM8) != 0 means a value has been selected. updateCalc calls calc on the numbers and operater given to it by numCalcAction$ or opCalcAction$, giving the value to variable name "result". If the value of result is 18 or 20, the resulting score is checked to see if it should be augmented by five and score() is called on the new score. score performs some more tests and calls for a new roll with thevalue of score that it received and possibly an updated value of goals or, if it ascertains that there is a winner, calls for a new rull with the values of 0 and 0 for score and rolls. ' ),    
+
+
 //************************************************************************** ENDOM MonadState
 //************************************************************************** BEGIN Promises
 h('h2', ' Asynchronous Composition: Promises, MonadItter, or Neither '),
@@ -968,20 +982,12 @@ h('p#timeout2', ),
 h('p#timeout3', ),    
 h('button#timeout', ' Run '),
 h('p', ' The final blurb confirms that the chained code waits for completion of the asynchronous code. Similar code could be made to wait for database calls, Ajax requests, or long-running processes to return before running subsequent chained code. In fact, messages$, the stream that handles incoming websockets messages, does just that. When a message is sent to the server, messages$ listens for the response. The functions waiting in MonadItter bnd() expressions are released according to the prefix of the incoming message from the server. Essentially, messages$ contains callbacks. MonadItter provides an uncluttered alternative to "if - then" or "case" blocks of code, separating the code to be executed from the listening code.'),
-h('p', ' I could have provided for error handling but therehere doesn\'t seem to be any need for it. If I were getting information from a remote database or Ajax server, I would handle errors with "window.addEventListener("error", function (e) { ...".'),
+h('p', ' I could have provided for error handling but there doesn\'t seem to be any need for it here. If I were getting information from a remote database or Ajax server, I would handle errors with "window.addEventListener("error", function (e) { ...".'),
 h('a', { props: { href: '#top' } }, 'Back To The Top'),
 //************************************************************************** ENDOM Promises
 h('h2', 'Immutable Data And The State Object " '),
 h('h3', ' Mutations   '),
 h('p', ' Mutations in this application are confined to MonadItter instances and internal function operations. Functions in this application do not have side effects. If a function argument is an array, say "ar", I make a clone by calling "var ar = ar.sliceM()" or "let ar2 = ar.sliceM()" before mutating ar or ar2 inside the function. That way, the original ar remains unaffected. MonadItter instances don\'t have monadic properties. When their bnd() method is called, they sit idly until their release() method is called. I don\t see any reason to make a clone each time bnd() or release() is called. As demonstrated below, a MonadItter instance can hold several different expressions simultaneously, executing them one at a time in the order in which they appear in the code, once each time the release() method is called, In the quadratic equation demonstration, the second call to release() takes the result from the first call  '),
-h('h3', ' The simulated dice game '),
-h('p', ' A score increases by 1 or 3 if the result of a computation is 20 or 18, respectively. 5 additional points are added each time the result is a multiple of 5. A computation that results in a score of 25 earns 1 goal. So if a score is 17 and a player multiplies 3 * 6, 3 points are awarded resulting in 20 + 5 = 25 points. Goal! When a goal is earned, the traversable history is deleted and prepared for a fresh start. Here is the code involved in the simulated dice game: '),
-code.updateCalc,
-h('p', ' The history of the number display and scoreboard in the game can be traversed in either direction until a player scores a goal. After that, the traversable history is deleted and then builds up until another goal is achieves. Players can score points using historical displays, so to keep competition fair, group members are notified when another member clicks the BACK button. The code is shown below, in the MonadSet section; but first, here is some background. '),
-h('h3', ' rollMonad '),
-h('p', ' rollMonad and its process attribute are defined as follows: '),
-code.rollMonad,
-h('p#monadset', ' As you see, rollMonad.run does one simple thing; it updates the four monads in the player_state function. There are various ways of achieving the same result, but MonadState provides a convenient alternative. Next, I will show how the list of currently online group members is maintained through the use of an instance of MonadSet. '),
 h('h2', ' MonadSet '),
 h('p', ' The list of online group members at the bottom of the scoreboard is very responsive to change. When someone joins the group, a message prefixed by NN#$42 prompts the server to send out the current list of group members. When someone closes their browser window, the server is programmed to send out the new list of group members. All updating is done in the websockets messages function. MonadSet\'s add and delete methods provide convenient alternatives to using Monad\'s bnd method with the push and splice functions. Here are the definitions of MonadSet and the MonadSet instance sMplayers '),
 code.MonadSet,
@@ -989,11 +995,6 @@ h('p#monadmaybe', ' Because sMplayerss is immutable, its most recent state can b
 code.traverse,
 h('p', ' You must log in and enter something in the "Change group" box in order to see currently online members. You can open this page in more windows and see how promptly additions and exits show up in the scoreboard. '),
 h('a', { props: { href: '#top' } }, 'Back To The Top'),
-  h('h2', 'Updating the DOM'),
-  h('p', ' Two general methods work in Motorcycle. Sometimes I keep m.x in the virtual DOM code for some monad m. If a user performs some action that cause m.x to have a new value, that information is fed into the stream that updates the virtual DOM. The name Cycle is very fitting. Other times I respond to user input or websockes messages by from inside a stream that is merged into the virtual DOM by using document.getElementById("someId").innerHTML = newValue. '),
-  h('br'),
-  h('h3', 'Dice Game DOM updates'),
-  h('p', ' mMcurrentRoll.ret() is called only when (1) a new dice roll comes in from the server, (2) when a player clicks a number, and (3) when clicking a number or operator results in a computation being performed. These are the three things that require a DOM update. When a player clicks a number, it disappears from number display. When a computation is performed, the result is added to the number display, unless the result is 18 or 20. A result of 18 or 20 results in a new roll coming in from the server '),
   h('h3', ' Websocket messages'  ),  
   h('p', ' Incoming websockets messages trigger updates to the game display, the chat display, and the todo list display. The members of a group see what other members are doing; and in the case of the todo list, they see the current list when they sign in to the group. When any member of a group adds a task, crosses it out as completed, edits its description, or removes it, the server updates the persistent file and all members of the group immediately see the revised list.  '),
   h('p', 'The code below shows how incoming websockets messages are routed. For example, mMZ10.release() is called when a new dice roll (prefixed by CA#$42) comes in.   '),
@@ -1002,7 +1003,7 @@ h('a', { props: { href: '#top' } }, 'Back To The Top'),
   h('a#tdList2', { props: { href: '#itterLink' } }, 'release() with arguments'),
   h('br'),
   h('br'),
-  h('a', { props: { href: '#top' } }, 'Back To The Top'),
+  h('a', { props: { href: '#top' }}, 'Back To The Top'),
   h('br'),
   h('h3', 'The Todo List'),
   h('p', ' Next, I\'ll go over some features of the todo list application. This will show how Motorcycle.js and the monads work together.'),

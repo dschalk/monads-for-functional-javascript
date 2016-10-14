@@ -86,12 +86,12 @@ function equals(mon1, mon2) {
 
 var mMtemp5 = new Monad(0, 'mMtemp5') 
 
-var add = function add (x, b) {
+function add (x, b) {
     return ret(parseInt(x,10) + parseInt(b,10) );
 };
 
-var cube = function cube (v, id = 'default') {
-    return ret(v * v * v, id);
+function cube (v) {
+    return ret(v * v * v);
 };
 
 var aD = function (x, b, id = 'mQfred') {
@@ -189,22 +189,18 @@ function MonadState2(g, state, p) {
 };
 
 var travMonad = new MonadState("travMonad", [[8,8,8,8], 0, 7, [ [ [], 0, 0 ] ] ], trav_state)
-console.log('travMonad.s.slice() >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>. ', travMonad.s.slice() );
 
 function trav_state (ar) {
   pMindex.bnd(add,1).bnd(pMindex.ret);
   var nums = ar[0];
   var score = ar[1];
   var goals = ar[2];
-  console.log('Early in trav_state.s.slice() <<<0000000<<< nums, score, goals', nums, score, goals );
   var next = travMonad.s.slice();
-  console.log('Early in trav_state.s.slice() <<<1111111<<< next, get(pMindex)  ', next, get(pMindex) );
   var ar = [nums, score, goals];
   next[0] = nums;
   next[1] = score;
   next[2] = goals;
   next[3].unshift(ar);
-  console.log('Later in trav_state.s.slice() <<<<2222222<<< next, get(pMindex)  ', next, get(pMindex) );
   return next;
 }
 
