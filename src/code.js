@@ -65,41 +65,29 @@ var driver = h('pre', `  var websocketsDriver = function () {
 ` )
 
 var messages = h('pre', `  const messages$ = (sources.WS).map( e => {
-
-function main(sources) {
-    mMindex.ret(0);
-    const messages$ = (sources.WS).map( e => {
-      mMtem.ret(e.data.split(',')).bnd( v => {
-        console.log('<><><><><><><><><><><><><><><><>  INCOMING  <><><><><><><> >>> In messages. e amd v are ', e, v);
-        mMZ10.bnd( () => mM1.ret(v.slice(3)).bnd(function (y) { return game([pMscore.x, pMgoals.x, y, mM3.x].concat(y))}));
-        mMZ11.bnd( () => socket.send('CG#$42,' + pMgroup.x + ',' + pMname.x + ',' + pMscore + ',' + pMgoals));
-        mMZ12.bnd( () => mM6.ret(v[2] + ' successfully logged in.'));
-        mMZ13.bnd( () => updateMessages(v));
-        mMZ14.bnd( () => mMgoals2.ret('The winner is ' + v[2]));
-        mMZ15.bnd( () => mMgoals2.ret('A player named ' + v[2] + ' is currently logged in. Page will refresh in 4 seconds.')
-        .bnd(refresh));
-        mMZ16.bnd( () => { if (pMname.x != v[2]) {
-            mMgoals2.ret(v[2] + v[3]);
-        } });
-        mMZ17.bnd( () => {
-            if (v[3] == 'no file') mMtaskList.ret([]);
-            else process(e.data);
-        });
-        mMZ18.bnd( () => { if (pMname == v[2]) playerMonad.run([v[3], v[4]]); });
-        mMZ19.bnd( () => updatePlayers(e.data));
-      });
-      mMtemp.ret(e.data.split(',')[0])
-      .bnd(next, 'CA#$42', mMZ10)
-      .bnd(next, 'XX#$42', mMZ11)
-      .bnd(next, 'CC#$42', mMZ12)
-      .bnd(next, 'CD#$42', mMZ13)
-      .bnd(next, 'CE#$42', mMZ14)
-      .bnd(next, 'EE#$42', mMZ15)
-      .bnd(next, 'DE#$42', mMZ16)
-      .bnd(next, 'DD#$42', mMZ17)
-      .bnd(next, 'CG#$42', mMZ18)
-      .bnd(next, 'NN#$42', mMZ19)
-    });
+  mMtem.ret(e.data.split(',')).bnd( v => {
+  console.log('<><><><><><><><><><><><><><><><>  INCOMING  <><><><><><><> >>> In messages. e amd v are ', e, v);
+  mMZ10.bnd( () => {
+    pMnums.ret([v[3], v[4], v[5], v[6]]).bnd(test3).bnd(pMstyle.ret)
+    travMonad.run([ [v[3], v[4], v[5], v[6]], v[7], v[8] ]);
+    pMscore.ret(v[7]);
+    pMgoals.ret(v[8]) }); 
+  mMZ12.bnd( () => mM6.ret(v[2] + ' successfully logged in.'));
+  mMZ13.bnd( () => updateMessages(e.data));
+  mMZ14.bnd( () => mMgoals2.ret('The winner is ' + v[2]));
+  mMZ15.bnd( () => {
+    mMgoals2.ret('A player named ' + v[2] + ' is currently logged in. Page will refresh in 4 seconds.')
+    refresh() });
+  mMZ17.bnd( () => testTask(v[2], v[3], e.data) ); 
+    mMZ18.bnd( () => {if (get(pMgroup) != 'solo' || get(pMname) == v[2]) {updatePlayers(e.data) } });
+  })       
+  mMtemp.ret(e.data.split(',')[0])
+  .bnd(cow, 'CA#$42', mMZ10)
+  .bnd(cow, 'CD#$42', mMZ13)
+  .bnd(cow, 'CE#$42', mMZ14)
+  .bnd(cow, 'EE#$42', mMZ15)
+  .bnd(cow, 'DD#$42', mMZ17)
+  .bnd(cow, 'NN#$42', mMZ18)
   });  `  )
 
 var MonadSet = h('pre',  `  var MonadSet = function MonadSet(set, ID) {

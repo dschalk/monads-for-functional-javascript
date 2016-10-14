@@ -193,7 +193,8 @@ application state pending = do
                     atomically $ putTMVar state s'
                     let gr = getGroup (first client) s
                     let subSt = subState (getName client) gr s'
-                    broadcast ("XX#$42,gr," `mappend` name `mappend` " ,disconnected " ) subSt
+                    broadcast ("NN#$42," `mappend` gr `mappend` "," `mappend` name `mappend` "," 
+                        `mappend` (T.pack "<br>") `mappend` T.concat (intersperse "<br>" (textState subSt))) subSt
 
 talk :: WS.Connection -> TMVar ServerState -> Client -> IO ()
 talk conn state (_, _, _, _, _) = forever $ do

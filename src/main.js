@@ -79,7 +79,6 @@ function main(sources) {
   var newTasks = [];
 
   const messages$ = (sources.WS).map( e => {
-
   mMtem.ret(e.data.split(',')).bnd( v => {
   console.log('<><><><><><><><><><><><><><><><>  INCOMING  <><><><><><><> >>> In messages. e amd v are ', e, v);
   mMZ10.bnd( () => {
@@ -87,7 +86,6 @@ function main(sources) {
     travMonad.run([ [v[3], v[4], v[5], v[6]], v[7], v[8] ]);
     pMscore.ret(v[7]);
     pMgoals.ret(v[8]) }); 
-  mMZ11.bnd( () => socket.send(`CG#$42,${get(pMgroup)},${get(pMname)},${get(pMscore)},${get(pMgoals)}`));
   mMZ12.bnd( () => mM6.ret(v[2] + ' successfully logged in.'));
   mMZ13.bnd( () => updateMessages(e.data));
   mMZ14.bnd( () => mMgoals2.ret('The winner is ' + v[2]));
@@ -99,7 +97,6 @@ function main(sources) {
   })       
   mMtemp.ret(e.data.split(',')[0])
   .bnd(cow, 'CA#$42', mMZ10)
-  .bnd(cow, 'XX#$42', mMZ11)
   .bnd(cow, 'CD#$42', mMZ13)
   .bnd(cow, 'CE#$42', mMZ14)
   .bnd(cow, 'EE#$42', mMZ15)
@@ -774,7 +771,6 @@ function display(x, id, string, mon = mMdisplay) {
       h('a.tao', { props: { href: '#monadmaybe' } }, 'Maybe Monad'),
       // h('a.tao', {props: {href: '#monads'}}, 'Why Call Them Monads'   ),  
       h('div#captionDiv', [
-          h('h3', 'Obsolete commentary is being revised' ),
           h('h1', 'Motorcycle.js With JS-monads') ]),
           h('span.tao1', ' The demonstrations include persisternt, shared todo lists; '),
           h('br'),
@@ -964,7 +960,6 @@ h('p', ' The previous discusion was about traversal of the game history. This is
     code.numClick,
 h('p', ' The clicked number is removed from pMnums and added to mM3 in the numClickAction$ stream. If two numbers and an operator have been selected, numClickAction$ and opClickAction$ call updateCalc, giving it the two member array (which is held in mM3) of selected numbers and the selected operator. After each roll, mM8 is given the value 0 so get(mM8) != 0 means a value has been selected. updateCalc calls calc on the numbers and operater given to it by numCalcAction$ or opCalcAction$, giving the value to variable name "result". If the value of result is 18 or 20, the resulting score is checked to see if it should be augmented by five and score() is called on the new score. score performs some more tests and calls for a new roll with thevalue of score that it received and possibly an updated value of goals or, if it ascertains that there is a winner, calls for a new rull with the values of 0 and 0 for score and rolls. ' ),    
 
-
 //************************************************************************** ENDOM MonadState
 //************************************************************************** BEGIN Promises
 h('h2', ' Asynchronous Composition: Promises, MonadItter, or Neither '),
@@ -976,7 +971,6 @@ h('p', ' After a two-second delay, the Promise returns an anonymous monad with a
 h('p', ' The same result can be achieved with MonadItter and the following function '),
 code.timeout,
 h('p', ' If you click RUN, "get(m) is 27" appears after one second. Two seconds later, "get(m) is 42" is displayed along with a blurb. The blurb confirms the chain can continue, without the encumbrance and limitations of "then" clauses, after the delayed computations complete. '),
-
 code.timeoutSnippet,
 h('p#timeout2', ),    
 h('p#timeout3', ),    
@@ -985,15 +979,9 @@ h('p', ' The final blurb confirms that the chained code waits for completion of 
 h('p', ' I could have provided for error handling but there doesn\'t seem to be any need for it here. If I were getting information from a remote database or Ajax server, I would handle errors with "window.addEventListener("error", function (e) { ...".'),
 h('a', { props: { href: '#top' } }, 'Back To The Top'),
 //************************************************************************** ENDOM Promises
-h('h2', 'Immutable Data And The State Object " '),
-h('h3', ' Mutations   '),
-h('p', ' Mutations in this application are confined to MonadItter instances and internal function operations. Functions in this application do not have side effects. If a function argument is an array, say "ar", I make a clone by calling "var ar = ar.sliceM()" or "let ar2 = ar.sliceM()" before mutating ar or ar2 inside the function. That way, the original ar remains unaffected. MonadItter instances don\'t have monadic properties. When their bnd() method is called, they sit idly until their release() method is called. I don\t see any reason to make a clone each time bnd() or release() is called. As demonstrated below, a MonadItter instance can hold several different expressions simultaneously, executing them one at a time in the order in which they appear in the code, once each time the release() method is called, In the quadratic equation demonstration, the second call to release() takes the result from the first call  '),
 h('h2', ' MonadSet '),
 h('p', ' The list of online group members at the bottom of the scoreboard is very responsive to change. When someone joins the group, a message prefixed by NN#$42 prompts the server to send out the current list of group members. When someone closes their browser window, the server is programmed to send out the new list of group members. All updating is done in the websockets messages function. MonadSet\'s add and delete methods provide convenient alternatives to using Monad\'s bnd method with the push and splice functions. Here are the definitions of MonadSet and the MonadSet instance sMplayers '),
 code.MonadSet,
-h('p#monadmaybe', ' Because sMplayerss is immutable, its most recent state can be safely stored in the mMsetArchive instance of Monad. This is done so the traversable game history shows who was online in each step. Here is the code that keeps the browser window current and, at the same time, maintains a history of the sate of game play. '),
-code.traverse,
-h('p', ' You must log in and enter something in the "Change group" box in order to see currently online members. You can open this page in more windows and see how promptly additions and exits show up in the scoreboard. '),
 h('a', { props: { href: '#top' } }, 'Back To The Top'),
   h('h3', ' Websocket messages'  ),  
   h('p', ' Incoming websockets messages trigger updates to the game display, the chat display, and the todo list display. The members of a group see what other members are doing; and in the case of the todo list, they see the current list when they sign in to the group. When any member of a group adds a task, crosses it out as completed, edits its description, or removes it, the server updates the persistent file and all members of the group immediately see the revised list.  '),
@@ -1005,21 +993,6 @@ h('a', { props: { href: '#top' } }, 'Back To The Top'),
   h('br'),
   h('a', { props: { href: '#top' }}, 'Back To The Top'),
   h('br'),
-  h('h3', 'The Todo List'),
-  h('p', ' Next, I\'ll go over some features of the todo list application. This will show how Motorcycle.js and the monads work together.'),
-  h('p', ' If you enter something like Susan, Fred, Pay the water bill, the editable task will appear in your browser and in the browsers of any members a group you might have created or joined. If you have loaded this page in another tab and changed to the same group in both, you will see the task in both tabs. The task has a delete button, an edit button, and a "Completed" checkbox. It shows that Susan authorized the task and Fred is responsible for making sure it gets done. Instead of entering an authority and responsible person, you can just enter two commas before the task description. Without two commas, a message appears requesting more information. '),
-  code.newTask,
-  h('p', 'mM$taskList caries a string representing the task list. mMtaskList.x.split(",") produces an array whose length is a multiple of six. Commas in the task description are replaced by "$*$*$" so split(",") will put the entire task description in a single element. Commas are re-inserted when the list arrives from the server for rendering. Although a task list is a nested virtual DOM object (Snabbdom vnode), it can be conveniently passed back and forth to the server as a string without resorting to JS.stringify or JSON.stringify. Its type is Text on the server and String in the front end. It arrives from the server prefixed by "DD#$42" causing "process(e.data) to update the virtual DOM. Here is process(): '),
-  code.process,
-  h('span.tao', 'As you see, the string becomes a list of six-element objects, then those objects are used to create a Snabbdom vnode which is handed to mM$taskList.ret() in order to the update mMtaskList (more precisely, to create a fresh instance of mMtaskList). mMtaskList.x sits permanently in the main virtual DOM description. '),
-  h('a', { props: { href: "https://github.com/dschalk/JS-monads-stable" } }, 'https://github.com/dschalk/JS-monads-stable'),
-  h('br'),
-  h('p', ' Clicking "Completed": When the "Completed" button is clicked, the following code runs:         '),
-  code.colorClick,
-  h('p', 'mMtaskList is split into an array. Every sixth element is the start of a new task. colorAction$ toggles the second, third, and fourth element in the task pinpointed by "index" * 6. getIndex finds the index of the first and only the element whose task description matches the one that is being marked "Completed". I say "only" because users are prevented from adding duplicate tasks. After the changes are made, the array of strings is reduced to one string and sent to the server by task2(). '),
-  h('p', ' This is the code involved in editing a task description: '),
-  code.edit,
-  h('p', 'Clicking "Edit" causes a text box to be displayed. Pressing <ENTER> causes it to disappear. edit2Action$ obtains the edited description of the task and the index of the task item and provides them as arguments to process. Process exchanges $*$*$ for any commas in the edited version and assigns the amended task description to the variable "task". mMtaskList.x is copied and split into an array. "index * 6" is replaced with "task" and the list of strings is reduced back to a single string and sent to the server for distribution. This pattern, - (1) split the string representation of the todo list into an array of strings, (2) do something, (3) reduce the list back to a string - is repeated when the "Delete" button is clicked. If the last item gets deleted, the server is programmed to delete the persistent file bearing the name of the group whose member deleted the last task. '),
   h('hr'),
   h('a', { props: { href: '#top' } }, 'Back To The Top'),
   h('hr'),
