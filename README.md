@@ -305,19 +305,16 @@ The code below shows how incoming websockets messages are routed. For example, m
     mMZ18.bnd( () => {if (get(pMgroup) != 'solo' || get(pMname) == v[2]) {updatePlayers(e.data) } });
   })       
   mMtemp.ret(e.data.split(',')[0])
-  .bnd(cow, 'CA#$42', mMZ10)
-  .bnd(cow, 'CD#$42', mMZ13)
-  .bnd(cow, 'CE#$42', mMZ14)
-  .bnd(cow, 'EE#$42', mMZ15)
-  .bnd(cow, 'DD#$42', mMZ17)
-  .bnd(cow, 'NN#$42', mMZ18)
+  .bnd(next, 'CA#$42', mMZ10)
+  .bnd(next, 'CD#$42', mMZ13)
+  .bnd(next, 'CE#$42', mMZ14)
+  .bnd(next, 'EE#$42', mMZ15)
+  .bnd(next, 'DD#$42', mMZ17)
+  .bnd(next, 'NN#$42', mMZ18)
   });
 ```  
 The "mMZ" prefix designates instances of MonadItter. An instance's bnd() method assigns its argument to its "p" attribute. "p" runs if and when its release() method is called. The next() function releases a specified MonadItter instance when the calling monad's value matches the specified value in the expression. In the messages$ stream, the MonadItter instance's bnd methods do not take argumants, but next is capable of sending arguments when bnd() is called on functions requiring them. Here is an example:
 
-The clicked number is removed from pMnums and added to mM3 in the numClickAction$ stream. If two numbers and an operator have been selected, numClickAction$ and opClickAction$ call updateCalc, giving it the two member array (which is held in mM3) of selected numbers and the selected operator. After each roll, mM8 is given the value 0 so get(mM8) != 0 means an operator has been selected. updateCalc calls calc on the numbers and operater given to it by numCalcAction$ or opCalcAction$, giving the value to a variable named "result". If the value of result is 18 or 20, the resulting score is checked to see if it should be augmented by five and then score(scor) is called, providing the new score to the function score(). score() performs some more tests and calls for a new roll with the values of score and goals it has determined depending on whether or not there is a score and, if so, a winner.
-```
-##[The Online Demonstration](http://schalk.net:3055)
 The online demonstration features a game with a traversible dice-roll history; group chat rooms; and a persistent, multi-user todo list. People in the same group share the game, chat messages, and whatever todo list they might have. Updating, adding, removing, or checking "Complete" by any member causes every member 's todo list to update. The Haskell websockets server preserves a unique text file for each group's todo list. Restarting the server does not affect the lists. Restarting or refreshing the browser window causes the list display to disappear, but signing in and re-joining the old group brings it back. If the final task is removed, the server deletes the group's todo text file. 
 
 With Motorcycle.js, the application runs smoothly and is easy to understand and maintain. I say "easy to understand", but for people coming from an imperitive programming background, some effort must first be invested into getting used to functions that take functions as arguments, which are at the heart of Motorcycle and JS-monads-stable. After that, seeing how the monads work is a matter of contemplating their definitions and experimenting a little. Most of the monads and the functions they use in this demonstration are readily available in the browser console. If you have the right dev tools in Chrome or Firefox, just load [http://schalk.net:3055](http://schalk.net:3055) and press F12. You might need to enter Ctrl-R to re-load with access to the monad.js script. I do this to troubleshoot and experiment. 
