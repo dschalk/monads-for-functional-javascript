@@ -70,19 +70,14 @@ var b = 4;
 var c = a + b;
 
 function ret(v, id = 'default') {
-  return new Monad(v, id);
+  window[id] = new Monad(v, id);
+  return window[id];
 }
 
-    var equals = function equals (mon1, mon2) {
-      if (mon1.id === mon2.id && get(mon1) === get(mon2)) return true;
-      else return false
-    }  
-function equals(mon1, mon2) {
-    if (mon1.id === mon2.id && get(mon1) === get(mon2))
-        return true;
-    else
-        return false;
-};
+var equals = function equals (mon1, mon2) {
+  if (mon1.id === mon2.id && get(mon1) === get(mon2)) return true;
+  else return false
+}
 
 var mMtemp5 = new Monad(0, 'mMtemp5') 
 
@@ -188,7 +183,7 @@ function MonadState2(g, state, p) {
   return ob;
 };
 
-var travMonad = new MonadState("travMonad", [[8,8,8,8], 0, 7, [ [ [], 0, 0 ] ] ], trav_state)
+var travMonad = new MonadState("travMonad", [[8,8,8,8], 0, 0, [ [ [], 0, 0 ] ] ], trav_state)
 
 function trav_state (ar) {
   pMindex.bnd(add,1).bnd(pMindex.ret);
@@ -847,10 +842,11 @@ var mult = function mult(x, y) {
     return mon.ret(x * y);
     }
 
-var log = function log(x, message, mon) {
-    console.log("From " + mon + ': ' + message);
+function log(x, message) {
+    console.log(message.join(', '));
     return ret(x);
 };
+
 var log2 = function log2(x) {
     console.log('In log2.  x is: ', x);
     return ret(x);

@@ -938,9 +938,9 @@ var e1 = h('pre.turk',  `  function ret(v, id = 'default') {
     return ret(parseInt(x,10) + parseInt(b,10) );
   };
 
-  function log(x, message) {
-    console.log(message);
-    return ret(x);
+  function log(x, message) {     // message is an array
+      console.log(message.join(', '));
+      return ret(x);
   };  `  )
 
 var e2 = h('pre.turk',  `  var c = m.ret(0).bnd(add,3).bnd(cube).bnd(log, "The values of m\'s and c\'s 
@@ -1022,7 +1022,7 @@ var updateMessages = h('pre',  `    var updateMessages = function updateMessages
         messageMonad.run([ [h('br'), sender + ': ' + str], [], [], messageMonad.s[3] ]);
     }  ;  `  )
 
-var travMonad = h('pre',  `  var travMonad = new MonadState("travMonad", [[8,8,8,8], 0, 7, [ [ [], 0, 0 ] ] ], trav_state)
+var travMonad = h('pre',  `  var travMonad = new MonadState("travMonad", [[8,8,8,8], 0, 0, [ [ [], 0, 0 ] ] ], trav_state)
   
   function trav_state (ar) {
     pMindex.bnd(add,1).bnd(pMindex.ret);
@@ -1035,7 +1035,7 @@ var travMonad = h('pre',  `  var travMonad = new MonadState("travMonad", [[8,8,8
     next[1] = score;
     next[2] = goals;
     next[3].unshift(ar);
-    return next;
+    return next;         // This results in travMonad.s == next.
   }  `  )
 
 
@@ -1136,15 +1136,36 @@ var numClick = h('pre',  `  var numClick$ = sources.DOM
     else {pMgoals.bnd(add, 1).bnd(pMgoals.ret).bnd(g => newRoll(0, g))};
   };  `  )
 
+var e7 = h('pre.turk',  `  ret(3,'cow').bnd(x => log(x,['Received the value ' + x])
+  .bnd(cube).bnd(y => log(y, [x + ' cubed is ' + y])
+  .bnd(log,['The monad cow holds the value ' + get(cow)])))  `  )
+
+var e7x = h('pre',  `   Output:
+   Received the value 3
+   3 cubed is 27  
+   The monad cow holds the value 3  `  )
+
 var p3 = h('pre',  `  
 `  )
 
-var p2 = h('pre',  `  
+var p4 = h('pre',  `  
+`  )
+
+var p5 = h('pre',  `  
+`  )
+
+var p7 = h('pre',  `  
+`  )
+
+var p6 = h('pre',  `  
+`  )
+
+var p9 = h('pre',  `  
 `  )
 
 
 
-  export default { numClick, mMZ10, test3, travMonad, monad, equals, fmap, opM, e1, e2, e2x, e3, e4, e4x, e6, e6x, driver, messages, monadIt, MonadSet, updateCalc, arrayFuncs, travel, nums, cleanup, ret, C42, newTask, process, mM$task, addString, colorClick, edit, testZ, quad, runTest, todoStream, inc, seed,  add, traverse, MonadState, primesMonad, fibsMonad, primeFibInterface, tr3, fpTransformer, innerHTML, factorsMonad, factorsInput, playerMonad, promise, promiseSnippet, timeout, timeoutSnippet, examples, examples2, async }
+  export default { numClick, mMZ10, test3, travMonad, monad, equals, fmap, opM, e1, e2, e2x, e3, e4, e4x, e6, e6x, e7, e7x, driver, messages, monadIt, MonadSet, updateCalc, arrayFuncs, travel, nums, cleanup, ret, C42, newTask, process, mM$task, addString, colorClick, edit, testZ, quad, runTest, todoStream, inc, seed,  add, traverse, MonadState, primesMonad, fibsMonad, primeFibInterface, tr3, fpTransformer, innerHTML, factorsMonad, factorsInput, playerMonad, promise, promiseSnippet, timeout, timeoutSnippet, examples, examples2, async }
  
 
 
