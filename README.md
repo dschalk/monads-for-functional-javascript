@@ -39,13 +39,23 @@ In most chains of computations, the arguments provided to each link's bnd() meth
     var cube = function cube (v, id = 'default') {
         return ret(v * v * v, id);
     };
-
-    var log = function log(x, message) {
-        console.log(message);
+  
+    function log(x, message) {     // message is an array
+        console.log(message.join(', '));
         return ret(x);
-    };
+    };  
 ```
+These functions can be used with instances of Monad in many ways, for example:
+```javascript
+  ret(3,'cow').bnd(x => log(x,['Received the value ' + x])
+  .bnd(cube).bnd(y => log(y, [x + ' cubed is ' + y])
+  .bnd(log,['The monad cow holds the value ' + get(cow)])))  
 
+   Output:
+   Received the value 3
+   3 cubed is 27  
+   The monad cow holds the value 3  
+```
 In the following discussion, "x == y" signifies that x == y returns true. Let J be the collection of all Javascript values, including functions, instances of Monad, etc, and let F be the collection of all functions mapping values in J to instances of Monad m with references matching their ids; that is, with m[id] == m.id. M is defined as the collection of all such instances of Monad along and all of the functions in F. We speculate that there is a one to one correspondence between monads in Hask (The For any m (with id == "m"), f, and f' in M, J, F, and F, respectively, the following relationships hold:
 ```javascript
 Left Identity
@@ -98,412 +108,213 @@ const MonadItter = function ()  {
   this.bnd = func => this.p = func;
 };
 ```
-
 As shown later in the online demonstration, MonadItter instances control the routing of incoming websockets messages and the flow of action in the simulated dice game. In one of the demonstrations, they behave much like ES2015 iterators. I prefer them over ES2015 iterators. They can also help to provide promises-like functionality without promises.
 
-## MonadState
-```javascript
-  function MonadState(g, state, p) {
-    var ob = {
-      id: g,
-      s: state,
-      a: s[3],
-      process: p,
-      bnd: (func, ...args) => func(ob.s, ...args),  
-      run: function (ar) {
-        var ar2 = ob.process(ar);
-        ob.s = ar2;
-        ob.a = ar2[3];
-        window[ob.id] = ob;
-        return window[ob.id];
-      }
-    };
-    return ob;
-  };
-```
-MonadState reproduces some of the functionality found in the Haskell Module "Control.Monad.State.Lazy", inspired by the paper "Functional Programming with erloading and Higher-der Polymorphism", Mark P Jones (http://web.cecs.pdx.edu/~mpj/) Advanced School of Functional Programming, 1995. The following demonstrations use the MonadState instances fibsMonad and primesMonad to create and store arrays of Fibonacci numbers and arrays of prime numbers, respectively. fibsMonad and primesMonad provide a simple way to compute lists of prime Fibonacci numbers. Because the results of computations are stored in the a and s attributes of MonadState instances, it was easy to make sure that no prime number had to be computed more than once in the prime Fibonacci demonstration and the "display the prime factors" demonstrations.
+###Traversal of the dice game history.
 
-Here is the definition of fibsMonad, along with the definition of the function that becomes fibsMonad.process.
+MonadState instance travMonad facilitates traversal of the game history. travMonad.s is a four member array holding the current numbers, current score, current goals, and an array of arrays containing numbers, score, and goals corresponding to past states of the game.. Here is the definition of travMonad and its auxiliary function:
 ```javascript
-  var fibsMonad = new MonadState('fibsMonad', [0, 1, 3, [0,1]], [0,1], fibs_state); 
+  var travMonad = new MonadState("travMonad", [[8,8,8,8], 0, 0, [ [ [], 0, 0 ] ] ], trav_state)
   
-  var fibs_state = function fibs_state(ar) {
-    var a = ar.slice();
-    while (a[3].length < a[2]) {
-      a = [a[1], a[0] + a[1], a[2], a[3].concat(a[0])];
-    }
-    return a;
+  function trav_state (ar) {
+    pMindex.bnd(add,1).bnd(pMindex.ret);
+    var nums = ar[0];
+    var score = ar[1];
+    var goals = ar[2];
+    var next = travMonad.s.slice();
+    var ar = [nums, score, goals];
+    next[0] = nums;
+    next[1] = score;
+    next[2] = goals;
+    next[3].unshift(ar);
+    return next;         // This results in travMonad.s == next.
   }
-```
-Another MonadState instance used in the online demonstration is primesMonad. Here is its definition along with the function that becomes primesMonad.process:
-### primesMonad
-```javascript
-  var primesMonad = new MonadState('primesMonad', [3, 2, 'primesMonad', [2]], [2],  primes_state)  
-
-  var primes_state = function primes_state(x) {
-    var v = x.slice();
-      while (2 == 2) {
-        if (v[3].every(e => ((v[0]/e) != Math.floor(v[0]/e)))) {
-          v[3].push(v[0]);
-        }
-        if (v[3][v[3].length - 1] > v[2]) { break };     // Not an infinite loop afterall.
-        v[0]+=2;
-      }
-    return v;
-  }
-```
-More code and interactive demonstrations are available online at [http://schalk.net:3055](http://schalk.net:3055). 
-## messageMonad
-The following code supports the group chat feature:
-```javascript
-    var messageMonad = new MonadState('messageMonad', messages, messages, message_state); 
-    
-    function message_state(v) {
-      var ar = v[0].concat(v[3]);
-      return [ v[0], [], [], ar ];
-    };
-
-    var updateMessages = function updateMessages(e) {
-      var ar = e.split(',');
-      var sender = ar[2];
-      ar.splice(0,3);
-      var str = ar.join(',');
-      messageMonad.run([ [h('br'), sender + ': ' + str], [], [], messageMonad.s[3] ]);
-    };
-```
-messageMonad.s[3] rests permantly in the virtual DOM. The message handler sends a string to the websockets server which broadcasts it to group members. The incoming websockets message handler is a stream which is merged into the stream that feeds the virtual DOM, triggering the Snabbdom diff anad render algorithm.
-## MonadSet
-An instance of MonadSet supports the browser display of all currently online group members.
-```javascript
-const MonadSet = function (set, ID = 'anonymous')  {
-  this.s = set;
-  this.bnd = (func, ...args) => func(this.s, ...args);  
-  this.add = a => new MonadSet(s.add(a), this.id);
-  this.delete = a => new MonadSet(s.delete(a), this.id);
-  this.clear = () => new MonadSet(s.clear(), this.id);
-};
-
-var s = new Set();
-
-var sMplayers = new MonadSet(s, 'sMplayers')  // holds currently online players
-
-  var updatePlayers = function updatePlayers (data) { 
-    sMplayers.clear();
-    var namesL = data.split("<br>");
-    var namesList = namesL.slice(1);
-    updateScoreboard2(namesList);
-    namesList.forEach(player => sMplayers.add(player.trim()));
-  }
-
-  var updateScoreboard2 = function updateScoreboard2(v) {
-    var ar = [];
-    for (let k of v) {
-        ar.push(['  ' + k]);
-    };
-    pMdata.ret(ar);
-  };
-```
-## MonadItter example
-MonadItter instance mMZ3 calls its bnd() method three times. User input releases it three times, each time supplying a number to the quadratic equation `a*x*x + b*x + c = 0 `. When mMZ3 is released the third time, an attempt is made to find solutions using the quadratic formula. Here is the code:
-```javascript  
-  const quad$ = sources.DOM
-    .select('#quad').events('keypress')  // Motorcycle way of getting user input.
-  
-  const quadAction$ = quad$.map((e) => {
-    if( e.keyCode == 13 ) {
-      mMZ3.release(e.target.value)       // Releases mMZ3 (below).
-      document.getElementById('quad').value = '';
-    }
-  });
-
-  var qS1 = function qS1 (a, b, c) {
-    let n = (b*(-1)) + (Math.sqrt(b*b - 4*a*c));
-    if (n != n) {
-      return "No solution";
-    }
-    return n/(2*a);
-  }
-
-  var qS2 = function qS2 (a, b, c) {
-    let n = (b*(-1)) - (Math.sqrt(b*b - 4*a*c));
-    if (n != n) {
-      return "No solution";
-    }
-    return n/(2*a);
-  }  
-
-  var solve = function solve () {
-    mMZ3.bnd(a => 
-    mMtemp.ret(a)           
-    .bnd(display, 'quad4', '')         
-    .bnd(display, 'quad6', '')         
-    .bnd(display,'quad5', a + " * x * x ")
-    .bnd(a => mMZ3    // Blocks here until new user input comes in.
-    .bnd(b =>  mMtemp.ret(b)
-    .bnd(display, 'quad6', b + ' * x ').bnd(b => mMZ3  // Blocks again.
-    .bnd(c => mMtemp.ret([a,b,c]).bnd(fmap, qS4, "mMtemp")
-    .bnd(v => {  
-      let x = v[0]
-      let y = v[1]
-      console.log('Here is x and y: ', x, y)
-    mMtemp.bnd(display, 'quad4', "Results: " + x + " and  " + y)  
-    .bnd(display, 'quad5', p(a).text + " * " + x + " * " + x + " + " + p(b).text + 
-            " * " + x + " " + p(c).text + " = 0")
-    .bnd(display, 'quad6', p(a).text + " * " + y + " * " + y + " + " + p(b).text + 
-            " * " + y + " " + p(c).text + " = 0")   
-    solve();  
-    } ) ) ) ) ) ) 
-  };
-
-function fmap (x, g, id) {
-  window[id] = new Monad(g(x), id); 
-  return window[id]
-}
-
-var display = function display (x, id, string) {
-  document.getElementById(id).innerHTML = string;
-  return ret(x);
-}
-```
-## MonadState Transformer Example
-MonadState instances are used to create a list of prime Fibonacci number. More commentary is available at [Demonstration](http://schalk.net:3055). Here are the definitions of fibsMonad and its helper functions:
-
-### MonadState Transformers
-Transformers take instances of MonadState and return different instances of MonadState, possibly in a modified state. The method call "fibsMonad.bnd(pfTransformer, primesMonad)" returns primesMonad. Here is the definition of pfTransformer:
-```javascript
-  var fpTransformer = function transformer (s, m) {
-    var bound = Math.ceil(Math.sqrt(s[3][s[3].length - 1]));
-    if (bound > m.a[m.a.length - 1] ) {
-      m.run([m.s[0], "from the fibKeyPress5$ handler", bound, primesMonad.a])
-    }
-    return m;
-  }
-``` 
-The final computation occurs when "tr3(fibsState[3],primesState[3]" is called. tr3() takes an array of fibonacci numbers and an array of prime numbers and returns an array containing an array of Fibonacci numbrs, an array of prime numbers, and an array of prime Fibonacci numbers. Here is the definition of tr3:
-```javascript
-  var tr3 = function tr (fibsArray, primesArray) {
-    var bound = Math.ceil(Math.sqrt(fibsArray[fibsArray.length - 1]))
-    var primes = primesArray.slice();
-    if (primesArray[primesArray.length - 1] >= bound) {
-      primes = primesArray.filter(v => v <= bound);
-    } 
-    var ar = [];
-    var fibs = fibsArray.slice(3);
-    fibs.map (f => {
-      if ( primesArray.every(p => (f % p != 0 || f == p))) ar.push(f);
-    })
-    return [fibsArray, primes, ar]
-  }
- ```
-This is how user input is handled:
-```javascript  
-  const fibKeyPress5$ = sources.DOM
-    .select('input#fib92').events('keydown');
-
-  const primeFib$ = fibKeyPress5$.map(e => {
-    if( e.keyCode == 13 ) {
-      var res = fibsMonad
-      .run([0, 1, e.target.value, []])
-      .bnd(fibsState => fibsMonad
-      .bnd(fpTransformer, primesMonad)
-      .bnd(primesState => tr3(fibsState[3],primesState[3])))
-      document.getElementById('PF_9').innerHTML = res[0];
-      document.getElementById('PF_22').innerHTML = res[1];
-      document.getElementById('primeFibs').innerHTML = res[2];
-    }
-  });
-```
-##Asynchronous Composition: Promises, MonadItter, or Niether
-
-Using the ES2015 Promises API inside of monads is easy. For example, consider the function "promise", defined as follows:
-```javascript
-  var promise = function promise(x, t, mon, args) {
-    return (new Promise((resolve) => {
-      setTimeout(function() {
-        resolve(eval("mon.ret(x).bnd(" + args + ")"))   // eval! Get over it, Douglas.
-      },t*1000  );
-    }));
-  };
-```
-Running the following code causes get(m) == 42 after two seconds.
-```javascript
-  m.ret(3).bnd(promise, 2, m, "cube").then(data => m.ret(data.x).bnd(add, 15, m))  
-```
-After a two-second delay, the Promise returns the newest version of m with m.x = 27. The then statement passes 27 to m and returns a new version of m with added 15 to it. This pattern can be used to define less trivial functions that handle database calls, functions that don't return immediately, etc. And, of course, ES2015 Promises API error handling can be added.
-
-The same result can be achieved with MonadItter instead of Promises. Consider this:
-```javascript
-  var timeout2 = function timeout (x, t, m, args) {
-    setTimeout(function () {
-      mMZ9.release();
-    }, t * 1000  );
-    return mMZ9.bnd(() => m.bnd(... args))
-  };
-```
-The following code uses timeout2 (above). If you click RUN in the online presentation, "m.x is 27" appears after one second. Two seconds later, "m.x is 42" is displayed along with a blurb that confirms the chain can continue after the delayed computation completes. Here is the code that handles user input:
-```javascript
-  const timeoutClicks$ = sources.DOM.select('#timeout').events('click')
-
-  const timeoutAction$ = timeoutClicks$.map(() => {
-    document.getElementById('timeout2').innerHTML = ''
-    document.getElementById('timeout3').innerHTML = ''
-    m.ret(3, 'm')
-      .bnd(timeout2, 1, m, [() => m
-      .bnd(cube, m)
-      .bnd(display, 'timeout2', 'm.x is ' + ' ' + m.x, m)
-      .bnd(timeout2, 2, m, [() => m
-      .bnd(add, 15, m)
-      .bnd(display, 'timeout2',  'm.x is ' + ' ' + m.x, m)
-      /* Continue chaining from here */
-      .bnd(display, 'timeout3', 'The meaning of everything was computed to be' + ' ' + m.x, m)   
-    ])]);  
-  });
-```
-The final blurb confirms that the chained code waits for completion of the asynchronous code. Similar code could be made to wait for database calls, Ajax requests, or long-running processes to return before running subsequent chained code. In fact, messages$, the stream that handles incoming websockets messages, named "messages$", does just that. When a message is sent to the server, messages$ listens for the response. The functions waiting in MonadItter bnd() expressions are released according to the prefix of the incoming message from the server. Essentially, messages$ contains callbacks. MonadItter provides an uncluttered alternative to "if - then" blocks of code. 
-
-I didn\'t provide for error handling. There doesn't seem to be any need for it in this demonstration. If I were getting information from a remote database or Ajax server, I would handle errors with "window.addEventListener("error", function (e) { ...".
-
-Composition with Promises involves chains of ".then" statements. Using MonadItter, composition can be accomplished with Monad's bnd() and ret() methods, just as we have done throughout this presentation.
-
-``` 
-##MonadMaybe
-When sequences of computations are performed inside of MonadMaybe, the inadvertent creation of variables with the values NaN or undefined can halt further computation while the sequence rapidly runs to completion. In this demonstration, an udefined variable and a variable with value NaN appear in the middle of a middle of a sequence of computations. Scren shots of the Chrome console show what happens. First, here are the most relevant definitions:
-```javascript
-  var MonadMaybe = function MonadMaybe(z) {
-  var _this = this;
-  var g = arguments.length <= 1 || arguments[1] === undefined ? 'anonymous' : arguments[1];
-  this.id = g;
-  this.x = z;
-  
-  this.bnd = function (a) {
-    console.log('<B><B><B>             Entering bnd()  <B><B><B>               The argument is ', a );
-    var result;
-    if (_this.x == 'Nothing' || a[1] == 'Nothing') {
-      console.log('<B><N><B>             In bnd()        <B><N><B>      Propagating Nothing from bnd()');
-      result = Nothing;
-      console.log('<$><$><$>             In bnd()        <$><$><$>      The result is ', result, '   result.x:', result.x);
-    }
-    else if (a instanceof Function) return a();
-    else {
-      var b = a.slice(1);
-      var res = test([a[0],_this.x.toString(), ... b]);    
-      result = res;
-      console.log('<$><$><$>             In bnd()        <$><$><$>      The result is ', result, '   result.x:', result.x);
-    }
-    return result;
-  }
-  
-  this.ret = function (a) { 
-    var b = eval(`typeof(acorn)`);
-    console.log('<@><@><@>             In ret()  <@><@><@>            Creating a new instance of MonadMaybe ___  id:', '"' +_this.id +'"', '     value:', a );
-    if (_this.x == 'Nothing') {
-      console.log('<N><N><N>    Still in ret()   <N><N><N>      Propagating Nothing from ret()');
-      return Nothing
-    }  
-    try {
-      if (a == undefined) throw '    ' + a + " is not defined"
-      return window[_this.id] = new MonadMaybe(a, _this.id);
-    }
-    catch(e) { 
-      console.log("<N><N><N>   Still in ret()  <N><N><N>  In a catch block ", a, 'is not defined.    ', e) 
-      return Nothing
-    };
-    try {
-      if (a == 'NaN') throw '    ' + a + " is not a number"
-      return window[_this.id] = new MonadMaybe(a, _this.id);
-    }
-    catch(e) { 
-      console.log("<N><N><N>   Still in ret()  <N><N><N>  In a catch block ", a, 'is not a number.   ', e) 
-      return Nothing
-    };
-  };
-};
-  
-  var Nothing = new MonadMaybe('Nothing', 'Nothing');
-  
-  function run (x) {
-    console.log('<O><O><O>  Left test(), now at the start of run()  <O><O><O>  The argument is ', x);  
-    var f = eval(x[0]);
-    var b = x.slice(1)
-    return f(... b)
-  }
-  
-function test (a) {
-
-  console.log('<T><T><T>  Left bnd(); now at the start of test()  <T><T><T>  The argument is ', a );
-  
-  for (let c of a) {
-    try {if (eval(c).toString == undefined) {
-      throw "Error " + c + "is not defined"}
-    } 
-    catch(e) {
-      console.log("<E><E><E>             In test()       <E><E><E>      " + c + " is not defined");
-      console.log("<T><N><T>             In test()       <T><N><T>      Propagating Nothing from test()");
-      return Nothing;
-    }
-    try {if ((eval(c).toString()) == 'NaN') {
-      throw "Error " + c + " is not a number"}
-    } 
-    catch(e) {
-      console.log('<E><E><E>             In test()       <E><E><E>      " + c + " is not a number' );
-      console.log("<T><N><T>             In test()       <T><N><T>      Propagating Nothing from test()");
-      return Nothing;
-    }
-    try {if (a[1] == 'Nothing') {
-      throw "Error The value of the argument's x attribute is 'Nothing' " }
-    } 
-    catch(e) {
-      console.log('<E><E><E>             In test()       <E><E><E>      The substrate monad's x attribute is "Nothing' );
-      console.log("<T><N><T>             In test()       <T><N><T>      Propagating Nothing from test()");
-      return Nothing;
-    }
-  return run(a);
-  }  
 ```  
-And here are the screenshots of what was logged after calling a sequence of computations that executed properly and then two variations that failed. First, the version that succeeded:
-![success](src/images/success.png)
-Next, the undefined variable ox appears halfway through the sequence of computations. What happened and where it happened are readily apparent in the screenshot. Just scan for the first appearance of MonadMaybe  {id: "Nothing, x: "Nothing"} result.x Nothing, then look above it. Two lines up it says "ox is not defined". Directly above that we see that the undefined variable was introduced in the file named "test". Two lines above that we see that mQ1 has the value ox. Here is the screenshot:  
-![undefined](/src/images/ox.png)
-And finally, 0/0 causes get(mQ1) == NaN.
-![NaN](src/images/div0.png)
-After NaN was encountered, the sequence ran smoothly and rapidly through the final stages without attempting to do the specified work. In other scenarios, the savings in resources might be significant, a system crash might be averted, or a silently-produced bug causing incorrect results might have been avoided. And if I hadn't intentionally caused the failure, trouble-shooting would have been a no-brainer. In production, I would log only code pertaining to Nothing in order to be notified of problems that slipped past me during testing, but for this demonstration I logged messages from each stage of the computation, which might be a good thing to do during development. An operation in the middle of a sequence of operations might pause to obtain data from a remote resouse based on information received from the previous MonadMaybe instance. MonadMaybe could be modified to throw for more that undefined and NaN.
-### The Haskell Wai Websockets Back End
-This project isn't an exposition of the modified Haskell Wai Websockets server, but I want to point out the similarity between the way the server holds the application's state in a TMVar and the way the front end holds state in an object. The application's state is always changing, so it\'s a pretty safe bet that something is mutating somewhere. The Haskell server for the online demonstration at [JS-monads-stable](http://schalk.net:3055) keeps the ever-changing state of the application in the ServerState list of tupples. It is defined as follows: 
-```haskell
-type Name = Text
-type Score = Int
-type Goal = Int
-type Group = Text
-type Client = (Name, Score, Goal, Group, WS.Connection)
-type ServerState = [Client]
+The number display is generated by four virtual button nodes with id = i, st yle: {display: get(pMstyle)[i]} and text get(pMnums)[i] for i = 0, 1, 2, and 3. The virtual button nodes rest permanently in the virtual DOM. pMnums and pMstyle are updated in the messages$ stream whenever a new dice roll is received from the server. pMnums and pMstyle are also re-set when a user clicks a number, causing it to disappear from the display and when when a user clicks a number or an operator button prompting a call to updateCalc, which either causes a new roll or a computed number to be added to the display. numClickAction$ and opClickAction$ are merged into the stream that feeds the virtual DOM, so updates are seen almost instantaneously.
 
-newServerState :: ServerState
-newServerState = []
-```
-When the server loads, the line of code 
-```haskell
-state <- atomically $ newTMVar newServerState
-```
-When the server is notified of a score change in the simulated dice game, this code executes:
-```haskell
-else if "CG#$42" `T.isPrefixOf` msg
-  then
-    mask_ $ do
-      old <- atomically $ takeTMVar state
-      let new = changeScore sender extraNum extraNum2 old
-      atomically $ putTMVar state new
-      let subSt = subState sender group new
-      broadcast msg subSt
-      broadcast ("CB#$42," `mappend` group `mappend` ","
-          `mappend` sender `mappend` "," `mappend` T.concat (intersperse "<br>" (textState subSt))) subSt
-```
-You don't need to be a Haskell programmer to see that state is pulled out of the TMVar and given the name "old". "new" is the state after changeScore sender extraNum extraNum2 old executes. "atomically $ putTMVar state new" replaces "old" in the TMVar with "new".
+Whenever pMnums changes, the expression pMnums.bnd(test3).bnd(pMstyle.ret) updates pMstyle so as to hide undefined values of get(pMnumes)[i] for i = 0, 1, 2, and 3.
+```javascript
+  function test3 (a) {
+    var b = [];
+    for (let i of [0,1,2,3]) {
+      b[i] = (a[i] == undefined) ? 'none' : 'inline'
+    }
+    return ret(b);
+  }  
 
-In the server, replacing state in the TMVar takes place inside the Imonad, which scupulously protects the application from side effects. But the fact remains that the TMVar ServerState list of clients is not what it used to be after a score change. Some client in the ServerState list has been replaced by a client with the same name, goal, group, and websockets connection but a different score.
+  pMnums.bnd(test3).bnd(pMstyle.ret);  
+```  
+New dice rolls always correspond to score changes. One point is lost each time a player clicke ROLL. Scores increase whenever players put together expressions that return 18 or 20. An increase in score is always accompanied by a call to newRoll() with two arguments: score and goals. The server updates its ServerState TMVar and broadcasts the new roll to all group members with the prefix "CA#$42. The server also broadcasts the updated score and goal information, with the prefix NN#$42. These messages are caught, parsed, and acted upon in the message$ stream in the Motorcycle front end. pMnums, pMstyle, and travMonad get updated during the course of this process.
+```javascript
+  mMZ10.bnd( () => {
+    pMnums.ret([v[3], v[4], v[5], v[6]]).bnd(test3).bnd(pMstyle.ret)
+    travMonad.run([ [v[3], v[4], v[5], v[6]], v[7], v[8] ]);
+    pMscore.ret(v[7]);
+    pMgoals.ret(v[8]) });  
+```
+###Updating the numbers
 
-### MonadItter
-MonadItter instances are net monadic in any sense of the word. "Monad" is more like a namespace in the case of MonadItter. It is useful, but only for its bnd() and release() methods.  only when their bnd() method is used; and when bnd() is used, the "p" attribute becomes the argument to bnd(). I think this is a situation in which it is wise to take advantage of the fact that Javascript allows p to morph into the bnd() argument. Words like "dogmatic", "religous", and "obsessive" come to mind when I think of imposing consistency on this project by eliminating the only exception to the general no-mutations policy. If I find that it interferes with JavaScript engine optimization, I will reconsider.
- 
+The previous discusion was about traversal of the game history. This seems like a good place to look at the algorithm for generating new numbers when players click on the number and operator buttons. Here is the code:
+```javascript
+  var numClick$ = sources.DOM
+      .select('.num').events('click'); 
+
+  var numClickAction$ = numClick$.map(e => {
+    if (get(mM3).length == 2) {return};
+    pMnums    
+    .bnd(spliceM, e.target.id, 1)
+    .bnd(pMnums.ret)
+    .bnd(test3)
+    .bnd(pMstyle.ret)
+    mM3
+    .bnd(push, e.target.innerHTML)
+    .bnd(mM3.ret)
+    .bnd(v => {
+      if (v.length == 2 && get(mM8) != 0) {
+        updateCalc(v, get(mM8)) 
+      }
+    })
+    }).startWith([0, 0, 0, 0]);
+
+  var opClick$ = sources.DOM
+      .select('.op').events('click');
+
+  var opClickAction$ = opClick$.map(e => {
+    mM8.ret(e.target.innerHTML).bnd(v => { 
+      var ar = get(mM3)
+      if (ar.length === 2) {
+        updateCalc(ar, v)
+      }
+    }) 
+  });
+
+  function updateCalc(ar, op) {
+    var result = calc(ar[0], op, ar[1]);
+    mM3.ret([]);
+    mM8.ret(0)
+    if (result == 20) { 
+      pMscore.bnd(add,1)
+      .bnd(testscore)
+      .bnd(pMscore.ret)
+      .bnd(v => score(v));
+      return; 
+    } 
+    else if (result == 18) { 
+      pMscore.bnd(add,3)
+      .bnd(testscore)
+      .bnd(pMscore.ret)
+      .bnd(v => score(v));
+      return; 
+    }
+    else {
+      pMnums.bnd(push,result)
+      .bnd(pMnums.ret)
+      .bnd(v => {
+        travMonad.run([v, get(pMscore), get(pMgoals)])
+        test3(v)
+        .bnd(pMstyle.ret)
+      }); 
+      mM8.ret(0);
+      mM3.ret([]);
+      console.log('in updateCalc 1111111111 get(pMnums), get(pMstyle) ', get(pMnums), get(pMstyle) );
+    }
+  };  
+
+  var testscore = function testscore(v) {
+    if ((v % 5) === 0) return ret(v+5)
+    else return ret(v);
+  };
+
+  function score(scor) {
+    if (scor != 25) {
+      newRoll(scor, get(pMgoals))
+    }
+    else if (get(pMgoals) == 2) {
+      newRoll(0,0)
+    }
+    else {pMgoals.bnd(add, 1).bnd(pMgoals.ret).bnd(g => newRoll(0, g))};
+  };  
+
+```  
+The clicked number is removed from pMnums and added to mM3 in the numClickAction$ stream. If two numbers and an operator have been selected, numClickAction$ and opClickAction$ call updateCalc, giving it the two member array (which is held in mM3) of selected numbers and the selected operator. After each roll, mM8 is given the value 0 so get(mM8) != 0 means an operator has been selected. updateCalc calls calc on the numbers and operater given to it by numCalcAction$ or opCalcAction$, giving the value to a variable named "result". If the value of result is 18 or 20, the resulting score is checked to see if it should be augmented by five and then score(scor) is called, providing the new score to the function score(). score() performs some more tests and calls for a new roll with the values of score and goals it has determined depending on whether or not there is a score and, if so, a winner.
+MonadSet
+
+The list of online group members at the bottom of the scoreboard is very responsive to change. When someone joins the group, changes to a different group, or closes a browser session, a message prefixed by NN#$42 goes out from the server providing group members with the updated list of group members. MonadSet acts upon messages prefixed by NN#$42. Here are the definitions of MonadSet and the MonadSet instance sMplayers
+
+  var MonadSet = function MonadSet(set, ID) {
+    var _this = this;
+  
+    this.s = set;
+  
+    if (arguments.length === 1) this.id = 'anonymous';
+    else this.id = ID;
+  
+    this.bnd = function (func, ...args) {
+       return func(_this.x, ...args);
+    };
+  
+    this.add = function (a) {
+      var ar = Array.from(_this.s);
+      set = new Set(ar);
+      set.add(a);
+      window[_this.id] = new MonadSet(set, _this.id);
+      return window[_this.id];
+    };
+  
+    this.delete = function (a) {
+      var ar = Array.from(_this.s);
+      set = new Set(ar);
+      set.delete(a);
+      window[_this.id] = new MonadSet(set, _this.id);
+      return window[_this.id];
+    };
+  
+    this.clear = function () {
+      set = new Set([]);
+      window[_this.id] = new MonadSet(set, _this.id);
+      return window[_this.id];
+    };
+  };
+  
+  var s = new Set();
+  
+  var sMplayers = new MonadSet( s, 'sMplayers' )  
+Back To The Top
+Websocket messages
+
+Incoming websockets messages trigger updates to the game display, the chat display, and the todo list display. The members of a group see what other members are doing; and in the case of the todo list, they see the current list when they sign in to the group. When any member of a group adds a task, crosses it out as completed, edits its description, or removes it, the server updates the persistent file and all members of the group immediately see the revised list.
+
+The code below shows how incoming websockets messages are routed. For example, mMZ10.release() is called when a new dice roll (prefixed by CA#$42) comes in.
+
+  const messages$ = (sources.WS).map( e => {
+  mMtem.ret(e.data.split(',')).bnd( v => {
+  console.log('<><><><><><><><><><><><><><><><>  INCOMING  <><><><><><><> >>> In messages. e amd v are ', e, v);
+  mMZ10.bnd( () => {
+    pMnums.ret([v[3], v[4], v[5], v[6]]).bnd(test3).bnd(pMstyle.ret)
+    travMonad.run([ [v[3], v[4], v[5], v[6]], v[7], v[8] ]);
+    pMscore.ret(v[7]);
+    pMgoals.ret(v[8]) }); 
+  mMZ12.bnd( () => mM6.ret(v[2] + ' successfully logged in.'));
+  mMZ13.bnd( () => updateMessages(e.data));
+  mMZ14.bnd( () => mMgoals2.ret('The winner is ' + v[2]));
+  mMZ15.bnd( () => {
+    mMgoals2.ret('A player named ' + v[2] + ' is currently logged in. Page will refresh in 4 seconds.')
+    refresh() });
+  mMZ17.bnd( () => testTask(v[2], v[3], e.data) ); 
+    mMZ18.bnd( () => {if (get(pMgroup) != 'solo' || get(pMname) == v[2]) {updatePlayers(e.data) } });
+  })       
+  mMtemp.ret(e.data.split(',')[0])
+  .bnd(cow, 'CA#$42', mMZ10)
+  .bnd(cow, 'CD#$42', mMZ13)
+  .bnd(cow, 'CE#$42', mMZ14)
+  .bnd(cow, 'EE#$42', mMZ15)
+  .bnd(cow, 'DD#$42', mMZ17)
+  .bnd(cow, 'NN#$42', mMZ18)
+  });  
+The "mMZ" prefix designates instances of MonadItter. An instance's bnd() method assigns its argument to its "p" attribute. "p" runs if and when its release() method is called. The next() function releases a specified MonadItter instance when the calling monad's value matches the specified value in the expression. In the messages$ stream, the MonadItter instance's bnd methods do not take argumants, but next is capable of sending arguments when bnd() is called on functions requiring them. Here is an example:
+
+The clicked number is removed from pMnums and added to mM3 in the numClickAction$ stream. If two numbers and an operator have been selected, numClickAction$ and opClickAction$ call updateCalc, giving it the two member array (which is held in mM3) of selected numbers and the selected operator. After each roll, mM8 is given the value 0 so get(mM8) != 0 means an operator has been selected. updateCalc calls calc on the numbers and operater given to it by numCalcAction$ or opCalcAction$, giving the value to a variable named "result". If the value of result is 18 or 20, the resulting score is checked to see if it should be augmented by five and then score(scor) is called, providing the new score to the function score(). score() performs some more tests and calls for a new roll with the values of score and goals it has determined depending on whether or not there is a score and, if so, a winner.
+```
 ##[The Online Demonstration](http://schalk.net:3055)
 The online demonstration features a game with a traversible dice-roll history; group chat rooms; and a persistent, multi-user todo list. People in the same group share the game, chat messages, and whatever todo list they might have. Updating, adding, removing, or checking "Complete" by any member causes every member 's todo list to update. The Haskell websockets server preserves a unique text file for each group's todo list. Restarting the server does not affect the lists. Restarting or refreshing the browser window causes the list display to disappear, but signing in and re-joining the old group brings it back. If the final task is removed, the server deletes the group's todo text file. 
 
