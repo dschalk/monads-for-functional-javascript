@@ -326,7 +326,7 @@ Instances of MonadE function much the same as instances of Monad, but When an in
         ' squared and ' + b.getx() + ' squared is ' + d.getx())    
   });
 ```
-![Alt text](MonadE_a?raw=true)
+![Alt text](MonadE_a.png?raw=true)
 Here are the definitions of MonadE and the functions used in the demonstration:
 ```Javascript
   function MonadE (val, ID, er = []) {
