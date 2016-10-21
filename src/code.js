@@ -1262,47 +1262,6 @@ var screenshot = h('pre.turk',  `  ret2(0,'a').bnd('add2',3)
    .bnd('d.ret')
    .bnd('log2','The square root of the sum of ' + a.getx() + 
         ' squared and ' + b.getx() + ' squared is ' + d.getx())    
-  });
-        
-
-
-  .bnd('mult2',100)
-  .bnd(a.ret)
-  .bnd('square2')  
-  .bnd(c.ret)  
-  .bnd(() => {
-     b.bnd('add2',4)
-    .bnd('mult2',100)
-    .bnd('b.ret')
-    .bnd('d.ret')
-    .bnd('square2')
-    .bnd('d.ret')
-    .bnd('add2',c.getx())
-    .bnd('d.ret')
-    .bnd('sqroot2')
-    .bnd('d.ret')
-    .bnd('log2','The square root of the sum of ' + a.getx() + 
-      ' squared and ' + b.getx() + ' squared is ' + d.getx())    
-  });  
-
-  a.bnd('add22',3)
-  .bnd('mult2',100)
-  .bnd(a.ret)
-  .bnd('square2')  
-  .bnd(c.ret)  
-  .bnd(() => {
-     b.bnd('add2',4)
-    .bnd('mult2',100)
-    .bnd('b.ret')
-    .bnd('d.ret')
-    .bnd('square2')
-    .bnd('d.ret')
-    .bnd('add2',c.getx())
-    .bnd('d.ret')
-    .bnd('sqroot2')
-    .bnd('d.ret')
-    .bnd('log2','The square root of the sum of ' + a.getx() + 
-      ' squared and ' + b.getx() + ' squared is ' + d.getx())    
   });  `  )
 
 var p5 = h('pre',  `  
