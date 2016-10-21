@@ -3,14 +3,10 @@
 // import {run} from '@cycle/xstream-run';
 // import {makeDOMDriver} from '@cycle/dom';
 import Cycle from '@motorcycle/core';
+import {create, merge} from 'most';
 import {h, p, span, h1, h2, h3, pre, br, div, label, input, hr, makeDOMDriver} from '@motorcycle/dom';
-import { create, merge, filter, just, delay} from 'most';
 import code from './code.js';
 
-var next = function next () {
-  console.log('7777777777777777 I exis! ' );
-  return 42;
-};
 console.log('I cannot explain it XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX ');
 var Greeter = (function () {
     function Greeter(message) {
@@ -99,30 +95,19 @@ function main(sources) {
     mMZ18.bnd( () => {if (get(pMgroup) != 'solo' || get(pMname) == v[2]) {updatePlayers(e.data) } });
   })       
   mMtemp.ret(e.data.split(',')[0])
-  .bnd(cow, 'CA#$42', mMZ10)
-  .bnd(cow, 'CD#$42', mMZ13)
-  .bnd(cow, 'CE#$42', mMZ14)
-  .bnd(cow, 'EE#$42', mMZ15)
-  .bnd(cow, 'DD#$42', mMZ17)
-  .bnd(cow, 'NN#$42', mMZ18)
+  .bnd(next, 'CA#$42', mMZ10)
+  .bnd(next, 'CD#$42', mMZ13)
+  .bnd(next, 'CE#$42', mMZ14)
+  .bnd(next, 'EE#$42', mMZ15)
+  .bnd(next, 'DD#$42', mMZ17)
+  .bnd(next, 'NN#$42', mMZ18)
   });
         
-  function cow(x, y, instance) {
+  function next(x, y, instance) {
     if (x == y) {
         instance.release();
     }
     return ret(x);
-  };
-  
-  function testTask (v2, v3, data)  {
-    if (v3 == 'no file' || v3 == 'empty') {
-      mMtaskList.ret([]);
-      taskL = h('span' ); 
-      return;
-    }
-    if (get(pMgroup) != 'solo' || get(pMgroup) == 'solo' &&  get(pMname) == v2) {   
-      process(data);  
-    } 
   };
   
   function newRoll (a,b) {
@@ -237,6 +222,7 @@ function main(sources) {
   });
 
   function updateCalc(ar, op) {
+    mMgoals2.ret('');
     var result = calc(ar[0], op, ar[1]);
     mM3.ret([]);
     mM8.ret(0)
@@ -274,6 +260,7 @@ function main(sources) {
       newRoll(scor, get(pMgoals))
     }
     else if (get(pMgoals) == 2) {
+      socket.send(`CE#$42,${get(pMgroup)},${get(pMname)}`);
       newRoll(0,0)
     }
     else {pMgoals.bnd(add, 1).bnd(pMgoals.ret).bnd(g => newRoll(0, g))};
@@ -447,8 +434,9 @@ function main(sources) {
       messageMonad.run([ [h('br'), sender + ': ' + str], [], [], messageMonad.s[3] ]);
     };
 
+// *******************************************************************BEGIN TODO LIST           
+            
     var task2 = function task2(str) {
-        console.log('In taskAction$. str is: ', str);
         socket.send(`TD#$42,${get(pMgroup)},${get(pMname)},@${str}`)  
     };
 
@@ -485,54 +473,50 @@ function main(sources) {
         }
     });
 
-    var process = function (str) {
-      console.log('In process ppppppppppppppppp  str ', str);
-        var a = str.split(",");
-        if (a == undefined) {
-            return;
-        }
-        ;
-        if (a.length < 9) {
-            return;
-        }
-        ;
-        var ar = a.slice(3);
-        var s = ar.reduce(function (a, b) { return a + ',' + b; });
-        console.log('2323232323232323232323232323232 In process. ar and s are: ', ar, s);
-        var tempArray = [];
-        if (ar.length < 6) {
-            return;
-        }
-        ;
-        if ((ar.length % 6) !== 0) {
-            document.getElementById('alert').innerHTML = 'Error: array length is: ' + length;
-        }
-        mMcurrentList.ret(s);
-        process3(ar);
-    };
+  function testTask (v2, v3, data)  {
+    if (v3 == 'no file' || v3 == 'empty') {
+      mMtaskList.ret([]);
+      taskL = h('span' ); 
+      return;
+    }
+    if (get(pMgroup) != 'solo' || get(pMgroup) == 'solo' &&  get(pMname) == v2) {   
+      process(data);  
+    } 
+  };
+  
+  var process = function (str) {
+      var a = str.split(",");
+
+      if (a == undefined) {
+          return;
+      };
+
+      if (a.length < 9) {
+          return;
+      };
+
+      var ar = a.slice(3);
+      var s = ar.reduce(function (a, b) { return a + ',' + b; });
+      var tempArray = [];
+      mMcurrentList.ret(s);
+      process3(ar);
+  };
 
     var process3 = function (a) {
-      console.log('Entering process3  33333333333333333 a is ', a );
-      if (a.length > 0 && (a.length % 6) == 0) {
-          var ar5 = [];
-          var keys = rang(0, a.length / 6);
-          keys.map(function (_) {
-            ar5.push({
-              task: convertBack(a.shift()),
-              color: a.shift(),
-              textDecoration: a.shift(),
-              checked: a.shift() === 'true',
-              author: a.shift(),
-              responsible: a.shift()
-            });
-          });
-          mMar2.ret(ar5);
-          process4(ar5);
-        console.log('In process3  33333333333333333 a, ar5 is ', a, ar5 );
-      }
-        else {
-            document.getElementById('alert2').innerHTML = 'The length of the game array is either 0 or is not divisible by 6';
-        }
+      var ar5 = [];
+      var keys = rang(0, a.length / 6);
+      keys.map( _ => {
+        ar5.push({
+          task: convertBack(a.shift()),
+          color: a.shift(),
+          textDecoration: a.shift(),
+          checked: a.shift() === 'true',
+          author: a.shift(),
+          responsible: a.shift()
+        });
+      });
+      mMar2.ret(ar5);
+      process4(ar5);
     };
 
     var process4 = function (a) {
@@ -625,7 +609,8 @@ function main(sources) {
         ar.splice(index * 6, 6);
         task2(ar.reduce(function (a, b) { return a + ',' + b; }));
     });
-                       
+
+// **********************************************************************END TODO LIST                       
     var timeoutClicks$ = sources.DOM.select('#timeout').events('click');
   
     const timeoutAction$ = timeoutClicks$.map(() => {
@@ -793,6 +778,7 @@ function display(x, id, string, mon = mMdisplay) {
           h('br'),
           h('span', ' Here are the basic rules:'),
           h('p', 'RULES: If clicking two numbers and an operator (in any order) results in 20 or 18, the score increases by 1 or 3, respectively. If the score becomes 0 or is evenly divisible by 5, 5 points are added. A score of 25 results in one goal. That can only be achieved by arriving at a score of 20, which jumps the score to 25. Directly computing 25 results in a score of 30, and no goal. Each time RL is clicked, one point is deducted. Three goals wins the game. '),
+          h('p.red4', get(mMgoals2) ),
           h('button#0.num',  { style: { display: `${get(pMstyle)[0]}` }}, `${get(pMnums)[0]}` ),
           h('button#1.num',  { style: { display: `${get(pMstyle)[1]}` }}, `${get(pMnums)[1]}` ),
           h('button#2.num',  { style: { display: `${get(pMstyle)[2]}` }}, `${get(pMnums)[2]}` ),
@@ -830,7 +816,7 @@ h('p', ' These functions can be used with instances of Monad in many ways, for e
 code.e7,    
 code.e7x,    
 h('h3', ' The Monad Laws '), 
-h('p', ' In the following discussion, "x == y" signifies that the expression x == y returns true. Let J be the collection of all Javascript values, including functions, instances of Monad, etc, and let F be the collection of all functions mapping values in J to instances of Monad with references (names) matching their ids; that is, with window[id] == m.id for some id which is a valid es2015 variable name. The collection of all such instances of Monad along and all of the functions in F is called "M". For any instances of Monad m, m1, and m2 in M and any functions f and gin F, the following relationships follow easily from the definition of Monad: '), 
+h('p', ' In the following discussion, "x == y" signifies that the expression x == y returns true. Let J be the collection of all Javascript values, including functions, instances of Monad, etc, and let F be the collection of all functions mapping values in J to instances of Monad with references (names) matching their ids; that is, with window[id] == m.id for some id which is a valid es2015 variable name. The collection of all such instances of Monad along and all of the functions in F is called "M". For any instances of Monad m, m1, and m2 in M and any functions f and g in F, the following relationships follow easily from the definition of Monad: '), 
 h('div.bh3', 'Left Identity ' ),
 h('pre.turk', `    equals( m.ret(v, ...args).bnd(f, ...args), f(v, ...args) )    
     equals( ret(v, ...args).bnd(f, ...args), f(v, ...args) ) 
@@ -946,9 +932,10 @@ h('p', ' New dice rolls always correspond to score changes. One point is lost ea
   code.mMZ10,  
 h('h3', ' Updating the numbers ' ),
 h('p', ' The previous discusion was about traversal of the game history. This seems like a good place to look at the algorithm for generating new numbers when players click on the number and operator buttons. Here is the code: ' ),  
-    code.numClick,
-h('p', ' The clicked number is removed from pMnums and added to mM3 in the numClickAction$ stream. If two numbers and an operator have been selected, numClickAction$ and opClickAction$ call updateCalc, giving it the two member array (which is held in mM3) of selected numbers and the selected operator. After each roll, mM8 is given the value 0 so get(mM8) != 0 means an operator has been selected. updateCalc calls calc on the numbers and operater given to it by numCalcAction$ or opCalcAction$, giving the value to a variable named "result". If the value of result is 18 or 20, the resulting score is checked to see if it should be augmented by five and then score(scor) is called, providing the new score to the function score(). score() performs some more tests and calls for a new roll with the values of score and goals it has determined depending on whether or not there is a score and, if so, a winner. ' ),    
-
+    code.numClick1,
+h('p', ' The clicked number is removed from pMnums and added to mM3 in the numClickAction$ stream. If two numbers and an operator have been selected, numClickAction$ and opClickAction$ call updateCalc, giving it the two member array (which is held in mM3) of selected numbers and the selected operator. After each roll, mM8 is given the value 0 so get(mM8) != 0 means an operator has been selected. ' ),
+  code.numClick2,
+h('p', ' updateCalc calls calc on the numbers and operater given to it by numCalcAction$ or opCalcAction$, giving the value to a variable named "result". If the value of result is 18 or 20, the resulting score is checked to see if it should be augmented by five and then score(scor) is called, providing the new score to the function score(). score() performs some more tests and calls for a new roll with the values of score and goals it has determined depending on whether or not there is a score and, if so, a winner. ' ),
 //************************************************************************** ENDOM MonadState
 h('h2', ' MonadSet '),
 h('p', ' The list of online group members at the bottom of the scoreboard is very responsive to change. When someone joins the group, changes to a different group, or closes a browser session, a message prefixed by NN#$42 goes out from the server providing group members with the updated list of group members. MonadSet acts upon messages prefixed by NN#$42. Here are the definitions of MonadSet and the MonadSet instance sMplayers '),
@@ -961,15 +948,18 @@ h('a', { props: { href: '#top' } }, 'Back To The Top'),
   h('p', ' The "mMZ" prefix designates instances of MonadItter. An instance\'s bnd() method assigns its argument to its "p" attribute. "p" runs if and when its release() method is called. The next() function releases a specified MonadItter instance when the calling monad\'s value matches the specified value in the expression. In the messages$ stream, the MonadItter instance\'s bnd methods do not take argumants, but next is capable of sending arguments when bnd() is called on functions requiring them. Here is an example: '),
   h('a#tdList2', { props: { href: '#itterLink' } }, 'release() with arguments'),
   h('br'),
+  h('h2', ' MonadE - An Error-Catching Monad ' ),
+  h('p', ' Instances of MonadE function much the same as instances of Monad, but When an instance of MonadE encounters an error, it ceases to perform any further computations, propagating the error to the end of the sequence it is in. Functions used as arguments to the MonadE bnd() method are placed in quotation marks to prevent the browser engine from throwing reference errors. Arguments can be protected in the same manner. The screen shot (below) taken after running the following expressions in the Google Chrome console shows the logs resulting from running the error-free version and then the version with an error. ' ),
+    code.screenshot,
+  h('img#image', {props: {src: "MonadE_a.png"}}  ),   
   h('br'),
-  h('hr'),
+  h('p', ' Here are the definitions of MonadE and the functions used in the demonstration: ' ),
+    code.monadE,
+  h('p', ' Once a MonadE instance encounters an error, its bnd() method will not process any function other than clean() and log2(). That is because e.length == 1, not 0. clean() resets an instance to normal functioning mode by setting its e attribute back to []. a, b, c, and d are created on the fly in the error-free version. In the version with an error, a already exists and ret2(0,\'a\') re-sets a\'s value to 0. ' ),   
+  h('br'),
+  h('br'),
+  h('br'),
   h('a', { props: { href: '#top' } }, 'Back To The Top'),
-  h('p'),
-  h('br'),
-  h('br'),
-  h('br'),
-  h('br'),
-  h('br'),
   h('br'),
   h('br'),
   h('br'),

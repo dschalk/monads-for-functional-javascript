@@ -3,7 +3,7 @@ var todoData, mMt3VAL;
 var taskL = [];
 var MESSAGES = [];
 function tst (x) {return x};
-// just a horse and rabbit
+
 function Monad (z, ID = 'default') {
     var x = z;
     var ob = {
@@ -18,8 +18,27 @@ function Monad (z, ID = 'default') {
   return ob;
 }
 
+function Monad2 (z, ID = 'default') {
+    var x = z;
+    var ob = {
+    id: ID,
+    bnd: function (func, ...args) {
+      return window[func](x, ...args)
+    },
+    ret: function (a) {
+      return window[ob.id] = new Monad2(a, ob.id);
+    }
+  };
+  return ob;
+}
+
 function get (m) {
   let v = m.bnd(x => x);
+  return v;
+}  
+
+function get2 (m) {
+  let v = m.bnd('x => x');  
   return v;
 }  
 
@@ -199,6 +218,150 @@ function trav_state (ar) {
   return next;
 }
 
+function evalF(x) {
+  var v;
+  if (typeof x == "string") {v = eval("typeof x")}  
+  else if (isNaN(x)) v = "NaN";
+  else v = typeof x;
+  console.log('In evalF. ', x, ' is ', v );
+  return v;
+}
+
+  function MonadE (val, ID, er = []) {
+    var x = val;
+    var e = er;
+    var ob = {  
+      id: ID,
+  
+      getx: function () {return x},
+  
+      bnd: function (f, ...args) {
+
+        if (f == 'clean') {
+          ret2(x, ob.id, []);
+          return new MonadE(x, ob.id, [])
+        }
+
+        if (f == 'log2') {
+          console.log(args[0]);
+          return new MonadE(args[0], 'log', [])
+        }
+  
+        if (e.length > 0) {
+          console.log('BYPASSING COMPUTATION in MonadE instance', ob.id, f, '.  PROPAGATING ERROR:',  e[0]); 
+          return ob;  
+        }
+  
+        var a = ("typeof " + f);
+
+        if (eval(a) == 'function') {
+          for (let v of args) {
+  
+            if (eval('typeof eval(v)') == 'undefined') {
+              console.log(v, "is undefined. No further computations will be attempted");
+              e.push(v + " is undefined." );
+              return ob;
+            }
+  
+            if (eval('typeof eval(v)') == 'NaN') {
+              console.log(v, "is NaN. No further computations will be attempted");
+              e.push(v + " is NaN." );
+              return ob;
+            }
+          }
+          return eval(f)(x, ...args);
+        }
+  
+        else {
+          e.push(f + ' is not a function. ');
+          console.log(f, 'is not a function. No further computations will be attempted');
+          return ob;
+        }
+      },
+  
+      ret: function (a) {
+        window[ob.id] = new MonadE(a, ob.id, []);
+        return window[ob.id];
+      }  
+    }
+    return ob;
+  };
+  
+  function add2 (x,a) {
+    return ret2(x + a)
+  }
+  
+  function square2 (x) {
+    return ret2(x*x);
+  };
+  
+  function mult2 (x,y) {
+    return ret2(x*y);
+  };
+  
+  function ret2(v, id = 'default', er = []) {
+    window[id] = new MonadE(v, id, er);
+    return window[id];
+  }
+function add2 (x,a) {
+  return ret2(x + a)
+}
+
+function square2 (x) {
+  return ret2(x*x);
+};
+
+function mult2 (x,y) {
+  return ret2(x*y);
+};
+
+function ret2(v, id = 'default', er = []) {
+  window[id] = new MonadE(v, id, er);
+  return window[id];
+}
+
+function cube2 (x) {
+  return ret2(x*x*x);
+};
+
+function push2(x, v) {
+    var ar = x.slice();
+    ar.push(v);
+    return ret2(ar);
+};
+
+function unshift(x, y) {
+    var ar = x.slice();
+    ar.unshift(y);
+    return ret2(ar);
+};
+
+function splice2(x, start, how_many) {
+    var ar = x.slice();
+    ar.splice(start, how_many)
+    return ret2(ar);
+};
+
+function sliceM(x, howmany) {
+    var ar = x.slice(howmany);
+    return ret2(ar);
+};
+
+function log2(x, message) {
+  console.log(message);
+  return ret2(x);
+};
+
+function sqroot2 (x) {
+  return ret2(Math.sqrt(x));
+}
+
+var mMEa = new MonadE(0, 'mMEa');
+
+mMEa.bnd('add2',3);
+mMEa.bnd('cube2');
+
+
 var fpTransformer = function transformer(s, m) {
   var bound = Math.ceil(Math.sqrt(s[3][s[3].length - 1]));
   if (bound > m.a[m.a.length - 1]) {
@@ -335,7 +498,8 @@ function message_state(v) {
 
 var mMsetArchive = new Monad([], 'mMsetArchive');
 mMsetArchive.ret([]);
-var clean = function clean(x, mon) {
+
+function clean(x, mon) {
   if (mon === void 0) { mon = mMtemp; }
   mon.ret([]);
 };
@@ -466,8 +630,6 @@ function primes(n, ar) {
   var mMscoreboard = M([], 'mMscoreboard');
   var mMmsg = M([], 'mMmsg');
   var mMgoals2 = M('', 'mMgoals2');
-  var mMnbrs = M([], 'mMnbrs');
-  var mMnumbers = M([], 'mMnumbers');
   var mMname = M('', 'mMname');
   var mMar = M([1, 2, 3, 4, 5], 'mMar');
   var mMar2 = M([], 'mMar2');
@@ -525,6 +687,7 @@ function primes(n, ar) {
   var mMallRolls = new Monad([[0, 0, 0, 0]], 'mMallRolls');
   var mMcurrentList = new Monad([], 'mMcurrentList');
   var mMtaskList = new Monad([], 'mMtaskList');
+  var mMtaskL = new Monad([], 'mMtaskL');
   var mMsenderList = new Monad([], 'mMsenderList');
   var mMsoloAlert = new Monad('', 'mMsoloAlert');
   var mMe = new Monad('', 'mMe');
@@ -728,12 +891,6 @@ function primes(n, ar) {
       return mon;
   };
 
-  var unshift = function unshift(x, y) {
-      var ar = x.slice();
-      ar.unshift(y);
-      return ret(ar);
-  };
-
   var toFloat = function toFloat(x) {
       return ret(parseFloat(x));
   };
@@ -751,19 +908,17 @@ function primes(n, ar) {
       return ret(ar, 'pushFunc');
   };
 
-  var push2 = function push2(x, v) {
-     console.log('pppppppppppppppppppppppppppppppppppppppppppppp   in push2  x, v ', x, v );
-      var ar = x.slice();
-      ar.push(v);
-      return ret2(ar, 'push2Func');
-  };
-
   var spliceRemove = function spliceRemove(x, index) {
       var ar = x.slice();
       ar.splice(index, 1)
       return ret(ar);
   };
 
+  var unshift = function unshift(x, y) {
+      var ar = x.slice();
+      ar.unshift(y);
+      return ret(ar);
+  };
 
   var spliceRemove2 = function spliceRemove(x, index) {
       var ar = x.slice();
@@ -784,7 +939,6 @@ function primes(n, ar) {
   var spliceM = function spliceM(x, start, how_many) {
       var ar = x.slice();
       ar.splice(start, how_many)
-      console.log('In spliceM HHHHHHHHHHHHHHHHHHHHHHHHH x, start, how_many, ar ', x, start, how_many, ar );
       return ret(ar);
   };
 
@@ -847,10 +1001,6 @@ function log(x, message) {
     return ret(x);
 };
 
-var log2 = function log2(x) {
-    console.log('In log2.  x is: ', x);
-    return ret(x);
-};
 var lg = function lg(x) {
     console.log(x);
     return ret(x);

@@ -281,6 +281,133 @@ The list of online group members at the bottom of the scoreboard is very respons
   
   var sMplayers = new MonadSet( s, 'sMplayers' )  
 ```
+## MonadE - An Error-Catching Monad
+Instances of MonadE function much the same as instances of Monad, but When an instance of MonadE encounters an error, it ceases to perform any further computations, propagating the error to the end of the sequence it is in. Functions used as arguments to the MonadE bnd() method are placed in quotation marks to prevent the browser engine from throwing reference errors. Arguments can be protected in the same manner. The screen shot (below) taken after running the following expressions in the Google Chrome console shows the logs resulting from running the error-free version and then the version with an error.
+```Javascript
+  ret2(0,'a').bnd('add2',3)
+  .bnd('mult2',100)
+  .bnd(a.ret)
+  .bnd('square2')  
+  .bnd("ret2(0,'c').ret")  
+   .bnd(() => {
+    ret2(0,'b')
+    .bnd('add2',4)
+   .bnd('mult2',100)
+   .bnd('b.ret')
+   .bnd("ret2(0,'d').ret")
+   .bnd('square2')
+   .bnd('d.ret')
+   .bnd('add2',c.getx())
+   .bnd('d.ret')
+   .bnd('sqroot2')
+   .bnd('d.ret')
+   .bnd('log2','The square root of the sum of ' + a.getx() + 
+        ' squared and ' + b.getx() + ' squared is ' + d.getx())    
+  });
+        
+  ret2(0,'a').bnd('add22',3)
+  .bnd('mult2',100)
+  .bnd(a.ret)
+  .bnd('square2')  
+  .bnd("ret2(0,'c').ret")  
+   .bnd(() => {
+    ret2(0,'b')
+    .bnd('add2',4)
+   .bnd('mult2',100)
+   .bnd('b.ret')
+   .bnd("ret2(0,'d').ret")
+   .bnd('square2')
+   .bnd('d.ret')
+   .bnd('add2',c.getx())
+   .bnd('d.ret')
+   .bnd('sqroot2')
+   .bnd('d.ret')
+   .bnd('log2','The square root of the sum of ' + a.getx() + 
+        ' squared and ' + b.getx() + ' squared is ' + d.getx())    
+  });
+```
+![Alt text](MonadE_a?raw=true)
+Here are the definitions of MonadE and the functions used in the demonstration:
+```Javascript
+  function MonadE (val, ID, er = []) {
+    var x = val;
+    var e = er;
+    var ob = {  
+      id: ID,
+  
+      getx: function () {return x},
+  
+      bnd: function (f, ...args) {
+
+        if (f == 'clean') {
+          ret2(x, ob.id, []);
+          return new MonadE(x, ob.id, [])
+        }
+
+        if (f == 'log2') {
+          console.log(args[0]);
+          return new MonadE(args[0], 'log', [])
+        }
+  
+        if (e.length > 0) {
+          console.log('BYPASSING COMPUTATION in MonadE instance', ob.id, f, '.  PROPAGATING ERROR:',  e[0]); 
+          return ob;  
+        }
+  
+        var a = ("typeof " + f);
+
+        if (eval(a) == 'function') {
+          for (let v of args) {
+  
+            if (eval('typeof eval(v)') == 'undefined') {
+              console.log(v, "is undefined. No further computations will be attempted");
+              e.push(v + " is undefined." );
+              return ob;
+            }
+  
+            if (eval('typeof eval(v)') == 'NaN') {
+              console.log(v, "is NaN. No further computations will be attempted");
+              e.push(v + " is NaN." );
+              return ob;
+            }
+          }
+          return eval(f)(x, ...args);
+        }
+  
+        else {
+          e.push(f + ' is not a function. ');
+          console.log(f, 'is not a function. No further computations will be attempted');
+          return ob;
+        }
+      },
+  
+      ret: function (a) {
+        window[ob.id] = new MonadE(a, ob.id, []);
+        return window[ob.id];
+      }  
+    }
+    return ob;
+  };
+  
+  function add2 (x,a) {
+    return ret2(x + a)
+  }
+  
+  function square2 (x) {
+    return ret2(x*x);
+  };
+  
+  function mult2 (x,y) {
+    return ret2(x*y);
+  };
+  
+  function ret2(v, id = 'default', er = []) {
+    window[id] = new MonadE(v, id, er);
+    return window[id];
+  }  
+```
+Once a MonadE instance encounters an error, its bnd() method will not process any function other than clean() and log2(). That is because e.length == 1, not 0. clean() resets an instance to normal functioning mode by setting its e attribute back to []. a, b, c, and d are created on the fly in the error-free version. In the version with an error, a already exists and ret2(0,'a') re-sets a's value to 0.
+
 ##Websocket messages
 
 Incoming websockets messages trigger updates to the game display, the chat display, and the todo list display. The members of a group see what other members are doing; and in the case of the todo list, they see the current list when they sign in to the group. When any member of a group adds a task, crosses it out as completed, edits its description, or removes it, the server updates the persistent file and all members of the group immediately see the revised list.

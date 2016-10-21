@@ -82,12 +82,12 @@ var messages = h('pre', `  const messages$ = (sources.WS).map( e => {
     mMZ18.bnd( () => {if (get(pMgroup) != 'solo' || get(pMname) == v[2]) {updatePlayers(e.data) } });
   })       
   mMtemp.ret(e.data.split(',')[0])
-  .bnd(cow, 'CA#$42', mMZ10)
-  .bnd(cow, 'CD#$42', mMZ13)
-  .bnd(cow, 'CE#$42', mMZ14)
-  .bnd(cow, 'EE#$42', mMZ15)
-  .bnd(cow, 'DD#$42', mMZ17)
-  .bnd(cow, 'NN#$42', mMZ18)
+  .bnd(next, 'CA#$42', mMZ10)
+  .bnd(next, 'CD#$42', mMZ13)
+  .bnd(next, 'CE#$42', mMZ14)
+  .bnd(next, 'EE#$42', mMZ15)
+  .bnd(next, 'DD#$42', mMZ17)
+  .bnd(next, 'NN#$42', mMZ18)
   });  `  )
 
 var MonadSet = h('pre',  `  var MonadSet = function MonadSet(set, ID) {
@@ -1056,7 +1056,7 @@ var mMZ10 = h('pre',  `  mMZ10.bnd( () => {
     pMscore.ret(v[7]);
     pMgoals.ret(v[8]) });  `  )
 
-var numClick = h('pre',  `  var numClick$ = sources.DOM
+var numClick1 = h('pre',  `  var numClick$ = sources.DOM
       .select('.num').events('click'); 
 
   var numClickAction$ = numClick$.map(e => {
@@ -1086,9 +1086,9 @@ var numClick = h('pre',  `  var numClick$ = sources.DOM
         updateCalc(ar, v)
       }
     }) 
-  });
+  });  `  )
 
-  function updateCalc(ar, op) {
+var numClick2 = h('pre',  `  function updateCalc(ar, op) {
     var result = calc(ar[0], op, ar[1]);
     mM3.ret([]);
     mM8.ret(0)
@@ -1145,11 +1145,165 @@ var e7x = h('pre',  `   Output:
    3 cubed is 27  
    The monad cow holds the value 3  `  )
 
-var p3 = h('pre',  `  
-`  )
+var monadE = h('pre.turk',  `  function MonadE (val, ID, er = []) {
+    var x = val;
+    var e = er;
+    var ob = {  
+      id: ID,
+  
+      getx: function () {return x},
+  
+      bnd: function (f, ...args) {
 
-var p4 = h('pre',  `  
-`  )
+        if (f == 'clean') {
+          ret2(x, ob.id, []);
+          return new MonadE(x, ob.id, [])
+        }
+
+        if (f == 'log2') {
+          console.log(args[0]);
+          return new MonadE(args[0], 'log', [])
+        }
+  
+        if (e.length > 0) {
+          console.log('BYPASSING COMPUTATION in MonadE instance', ob.id, f, '.  PROPAGATING ERROR:',  e[0]); 
+          return ob;  
+        }
+  
+        var a = ("typeof " + f);
+
+        if (eval(a) == 'function') {
+          for (let v of args) {
+  
+            if (eval('typeof eval(v)') == 'undefined') {
+              console.log(v, "is undefined. No further computations will be attempted");
+              e.push(v + " is undefined." );
+              return ob;
+            }
+  
+            if (eval('typeof eval(v)') == 'NaN') {
+              console.log(v, "is NaN. No further computations will be attempted");
+              e.push(v + " is NaN." );
+              return ob;
+            }
+          }
+          return eval(f)(x, ...args);
+        }
+  
+        else {
+          e.push(f + ' is not a function. ');
+          console.log(f, 'is not a function. No further computations will be attempted');
+          return ob;
+        }
+      },
+  
+      ret: function (a) {
+        window[ob.id] = new MonadE(a, ob.id, []);
+        return window[ob.id];
+      }  
+    }
+    return ob;
+  };
+  
+  function add2 (x,a) {
+    return ret2(x + a)
+  }
+  
+  function square2 (x) {
+    return ret2(x*x);
+  };
+  
+  function mult2 (x,y) {
+    return ret2(x*y);
+  };
+  
+  function ret2(v, id = 'default', er = []) {
+    window[id] = new MonadE(v, id, er);
+    return window[id];
+  }  `  )
+
+var screenshot = h('pre.turk',  `  ret2(0,'a').bnd('add2',3)
+  .bnd('mult2',100)
+  .bnd(a.ret)
+  .bnd('square2')  
+  .bnd("ret2(0,'c').ret")  
+   .bnd(() => {
+    ret2(0,'b')
+    .bnd('add2',4)
+   .bnd('mult2',100)
+   .bnd('b.ret')
+   .bnd("ret2(0,'d').ret")
+   .bnd('square2')
+   .bnd('d.ret')
+   .bnd('add2',c.getx())
+   .bnd('d.ret')
+   .bnd('sqroot2')
+   .bnd('d.ret')
+   .bnd('log2','The square root of the sum of ' + a.getx() + 
+        ' squared and ' + b.getx() + ' squared is ' + d.getx())    
+  });
+        
+  ret2(0,'a').bnd('add22',3)
+  .bnd('mult2',100)
+  .bnd(a.ret)
+  .bnd('square2')  
+  .bnd("ret2(0,'c').ret")  
+   .bnd(() => {
+    ret2(0,'b')
+    .bnd('add2',4)
+   .bnd('mult2',100)
+   .bnd('b.ret')
+   .bnd("ret2(0,'d').ret")
+   .bnd('square2')
+   .bnd('d.ret')
+   .bnd('add2',c.getx())
+   .bnd('d.ret')
+   .bnd('sqroot2')
+   .bnd('d.ret')
+   .bnd('log2','The square root of the sum of ' + a.getx() + 
+        ' squared and ' + b.getx() + ' squared is ' + d.getx())    
+  });
+        
+
+
+  .bnd('mult2',100)
+  .bnd(a.ret)
+  .bnd('square2')  
+  .bnd(c.ret)  
+  .bnd(() => {
+     b.bnd('add2',4)
+    .bnd('mult2',100)
+    .bnd('b.ret')
+    .bnd('d.ret')
+    .bnd('square2')
+    .bnd('d.ret')
+    .bnd('add2',c.getx())
+    .bnd('d.ret')
+    .bnd('sqroot2')
+    .bnd('d.ret')
+    .bnd('log2','The square root of the sum of ' + a.getx() + 
+      ' squared and ' + b.getx() + ' squared is ' + d.getx())    
+  });  
+
+  a.bnd('add22',3)
+  .bnd('mult2',100)
+  .bnd(a.ret)
+  .bnd('square2')  
+  .bnd(c.ret)  
+  .bnd(() => {
+     b.bnd('add2',4)
+    .bnd('mult2',100)
+    .bnd('b.ret')
+    .bnd('d.ret')
+    .bnd('square2')
+    .bnd('d.ret')
+    .bnd('add2',c.getx())
+    .bnd('d.ret')
+    .bnd('sqroot2')
+    .bnd('d.ret')
+    .bnd('log2','The square root of the sum of ' + a.getx() + 
+      ' squared and ' + b.getx() + ' squared is ' + d.getx())    
+  });  `  )
 
 var p5 = h('pre',  `  
 `  )
@@ -1165,7 +1319,7 @@ var p9 = h('pre',  `
 
 
 
-  export default { numClick, mMZ10, test3, travMonad, monad, equals, fmap, opM, e1, e2, e2x, e3, e4, e4x, e6, e6x, e7, e7x, driver, messages, monadIt, MonadSet, updateCalc, arrayFuncs, travel, nums, cleanup, ret, C42, newTask, process, mM$task, addString, colorClick, edit, testZ, quad, runTest, todoStream, inc, seed,  add, traverse, MonadState, primesMonad, fibsMonad, primeFibInterface, tr3, fpTransformer, innerHTML, factorsMonad, factorsInput, playerMonad, promise, promiseSnippet, timeout, timeoutSnippet, examples, examples2, async }
+  export default { screenshot, monadE, numClick1, numClick2, mMZ10, test3, travMonad, monad, equals, fmap, opM, e1, e2, e2x, e3, e4, e4x, e6, e6x, e7, e7x, driver, messages, monadIt, MonadSet, updateCalc, arrayFuncs, travel, nums, cleanup, ret, C42, newTask, process, mM$task, colorClick, edit, testZ, quad, runTest, todoStream, inc, seed,  add, traverse, MonadState, primesMonad, fibsMonad, primeFibInterface, tr3, fpTransformer, innerHTML, factorsMonad, factorsInput, playerMonad, promise, promiseSnippet, timeout, timeoutSnippet, examples, examples2, async }
  
 
 
