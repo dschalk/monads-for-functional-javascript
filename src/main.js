@@ -306,29 +306,27 @@ function main(sources) {
     console.log('In primeFib$ VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV primesMonad.s, primesMonad.a ', primesMonad.s, primesMonad.a );
     console.log('In primeFib$ VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV fibsMonad.s, fibsMonad.a ', fibsMonad.s, fibsMonad.a );
       if (e.keyCode == 13) {
-          var res = fibsMonad
+          mMres.ret(fibsMonad
               .run([1, 2 ,e.target.value, [0,1]])
               .bnd(fibsState => 
               fibsMonad
               .bnd(fpTransformer, primesMonad)
-              .bnd(primesState => tr3(fibsState[3], primesState[3]) ) );
-          document.getElementById('PF_9').innerHTML = res[0];
-          document.getElementById('PF_22').innerHTML = res[1];
-          document.getElementById('primeFibs').innerHTML = res[2];
+              .bnd(primesState => tr3(fibsState[3], primesState[3]) ) ) );
       }
   });
   // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> ENDOM basic prime END
   // <>>><>><><><><>>>><><><   prime factors   ><><><><><><>>><<><><><><><><>< START prime factors  
   var factorsPress$ = sources.DOM
       .select('input#factors_1').events('keydown');
-  var factors = [];
+
+
   var factorsAction$ = factorsPress$.map(function (e) {
+    var factors = [];
+    mMfactors3.ret('');
     if (e.keyCode == 13) {
       var num = e.target.value
       if (!num.match(/^[0-9]+$/)) {
-        document.getElementById('factors_3').innerHTML = 
-          'This works only if you enter a number.';
-        document.getElementById('factors_4').innerHTML = num + ' is not a number';
+        mMfactors3.ret('This works only if you enter a number. ' + num + ' is not a number');
       }
       else {
         factors = primesMonad.run([primesMonad.s[0], [], num, primesMonad.a])
@@ -389,29 +387,37 @@ function main(sources) {
   });
 
   var solve = function solve () {
-    mMZ3.bnd(a => ret(a)
-    .bnd(display, 'quad4', '')         
-    .bnd(display, 'quad6', '')         
-    .bnd(display,'quad5', a + " * x * x ")
-    .bnd(a => mMZ3    // Blocks here until new user input comes in.
-    .bnd(b => ret(b)
-    .bnd(display, 'quad6', b + ' * x ').bnd(b => mMZ3  // Blocks again.
-    .bnd(c => mMtemp.ret([a,b,c]).bnd(fmap, qS4,'mMtemp2')
+     mMZ3.bnd(a => {
+     mMquad4.ret(''); 
+     mMquad6.ret('');  
+     mMquad5.ret(a + " * x * x ")    
+     mMZ3.bnd(b => {
+     mMquad6.ret(b + ' * x ')
+     mMZ3.bnd(c => {
+     mMtemp.ret([a,b,c])
+    .bnd(fmap, qS4,'mMtemp2')
     .bnd(result => {  
       let x = result[0]
       let y = result[1]
-      if (x == 0) {mMtemp.bnd(display, 'quad5', 'No solution', mMtemp)
-         .bnd(display, 'quad6', ' ', mMtemp); solve(); return;}
-      if (y == 0) {mMtemp.bnd(display, 'quad5', 'No solution', mMtemp)
-         .bnd(display, 'quad6', ' ', mMtemp)   
-         solve(); return;};
-    mMtemp.bnd(display, 'quad4', "Results: " + x + " and  " + y)  
-    .bnd(display, 'quad5', p(a).text + " * " + x + " * " + x + " + " + p(b).text + 
-            " * " + x + " " + p(c).text + " = 0")
-    .bnd(display, 'quad6', p(a).text + " * " + y + " * " + y + " + " + p(b).text + 
-            " * " + y + " " + p(c).text + " = 0")   
-    solve();  
-    } )))))) 
+      if (x == 0) {
+        mMquad5.ret('No solution', mMtemp)
+        mMquad6.ret(' ');
+        solve(); 
+        return;
+      }
+      if (y == 0) {
+        mMquad5.ret('No solution')
+        mMquad6.ret(' ')   
+        solve(); 
+        return;
+      };
+      mMquad4.ret("Results: " + x + " and  " + y)  
+      mMquad5.ret(p(a).text + " * " + x + " * " + x + " + " + p(b).text + 
+              " * " + x + " " + p(c).text + " = 0")
+      mMquad6.ret(p(a).text + " * " + y + " * " + y + " + " + p(b).text + 
+              " * " + y + " " + p(c).text + " = 0")   
+      solve();  
+      }) }) }) }) 
   };
   
     solve();
@@ -866,9 +872,9 @@ h('span', 'Please enter an integer here: '),
 h('input#testW'),
 h('p', ' cube() is defined in the Monad section (above). If you click "mMZ1.release(1)" several times, the code (above) will run several times, each time with v == 1. The result, mMt3.x, is shown below the button. mMZ1.p (bnd()\'s argument) remains constant while mMZ1.release(1) is repeatedly called, incrementing the number being cubed each time. '),
                   h('p', ' Here is another example. It demonstrates lambda expressions passing values to a remote location for use in a computation. If you enter three numbers consecutively below, call them a, b, and c, then the quadratic equation will be used to find solutions for a*x**2 + b*x + c = 0. The a, b, and c you select might not have a solution. If a and b are positive numbers, you are likely to see solutions if c is a negative number. For example, 12, 12, and -24 yields the solutions 1 and -2. '),
-h('p#quad4.red2'),
-h('p#quad5.red2'),
-h('p#quad6.red2'),
+h('p#quad4.red2', `${get(mMquad4)}`  ),
+h('p#quad5.red2', `${get(mMquad5)}`  ),
+h('p#quad6.red2', `${get(mMquad6)}`  ),
 h('p', 'Run mMZ3.release(v) three times for three numbers. The numbers are a, b, and c in ax*x + b*x + c = 0: '),
 h('input#quad'),
 h('p', 'Here is the code:'),
@@ -891,9 +897,9 @@ code.fpTransformer,
 h('p', ' If the largest number in primesMonad.a is less than the square root of the largest number in fibsMonad.a, primesMonad is updated so that the largest number in primesMonad.a is greater than the square root of the largest number in fibsMonad.a. herwise, primesMonad is returned unchanged.  '),
 h('p', ' The final computation in the prime Fibonacci numbers demonstration occurs when "tr3(fibsState[3],primesState[3]" is called. tr3() takes an array of Fibonacci numbers and an array of prime numbers and returns an array containing an array of Fibonacci numbers, an array of prime numbers, and an array of prime Fibonacci numbers. Here is the definition of tr3: '),
 code.tr3,
-h('p', ' User input is handled by a chain of computations.  first to update fibsMonad, second to extract fibsMonad.s, third to run fpTransformer to modify and then return primesMonad, and fourth to extract primesMonad.s and run tr3(fibsState[3],primesState[3]). Here is the code: '),
+h('p', ' User input is handled by a chain of computations. first to update fibsMonad, second to extract fibsMonad.s, third to run fpTransformer to modify and then return primesMonad, and fourth to extract primesMonad.s and run tr3(fibsState[3],primesState[3]). Monad instance mMres obtains the result. `${get(mMres)[0])`, `${get(mMres)[1])`, and `${get(mMres)[2])`, are permanent features of the virtual DOM.  Here is the code: '),
 code.primeFibInterface,
-h('p', 'ly 48 Fibonacci numbers need to be generated in order to get the eleventh prime Fibonacci number. But 5546 prime numbers need to be generated to test for divisibility into 2971215073. Finding the next Fibonacci number is just a matter of adding the previous two. Getting the next prime number is a more elaborate and time-consuming procedure. In this context, the time needed to compute 48 Fibonacci numbers is insignificant, so I didn\'t bother to save previously computed Fibonacci numbers in the prime Fibonacci demonstration. When a user enters a number smaller than the current length of fibsMonad.a, fibsMonad is modified such that its length becomes exactly what the user entered.'),
+h('p', 'Only 48 Fibonacci numbers need to be generated in order to get the eleventh prime Fibonacci number. But 5546 prime numbers need to be generated to test for divisibility into 2971215073. Finding the next Fibonacci number is just a matter of adding the previous two. Getting the next prime number is a more elaborate and time-consuming procedure. In this context, the time needed to compute 48 Fibonacci numbers is insignificant, so I didn\'t bother to save previously computed Fibonacci numbers in the prime Fibonacci demonstration. When a user enters a number smaller than the current length of fibsMonad.a, fibsMonad is modified such that its length becomes exactly what the user entered.'),
 h('p', ' Entering 50 in my desktop Ubuntu Chrome and Firefox browsers got the first eleven prime Fibonacci numbers in about one second. I tried gradually incrementing upwards from 50, but when I got to 61 I stopped due to impatience with the lag time. The 61st Fibonacci number was computed to be 1,548,008,755,920. 76,940 prime numbers were needed to check the 60th Fibonacci number. 96,043 prime numbers were needed to check the 61st Fibonacci number.  At Fibonacci number 61, no new prime Fibonacci numbers had appeared.'),
 h('p', ' According to multiple sources, these are the first eleven proven prime Fibonacci numbers:'),
 h('span.lb', ' 2, 3, 5, 13, 89, 233, 1597, 28657, 514229, 433494437, and 2971215073 '),
@@ -904,23 +910,26 @@ h('input#fib92'),
 h('br'),
 h('span#PF_7.red6', 'Fibonacci Numbers'),
 h('br'),
-h('span#PF_9.turk'),
+h('span#PF_9.turk', `${get(mMres)[0]}`  ),
 h('br'),
 h('span#PF_21.red6', 'Prime Numbers'),
 h('br'),
-h('span#PF_22.turk'),
+h('span#PF_22.turk', `${get(mMres)[1]}`  ),
 h('br'),
 h('span#PF_8.red6', 'Prime Fibonacci Numbers'),
 h('br'),
-h('span#primeFibs.turk'),
+h('span#primeFibs.turk', `${get(mMres)[2]}`  ),
 h('p', ' The next demonstration uses two instances of MonadState to find the prime factors of numbers. Each prime factor is listed once.  my desktop computer, it took several seconds to verify that 514229 is a prime number. After that, due to persistent (until the web page closes) memoization, numbers below 514229 or not too far above it evaluated rapidly. Here\'s where you can enter a number to see its prime factors: '),
 h('input#factors_1'),
 h('br'),
-h('p.turk',get(mMfactors) ),    
+h('br'),
+h('div.tao3', get(mMfactors) ),    
+h('div.tao3', get(mMfactors3) ),    
 h('p', ' The demonstration uses primesMonad and factorsMonad. Here are the definitions of factosMonad and factor_state, the function that is factorsMonad.process: '),
 code.factorsMonad,
 h('p#async', ' And this is how user input is handled: '),
 code.factorsInput,
+h('p', ' The expressions get(mMfactors) and get(mMfactors) are permanent fixtures of the virtual DOM. The click handler is a stream which is merged into the stream that feeds the virtual DOM. Changes to mMfactors and mMfactors3 are in the cycle initiated by user input and culminating in a modification of the virtual DOM. ' ),   
 h('a', { props: { href: '#top' } }, 'Back To The Top'),
 h('h3', ' Traversal of the dice game history. ' ),
 h('p', ' MonadState instance travMonad facilitates traversal of the game history. travMonad.s is a four member array holding the current numbers, current score, current goals, and an array of arrays containing numbers, score, and goals corresponding to past states of the game.. Here is the definition of travMonad and its auxiliary function:' ),

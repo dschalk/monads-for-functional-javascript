@@ -219,40 +219,6 @@ var cleanup = h('pre',  `  function cleanup (x) {
       return ret(x);
   }; `  )
 
-  var travel = h('pre',  `    const forwardClick$ = sources.DOM
-      .select('#forward').events('click');
-   
-      const backClick$ = sources.DOM
-        .select('#back').events('click');
-     
-      const forwardAction$ = forwardClick$.map(() => {
-        if (mMindex.x < (mMhistorymM1.x.length - 1)) {
-          mMindex.bnd(add, 1, mMindex)
-          .bnd(v => trav(v))
-        }
-      });
-     
-      const backAction$ = backClick$.map(() => {
-        if (mMindex.x > 0) {
-          mMindex.bnd(add, -1, mMindex)
-          .bnd(v => trav(v))
-          socket.send('DE#$42,' + pMgroup.x + ',' + pMname.x + ', clicked the BACK button. ');
-        }
-      });
-    
-    var trav = function trav (index) {       
-      document.getElementById('0').innerHTML = mMhistorymM1.x[index][0]; 
-      document.getElementById('1').innerHTML = mMhistorymM1.x[index][1]; 
-      document.getElementById('2').innerHTML = mMhistorymM1.x[index][2]; 
-      document.getElementById('3').innerHTML = mMhistorymM1.x[index][3];
-      document.getElementById('sb3').innerHTML = 'Score: ' + mMplayerArchive.x[index][2];
-      document.getElementById('sb4').innerHTML = 'Goals: ' + mMplayerArchive.x[index][3];
-      if (pMgroup.x != 'solo') {
-        document.getElementById('sb6').innerHTML =  Array.from(mMsetArchive.x[index].s);
-      }
-      cleanup();
-    };    `  )
-
   var C42 = h('pre',  `  mMZ10.bnd(() => mM$1
      .ret([mMar.x[3], mMar.x[4], mMar.x[5], mMar.x[6]])
      .bnd(() => mM$2.ret([]))
@@ -507,27 +473,39 @@ var cleanup = h('pre',  `  function cleanup (x) {
   });
 
   var solve = function solve () {
-    mMZ3.bnd(a => ret(a)
-    .bnd(display, 'quad4', '')         
-    .bnd(display, 'quad6', '')         
-    .bnd(display,'quad5', a + " * x * x ")
-    .bnd(a => mMZ3    // Blocks here until new user input comes in.
-    .bnd(b => ret(b)
-    .bnd(display, 'quad6', b + ' * x ').bnd(b => mMZ3  // Blocks again.
-    .bnd(c => mMtemp.ret([a,b,c]).bnd(fmap, qS4,'mMtemp2')
+     mMZ3.bnd(a => {
+     mMquad4.ret(''); 
+     mMquad6.ret('');  
+     mMquad5.ret(a + " * x * x ")    
+     mMZ3.bnd(b => {
+     mMquad6.ret(b + ' * x ')
+     mMZ3.bnd(c => {
+     mMtemp.ret([a,b,c])
+    .bnd(fmap, qS4,'mMtemp2')
     .bnd(result => {  
       let x = result[0]
       let y = result[1]
-      console.log('Here is x and y: ', x, y)
-    mMtemp.bnd(display, 'quad4', "Results: " + x + " and  " + y)  
-    .bnd(display, 'quad5', p(a).text + " * " + x + " * " + x + " + " + p(b).text + 
-            " * " + x + " " + p(c).text + " = 0")
-    .bnd(display, 'quad6', p(a).text + " * " + y + " * " + y + " + " + p(b).text + 
-            " * " + y + " " + p(c).text + " = 0")   
-    solve();  
-    } )))))) 
+      if (x == 0) {
+        mMquad5.ret('No solution', mMtemp)
+        mMquad6.ret(' ');
+        solve(); 
+        return;
+      }
+      if (y == 0) {
+        mMquad5.ret('No solution')
+        mMquad6.ret(' ')   
+        solve(); 
+        return;
+      };
+      mMquad4.ret("Results: " + x + " and  " + y)  
+      mMquad5.ret(p(a).text + " * " + x + " * " + x + " + " + p(b).text + 
+              " * " + x + " " + p(c).text + " = 0")
+      mMquad6.ret(p(a).text + " * " + y + " * " + y + " + " + p(b).text + 
+              " * " + y + " " + p(c).text + " = 0")   
+      solve();  
+      }) }) }) }) 
   };
-
+  
   var p = function p (x) { 
     if (x >= 0) {return ' + ' + x}
     if (x < 0 ) {return ' - ' + Math.abs(x)}
@@ -552,11 +530,6 @@ var cleanup = h('pre',  `  function cleanup (x) {
     var mon = new Monad(g(x), id); 
     window[id] = mon;
     return mon;
-  }
-
-  var display = function display (x, id, string) {
-    document.getElementById(id).innerHTML = string;
-    return ret(x);
   }  `  )
 
   var runTest = h('pre',  `  var runTest = function monTest () {
@@ -599,60 +572,6 @@ var add = h('pre',  `  var add = function(x,b,mon) {
   }; ` )
   
 var seed = h('pre',  `  mM$prime.ret([[2],3])  `  )
-
-var traverse = h('pre',  `  const forwardClick$ = sources.DOM
-        .select('#forward').events('click');
-
-    var backClick$ = sources.DOM
-        .select('#back').events('click');
-
-    var forwardAction$ = forwardClick$.map(function () {
-        if (mMindex.x < (mMhistory.x.length - 1)) {
-          mMindex.bnd(add, 1, mMindex)
-          .bnd(v => trav(v));
-        }
-    });
-
-    var backAction$ = backClick$.map(function () {
-        if (mMindex.x > 0) {
-          mMindex.bnd(add, -1, mMindex)
-          .bnd(v => trav(v));
-          socket.send('DE#$42,' + pMgroup.x + ',' + pMname.x + ', clicked the BACK button. ');
-        }
-    });
-
-    var game = function game(z) {
-        var x = z.slice();
-        mMindex.bnd(add, 1, mMindex)
-            .bnd(function (i) { return mMhistory.bnd(spliceAdd, i, x, mMhistory); });
-        document.getElementById('0').innerHTML = x[4];
-        document.getElementById('1').innerHTML = x[5];
-        document.getElementById('2').innerHTML = x[6];
-        document.getElementById('3').innerHTML = x[7];
-        game2();
-        cleanup('cow');
-    };
-
-    var game2 = function game2() {
-        document.getElementById('sb1').innerHTML = 'Name: ' + pMname.x;
-        document.getElementById('sb2').innerHTML = 'Group: ' + pMgroup.x;
-        document.getElementById('sb5').innerHTML = 'Currently online: Name | score | goals';
-        document.getElementById('sb6').innerHTML = mMscoreboard.x;
-        cleanup('fred');
-    };
-    var trav = function trav(index) {
-        document.getElementById('0').innerHTML = mMhistory.x[index][4];
-        document.getElementById('1').innerHTML = mMhistory.x[index][5];
-        document.getElementById('2').innerHTML = mMhistory.x[index][6];
-        document.getElementById('3').innerHTML = mMhistory.x[index][7];
-        var a = mMhistory.x[index];
-        mM1.ret(a[2]);
-        mM3.ret(a[3]);
-        socket.send('CG#$42,' + mMgroup.x + ',' + pMname.x + ',' + a[0] + ',' + a[1]);
-        mM8.ret(0);
-        cleanup('steve');
-    };
-  };  `  )
 
 var MonadState = h('pre',  `  
   function MonadState(g, state, p) {
@@ -716,14 +635,11 @@ var primeFibInterface = h('pre',  `  const fibKeyPress5$ = sources.DOM
 
   const primeFib$ = fibKeyPress5$.map(e => {
     if( e.keyCode == 13 ) {
-      var res = fibsMonad
+      mMres.ret(fibsMonad
       .run([0, 1, e.target.value, []])
       .bnd(fibsState => fibsMonad
       .bnd(fpTransformer, primesMonad)
-      .bnd(primesState => tr3(fibsState[3],primesState[3])))
-      document.getElementById('PF_9').innerHTML = res[0];
-      document.getElementById('PF_22').innerHTML = res[1];
-      document.getElementById('primeFibs').innerHTML = res[2];
+      .bnd(primesState => tr3(fibsState[3],primesState[3]))))var
     }
   });  `  )
 
@@ -733,11 +649,6 @@ var fpTransformer = h('pre',  `  var fpTransformer = function fpTransformer (s, 
       m.run([m.s[0], "from the fibKeyPress5$ handler", bound, primesMonad.a])
     }
     return m;
-  }  `  )
-
-var innerHTML = h('pre',  `  var innerHTML = function innerHTML (x, v, u, m) { 
-    document.getElementById(u).innerHTML = v;
-    return m.ret(x);
   }  `  )
 
 var factorsMonad = h('pre',  `  var factorsMonad = new MonadState('factorsMonad', [[], [], 2, []], [], factor_state);
@@ -772,22 +683,18 @@ var factorsMonad = h('pre',  `  var factorsMonad = new MonadState('factorsMonad'
 var factorsInput = h('pre',  `  var factorsPress$ = sources.DOM
       .select('input#factors_1').events('keydown');
 
-    var factorsAction$ = factorsPress$.map(function (e) {
-      if (e.keyCode == 13) {
-        var num = e.target.value
-        if (!num.match(/^[0-9]+$/)) {
-          document.getElementById('factors_3').innerHTML = 
-            'This works only if you enter a number.';
-          document.getElementById('factors_4').innerHTML = num + ' is not a number';
-        }
-        else {
-          var factors = primesMonad.run([primesMonad.s[0], [], num, primesMonad.a])
-          .bnd(v => [prFactTransformer(v, num), prFactTransformer2(v, num)]);
-          document.getElementById('factors_3').innerHTML = 
-            'The distinct prime factors of ' + num + ' are ' + factors[0].s[0] ;
-          document.getElementById('factors_4').innerHTML = 
-            'All of the prime factors of ' + num + ' are ' + factors[1].s[0];
-        }
+  var factorsAction$ = factorsPress$.map(function (e) {
+    var factors = [];
+    mMfactors3.ret('');
+    if (e.keyCode == 13) {
+      var num = e.target.value
+      if (!num.match(/^[0-9]+$/)) {
+        mMfactors3.ret('This works only if you enter a number. ' + num + ' is not a number');
+      }
+      else {
+        factors = primesMonad.run([primesMonad.s[0], [], num, primesMonad.a])
+        .bnd(s => prFactTransformer3(s, num));
+        mMfactors.ret("The prime factors of " + num + " are " + factors.join(', '));
       }
     }
   });  `  )
@@ -1287,7 +1194,7 @@ var p9 = h('pre',  `
 
 
 
-  export default { screenshot, monadE, numClick1, numClick2, mMZ10, test3, travMonad, monad, equals, fmap, opM, e1, e2, e2x, e3, e4, e4x, e6, e6x, e7, e7x, driver, messages, monadIt, MonadSet, updateCalc, arrayFuncs, travel, nums, cleanup, ret, C42, newTask, process, mM$task, colorClick, edit, testZ, quad, runTest, todoStream, inc, seed,  add, traverse, MonadState, primesMonad, fibsMonad, primeFibInterface, tr3, fpTransformer, innerHTML, factorsMonad, factorsInput, playerMonad, promise, promiseSnippet, timeout, timeoutSnippet, examples, examples2, async }
+  export default { screenshot, monadE, numClick1, numClick2, mMZ10, test3, travMonad, monad, equals, fmap, opM, e1, e2, e2x, e3, e4, e4x, e6, e6x, e7, e7x, driver, messages, monadIt, MonadSet, updateCalc, arrayFuncs, nums, cleanup, ret, C42, newTask, process, mM$task, colorClick, edit, testZ, quad, runTest, todoStream, inc, seed,  add, MonadState, primesMonad, fibsMonad, primeFibInterface, tr3, fpTransformer, factorsMonad, factorsInput, playerMonad, promise, promiseSnippet, timeout, timeoutSnippet, examples, examples2, async }
  
 
 

@@ -2,6 +2,7 @@
 var todoData, mMt3VAL; 
 var taskL = [];
 var MESSAGES = [];
+var res = [];
 function tst (x) {return x};
 
 function Monad (z, ID = 'default') {
@@ -441,7 +442,7 @@ function factor_state2(a) {
   return result;
 }
 
-var mMfactors = new Monad(-1, 'mMfactors');
+var mMfactors = new Monad('', 'mMfactors');
 
 var prFactTransformer = function prFactTransformer(s, n) {
   return factorsMonad.run([[], [], n, s[3]]);
@@ -733,6 +734,14 @@ function primes(n, ar) {
   var mMcount4 = new Monad(0, 'mMcount4');
   var updateGameFunc = new Monad('start', 'updateGameFunc');
   var cleanup2Func = new Monad('start', 'cleanup2Func');
+  var mMres = new Monad(['','',''], 'mMres');
+  var mMquad4 = new Monad('', 'mMquad4');
+  var mMquad5 = new Monad('', 'mMquad5');
+  var mMquad6 = new Monad('', 'mMquad6');
+  var mMfactors3 = new Monad('', 'mMfactors3');
+  var mMfactors4 = new Monad('', 'mMfactors4');
+
+
 
   var mMZ1 = MI();
   var mMZ2 = MI();
