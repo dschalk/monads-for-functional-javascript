@@ -414,7 +414,9 @@ Here are the definitions of MonadE and the functions used in the demonstration:
     return window[id];
   }  
 ```
-Once a MonadE instance encounters an erroOnce a MonadE instance encounters an error, its bnd() method will not process any function other than clean() and log2(). That is because e.length == 1, not 0. clean() resets an instance to normal functioning mode by setting its e attribute back to []. a, b, c, and d are created on the fly in the error-free version. In the version with an error, a already exists and ret2(0,'a') re-sets a's value to 0.r, its bnd() method will not process any function other than clean() and log2(). That is because e.length == 1, not 0. clean() resets an instance to normal functioning mode by setting its e attribute back to []. a, b, c, and d are created on the fly in the error-free version. In the version with an error, a already exists and ret2(0,'a') re-sets a's value to 0.
+When a MonadE instance encounters a function or an argument in quotation marks of types undefined or NaN, a message string gets pushed into its e attribue. After that, the bnd() method will not process any function other than clean() and log2(). It will stop at the "if (e.length > 0)" block. clean() resets an instance to normal functioning mode by setting its e attribute back to []. a, b, c, and d are created on the fly in the error-free version. In the version with an error, a already exists and ret2(0,'a') re-sets a's value to 0.
+
+The final test in the bnd() method occurs in a try-catch block. If a function and its quoted arguments are not of types undefined or NaN but the system returns an error, the error message gets logged and a browser crash is averted.
 
 ##Websocket messages
 
