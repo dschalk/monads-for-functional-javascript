@@ -1173,21 +1173,30 @@ var monadE = h('pre.turk',  `  function MonadE (val, ID, er = []) {
         var a = ("typeof " + f);
 
         if (eval(a) == 'function') {
+          let b = '';
           for (let v of args) {
-  
-            if (eval('typeof eval(v)') == 'undefined') {
+
+            b = "typeof " + v
+
+            if (eval(b) == 'undefined') {
               console.log(v, "is undefined. No further computations will be attempted");
               e.push(v + " is undefined." );
               return ob;
             }
   
-            if (eval('typeof eval(v)') == 'NaN') {
+            if (eval(b) == 'NaN') {
               console.log(v, "is NaN. No further computations will be attempted");
               e.push(v + " is NaN." );
               return ob;
             }
           }
-          return eval(f)(x, ...args);
+
+          try {return eval(f)(x, ...args)}
+          catch (error) {
+            e.push(error);
+            console.log('MonadE instance',ob.id,'generated the following error message:');
+            console.log('Error ' + error);  
+          }
         }
   
         else {
@@ -1255,7 +1264,7 @@ var screenshot = h('pre.turk',  `  ret2(0,'a').bnd('add2',3)
    .bnd('b.ret')
    .bnd("ret2(0,'d').ret")
    .bnd('square2')
-   .bnd('d.ret')
+   .bnd('d.ret') 
    .bnd('add2',c.getx())
    .bnd('d.ret')
    .bnd('sqroot2')

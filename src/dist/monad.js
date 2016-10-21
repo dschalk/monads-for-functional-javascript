@@ -255,21 +255,30 @@ function evalF(x) {
         var a = ("typeof " + f);
 
         if (eval(a) == 'function') {
+          let b = '';
           for (let v of args) {
-  
-            if (eval('typeof eval(v)') == 'undefined') {
-              console.log(v, "is undefined. No further computations will be attempted");
+
+            b = "typeof " + v
+
+            if (eval(b) == 'undefined') {
               e.push(v + " is undefined." );
+              console.log(v, "is undefined. No further computations will be attempted");
               return ob;
             }
   
-            if (eval('typeof eval(v)') == 'NaN') {
-              console.log(v, "is NaN. No further computations will be attempted");
+            if (eval(b) == 'NaN') {
               e.push(v + " is NaN." );
+              console.log(v, "is NaN. No further computations will be attempted");
               return ob;
             }
           }
-          return eval(f)(x, ...args);
+
+          try {return eval(f)(x, ...args)}
+          catch (error) {
+            e.push(error);
+            console.log('MonadE instance',ob.id,'generated the following error message:');
+            console.log('Error ' + error);  
+          }
         }
   
         else {

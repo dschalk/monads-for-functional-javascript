@@ -358,23 +358,30 @@ Here are the definitions of MonadE and the functions used in the demonstration:
         var a = ("typeof " + f);
 
         if (eval(a) == 'function') {
+          let b = '';
           for (let v of args) {
-  
-            if (eval('typeof eval(v)') == 'undefined') {
+            b = "typeof " + v
+            if (eval(b) == 'undefined') {
               console.log(v, "is undefined. No further computations will be attempted");
               e.push(v + " is undefined." );
               return ob;
             }
   
-            if (eval('typeof eval(v)') == 'NaN') {
+            if (eval(b) == 'NaN') {
               console.log(v, "is NaN. No further computations will be attempted");
               e.push(v + " is NaN." );
               return ob;
             }
           }
-          return eval(f)(x, ...args);
+
+          try {return eval(f)(x, ...args)}
+          catch (error) {
+            e.push(error);
+            console.log('MonadE instance',ob.id,'generated the following error message:');
+            console.log('Error ' + error);  
+          }
         }
-  
+        
         else {
           e.push(f + ' is not a function. ');
           console.log(f, 'is not a function. No further computations will be attempted');
