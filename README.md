@@ -1,3 +1,4 @@
+<a name="back"></a>
 
 #JS-monads-stable 
 
@@ -83,15 +84,17 @@ Commutivity
   Example: equals( m.ret(0).bnd(add, 3).bnd(cube), 
            m.ret(0).bnd(v => add(v,3).bnd(cube)) )  Tested amd verified
   Haskell monad law: (m >>= f) >>= g ≡ m >>= ( \x -> (f x >>= g) ) 
-```
+```  
+<a name="discuss"></a>
 where equals is defined as:
 ```javascript
     var equals = function equals (mon1, mon2) {
       if (mon1.id === mon2.id && get(mon1) === get(mon2)) return true;
       else return false
     }  
-```
-# ##Discuttion<a name="discuss"></a>
+```    
+[Back to the top](#back)
+# ##Discussion
 The function equals() was used because the == and === operators on objects check for location in memory, not equality of attributes and equivalence of methods. If the left and right sides of predicates create new instances of m, then the left side m and the right side m wind up in different locations in memory and the == operator returns false. So we expect m.ret(3) == m.ret(3) to return false. What concerns us is the equivalence of both sides of a comparison; that is, can the left side be substituted for the right side and vice versa.
 
 Tests in the JS-monads-mutableInstances branch at the Github repository produce results closer to what we would expect in mathematics. For example: m.ret(7) == m.ret(7) returns true in JS-monads-mutableIntances but false in JS-monads-stable, the master branch. But it would be folly to give up immutability for the sake of making unimportant comparisons come out "right". equals(m.ret(7), m.ret(7)) tells us that m.ret(7) will yield a result that performs consistenly any time it is executed. and that is all that is important. Similarly, equals(ret(3).bnd(cube), cube(3)) tells us that ret(3).bnd(cube) and cube(3) yield results that will perform identically, so they can be substituted for one another.
