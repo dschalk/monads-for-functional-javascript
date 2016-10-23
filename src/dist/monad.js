@@ -9,10 +9,6 @@ var chatDiv = 'none';
 var captionDiv = 'none';
 function tst (x) {return x};
 
-
-
-
-
 function Monad (z, ID = 'default') {
     var x = z;
     var ob = {

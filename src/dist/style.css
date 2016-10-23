@@ -22,6 +22,11 @@ input {
  margin-left: 2%;
 }
 
+#italic {
+  font-style: italic;
+  font-size: 18px;
+}
+
 #image {
   height: 145%;
   width: 145%;
