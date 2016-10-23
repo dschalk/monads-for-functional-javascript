@@ -3,7 +3,15 @@ var todoData, mMt3VAL;
 var taskL = [];
 var MESSAGES = [];
 var res = [];
+var todoDiv = 'none';
+var gameDiv = 'none';
+var chatDiv = 'none';
+var captionDiv = 'none';
 function tst (x) {return x};
+
+
+
+
 
 function Monad (z, ID = 'default') {
     var x = z;
@@ -686,7 +694,7 @@ function primes(n, ar) {
   var mMhelper = new Monad('helper', 'mMhelper');
   var mMtasks = new Monad([], 'mMtasks');
   var mMid = new Monad(42, 'mMid');
-  var mMalert = new Monad('nothing');
+  var mMalert = new Monad('', 'mMalert');
   var fibmon = new Monad([0, 1]);
   var mMmax = new Monad(0, 'mMmax');
   var mMfibSave = new Monad(0, 'mMfibSave');
@@ -789,6 +797,22 @@ function primes(n, ar) {
   var mMitterPF2 = MI();
   var style = ['inline', 'inline', 'inline', 'inline'];
   var nums = [0,0,0,0];  
+var mMdice = new Monad('none','mMdice');
+var mMrightPanel = new Monad('none','mMrightPanel');
+var mMgameDiv2 = new Monad('none','mMgameDiv2');
+var mMgameDiv = new Monad('block','mMgameDiv');
+var mMlogin = new Monad('inline','mMlogin');
+var mMlog1 = new Monad('inline','mMlog1');
+var mMlog2 = new Monad('none','mMlog2');
+var mMtodoDiv = new Monad('block','mMtodoDiv');
+var mMchatDiv = new Monad('block','mMchatDiv');
+var mMcaptionDiv = new Monad('block','mMcaptionDiv');
+var mMtodoDiv = new Monad('block','mMtodoDiv');
+var mMtodo = new Monad('inline','mMtodo');
+var mMchat = new Monad('inline','mMchatDiv');
+var mMcaption = new Monad('inline','mMcaptionDiv');
+var mMtodo = new Monad('inline','mMtodoDiv');
+var mMgame = new Monad('none','mMgameDiv');
 
   function numProtect (x) {return (new Number (x))*1; }; 
 

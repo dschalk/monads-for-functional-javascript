@@ -124,12 +124,24 @@ function main(sources) {
       socket.send(`CC#$42${v}`);
       console.log('33333333333333333333333333333333333333 login e.target.value ', e.target.value);
       mM3.ret([]);
-      document.getElementById('dice').style.display = 'block';
-      document.getElementById('rightPanel').style.display = 'block';
-      document.getElementById('log1').style.display = 'none';
-      document.getElementById('log2').style.display = 'block';
-      document.getElementById('gameDiv2').style.display = 'block';
-      document.getElementById('login').blur(); 
+
+      mMdice.ret('block');
+      mMrightPanel.ret('block');
+      mMgameDiv2.ret('block')
+      mMlogin.ret('none');
+      mMlog1.ret('none');
+      mMlog2.ret('block');
+
+      /*
+      mMcaptionDiv.ret('block')
+      mMchatDiv.ret('block')
+      mMtodoDiv.ret('block')
+      mMgameDiv.ret('block')
+      mMchat.ret('inline')
+      mMcaption.ret('inline');
+      mMgame.ret('inline')
+      mMtodo.ret('inline')
+      */
       // document.getElementById('group').focus(); 
       newRoll(0,0);
     }
@@ -192,9 +204,7 @@ function main(sources) {
 
   var numClickAction$ = numClick$.map(e => {
     if (get(mM3).length == 2) {return};
-    var muns;
-    var styles;
-    pMnums    
+    pMnums
     .bnd(spliceM, e.target.id, 1)
     .bnd(pMnums.ret)
     .bnd(test3)
@@ -265,16 +275,6 @@ function main(sources) {
     }
     else {pMgoals.bnd(add, 1).bnd(pMgoals.ret).bnd(g => newRoll(0, g))};
   };
-
-  var todoClick$ = sources.DOM
-      .select('#todoButton').events('click');
-
-  var todoClickAction$ = todoClick$.map(function (e) {
-      var el = document.getElementById('todoDiv');
-      (el.style.display == 'none') ?
-          el.style.display = 'inline' :
-          el.style.display = 'none';
-  });
   // ************************************************************************* Original Fibonacci enter
   var fib2 = function fib2(v) {
       if (v[2] > 1) {
@@ -456,8 +456,7 @@ function main(sources) {
         if (e.keyCode == 13) {
             var ar = e.target.value.split(',');
             if (ar.length < 3) {
-                alert = 'You should enter "author, responsible party, task" separated by commas';
-                document.getElementById('alert').innerHTML = alert;
+                mMalert.ret('You should enter "author, responsible party, task" separated by commas');
             }
             var ar2 = ar.slice(2);
             console.log('*************  newTaskAction$  ************************$$$$$$$$$$$  ar ', ar);
@@ -510,17 +509,19 @@ function main(sources) {
 
     var process3 = function (a) {
       var ar5 = [];
-      var keys = rang(0, a.length / 6);
-      keys.map( _ => {
-        ar5.push({
-          task: convertBack(a.shift()),
-          color: a.shift(),
-          textDecoration: a.shift(),
-          checked: a.shift() === 'true',
-          author: a.shift(),
-          responsible: a.shift()
+      if (a.length % 6 == 0) {
+        var keys = rang(0, a.length / 6);
+        keys.map( _ => {
+          ar5.push({
+            task: convertBack(a.shift()),
+            color: a.shift(),
+            textDecoration: a.shift(),
+            checked: a.shift() === 'true',
+            author: a.shift(),
+            responsible: a.shift()
+          });
         });
-      });
+      };
       mMar2.ret(ar5);
       process4(ar5);
     };
@@ -652,6 +653,17 @@ function main(sources) {
             el.style.display = 'none';
     });
     // **************************************   GAME   *********************************************** GAME START
+
+  /*  var todoClick$ = sources.DOM
+        .select('#todoButton').events('click');
+  
+    var todoClickAction$ = todoClick$.map(function (e) {
+        var el = document.getElementById('todoDiv');
+        (el.style.display == 'none') ?
+            el.style.display = 'inline' :
+            el.style.display = 'none';
+    });
+
     var gameClick$ = sources.DOM
         .select('#game').events('click');
 
@@ -664,6 +676,43 @@ function main(sources) {
         (el2.style.display == 'none') ?
             el2.style.display = 'inline' :
             el2.style.display = 'none';
+    });
+*/
+
+    var todoClick$ = sources.DOM
+        .select('#todoButton').events('click');
+  
+    var todoClickAction$ = todoClick$.map(function (e) {
+        (get(mMtodoDiv)  == 'none') ?
+            mMtodoDiv.ret('block') :
+            mMtodoDiv.ret('none') 
+    });
+
+    var chatClick$ = sources.DOM
+        .select('#chat2').events('click');
+
+    var chatClickAction$ = chatClick$.map(function () {
+        (get(mMchatDiv)  == 'none') ?
+            mMchatDiv.ret('block') :
+            mMchatDiv.ret('none') 
+    });
+
+    var captionClick$ = sources.DOM
+        .select('#caption').events('click');
+
+    var captionClickAction$ = captionClick$.map(function () {
+        (get(mMcaptionDiv)  == 'none') ?
+            mMcaptionDiv.ret('block') :
+            mMcaptionDiv.ret('none') 
+    });
+
+    var gameClick$ = sources.DOM
+        .select('#game').events('click');
+
+    var gameClickAction$ = gameClick$.map(function () {
+        (get(mMgameDiv)  == 'none') ?
+            mMgameDiv.ret('block') :
+            mMgameDiv.ret('none') 
     });
 
     var forwardClick$ = sources.DOM
@@ -707,16 +756,16 @@ function display(x, id, string, mon = mMdisplay) {
   return {
   DOM: calcStream$.map(function () {
   return h('div.content', [
-  h('div#rightPanel', { style: { display: 'none' } }, [
+  h('div#rightPanel', { style: { display: `${get(mMrightPanel)}` } }, [
       h('span#tog', [
-          h('button#game', { style: { fontSize: '16px' } }, 'TOGGLE GAME'),
+          h('button#game', { style: { fontSize: '16px', display: 'inline' } }, 'TOGGLE GAME'),
           h('span.tao', ' '),
-          h('button#todoButton', { style: { fontSize: '16px' } }, 'TOGGLE TODO_LIST'),
+          h('button#todoButton', { style: { fontSize: '16px', display: 'inline' } }, 'TOGGLE TODO_LIST'),
           h('br'),
           h('br'),
-          h('button#chat2', { style: { fontSize: '16px' } }, 'TOGGLE CHAT'),
+          h('button#chat2', { style: { fontSize: '16px', display: 'inline' } }, 'TOGGLE CHAT'),
           h('span.tao', ' '),
-          h('button#caption', { style: { fontSize: '16px' } }, 'TOGGLE CAPTION')]),
+          h('button#caption', { style: { fontSize: '16px', display: 'inline' } }, 'TOGGLE CAPTION')]),
       h('br'),
       h('br'),
       h('br'),
@@ -730,35 +779,30 @@ function display(x, id, string, mon = mMdisplay) {
       h('br'),
       h('br'),
       h('br'),
-      h('br'),
-      h('br'),
-      h('br'),
-      h('br'),
-      h('br'),
-      h('div#gameDiv', [
+      h('div#gameDiv', { style: { display: `${get(mMgameDiv)}` } }, [
       h('div.game', `Name: ${get(pMname)}`),
       h('div.game', `Group: ${get(pMgroup)}`),
       h('div.game', `Currently online: Name score | goals`  ),
       h('div.game', `${get(pMdata)}`) ]),  
       h('br'),
       h('br'),
-      h('div#todoDiv', [
+      h('div#todoDiv',  { style: { display: `${get(mMtodoDiv)}` } }, [
         h('div#taskList', taskL  ),
         h('span', 'Author, Responsible Person, Task: '),
         h('input.newTask') ]),
       h('br'),
-      h('span#alert'),
+      h('span#alert', `${get(mMalert)}` ),
       h('br'),
       h('span#alert2'),
       h('br'),
-      h('div#chatDiv', [
+      h('div#chatDiv',  { style: { display: `${get(mMchatDiv)}` } }, [
         h('div#messages', [
           h('span', 'Message: '),
           h('input.inputMessage'),
           h('div', messageMonad.s[3] ) ])  ]) ]),
   h('div#leftPanel', [  
       h('br'),
-      h('div#captionDiv', [
+      h('div#captionDiv', { style: { display: `${get(mMcaptionDiv)}` } },  [
           h('h1', 'Motorcycle.js With JS-monads') ]),
           h('span.tao1', ' The demonstrations include persisternt, shared todo lists; '),
           h('br'),
@@ -780,7 +824,7 @@ function display(x, id, string, mon = mMdisplay) {
       h('a', { props: { href: "https://github.com/paldepind/snabbdom", target: "_blank" } }, 'Snabbdom'),
       h('span', ' instead of RxJS and virtual-dom.  The code for this repository is at '),
       h('a', { props: { href: "https://github.com/dschalk/JS-monads-stable", target: "_blank" } }, 'JS-monads-stable'),  
-      h('div#gameDiv2', { style: { display: 'none' } }, [
+      h('div#gameDiv2', { style: { display: `${get(mMgameDiv2)}` } }, [
           h('br'),
           h('span', ' Here are the basic rules:'),
           h('p', 'RULES: If clicking two numbers and an operator (in any order) results in 20 or 18, the score increases by 1 or 3, respectively. If the score becomes 0 or is evenly divisible by 5, 5 points are added. A score of 25 results in one goal. That can only be achieved by arriving at a score of 20, which jumps the score to 25. Directly computing 25 results in a score of 30, and no goal. Each time RL is clicked, one point is deducted. Three goals wins the game. '),
@@ -796,17 +840,17 @@ function display(x, id, string, mon = mMdisplay) {
           h('button#5.op', 'div'),
           h('button#5.op', 'concat'),
           h('br'),
-          h('div#dice', { style: { display: 'none' } }, [
+          h('div#dice', { style: { display: `${get(mMdice)}` } }, [
               h('button.roll', 'ROLL'),
               h('br'),
               h('button#back', 'BACK'),
               h('button#forward', 'FORWARD'),])]),
-h('div#log1', [
+h('div#log1',  { style: { display: get(mMlog1) } }, [
 h('p', 'IN ORDER TO SEE THE GAME, TODOLIST, AND CHAT DEMONSTRATIONS, YOU MUST ENTER SOMETHING .'),
 h('span', 'Name: '),
 h('input#login', )]),
 h('p', `${get(mM6)}`),
-h('div#log2', { style: { display: 'none' } }, [
+h('div#log2', { style: { display: get(mMlog2) } }, [
     h('span', 'Change group: '),
     h('input#group')]),
 h('p', `${get(mMsoloAlert)}`),
