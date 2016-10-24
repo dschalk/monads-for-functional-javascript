@@ -266,11 +266,12 @@ talk conn state (_, _, _, _, _) = forever $ do
                 old <- atomically $ takeTMVar state
                 let new = changeGroup sender extra old
                 atomically $ putTMVar state new
-                let subSt = subState sender extra new
+                let subSt1 = subState sender extra new
                 tasks <- liftIO $ read2 (msgArray !! 1)
                 st <- atomically $ readTMVar state
-                let subSt = subState sender group st
-                broadcast ("DD#$42," `mappend` group `mappend` "," `mappend` sender `mappend` "," `mappend` tasks) subSt
+                let subSt2 = subState sender group st
+                broadcast ("DD#$42," `mappend` group `mappend` "," `mappend` sender `mappend` "," `mappend` tasks) subSt1
+                broadcast ("DD#$42," `mappend` extra `mappend` "," `mappend` sender `mappend` "," `mappend` tasks) subSt2
 
     else if "HQ#$42" `T.isPrefixOf` msg
         then

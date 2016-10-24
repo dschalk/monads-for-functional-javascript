@@ -5371,10 +5371,10 @@
 
 	    var groupPressAction$ = groupPress$.map(function (e) {
 	        if (e.keyCode == 13) {
-	            var oldGroup = get(pMgroup);
-	            var gr = e.target.value;
-	            socket.send('CO#$42,' + gr + ',' + get(pMname) + ',' + gr);
-	            pMgroup.ret(gr).bnd(pMgroup.ret);
+	            socket.send('CO#$42,' + get(pMgroup) + ',' + get(pMname) + ',' + e.target.value);
+	            pMgroup.ret(e.target.value).bnd(pMgroup.ret).bnd(function (gr) {
+	                return socket.send('CG#$42,' + get(pMgroup) + ',' + get(pMname) + ',0,0');
+	            });
 	        }
 	    });
 

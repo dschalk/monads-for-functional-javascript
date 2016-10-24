@@ -152,11 +152,11 @@ function main(sources) {
 
   var groupPressAction$ = groupPress$.map(e => {
       if (e.keyCode == 13) {
-          var oldGroup = get(pMgroup);
-          var gr = e.target.value;
-          socket.send(`CO#$42,${gr},${get(pMname)},${gr}`);
-          pMgroup.ret(gr)
+          socket.send(`CO#$42,${get(pMgroup)},${get(pMname)},${e.target.value}`);
+          pMgroup.ret(e.target.value)
           .bnd(pMgroup.ret)
+          .bnd(gr =>
+          socket.send(`CG#$42,${get(pMgroup)},${get(pMname)},0,0`));
       }
   });
 
