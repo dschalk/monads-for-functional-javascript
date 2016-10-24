@@ -157,8 +157,6 @@ function main(sources) {
           socket.send(`CO#$42,${gr},${get(pMname)},${gr}`);
           pMgroup.ret(gr)
           .bnd(pMgroup.ret)
-          .bnd(v => 
-          socket.send(`CA#$42,${v},${get(pMname)},6,6,12,20,0,0`));
       }
   });
 
@@ -892,12 +890,24 @@ h('pre.turk', `    equals(m.bnd(m.ret), m)      Tested and verified
     Haskell monad law: (m >>= f) >>= g \u2261 m >>= ( \\x -> (f x >>= g) ) `),
     h('p', ' where equals is defined as: '),
     code.equals,
-h('p', ' and f \u2261 g means f x == g x for all Haskell values x. The function equals() was used because the == and === operators on objects check for location in memory, not equality of attributes and equivalence of methods. If the left and right sides of predicates create new instances of m, then the left side m and the right side m wind up in different locations in memory and the == operator returns false. So we expect m.ret(3) == m.ret(3) to return false, and it does. The question we want answered is this: Can the left side be substituted for the right side and vice versa? That question is answered by equals().   '),
+h('p#discussion', ' and ' ),
+h('pre.turk', `f \u2261 g` ),
+h('span', ' means f x == g x for all Haskell values x. ' ),
+h('br' ),    
+h('br' ),    
+h('a', { props: { href: '#top' } }, 'Back To The Top'),
+h('h3', ' Disussion ' ),
+h('p', ' The function equals() was used because the == and === operators on objects check for location in memory, not equality of attributes and equivalence of methods. If the left and right sides of predicates create new instances of m, then the left side m and the right side m wind up in different locations in memory and the == operator returns false. So we expect m.ret(3) == m.ret(3) to return false, and it does. The question we want answered is this: Can the left side be substituted for the right side and vice versa? That question is answered by equals() - and also by \u2261. '),
+h('span', ' The Haskell programming language took the name "monad" from the branch of mathematics known as category theory. This was deemed appropriate because Haskell monads behave somewhat like category theory monads and the inspiration came out of mathematics. For Haskell monads to be category theory monads, they would need to reside in a category-theory category. It is generally acknowledged within the Haskell community that they do not. Attempts have been made to find a subset of Haskell, or something similar to Haskell, that actually is a category. That would be the first step in finding a way to prove that Haskell monads, or some semblance thereof, are category-theory monads. Or, as the phrase goes, prove that a monad is '), 
+h('a', { props: { href: "http://stackoverflow.com/questions/3870088/a-monad-is-just-a-monoid-in-the-category-of-endofunctors-whats-the-issue" }}, ' just a monoid in the category of endofunctors' ), 
+h('p', ' An interesting discussion of these matters can be found at ' ),
+h('a', { props: { href: "http://math.andrej.com/2016/08/06/hask-is-not-a-category/", target: "_blank" } }, 'Hask is not a category'),
+
     
  // **************************************************************************** END MONAD       START MonadItter   
 h('h2', 'MonadItter'),
 code.monadIt,
-h('p', ' MonadItter instances are not meant to be sequenced. They exist to facilitate the work of instances of Mmonad, MonadState, etc. Here\'s how they work: '),
+h('p', ' MonadItter instances don\'t link to one another. They exist to facilitate the work of instances of Mmonad, MonadState, etc. Here\'s how they work: '),
 h('p', 'For any instance of MonadItter, say "it", "it.bnd(func)" causes it.p == func. Calling the method "it.release(...args)" causes p(...args) to run, possibly with arguments supplied by the caller. '),
 h('p', ' As shown later on this page, MonadItter instances control the routing of incoming websockets messages. In one of the demonstrations below, they behave much like ES2015 iterators. I prefer them over ES2015 iterators, at least for what I am demonstrating.'),
 h('h3#itterLink', ' A Basic Itterator '),
