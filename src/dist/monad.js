@@ -906,6 +906,15 @@ var mMgame = new Monad('none','mMgameDiv');
       return result;
   };
 
+  function noComma (s) {
+    s.trim();
+    while (s.trim().substr(0,1) == ",") { 
+      s.trim();
+      s = s.slice(1);
+    }
+    return s;
+  }
+  
   var equals2 = function equals(x, mon1, mon2) {
       if (mon1.id === mon2.id && get(mon1) === get(mon2)) {
           ret.ret('true');

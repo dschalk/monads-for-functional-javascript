@@ -454,7 +454,8 @@ function main(sources) {
         if (e.keyCode == 13) {
             var ar = e.target.value.split(',');
             if (ar.length < 3) {
-                mMalert.ret('You should enter "author, responsible party, task" separated by commas');
+              mMalert.ret('You should enter "author, responsible party, task" separated by commas');
+              return;
             }
             var ar2 = ar.slice(2);
             console.log('*************  newTaskAction$  ************************$$$$$$$$$$$  ar ', ar);
@@ -465,13 +466,13 @@ function main(sources) {
                 task = ar2.reduce(function (a, b) { return a + '$*$*$' + b; });
             }
             if ((get(mMar2).filter(function (v) { return (v.task == task); }).length) > 0) {
-                document.getElementById('alert').innerHTML = task + " is already listed.";
+                mMalert.ret(task + " is already listed.");
             }
             else if (ar.length > 2) {
                 mMcurrentList.bnd(addString, task + ',yellow, none, false,' + ar[0] + ',' + ar[1], mMcurrentList);
                 task2(get(mMcurrentList));
                 e.target.value = '';
-                document.getElementById('alert').innerHTML = '';
+                mMalert.ret('');
             }
         }
     });
@@ -486,10 +487,9 @@ function main(sources) {
       process(data);  
     } 
   };
-  
+
   var process = function (str) {
       var a = str.split(",");
-
       if (a == undefined) {
           return;
       };
@@ -519,7 +519,8 @@ function main(sources) {
             responsible: a.shift()
           });
         });
-      };
+      }
+      else console.log(a, "is not an appropriate size");
       mMar2.ret(ar5);
       process4(ar5);
     };
@@ -584,7 +585,7 @@ function main(sources) {
         .select('#edit2').events('keypress');
 
     var edit2Action$ = edit2$.map(function (e) {
-        var v = e.target.value;
+        var v = noComma(e.target.value);
         var index = getIndex2(e);
         if (e.keyCode == 13) {
             process2(v, index);
@@ -594,10 +595,12 @@ function main(sources) {
 
     var process2 = function (str, index) {
         var a = get(mMcurrentList).split(',');
+        console.log('In process2 VVVVVVVVVVVV a is ', a );
         a[6 * index] = str;
         var b = a.reduce(function (a, b) { return a + ',' + b; });
         task2(b);
     };
+
     var deleteClick$ = sources.DOM
         .select('.delete').events('click');
 
@@ -616,22 +619,6 @@ function main(sources) {
     });
 
 // **********************************************************************END TODO LIST                       
-    var timeoutClicks$ = sources.DOM.select('#timeout').events('click');
-  
-    const timeoutAction$ = timeoutClicks$.map(() => {
-      document.getElementById('timeout2').innerHTML = ''
-      document.getElementById('timeout3').innerHTML = ''
-      m.ret(3).bnd(m.ret)
-        .bnd(display, 'timeout2', 'get(m) is ' + ' ' + get(m)).bnd(m.ret)
-        .bnd(timeout2, 1.5, m, [() => m
-        .bnd(cube).bnd(m.ret)
-        .bnd(display, 'timeout2', 'get(m) is ' + ' ' + get(m)).bnd(m.ret)
-        .bnd(timeout2, 2, m, [() => m
-        .bnd(add, 15).bnd(m.ret)
-        .bnd(display, 'timeout2',  'get(m) is ' + ' ' + get(m)).bnd(m.ret)
-        .bnd(display, 'timeout3', `The meaning of everything was computed to be ${get(m)}.`)   
-      ])]);  
-    });  
 
     var chatClick$ = sources.DOM
         .select('#chat2').events('click');
@@ -745,12 +732,7 @@ function main(sources) {
       }
     });
 
-function display(x, id, string, mon = mMdisplay) {
-    document.getElementById(id).innerHTML = string;
-    return mon.ret(x);
-};
-
-  var calcStream$ = merge(  backAction$, forwardAction$, timeoutAction$, factorsAction$, primeFib$, fibPressAction$, quadAction$, edit1Action$, edit2Action$, testWAction$, testZAction$, testQAction$, colorAction$, deleteAction$, newTaskAction$, chatClickAction$, gameClickAction$, todoClickAction$, captionClickAction$, groupPressAction$, rollClickAction$, messagePressAction$, loginPressAction$, messages$, numClickAction$, opClickAction$);
+  var calcStream$ = merge(  backAction$, forwardAction$, factorsAction$, primeFib$, fibPressAction$, quadAction$, edit1Action$, edit2Action$, testWAction$, testZAction$, testQAction$, colorAction$, deleteAction$, newTaskAction$, chatClickAction$, gameClickAction$, todoClickAction$, captionClickAction$, groupPressAction$, rollClickAction$, messagePressAction$, loginPressAction$, messages$, numClickAction$, opClickAction$);
   return {
   DOM: calcStream$.map(function () {
   return h('div.content', [
@@ -802,7 +784,7 @@ function display(x, id, string, mon = mMdisplay) {
       h('br'),
       h('div#captionDiv', { style: { display: `${get(mMcaptionDiv)}` } },  [
           h('h1', 'Motorcycle.js With JS-monads') ]),
-          h('span#italic', ' Monads not in the sense of category theory monads; monads in the same spirit as the Haskell programming language constructs known as "monads". See ' ),
+          h('span#italic', ' Monads, not category theory monads; monads like the Haskell monads. See ' ),
       h('a', { props: { href: "http://math.andrej.com/2016/08/06/hask-is-not-a-category/", target: "_blank" } }, 'Hask is not a category'),
           h('span', ' by Andrej Bauer and . ' ),
           h('a', { props: { href: '#discussion' } }, 'Discussion'),
