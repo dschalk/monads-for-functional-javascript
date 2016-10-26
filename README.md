@@ -334,45 +334,6 @@ Next, I tried to define test2 in the Chrome developer scratch pad, which runs in
       ' squared and ' + b.getx() + ' squared is ' + e.getx(), 'e')
     .getx()  
 ```
-Instances of MonadE function much the same as instances of Monad, but when an instance of MonadE encounters an error, it ceases to perform any further computations. Instead, it passes through every subsequent stage of a sequence of MonadE expressions, reporting where it is and repeating the error message. It will continue to do this until it is re-instantiated or until its bnd() method runs on the function clean().
-
-Functions used as arguments to the MonadE bnd() method are placed in quotation marks to prevent the browser engine from throwing reference errors. Arguments can be protected in the same manner.
-
-The variable test1 was defined as shown below. When test1 was entered in the Chrome developer console, "The square root of the sum of 300 squared and 400 squared is 500" was displayed. Here is the code. The screen shot is shown below.
-
-  test1 = ret2(0,'a')
-    .bnd('add2',3, 'a')
-    .bnd('mult2',100,'a')
-    .bnd('square2','c')
-    .bnd('ret2','c')
-    .bnd('add2',-c.getx() + 4,'b')
-    .bnd('ret2','b')
-    .bnd('mult2',100,'b')
-    .bnd('ret2','e')
-    .bnd('square2','e')
-    .bnd('add2',c.getx(),'e')
-    .bnd('sqroot2','e')
-    .bnd('log2','The square root of the sum of ' + a.getx() + 
-      ' squared and ' + b.getx() + ' squared is ' + e.getx(), 'e')
-    .getx()  
-Next, I tried to define test2 in the Chrome developer scratch pad, which runs in the Chrome developer tools. Like the console, it is accessable by pressing F12 while in the running application in Chrome. Firefox provides similar tools. The attempt to define test2 resulted in the sequence of reports shown in the screenshot below. I defined test2 in monad.js, which loads as a script in the index.html file. The application loaded successfully, and when I looked in the console, I saw the same series of reports (screenshot below). When I entered test2 in the console, 0 was displayed. That was the value of the MonadE instance "a" when the error occurred. Here is test2 and the screenshot:
-
-  test2 = ret2(0,'a')
-    .bnd('add22',3, 'a')     // The error occurs here.
-    .bnd('mult2',100,'a')
-    .bnd('square2','c')
-    .bnd('ret2','c')
-    .bnd('add2',-c.getx() + 4,'b')
-    .bnd('ret2','b')
-    .bnd('mult2',100,'b')
-    .bnd('ret2','e')
-    .bnd('square2','e')
-    .bnd('add2',c.getx(),'e')
-    .bnd('sqroot2','e')
-    .bnd('log2','The square root of the sum of ' + a.getx() + 
-      ' squared and ' + b.getx() + ' squared is ' + e.getx(), 'e')
-    .getx()  
-```
 ![Alt text](MonadE_a.png?raw=true)
 Here are the definitions of MonadE and the functions used in the demonstration:
 ```Javascript
