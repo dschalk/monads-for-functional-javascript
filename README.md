@@ -293,52 +293,87 @@ The list of online group members at the bottom of the scoreboard is very respons
   var sMplayers = new MonadSet( s, 'sMplayers' )  
 ```
 ## MonadE - An Error-Catching Monad
-Instances of MonadE function much the same as instances of Monad, but When an instance of MonadE encounters an error, it ceases to perform any further computations, propagating the error to the end of the sequence it is in. Functions used as arguments to the MonadE bnd() method are placed in quotation marks to prevent the browser engine from throwing reference errors. Arguments can be protected in the same manner. The screen shot (below) taken after running the following expressions in the Google Chrome console shows the logs resulting from running the error-free version and then the version with an error.
-```Javascript
-  ret2(0,'a').bnd('add2',3)
-  .bnd('mult2',100)
-  .bnd(a.ret)
-  .bnd('square2')  
-  .bnd("ret2(0,'c').ret")  
-   .bnd(() => {
-    ret2(0,'b')
-    .bnd('add2',4)
-   .bnd('mult2',100)
-   .bnd('b.ret')
-   .bnd("ret2(0,'d').ret")
-   .bnd('square2')
-   .bnd('d.ret')
-   .bnd('add2',c.getx())
-   .bnd('d.ret')
-   .bnd('sqroot2')
-   .bnd('d.ret')
-   .bnd('log2','The square root of the sum of ' + a.getx() + 
-        ' squared and ' + b.getx() + ' squared is ' + d.getx())    
-  });
-        
-  ret2(0,'a').bnd('add22',3)
-  .bnd('mult2',100)
-  .bnd(a.ret)
-  .bnd('square2')  
-  .bnd("ret2(0,'c').ret")  
-   .bnd(() => {
-    ret2(0,'b')
-    .bnd('add2',4)
-   .bnd('mult2',100)
-   .bnd('b.ret')
-   .bnd("ret2(0,'d').ret")
-   .bnd('square2')
-   .bnd('d.ret')
-   .bnd('add2',c.getx())
-   .bnd('d.ret')
-   .bnd('sqroot2')
-   .bnd('d.ret')
-   .bnd('log2','The square root of the sum of ' + a.getx() + 
-        ' squared and ' + b.getx() + ' squared is ' + d.getx())    
-  });
+
+Instances of MonadE function much the same as instances of Monad, but when an instance of MonadE encounters an error, it ceases to perform any further computations. Instead, it passes through every subsequent stage of a sequence of MonadE expressions, reporting where it is and repeating the error message. It will continue to do this until it is re-instantiated or until its bnd() method runs on the function clean().
+
+Functions used as arguments to the MonadE bnd() method are placed in quotation marks to prevent the browser engine from throwing reference errors. Arguments can be protected in the same manner.
+
+The variable test1 was defined as shown below. When test1 was entered in the Chrome developer console, "The square root of the sum of 300 squared and 400 squared is 500" was displayed. Here is the code. The screen shot is shown below.
+```javascript
+  test1 = ret2(0,'a')
+    .bnd('add2',3, 'a')
+    .bnd('mult2',100,'a')
+    .bnd('square2','c')
+    .bnd('ret2','c')
+    .bnd('add2',-c.getx() + 4,'b')
+    .bnd('ret2','b')
+    .bnd('mult2',100,'b')
+    .bnd('ret2','e')
+    .bnd('square2','e')
+    .bnd('add2',c.getx(),'e')
+    .bnd('sqroot2','e')
+    .bnd('log2','The square root of the sum of ' + a.getx() + 
+      ' squared and ' + b.getx() + ' squared is ' + e.getx(), 'e')
+    .getx()  
+```    
+Next, I tried to define test2 in the Chrome developer scratch pad, which runs in the Chrome developer tools. Like the console, it is accessable by pressing F12 while in the running application in Chrome. Firefox provides similar tools. The attempt to define test2 resulted in the sequence of reports shown in the screenshot below. I defined test2 in monad.js, which loads as a script in the index.html file. The application loaded successfully, and when I looked in the console, I saw the same series of reports (screenshot below). When I entered test2 in the console, 0 was displayed. That was the value of the MonadE instance "a" when the error occurred. Here is test2 and the screenshot:
+```javascript
+  test2 = ret2(0,'a')
+    .bnd('add22',3, 'a')     // The error occurs here.
+    .bnd('mult2',100,'a')
+    .bnd('square2','c')
+    .bnd('ret2','c')
+    .bnd('add2',-c.getx() + 4,'b')
+    .bnd('ret2','b')
+    .bnd('mult2',100,'b')
+    .bnd('ret2','e')
+    .bnd('square2','e')
+    .bnd('add2',c.getx(),'e')
+    .bnd('sqroot2','e')
+    .bnd('log2','The square root of the sum of ' + a.getx() + 
+      ' squared and ' + b.getx() + ' squared is ' + e.getx(), 'e')
+    .getx()  
+```
+Instances of MonadE function much the same as instances of Monad, but when an instance of MonadE encounters an error, it ceases to perform any further computations. Instead, it passes through every subsequent stage of a sequence of MonadE expressions, reporting where it is and repeating the error message. It will continue to do this until it is re-instantiated or until its bnd() method runs on the function clean().
+
+Functions used as arguments to the MonadE bnd() method are placed in quotation marks to prevent the browser engine from throwing reference errors. Arguments can be protected in the same manner.
+
+The variable test1 was defined as shown below. When test1 was entered in the Chrome developer console, "The square root of the sum of 300 squared and 400 squared is 500" was displayed. Here is the code. The screen shot is shown below.
+
+  test1 = ret2(0,'a')
+    .bnd('add2',3, 'a')
+    .bnd('mult2',100,'a')
+    .bnd('square2','c')
+    .bnd('ret2','c')
+    .bnd('add2',-c.getx() + 4,'b')
+    .bnd('ret2','b')
+    .bnd('mult2',100,'b')
+    .bnd('ret2','e')
+    .bnd('square2','e')
+    .bnd('add2',c.getx(),'e')
+    .bnd('sqroot2','e')
+    .bnd('log2','The square root of the sum of ' + a.getx() + 
+      ' squared and ' + b.getx() + ' squared is ' + e.getx(), 'e')
+    .getx()  
+Next, I tried to define test2 in the Chrome developer scratch pad, which runs in the Chrome developer tools. Like the console, it is accessable by pressing F12 while in the running application in Chrome. Firefox provides similar tools. The attempt to define test2 resulted in the sequence of reports shown in the screenshot below. I defined test2 in monad.js, which loads as a script in the index.html file. The application loaded successfully, and when I looked in the console, I saw the same series of reports (screenshot below). When I entered test2 in the console, 0 was displayed. That was the value of the MonadE instance "a" when the error occurred. Here is test2 and the screenshot:
+
+  test2 = ret2(0,'a')
+    .bnd('add22',3, 'a')     // The error occurs here.
+    .bnd('mult2',100,'a')
+    .bnd('square2','c')
+    .bnd('ret2','c')
+    .bnd('add2',-c.getx() + 4,'b')
+    .bnd('ret2','b')
+    .bnd('mult2',100,'b')
+    .bnd('ret2','e')
+    .bnd('square2','e')
+    .bnd('add2',c.getx(),'e')
+    .bnd('sqroot2','e')
+    .bnd('log2','The square root of the sum of ' + a.getx() + 
+      ' squared and ' + b.getx() + ' squared is ' + e.getx(), 'e')
+    .getx()  
 ```
 ![Alt text](MonadE_a.png?raw=true)
-
 Here are the definitions of MonadE and the functions used in the demonstration:
 ```Javascript
   function MonadE (val, ID, er = []) {
@@ -356,14 +391,14 @@ Here are the definitions of MonadE and the functions used in the demonstration:
           return new MonadE(x, ob.id, [])
         }
 
-        if (f == 'log2') {
-          console.log(args[0]);
-          return new MonadE(args[0], 'log', [])
-        }
-  
         if (e.length > 0) {
           console.log('BYPASSING COMPUTATION in MonadE instance', ob.id, f, '.  PROPAGATING ERROR:',  e[0]); 
           return ob;  
+        }
+  
+        if (f == 'log2') {
+          console.log(args[0]);
+          return new MonadE(args[0], 'log', [])
         }
   
         var a = ("typeof " + f);
@@ -407,25 +442,40 @@ Here are the definitions of MonadE and the functions used in the demonstration:
     }
     return ob;
   };
-  
-  function add2 (x,a) {
-    return ret2(x + a)
-  }
-  
-  function square2 (x) {
-    return ret2(x*x);
+   
+  function add2 (x, y, str ) {
+    window[str] = new MonadE(x+y, str, []);
+    return window[str];
   };
   
-  function mult2 (x,y) {
-    return ret2(x*y);
+  function square2 (x, str) {
+    window[str] = new MonadE(x*x, str, []);
+    return window[str];
   };
   
-  function ret2(v, id = 'default', er = []) {
-    window[id] = new MonadE(v, id, er);
+  function mult2 (x,y,str) {
+    window[str] = new MonadE(x*y, str, []);
+    return window[str];
+  };
+  
+  function sqroot2 (x,str) {
+    window[str] = new MonadE(Math.sqrt(x), str, []);
+    return window[str];
+  };
+
+  function log2(x, message, str) {
+    window[str] = new MonadE(x, str, []);
+    console.log(message);
+    return window[str];
+  };
+
+  function ret2(v, id = 'ret2') {
+    window[id] = new MonadE(v, id, []);
     return window[id];
-  }  
+  };  
+   }  
 ```
-When a MonadE instance encounters a function or an argument in quotation marks of types undefined or NaN, a message string gets pushed into its e attribue. After that, the bnd() method will not process any function other than clean() and log2(). It will stop at the "if (e.length > 0)" block. clean() resets an instance to normal functioning mode by setting its e attribute back to []. a, b, c, and d are created on the fly in the error-free version. In the version with an error, a already exists and ret2(0,'a') re-sets a's value to 0.
+When a MonadE instance encounters a function or an argument in quotation marks of types undefined or NaN, a message string gets pushed into its e attribue. After that, the bnd() method will not process any function other than clean() and log2(). It will stop at theif (e.length > 0)block. clean() resets an instance to normal functioning mode by setting its e attribute back to []. MonadE instances are created on the flyin the error-free version. In the version with an error, these MonadE instances have already been created and ret2, by creating fresh instances, effectively re-sets their values to 0. 
 
 The final test in the bnd() method occurs in a try-catch block. If a function and its quoted arguments are not of types undefined or NaN but the system returns an error, the error message gets logged and a browser crash is averted.
 

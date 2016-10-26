@@ -246,17 +246,17 @@ function evalF(x) {
           ret2(x, ob.id, []);
           return new MonadE(x, ob.id, [])
         }
-
-        if (f == 'log2') {
-          console.log(args[0]);
-          return new MonadE(args[0], 'log', [])
-        }
   
         if (e.length > 0) {
           console.log('BYPASSING COMPUTATION in MonadE instance', ob.id, f, '.  PROPAGATING ERROR:',  e[0]); 
           return ob;  
         }
   
+        if (f == 'log2') {
+          console.log(args[1])
+          return new MonadE ( args[0], args[2], [] )
+        }
+
         var a = ("typeof " + f);
 
         if (eval(a) == 'function') {
@@ -266,14 +266,14 @@ function evalF(x) {
             b = "typeof " + v
 
             if (eval(b) == 'undefined') {
-              e.push(v + " is undefined." );
               console.log(v, "is undefined. No further computations will be attempted");
+              e.push(v + " is undefined." );
               return ob;
             }
   
             if (eval(b) == 'NaN') {
-              e.push(v + " is NaN." );
               console.log(v, "is NaN. No further computations will be attempted");
+              e.push(v + " is NaN." );
               return ob;
             }
           }
@@ -300,7 +300,8 @@ function evalF(x) {
     }
     return ob;
   };
-  
+
+  /*
   function add2 (x,a) {
     return ret2(x + a)
   }
@@ -316,23 +317,85 @@ function evalF(x) {
   function ret2(v, id = 'default', er = []) {
     window[id] = new MonadE(v, id, er);
     return window[id];
+  }  
+  function MonadE (val, ID, er = []) {
+    var x = val;
+    var e = er;
+    var id = ID;
+    var bnd = (f, ...args) => {
+        if (f == 'clean') {
+          return new MonadE(x, id, [])
+        }
+        if (e.length > 0) {
+          console.log('BYPASSING COMPUTATION in MonadE instance', id, f, '.  PROPAGATING ERROR:',  e[0]); 
+          return;  
+        }
+        var a = ("typeof " + f);
+        if (eval(a) == 'function') {
+          let b = '';
+          for (let v of args) {
+            b = "typeof " + v
+            if (eval(b) == 'undefined') {
+              e.push(v + " is undefined." );
+              console.log(v, "is undefined. No further computations will be attempted");
+              return this;
+            }
+            if (eval(b) == 'NaN') {
+              e.push(v + " is NaN." );
+              console.log(v, "is NaN. No further computations will be attempted");
+              return this;
+            }
+          }
+          try {return eval(f)(x, ...args)}
+          catch (error) {
+            e.push(error);
+            console.log('MonadE instance',id,'generated the following error message:');
+            console.log('Error ' + error);  
+          }
+        } 
+        else {
+          e.push(f + ' is not a function. ');
+          console.log(f, 'is not a function. No further computations will be attempted');
+          return;
+        }
+      }
+      var ret = a => {
+        window[id] = new MonadE(a, id, []);
+        return window[d];
+      }  
+    }
+  */
+  
+  function add2 (x, y, str ) {
+    window[str] = new MonadE(x+y, str, []);
+    return window[str];
   }
-function add2 (x,a) {
-  return ret2(x + a)
-}
+  
+  function square2 (x, str) {
+    window[str] = new MonadE(x*x, str, []);
+    return window[str];
+  };
+  
+  function mult2 (x,y,str) {
+    window[str] = new MonadE(x*y, str, []);
+    return window[str];
+  };
+  
+  function sqroot2 (x,str) {
+    window[str] = new MonadE(Math.sqrt(x), str, []);
+    return window[str];
+  }
 
-function square2 (x) {
-  return ret2(x*x);
-};
+  function log2(x, message, str) {
+    window[str] = new MonadE(x, str, []);
+    console.log(message);
+    return window[str];
+  };
 
-function mult2 (x,y) {
-  return ret2(x*y);
-};
-
-function ret2(v, id = 'default', er = []) {
-  window[id] = new MonadE(v, id, er);
-  return window[id];
-}
+  function ret2(v, id = 'ret2') {
+    window[id] = new MonadE(v, id, []);
+    return window[id];
+  }
 
 function cube2 (x) {
   return ret2(x*x*x);
@@ -345,11 +408,11 @@ function push2(x, v) {
 };
 
 function unshift(x, y) {
-    var ar = x.slice();
-    ar.unshift(y);
-    return ret2(ar);
-};
-
+  var ar = x.slice();
+  ar.unshift(y);  
+  return ret2(ar)
+}  
+  
 function splice2(x, start, how_many) {
     var ar = x.slice();
     ar.splice(start, how_many)
@@ -361,19 +424,41 @@ function sliceM(x, howmany) {
     return ret2(ar);
 };
 
-function log2(x, message) {
-  console.log(message);
-  return ret2(x);
-};
-
-function sqroot2 (x) {
-  return ret2(Math.sqrt(x));
-}
-
 var mMEa = new MonadE(0, 'mMEa');
 
-mMEa.bnd('add2',3);
-mMEa.bnd('cube2');
+
+  var test1 = ret2(0,'a')
+    .bnd('add2',3, 'a')
+    .bnd('mult2',100,'a')
+    .bnd('square2','c')
+    .bnd('ret2','c')
+    .bnd('add2',-c.getx() + 4,'b')
+    .bnd('ret2','b')
+    .bnd('mult2',100,'b')
+    .bnd('ret2','e')
+    .bnd('square2','e')
+    .bnd('add2',c.getx(),'e')
+    .bnd('sqroot2','e')
+    .bnd('log2','The square root of the sum of ' + a.getx() + 
+       ' squared and ' + b.getx() + ' squared is ' + e.getx(), 'e')
+    .getx()
+
+
+  var test2 = ret2(0,'a')
+    .bnd('add22',3, 'a')
+    .bnd('mult2',100,'a')
+    .bnd('square2','c')
+    .bnd('ret2','c')
+    .bnd('add2',-c.getx() + 4,'b')
+    .bnd('ret2','b')
+    .bnd('mult2',100,'b')
+    .bnd('ret2','e')
+    .bnd('square2','e')
+    .bnd('add2',c.getx(),'e')
+    .bnd('sqroot2','e')
+    .bnd('log2','The square root of the sum of ' + a.getx() + 
+       ' squared and ' + b.getx() + ' squared is ' + e.getx(), 'e')
+    .getx()
 
 
 var fpTransformer = function transformer(s, m) {
@@ -892,6 +977,7 @@ var mMgame = new Monad('none','mMgameDiv');
           case "subtract":
               result = parseInt(a, 10) - parseInt(b, 10);
               break;
+          
           case "mult":
               result = parseInt(a, 10) * parseInt(b, 10);
               break;
@@ -908,7 +994,7 @@ var mMgame = new Monad('none','mMgameDiv');
 
   function noComma (s) {
     s.trim();
-    while (s.trim().substr(0,1) == ",") { 
+    while (s.trim()[0] == ",") { 
       s.trim();
       s = s.slice(1);
     }

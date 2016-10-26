@@ -65,29 +65,29 @@ var driver = h('pre', `  var websocketsDriver = function () {
 ` )
 
 var messages = h('pre', `  const messages$ = (sources.WS).map( e => {
-  mMtem.ret(e.data.split(',')).bnd( v => {
-  console.log('<><><><><><><><><><><><><><><><>  INCOMING  <><><><><><><> >>> In messages. e amd v are ', e, v);
-  mMZ10.bnd( () => {
-    pMnums.ret([v[3], v[4], v[5], v[6]]).bnd(test3).bnd(pMstyle.ret)
-    travMonad.run([ [v[3], v[4], v[5], v[6]], v[7], v[8] ]);
-    pMscore.ret(v[7]);
-    pMgoals.ret(v[8]) }); 
-  mMZ12.bnd( () => mM6.ret(v[2] + ' successfully logged in.'));
-  mMZ13.bnd( () => updateMessages(e.data));
-  mMZ14.bnd( () => mMgoals2.ret('The winner is ' + v[2]));
-  mMZ15.bnd( () => {
-    mMgoals2.ret('A player named ' + v[2] + ' is currently logged in. Page will refresh in 4 seconds.')
-    refresh() });
-  mMZ17.bnd( () => testTask(v[2], v[3], e.data) ); 
-    mMZ18.bnd( () => {if (get(pMgroup) != 'solo' || get(pMname) == v[2]) {updatePlayers(e.data) } });
-  })       
-  mMtemp.ret(e.data.split(',')[0])
-  .bnd(next, 'CA#$42', mMZ10)
-  .bnd(next, 'CD#$42', mMZ13)
-  .bnd(next, 'CE#$42', mMZ14)
-  .bnd(next, 'EE#$42', mMZ15)
-  .bnd(next, 'DD#$42', mMZ17)
-  .bnd(next, 'NN#$42', mMZ18)
+    mMtem.ret(e.data.split(',')).bnd( v => {
+    console.log('<><><><><><><><><><><><><><><><>  INCOMING  <><><><><><><> >>> In messages. e amd v are ', e, v);
+    mMZ10.bnd( () => {
+      pMnums.ret([v[3], v[4], v[5], v[6]]).bnd(test3).bnd(pMstyle.ret)
+      travMonad.run([ [v[3], v[4], v[5], v[6]], v[7], v[8] ]);
+      pMscore.ret(v[7]);
+      pMgoals.ret(v[8]) }); 
+    mMZ12.bnd( () => mM6.ret(v[2] + ' successfully logged in.'));
+    mMZ13.bnd( () => updateMessages(e.data));
+    mMZ14.bnd( () => mMgoals2.ret('The winner is ' + v[2]));
+    mMZ15.bnd( () => {
+      mMgoals2.ret('A player named ' + v[2] + ' is currently logged in. Page will refresh in 4 seconds.')
+      refresh() });
+    mMZ17.bnd( () => testTask(v[2], v[3], e.data) ); 
+      mMZ18.bnd( () => {if (get(pMgroup) != 'solo' || get(pMname) == v[2]) {updatePlayers(e.data) } });
+    })       
+    mMtemp.ret(e.data.split(',')[0])
+    .bnd(next, 'CA#$42', mMZ10)
+    .bnd(next, 'CD#$42', mMZ13)
+    .bnd(next, 'CE#$42', mMZ14)
+    .bnd(next, 'EE#$42', mMZ15)
+    .bnd(next, 'DD#$42', mMZ17)
+    .bnd(next, 'NN#$42', mMZ18)
   });  `  )
 
 var MonadSet = h('pre',  `  var MonadSet = function MonadSet(set, ID) {
@@ -652,32 +652,14 @@ var fpTransformer = h('pre',  `  var fpTransformer = function fpTransformer (s, 
   }  `  )
 
 var factorsMonad = h('pre',  `  var factorsMonad = new MonadState('factorsMonad', [[], [], 2, []], [], factor_state);
-  var factorsMonad2 = new MonadState('factorsMonad2', [[], [], 2, []], [], factor_state2);
   
   function factor_state(v) {
-      v[3].map(function (p) {
-          if (v[2] / p == Math.floor(v[2] / p)) {
-              v[0].push(p);
-          }
-      });
-      return v;
-  }
-  
-  function factor_state2(a) {
-      var v = a.slice();
-      var result;
-      func(v);
-      function func (v) {
-        for (let p of v[3]) {
-          if (v[2] / p == Math.floor(v[2] / p)) {
-              v[0].push(p);
-              func([v[0], v[1], v[2]/p, v[3]])
-              break;
-          };
-          result = v;
-        }; 
+    v[3].map(function (p) {
+      if (v[2] / p == Math.floor(v[2] / p)) {
+          v[0].push(p);
       }
-      return result;
+    });
+    return v;
   }  `  )
 
 var factorsInput = h('pre',  `  var factorsPress$ = sources.DOM
@@ -1033,11 +1015,11 @@ var numClick2 = h('pre',  `  function updateCalc(ar, op) {
   };
 
   function score(scor) {
-    console.log('In score 22222222222222222222222222222222222222222 scor ', scor );
     if (scor != 25) {
       newRoll(scor, get(pMgoals))
     }
     else if (get(pMgoals) == 2) {
+      socket.send(\`CE#$42,${get(pMgroup)},${get(pMname)}\`);
       newRoll(0,0)
     }
     else {pMgoals.bnd(add, 1).bnd(pMgoals.ret).bnd(g => newRoll(0, g))};
@@ -1067,14 +1049,14 @@ var monadE = h('pre.turk',  `  function MonadE (val, ID, er = []) {
           return new MonadE(x, ob.id, [])
         }
 
-        if (f == 'log2') {
-          console.log(args[0]);
-          return new MonadE(args[0], 'log', [])
-        }
-  
         if (e.length > 0) {
           console.log('BYPASSING COMPUTATION in MonadE instance', ob.id, f, '.  PROPAGATING ERROR:',  e[0]); 
           return ob;  
+        }
+  
+        if (f == 'log2') {
+          console.log(args[0]);
+          return new MonadE(args[0], 'log', [])
         }
   
         var a = ("typeof " + f);
@@ -1121,64 +1103,68 @@ var monadE = h('pre.turk',  `  function MonadE (val, ID, er = []) {
     return ob;
   };
   
-  function add2 (x,a) {
-    return ret2(x + a)
-  }
-  
-  function square2 (x) {
-    return ret2(x*x);
+  function add2 (x, y, str ) {
+    window[str] = new MonadE(x+y, str, []);
+    return window[str];
   };
   
-  function mult2 (x,y) {
-    return ret2(x*y);
+  function square2 (x, str) {
+    window[str] = new MonadE(x*x, str, []);
+    return window[str];
   };
   
-  function ret2(v, id = 'default', er = []) {
-    window[id] = new MonadE(v, id, er);
-    return window[id];
-  }  `  )
+  function mult2 (x,y,str) {
+    window[str] = new MonadE(x*y, str, []);
+    return window[str];
+  };
+  
+  function sqroot2 (x,str) {
+    window[str] = new MonadE(Math.sqrt(x), str, []);
+    return window[str];
+  };
 
-var screenshot = h('pre.turk',  `  ret2(0,'a').bnd('add2',3)
-  .bnd('mult2',100)
-  .bnd(a.ret)
-  .bnd('square2')  
-  .bnd("ret2(0,'c').ret")  
-   .bnd(() => {
-    ret2(0,'b')
-    .bnd('add2',4)
-   .bnd('mult2',100)
-   .bnd('b.ret')
-   .bnd("ret2(0,'d').ret")
-   .bnd('square2')
-   .bnd('d.ret')
-   .bnd('add2',c.getx())
-   .bnd('d.ret')
-   .bnd('sqroot2')
-   .bnd('d.ret')
-   .bnd('log2','The square root of the sum of ' + a.getx() + 
-        ' squared and ' + b.getx() + ' squared is ' + d.getx())    
-  });
-        
-  ret2(0,'a').bnd('add22',3)
-  .bnd('mult2',100)
-  .bnd(a.ret)
-  .bnd('square2')  
-  .bnd("ret2(0,'c').ret")  
-   .bnd(() => {
-    ret2(0,'b')
-    .bnd('add2',4)
-   .bnd('mult2',100)
-   .bnd('b.ret')
-   .bnd("ret2(0,'d').ret")
-   .bnd('square2')
-   .bnd('d.ret') 
-   .bnd('add2',c.getx())
-   .bnd('d.ret')
-   .bnd('sqroot2')
-   .bnd('d.ret')
-   .bnd('log2','The square root of the sum of ' + a.getx() + 
-        ' squared and ' + b.getx() + ' squared is ' + d.getx())    
-  });  `  )
+  function log2(x, message, str) {
+    window[str] = new MonadE(x, str, []);
+    console.log(message);
+    return window[str];
+  };
+
+  function ret2(v, id = 'ret2') {
+    window[id] = new MonadE(v, id, []);
+    return window[id];
+  };  `  )
+
+var screenshot1 = h('pre.turk',  `  test1 = ret2(0,'a')
+    .bnd('add2',3, 'a')
+    .bnd('mult2',100,'a')
+    .bnd('square2','c')
+    .bnd('ret2','c')
+    .bnd('add2',-c.getx() + 4,'b')
+    .bnd('ret2','b')
+    .bnd('mult2',100,'b')
+    .bnd('ret2','e')
+    .bnd('square2','e')
+    .bnd('add2',c.getx(),'e')
+    .bnd('sqroot2','e')
+    .bnd('log2','The square root of the sum of ' + a.getx() + 
+      ' squared and ' + b.getx() + ' squared is ' + e.getx(), 'e')
+    .getx()  `  )
+
+var screenshot2= h('pre.turk',  `  test2 = ret2(0,'a')
+    .bnd('add22',3, 'a')     // The error occurs here.
+    .bnd('mult2',100,'a')
+    .bnd('square2','c')
+    .bnd('ret2','c')
+    .bnd('add2',-c.getx() + 4,'b')
+    .bnd('ret2','b')
+    .bnd('mult2',100,'b')
+    .bnd('ret2','e')
+    .bnd('square2','e')
+    .bnd('add2',c.getx(),'e')
+    .bnd('sqroot2','e')
+    .bnd('log2','The square root of the sum of ' + a.getx() + 
+      ' squared and ' + b.getx() + ' squared is ' + e.getx(), 'e')
+    .getx()  `  )
 
 var p5 = h('pre',  `  
 `  )
@@ -1194,7 +1180,7 @@ var p9 = h('pre',  `
 
 
 
-  export default { screenshot, monadE, numClick1, numClick2, mMZ10, test3, travMonad, monad, equals, fmap, opM, e1, e2, e2x, e3, e4, e4x, e6, e6x, e7, e7x, driver, messages, monadIt, MonadSet, updateCalc, arrayFuncs, nums, cleanup, ret, C42, newTask, process, mM$task, colorClick, edit, testZ, quad, runTest, todoStream, inc, seed,  add, MonadState, primesMonad, fibsMonad, primeFibInterface, tr3, fpTransformer, factorsMonad, factorsInput, playerMonad, promise, promiseSnippet, timeout, timeoutSnippet, examples, examples2, async }
+  export default { screenshot1, screenshot2, monadE, numClick1, numClick2, mMZ10, test3, travMonad, monad, equals, fmap, opM, e1, e2, e2x, e3, e4, e4x, e6, e6x, e7, e7x, driver, messages, monadIt, MonadSet, updateCalc, arrayFuncs, nums, cleanup, ret, C42, newTask, process, mM$task, colorClick, edit, testZ, quad, runTest, todoStream, inc, seed,  add, MonadState, primesMonad, fibsMonad, primeFibInterface, tr3, fpTransformer, factorsMonad, factorsInput, playerMonad, promise, promiseSnippet, timeout, timeoutSnippet, examples, examples2, async }
  
 
 

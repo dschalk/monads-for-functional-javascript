@@ -14,6 +14,10 @@ input {
   margin-left: 3%;
 }
 
+.tao1 {
+  margin-left: 1.7%;
+}
+
 .lb {color: lightblue;}
 
 .bh3 {
@@ -234,7 +238,7 @@ pre {
 }
 
 p {
-  text-indent: 5%;
+  text-indent: 3%;
   }
 
 .indent {

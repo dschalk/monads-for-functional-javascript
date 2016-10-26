@@ -263,7 +263,6 @@ function main(sources) {
   };  
 
   function score(scor) {
-    console.log('In score 22222222222222222222222222222222222222222 scor ', scor );
     if (scor != 25) {
       newRoll(scor, get(pMgoals))
     }
@@ -785,7 +784,7 @@ function main(sources) {
       h('div#captionDiv', { style: { display: `${get(mMcaptionDiv)}` } },  [
           h('h1', 'Motorcycle.js With JS-monads') ]),
           h('span#italic', ' Monads, not category theory monads; monads like the Haskell monads. See ' ),
-      h('a', { props: { href: "http://math.andrej.com/2016/08/06/hask-is-not-a-category/", target: "_blank" } }, 'Hask is not a category'),
+      h('a', { props: { href: "http://math.andrej.com/2016/08/06/hask-is-not-a-category/", target: "_blank" } }, 'Hask is not a category.'),
           h('span', ' by Andrej Bauer and . ' ),
           h('a', { props: { href: '#discussion' } }, 'Discussion'),
           h('span', ' below. ' ),
@@ -880,11 +879,10 @@ h('br' ),
 h('a', { props: { href: '#top' } }, 'Back To The Top'),
 h('h3', ' Disussion ' ),
 h('p', ' The function equals() was used because the == and === operators on objects check for location in memory, not equality of attributes and equivalence of methods. If the left and right sides of predicates create new instances of m, then the left side m and the right side m wind up in different locations in memory and the == operator returns false. So we expect m.ret(3) == m.ret(3) to return false, and it does. The question we want answered is this: Can the left side be substituted for the right side and vice versa? That question is answered by equals() - and also by \u2261. '),
-h('span', ' The Haskell programming language took the name "monad" from the branch of mathematics known as category theory. This was deemed appropriate because Haskell monads behave somewhat like category theory monads and the inspiration came out of mathematics. For Haskell monads to be category theory monads, they would need to reside in a category-theory category. It is generally acknowledged within the Haskell community that they do not. Attempts have been made to find a subset of Haskell, or something similar to Haskell, that actually is a category. That would be the first step in finding a way to prove that Haskell monads, or some semblance thereof, are category-theory monads. Or, as the phrase goes, prove that a monad is '), 
-h('a', { props: { href: "http://stackoverflow.com/questions/3870088/a-monad-is-just-a-monoid-in-the-category-of-endofunctors-whats-the-issue" }}, ' just a monoid in the category of endofunctors' ), 
-h('p', ' An interesting discussion of these matters can be found at ' ),
-h('a', { props: { href: "http://math.andrej.com/2016/08/06/hask-is-not-a-category/", target: "_blank" } }, 'Hask is not a category'),
 
+h('span.tao', ' The Haskell programming language borrowed the name "monad" from the branch of mathematics known as category theory. This was apropriate because Haskell monads, along with the function return and the operator >>=, behave like category theory monads, and the inspiration for them came out of category theory. For Haskell monads to be category theory monads, they would need to reside in a category-theory category. It is generally acknowledged within the Haskell community that they do not.  See ' ),
+h('a', { props: { href: "http://math.andrej.com/2016/08/06/hask-is-not-a-category/", target: "_blank" } }, 'Hask is not a category.'),
+h('span', ' Attempts have been made to find a subset of Haskell, usually with  special constraints and new definitions of morphisms, that is an actual category. That would be the first step in finding a way to prove that Haskell monads are, at least in some contrived context, category-theory monads. Devising such a thing might be an instructive academic excercise, but I don\'t see how it could be of any value beyond that. Imatating definitions and patterns found in category theory, as Haskell does in defining the type classes functor, monoid, and monad, was a stroke of genius that vastly enriched the Haskell programming language. These are useful patterns in Javascript too.'  ), 
     
  // **************************************************************************** END MONAD       START MonadItter   
 h('h2', 'MonadItter'),
@@ -965,7 +963,7 @@ h('p', ' The demonstration uses primesMonad and factorsMonad. Here are the defin
 code.factorsMonad,
 h('p#async', ' And this is how user input is handled: '),
 code.factorsInput,
-h('p', ' The expressions get(mMfactors) and get(mMfactors) are permanent fixtures of the virtual DOM. The click handler is a stream which is merged into the stream that feeds the virtual DOM. Changes to mMfactors and mMfactors3 are in the cycle initiated by user input and culminating in a modification of the virtual DOM. ' ),   
+h('p', ' The expressions get(mMfactors) and get(mMfactors) are permanent fixtures of the virtual DOM. The click handler is a stream which receives input from the virtual DOM and is merged into the stream that feeds data to the virtual DOM. Since changes to mMfactors and mMfactors3 are in the cycle initiated by user input and culminating in a modification of the virtual DOM, there is no need to explicitly create observers. Reactivity stems from being in the cycle. ' ),   
 h('a', { props: { href: '#top' } }, 'Back To The Top'),
 h('h3', ' Traversal of the dice game history. ' ),
 h('p', ' MonadState instance travMonad facilitates traversal of the game history. travMonad.s is a four member array holding the current numbers, current score, current goals, and an array of arrays containing numbers, score, and goals corresponding to past states of the game.. Here is the definition of travMonad and its auxiliary function:' ),
@@ -973,7 +971,7 @@ h('p', ' MonadState instance travMonad facilitates traversal of the game history
 h('p', ' The number display is generated  by four virtual button nodes with id = i, st yle: {display: get(pMstyle)[i]} and text get(pMnums)[i] for i = 0, 1, 2, and 3. The virtual button nodes rest permanently in the virtual DOM.  pMnums and pMstyle are updated in the messages$ stream whenever a new dice roll is received from the server. pMnums and pMstyle are also re-set when a user clicks a number, causing it to disappear from the display and when when a user clicks a number or an operator button prompting a call to updateCalc, which either causes a new roll or a computed number to be added to the display. numClickAction$ and opClickAction$ are merged into the stream that feeds the virtual DOM, so updates are seen almost instantaneously. '),
 h('p', ' Whenever pMnums changes, the expression pMnums.bnd(test3).bnd(pMstyle.ret) updates pMstyle so as to hide undefined values of get(pMnumes)[i] for i = 0, 1, 2, and 3. ' ),
   code.test3,
-h('p', ' New dice rolls always correspond to score changes. One point is lost each time a player clicke ROLL. Scores increase whenever players put together expressions that return 18 or 20. An increase in score is always accompanied by a call to newRoll() with two arguments: score and goals. The server updates its ServerState TMVar and broadcasts the new roll to all group members with the prefix "CA#$42. The server also broadcasts the updated score and goal information, with the prefix NN#$42. These messages are caught, parsed, and acted upon in the message$ stream in the Motorcycle front end. pMnums, pMstyle, and travMonad get updated during the course of this process.' ),
+h('p', ' New dice rolls always correspond to score changes. One point is lost each time a player clicks ROLL. Scores increase whenever players put together expressions that return 18 or 20. An increase in score is always accompanied by a call to newRoll() with two arguments: score and goals. The server updates its ServerState TMVar and broadcasts the new roll to all group members with the prefix "CA#$42. The server also broadcasts the updated score and goal information, with the prefix NN#$42. These messages are caught, parsed, and acted upon in the message$ stream in the Motorcycle front end. pMnums, pMstyle, and travMonad get updated during the course of this process.' ),
   code.mMZ10,  
 h('h3', ' Updating the numbers ' ),
 h('p', ' The previous discusion was about traversal of the game history. This seems like a good place to look at the algorithm for generating new numbers when players click on the number and operator buttons. Here is the code: ' ),  
@@ -994,15 +992,21 @@ h('a', { props: { href: '#top' } }, 'Back To The Top'),
   h('a#tdList2', { props: { href: '#itterLink' } }, 'release() with arguments'),
   h('br'),
   h('h2', ' MonadE - An Error-Catching Monad ' ),
-  h('p', ' Instances of MonadE function much the same as instances of Monad, but When an instance of MonadE encounters an error, it ceases to perform any further computations, propagating the error to the end of the sequence it is in. Functions used as arguments to the MonadE bnd() method are placed in quotation marks to prevent the browser engine from throwing reference errors. Arguments can be protected in the same manner. The screen shot (below) taken after running the following expressions in the Google Chrome console shows the logs resulting from running the error-free version and then the version with an error. ' ),
-    code.screenshot,
+  h('p', ' Instances of MonadE function much the same as instances of Monad, but when an instance of MonadE encounters an error, it ceases to perform any further computations. Instead, it passes through every subsequent stage of a sequence of MonadE expressions, reporting where it is and repeating the error message. It will continue to do this until it is re-instantiated or until its bnd() method runs on the function clean(). ' ),
+  h('p', 'Functions used as arguments to the MonadE bnd() method are placed in quotation marks to prevent the browser engine from throwing reference errors. Arguments can be protected in the same manner. ' ), 
+  h('p', ' The variable test1 was defined as shown below. When test1 was entered in the Chrome developer console, "The square root of the sum of 300 squared and 400 squared is 500" was displayed. Here is the code. The screen shot is shown below. ' ),
+    code.screenshot1,
+  h('p', ' Next, I tried to define test2 in the Chrome developer scratch pad, which runs in the Chrome developer tools. Like the console, it is accessable by pressing F12 while in the running application in Chrome. Firefox provides similar tools. The attempt to define test2 resulted in the sequence of reports shown in the screenshot below. I defined test2 in monad.js, which loads as a script in the index.html file. The application loaded successfully, and when I looked in the console, I saw the same series of reports (screenshot below). When I entered test2 in the console, 0 was displayed. That was the value of the MonadE instance "a" when the error occurred. Here is test2 and the screenshot: ' ),  
+    code.screenshot2,
+  h('br'),
   h('img#image', {props: {src: "MonadE_a.png"}}  ),   
   h('br'),
-  h('br', ' Here are the definitions of MonadE and the functions used in the demonstration: ' ),
+  h('br'),
+  h('div.tao1', ' Here are the definitions of MonadE and the functions used in the demonstration: ' ),
     code.monadE,
-  h('span', ' When  a MonadE instance encounters a function or an argument in quotation marks of types undefined or NaN, a message string gets pushed into its e attribue. After that, the  bnd() method will not process any function other than clean() and log2(). It will stop at the' ),
+  h('span.tao', ' When  a MonadE instance encounters a function or an argument in quotation marks of types undefined or NaN, a message string gets pushed into its e attribue. After that, the  bnd() method will not process any function other than clean() and log2(). It will stop at the' ),
   h('span.turk', 'if (e.length > 0)' ), 
-  h('span', 'block. clean() resets an instance to normal functioning mode by setting its e attribute back to []. a, b, c, and d are created on the fly in the error-free version. In the version with an error, a already exists and ret2(0,\'a\') re-sets a\'s value to 0. ' ), 
+  h('span', 'block. clean() resets an instance to normal functioning mode by setting its e attribute back to []. MonadE instances are created on the flyin the error-free version. In the version with an error, these MonadE instances have already been created and ret2, by creating fresh instances, effectively re-sets their values to 0. . ' ), 
   h('p', ' The final test in the bnd() method occurs in a try-catch block. If a function and its quoted arguments are not of types undefined or NaN but the system returns an error, the error message gets logged and a browser crash is averted. ' ),    
   h('br'),
   h('br'),
