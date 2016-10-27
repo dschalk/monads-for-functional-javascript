@@ -251,9 +251,8 @@ The clicked number is removed from pMnums and added to mM3 in the numClickAction
 ```  
 updateCalc calls calc on the numbers and operater given to it by numCalcAction$ or opCalcAction$, giving the value to a variable named "result". If the value of result is 18 or 20, the resulting score is checked to see if it should be augmented by five and then score(scor) is called, providing the new score to the function score(). score() performs some more tests and calls for a new roll with the values of score and goals it has determined depending on whether or not there is a score and, if so, a winner.
 ##MonadSet
-The list of online group members at the bottom of the scoreboard is very responsive to change. When someone joins the group, changes to a different group, or closes a browser session, a message prefixed by NN#$42 goes out from the server providing group members with the updated list of group members. MonadSet acts upon messages prefixed by NN#$42. Here are the definitions of MonadSet and the MonadSet instance sMplayers
-```javascript
-  var MonadSet = h('pre',  `  var MonadSet = function MonadSet(set, str) {
+The list of online group members at the bottom of the scoreboard is very responsive to change. When someone joins the group, changes to a different group, or closes a browser session, a message prefixed by NN#$42 goes out from the server providing group members with the updated list of group members. MonadSet acts upon messages prefixed by NN#$42. Here are the definitions of MonadSet and the MonadSet instance sMplayers:
+```javascript  var MonadSet = h('pre',  `  var MonadSet = function MonadSet(set, str) {
     var ob = {
       ID: str,
       s: set,  
@@ -275,8 +274,7 @@ The list of online group members at the bottom of the scoreboard is very respons
 
   var s = new Set();
   
-  var sMplayers = new MonadSet(s, 'sMplayers'); // holds currently online players
-```
+  var sMplayers = new MonadSet(s, 'sMplayers'); // holds currently online players   ```
 ## MonadE - An Error-Catching Monad
 
 Instances of MonadE function much the same as instances of Monad, but when an instance of MonadE encounters an error, it ceases to perform any further computations. Instead, it passes through every subsequent stage of a sequence of MonadE expressions, reporting where it is and repeating the error message. It will continue to do this until it is re-instantiated or until its bnd() method runs on the function clean().
