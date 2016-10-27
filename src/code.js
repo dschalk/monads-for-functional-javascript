@@ -700,25 +700,17 @@ var MonadSet = h('pre',  `  var MonadSet = function MonadSet(set, str) {
     var ob = {
       ID: str,
       s: set,  
-      bnd: function (func, ...args) {
-         return func(_this.s, ...args);
-      },
-      add: function (a) {
-        return new MonadSet(s.add(a), ob.id);
-      },
-      delete: function (a) {
-      return new MonadSet(s.delete(a), ob.id);
-      },
-      clear: function () {
-      return new MonadSet(s.clear(), ob.id);
-      }
-    }
-    return o;b;
+      bnd: (func, ...args) => func(ob.s, ...args),
+      add: a => MonadSet(s.add(a), ob.id),
+      delete: a => MonadSet(s.delete(a), ob.id),
+      clear: () => MonadSet(s.clear(), ob.id)
+    };
+    return ob;
   };
 
   var s = new Set();
-  
-  var sMplayers = new MonadSet( s, 'sMplayers' )  `  )
+
+  var sMplayers = MonadSet(s, 'sMplayers'); // holds currently online players  `  );
 
 var promise = h('pre',  `      var promise = function promise(x, t, mon, args) {
         return (new Promise((resolve) => {

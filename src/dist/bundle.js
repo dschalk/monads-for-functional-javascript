@@ -4989,7 +4989,7 @@
 
 	var playerMonad = (0, _dom.h)('pre', '  var playerMonad = new MonadState(\'playerMonad\', [0,0], [0,0], player_state);\n\n  function player_state (v) {\n    var x = v.slice();\n    let ar = [ \n    pMscore.ret(x[0]),\n    pMgoals.ret(x[1]) ]\n    playerMonad.a = ar;\n    playerMonad.s = ar;  \n    return x; \n  };  ');
 
-	var MonadSet = (0, _dom.h)('pre', '  var MonadSet = function MonadSet(set, str) {\n    var ob = {\n      ID: str,\n      s: set,  \n      bnd: function (func, ...args) {\n         return func(_this.s, ...args);\n      },\n      add: function (a) {\n        return new MonadSet(s.add(a), ob.id);\n      },\n      delete: function (a) {\n      return new MonadSet(s.delete(a), ob.id);\n      },\n      clear: function () {\n      return new MonadSet(s.clear(), ob.id);\n      }\n    }\n    return o;b;\n  };\n\n  var s = new Set();\n  \n  var sMplayers = new MonadSet( s, \'sMplayers\' )  ');
+	var MonadSet = (0, _dom.h)('pre', '  var MonadSet = function MonadSet(set, str) {\n    var ob = {\n      ID: str,\n      s: set,  \n      bnd: (func, ...args) => func(ob.s, ...args),\n      add: a => MonadSet(s.add(a), ob.id),\n      delete: a => MonadSet(s.delete(a), ob.id),\n      clear: () => MonadSet(s.clear(), ob.id)\n    };\n    return ob;\n  };\n\n  var s = new Set();\n\n  var sMplayers = MonadSet(s, \'sMplayers\'); // holds currently online players  ');
 
 	var promise = (0, _dom.h)('pre', '      var promise = function promise(x, t, mon, args) {\n        return (new Promise((resolve) => {\n          setTimeout(function() {\n            resolve(eval("mon.ret(x).bnd(" + args + ")"))   // eval! Get over it, Douglas.\n          },t*1000  );\n        }));\n      };  ');
 
