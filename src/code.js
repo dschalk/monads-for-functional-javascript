@@ -697,28 +697,24 @@ var playerMonad = h('pre',  `  var playerMonad = new MonadState('playerMonad', [
   };  `  )
 
 var MonadSet = h('pre',  `  var MonadSet = function MonadSet(set, str) {
-  var ob = {
-    ID: str,
-  
-    s: set,  
-  
-    bnd: function (func, ...args) {
-       return func(_this.s, ...args);
-    },
-   
-    add: function (a) {
-      return new MonadSet(s.add(a), ob.id);
-    },
-  
-    delete: function (a) {
+    var ob = {
+      ID: str,
+      s: set,  
+      bnd: function (func, ...args) {
+         return func(_this.s, ...args);
+      },
+      add: function (a) {
+        return new MonadSet(s.add(a), ob.id);
+      },
+      delete: function (a) {
       return new MonadSet(s.delete(a), ob.id);
-    },
-  
-    clear: function () {
+      },
+      clear: function () {
       return new MonadSet(s.clear(), ob.id);
+      }
     }
-  }
-  return ob;
+    return o;b;
+  };
 
   var s = new Set();
   

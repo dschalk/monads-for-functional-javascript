@@ -139,32 +139,23 @@ var isFunc = function isFunc (x) { return eval("typeof(" + x + ") == 'function'"
     return ret(ar);
   };
 
-var MonadSet = function MonadSet(set) {
-var ob = {
-  bnd: function (func, ...args) {
-    return func(_this.x, ...args);
-  },
-
-  ID: arguments.length <= 1 || arguments[1] === undefined ? 'default' : arguments[1],
-
-  s: set,  
-
-  bnd: function (func, ...args) {
-     return func(_this.s, ...args);
-  },
- 
-  add: function (a) {
-    return new MonadSet(s.add(a), ob.id);
-  },
-
-  delete: function (a) {
-  return new MonadSet(s.delete(a), ob.id);
-  },
-
-  clear: function () {
-  return new MonadSet(s.clear(), ob.id);
+var MonadSet = function MonadSet(set, str) {
+  var ob = {
+    ID: str,
+    s: set,  
+    bnd: function (func, ...args) {
+       return func(_this.s, ...args);
+    },
+    add: function (a) {
+      return new MonadSet(s.add(a), ob.id);
+    },
+    delete: function (a) {
+    return new MonadSet(s.delete(a), ob.id);
+    },
+    clear: function () {
+    return new MonadSet(s.clear(), ob.id);
+    }
   }
-}
   return ob;
 };
 

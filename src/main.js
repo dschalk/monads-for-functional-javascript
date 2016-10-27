@@ -783,7 +783,7 @@ function main(sources) {
       h('br'),
       h('div#captionDiv', { style: { display: `${get(mMcaptionDiv)}` } },  [
           h('h1', 'Motorcycle.js With JS-monads') ]),
-          h('span#italic', ' Monads, not category theory monads; monads like the Haskell monads. See ' ),
+          h('span#italic', ' Not category theory monads; monads in the Haskell monads tradition. See ' ),
       h('a', { props: { href: "http://math.andrej.com/2016/08/06/hask-is-not-a-category/", target: "_blank" } }, 'Hask is not a category.'),
           h('span', ' by Andrej Bauer and . ' ),
           h('a', { props: { href: '#discussion' } }, 'Discussion'),

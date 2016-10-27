@@ -253,32 +253,26 @@ updateCalc calls calc on the numbers and operater given to it by numCalcAction$ 
 ##MonadSet
 The list of online group members at the bottom of the scoreboard is very responsive to change. When someone joins the group, changes to a different group, or closes a browser session, a message prefixed by NN#$42 goes out from the server providing group members with the updated list of group members. MonadSet acts upon messages prefixed by NN#$42. Here are the definitions of MonadSet and the MonadSet instance sMplayers
 ```javascript
-  var MonadSet = function MonadSet(set, str) {
-  var ob = {
-  
-    ID: str,
-  
-    s: set,  
-  
-    bnd: function (func, ...args) {
-       return func(_this.s, ...args);
-    },
-   
-    add: function (a) {
-      return new MonadSet(s.add(a), ob.id);
-    },
-  
-    delete: function (a) {
-    return new MonadSet(s.delete(a), ob.id);
-    },
-  
-    clear: function () {
-    return new MonadSet(s.clear(), ob.id);
+  var MonadSet = h('pre',  `  var MonadSet = function MonadSet(set, str) {
+    var ob = {
+      ID: str,
+      s: set,  
+      bnd: function (func, ...args) {
+         return func(_this.s, ...args);
+      },
+      add: function (a) {
+        return new MonadSet(s.add(a), ob.id);
+      },
+      delete: function (a) {
+      return new MonadSet(s.delete(a), ob.id);
+      },
+      clear: function () {
+      return new MonadSet(s.clear(), ob.id);
+      }
     }
-  }
-    return ob;
+    return o;b;
   };
-  
+
   var s = new Set();
   
   var sMplayers = new MonadSet(s, 'sMplayers'); // holds currently online players
