@@ -354,10 +354,10 @@ function main(sources) {
   .bnd(add,v).bnd(w => {
     mMt1.ret(w)
     .bnd(cube)
-    .bnd(x => mMt3VAL = w + ' cubed is ' + x)}));  
+    .bnd(x => mMt3.ret(w + ' cubed is ' + x))}));  
   
   mMZ2.bnd(v => cube(v)
-  .bnd(w => mMt3VAL = v + ' cubed is ' + w));
+  .bnd(w => mMt3.ret(v + ' cubed is ' + w)));
 
   var testZ = sources.DOM
       .select('#testZ').events('click');
@@ -893,18 +893,18 @@ h('p', ' As shown later on this page, MonadItter instances control the routing o
 h('h3#itterLink', ' A Basic Itterator '),
 h('p', 'The following example illustrates the use of release() with an argument. It also shows a lambda expressions being provided as an argument for the method mMZ1.bnd() (thereby becoming the value of mMZ1.p) and then mMZ1.release providing an arguments for the function mMZ1.p. The code is shown beneith the following two buttons. '),
 h('button#testZ', 'mMZ1.release(1)'),
-h('p.code2', mMt3VAL),
+h('p.code2', get(mMt3)  ) ,
 h('span', 'Refresh button: '),
 h('button#testQ', 'mMt1.ret(0).bnd(v => mMZ2.release(v)) '),
 h('br'),
 code.testZ,
-h('span.tao', ' mMt3.x sits permanently in the Motorcycle virtual DOM description. You can call '),
+h('span.tao', ' The expression get(mMt3) sits permanently in the Motorcycle virtual DOM description. `${get(mMt3)}` can also be used, and templating would be necessary inside a prop statement, but the bare function is evaluated here. You can call '),
 h('span.green', 'mMZ2.release(v)'),
 h('span', ' by entering a value for v below: '),
 h('br'),
 h('span', 'Please enter an integer here: '),
 h('input#testW'),
-h('p', ' cube() is defined in the Monad section (above). If you click "mMZ1.release(1)" several times, the code (above) will run several times, each time with v == 1. The result, mMt3.x, is shown below the button. mMZ1.p (bnd()\'s argument) remains constant while mMZ1.release(1) is repeatedly called, incrementing the number being cubed each time. '),
+h('p', ' cube() is defined in the Monad section (above). If you click "mMZ1.release(1)" several times, the code (above) will run several times, each time with v == 1. The result, get(mMt3), is shown below the button. mMZ1.p (bnd()\'s argument) remains constant while mMZ1.release(1) is repeatedly called, incrementing the number being cubed each time. '),
                   h('p', ' Here is another example. It demonstrates lambda expressions passing values to a remote location for use in a computation. If you enter three numbers consecutively below, call them a, b, and c, then the quadratic equation will be used to find solutions for a*x**2 + b*x + c = 0. The a, b, and c you select might not have a solution. If a and b are positive numbers, you are likely to see solutions if c is a negative number. For example, 12, 12, and -24 yields the solutions 1 and -2. '),
 h('p#quad4.red2', `${get(mMquad4)}`  ),
 h('p#quad5.red2', `${get(mMquad5)}`  ),

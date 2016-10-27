@@ -1,0 +1,82 @@
+    product: PE-590t (XX096AV#ABA)
+       product: 2A86
+          product: Intel(R) Core(TM) i7 CPU         970  @ 3.20GHz
+             product: EBJ21UE8BDF0-DJ-F
+             product: EBJ21UE8BDF0-DJ-F
+             product: EBJ21UE8BDF0-DJ-F
+             product: EBJ21UE8BDF0-DJ-F
+             product: EBJ21UE8BDF0-DJ-F
+             product: EBJ21UE8BDF0-DJ-F
+          product: 5520/5500/X58 I/O Hub to ESI Port
+             product: 5520/5500/X58 I/O Hub PCI Express Root Port 1
+                product: RT3090 Wireless 802.11n 1T/1R PCIe
+             product: 5520/5500/X58 I/O Hub PCI Express Root Port 3
+                product: GF106 [GeForce GT 440]
+                product: GF106 High Definition Audio Controller
+             product: 5520/5500/X58 I/O Hub PCI Express Root Port 7
+                product: SAA7231
+             product: 7500/5520/5500/X58 I/O Hub System Management Registers
+             product: 7500/5520/5500/X58 I/O Hub GPIO and Scratch Pad Registers
+             product: 7500/5520/5500/X58 I/O Hub Control Status and RAS Registers
+             product: 7500/5520/5500/X58 I/O Hub Throttle Registers
+             product: 82567V-2 Gigabit Network Connection
+             product: 82801JI (ICH10 Family) USB UHCI Controller #4
+                product: UHCI Host Controller
+             product: 82801JI (ICH10 Family) USB UHCI Controller #5
+                product: UHCI Host Controller
+             product: 82801JI (ICH10 Family) USB UHCI Controller #6
+                product: UHCI Host Controller
+             product: 82801JI (ICH10 Family) USB2 EHCI Controller #2
+                product: EHCI Host Controller
+             product: 82801JI (ICH10 Family) HD Audio Controller
+             product: 82801JI (ICH10 Family) PCI Express Root Port 1
+             product: 82801JI (ICH10 Family) PCI Express Port 2
+                product: uPD720200 USB 3.0 Host Controller
+                   product: xHCI Host Controller
+                   product: xHCI Host Controller
+                      product: HD Webcam C910
+             product: 82801JI (ICH10 Family) PCI Express Root Port 3
+                product: VT6315 Series Firewire Controller
+             product: 82801JI (ICH10 Family) PCI Express Root Port 4
+                product: JMB363 SATA/IDE Controller
+                product: JMB363 SATA/IDE Controller
+             product: 82801JI (ICH10 Family) USB UHCI Controller #1
+                product: UHCI Host Controller
+             product: 82801JI (ICH10 Family) USB UHCI Controller #2
+                product: UHCI Host Controller
+             product: 82801JI (ICH10 Family) USB UHCI Controller #3
+                product: UHCI Host Controller
+                   product: USB Keyboard
+                   product: USB OPTICAL MOUSE
+             product: 82801JI (ICH10 Family) USB2 EHCI Controller #1
+                product: EHCI Host Controller
+                   product: USB2.0-CRW
+             product: 82801 PCI Bridge
+             product: 82801JIR (ICH10R) LPC Interface Controller
+             product: SATA Controller [RAID mode]
+             product: 82801JI (ICH10 Family) SMBus Controller
+          product: Intel Corporation
+          product: Xeon 5600 Series QuickPath Architecture System Address Decoder
+          product: Xeon 5600 Series QPI Link 0
+          product: Xeon 5600 Series QPI Physical 0
+          product: Xeon 5600 Series Mirror Port Link 0
+          product: Xeon 5600 Series Mirror Port Link 1
+          product: Xeon 5600 Series Integrated Memory Controller Registers
+          product: Xeon 5600 Series Integrated Memory Controller Target Address Decoder
+          product: Xeon 5600 Series Integrated Memory Controller Test Registers
+          product: Xeon 5600 Series Integrated Memory Controller Channel 0 Control
+          product: Xeon 5600 Series Integrated Memory Controller Channel 0 Address
+          product: Xeon 5600 Series Integrated Memory Controller Channel 0 Rank
+          product: Xeon 5600 Series Integrated Memory Controller Channel 0 Thermal Control
+          product: Xeon 5600 Series Integrated Memory Controller Channel 1 Control
+          product: Xeon 5600 Series Integrated Memory Controller Channel 1 Address
+          product: Xeon 5600 Series Integrated Memory Controller Channel 1 Rank
+          product: Xeon 5600 Series Integrated Memory Controller Channel 1 Thermal Control
+          product: Xeon 5600 Series Integrated Memory Controller Channel 2 Control
+          product: Xeon 5600 Series Integrated Memory Controller Channel 2 Address
+          product: Xeon 5600 Series Integrated Memory Controller Channel 2 Rank
+          product: Xeon 5600 Series Integrated Memory Controller Channel 2 Thermal Control
+             product: ST2000DX001-1NS1
+             product: WDC WD5000AAKS-6
+             product: BD-RE  BH30L
+       product: Standard Efficiency

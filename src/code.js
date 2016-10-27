@@ -456,11 +456,14 @@ var cleanup = h('pre',  `  function cleanup (x) {
   };  `  )
 
 
-  var testZ = h('pre',  `  mMZ1.bnd(v => mMt1.bnd(add,v,mMt1)
-  .bnd(cube,mMt2)
-  .bnd(() => mMt3.ret(mMt1.x + ' cubed is ' + mMt2.x)))  
+  var testZ = h('pre',  `  mMZ1.bnd(v => mMt1
+  .bnd(add,v).bnd(w => {
+    mMt1.ret(w)
+    .bnd(cube)
+    .bnd(x => mMt3VAL = w + ' cubed is ' + x)}));  
   
-  mMZ2.bnd(v => cube(v).bnd(w => mMt3.ret(v + ' cubed is ' + w)))  `  )
+  mMZ2.bnd(v => cube(v)
+  .bnd(w => mMt3VAL = v + ' cubed is ' + w));  `  )
 
   var quad = h('pre',  `  const quad$ = sources.DOM
     .select('#quad').events('keypress')  // Motorcycle way to get user input.
@@ -468,7 +471,7 @@ var cleanup = h('pre',  `  function cleanup (x) {
   const quadAction$ = quad$.map((e) => {
     if( e.keyCode == 13 ) {
       mMZ3.release(e.target.value)       // Releases mMZ (below).
-      document.getElementById('quad').value = '';
+      document.getElementById('quad').value = null;
     }
   });
 
@@ -606,7 +609,7 @@ var primesMonad = h('pre',  `  var primesMonad = new MonadState('primesMonad', [
     return v;
   }  `  )
 
-var fibsMonad = h('pre',  `  var fibsMonad = new MonadState('fibsMonad', [0, 1, 3, [0,1]], [0,1], fibs_state  ) 
+var fibsMonad = h('pre',  `  var primesMonad = new MonadState('primesMonad', [3, '', 3, [2,3]], primes_state);
 
   var fibs_state = function fibs_state(ar) {
     var a = ar.slice();
@@ -651,7 +654,7 @@ var fpTransformer = h('pre',  `  var fpTransformer = function fpTransformer (s, 
     return m;
   }  `  )
 
-var factorsMonad = h('pre',  `  var factorsMonad = new MonadState('factorsMonad', [[], [], 2, []], [], factor_state);
+var factorsMonad = h('pre',  `  var factorsMonad = new MonadState('factorsMonad', [[], [], 2, []], factor_state);
   
   function factor_state(v) {
     v[3].map(function (p) {
@@ -693,41 +696,30 @@ var playerMonad = h('pre',  `  var playerMonad = new MonadState('playerMonad', [
     return x; 
   };  `  )
 
-var MonadSet = h('pre',  `  var MonadSet = function MonadSet(set, ID) {
-    var _this = this;
+var MonadSet = h('pre',  `  var MonadSet = function MonadSet(set, str) {
+  var ob = {
+    ID: str,
   
-    this.s = set;
+    s: set,  
   
-    if (arguments.length === 1) this.id = 'anonymous';
-    else this.id = ID;
+    bnd: function (func, ...args) {
+       return func(_this.s, ...args);
+    },
+   
+    add: function (a) {
+      return new MonadSet(s.add(a), ob.id);
+    },
   
-    this.bnd = function (func, ...args) {
-       return func(_this.x, ...args);
-    };
+    delete: function (a) {
+      return new MonadSet(s.delete(a), ob.id);
+    },
   
-    this.add = function (a) {
-      var ar = Array.from(_this.s);
-      set = new Set(ar);
-      set.add(a);
-      window[_this.id] = new MonadSet(set, _this.id);
-      return window[_this.id];
-    };
-  
-    this.delete = function (a) {
-      var ar = Array.from(_this.s);
-      set = new Set(ar);
-      set.delete(a);
-      window[_this.id] = new MonadSet(set, _this.id);
-      return window[_this.id];
-    };
-  
-    this.clear = function () {
-      set = new Set([]);
-      window[_this.id] = new MonadSet(set, _this.id);
-      return window[_this.id];
-    };
-  };
-  
+    clear: function () {
+      return new MonadSet(s.clear(), ob.id);
+    }
+  }
+  return ob;
+
   var s = new Set();
   
   var sMplayers = new MonadSet( s, 'sMplayers' )  `  )
@@ -995,6 +987,7 @@ var numClick2 = h('pre',  `  function updateCalc(ar, op) {
       .bnd(v => score(v));
       return; 
     }
+
     else {
       pMnums.bnd(push,result)
       .bnd(pMnums.ret)

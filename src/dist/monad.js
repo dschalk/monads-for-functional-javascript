@@ -140,27 +140,32 @@ var isFunc = function isFunc (x) { return eval("typeof(" + x + ") == 'function'"
   };
 
 var MonadSet = function MonadSet(set) {
-var _this = this;
+var ob = {
+  bnd: function (func, ...args) {
+    return func(_this.x, ...args);
+  },
 
-var ID = arguments.length <= 1 || arguments[1] === undefined ? 'default' : arguments[1];
+  ID: arguments.length <= 1 || arguments[1] === undefined ? 'default' : arguments[1],
 
-this.s = set;
-this.bnd = function (func) {
-  for (var _len = arguments.length, args = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
-    args[_key - 1] = arguments[_key];
+  s: set,  
+
+  bnd: function (func, ...args) {
+     return func(_this.s, ...args);
+  },
+ 
+  add: function (a) {
+    return new MonadSet(s.add(a), ob.id);
+  },
+
+  delete: function (a) {
+  return new MonadSet(s.delete(a), ob.id);
+  },
+
+  clear: function () {
+  return new MonadSet(s.clear(), ob.id);
   }
-
-  return func.apply(undefined, [_this.s].concat(args));
-};
-this.add = function (a) {
-  return new MonadSet(s.add(a), _this.id);
-};
-this.delete = function (a) {
-  return new MonadSet(s.delete(a), _this.id);
-};
-this.clear = function () {
-  return new MonadSet(s.clear(), _this.id);
-};
+}
+  return ob;
 };
 
 var s = new Set();
@@ -178,28 +183,6 @@ function MonadState(g, state, p) {
       var ar2 = ob.process(ar);
       ob.s = ar2;
       ob.a = ar2[3];
-      window[ob.id] = ob;
-      return window[ob.id];
-    }
-  };
-  return ob;
-};
-
-function MonadState2(g, state, p) {
-  var ob = {
-    id: g,
-    s: state,
-    a: s[3],
-    process: p,
-    bnd: (func, ...args) => func(ob.s, ...args),  
-    run: function (ar) {
-      var ar2 = ob.process(ar);
-      ob.s = ar2;
-      ob.s[3][2] = ar2[0][2]
-      ob.s[3][3] = ar2[0][3]
-      ob.s[2] = ar2[0][2]
-      ob.s[3] = ar2[0][3]
-      ob.a = s[0][3];
       window[ob.id] = ob;
       return window[ob.id];
     }
@@ -301,71 +284,6 @@ function evalF(x) {
     return ob;
   };
 
-  /*
-  function add2 (x,a) {
-    return ret2(x + a)
-  }
-  
-  function square2 (x) {
-    return ret2(x*x);
-  };
-  
-  function mult2 (x,y) {
-    return ret2(x*y);
-  };
-  
-  function ret2(v, id = 'default', er = []) {
-    window[id] = new MonadE(v, id, er);
-    return window[id];
-  }  
-  function MonadE (val, ID, er = []) {
-    var x = val;
-    var e = er;
-    var id = ID;
-    var bnd = (f, ...args) => {
-        if (f == 'clean') {
-          return new MonadE(x, id, [])
-        }
-        if (e.length > 0) {
-          console.log('BYPASSING COMPUTATION in MonadE instance', id, f, '.  PROPAGATING ERROR:',  e[0]); 
-          return;  
-        }
-        var a = ("typeof " + f);
-        if (eval(a) == 'function') {
-          let b = '';
-          for (let v of args) {
-            b = "typeof " + v
-            if (eval(b) == 'undefined') {
-              e.push(v + " is undefined." );
-              console.log(v, "is undefined. No further computations will be attempted");
-              return this;
-            }
-            if (eval(b) == 'NaN') {
-              e.push(v + " is NaN." );
-              console.log(v, "is NaN. No further computations will be attempted");
-              return this;
-            }
-          }
-          try {return eval(f)(x, ...args)}
-          catch (error) {
-            e.push(error);
-            console.log('MonadE instance',id,'generated the following error message:');
-            console.log('Error ' + error);  
-          }
-        } 
-        else {
-          e.push(f + ' is not a function. ');
-          console.log(f, 'is not a function. No further computations will be attempted');
-          return;
-        }
-      }
-      var ret = a => {
-        window[id] = new MonadE(a, id, []);
-        return window[d];
-      }  
-    }
-  */
-  
   function add2 (x, y, str ) {
     window[str] = new MonadE(x+y, str, []);
     return window[str];
@@ -497,7 +415,7 @@ var mMroll = new Monad([0,0,0,0], 'rollMonad');
 var mMplayer = new Monad([0,0,0,0], 'mMplayer');
 
 var fibsMonad = new MonadState('fibsMonad', [0, 1, 2, [0]], fibs_state);
-
+ 
 fibsMonad.run([1, 2 ,7, [0,1]]);
 
 factor_state([[], [], 24, [2, 3, 5]]);
