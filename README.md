@@ -253,7 +253,7 @@ updateCalc calls calc on the numbers and operater given to it by numCalcAction$ 
 ##MonadSet
 The list of online group members at the bottom of the scoreboard is very responsive to change. When someone joins the group, changes to a different group, or closes a browser session, a message prefixed by NN#$42 goes out from the server providing group members with the updated list of group members. MonadSet acts upon messages prefixed by NN#$42. Here are the definitions of MonadSet and the MonadSet instance sMplayers:
 ```javascript  
-  var MonadSet = h('pre',  `  var MonadSet = function MonadSet(set, str) {
+  var MonadSet = function MonadSet(set, str) {
     var ob = {
       ID: str,
       s: set,  
