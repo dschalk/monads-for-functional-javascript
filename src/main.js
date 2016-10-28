@@ -69,7 +69,7 @@ function updateTasks (obArray) {
 }; 
 
 
-    console.log(h('button',  { style: { display: `${get(pMstyle)[1]}` }}, `${get(pMnums)[1]}` ))
+    console.log(h('button',  { style: { display: pMstyle.x[1]} }, pMnums.x[1] ))
 
 function main(sources) {
 
@@ -81,7 +81,7 @@ function main(sources) {
   mMtem.ret(e.data.split(',')).bnd( v => {
   console.log('<><><><><><><><><><><><><><><><>  INCOMING  <><><><><><><> >>> In messages. e amd v are ', e, v);
   mMZ10.bnd( () => {
-    pMnums.ret([v[3], v[4], v[5], v[6]]).bnd(test3).bnd(pMstyle.ret)
+    mMtemp.ret([v[3], v[4], v[5], v[6]]).bnd(pMnums.ret).bnd(test3).bnd(pMstyle.ret)
     travMonad.run([ [v[3], v[4], v[5], v[6]], v[7], v[8] ]);
     pMscore.ret(v[7]);
     pMgoals.ret(v[8]) }); 
@@ -92,7 +92,8 @@ function main(sources) {
     mMgoals2.ret('A player named ' + v[2] + ' is currently logged in. Page will refresh in 4 seconds.')
     refresh() });
   mMZ17.bnd( () => testTask(v[2], v[3], e.data) ); 
-    mMZ18.bnd( () => {if (get(pMgroup) != 'solo' || get(pMname) == v[2]) {updatePlayers(e.data) } });
+    mMZ18.bnd( () => {
+      if (pMgroup.x != 'solo' || pMname.x == v[2] ) updatePlayers(e.data)  });
   })       
   mMtemp.ret(e.data.split(',')[0])
   .bnd(next, 'CA#$42', mMZ10)
@@ -111,7 +112,7 @@ function main(sources) {
   };
   
   function newRoll (a,b) {
-    socket.send(`CA#$42,${get(pMgroup)},${get(pMname)},6,6,12,20,${a},${b}`);
+    socket.send(`CA#$42,${pMgroup.x},${pMname.x},6,6,12,20,${a},${b}`);
   }
 
   var loginPress$ = sources.DOM
@@ -121,8 +122,7 @@ function main(sources) {
     var v = e.target.value;
     if (e.keyCode == 13) {
       pMname.ret(v);
-      socket.send(`CC#$42${v}`);
-      console.log('33333333333333333333333333333333333333 login e.target.value ', e.target.value);
+      socket.send('CC#$42' + v );
       mM3.ret([]);
 
       mMdice.ret('block');
@@ -152,11 +152,11 @@ function main(sources) {
 
   var groupPressAction$ = groupPress$.map(e => {
       if (e.keyCode == 13) {
-          socket.send(`CO#$42,${get(pMgroup)},${get(pMname)},${e.target.value}`);
+          socket.send(`CO#$42,${pMgroup.x},${pMname.x},${e.target.value}`);
           pMgroup.ret(e.target.value)
           .bnd(pMgroup.ret)
           .bnd(gr =>
-          socket.send(`CG#$42,${get(pMgroup)},${get(pMname)},0,0`));
+          socket.send(`CG#$42,${pMgroup.x},${pMname.x},0,0`));
       }
   });
 
@@ -165,7 +165,7 @@ function main(sources) {
 
   var messagePressAction$ = messagePress$.map(function (e) {
       if (e.keyCode == 13) {
-          socket.send(`CD#$42,${get(pMgroup)},${get(pMname)},${e.target.value}`);
+          socket.send(`CD#$42,${pMgroup.x},${pMname.x},${e.target.value}`);
           e.target.value = '';
           console.log('In messagePressAction$ ', socket.readyState);
       }
@@ -192,8 +192,8 @@ function main(sources) {
     .select('.roll').events('click');
 
   var rollClickAction$ = rollClick$.map(() => {
-    var a = get(pMscore) - 1;
-    var b = get(pMgoals);
+    var a = pMscore.x - 1;
+    var b = pMgoals.x;
     newRoll(a,b);
   }); 
 
@@ -201,18 +201,19 @@ function main(sources) {
       .select('.num').events('click'); 
 
   var numClickAction$ = numClick$.map(e => {
-    if (get(mM3).length == 2) {return};
+    if (mM3.x.length == 2) {return};
     pMnums
     .bnd(spliceM, e.target.id, 1)
     .bnd(pMnums.ret)
+    .bnd(mMtemp.ret)
     .bnd(test3)
     .bnd(pMstyle.ret)
     mM3
     .bnd(push, e.target.innerHTML)
     .bnd(mM3.ret)
     .bnd(v => {
-      if (v.length == 2 && get(mM8) != 0) {
-        updateCalc(v, get(mM8)) 
+      if (v.length == 2 && mM8.x != 0) {
+        updateCalc(v, mM8.x) 
       }
     })
     }).startWith([0, 0, 0, 0]);
@@ -222,7 +223,7 @@ function main(sources) {
 
   var opClickAction$ = opClick$.map(e => {
     mM8.ret(e.target.innerHTML).bnd(v => { 
-      var ar = get(mM3)
+      var ar = mM3.x
       if (ar.length === 2) {
         updateCalc(ar, v)
       }
@@ -252,22 +253,22 @@ function main(sources) {
       pMnums.bnd(push,result)
       .bnd(pMnums.ret)
       .bnd(v => {
-        travMonad.run([v, get(pMscore), get(pMgoals)])
+        travMonad.run([v, pMscore.x, pMgoals.x])
         test3(v)
         .bnd(pMstyle.ret)
       }); 
       mM8.ret(0);
       mM3.ret([]);
-      console.log('in updateCalc 1111111111 get(pMnums), get(pMstyle) ', get(pMnums), get(pMstyle) );
+      console.log('in updateCalc 1111111111 pMnums.x, pMstyle.x ', pMnums.x, pMstyle.x );
     }
   };  
 
   function score(scor) {
     if (scor != 25) {
-      newRoll(scor, get(pMgoals))
+      newRoll(scor, pMgoals.x)
     }
-    else if (get(pMgoals) == 2) {
-      socket.send(`CE#$42,${get(pMgroup)},${get(pMname)}`);
+    else if (pMgoals.x == 2) {
+      socket.send(`CE#$42,${pMgroup.x},${pMname.x}`);
       newRoll(0,0)
     }
     else {pMgoals.bnd(add, 1).bnd(pMgoals.ret).bnd(g => newRoll(0, g))};
@@ -588,12 +589,13 @@ function main(sources) {
         var index = getIndex2(e);
         if (e.keyCode == 13) {
             process2(v, index);
-            get(mMtaskList)[index].children[3].elm.style.display = 'none';
+            mMtaskList.x[index].children[3].elm.style.display = 'none';
+        updateScoreboard2(namesList);
         }
     });
 
     var process2 = function (str, index) {
-        var a = get(mMcurrentList).split(',');
+        var a = mMcurrentList.x.split(',');
         console.log('In process2 VVVVVVVVVVVV a is ', a );
         a[6 * index] = str;
         var b = a.reduce(function (a, b) { return a + ',' + b; });
@@ -618,9 +620,9 @@ function main(sources) {
     });
 
 // **********************************************************************END TODO LIST                       
-
-    var chatClick$ = sources.DOM
+  /*  var chatClick$ = sources.DOM
         .select('#chat2').events('click');
+
     var chatClickAction$ = chatClick$.map(function () {
         var el = document.getElementById('chatDiv');
         (el.style.display == 'none') ?
@@ -636,9 +638,8 @@ function main(sources) {
             el.style.display = 'inline' :
             el.style.display = 'none';
     });
-    // **************************************   GAME   *********************************************** GAME START
 
-  /*  var todoClick$ = sources.DOM
+    var todoClick$ = sources.DOM
         .select('#todoButton').events('click');
   
     var todoClickAction$ = todoClick$.map(function (e) {
@@ -654,6 +655,7 @@ function main(sources) {
     var gameClickAction$ = gameClick$.map(function () {
         var el = document.getElementById('gameDiv');
         (el.style.display == 'none') ?
+        updateScoreboard2(namesList);
             el.style.display = 'inline' :
             el.style.display = 'none';
         var el2 = document.getElementById('gameDiv2');
@@ -721,7 +723,8 @@ function main(sources) {
     var forwardAction$ = forwardClick$.map(function () {
       if (get(pMindex) < travMonad.a.length) {
         let a = travMonad.a[travMonad.a.length - get(pMindex) -1 ]
-        pMnums.ret(a[0]).bnd(test3).bnd(pMstyle.ret);
+        pMnums.ret(a[0]).bnd(mMtemp.ret).bnd(test3).bnd(pMstyle.ret);
+        updateScoreboard2(namesList);
         pMscore.ret(a[1]);
         pMgoals.ret(a[2]);
         pMindex.bnd(add,1).bnd(pMindex.ret);
@@ -759,10 +762,10 @@ function main(sources) {
       h('br'),
       h('br'),
       h('div#gameDiv', { style: { display: `mMgameDiv.x` } }, [
-      h('div.game', `Name: pMname.x` ),
-      h('div.game', `Group: pMgroup.x` ),
+      h('div.game', 'Name: ' + pMname.x ),
+      h('div.game', 'Group: ' + pMgroup.x ),
       h('div.game', `Currently online: Name score | goals`  ),
-      h('div.game', pMdata.x )    ]),  
+      h('div.game', '' + pMdata.x  ) ] ), 
       h('br'),
       h('br'),
       h('div#todoDiv',  { style: { display: mMtodoDiv.x } }, [

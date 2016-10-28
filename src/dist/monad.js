@@ -28,7 +28,11 @@ var Monad = function Monad(z = 0, g = 'generic') {
   this.x = z;
   this.id = g;
   this.bnd = function (func, ...args) {
-    return func(_this.x, ...args)
+    var m = func(_this.x, ...args)
+    if (m instanceof Monad) {
+      return window[_this.id] = new Monad(m.x, _this.id);
+    }
+    else return m;
   };
   this.ret = function (a) {
     return window[_this.id] = new Monad(a,_this.id);
@@ -106,7 +110,7 @@ var a = 3;
 var b = 4;
 var c = a + b;
 
-function ret(v, id) {
+function ret(v, id = 'generic') {
   window[id] = new Monad(v, id);
   return window[id];
 }
@@ -118,13 +122,17 @@ var equals = function equals (mon1, mon2) {
 
 var mMtemp5 = new Monad(0, 'mMtemp5') 
 
-function add (x, b) {
-    return ret(parseInt(x,10) + parseInt(b,10) );
-};
+  function add (x, b) {
+      return ret(parseInt(x,10) + parseInt(b,10) );
+  };
 
-function cube (v) {
-    return ret(v * v * v);
-};
+  function add3 (x, str) {
+      return ret(x + str);
+  };
+
+  function cube (v) {
+      return ret(v * v * v);
+  };
 
 var aD = function (x, b, id = 'mQfred') {
   return window[id] = new MonadMaybe (parseInt(x,10) + parseInt(b,10), id);
@@ -341,9 +349,9 @@ function sliceM(x, howmany) {
 var mMEa = new MonadE(0, 'mMEa');
 
 
-  var test1 = ret2(0,'a')
-    .bnd('add2',3, 'a')
-    .bnd('mult2',100,'a')
+  ret2(0,'a')
+  .bnd('add2',3, 'a')
+  .bnd('mult2',100,'a')
     .bnd('square2','c')
     .bnd('ret2','c')
     .bnd('add2',-c.getx() + 4,'b')
@@ -353,14 +361,12 @@ var mMEa = new MonadE(0, 'mMEa');
     .bnd('square2','e')
     .bnd('add2',c.getx(),'e')
     .bnd('sqroot2','e')
-    .bnd('log2','The square root of the sum of ' + a.getx() + 
-       ' squared and ' + b.getx() + ' squared is ' + e.getx(), 'e')
-    .getx()
+  console.log('The square root of the sum of ' + a.getx() + 
+    ' squared and ' + b.getx() + ' squared is ' + e.getx())
 
-
-  var test2 = ret2(0,'a')
-    .bnd('add22',3, 'a')
-    .bnd('mult2',100,'a')
+  ret2(0,'a')
+  .bnd('add22',3, 'a')
+  .bnd('mult2',100,'a')
     .bnd('square2','c')
     .bnd('ret2','c')
     .bnd('add2',-c.getx() + 4,'b')
@@ -370,9 +376,6 @@ var mMEa = new MonadE(0, 'mMEa');
     .bnd('square2','e')
     .bnd('add2',c.getx(),'e')
     .bnd('sqroot2','e')
-    .bnd('log2','The square root of the sum of ' + a.getx() + 
-       ' squared and ' + b.getx() + ' squared is ' + e.getx(), 'e')
-    .getx()
 
 
 var fpTransformer = function transformer(s, m) {
@@ -719,7 +722,11 @@ function primes(n, ar) {
   var m = new Monad([2], 'm');
   var m1 = new Monad(0, 'm1');
   var m2 = new Monad(0, 'm2');
-  var m3 = new Monad(0, 'm3');
+  var m3 = new Monad(0, 'm2');
+  var m4 = new Monad(0, 'm3');
+  var m5 = new Monad(0, 'm3');
+  var m6 = new Monad(0, 'm3');
+  var m7 = new Monad(0, 'm3');
   var mMprime = new Monad([2], 'mMprime');
   var mMprime2 = new Monad([2], 'mMprime2');
   var mMprimes = new Monad([2], 'mMprimes');
@@ -948,6 +955,9 @@ var mMgame = new Monad('none','mMgameDiv');
       return ret(ar)
   }
     
+  function sqroot (x) {
+    return ret(Math.sqrt(x));
+  }
 
   var push = function push(x, v) {
       var ar = x.slice();
@@ -1039,14 +1049,53 @@ var mMgame = new Monad('none','mMgameDiv');
       return ret(v * v);
   };
 
-var mult = function mult(x, y) {
-    return mon.ret(x * y);
+  function mult(x, y) {
+    return ret(x * y);
     }
 
-function log(x, message) {
+function log3(x, message) {
     console.log(message.join(', '));
     return ret(x);
 };
+
+function log(x,y) {
+    console.log(x+y)
+    return ret(x);
+};
+console.log('log function');
+m.ret('The square root of the sum of ').bnd(log,'').bnd(() => m.ret(3).bnd(mult,100).bnd(log,' squared plus ').bnd(m2.ret).bnd(m3.ret).bnd(add, -m2.x).bnd(add,4).bnd(mult,100).bnd(log, ' squared is  ').bnd(square).bnd(add,m2.bnd(square).x).bnd(sqroot).bnd(log,''))
+
+var MonadAcc = function MonadAcc(z = 0, g = 'generic') {
+  var _this = this;
+  this.x = z;
+  this.id = g;
+  this.bnd = function(func, ...args) {
+    return func(_this.x, ...args);
+  }
+  this.reset = function () {
+    return window[_this.id] = new MonadAcc('', _this.id);
+  };
+  this.ret = function (a) {
+    var str = _this.x + a;
+    return window[_this.id] = new MonadAcc(str, _this.id);
+  };
+};
+
+var acc1 = new MonadAcc('', 'acc1');
+
+console.log('accumulator',
+
+acc1.reset()
+.bnd(() => m.ret(3).bnd(mult,100)
+.bnd(acc1.ret)).ret(' squared plus ')
+.bnd(() => m2.ret(0).bnd(add,4).bnd(mult,100)
+.bnd(acc1.ret))
+.ret(' squared is ').bnd(() => m3.ret(Math.sqrt(m.x * m.x + m2.x * m2.x)).bnd(acc1.ret)).x);
+
+function acc (x, y, str) {
+  return window[str] = new MonadAcc(x + y, str);
+}
+
 
 var lg = function lg(x) {
     console.log(x);

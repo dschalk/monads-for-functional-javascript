@@ -5284,7 +5284,7 @@
 	    console.log('In updateTasks uuuuuuuuuuuuuuuuuu  todoData ', todoData);
 	};
 
-	console.log((0, _dom.h)('button', { style: { display: '' + get(pMstyle)[1] } }, '' + get(pMnums)[1]));
+	console.log((0, _dom.h)('button', { style: { display: pMstyle.x[1] } }, pMnums.x[1]));
 
 	function main(sources) {
 
@@ -5296,7 +5296,7 @@
 	        mMtem.ret(e.data.split(',')).bnd(function (v) {
 	            console.log('<><><><><><><><><><><><><><><><>  INCOMING  <><><><><><><> >>> In messages. e amd v are ', e, v);
 	            mMZ10.bnd(function () {
-	                pMnums.ret([v[3], v[4], v[5], v[6]]).bnd(test3).bnd(pMstyle.ret);
+	                mMtemp.ret([v[3], v[4], v[5], v[6]]).bnd(pMnums.ret).bnd(test3).bnd(pMstyle.ret);
 	                travMonad.run([[v[3], v[4], v[5], v[6]], v[7], v[8]]);
 	                pMscore.ret(v[7]);
 	                pMgoals.ret(v[8]);
@@ -5318,9 +5318,7 @@
 	                return testTask(v[2], v[3], e.data);
 	            });
 	            mMZ18.bnd(function () {
-	                if (get(pMgroup) != 'solo' || get(pMname) == v[2]) {
-	                    updatePlayers(e.data);
-	                }
+	                if (pMgroup.x != 'solo' || pMname.x == v[2]) updatePlayers(e.data);
 	            });
 	        });
 	        mMtemp.ret(e.data.split(',')[0]).bnd(next, 'CA#$42', mMZ10).bnd(next, 'CD#$42', mMZ13).bnd(next, 'CE#$42', mMZ14).bnd(next, 'EE#$42', mMZ15).bnd(next, 'DD#$42', mMZ17).bnd(next, 'NN#$42', mMZ18);
@@ -5334,7 +5332,7 @@
 	    };
 
 	    function newRoll(a, b) {
-	        socket.send('CA#$42,' + get(pMgroup) + ',' + get(pMname) + ',6,6,12,20,' + a + ',' + b);
+	        socket.send('CA#$42,' + pMgroup.x + ',' + pMname.x + ',6,6,12,20,' + a + ',' + b);
 	    }
 
 	    var loginPress$ = sources.DOM.select('input#login').events('keypress');
@@ -5344,7 +5342,6 @@
 	        if (e.keyCode == 13) {
 	            pMname.ret(v);
 	            socket.send('CC#$42' + v);
-	            console.log('33333333333333333333333333333333333333 login e.target.value ', e.target.value);
 	            mM3.ret([]);
 
 	            mMdice.ret('block');
@@ -5373,9 +5370,9 @@
 
 	    var groupPressAction$ = groupPress$.map(function (e) {
 	        if (e.keyCode == 13) {
-	            socket.send('CO#$42,' + get(pMgroup) + ',' + get(pMname) + ',' + e.target.value);
+	            socket.send('CO#$42,' + pMgroup.x + ',' + pMname.x + ',' + e.target.value);
 	            pMgroup.ret(e.target.value).bnd(pMgroup.ret).bnd(function (gr) {
-	                return socket.send('CG#$42,' + get(pMgroup) + ',' + get(pMname) + ',0,0');
+	                return socket.send('CG#$42,' + pMgroup.x + ',' + pMname.x + ',0,0');
 	            });
 	        }
 	    });
@@ -5384,7 +5381,7 @@
 
 	    var messagePressAction$ = messagePress$.map(function (e) {
 	        if (e.keyCode == 13) {
-	            socket.send('CD#$42,' + get(pMgroup) + ',' + get(pMname) + ',' + e.target.value);
+	            socket.send('CD#$42,' + pMgroup.x + ',' + pMname.x + ',' + e.target.value);
 	            e.target.value = '';
 	            console.log('In messagePressAction$ ', socket.readyState);
 	        }
@@ -5435,21 +5432,21 @@
 	    var rollClick$ = sources.DOM.select('.roll').events('click');
 
 	    var rollClickAction$ = rollClick$.map(function () {
-	        var a = get(pMscore) - 1;
-	        var b = get(pMgoals);
+	        var a = pMscore.x - 1;
+	        var b = pMgoals.x;
 	        newRoll(a, b);
 	    });
 
 	    var numClick$ = sources.DOM.select('.num').events('click');
 
 	    var numClickAction$ = numClick$.map(function (e) {
-	        if (get(mM3).length == 2) {
+	        if (mM3.x.length == 2) {
 	            return;
 	        };
-	        pMnums.bnd(spliceM, e.target.id, 1).bnd(pMnums.ret).bnd(test3).bnd(pMstyle.ret);
+	        pMnums.bnd(spliceM, e.target.id, 1).bnd(pMnums.ret).bnd(mMtemp.ret).bnd(test3).bnd(pMstyle.ret);
 	        mM3.bnd(push, e.target.innerHTML).bnd(mM3.ret).bnd(function (v) {
-	            if (v.length == 2 && get(mM8) != 0) {
-	                updateCalc(v, get(mM8));
+	            if (v.length == 2 && mM8.x != 0) {
+	                updateCalc(v, mM8.x);
 	            }
 	        });
 	    }).startWith([0, 0, 0, 0]);
@@ -5458,7 +5455,7 @@
 
 	    var opClickAction$ = opClick$.map(function (e) {
 	        mM8.ret(e.target.innerHTML).bnd(function (v) {
-	            var ar = get(mM3);
+	            var ar = mM3.x;
 	            if (ar.length === 2) {
 	                updateCalc(ar, v);
 	            }
@@ -5482,20 +5479,20 @@
 	            return;
 	        } else {
 	            pMnums.bnd(push, result).bnd(pMnums.ret).bnd(function (v) {
-	                travMonad.run([v, get(pMscore), get(pMgoals)]);
+	                travMonad.run([v, pMscore.x, pMgoals.x]);
 	                test3(v).bnd(pMstyle.ret);
 	            });
 	            mM8.ret(0);
 	            mM3.ret([]);
-	            console.log('in updateCalc 1111111111 get(pMnums), get(pMstyle) ', get(pMnums), get(pMstyle));
+	            console.log('in updateCalc 1111111111 pMnums.x, pMstyle.x ', pMnums.x, pMstyle.x);
 	        }
 	    };
 
 	    function score(scor) {
 	        if (scor != 25) {
-	            newRoll(scor, get(pMgoals));
-	        } else if (get(pMgoals) == 2) {
-	            socket.send('CE#$42,' + get(pMgroup) + ',' + get(pMname));
+	            newRoll(scor, pMgoals.x);
+	        } else if (pMgoals.x == 2) {
+	            socket.send('CE#$42,' + pMgroup.x + ',' + pMname.x);
 	            newRoll(0, 0);
 	        } else {
 	            pMgoals.bnd(add, 1).bnd(pMgoals.ret).bnd(function (g) {
@@ -5805,12 +5802,13 @@
 	        var index = getIndex2(e);
 	        if (e.keyCode == 13) {
 	            process2(v, index);
-	            get(mMtaskList)[index].children[3].elm.style.display = 'none';
+	            mMtaskList.x[index].children[3].elm.style.display = 'none';
+	            updateScoreboard2(namesList);
 	        }
 	    });
 
 	    var process2 = function process2(str, index) {
-	        var a = get(mMcurrentList).split(',');
+	        var a = mMcurrentList.x.split(',');
 	        console.log('In process2 VVVVVVVVVVVV a is ', a);
 	        a[6 * index] = str;
 	        var b = a.reduce(function (a, b) {
@@ -5838,21 +5836,23 @@
 	    });
 
 	    // **********************************************************************END TODO LIST                       
-
-	    var chatClick$ = sources.DOM.select('#chat2').events('click');
-	    var chatClickAction$ = chatClick$.map(function () {
-	        var el = document.getElementById('chatDiv');
-	        el.style.display == 'none' ? el.style.display = 'inline' : el.style.display = 'none';
-	    });
-
-	    var captionClick$ = sources.DOM.select('#caption').events('click');
-	    var captionClickAction$ = captionClick$.map(function () {
-	        var el = document.getElementById('captionDiv');
-	        el.style.display == 'none' ? el.style.display = 'inline' : el.style.display = 'none';
-	    });
-	    // **************************************   GAME   *********************************************** GAME START
-
-	    /*  var todoClick$ = sources.DOM
+	    /*  var chatClick$ = sources.DOM
+	          .select('#chat2').events('click');
+	       var chatClickAction$ = chatClick$.map(function () {
+	          var el = document.getElementById('chatDiv');
+	          (el.style.display == 'none') ?
+	              el.style.display = 'inline' :
+	              el.style.display = 'none';
+	      });
+	       var captionClick$ = sources.DOM
+	          .select('#caption').events('click');
+	      var captionClickAction$ = captionClick$.map(function () {
+	          var el = document.getElementById('captionDiv');
+	          (el.style.display == 'none') ?
+	              el.style.display = 'inline' :
+	              el.style.display = 'none';
+	      });
+	       var todoClick$ = sources.DOM
 	          .select('#todoButton').events('click');
 	    
 	      var todoClickAction$ = todoClick$.map(function (e) {
@@ -5866,6 +5866,7 @@
 	       var gameClickAction$ = gameClick$.map(function () {
 	          var el = document.getElementById('gameDiv');
 	          (el.style.display == 'none') ?
+	          updateScoreboard2(namesList);
 	              el.style.display = 'inline' :
 	              el.style.display = 'none';
 	          var el2 = document.getElementById('gameDiv2');
@@ -5919,7 +5920,8 @@
 	    var forwardAction$ = forwardClick$.map(function () {
 	        if (get(pMindex) < travMonad.a.length) {
 	            var a = travMonad.a[travMonad.a.length - get(pMindex) - 1];
-	            pMnums.ret(a[0]).bnd(test3).bnd(pMstyle.ret);
+	            pMnums.ret(a[0]).bnd(mMtemp.ret).bnd(test3).bnd(pMstyle.ret);
+	            updateScoreboard2(namesList);
 	            pMscore.ret(a[1]);
 	            pMgoals.ret(a[2]);
 	            pMindex.bnd(add, 1).bnd(pMindex.ret);
@@ -5932,7 +5934,7 @@
 	    var calcStream$ = (0, _most.merge)(backAction$, forwardAction$, factorsAction$, primeFib$, fibPressAction$, quadAction$, edit1Action$, edit2Action$, testWAction$, testZAction$, testQAction$, colorAction$, deleteAction$, newTaskAction$, chatClickAction$, gameClickAction$, todoClickAction$, captionClickAction$, groupPressAction$, rollClickAction$, messagePressAction$, loginPressAction$, messages$, numClickAction$, opClickAction$);
 	    return {
 	        DOM: calcStream$.map(function () {
-	            return (0, _dom.h)('div.content', [(0, _dom.h)('div#rightPanel', { style: { display: '' + get(mMrightPanel) } }, [(0, _dom.h)('span#tog', [(0, _dom.h)('button#game', { style: { fontSize: '16px', display: 'inline' } }, 'TOGGLE GAME'), (0, _dom.h)('span.tao', ' '), (0, _dom.h)('button#todoButton', { style: { fontSize: '16px', display: 'inline' } }, 'TOGGLE TODO_LIST'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('button#chat2', { style: { fontSize: '16px', display: 'inline' } }, 'TOGGLE CHAT'), (0, _dom.h)('span.tao', ' '), (0, _dom.h)('button#caption', { style: { fontSize: '16px', display: 'inline' } }, 'TOGGLE CAPTION')]), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('div#gameDiv', { style: { display: 'mMgameDiv.x' } }, [(0, _dom.h)('div.game', 'Name: pMname.x'), (0, _dom.h)('div.game', 'Group: pMgroup.x'), (0, _dom.h)('div.game', 'Currently online: Name score | goals'), (0, _dom.h)('div.game', pMdata.x)]), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('div#todoDiv', { style: { display: mMtodoDiv.x } }, [(0, _dom.h)('div#taskList', taskL), (0, _dom.h)('span', 'Author, Responsible Person, Task: '), (0, _dom.h)('input.newTask')]), (0, _dom.h)('br'), (0, _dom.h)('span#alert', mMalert.x), (0, _dom.h)('br'), (0, _dom.h)('span#alert2'), (0, _dom.h)('br'), (0, _dom.h)('div#chatDiv', { style: { display: mMchatDiv.x } }, [(0, _dom.h)('div#messages', [(0, _dom.h)('span', 'Message: '), (0, _dom.h)('input.inputMessage'), (0, _dom.h)('div', messageMonad.s[3])])])]), (0, _dom.h)('div#leftPanel', [(0, _dom.h)('br'), (0, _dom.h)('div#captionDiv', { style: { display: mMcaptionDiv.x } }, [(0, _dom.h)('h1', 'Motorcycle.js With JS-monads')]), (0, _dom.h)('span#italic', ' Not category theory monads; monads in the Haskell monads tradition. See '), (0, _dom.h)('a', { props: { href: "http://math.andrej.com/2016/08/06/hask-is-not-a-category/", target: "_blank" } }, 'Hask is not a category.'), (0, _dom.h)('span', ' by Andrej Bauer and . '), (0, _dom.h)('a', { props: { href: '#discussion' } }, 'Discussion'), (0, _dom.h)('span', ' below. '), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('span.tao1', ' The demonstrations include persisternt, shared todo lists; '), (0, _dom.h)('br'), (0, _dom.h)('span.tao1', ' An interactive simulated dice game with a traversable history (all group members see your score decrease or increase as you navegate backwards and forwards); '), (0, _dom.h)('br'), (0, _dom.h)('span.tao1', ' Chat rooms where members can compete in the simulated dice game, chat, and share a project todo list; '), (0, _dom.h)('br'), (0, _dom.h)('span.tao1', ' And other demonstrations of the power and convenience of JS-monads in a Motorcycle application.  '), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('span.tao', 'This is a '), (0, _dom.h)('a', { props: { href: "https://github.com/motorcyclejs", target: "_blank" } }, 'Motorcycle.js'), (0, _dom.h)('span', ' application. Motorcycle.js is '), (0, _dom.h)('a', { props: { href: "https://github.com/cyclejs/core", target: "_blank" } }, 'Cycle.js'), (0, _dom.h)('span', ' using '), (0, _dom.h)('a', { props: { href: "https://github.com/cujojs/most", target: "_blank" } }, 'Most'), (0, _dom.h)('span', ' , '), (0, _dom.h)('span', ' and '), (0, _dom.h)('a', { props: { href: "https://github.com/paldepind/snabbdom", target: "_blank" } }, 'Snabbdom'), (0, _dom.h)('span', ' instead of RxJS and virtual-dom.  The code for this repository is at '), (0, _dom.h)('a', { props: { href: "https://github.com/dschalk/JS-monads-stable", target: "_blank" } }, 'JS-monads-stable'), (0, _dom.h)('div#gameDiv2', { style: { display: mMgameDiv2.x } }, [(0, _dom.h)('br'), (0, _dom.h)('span', ' Here are the basic rules:'), (0, _dom.h)('p', 'RULES: If clicking two numbers and an operator (in any order) results in 20 or 18, the score increases by 1 or 3, respectively. If the score becomes 0 or is evenly divisible by 5, 5 points are added. A score of 25 results in one goal. That can only be achieved by arriving at a score of 20, which jumps the score to 25. Directly computing 25 results in a score of 30, and no goal. Each time RL is clicked, one point is deducted. Three goals wins the game. '), (0, _dom.h)('p.red4', mMgoals2.x), (0, _dom.h)('button#0.num', { style: { display: pMstyle.x[0] } }, pMnums.x[0]), (0, _dom.h)('button#0.num', { style: { display: pMstyle.x[1] } }, pMnums.x[1]), (0, _dom.h)('button#0.num', { style: { display: pMstyle.x[2] } }, pMnums.x[2]), (0, _dom.h)('button#0.num', { style: { display: pMstyle.x[3] } }, pMnums.x[3]), (0, _dom.h)('br'), (0, _dom.h)('button#4.op', 'add'), (0, _dom.h)('button#5.op', 'subtract'), (0, _dom.h)('button#5.op', 'mult'), (0, _dom.h)('button#5.op', 'div'), (0, _dom.h)('button#5.op', 'concat'), (0, _dom.h)('br'), (0, _dom.h)('div#dice', { style: { display: mMdice.x } }, [(0, _dom.h)('button.roll', 'ROLL'), (0, _dom.h)('br'), (0, _dom.h)('button#back', 'BACK'), (0, _dom.h)('button#forward', 'FORWARD')])]), (0, _dom.h)('div#log1', { style: { display: mMlog1.x } }, [(0, _dom.h)('p', 'IN ORDER TO SEE THE GAME, TODOLIST, AND CHAT DEMONSTRATIONS, YOU MUST ENTER SOMETHING .'), (0, _dom.h)('span', 'Name: '), (0, _dom.h)('input#login')]), (0, _dom.h)('p', mM6.x), (0, _dom.h)('div#log2', { style: { display: mMlog2.x } }, [(0, _dom.h)('span', 'Change group: '), (0, _dom.h)('input#group')]), (0, _dom.h)('p', mMsoloAlert.x), (0, _dom.h)('p', 'People who are in the same group, other than solo, share the same todo list, messages, and simulated dice game. In order to see any of these, you must establish an identity on the server by logging in. The websockets connection terminates if the first message the server receives does not come from the sign in form. You can enter any random numbers or letters you like. The only check is to make sure someone hasn\t already signed in with whatever you have selected. If you log in with a name that is already in use, a message will appear and this page will be re-loaded in the browser after a four-second pause. '), (0, _dom.h)('p', ' Data for the traversable game history accumulates until a player scores three goals and wins. The data array is then erased and the application is ready to start accumulating a new history. '), (0, _dom.h)('hr'), (0, _dom.h)('h1', 'The Monads'), (0, _dom.h)('h3', ' Monad '), _code2.default.monad, (0, _dom.h)('p', ' In most sequences of operationns, the arguments provided to each link\'s bnd() method are functions that return an instance of Monad. Here are some examples of functions that return instances of Monad: '), _code2.default.e1, (0, _dom.h)('p', ' These functions can be used with instances of Monad in many ways, for example: '), _code2.default.e7, _code2.default.e7x, (0, _dom.h)('h3', ' The Monad Laws '), (0, _dom.h)('p', ' In the following discussion, "x == y" signifies that the expression x == y returns true. Let J be the collection of all Javascript values, including functions, instances of Monad, etc, and let F be the collection of all functions mapping values in J to instances of Monad with references (names) matching their ids; that is, with window[id] == m.id for some id which is a valid es2015 variable name. The collection of all such instances of Monad along and all of the functions in F is called "M". For any instances of Monad m, m1, and m2 in M and any functions f and g in F, the following relationships follow easily from the definition of Monad: '), (0, _dom.h)('div.bh3', 'Left Identity '), (0, _dom.h)('pre.turk', '    equals( m.ret(v, ...args).bnd(f, ...args), f(v, ...args) )    \n    equals( ret(v, ...args).bnd(f, ...args), f(v, ...args) ) \n    Examples: equals( m.ret(3).bnd(cube), cube(3) )  Tested and verified  \n    equals( ret(3).bnd(cube), cube(3) )     Tested and verified\n    Haskell monad law: (return x) >>= f \u2261 f x  '), (0, _dom.h)('div.bh3', ' Right Identity  '), (0, _dom.h)('pre.turk', '    equals(m.bnd(m.ret), m)      Tested and verified \n    m.bnd(m.ret) === m   Tested and verified\n    equals(m.bnd(ret, \'m\'), m)  Tested and verified\n    Haskell monad law: m >>= return \u2261 m '), (0, _dom.h)('div.bh3', ' Commutivity  '), (0, _dom.h)('pre.turk', '    equals( m.bnd(f1, ...args).bnd(f2, ...args), m.bnd(v => f1(v, ...args).bnd(f2, ...args)) ) \n    Example: equals( m.ret(0).bnd(add, 3).bnd(cube), \n    m.ret(0).bnd(v => add(v,3).bnd(cube)) )  Tested amd verified\n    Haskell monad law: (m >>= f) >>= g \u2261 m >>= ( \\x -> (f x >>= g) ) '), (0, _dom.h)('p', ' where equals is defined as: '), _code2.default.equals, (0, _dom.h)('p#discussion', ' and '), (0, _dom.h)('pre.turk', 'f \u2261 g'), (0, _dom.h)('span', ' means f x == g x for all Haskell values x. '), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('a', { props: { href: '#top' } }, 'Back To The Top'), (0, _dom.h)('h3', ' Disussion '), (0, _dom.h)('p', ' The function equals() was used because the == and === operators on objects check for location in memory, not equality of attributes and equivalence of methods. If the left and right sides of predicates create new instances of m, then the left side m and the right side m wind up in different locations in memory and the == operator returns false. So we expect m.ret(3) == m.ret(3) to return false, and it does. The question we want answered is this: Can the left side be substituted for the right side and vice versa? That question is answered by equals() - and also by \u2261. '), (0, _dom.h)('span.tao', ' The Haskell programming language borrowed the name "monad" from the branch of mathematics known as category theory. This was apropriate because Haskell monads, along with the function return and the operator >>=, behave like category theory monads, and the inspiration for them came out of category theory. For Haskell monads to be category theory monads, they would need to reside in a category-theory category. It is generally acknowledged within the Haskell community that they do not.  See '), (0, _dom.h)('a', { props: { href: "http://math.andrej.com/2016/08/06/hask-is-not-a-category/", target: "_blank" } }, 'Hask is not a category.'), (0, _dom.h)('span', ' Attempts have been made to find a subset of Haskell, usually with  special constraints and new definitions of morphisms, that is an actual category. That would be the first step in finding a way to prove that Haskell monads are, at least in some contrived context, category-theory monads. Devising such a thing might be an instructive academic excercise, but I don\'t see how it could be of any value beyond that. Imatating definitions and patterns found in category theory, as Haskell does in defining the type classes functor, monoid, and monad, was a stroke of genius that vastly enriched the Haskell programming language. These are useful patterns in Javascript too.'),
+	            return (0, _dom.h)('div.content', [(0, _dom.h)('div#rightPanel', { style: { display: '' + get(mMrightPanel) } }, [(0, _dom.h)('span#tog', [(0, _dom.h)('button#game', { style: { fontSize: '16px', display: 'inline' } }, 'TOGGLE GAME'), (0, _dom.h)('span.tao', ' '), (0, _dom.h)('button#todoButton', { style: { fontSize: '16px', display: 'inline' } }, 'TOGGLE TODO_LIST'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('button#chat2', { style: { fontSize: '16px', display: 'inline' } }, 'TOGGLE CHAT'), (0, _dom.h)('span.tao', ' '), (0, _dom.h)('button#caption', { style: { fontSize: '16px', display: 'inline' } }, 'TOGGLE CAPTION')]), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('div#gameDiv', { style: { display: 'mMgameDiv.x' } }, [(0, _dom.h)('div.game', 'Name: ' + pMname.x), (0, _dom.h)('div.game', 'Group: ' + pMgroup.x), (0, _dom.h)('div.game', 'Currently online: Name score | goals'), (0, _dom.h)('div.game', '' + pMdata.x)]), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('div#todoDiv', { style: { display: mMtodoDiv.x } }, [(0, _dom.h)('div#taskList', taskL), (0, _dom.h)('span', 'Author, Responsible Person, Task: '), (0, _dom.h)('input.newTask')]), (0, _dom.h)('br'), (0, _dom.h)('span#alert', mMalert.x), (0, _dom.h)('br'), (0, _dom.h)('span#alert2'), (0, _dom.h)('br'), (0, _dom.h)('div#chatDiv', { style: { display: mMchatDiv.x } }, [(0, _dom.h)('div#messages', [(0, _dom.h)('span', 'Message: '), (0, _dom.h)('input.inputMessage'), (0, _dom.h)('div', messageMonad.s[3])])])]), (0, _dom.h)('div#leftPanel', [(0, _dom.h)('br'), (0, _dom.h)('div#captionDiv', { style: { display: mMcaptionDiv.x } }, [(0, _dom.h)('h1', 'Motorcycle.js With JS-monads')]), (0, _dom.h)('span#italic', ' Not category theory monads; monads in the Haskell monads tradition. See '), (0, _dom.h)('a', { props: { href: "http://math.andrej.com/2016/08/06/hask-is-not-a-category/", target: "_blank" } }, 'Hask is not a category.'), (0, _dom.h)('span', ' by Andrej Bauer and . '), (0, _dom.h)('a', { props: { href: '#discussion' } }, 'Discussion'), (0, _dom.h)('span', ' below. '), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('span.tao1', ' The demonstrations include persisternt, shared todo lists; '), (0, _dom.h)('br'), (0, _dom.h)('span.tao1', ' An interactive simulated dice game with a traversable history (all group members see your score decrease or increase as you navegate backwards and forwards); '), (0, _dom.h)('br'), (0, _dom.h)('span.tao1', ' Chat rooms where members can compete in the simulated dice game, chat, and share a project todo list; '), (0, _dom.h)('br'), (0, _dom.h)('span.tao1', ' And other demonstrations of the power and convenience of JS-monads in a Motorcycle application.  '), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('span.tao', 'This is a '), (0, _dom.h)('a', { props: { href: "https://github.com/motorcyclejs", target: "_blank" } }, 'Motorcycle.js'), (0, _dom.h)('span', ' application. Motorcycle.js is '), (0, _dom.h)('a', { props: { href: "https://github.com/cyclejs/core", target: "_blank" } }, 'Cycle.js'), (0, _dom.h)('span', ' using '), (0, _dom.h)('a', { props: { href: "https://github.com/cujojs/most", target: "_blank" } }, 'Most'), (0, _dom.h)('span', ' , '), (0, _dom.h)('span', ' and '), (0, _dom.h)('a', { props: { href: "https://github.com/paldepind/snabbdom", target: "_blank" } }, 'Snabbdom'), (0, _dom.h)('span', ' instead of RxJS and virtual-dom.  The code for this repository is at '), (0, _dom.h)('a', { props: { href: "https://github.com/dschalk/JS-monads-stable", target: "_blank" } }, 'JS-monads-stable'), (0, _dom.h)('div#gameDiv2', { style: { display: mMgameDiv2.x } }, [(0, _dom.h)('br'), (0, _dom.h)('span', ' Here are the basic rules:'), (0, _dom.h)('p', 'RULES: If clicking two numbers and an operator (in any order) results in 20 or 18, the score increases by 1 or 3, respectively. If the score becomes 0 or is evenly divisible by 5, 5 points are added. A score of 25 results in one goal. That can only be achieved by arriving at a score of 20, which jumps the score to 25. Directly computing 25 results in a score of 30, and no goal. Each time RL is clicked, one point is deducted. Three goals wins the game. '), (0, _dom.h)('p.red4', mMgoals2.x), (0, _dom.h)('button#0.num', { style: { display: pMstyle.x[0] } }, pMnums.x[0]), (0, _dom.h)('button#0.num', { style: { display: pMstyle.x[1] } }, pMnums.x[1]), (0, _dom.h)('button#0.num', { style: { display: pMstyle.x[2] } }, pMnums.x[2]), (0, _dom.h)('button#0.num', { style: { display: pMstyle.x[3] } }, pMnums.x[3]), (0, _dom.h)('br'), (0, _dom.h)('button#4.op', 'add'), (0, _dom.h)('button#5.op', 'subtract'), (0, _dom.h)('button#5.op', 'mult'), (0, _dom.h)('button#5.op', 'div'), (0, _dom.h)('button#5.op', 'concat'), (0, _dom.h)('br'), (0, _dom.h)('div#dice', { style: { display: mMdice.x } }, [(0, _dom.h)('button.roll', 'ROLL'), (0, _dom.h)('br'), (0, _dom.h)('button#back', 'BACK'), (0, _dom.h)('button#forward', 'FORWARD')])]), (0, _dom.h)('div#log1', { style: { display: mMlog1.x } }, [(0, _dom.h)('p', 'IN ORDER TO SEE THE GAME, TODOLIST, AND CHAT DEMONSTRATIONS, YOU MUST ENTER SOMETHING .'), (0, _dom.h)('span', 'Name: '), (0, _dom.h)('input#login')]), (0, _dom.h)('p', mM6.x), (0, _dom.h)('div#log2', { style: { display: mMlog2.x } }, [(0, _dom.h)('span', 'Change group: '), (0, _dom.h)('input#group')]), (0, _dom.h)('p', mMsoloAlert.x), (0, _dom.h)('p', 'People who are in the same group, other than solo, share the same todo list, messages, and simulated dice game. In order to see any of these, you must establish an identity on the server by logging in. The websockets connection terminates if the first message the server receives does not come from the sign in form. You can enter any random numbers or letters you like. The only check is to make sure someone hasn\t already signed in with whatever you have selected. If you log in with a name that is already in use, a message will appear and this page will be re-loaded in the browser after a four-second pause. '), (0, _dom.h)('p', ' Data for the traversable game history accumulates until a player scores three goals and wins. The data array is then erased and the application is ready to start accumulating a new history. '), (0, _dom.h)('hr'), (0, _dom.h)('h1', 'The Monads'), (0, _dom.h)('h3', ' Monad '), _code2.default.monad, (0, _dom.h)('p', ' In most sequences of operationns, the arguments provided to each link\'s bnd() method are functions that return an instance of Monad. Here are some examples of functions that return instances of Monad: '), _code2.default.e1, (0, _dom.h)('p', ' These functions can be used with instances of Monad in many ways, for example: '), _code2.default.e7, _code2.default.e7x, (0, _dom.h)('h3', ' The Monad Laws '), (0, _dom.h)('p', ' In the following discussion, "x == y" signifies that the expression x == y returns true. Let J be the collection of all Javascript values, including functions, instances of Monad, etc, and let F be the collection of all functions mapping values in J to instances of Monad with references (names) matching their ids; that is, with window[id] == m.id for some id which is a valid es2015 variable name. The collection of all such instances of Monad along and all of the functions in F is called "M". For any instances of Monad m, m1, and m2 in M and any functions f and g in F, the following relationships follow easily from the definition of Monad: '), (0, _dom.h)('div.bh3', 'Left Identity '), (0, _dom.h)('pre.turk', '    equals( m.ret(v, ...args).bnd(f, ...args), f(v, ...args) )    \n    equals( ret(v, ...args).bnd(f, ...args), f(v, ...args) ) \n    Examples: equals( m.ret(3).bnd(cube), cube(3) )  Tested and verified  \n    equals( ret(3).bnd(cube), cube(3) )     Tested and verified\n    Haskell monad law: (return x) >>= f \u2261 f x  '), (0, _dom.h)('div.bh3', ' Right Identity  '), (0, _dom.h)('pre.turk', '    equals(m.bnd(m.ret), m)      Tested and verified \n    m.bnd(m.ret) === m   Tested and verified\n    equals(m.bnd(ret, \'m\'), m)  Tested and verified\n    Haskell monad law: m >>= return \u2261 m '), (0, _dom.h)('div.bh3', ' Commutivity  '), (0, _dom.h)('pre.turk', '    equals( m.bnd(f1, ...args).bnd(f2, ...args), m.bnd(v => f1(v, ...args).bnd(f2, ...args)) ) \n    Example: equals( m.ret(0).bnd(add, 3).bnd(cube), \n    m.ret(0).bnd(v => add(v,3).bnd(cube)) )  Tested amd verified\n    Haskell monad law: (m >>= f) >>= g \u2261 m >>= ( \\x -> (f x >>= g) ) '), (0, _dom.h)('p', ' where equals is defined as: '), _code2.default.equals, (0, _dom.h)('p#discussion', ' and '), (0, _dom.h)('pre.turk', 'f \u2261 g'), (0, _dom.h)('span', ' means f x == g x for all Haskell values x. '), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('a', { props: { href: '#top' } }, 'Back To The Top'), (0, _dom.h)('h3', ' Disussion '), (0, _dom.h)('p', ' The function equals() was used because the == and === operators on objects check for location in memory, not equality of attributes and equivalence of methods. If the left and right sides of predicates create new instances of m, then the left side m and the right side m wind up in different locations in memory and the == operator returns false. So we expect m.ret(3) == m.ret(3) to return false, and it does. The question we want answered is this: Can the left side be substituted for the right side and vice versa? That question is answered by equals() - and also by \u2261. '), (0, _dom.h)('span.tao', ' The Haskell programming language borrowed the name "monad" from the branch of mathematics known as category theory. This was apropriate because Haskell monads, along with the function return and the operator >>=, behave like category theory monads, and the inspiration for them came out of category theory. For Haskell monads to be category theory monads, they would need to reside in a category-theory category. It is generally acknowledged within the Haskell community that they do not.  See '), (0, _dom.h)('a', { props: { href: "http://math.andrej.com/2016/08/06/hask-is-not-a-category/", target: "_blank" } }, 'Hask is not a category.'), (0, _dom.h)('span', ' Attempts have been made to find a subset of Haskell, usually with  special constraints and new definitions of morphisms, that is an actual category. That would be the first step in finding a way to prove that Haskell monads are, at least in some contrived context, category-theory monads. Devising such a thing might be an instructive academic excercise, but I don\'t see how it could be of any value beyond that. Imatating definitions and patterns found in category theory, as Haskell does in defining the type classes functor, monoid, and monad, was a stroke of genius that vastly enriched the Haskell programming language. These are useful patterns in Javascript too.'),
 
 	            // **************************************************************************** END MONAD       START MonadItter   
 	            (0, _dom.h)('h2', 'MonadItter'), _code2.default.monadIt, (0, _dom.h)('p', ' MonadItter instances don\'t link to one another. They exist to facilitate the work of instances of Mmonad, MonadState, etc. Here\'s how they work: '), (0, _dom.h)('p', 'For any instance of MonadItter, say "it", "it.bnd(func)" causes it.p == func. Calling the method "it.release(...args)" causes p(...args) to run, possibly with arguments supplied by the caller. '), (0, _dom.h)('p', ' As shown later on this page, MonadItter instances control the routing of incoming websockets messages. In one of the demonstrations below, they behave much like ES2015 iterators. I prefer them over ES2015 iterators, at least for what I am demonstrating.'), (0, _dom.h)('h3#itterLink', ' A Basic Itterator '), (0, _dom.h)('p', 'The following example illustrates the use of release() with an argument. It also shows a lambda expressions being provided as an argument for the method mMZ1.bnd() (thereby becoming the value of mMZ1.p) and then mMZ1.release providing an arguments for the function mMZ1.p. The code is shown beneith the following two buttons. '), (0, _dom.h)('button#testZ', 'mMZ1.release(1)'), (0, _dom.h)('p.code2', mMt3.x), (0, _dom.h)('span', 'Refresh button: '), (0, _dom.h)('button#testQ', 'mMt1.ret(0).bnd(v => mMZ2.release(v)) '), (0, _dom.h)('br'), _code2.default.testZ, (0, _dom.h)('span.tao', ' The expression mMt3.x sits permanently in the Motorcycle virtual DOM description. You can call '), (0, _dom.h)('span.green', 'mMZ2.release(v)'), (0, _dom.h)('span', ' by entering a value for v below: '), (0, _dom.h)('br'), (0, _dom.h)('span', 'Please enter an integer here: '), (0, _dom.h)('input#testW'), (0, _dom.h)('p', ' cube() is defined in the Monad section (above). If you click "mMZ1.release(1)" several times, the code (above) will run several times, each time with v == 1. The result, mMt3.x, is shown below the button. mMZ1.p (bnd()\'s argument) remains constant while mMZ1.release(1) is repeatedly called, incrementing the number being cubed each time. '), (0, _dom.h)('p', ' Here is another example. It demonstrates lambda expressions passing values to a remote location for use in a computation. If you enter three numbers consecutively below, call them a, b, and c, then the quadratic equation will be used to find solutions for a*x**2 + b*x + c = 0. The a, b, and c you select might not have a solution. If a and b are positive numbers, you are likely to see solutions if c is a negative number. For example, 12, 12, and -24 yields the solutions 1 and -2. '), (0, _dom.h)('p#quad4.red2', mMquad4.x), (0, _dom.h)('p#quad5.red2', mMquad5.x), (0, _dom.h)('p#quad6.red2', mMquad6.x), (0, _dom.h)('p', 'Run mMZ3.release(v) three times for three numbers. The numbers are a, b, and c in ax*x + b*x + c = 0: '), (0, _dom.h)('input#quad'), (0, _dom.h)('p', 'Here is the code:'), _code2.default.quad, (0, _dom.h)('p', ' fmap (above) facilitated using qS4 in a monadic sequence. qS4 returns an array, not an instance of Monad, but fmap lifts qS4 into the monadic sequence. '),
