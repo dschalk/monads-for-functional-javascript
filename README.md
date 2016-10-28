@@ -1,7 +1,7 @@
 <a name="back"></a>
 
 #JS-monads-stable 
-
+#Down for repairs. Breaking changes in the definition of Monad require attention. I should have done this in a branch, but I got carried away, committed some broken code, and now I am bringing everything up to date. 
 Monads not in the sense of category theory monads; monads in the same spirit as the Haskell programming language constructs known as "monads". See [Hask is not a category](http://math.andrej.com/2016/08/06/hask-is-not-a-category/) by Andrej Bauer and [Discussion](#discuss) below.
 
 This is the repository for a [Motorcycle.js](https://github.com/motorcyclejs) application running online at [JS-monads-stable](http://schalk.net:3055). Motorcycle.js is essentially [Cycle.js](https://github.com/cyclejs/core) using [Most](https://github.com/cujojs/most) and [Snabbdom](https://github.com/paldepind/snabbdom) instead of RxJS and virtual-dom.
