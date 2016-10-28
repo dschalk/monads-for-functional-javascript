@@ -9,7 +9,7 @@ var chatDiv = 'none';
 var captionDiv = 'none';
 function tst (x) {return x};
 
-function Monad (z, ID = 'default') {
+function Snownad (z, ID = 'default') {
     var x = z;
     var ob = {
     id: ID,
@@ -22,6 +22,19 @@ function Monad (z, ID = 'default') {
   };
   return ob;
 }
+
+var Monad = function Monad(z = 0, g = 'generic') {
+  var _this = this;
+  this.x = z;
+  this.id = g;
+  this.bnd = function (func, ...args) {
+    return func(_this.x, ...args)
+  };
+  this.ret = function (a) {
+    return window[_this.id] = new Monad(a,_this.id);
+  };
+};
+
 
 function Monad2 (z, ID = 'default') {
     var x = z;
@@ -93,7 +106,7 @@ var a = 3;
 var b = 4;
 var c = a + b;
 
-function ret(v, id = 'default') {
+function ret(v, id) {
   window[id] = new Monad(v, id);
   return window[id];
 }
