@@ -201,11 +201,9 @@ function main(sources) {
       .select('.num').events('click'); 
 
   var numClickAction$ = numClick$.map(e => {
+    console.log('In numClickAction. e.target.id, e, and pMnums are ', e.target.id, e, pMnums.x );
     if (mM3.x.length == 2) {return};
-    pMnums
-    .bnd(spliceM, e.target.id, 1)
-    .bnd(pMnums.ret)
-    .bnd(mMtemp.ret)
+    mMtemp.ret(pMnums.bnd(spliceM, e.target.id, 1).x)
     .bnd(test3)
     .bnd(pMstyle.ret)
     mM3
@@ -251,6 +249,7 @@ function main(sources) {
     }
     else {
       pMnums.bnd(push,result)
+      .bnd(mMtemp3.ret)
       .bnd(pMnums.ret)
       .bnd(v => {
         travMonad.run([v, pMscore.x, pMgoals.x])
@@ -710,7 +709,7 @@ function main(sources) {
     var backAction$ = backClick$.map(() => {
       if (get(pMindex) > 1) {
         let a = travMonad.a[travMonad.a.length + 1 - get(pMindex) ];
-        pMnums.ret(a[0]).bnd(test3).bnd(pMstyle.ret);
+        mMtemp.ret(a[0]),bnd(pMnums.ret).bnd(test3).bnd(pMstyle.ret);
         pMscore.ret(a[1]);
         pMgoals.ret(a[2]);
         pMindex.bnd(add,-1).bnd(pMindex.ret);
@@ -723,7 +722,7 @@ function main(sources) {
     var forwardAction$ = forwardClick$.map(function () {
       if (get(pMindex) < travMonad.a.length) {
         let a = travMonad.a[travMonad.a.length - get(pMindex) -1 ]
-        pMnums.ret(a[0]).bnd(mMtemp.ret).bnd(test3).bnd(pMstyle.ret);
+        mMtemp.ret(a[0]).bnd(pMnums.ret).bnd(mMtemp.ret).bnd(test3).bnd(pMstyle.ret);
         updateScoreboard2(namesList);
         pMscore.ret(a[1]);
         pMgoals.ret(a[2]);
@@ -793,6 +792,9 @@ function main(sources) {
           h('span', ' below. ' ),
           h('br'),
           h('br'),
+          h('div.red24', 'The definition of Monad has changed. The commentary and code examples will soon be up to date. ' ),
+          h('br'),
+          h('br'),
           h('span.tao1', ' The demonstrations include persisternt, shared todo lists; '),
           h('br'),
           h('span.tao1', ' An interactive simulated dice game with a traversable history (all group members see your score decrease or increase as you navegate backwards and forwards); '),
@@ -819,9 +821,9 @@ function main(sources) {
           h('p', 'RULES: If clicking two numbers and an operator (in any order) results in 20 or 18, the score increases by 1 or 3, respectively. If the score becomes 0 or is evenly divisible by 5, 5 points are added. A score of 25 results in one goal. That can only be achieved by arriving at a score of 20, which jumps the score to 25. Directly computing 25 results in a score of 30, and no goal. Each time RL is clicked, one point is deducted. Three goals wins the game. '),
           h('p.red4', mMgoals2.x ),
           h('button#0.num',  { style: { display: pMstyle.x[0] }}, pMnums.x[0] ),
-          h('button#0.num',  { style: { display: pMstyle.x[1] }}, pMnums.x[1] ),
-          h('button#0.num',  { style: { display: pMstyle.x[2] }}, pMnums.x[2] ),
-          h('button#0.num',  { style: { display: pMstyle.x[3] }}, pMnums.x[3] ),
+          h('button#1.num',  { style: { display: pMstyle.x[1] }}, pMnums.x[1] ),
+          h('button#2.num',  { style: { display: pMstyle.x[2] }}, pMnums.x[2] ),
+          h('button#3.num',  { style: { display: pMstyle.x[3] }}, pMnums.x[3] ),
           h('br'),
           h('button#4.op', 'add'),
           h('button#5.op', 'subtract'),
@@ -856,32 +858,26 @@ code.e7,
 code.e7x,    
 h('h3', ' The Monad Laws '), 
 h('p', ' In the following discussion, "x == y" signifies that the expression x == y returns true. Let J be the collection of all Javascript values, including functions, instances of Monad, etc, and let F be the collection of all functions mapping values in J to instances of Monad with references (names) matching their ids; that is, with window[id] == m.id for some id which is a valid es2015 variable name. The collection of all such instances of Monad along and all of the functions in F is called "M". For any instances of Monad m, m1, and m2 in M and any functions f and g in F, the following relationships follow easily from the definition of Monad: '), 
-h('div.bh3', 'Left Identity ' ),
-h('pre.turk', `    equals( m.ret(v, ...args).bnd(f, ...args), f(v, ...args) )    
-    equals( ret(v, ...args).bnd(f, ...args), f(v, ...args) ) 
-    Examples: equals( m.ret(3).bnd(cube), cube(3) )  Tested and verified  
-    equals( ret(3).bnd(cube), cube(3) )     Tested and verified
+h('div', 'Left Identity ' ),
+h('pre.turk', `    m.ret(v, ...args).bnd(f, ...args).x == f(v, ...args).x   
+    ret(v, ...args).bnd(f, ...args).x == f(v, ...args).x 
+    Examples: m.ret(3).bnd(cube).x == cube(3).x  Tested and verified  
+    ret(3).bnd(cube).x == cube(3).x     Tested and verified
     Haskell monad law: (return x) >>= f \u2261 f x  ` ),
-h('div.bh3', ' Right Identity  ' ),  
-h('pre.turk', `    equals(m.bnd(m.ret), m)      Tested and verified 
+h('div#discussion', ' Right Identity  ' ),  
+h('pre.turk', `    m.bnd(m.ret) == m      Tested and verified 
     m.bnd(m.ret) === m   Tested and verified
-    equals(m.bnd(ret, 'm'), m)  Tested and verified
+    m.bnd(ret) == m  Tested and verified
     Haskell monad law: m >>= return \u2261 m `  ),
-    h('div.bh3', ' Commutivity  ' ),  
-    h('pre.turk', `    equals( m.bnd(f1, ...args).bnd(f2, ...args), m.bnd(v => f1(v, ...args).bnd(f2, ...args)) ) 
-    Example: equals( m.ret(0).bnd(add, 3).bnd(cube), 
-    m.ret(0).bnd(v => add(v,3).bnd(cube)) )  Tested amd verified
+    h('div', ' Commutivity  ' ),  
+    h('pre.turk', `    m.bnd(f1, ...args).bnd(f2, ...args).x == m.bnd(v => f1(v, ...args).bnd(f2, ...args)).x 
+    Example: m.ret(0).bnd(add, 3).bnd(cube).x == 
+    m.ret(0).bnd(v => add(v,3).bnd(cube)).x  Tested amd verified
     Haskell monad law: (m >>= f) >>= g \u2261 m >>= ( \\x -> (f x >>= g) ) `),
-    h('p', ' where equals is defined as: '),
-    code.equals,
-h('p#discussion', ' and ' ),
-h('pre.turk', `f \u2261 g` ),
-h('span', ' means f x == g x for all Haskell values x. ' ),
-h('br' ),    
-h('br' ),    
 h('a', { props: { href: '#top' } }, 'Back To The Top'),
 h('h3', ' Disussion ' ),
-h('p', ' The function equals() was used because the == and === operators on objects check for location in memory, not equality of attributes and equivalence of methods. If the left and right sides of predicates create new instances of m, then the left side m and the right side m wind up in different locations in memory and the == operator returns false. So we expect m.ret(3) == m.ret(3) to return false, and it does. The question we want answered is this: Can the left side be substituted for the right side and vice versa? That question is answered by equals() - and also by \u2261. '),
+h('pre.turk', `f \u2261 g` ),
+h('span', ' means f x == g x for all Haskell values x. That Haskell equivalence test is the applied to Javascript expressions in the above examples. Neither the == nor the === operator would provide useful information in this context. These operators test objects for location in memory. If the left and right sides of predicates create new instances of m, then the left side m and the right side m wind up in different locations in memory and the == operator returns false. So we expect m.ret(3) == m.ret(3) to return false, and it does. The question we want answered is the question \u2261 answers in Haskell: Can the left and right sides be substituted for one another and still yield the same results.'),
 
 h('span.tao', ' The Haskell programming language borrowed the name "monad" from the branch of mathematics known as category theory. This was apropriate because Haskell monads, along with the function return and the operator >>=, behave like category theory monads, and the inspiration for them came out of category theory. For Haskell monads to be category theory monads, they would need to reside in a category-theory category. It is generally acknowledged within the Haskell community that they do not.  See ' ),
 h('a', { props: { href: "http://math.andrej.com/2016/08/06/hask-is-not-a-category/", target: "_blank" } }, 'Hask is not a category.'),
