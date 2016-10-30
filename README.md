@@ -30,7 +30,7 @@ The code here is not annotated, but detailed examinations of the code behind the
 ```
 In most chains of computations, the arguments provided to each link's bnd() method are functions that return instances of Monad. The stand-alone ret() function does only one thing; it creates new Monad instances. Here are some examples of functions that return instances of Monad:
 ```javascript
-    function ret(v, id = 'default') {
+    function ret(v, id = 'generic') {
       return new Monad(v, id);
     } 
 
@@ -91,16 +91,83 @@ where equals is defined as:
     }  
 ```    
 [Back to the top](#back)
-# ##Discussion
-The function equals() was used because the == and === operators on objects check for location in memory, not equality of attributes and equivalence of methods. If the left and right sides of predicates create new instances of m, then the left side m and the right side m wind up in different locations in memory and the == operator returns false. So we expect m.ret(3) == m.ret(3) to return false. What concerns us is the equivalence of both sides of a comparison; that is, can the left side be substituted for the right side and vice versa.
+# ##Discussiono
 
-Tests in the JS-monads-mutableInstances branch at the Github repository produce results closer to what we would expect in mathematics. For example: m.ret(7) == m.ret(7) returns true in JS-monads-mutableIntances but false in JS-monads-stable, the master branch. But it would be folly to give up immutability for the sake of making unimportant comparisons come out "right". equals(m.ret(7), m.ret(7)) tells us that m.ret(7) will yield a result that performs consistenly any time it is executed. and that is all that is important. Similarly, equals(ret(3).bnd(cube), cube(3)) tells us that ret(3).bnd(cube) and cube(3) yield results that will perform identically, so they can be substituted for one another.
 
-In Haskell, x ≡ y means that you can replace x with y and vice-versa, and the behaviour of your program will not change. That is what "equals(x, y)" means in the context of demonstrating that instances of Monad in M obey the Javascript equivalent of the Haskell monad laws. The Monad ret() (the function and the method) and bnd() methods provide functionality similar to the Haskell monad return function and >>= operator. 
 
-Haskell monads are not category theory monads. To begin with, they don't even reside in a category. See: http://math.andrej.com/2016/08/06/hask-is-not-a-category. Nevertheless, blogs abound perpetuating the Haskell mystique that, as one blogger wrote, "There exists a "Haskell category", of which the objects are Haskell types, and the morphisms from types a to b are Haskell functions of type a -> b." The nLab wiki page states "There is a category, Hask, whose objects are Haskell types and whose morphisms are extensionally identified Haskell functions.", and the first line of the Haskell Wiki https://wiki.haskell.org/Hask states "Hask is the category of Haskell types and functions." but at least it goes on to demonstrate that Hask is not a category theory category.
+I experimented with several definitions of Monad during the investigations that led to the current one. This version's bnd() method re-assigns the calling monad's identifyer (variable name) without clobbering previous versions with the same name. For example, m.bnd(cube) re-assigns "m" to the returned monad, which has an x attribute that is the calling monad's x attribute cubed. If the previous version is an array element, an object attribute, or has a reference to it, it persists as it was, with its x attribute unchanged. That feature is illustrated in the screen shot (below). Here are the functions associated with the screen shots:
+```javascript
+    function test10 () {
+     m.ret(4).bnd(m1.ret).bnd(mult,100)
+     .bnd(m2.ret).bnd(square)
+     .bnd(m3.ret).bnd(add,-m3.x + 3).bnd(mult,100)
+     .bnd(m4.ret).bnd(square)
+     .bnd(m5.ret).bnd(add,m3.x) 
+     .bnd(m6.ret).bnd(sqroot)
+     .bnd(m7.ret).bnd(() => { 
+       mMar10.ret([m, m1, m2, m3, m4, m5, m6, m7]); 
+       console.log('The square root of the sum of ', m2.x,
+         ' squared and ', m4.x, ' squared is ', m7.x); });
+     return mMar10;
+   }  
 
-It is true that Haskell monads obey rules that are Haskell translations of the structure-preserving rules about functors and natural transformations in the category-theoretic monad. I have demonstrated that the elements of M (defined above) obey a Javascript version of these same rules. This suggests that instances of Monad can be expected to be versitile and robust in production. The smoothly functioning game and todo list, along with the demonstratons that appear later on this page, reinforce this expectation.
+   function test11 () {
+     m.ret(4).bnd(v => 
+     ret(v).bnd(m1.ret).bnd(mult,100)
+     .bnd(m2.ret).bnd(square)
+     .bnd(m3.ret).bnd(add,-m3.x + 3).bnd(mult,100)
+     .bnd(m4.ret).bnd(square)
+     .bnd(m5.ret).bnd(add,m3.x) 
+     .bnd(m6.ret).bnd(sqroot)
+     .bnd(m7.ret).bnd(() => { 
+       mMar11.ret([m, m1, m2, m3, m4, m5, m6, m7]);
+       console.log('The square root of the sum of ', m2.x,
+         ' squared and ', m4.x, ' squared is ', m7.x); }));
+     return mMar11;
+   }  
+```   
+The screen shot(below) demonstrates two things:
+
+  (1) Immutability. When some named monads are superseded by fresh instantiations, 
+      previous instances stored in an array do not change.
+  (2) Fine grained control. The function test10() causes m.x to have 
+      the final value of the computation.
+      The function test11() is almost identical to test10(), but m steps
+      back and sends its value to ret(), creating an instance of Monad
+      named "generic" (see the definition(above) of ret), and generic initiates the computation sequence, 
+      resulting in generic.x == 500, and still m.x == 4 - no change.  
+In a similar function, m might obtain its value from a websocket or user input. The coder might want to preserve m for further use, might have a use for m with the final value, or might not care what value m has after the computation is finished. Here is the screen shot, taken in the Chrome console, comparing the monads returned by test10() and test11().
+
+
+The Monad Laws
+
+In the following discussion, "x == y" signifies that the expression x == y returns true. Let J be the collection of all Javascript values, including functions, instances of Monad, etc, and let F be the collection of all functions mapping values in J to instances of Monad with references (names) matching their ids; that is, with window[id] == m.id for some id which is a valid es2015 variable name. The collection of all such instances of Monad along and all of the functions in F is called "M". For any instances of Monad m, m1, and m2 in M and any functions f and g in F, the following relationships follow easily from the definition of Monad:
+
+Left Identity
+    m.ret(v, ...args).bnd(f, ...args).x == f(v, ...args).x   
+    ret(v, ...args).bnd(f, ...args).x == f(v, ...args).x 
+    Examples: m.ret(3).bnd(cube).x == cube(3).x  Tested and verified  
+    ret(3).bnd(cube).x == cube(3).x     Tested and verified
+    Haskell monad law: (return x) >>= f ≡ f x  
+Right Identity
+    m.bnd(m.ret) == m      Tested and verified 
+    m.bnd(m.ret) === m   Tested and verified
+    m.bnd(ret) == m  Tested and verified
+    Haskell monad law: m >>= return ≡ m 
+Commutivity
+    m.bnd(f1, ...args).bnd(f2, ...args).x == m.bnd(v => f1(v, ...args).bnd(f2, ...args)).x 
+    Example: m.ret(0).bnd(add, 3).bnd(cube).x == 
+    m.ret(0).bnd(v => add(v,3).bnd(cube)).x  Tested amd verified
+    Haskell monad law: (m >>= f) >>= g ≡ m >>= ( \x -> (f x >>= g) ) 
+
+###Disussion
+
+The Haskell statement f ≡ g means that f x == g x for all Haskell values x of the appropriate type. That is the test applied to Javascript expressions in "Monad Laws" section (above). Neither the == nor the === operator would provide useful information about the behavior of instances of Monad, which are objects. Those operators test objects for location in memory. If the left and right sides of predicates create new instances of m, then the left side m and the right side m wind up in different locations in memory. So we expect m.ret(3) == m.ret(3) to return false, and it does. The question we want answered is the question ≡ answers in Haskell: Can the left and right sides be substituted for one another and still yield the same results.
+
+The Haskell programming language borrowed the term "monad" from the branch of mathematics known as category theory. This was apropriate because Haskell monads, along with the function return and the operator >>=, behave like category theory monads, and the inspiration for them came out of category theory. For Haskell monads to be category theory monads, they would need to reside in a category-theory category. It is an established fact that they do not, although the Haskell mystique tends to give the impression that they do. See Hask is not a category.
+
+Attempts have been made to define a Haskell category, usually with special constraints, omitted features, and sometimes with definitions of morphisms that are not Haskell functions. Succeeding in that endeavor would be the first step toward proving that Haskell monads are, in some contrived context, category-theory monads. Devising such a scheme might be an instructive academic excercise, but I don't see how it could be of any value beyond that. Imitating definitions and patterns found in category theory, as Haskell does in defining the type classes functor, monoid, and monad, was a stroke of genius that vastly enriched the Haskell programming language. These category theory patterns are less needed, but neverthless useful, in Javascript. Code that adheres to them tends to be robust and versitile.
+
 ##MonadItter
 
 MonadItter instances do not have monadic properties, but they facilitate the work of monads. Here's how they work:
@@ -114,9 +181,6 @@ const MonadItter = function ()  {
 };
 ```
 As shown later in the online demonstration, MonadItter instances control the routing of incoming websockets messages and the flow of action in the simulated dice game. In one of the demonstrations, they behave much like ES2015 iterators. I prefer them over ES2015 iterators. They can also help to provide promises-like functionality without promises.
-
-G
-
 
 ###Traversal of the dice game history.
 
