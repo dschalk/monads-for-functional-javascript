@@ -31,7 +31,7 @@ input {
   font-size: 18px;
 }
 
-#image {
+.image {
   height: 145%;
   width: 145%;
 }
@@ -155,7 +155,16 @@ h3 {
   color: #ff0000;
   font-size: 16px;
 }
-
+.turk5 {
+  margin: 1%;
+  color: #ff7fac;
+  font-size: 16px;
+}
+.turk6 {
+  margin: 1%;
+  color: #fcff7f;
+  font-size: 16px;
+}
 .turk {
   margin: 1%;
   color: #00e9ff;

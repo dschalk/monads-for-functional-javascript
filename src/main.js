@@ -7,7 +7,7 @@ import {create, merge} from 'most';
 import {h, p, span, h1, h2, h3, pre, br, div, label, input, hr, makeDOMDriver} from '@motorcycle/dom';
 import code from './code.js';
 
-console.log('I cannot explain it XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX ');
+console.log('I cannot explain it. So great the mystery. So amazing this univers');
 var Greeter = (function () {
     function Greeter(message) {
         this.greeting = message;
@@ -856,6 +856,20 @@ code.e1,
 h('p', ' These functions can be used with instances of Monad in many ways, for example: '),
 code.e7,    
 code.e7x,    
+h('p', ' I experimented with several definitions of Monad during the investigations that led to the current one. This version\'s bnd() method re-assigns the calling monad\'s identifyer (variable name) without clobbering previous versions with the same name. For example, m.bnd(cube) re-assigns "m" to the returned monad, which has an x attribute that is the calling monad\'s x attribute cubed. If the previous version is an array element, an object attribute, or has a reference to it, it persists as it was, with its x attribute unchanged. That feature is illustrated in the screen shot (below). Here are the functions associated with the screen shots:' ),
+    code.test10_11,
+h('p', ' The screen shot(below) demonstrates two things: ' ),
+h('pre.turk6', 
+`  (1) Immutability. When some named monads are superseded by fresh instantiations, 
+      previous instances stored in an array do not change.
+  (2) Fine grained control. The function test10() causes m.x to have 
+      the final value of the computation.
+      The function test11() is almost identical to test10(), but m steps
+      back and sends its value to ret(), creating an instance of Monad
+      named "generic" (see the definition(above) of ret), and generic initiates the computation sequence, 
+      resulting in generic.x == 500, and still m.x == 4 - no change.  ` ), 
+h('p', ' In a similar function, m might obtain its value from a websocket or user input. The coder might want to preserve m for further use, might have a use for m with the final value, or might not care what value m has after the computation is finished. Here is the screen shot, taken in the Chrome console, comparing the monads returned by test10() and test11(). ' ),   
+h('img.image', {props: {src: "Immutable_a.png"}}  ),   
 h('h3', ' The Monad Laws '), 
 h('p', ' In the following discussion, "x == y" signifies that the expression x == y returns true. Let J be the collection of all Javascript values, including functions, instances of Monad, etc, and let F be the collection of all functions mapping values in J to instances of Monad with references (names) matching their ids; that is, with window[id] == m.id for some id which is a valid es2015 variable name. The collection of all such instances of Monad along and all of the functions in F is called "M". For any instances of Monad m, m1, and m2 in M and any functions f and g in F, the following relationships follow easily from the definition of Monad: '), 
 h('div', 'Left Identity ' ),
@@ -876,12 +890,16 @@ h('pre.turk', `    m.bnd(m.ret) == m      Tested and verified
     Haskell monad law: (m >>= f) >>= g \u2261 m >>= ( \\x -> (f x >>= g) ) `),
 h('a', { props: { href: '#top' } }, 'Back To The Top'),
 h('h3', ' Disussion ' ),
-h('pre.turk', `f \u2261 g` ),
-h('span', ' means f x == g x for all Haskell values x. That Haskell equivalence test is the applied to Javascript expressions in the above examples. Neither the == nor the === operator would provide useful information in this context. These operators test objects for location in memory. If the left and right sides of predicates create new instances of m, then the left side m and the right side m wind up in different locations in memory and the == operator returns false. So we expect m.ret(3) == m.ret(3) to return false, and it does. The question we want answered is the question \u2261 answers in Haskell: Can the left and right sides be substituted for one another and still yield the same results.'),
-
-h('span.tao', ' The Haskell programming language borrowed the name "monad" from the branch of mathematics known as category theory. This was apropriate because Haskell monads, along with the function return and the operator >>=, behave like category theory monads, and the inspiration for them came out of category theory. For Haskell monads to be category theory monads, they would need to reside in a category-theory category. It is generally acknowledged within the Haskell community that they do not.  See ' ),
+h('span.tao', ' The Haskell statement ' ),    
+h('span.turk6', `f \u2261 g` ),
+h('span', ' means that f x == g x for all Haskell values x of the appropriate type. That is the test applied to Javascript expressions in "Monad Laws" section (above). Neither the == nor the === operator would provide useful information about the behavior of instances of Monad, which are objects. Those operators test objects for location in memory. If the left and right sides of predicates create new instances of m, then the left side m and the right side m wind up in different locations in memory. So we expect m.ret(3) == m.ret(3) to return false, and it does. The question we want answered is the question \u2261 answers in Haskell: Can the left and right sides be substituted for one another and still yield the same results.'),
+h('br' ),
+h('br' ),
+h('span.tao', ' The Haskell programming language borrowed the term "monad" from the branch of mathematics known as category theory. This was apropriate because Haskell monads, along with the function return and the operator >>=, behave like category theory monads, and the inspiration for them came out of category theory. For Haskell monads to be category theory monads, they would need to reside in a category-theory category. It is an established fact that they do not, although the Haskell mystique tends to give the impression that they do. See ' ),
 h('a', { props: { href: "http://math.andrej.com/2016/08/06/hask-is-not-a-category/", target: "_blank" } }, 'Hask is not a category.'),
-h('span', ' Attempts have been made to find a subset of Haskell, usually with  special constraints and new definitions of morphisms, that is an actual category. That would be the first step in finding a way to prove that Haskell monads are, at least in some contrived context, category-theory monads. Devising such a thing might be an instructive academic excercise, but I don\'t see how it could be of any value beyond that. Imatating definitions and patterns found in category theory, as Haskell does in defining the type classes functor, monoid, and monad, was a stroke of genius that vastly enriched the Haskell programming language. These are useful patterns in Javascript too.'  ), 
+h('br' ),
+h('br' ),
+h('span', ' Attempts have been made to define a Haskell category, usually with special constraints, omitted features, and sometimes with definitions of morphisms that are not Haskell functions. Succeeding in that endeavor would be the first step toward proving that Haskell monads are, in some contrived context, category-theory monads. Devising such a scheme might be an instructive academic excercise, but I don\'t see how it could be of any value beyond that. Imitating definitions and patterns found in category theory, as Haskell does in defining the type classes functor, monoid, and monad, was a stroke of genius that vastly enriched the Haskell programming language. These category theory patterns are less needed, but neverthless useful, in Javascript. Code that adheres to them tends to be robust and versitile.'  ), 
     
  // **************************************************************************** END MONAD       START MonadItter   
 h('h2', 'MonadItter'),
@@ -998,7 +1016,7 @@ h('a', { props: { href: '#top' } }, 'Back To The Top'),
   h('p', ' Next, I tried to define test2 in the Chrome developer scratch pad, which runs in the Chrome developer tools. Like the console, it is accessable by pressing F12 while in the running application in Chrome. Firefox provides similar tools. The attempt to define test2 resulted in the sequence of reports shown in the screenshot below. I defined test2 in monad.js, which loads as a script in the index.html file. The application loaded successfully, and when I looked in the console, I saw the same series of reports (screenshot below). When I entered test2 in the console, 0 was displayed. That was the value of the MonadE instance "a" when the error occurred. Here is test2 and the screenshot: ' ),  
     code.screenshot2,
   h('br'),
-  h('img#image', {props: {src: "MonadE_a.png"}}  ),   
+  h('img.image', {props: {src: "MonadE_a.png"}}  ),   
   h('br'),
   h('br'),
   h('div.tao1', ' Here are the definitions of MonadE and the functions used in the demonstration: ' ),

@@ -12,12 +12,16 @@ The server is a modified clone of the Haskell Wai Websockets server. Haskell pat
 The code here is not annotated, but detailed examinations of the code behind the multiplayer simulated dice game, persistent todo list, chat feature, and several other demonstrations can be found at [http://schalk.net:3055](http://schalk.net:3055), where the code is running online. 
 ## Basic Monad    
 ```javascript    
-    var Monad = function Monad(z = 0, g = 'generic') {
+    var Monad = function Monad(z = 42, g = 'generic') {
       var _this = this;
       this.x = z;
       this.id = g;
       this.bnd = function (func, ...args) {
-        return func(_this.x, ...args)
+        var m = func(_this.x, ...args)
+        if (m instanceof Monad) {
+          return window[_this.id] = new Monad(m.x, _this.id);
+        }
+        else return m;
       };
       this.ret = function (a) {
         return window[_this.id] = new Monad(a,_this.id);

@@ -7,38 +7,42 @@ var observer = sub.observer;
 var stream = sub.stream;
 */
 
-var Monad = function Monad(z) {
-    var _this = this;
-
-    var g = arguments.length <= 1 || arguments[1] === undefined ? 'anonymous' : arguments[1];
-
-    this.id = g;
-    this.x = z;
-    this.bnd = function (func) {
-        for (var _len = arguments.length, args = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
-            args[_key - 1] = arguments[_key];
-        }
-
-        return func.apply(undefined, [_this.x].concat(args));
-    };
-    this.ret = function (a) {
-        return window[_this.id] = new Monad(a, _this.id);
-    };
+var Monad = function Monad(z = 42, g = 'generic') {
+  var _this = this;
+  this.x = z;
+  this.id = g;
+  this.bnd = function (func, ...args) {
+    var m = func(_this.x, ...args)
+    if (m instanceof Monad) {
+      return window[_this.id] = new Monad(m.x, _this.id);
+    }
+    else return m;
+  };
+  this.ret = function (a) {
+    return window[_this.id] = new Monad(a,_this.id);
+  };
 };
 
-var mMname = new Monad('Fred', 'mMname');
+function ret2(v, id = 'ret2') {
+  window[id] = new MonadE(v, id, []);
+  return window[id];
+}
 
-const monad = h('pre', {style: {color: '#AFEEEE' }}, `    var Monad = function Monad(z = 0, g = 'generic') {
+var monad = h('pre.turk',  `    var Monad = function Monad(z = 42, g = 'generic') {
       var _this = this;
       this.x = z;
       this.id = g;
       this.bnd = function (func, ...args) {
-        return func(_this.x, ...args)
+        var m = func(_this.x, ...args)
+        if (m instanceof Monad) {
+          return window[_this.id] = new Monad(m.x, _this.id);
+        }
+        else return m;
       };
       this.ret = function (a) {
         return window[_this.id] = new Monad(a,_this.id);
       };
-    }; ` )
+    };  `  )
 
 const monadIt = h('pre', {style: {color: '#AFEEEE' }}, `  const MonadItter = () => {
     this.p = function () {};
@@ -787,11 +791,11 @@ var examples2 = h('pre',  `
     return ret(x);
   }  `  )
 
-var e1 = h('pre.turk',  `  function ret(v, id = 'default') {
+var e1 = h('pre.turk',  `  function ret(v, id = 'generic') {
     window[id] = new Monad(v, id);
     return window[id];
   }
-  
+
   function cube (v, id) {
     return ret(v * v * v);
   };
@@ -1139,11 +1143,37 @@ var screenshot2= h('pre.turk',  `  test2 = ret2(0,'a')
       ' squared and ' + b.getx() + ' squared is ' + e.getx(), 'e')
     .getx()  `  )
 
-var p5 = h('pre',  `  
-`  )
+var test10_11 = h('pre.turk5',  `    function test10 () {
+     m.ret(4).bnd(m1.ret).bnd(mult,100)
+     .bnd(m2.ret).bnd(square)
+     .bnd(m3.ret).bnd(add,-m3.x + 3).bnd(mult,100)
+     .bnd(m4.ret).bnd(square)
+     .bnd(m5.ret).bnd(add,m3.x) 
+     .bnd(m6.ret).bnd(sqroot)
+     .bnd(m7.ret).bnd(() => { 
+       mMar10.ret([m, m1, m2, m3, m4, m5, m6, m7]); 
+       console.log('The square root of the sum of ', m2.x,
+         ' squared and ', m4.x, ' squared is ', m7.x); });
+     return mMar10;
+   }  
 
-var p7 = h('pre',  `  
-`  )
+   function test11 () {
+     m.ret(4).bnd(v => 
+     ret(v).bnd(m1.ret).bnd(mult,100)
+     .bnd(m2.ret).bnd(square)
+     .bnd(m3.ret).bnd(add,-m3.x + 3).bnd(mult,100)
+     .bnd(m4.ret).bnd(square)
+     .bnd(m5.ret).bnd(add,m3.x) 
+     .bnd(m6.ret).bnd(sqroot)
+     .bnd(m7.ret).bnd(() => { 
+       mMar11.ret([m, m1, m2, m3, m4, m5, m6, m7]);
+       console.log('The square root of the sum of ', m2.x,
+         ' squared and ', m4.x, ' squared is ', m7.x); }));
+     return mMar11;
+   }  `  )
+
+var test = h('pre',  `  
+  `  )
 
 var p6 = h('pre',  `  
 `  )
@@ -1153,7 +1183,7 @@ var p9 = h('pre',  `
 
 
 
-  export default { screenshot1, screenshot2, monadE, numClick1, numClick2, mMZ10, test3, travMonad, monad, equals, fmap, opM, e1, e2, e2x, e3, e4, e4x, e6, e6x, e7, e7x, driver, messages, monadIt, MonadSet, updateCalc, arrayFuncs, nums, cleanup, ret, C42, newTask, process, mM$task, colorClick, edit, testZ, quad, runTest, todoStream, inc, seed,  add, MonadState, primesMonad, fibsMonad, primeFibInterface, tr3, fpTransformer, factorsMonad, factorsInput, playerMonad, promise, promiseSnippet, timeout, timeoutSnippet, examples, examples2, async }
+  export default { test10_11, screenshot1, screenshot2, monadE, numClick1, numClick2, mMZ10, test3, travMonad, monad, equals, fmap, opM, e1, e2, e2x, e3, e4, e4x, e6, e6x, e7, e7x, driver, messages, monadIt, MonadSet, updateCalc, arrayFuncs, nums, cleanup, ret, C42, newTask, process, mM$task, colorClick, edit, testZ, quad, runTest, todoStream, inc, seed,  add, MonadState, primesMonad, fibsMonad, primeFibInterface, tr3, fpTransformer, factorsMonad, factorsInput, playerMonad, promise, promiseSnippet, timeout, timeoutSnippet, examples, examples2, async }
  
 
 

@@ -23,7 +23,7 @@ function Snownad (z, ID = 'default') {
   return ob;
 }
 
-var Monad = function Monad(z = 0, g = 'generic') {
+var Monad = function Monad(z = 42, g = 'generic') {
   var _this = this;
   this.x = z;
   this.id = g;
@@ -63,7 +63,7 @@ function get2 (m) {
   let v = m.bnd('x => x');  
   return v;
 }  
-
+var mMob = new Monad (0, 'mMob')
 var pMname = new Monad('1v65n$%pqw3*@#9', 'pMname');
 var pMgroup = new Monad('solo', 'pMgroup');
 var pMscore = new Monad(0, 'pMscore');
@@ -348,7 +348,7 @@ function sliceM(x, howmany) {
 
 var mMEa = new MonadE(0, 'mMEa');
 
-
+console.log('A MonadE instance running first without and nex with a reference error: ');
   ret2(0,'a')
   .bnd('add2',3, 'a')
   .bnd('mult2',100,'a')
@@ -721,14 +721,18 @@ function primes(n, ar) {
   var mMquad1 = new Monad('', 'mMquad1');
   var mMquad2 = new Monad('', 'mMquad2');
   var mMquad3 = new Monad('', 'mMquad3');
-  var m = new Monad([2], 'm');
-  var m1 = new Monad(0, 'm1');
-  var m2 = new Monad(0, 'm2');
-  var m3 = new Monad(0, 'm2');
-  var m4 = new Monad(0, 'm3');
-  var m5 = new Monad(0, 'm3');
-  var m6 = new Monad(0, 'm3');
-  var m7 = new Monad(0, 'm3');
+  var m = new Monad(42, 'm');
+  var m1 = new Monad(1, 'm1');
+  var m2 = new Monad(2, 'm2');
+  var m3 = new Monad(3, 'm3');
+  var m4 = new Monad(4, 'm4');
+  var m5 = new Monad(5, 'm5');
+  var m6 = new Monad(6, 'm6');
+  var m7 = new Monad(7, 'm7');
+  var m8 = new Monad(8, 'm8');
+  var m9 = new Monad(9, 'm9');
+  var m10 = new Monad(10, 'm10');
+  var m11 = new Monad(11, 'm11');
   var mMprime = new Monad([2], 'mMprime');
   var mMprime2 = new Monad([2], 'mMprime2');
   var mMprimes = new Monad([2], 'mMprimes');
@@ -1066,6 +1070,11 @@ function log(x,y) {
     return ret(x);
 };
 
+function logX(x,y) {
+    console.log(x)
+    return ret(x);
+};
+
 function acc (x, y, str) {
   return window[str] = new MonadAcc(x + y, str);
 }
@@ -1137,35 +1146,206 @@ var MonadAcc = function MonadAcc(z = 0, g = 'generic') {
 
 var acc1 = new MonadAcc('', 'acc1');
 
-console.log('accumulator',
-acc1.reset()
+console.log('Test of MonadAcc, a logging monad:\n ',
+acc1.reset().ret('The square root of the sum of ')
 .bnd(() => m.ret(3).bnd(mult,100)
-.bnd(acc1.ret)).ret(' squared plus ')
-.bnd(() => m2.ret(0).bnd(add,4).bnd(mult,100)
-.bnd(acc1.ret))
-.ret(' squared is ').bnd(() => m3.ret(Math.sqrt(m.x * m.x + m2.x * m2.x)).bnd(acc1.ret)).x,
-
-acc1.reset()
-.bnd(() => m.ret(3).bnd(mult,100)
-.bnd(acc1.ret)).ret(' squared plus ')
+.bnd(acc1.ret)).ret(' squared and ')
 .bnd(() => m2.ret(0).bnd(add,4).bnd(mult,100)
 .bnd(acc1.ret))
 .ret(' squared is ').bnd(() => m3.ret(m.x * m.x + m2.x * m2.x).bnd(sqroot).bnd(acc1.ret)).x);
 
 function acc (x, y, str) {
-  return window[str] = new MonadAcc(x + y, str);
+  return window[str] = new MonadAcc(x + y, str);0
 }
 
-console.log('log function');
+var mMob10 = new Monad ({}, 'mMob10');
+var mMob11 = new Monad ([], 'mMob11');
+var mMar10 = new Monad ([], 'mMar10');
+var mMar11 = new Monad ([], 'mMar11');
+var ob10;
+var ob11;
+var ob12;
+m.ret(4), m1.ret(1), m2.ret(2), m3.ret(3),
+  m4.ret(4), m5.ret(5), m6.ret(6), m7.ret(7), m8.ret(8);
 
-m.ret('The square root of the sum of ').bnd(log,'').bnd(() => m.ret(3)
-.bnd(mult,100)
-.bnd(log,' squared plus ').bnd(m2.ret)
-.bnd(m3.ret).bnd(add, -m2.x).bnd(add,4).bnd(mult,100)
-.bnd(log, ' squared is  ').bnd(square).bnd(add,m2.bnd(square).x).bnd(sqroot).bnd(log,''))
+m.bnd(m1.ret).bnd(cube)       // m1.x == 4
+.bnd(m2.ret).bnd(add,-m2.x)  // m2.x == 64
+.bnd(m3.ret).bnd(add,3)      // m3.x == 0
+.bnd(m4.ret).bnd(cube)       // m4.x == 3
+.bnd(m5.ret).bnd(add,-m5.x)  // m5.x == 27
+.bnd(m6.ret).bnd(add,10)     // m6.x == 0
+.bnd(m7.ret).bnd(cube)       // m7.x == 10 
+.bnd(m8.ret).bnd(() => {     // m8.x == 1000
+mMar10.ret([m, m1, m2, m3, m4, m5, m6, m7, m8]); });
 
-var lg = function lg(x) {
-    console.log(x);
-    return ret(x);
-};
+/*
+console.log('.');
+console.log('.');
+console.log('m.x, m1.x, m2.x, m3.x, m4.x, m5.x, m6.x, m7.x, m8.x');
+console.log(m.x, m1.x, m2.x, m3.x, m4.x, m5.x, m6.x, m7.x, m8.x);
+console.log( `m.ret(4), m1.ret(1), m2.ret(2), m3.ret(3),0
+  m4.ret(4), m5.ret(5), m6.ret(6), m7.ret(7), m8.ret(8)` );
+test10()
+console.log('.');
+console.log('mMar10.x[0].x, mMar10.x[1].x, mMar10.x[2].x, mMar10.x[3].x, mMar10.x[4].x, mMar10.x[5].x, mMar10.x[6].x, mMar10.x[7].x, mMar10.x[8].x'); 
+console.log(mMar10.x[0].x, mMar10.x[1].x, mMar10.x[2].x, mMar10.x[3].x, mMar10.x[4].x, mMar10.x[5].x, mMar10.x[6].x, mMar10.x[7].x, mMar10.x[8].x); 
+console.log('.');
+console.log( `m.ret(4), m1.ret(1), m2.ret(2), m3.ret(3),
+  m4.ret(4), m5.ret(5), m6.ret(6), m7.ret(7), m8.ret(8)` );
+m.ret(4), m1.ret(1), m2.ret(2), m3.ret(3), m4.ret(4), m5.ret(5), m6.ret(6), m7.ret(7), m8.ret(8)
+console.log('.');
+console.log('m.x, m1.x, m2.x, m3.x, m4.x, m5.x, m6.x, m7.x, m8.x');
+console.log(m.x, m1.x, m2.x, m3.x, m4.x, m5.x, m6.x, m7.x, m8.x);
+console.log('.');
+console.log('mMar10.x[0].x, mMar10.x[1].x, mMar10.x[2].x, mMar10.x0[3].x, mMar10.x[4].x, mMar10.x[5].x, mMar10.x[6].x, mMar10.x[7].x, mMar10.x[8].x'); 
+console.log(mMar10.x[0].x, mMar10.x[1].x, mMar10.x[2].x, mMar10.x[3].x, mMar10.x[4].x, mMar10.x[5].x, mMar10.x[6].x, mMar10.x[7].x, mMar10.x[8].x); 
+console.log('.');
+function test10 () {
+  m.ret(4), m1.ret(1), m2.ret(2), m3.ret(3),
+    m4.ret(4), m5.ret(5), m6.ret(6), m7.ret(7), m8.ret(8)
 
+  m.bnd(m1.ret).bnd(cube)       // m1.x == 4
+  .bnd(m2.ret).bnd(add,-m2.x)  // m2.x == 64
+  .bnd(m3.ret).bnd(add,3)      // m3.x == 0
+  .bnd(m4.ret).bnd(cube)       // m4.x == 3
+  .bnd(m5.ret).bnd(add,-m5.x)  // m5.x == 27
+  .bnd(m6.ret).bnd(add,10)     // m6.x == 0
+  .bnd(m7.ret).bnd(cube)       // m7.x == 10 
+  .bnd(m8.ret).bnd(() => {     // m8.x == 1000
+mMar10.ret([m, m1, m2, m3, m4, m5, m6, m7, m8]); });
+  return mMar10;
+}  
+
+function test11 () {
+  m.ret(4);  // In an application, m might receive its value dynamically, 
+             //perhaps from a websocket or user input. 
+  ret(m.x).bnd(m1.ret).bnd(mult,100).bnd(square)
+  .bnd(m2.ret).bnd(add,-m2.x + 3).bnd(mult,100).bnd(square)
+  .bnd(m4.ret).bnd(add,m2.x) 
+  .bnd(m5.ret).bnd(sqroot)
+  .bnd(m6.ret).bnd(() => { 
+  mMar11.ret([m, m1, m2, m3, m4, m5, m6]); });
+  return mMar11;
+}  
+
+console.log('.');
+console.log('.');
+console.log('.');
+console.log('.');
+console.log('.');
+// console.log('test10',test10() );
+console.log('.');
+// console.log('m.x, m1.x, m2.x, m3.x, m4.x, m5.x, m6.x, m7.x, m8.x');
+// console.log(m.x, m1.x, m2.x, m3.x, m4.x, m5.x, m6.x, m7.x, m8.x);
+console.log('.');
+console.log('mMar10.x[0].x, mMar10.x[1].x, mMar10.x[2].x, mMar10.x[3].x, mMar10.x[4].x, mMar10.x[5].x, mMar10.x[6].x, mMar10.x[7].x, mMar10.x[8].x'); 
+console.log(mMar10.x[0].x, mMar10.x[1].x, mMar10.x[2].x, mMar10.x[3].x, mMar10.x[4].x, mMar10.x[5].x, mMar10.x[6].x, mMar10.x[7].x, mMar10.x[8].x); 
+console.log('.');
+console.log('.');
+console.log('.');
+console.log( `m.ret(4), m1.ret(1), m2.ret(2), m3.ret(3),
+  m4.ret(4), m5.ret(5), m6.ret(6), m7.ret(7), m8.ret(8)` );
+m.ret(4), m1.ret(1), m2.ret(2), m3.ret(3), m4.ret(4), m5.ret(5), m6.ret(6), m7.ret(7), m8.ret(8)
+
+*/
+function test10 () {
+  m.ret(4).bnd(m1.ret).bnd(mult,100)
+  .bnd(m2.ret).bnd(square)
+  .bnd(m3.ret).bnd(add,-m3.x + 3).bnd(mult,100)
+  .bnd(m4.ret).bnd(square)
+  .bnd(m5.ret).bnd(add,m3.x) 
+  .bnd(m6.ret).bnd(sqroot)
+  .bnd(m7.ret).bnd(() => { 
+    mMar10.ret([m, m1, m2, m3, m4, m5, m6, m7]); 
+    console.log('The square root of the sum of ', m2.x,
+      ' squared and ', m4.x, ' squared is ', m7.x); });
+  return mMar10;
+}  
+
+function test11 () {
+ // m.ret(4);  // In an application, m might receive its value dynamically, 
+             //perhaps from a websocket or user input. 
+  m.ret(4).bnd(v => 
+  ret(v).bnd(m1.ret).bnd(mult,100)
+  .bnd(m2.ret).bnd(square)
+  .bnd(m3.ret).bnd(add,-m3.x + 3).bnd(mult,100)
+  .bnd(m4.ret).bnd(square)
+  .bnd(m5.ret).bnd(add,m3.x) 
+  .bnd(m6.ret).bnd(sqroot)
+  .bnd(m7.ret).bnd(() => { 
+    mMar11.ret([m, m1, m2, m3, m4, m5, m6, m7]);
+    console.log('The square root of the sum of ', m2.x,
+      ' squared and ', m4.x, ' squared is ', m7.x); }));
+  return mMar11;
+}  
+
+console.log('.');
+console.log('test10 ', test10());
+console.log('m.x, m1.x, m2.x, m3.x, m4.x, m5.x, m6.x, m7.x');
+console.log(m.x, m1.x, m2.x, m3.x, m4.x, m5.x, m6.x, m7.x);
+console.log( `m.ret(4), m1.ret(1), m2.ret(2), m3.ret(3),0
+  m4.ret(4), m5.ret(5), m6.ret(6)` );
+m.ret(4), m1.ret(1), m2.ret(2), m3.ret(3), m4.ret(4),
+  m5.ret(5), m6.ret(6), m7.ret(7);
+console.log('m.x, m1.x, m2.x, m3.x, m4.x, m5.x, m6.x, m7.x');
+console.log(m.x, m1.x, m2.x, m3.x, m4.x, m5.x, m6.x, m7.x);                             // The monads have new values.
+console.log(`mMar10.x[0].x, mMar10.x[1].x, mMar10.x[2].x, mMar10.x[3].x,
+  mMar10.x[4].x, mMar10.x[5].x, mMar10.x[6].x`); 
+console.log(mMar10.x[0].x, mMar10.x[1].x, mMar10.x[2].x, mMar10.x[3].x, mMar10.x[4].x, mMar10.x[5].x, mMar10.x[6].x, mMar10.x[7].x); // The stored monads are unaffected.  m.x is the result of the computation.
+console.log('.');
+console.log('test11 ', test11());
+console.log('m.x, m1.x, m2.x, m3.x, m4.x, m5.x, m6.x, m7.x');
+console.log(m.x, m1.x, m2.x, m3.x, m4.x, m5.x, m6.x, m7.x);
+console.log( `m.ret(4), m1.ret(1), m2.ret(2), m3.ret(3),0
+  m4.ret(4), m5.ret(5), m6.ret(6)` );
+m.ret(4), m1.ret(1), m2.ret(2), m3.ret(3), m4.ret(4), m5.ret(5), m6.ret(6), m7.ret(7)
+console.log('m.x, m1.x, m2.x, m3.x, m4.x, m5.x, m6.x');                                
+console.log(m.x, m1.x, m2.x, m3.x, m4.x, m5.x, m6.x);                                    // The monads have new values.
+console.log(`mMar11.x[0].x, mMar11.x[1].x, mMar11.x[2].x, mMar11.x[3].x,
+  mMar11.x[4].x, mMar11.x[5].x, mMar11.x[6].x, mMar11.x[7].x`); 
+console.log(mMar11.x[0].x, mMar11.x[1].x, mMar11.x[2].x, mMar11.x[3].x, mMar11.x[4].x, mMar11.x[5].x, mMar11.x[6].x, mMar11.x[7].x);  // The stored monads do not change. m has its initial value
+console.log('.');
+console.log('.');
+console.log('.');
+console.log('cows and horses');
+/*
+console.log('mMar11.x[0].x, mMar11.x[1].x, mMar11.x[2].x, mMar11.x[3].x, mMar11.x[4].x, mMar11.x[5].x, mMar11.x[6].x'); 0
+console.log(mMar11.x[0].x, mMar11.x[1].x, mMar11.x[2].x, mMar11.x[3].x, mMar11.x[4].x, mMar11.x[5].x, mMar11.x[6].x); 
+console.log('.')
+console.log('.');
+console.log('.');
+console.log('.');
+console.log('.');
+console.log('.');
+console.log('.');
+console.log('.');
+console.log('.');
+console.log('.');
+console.log('.');
+console.log('.');
+console.log('.');
+console.log('.');
+
+
+
+
+
+console.log('m.x:', m.x, 'm1.x:', m1.x, 'm2.x:', m2.x, 'm3.x:', m3.x, 'm4.x:', m4.x,
+  'm5.x:', m5.x, 'm6.x', m6.x, 'm7.x:', m7.x, 'm8.x:', m8.x, 'm9.x:', m9.x)
+
+console.log('mMob10',mMob10)
+console.log('mMob11',mMob11)
+console.log('mMob11.x',mMob11.x)
+console.log('mMar10',mMar10)
+console.log('mMar10.x',mMar10.x)
+
+console.log('m.x:', m.x, 'm1.x:', m1.x, 'm2.x:', m2.x, 'm3.x:', m3.x, 'm4.x:', m4.x,
+  'm5.x:', m5.x, 'm6.x', m6.x, 'm7.x:', m7.x, 'm8.x:', m8.x, 'm9.x:', m9.x)
+
+console.log(ob10);
+
+mMob10.ret({'m': m.x, 'm1': m1.x, 'm2': m2.x, 'm3': m3.x, 'm4': m4.x,  'm5': m5.x, 'm6': m6.x, 'm7': m7.x, 'm8': m8.x, 'm9': m9.x});a
+mMob11.ret({'m': m, 'm1': m1, 'm2': m2, 'm3': m3, 'm4': m4,  'm5': m5, 'm6': m6, 'm7': m7, 'm8': m8, 'm9': m9}); 
+
+m.ret(420), m1.ret(1), m2.ret(2), m3.ret(3), m4.ret(4), m5.ret(5), m6.ret(6), m7.ret(7)
+*/
