@@ -860,14 +860,11 @@ h('p', ' I experimented with several definitions of Monad during the investigati
     code.test10_11,
 h('p', ' The screen shot (below) demonstrates two things: ' ),
 h('pre.turk6', 
-`  (1) Immutability. When some named monads are superseded by fresh instantiations, 
-      previous instances stored in an array do not change.
-  (2) Fine grained control. The function test10() causes m.x to have 
-      the final value of the computation.
-      The function test11() is almost identical to test10(), but m steps
-      back and sends its value to ret(), creating an instance of Monad
-      named "generic" (see the definition(above) of ret), and generic initiates the computation sequence, 
-      resulting in generic.x == 500, and still m.x == 4 - no change.  ` ), 
+`  (1) Immutability. When named monads are superseded by fresh instantiations, 
+      previous instances that have been stored in an array do not change.
+
+  (2) Convenient control. The monad m still has its initial value after test10() runs. 
+      Simply ppending ".bnd(m.ret)" to the end of the computation gives m its final value.  ` ), 
 h('p', ' In a similar function, m might obtain its value from a websocket or user input. The coder might want to preserve m for further use, might have a use for m with the final value, or might not care what value m has after the computation is finished. Here is the screen shot, taken in the Chrome console, comparing the monads returned by test10() and test11(). ' ),   
 h('img.image', {props: {src: "Immutable_a.png"}}  ),   
 h('h3', ' The Monad Laws '), 
