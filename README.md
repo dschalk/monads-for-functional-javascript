@@ -107,40 +107,41 @@ where equals is defined as:
     }  
 ```    
 [Back to the top](#back)
-# ##Discussiono
-
-
 
 I experimented with several definitions of Monad during the investigations that led to the current one. This version's bnd() method re-assigns the calling monad's identifyer (variable name) without clobbering previous versions with the same name. For example, m.bnd(cube) re-assigns "m" to the returned monad, which has an x attribute that is the calling monad's x attribute cubed. If the previous version is an array element, an object attribute, or has a reference to it, it persists as it was, with its x attribute unchanged. That feature is illustrated in the screen shot (below). Here are the functions associated with the screen shots:
 ```javascript
     function test10 () {
-     m.ret(4).bnd(m1.ret).bnd(mult,100)
-     .bnd(m2.ret).bnd(square)
-     .bnd(m3.ret).bnd(add,-m3.x + 3).bnd(mult,100)
-     .bnd(m4.ret).bnd(square)
-     .bnd(m5.ret).bnd(add,m3.x) 
-     .bnd(m6.ret).bnd(sqroot)
-     .bnd(m7.ret).bnd(() => { 
-       mMar10.ret([m, m1, m2, m3, m4, m5, m6, m7]); 
-       console.log('The square root of the sum of ', m2.x,
-         ' squared and ', m4.x, ' squared is ', m7.x); });
-     return mMar10;
+      m.ret(4).bnd(mult,100,'Mm1')
+      .bnd(square,'Mm2')
+      .bnd(add,-m2.x + 3,'Mm3')
+      .bnd(mult,100,'Mm4')
+      .bnd(square,'Mm5')
+      .bnd(add,m2.x,'Mm6') 
+      .bnd(sqroot,'Mm7')
+      .bnd(() => { 
+        mMar10.ret([m, m1, m2, m3, m4, m5, m6, m7]);
+        console.log('The square root of the sum of ', m1.x,
+          ' squared and ', m4.x, ' squared is ', m7.x); });
+      return mMar10;
+    }  
+    
+    function test11 () {
+      m.ret(4).bnd(v => 
+      ret(v)
+      .bnd(mult,100,'Mm1')
+      .bnd(square,'Mm2')
+      .bnd(add,-m2.x + 3,'Mm3')
+      .bnd(mult,100,'Mm4')
+      .bnd(square,'Mm5')
+      .bnd(add,m2.x,'Mm6') 
+      .bnd(sqroot,'Mm7').bnd(m.ret)
+      .bnd(() => { 
+        mMar11.ret([m, m1, m2, m3, m4, m5, m6, m7]);
+        console.log('The square root of the sum of ', m1.x,
+          ' squared and ', m4.x, ' squared is ', m7.x); }));
+      return mMar11;
    }  
-
-   function test11 () {
-     m.ret(4).bnd(v => 
-     ret(v).bnd(m1.ret).bnd(mult,100)
-     .bnd(m2.ret).bnd(square)
-     .bnd(m3.ret).bnd(add,-m3.x + 3).bnd(mult,100)
-     .bnd(m4.ret).bnd(square)
-     .bnd(m5.ret).bnd(add,m3.x) 
-     .bnd(m6.ret).bnd(sqroot)
-     .bnd(m7.ret).bnd(() => { 
-       mMar11.ret([m, m1, m2, m3, m4, m5, m6, m7]);
-       console.log('The square root of the sum of ', m2.x,
-         ' squared and ', m4.x, ' squared is ', m7.x); }));
-     return mMar11;
-   }  
+   
 ```   
 The screen shot(below) demonstrates two things:
 
@@ -154,6 +155,7 @@ The screen shot(below) demonstrates two things:
       resulting in generic.x == 500, and still m.x == 4 - no change.  
 In a similar function, m might obtain its value from a websocket or user input. The coder might want to preserve m for further use, might have a use for m with the final value, or might not care what value m has after the computation is finished. Here is the screen shot, taken in the Chrome console, comparing the monads returned by test10() and test11().
 
+![Alt text](Immutable_a.png?raw=true)
 
 The Monad Laws
 
