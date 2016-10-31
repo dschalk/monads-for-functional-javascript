@@ -4929,7 +4929,7 @@
 	  return window[id];
 	}
 
-	var monad = (0, _dom.h)('pre.turk', '    var Monad = function Monad(z = 42, g = \'generic\') {\n      var _this = this;\n      this.x = z;\n      this.id = g;\n      this.bnd = function (func, ...args) {\n        var m = func(_this.x, ...args)\n        if (m instanceof Monad) {\n          return window[_this.id] = new Monad(m.x, _this.id);\n        }\n        else return m;\n      };\n      this.ret = function (a) {\n        return window[_this.id] = new Monad(a,_this.id);\n      };\n    };  ');
+	var monad = (0, _dom.h)('pre.turk', '    var Monad = function Monad(z = 42, g = \'generic\') {\n      var _this = this;\n      this.x = z;\n      this.id = g;\n      this.bnd = function (func, ...args) {\n        var m = func(_this.x, ...args)\n        var mon;\n        if (m instanceof Monad) {\n          mon = testPrefix(args,_this.id); \n          return window[mon] = new Monad(m.x, mon);\n        }\n        else return m;\n      };\n      this.ret = function (a) {\n        return window[_this.id] = new Monad(a,_this.id);\n      };\n\n    function stripchars(string, chars) {\n      return string.replace(RegExp(\'[\'+chars+\']\',\'g\'), \'\');\n    }\n    \n    function testPrefix (x,y) {\n      var t = y;\n      if (Array.isArray(x)) {\n      x.some(v => {\n        if (typeof v == \'string\' && v.startsWith(\'MONAD\')) {\n          var pos = stripchars(v,\'MONAD\');\n          t = pos;\n        }\n      })\n      }\n      return t;\n    };  ');
 
 	var monadIt = (0, _dom.h)('pre', { style: { color: '#AFEEEE' } }, '  const MonadItter = () => {\n    this.p = function () {};\n    this.release = (...args) => this.p(...args);\n    this.bnd = func => this.p = func;\n  }; ');
 

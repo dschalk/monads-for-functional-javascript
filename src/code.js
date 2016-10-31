@@ -34,14 +34,32 @@ var monad = h('pre.turk',  `    var Monad = function Monad(z = 42, g = 'generic'
       this.id = g;
       this.bnd = function (func, ...args) {
         var m = func(_this.x, ...args)
+        var mon;
         if (m instanceof Monad) {
-          return window[_this.id] = new Monad(m.x, _this.id);
+          mon = testPrefix(args,_this.id); 
+          return window[mon] = new Monad(m.x, mon);
         }
         else return m;
       };
       this.ret = function (a) {
         return window[_this.id] = new Monad(a,_this.id);
       };
+
+    function stripchars(string, chars) {
+      return string.replace(RegExp('['+chars+']','g'), '');
+    }
+    
+    function testPrefix (x,y) {
+      var t = y;
+      if (Array.isArray(x)) {
+      x.some(v => {
+        if (typeof v == 'string' && v.startsWith('MONAD')) {
+          var pos = stripchars(v,'MONAD');
+          t = pos;
+        }
+      })
+      }
+      return t;
     };  `  )
 
 const monadIt = h('pre', {style: {color: '#AFEEEE' }}, `  const MonadItter = () => {

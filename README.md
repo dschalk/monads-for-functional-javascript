@@ -18,8 +18,10 @@ The code here is not annotated, but detailed examinations of the code behind the
       this.id = g;
       this.bnd = function (func, ...args) {
         var m = func(_this.x, ...args)
+        var mon;
         if (m instanceof Monad) {
-          return window[_this.id] = new Monad(m.x, _this.id);
+          mon = testPrefix(args,_this.id); 
+          return window[mon] = new Monad(m.x, mon);
         }
         else return m;
       };
@@ -27,6 +29,24 @@ The code here is not annotated, but detailed examinations of the code behind the
         return window[_this.id] = new Monad(a,_this.id);
       };
     };
+    
+    
+    function stripchars(string, chars) {
+      return string.replace(RegExp('['+chars+']','g'), '');
+    }
+    
+    function testPrefix (x,y) {
+      var t = y;
+      if (Array.isArray(x)) {
+      x.some(v => {
+        if (typeof v == 'string' && v.startsWith('MONAD')) {
+          var pos = stripchars(v,'MONAD');
+          t = pos;
+        }
+      })
+      }
+      return t;
+}
 ```
 In most chains of computations, the arguments provided to each link's bnd() method are functions that return instances of Monad. The stand-alone ret() function does only one thing; it creates new Monad instances. Here are some examples of functions that return instances of Monad:
 ```javascript

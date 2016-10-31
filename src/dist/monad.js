@@ -23,14 +23,41 @@ function Snownad (z, ID = 'default') {
   return ob;
 }
 
+// string.replace(RegExp('['+chars+']','g'), 
+
+
+function stripchars(string, chars) {
+  return string.replace(RegExp('['+chars+']','g'), '');
+}
+
+function testPrefix (x,y) {
+  var t = y;
+  if (Array.isArray(x)) {
+  x.some(v => {
+    if (typeof v == 'string' && v.startsWith('MONAD')) {
+      var pos = stripchars(v,'MONAD');
+      t = pos;
+    }
+  })
+  }
+  return t;
+}
+
+var jack = ['7554','abcdefghi', 'car', 'MONADm3']
+var c = testPrefix(jack)
+console.log(c)
+
+
 var Monad = function Monad(z = 42, g = 'generic') {
   var _this = this;
   this.x = z;
   this.id = g;
   this.bnd = function (func, ...args) {
     var m = func(_this.x, ...args)
+    var mon;
     if (m instanceof Monad) {
-      return window[_this.id] = new Monad(m.x, _this.id);
+      mon = testPrefix(args,_this.id); 
+      return window[mon] = new Monad(m.x, mon);
     }
     else return m;
   };
@@ -1179,73 +1206,72 @@ m.bnd(m1.ret).bnd(cube)       // m1.x == 4
 mMar10.ret([m, m1, m2, m3, m4, m5, m6, m7, m8]); });
 
 /*
-console.log('.');
-console.log('.');
-console.log('m.x, m1.x, m2.x, m3.x, m4.x, m5.x, m6.x, m7.x, m8.x');
-console.log(m.x, m1.x, m2.x, m3.x, m4.x, m5.x, m6.x, m7.x, m8.x);
-console.log( `m.ret(4), m1.ret(1), m2.ret(2), m3.ret(3),0
-  m4.ret(4), m5.ret(5), m6.ret(6), m7.ret(7), m8.ret(8)` );
-test10()
-console.log('.');
-console.log('mMar10.x[0].x, mMar10.x[1].x, mMar10.x[2].x, mMar10.x[3].x, mMar10.x[4].x, mMar10.x[5].x, mMar10.x[6].x, mMar10.x[7].x, mMar10.x[8].x'); 
-console.log(mMar10.x[0].x, mMar10.x[1].x, mMar10.x[2].x, mMar10.x[3].x, mMar10.x[4].x, mMar10.x[5].x, mMar10.x[6].x, mMar10.x[7].x, mMar10.x[8].x); 
-console.log('.');
-console.log( `m.ret(4), m1.ret(1), m2.ret(2), m3.ret(3),
-  m4.ret(4), m5.ret(5), m6.ret(6), m7.ret(7), m8.ret(8)` );
-m.ret(4), m1.ret(1), m2.ret(2), m3.ret(3), m4.ret(4), m5.ret(5), m6.ret(6), m7.ret(7), m8.ret(8)
-console.log('.');
-console.log('m.x, m1.x, m2.x, m3.x, m4.x, m5.x, m6.x, m7.x, m8.x');
-console.log(m.x, m1.x, m2.x, m3.x, m4.x, m5.x, m6.x, m7.x, m8.x);
-console.log('.');
-console.log('mMar10.x[0].x, mMar10.x[1].x, mMar10.x[2].x, mMar10.x0[3].x, mMar10.x[4].x, mMar10.x[5].x, mMar10.x[6].x, mMar10.x[7].x, mMar10.x[8].x'); 
-console.log(mMar10.x[0].x, mMar10.x[1].x, mMar10.x[2].x, mMar10.x[3].x, mMar10.x[4].x, mMar10.x[5].x, mMar10.x[6].x, mMar10.x[7].x, mMar10.x[8].x); 
-console.log('.');
-function test10 () {
-  m.ret(4), m1.ret(1), m2.ret(2), m3.ret(3),
-    m4.ret(4), m5.ret(5), m6.ret(6), m7.ret(7), m8.ret(8)
+csole.log('.');
+csole.log('.');
+csole.log('m.x, m1.x, m2.x, m3.x, m4.x, m5.x, m6.x, m7.x, m8.x');
+csole.log(m.x, m1.x, m2.x, m3.x, m4.x, m5.x, m6.x, m7.x, m8.x);
+csole.log( `m.ret(4), m1.ret(1), m2.ret(2), m3.ret(3),0
+ 4.ret(4), m5.ret(5), m6.ret(6), m7.ret(7), m8.ret(8)` );
+tt10()
+csole.log('.');
+csole.log('mMar10.x[0].x, mMar10.x[1].x, mMar10.x[2].x, mMar10.x[3].x, mMar10.x[4].x, mMar10.x[5].x, mMar10.x[6].x, mMar10.x[7].x, mMar10.x[8].x'); 
+csole.log(mMar10.x[0].x, mMar10.x[1].x, mMar10.x[2].x, mMar10.x[3].x, mMar10.x[4].x, mMar10.x[5].x, mMar10.x[6].x, mMar10.x[7].x, mMar10.x[8].x); 
+csole.log('.');
+csole.log( `m.ret(4), m1.ret(1), m2.ret(2), m3.ret(3),
+ 4.ret(4), m5.ret(5), m6.ret(6), m7.ret(7), m8.ret(8)` );
+met(4), m1.ret(1), m2.ret(2), m3.ret(3), m4.ret(4), m5.ret(5), m6.ret(6), m7.ret(7), m8.ret(8)
+csole.log('.');
+csole.log('m.x, m1.x, m2.x, m3.x, m4.x, m5.x, m6.x, m7.x, m8.x');
+csole.log(m.x, m1.x, m2.x, m3.x, m4.x, m5.x, m6.x, m7.x, m8.x);
+csole.log('.');
+csole.log('mMar10.x[0].x, mMar10.x[1].x, mMar10.x[2].x, mMar10.x0[3].x, mMar10.x[4].x, mMar10.x[5].x, mMar10.x[6].x, mMar10.x[7].x, mMar10.x[8].x'); 
+csole.log(mMar10.x[0].x, mMar10.x[1].x, mMar10.x[2].x, mMar10.x[3].x, mMar10.x[4].x, mMar10.x[5].x, mMar10.x[6].x, mMar10.x[7].x, mMar10.x[8].x); 
+csole.log('.');
+fction test10 () {
+ .ret(4), m1.ret(1), m2.ret(2), m3.ret(3),
+  m4.ret(4), m5.ret(5), m6.ret(6), m7.ret(7), m8.ret(8)
+ .bnd(m1.ret).bnd(cube)       // m1.x == 4
+ bnd(m2.ret).bnd(add,-m2.x)  // m2.x == 64
+ bnd(m3.ret).bnd(add,3)      // m3.x == 0
+ bnd(m4.ret).bnd(cube)       // m4.x == 3
+ bnd(m5.ret).bnd(add,-m5.x)  // m5.x == 27
+ bnd(m6.ret).bnd(add,10)     // m6.x == 0
+ bnd(m7.ret).bnd(cube)       // m7.x == 10 
+ bnd(m8.ret).bnd(() => {     // m8.x == 1000
+mr10.ret([m, m1, m2, m3, m4, m5, m6, m7, m8]); }  );
+ eturn mMar10;
+}
 
-  m.bnd(m1.ret).bnd(cube)       // m1.x == 4
-  .bnd(m2.ret).bnd(add,-m2.x)  // m2.x == 64
-  .bnd(m3.ret).bnd(add,3)      // m3.x == 0
-  .bnd(m4.ret).bnd(cube)       // m4.x == 3
-  .bnd(m5.ret).bnd(add,-m5.x)  // m5.x == 27
-  .bnd(m6.ret).bnd(add,10)     // m6.x == 0
-  .bnd(m7.ret).bnd(cube)       // m7.x == 10 
-  .bnd(m8.ret).bnd(() => {     // m8.x == 1000
-mMar10.ret([m, m1, m2, m3, m4, m5, m6, m7, m8]); });
-  return mMar10;
-}  
+fction test11 () {
+ .ret(4);  // In an application, m might receive its value dynamically, 
+           //perhaps from a websocket or user input. 
+ et(m.x).bnd(m1.ret).bnd(mult,100).bnd(square)
+ bnd(m2.ret).bnd(add,-m2.x + 3).bnd(mult,100).bnd(square)
+ bnd(m4.ret).bnd(add,m2.x) 
+ bnd(m5.ret).bnd(sqroot)
+ bnd(m6.ret).bnd(() => { 
+ Mar11.ret([m, m1, m2, m3, m4, m5, m6]); });
+ eturn mMar11;
+}
 
-function test11 () {
-  m.ret(4);  // In an application, m might receive its value dynamically, 
-             //perhaps from a websocket or user input. 
-  ret(m.x).bnd(m1.ret).bnd(mult,100).bnd(square)
-  .bnd(m2.ret).bnd(add,-m2.x + 3).bnd(mult,100).bnd(square)
-  .bnd(m4.ret).bnd(add,m2.x) 
-  .bnd(m5.ret).bnd(sqroot)
-  .bnd(m6.ret).bnd(() => { 
-  mMar11.ret([m, m1, m2, m3, m4, m5, m6]); });
-  return mMar11;
-}  
-
-console.log('.');
-console.log('.');
-console.log('.');
-console.log('.');
-console.log('.');
-// console.log('test10',test10() );
-console.log('.');
-// console.log('m.x, m1.x, m2.x, m3.x, m4.x, m5.x, m6.x, m7.x, m8.x');
-// console.log(m.x, m1.x, m2.x, m3.x, m4.x, m5.x, m6.x, m7.x, m8.x);
-console.log('.');
-console.log('mMar10.x[0].x, mMar10.x[1].x, mMar10.x[2].x, mMar10.x[3].x, mMar10.x[4].x, mMar10.x[5].x, mMar10.x[6].x, mMar10.x[7].x, mMar10.x[8].x'); 
-console.log(mMar10.x[0].x, mMar10.x[1].x, mMar10.x[2].x, mMar10.x[3].x, mMar10.x[4].x, mMar10.x[5].x, mMar10.x[6].x, mMar10.x[7].x, mMar10.x[8].x); 
-console.log('.');
-console.log('.');
-console.log('.');
-console.log( `m.ret(4), m1.ret(1), m2.ret(2), m3.ret(3),
-  m4.ret(4), m5.ret(5), m6.ret(6), m7.ret(7), m8.ret(8)` );
-m.ret(4), m1.ret(1), m2.ret(2), m3.ret(3), m4.ret(4), m5.ret(5), m6.ret(6), m7.ret(7), m8.ret(8)
+csole.log('.');
+csole.log('.');
+csole.log('.');
+csole.log('.');
+csole.log('.');
+/console.log('test10',test10() );
+csole.log('.');
+/console.log('m.x, m1.x, m2.x, m3.x, m4.x, m5.x, m6.x, m7.x, m8.x');
+/console.log(m.x, m1.x, m2.x, m3.x, m4.x, m5.x, m6.x, m7.x, m8.x);
+csole.log('.');
+csole.log('mMar10.x[0].x, mMar10.x[1].x, mMar10.x[2].x, mMar10.x[3].x, mMar10.x[4].x, mMar10.x[5].x, mMar10.x[6].x, mMar10.x[7].x, mMar10.x[8].x'); 
+csole.log(mMar10.x[0].x, mMar10.x[1].x, mMar10.x[2].x, mMar10.x[3].x, mMar10.x[4].x, mMar10.x[5].x, mMar10.x[6].x, mMar10.x[7].x, mMar10.x[8].x); 
+csole.log('.');
+csole.log('.');
+csole.log('.');
+csole.log( `m.ret(4), m1.ret(1), m2.ret(2), m3.ret(3),
+ 4.ret(4), m5.ret(5), m6.ret(6), m7.ret(7), m8.ret(8)` );
+met(4), m1.ret(1), m2.ret(2), m3.ret(3), m4.ret(4), m5.ret(5), m6.ret(6), m7.ret(7), m8.ret(8)
 
 */
 function test10 () {
@@ -1263,8 +1289,6 @@ function test10 () {
 }  
 
 function test11 () {
- // m.ret(4);  // In an application, m might receive its value dynamically, 
-             //perhaps from a websocket or user input. 
   m.ret(4).bnd(v => 
   ret(v).bnd(m1.ret).bnd(mult,100)
   .bnd(m2.ret).bnd(square)
@@ -1308,44 +1332,5 @@ console.log('.');
 console.log('.');
 console.log('.');
 console.log('cows and horses');
-/*
-console.log('mMar11.x[0].x, mMar11.x[1].x, mMar11.x[2].x, mMar11.x[3].x, mMar11.x[4].x, mMar11.x[5].x, mMar11.x[6].x'); 0
-console.log(mMar11.x[0].x, mMar11.x[1].x, mMar11.x[2].x, mMar11.x[3].x, mMar11.x[4].x, mMar11.x[5].x, mMar11.x[6].x); 
-console.log('.')
-console.log('.');
-console.log('.');
-console.log('.');
-console.log('.');
-console.log('.');
-console.log('.');
-console.log('.');
-console.log('.');
-console.log('.');
-console.log('.');
-console.log('.');
-console.log('.');
-console.log('.');
 
 
-
-
-
-console.log('m.x:', m.x, 'm1.x:', m1.x, 'm2.x:', m2.x, 'm3.x:', m3.x, 'm4.x:', m4.x,
-  'm5.x:', m5.x, 'm6.x', m6.x, 'm7.x:', m7.x, 'm8.x:', m8.x, 'm9.x:', m9.x)
-
-console.log('mMob10',mMob10)
-console.log('mMob11',mMob11)
-console.log('mMob11.x',mMob11.x)
-console.log('mMar10',mMar10)
-console.log('mMar10.x',mMar10.x)
-
-console.log('m.x:', m.x, 'm1.x:', m1.x, 'm2.x:', m2.x, 'm3.x:', m3.x, 'm4.x:', m4.x,
-  'm5.x:', m5.x, 'm6.x', m6.x, 'm7.x:', m7.x, 'm8.x:', m8.x, 'm9.x:', m9.x)
-
-console.log(ob10);
-
-mMob10.ret({'m': m.x, 'm1': m1.x, 'm2': m2.x, 'm3': m3.x, 'm4': m4.x,  'm5': m5.x, 'm6': m6.x, 'm7': m7.x, 'm8': m8.x, 'm9': m9.x});a
-mMob11.ret({'m': m, 'm1': m1, 'm2': m2, 'm3': m3, 'm4': m4,  'm5': m5, 'm6': m6, 'm7': m7, 'm8': m8, 'm9': m9}); 
-
-m.ret(420), m1.ret(1), m2.ret(2), m3.ret(3), m4.ret(4), m5.ret(5), m6.ret(6), m7.ret(7)
-*/
