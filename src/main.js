@@ -705,39 +705,39 @@ function main(sources) {
 
     var backClick$ = sources.DOM
         .select('#back').events('click');
+
   
     var backAction$ = backClick$.map(() => {
-      if (get(pMindex) > 1) {
-        let a = travMonad.a[travMonad.a.length + 1 - get(pMindex) ];
+      if (pMindex.x > 1) {
+        let a = travMonad.a[travMonad.a.length + 1 - pMindex.x ];
         mMtemp.ret(a[0]),bnd(pMnums.ret).bnd(test3).bnd(pMstyle.ret);
         pMscore.ret(a[1]);
         pMgoals.ret(a[2]);
         pMindex.bnd(add,-1).bnd(pMindex.ret);
-        if (get(pMnums).length == 4) {
-          socket.send(`CG#$42,${get(pMgroup)},${get(pMname)},${get(pMscore)},${get(pMgoals)}`);
+        if (pMnums.x.length == 4) {
+          socket.send(`CG#$42,${pMgroup.x},${pMname.x},${pMscore.x},${pMgoals.x}`);
         }
       }
     });
 
     var forwardAction$ = forwardClick$.map(function () {
-      if (get(pMindex) < travMonad.a.length) {
-        let a = travMonad.a[travMonad.a.length - get(pMindex) -1 ]
+      if (pMindex.x < travMonad.a.length.x) {
+        let a = travMonad.a[travMonad.a.length - pMindex.x -1 ]
         mMtemp.ret(a[0]).bnd(pMnums.ret).bnd(mMtemp.ret).bnd(test3).bnd(pMstyle.ret);
         updateScoreboard2(namesList);
         pMscore.ret(a[1]);
         pMgoals.ret(a[2]);
         pMindex.bnd(add,1).bnd(pMindex.ret);
-        if (get(pMnums).length == 4) {
-          socket.send(`CG#$42,${get(pMgroup)},${get(pMname)},${get(pMscore)},${get(pMgoals)}`);
+        if (pMnums.x.length == 4) {
+          socket.send(`CG#$42,${pMgroup.x},${pMname.x},${pMscore.x},${pMgoals.x}`);
         }
       }
-    });
-
+    });  
   var calcStream$ = merge(  backAction$, forwardAction$, factorsAction$, primeFib$, fibPressAction$, quadAction$, edit1Action$, edit2Action$, testWAction$, testZAction$, testQAction$, colorAction$, deleteAction$, newTaskAction$, chatClickAction$, gameClickAction$, todoClickAction$, captionClickAction$, groupPressAction$, rollClickAction$, messagePressAction$, loginPressAction$, messages$, numClickAction$, opClickAction$);
   return {
   DOM: calcStream$.map(function () {
   return h('div.content', [
-  h('div#rightPanel', { style: { display: `${get(mMrightPanel)}` } }, [
+  h('div#rightPanel', { style: { display: `${mMrightPanel.x}` } }, [
       h('span#tog', [
           h('button#game', { style: { fontSize: '16px', display: 'inline' } }, 'TOGGLE GAME'),
           h('span.tao', ' '),
@@ -858,7 +858,7 @@ code.e7,
 code.e7x,    
 h('p', ' I experimented with several definitions of Monad during the investigations that led to the current one. This version\'s bnd() method re-assigns the calling monad\'s identifyer (variable name) without clobbering previous versions with the same name. For example, m.bnd(cube) re-assigns "m" to the returned monad, which has an x attribute that is the calling monad\'s x attribute cubed. If the previous version is an array element, an object attribute, or has a reference to it, it persists as it was, with its x attribute unchanged. That feature is illustrated in the screen shot (below). Here are the functions associated with the screen shots:' ),
     code.test10_11,
-h('p', ' The screen shot(below) demonstrates two things: ' ),
+h('p', ' The screen shot (below) demonstrates two things: ' ),
 h('pre.turk6', 
 `  (1) Immutability. When some named monads are superseded by fresh instantiations, 
       previous instances stored in an array do not change.
@@ -904,11 +904,11 @@ h('span', ' Attempts have been made to define a Haskell category, usually with s
  // **************************************************************************** END MONAD       START MonadItter   
 h('h2', 'MonadItter'),
 code.monadIt,
-h('p', ' MonadItter instances don\'t link to one another. They exist to facilitate the work of instances of Mmonad, MonadState, etc. Here\'s how they work: '),
+h('p', ' MonadItter instances don\'t link to one another. They exist to facilitate the work of instances of Monad, MonadState, etc. Here\'s how they work: '),
 h('p', 'For any instance of MonadItter, say "it", "it.bnd(func)" causes it.p == func. Calling the method "it.release(...args)" causes p(...args) to run, possibly with arguments supplied by the caller. '),
 h('p', ' As shown later on this page, MonadItter instances control the routing of incoming websockets messages. In one of the demonstrations below, they behave much like ES2015 iterators. I prefer them over ES2015 iterators, at least for what I am demonstrating.'),
 h('h3#itterLink', ' A Basic Itterator '),
-h('p', 'The following example illustrates the use of release() with an argument. It also shows a lambda expressions being provided as an argument for the method mMZ1.bnd() (thereby becoming the value of mMZ1.p) and then mMZ1.release providing an arguments for the function mMZ1.p. The code is shown beneith the following two buttons. '),
+h('p', 'The following example illustrates the use of release() with an argument. It also shows a lambda expressions being provided as an argument for the method mMZ1.bnd() (thereby becoming the value of mMZ1.p), and then mMZ1.release providing an arguments for the function mMZ1.p. The code is shown beneith the following two buttons. '),
 h('button#testZ', 'mMZ1.release(1)'),
 h('p.code2', mMt3.x  ) ,
 h('span', 'Refresh button: '),
@@ -931,13 +931,14 @@ h('input#quad'),
 h('p', 'Here is the code:'),
 code.quad,
 h('p', ' fmap (above) facilitated using qS4 in a monadic sequence. qS4 returns an array, not an instance of Monad, but fmap lifts qS4 into the monadic sequence. '),
+h('p', ' The function solve() is recursive. It invokes itself after release() executes three times. The expression "solve()" resets solve to the top, where mMZ3.p becomes a function containing two nested occurrances of mMZ3.bnd. After mMZ3.release() executes, mMZ3.p becomes the function that is the argument to the next occurrance of mMZ3.bnd. That function contains yet another occurrance of mMZ3.bnd. MonadItter is syntactic sugar for nested callbacks. ' ),       
   
 // ************************************************************************** START MonadState
 h('p#monadstate'),
 h('h2', 'MonadState and MonadState Transformers'),
 h('p', ' An instance of MonadState holds the current state and value of a computation. For any instance of MonadState, say m, these can be accessed through m.s and m.a, respectively.  '),
 code.MonadState,
-h('p', ' MonadState reproduces some of the functionality found in the Haskell Module "Control.Monad.State.Lazy", inspired by the paper "Functional Programming with erloading and Higher-der Polymorphism", Mark P Jones (http://web.cecs.pdx.edu/~mpj/) Advanced School of Functional Programming, 1995. The following demonstrations use the MonadState instances fibsMonad and primesMonad to create and store arrays of Fibonacci numbers and arrays of prime numbers, respectively. fibsMonad and primesMonad provide a simple way to compute lists of prime Fibonacci numbers.  Because the results of computations are stored in the a and s attributes of MonadState instances, it was easy to make sure that no prime number had to be computed more than once in the prime Fibonacci demonstration. '),
+h('p', ' MonadState reproduces some of the functionality found in the Haskell Module "Control.Monad.State.Lazy", inspired by the paper "Functional Programming with Overloading and Higher-der Polymorphism", Mark P Jones (http://web.cecs.pdx.edu/~mpj/) Advanced School of Functional Programming, 1995. The following demonstrations use the MonadState instances fibsMonad and primesMonad to create and store arrays of Fibonacci numbers and arrays of prime numbers, respectively. fibsMonad and primesMonad provide a simple way to compute lists of prime Fibonacci numbers.  Because the results of computations are stored in the a and s attributes of MonadState instances, it was easy to make sure that no prime number had to be computed more than once in the prime Fibonacci demonstration. '),
 h('p', ' Here is the definition of fibsMonad, along with the definition of the function that becomes fibsMonad.process. '),
 code.fibsMonad,
 h('p', ' Another MonadState instance used in this demonstration is primesMonad. Here is its definition along with the function that becomes primesMonad.process:  '),
@@ -970,7 +971,7 @@ h('br'),
 h('span#PF_8.red6', 'Prime Fibonacci Numbers'),
 h('br'),
 h('span#primeFibs.turk', mMres.x[2]  ),
-h('p', ' The next demonstration uses two instances of MonadState to find the prime factors of numbers. Each prime factor is listed once.  my desktop computer, it took several seconds to verify that 514229 is a prime number. After that, due to persistent (until the web page closes) memoization, numbers below 514229 or not too far above it evaluated rapidly. Here\'s where you can enter a number to see its prime factors: '),
+h('p', ' The next demonstration uses two instances of MonadState to find the prime factors of numbers. Each prime factor is listed once.  On my desktop computer, it took several seconds to verify that 514229 is a prime number. After that, due to memoization, numbers below 514229 or not too far above it evaluated rapidly. Here\'s where you can enter a number to see its prime factors: '),
 h('input#factors_1'),
 h('br'),
 h('br'),

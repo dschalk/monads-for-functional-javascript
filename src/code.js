@@ -28,7 +28,7 @@ function ret2(v, id = 'ret2') {
   return window[id];
 }
 
-var monad = h('pre.turk',  `    var Monad = function Monad(z = 42, g = 'generic') {
+var monad = h('pre.turk6',  `    var Monad = function Monad(z = 42, g = 'generic') {
       var _this = this;
       this.x = z;
       this.id = g;
@@ -44,20 +44,17 @@ var monad = h('pre.turk',  `    var Monad = function Monad(z = 42, g = 'generic'
       this.ret = function (a) {
         return window[_this.id] = new Monad(a,_this.id);
       };
-
-    function stripchars(string, chars) {
-      return string.replace(RegExp('['+chars+']','g'), '');
-    }
+    };
     
     function testPrefix (x,y) {
       var t = y;
+      var s;
       if (Array.isArray(x)) {
-      x.some(v => {
-        if (typeof v == 'string' && v.startsWith('MONAD')) {
-          var pos = stripchars(v,'MONAD');
-          t = pos;
-        }
-      })
+        x.some(v => {
+          if (typeof v == 'string' && v.charAt() == 'M') {
+            t = v.slice(1, v.length);
+          }
+        })
       }
       return t;
     };  `  )
@@ -1162,33 +1159,37 @@ var screenshot2= h('pre.turk',  `  test2 = ret2(0,'a')
     .getx()  `  )
 
 var test10_11 = h('pre.turk5',  `    function test10 () {
-     m.ret(4).bnd(m1.ret).bnd(mult,100)
-     .bnd(m2.ret).bnd(square)
-     .bnd(m3.ret).bnd(add,-m3.x + 3).bnd(mult,100)
-     .bnd(m4.ret).bnd(square)
-     .bnd(m5.ret).bnd(add,m3.x) 
-     .bnd(m6.ret).bnd(sqroot)
-     .bnd(m7.ret).bnd(() => { 
-       mMar10.ret([m, m1, m2, m3, m4, m5, m6, m7]); 
-       console.log('The square root of the sum of ', m2.x,
-         ' squared and ', m4.x, ' squared is ', m7.x); });
-     return mMar10;
-   }  
-
-   function test11 () {
-     m.ret(4).bnd(v => 
-     ret(v).bnd(m1.ret).bnd(mult,100)
-     .bnd(m2.ret).bnd(square)
-     .bnd(m3.ret).bnd(add,-m3.x + 3).bnd(mult,100)
-     .bnd(m4.ret).bnd(square)
-     .bnd(m5.ret).bnd(add,m3.x) 
-     .bnd(m6.ret).bnd(sqroot)
-     .bnd(m7.ret).bnd(() => { 
-       mMar11.ret([m, m1, m2, m3, m4, m5, m6, m7]);
-       console.log('The square root of the sum of ', m2.x,
-         ' squared and ', m4.x, ' squared is ', m7.x); }));
-     return mMar11;
-   }  `  )
+    function test10 () {
+      m.ret(4).bnd(mult,100,'Mm1')
+      .bnd(square,'Mm2')
+      .bnd(add,-m2.x + 3,'Mm3')
+      .bnd(mult,100,'Mm4')
+      .bnd(square,'Mm5')
+      .bnd(add,m2.x,'Mm6') 
+      .bnd(sqroot,'Mm7')
+      .bnd(() => { 
+        mMar10.ret([m, m1, m2, m3, m4, m5, m6, m7]);
+        console.log('The square root of the sum of ', m1.x,
+          ' squared and ', m4.x, ' squared is ', m7.x); });
+      return mMar10;
+    }  
+    
+    function test11 () {
+      m.ret(4).bnd(v => 
+      ret(v)
+      .bnd(mult,100,'Mm1')
+      .bnd(square,'Mm2')
+      .bnd(add,-m2.x + 3,'Mm3')
+      .bnd(mult,100,'Mm4')
+      .bnd(square,'Mm5')
+      .bnd(add,m2.x,'Mm6') 
+      .bnd(sqroot,'Mm7').bnd(m.ret)
+      .bnd(() => { 
+        mMar11.ret([m, m1, m2, m3, m4, m5, m6, m7]);
+        console.log('The square root of the sum of ', m1.x,
+          ' squared and ', m4.x, ' squared is ', m7.x); }));
+      return mMar11;
+    }  `  )
 
 var test = h('pre',  `  
   `  )

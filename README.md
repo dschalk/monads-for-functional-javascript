@@ -30,23 +30,19 @@ The code here is not annotated, but detailed examinations of the code behind the
       };
     };
     
-    
-    function stripchars(string, chars) {
-      return string.replace(RegExp('['+chars+']','g'), '');
-    }
-    
     function testPrefix (x,y) {
       var t = y;
+      var s;
       if (Array.isArray(x)) {
-      x.some(v => {
-        if (typeof v == 'string' && v.startsWith('MONAD')) {
-          var pos = stripchars(v,'MONAD');
-          t = pos;
-        }
-      })
+        x.some(v => {
+          if (typeof v == 'string' && v.charAt() == 'M') {
+            t = v.slice(1, v.length);
+          }
+        })
       }
       return t;
-}
+    }
+
 ```
 In most chains of computations, the arguments provided to each link's bnd() method are functions that return instances of Monad. The stand-alone ret() function does only one thing; it creates new Monad instances. Here are some examples of functions that return instances of Monad:
 ```javascript

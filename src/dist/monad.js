@@ -32,21 +32,20 @@ function stripchars(string, chars) {
 
 function testPrefix (x,y) {
   var t = y;
+  var s;
   if (Array.isArray(x)) {
-  x.some(v => {
-    if (typeof v == 'string' && v.startsWith('MONAD')) {
-      var pos = stripchars(v,'MONAD');
-      t = pos;
-    }
-  })
+    x.some(v => {
+      if (typeof v == 'string' && v.charAt() == 'M') {
+        t = v.slice(1, v.length);
+      }
+    })
   }
   return t;
 }
 
-var jack = ['7554','abcdefghi', 'car', 'MONADm3']
+var jack = ['7554','abcdefghi', 'car', 'Mm3']
 var c = testPrefix(jack)
 console.log(c)
-
 
 var Monad = function Monad(z = 42, g = 'generic') {
   var _this = this;
@@ -1189,6 +1188,7 @@ var mMob10 = new Monad ({}, 'mMob10');
 var mMob11 = new Monad ([], 'mMob11');
 var mMar10 = new Monad ([], 'mMar10');
 var mMar11 = new Monad ([], 'mMar11');
+var mMar12 = new Monad ([], 'mMar12');
 var ob10;
 var ob11;
 var ob12;
@@ -1205,104 +1205,38 @@ m.bnd(m1.ret).bnd(cube)       // m1.x == 4
 .bnd(m8.ret).bnd(() => {     // m8.x == 1000
 mMar10.ret([m, m1, m2, m3, m4, m5, m6, m7, m8]); });
 
-/*
-csole.log('.');
-csole.log('.');
-csole.log('m.x, m1.x, m2.x, m3.x, m4.x, m5.x, m6.x, m7.x, m8.x');
-csole.log(m.x, m1.x, m2.x, m3.x, m4.x, m5.x, m6.x, m7.x, m8.x);
-csole.log( `m.ret(4), m1.ret(1), m2.ret(2), m3.ret(3),0
- 4.ret(4), m5.ret(5), m6.ret(6), m7.ret(7), m8.ret(8)` );
-tt10()
-csole.log('.');
-csole.log('mMar10.x[0].x, mMar10.x[1].x, mMar10.x[2].x, mMar10.x[3].x, mMar10.x[4].x, mMar10.x[5].x, mMar10.x[6].x, mMar10.x[7].x, mMar10.x[8].x'); 
-csole.log(mMar10.x[0].x, mMar10.x[1].x, mMar10.x[2].x, mMar10.x[3].x, mMar10.x[4].x, mMar10.x[5].x, mMar10.x[6].x, mMar10.x[7].x, mMar10.x[8].x); 
-csole.log('.');
-csole.log( `m.ret(4), m1.ret(1), m2.ret(2), m3.ret(3),
- 4.ret(4), m5.ret(5), m6.ret(6), m7.ret(7), m8.ret(8)` );
-met(4), m1.ret(1), m2.ret(2), m3.ret(3), m4.ret(4), m5.ret(5), m6.ret(6), m7.ret(7), m8.ret(8)
-csole.log('.');
-csole.log('m.x, m1.x, m2.x, m3.x, m4.x, m5.x, m6.x, m7.x, m8.x');
-csole.log(m.x, m1.x, m2.x, m3.x, m4.x, m5.x, m6.x, m7.x, m8.x);
-csole.log('.');
-csole.log('mMar10.x[0].x, mMar10.x[1].x, mMar10.x[2].x, mMar10.x0[3].x, mMar10.x[4].x, mMar10.x[5].x, mMar10.x[6].x, mMar10.x[7].x, mMar10.x[8].x'); 
-csole.log(mMar10.x[0].x, mMar10.x[1].x, mMar10.x[2].x, mMar10.x[3].x, mMar10.x[4].x, mMar10.x[5].x, mMar10.x[6].x, mMar10.x[7].x, mMar10.x[8].x); 
-csole.log('.');
-fction test10 () {
- .ret(4), m1.ret(1), m2.ret(2), m3.ret(3),
-  m4.ret(4), m5.ret(5), m6.ret(6), m7.ret(7), m8.ret(8)
- .bnd(m1.ret).bnd(cube)       // m1.x == 4
- bnd(m2.ret).bnd(add,-m2.x)  // m2.x == 64
- bnd(m3.ret).bnd(add,3)      // m3.x == 0
- bnd(m4.ret).bnd(cube)       // m4.x == 3
- bnd(m5.ret).bnd(add,-m5.x)  // m5.x == 27
- bnd(m6.ret).bnd(add,10)     // m6.x == 0
- bnd(m7.ret).bnd(cube)       // m7.x == 10 
- bnd(m8.ret).bnd(() => {     // m8.x == 1000
-mr10.ret([m, m1, m2, m3, m4, m5, m6, m7, m8]); }  );
- eturn mMar10;
-}
-
-fction test11 () {
- .ret(4);  // In an application, m might receive its value dynamically, 
-           //perhaps from a websocket or user input. 
- et(m.x).bnd(m1.ret).bnd(mult,100).bnd(square)
- bnd(m2.ret).bnd(add,-m2.x + 3).bnd(mult,100).bnd(square)
- bnd(m4.ret).bnd(add,m2.x) 
- bnd(m5.ret).bnd(sqroot)
- bnd(m6.ret).bnd(() => { 
- Mar11.ret([m, m1, m2, m3, m4, m5, m6]); });
- eturn mMar11;
-}
-
-csole.log('.');
-csole.log('.');
-csole.log('.');
-csole.log('.');
-csole.log('.');
-/console.log('test10',test10() );
-csole.log('.');
-/console.log('m.x, m1.x, m2.x, m3.x, m4.x, m5.x, m6.x, m7.x, m8.x');
-/console.log(m.x, m1.x, m2.x, m3.x, m4.x, m5.x, m6.x, m7.x, m8.x);
-csole.log('.');
-csole.log('mMar10.x[0].x, mMar10.x[1].x, mMar10.x[2].x, mMar10.x[3].x, mMar10.x[4].x, mMar10.x[5].x, mMar10.x[6].x, mMar10.x[7].x, mMar10.x[8].x'); 
-csole.log(mMar10.x[0].x, mMar10.x[1].x, mMar10.x[2].x, mMar10.x[3].x, mMar10.x[4].x, mMar10.x[5].x, mMar10.x[6].x, mMar10.x[7].x, mMar10.x[8].x); 
-csole.log('.');
-csole.log('.');
-csole.log('.');
-csole.log( `m.ret(4), m1.ret(1), m2.ret(2), m3.ret(3),
- 4.ret(4), m5.ret(5), m6.ret(6), m7.ret(7), m8.ret(8)` );
-met(4), m1.ret(1), m2.ret(2), m3.ret(3), m4.ret(4), m5.ret(5), m6.ret(6), m7.ret(7), m8.ret(8)
-
-*/
 function test10 () {
-  m.ret(4).bnd(m1.ret).bnd(mult,100)
-  .bnd(m2.ret).bnd(square)
-  .bnd(m3.ret).bnd(add,-m3.x + 3).bnd(mult,100)
-  .bnd(m4.ret).bnd(square)
-  .bnd(m5.ret).bnd(add,m3.x) 
-  .bnd(m6.ret).bnd(sqroot)
-  .bnd(m7.ret).bnd(() => { 
-    mMar10.ret([m, m1, m2, m3, m4, m5, m6, m7]); 
-    console.log('The square root of the sum of ', m2.x,
+  m.ret(4).bnd(mult,100,'Mm1')
+  .bnd(square,'Mm2')
+  .bnd(add,-m2.x + 3,'Mm3')
+  .bnd(mult,100,'Mm4')
+  .bnd(square,'Mm5')
+
+  .bnd(add,m2.x,'Mm6') 
+  .bnd(sqroot,'Mm7')
+  .bnd(() => { 
+    mMar10.ret([m, m1, m2, m3, m4, m5, m6, m7]);
+    console.log('The square root of the sum of ', m1.x,
       ' squared and ', m4.x, ' squared is ', m7.x); });
   return mMar10;
 }  
 
 function test11 () {
-  m.ret(4).bnd(v => 
-  ret(v).bnd(m1.ret).bnd(mult,100)
-  .bnd(m2.ret).bnd(square)
-  .bnd(m3.ret).bnd(add,-m3.x + 3).bnd(mult,100)
-  .bnd(m4.ret).bnd(square)
-  .bnd(m5.ret).bnd(add,m3.x) 
-  .bnd(m6.ret).bnd(sqroot)
-  .bnd(m7.ret).bnd(() => { 
+  m.ret(4).bnd(mult,100,'Mm1')
+  .bnd(square,'Mm2')
+  .bnd(add,-m2.x + 3,'Mm3')
+  .bnd(mult,100,'Mm4')
+  .bnd(square,'Mm5')
+  .bnd(add,m2.x,'Mm6') 
+  .bnd(sqroot,'Mm7').bnd(m.ret)
+  .bnd(() => { 
     mMar11.ret([m, m1, m2, m3, m4, m5, m6, m7]);
-    console.log('The square root of the sum of ', m2.x,
-      ' squared and ', m4.x, ' squared is ', m7.x); }));
+    console.log('The square root of the sum of ', m1.x,
+      ' squared and ', m4.x, ' squared is ', m7.x); });
   return mMar11;
 }  
 
+console.log('.');
 console.log('.');
 console.log('test10 ', test10());
 console.log('m.x, m1.x, m2.x, m3.x, m4.x, m5.x, m6.x, m7.x');
@@ -1330,7 +1264,5 @@ console.log(`mMar11.x[0].x, mMar11.x[1].x, mMar11.x[2].x, mMar11.x[3].x,
 console.log(mMar11.x[0].x, mMar11.x[1].x, mMar11.x[2].x, mMar11.x[3].x, mMar11.x[4].x, mMar11.x[5].x, mMar11.x[6].x, mMar11.x[7].x);  // The stored monads do not change. m has its initial value
 console.log('.');
 console.log('.');
-console.log('.');
 console.log('cows and horses');
-
 
