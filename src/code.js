@@ -819,8 +819,8 @@ var e1 = h('pre.turk',  `  function ret(v, id = 'generic') {
     return ret(parseInt(x,10) + parseInt(b,10) );
   };
 
-  function log(x, message) {     // message is an array
-      console.log(message.join(', '));
+  function log(x,y) {
+      console.log(y)
       return ret(x);
   };  `  )
 
@@ -1017,14 +1017,15 @@ var numClick2 = h('pre',  `  function updateCalc(ar, op) {
     else {pMgoals.bnd(add, 1).bnd(pMgoals.ret).bnd(g => newRoll(0, g))};
   };  `  )
 
-var e7 = h('pre.turk',  `  ret(3,'cow').bnd(x => log(x,['Received the value ' + x])
-  .bnd(cube).bnd(y => log(y, [x + ' cubed is ' + y])
-  .bnd(log,['The monad cow holds the value ' + cow.x])))  `  )
+var e7 = h('pre.turk',  `  ret(3,'cow').bnd(x => log(x,'Received the value ' + x)
+  .bnd(cube).bnd(y => log(y, x + ' cubed is ' + y)
+  .bnd(log,'The monad cow holds the value ' + cow.x)))  `  )
 
-var e7x = h('pre',  `   Output:
-   Received the value 3
-   3 cubed is 27  
-   The monad cow holds the value 3  `  )
+var e7x = h('pre.turk',  `   Output:  `  )
+
+var e7y = h('pre',  `    Received the value 3
+    3 cubed is 27  
+    The monad cow holds the value 3  `  )
 
 var monadE = h('pre.turk',  `  function MonadE (val, ID, er = []) {
     var x = val;
@@ -1159,7 +1160,6 @@ var screenshot2= h('pre.turk',  `  test2 = ret2(0,'a')
     .getx()  `  )
 
 var test10_11 = h('pre.turk5',  `    function test10 () {
-    function test10 () {
       m.ret(4).bnd(mult,100,'Mm1')
       .bnd(square,'Mm2')
       .bnd(add,-m2.x + 3,'Mm3')
@@ -1175,9 +1175,7 @@ var test10_11 = h('pre.turk5',  `    function test10 () {
     }  
     
     function test11 () {
-      m.ret(4).bnd(v => 
-      ret(v)
-      .bnd(mult,100,'Mm1')
+      m.ret(4).bnd(mult,100,'Mm1')
       .bnd(square,'Mm2')
       .bnd(add,-m2.x + 3,'Mm3')
       .bnd(mult,100,'Mm4')
@@ -1187,7 +1185,7 @@ var test10_11 = h('pre.turk5',  `    function test10 () {
       .bnd(() => { 
         mMar11.ret([m, m1, m2, m3, m4, m5, m6, m7]);
         console.log('The square root of the sum of ', m1.x,
-          ' squared and ', m4.x, ' squared is ', m7.x); }));
+          ' squared and ', m4.x, ' squared is ', m7.x); });
       return mMar11;
     }  `  )
 
@@ -1202,7 +1200,7 @@ var p9 = h('pre',  `
 
 
 
-  export default { test10_11, screenshot1, screenshot2, monadE, numClick1, numClick2, mMZ10, test3, travMonad, monad, equals, fmap, opM, e1, e2, e2x, e3, e4, e4x, e6, e6x, e7, e7x, driver, messages, monadIt, MonadSet, updateCalc, arrayFuncs, nums, cleanup, ret, C42, newTask, process, mM$task, colorClick, edit, testZ, quad, runTest, todoStream, inc, seed,  add, MonadState, primesMonad, fibsMonad, primeFibInterface, tr3, fpTransformer, factorsMonad, factorsInput, playerMonad, promise, promiseSnippet, timeout, timeoutSnippet, examples, examples2, async }
+  export default { test10_11, screenshot1, screenshot2, monadE, numClick1, numClick2, mMZ10, test3, travMonad, monad, equals, fmap, opM, e1, e2, e2x, e3, e4, e4x, e6, e6x, e7, e7x, e7y, driver, messages, monadIt, MonadSet, updateCalc, arrayFuncs, nums, cleanup, ret, C42, newTask, process, mM$task, colorClick, edit, testZ, quad, runTest, todoStream, inc, seed,  add, MonadState, primesMonad, fibsMonad, primeFibInterface, tr3, fpTransformer, factorsMonad, factorsInput, playerMonad, promise, promiseSnippet, timeout, timeoutSnippet, examples, examples2, async }
  
 
 

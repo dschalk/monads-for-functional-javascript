@@ -95,7 +95,7 @@ var pMgroup = new Monad('solo', 'pMgroup');
 var pMscore = new Monad(0, 'pMscore');
 var pMgoals = new Monad(0, 'pMgoals');
 var pMnums = new Monad([8,8,8,8], 'pMnums');
-var pMindex = new Monad(1, 'pMindex');
+var pMindex = new Monad(0, 'pMindex');
 var pMdata = new Monad([], 'pMdata');
 var pMelms = new Monad( [0,0,0,0], 'pMelms' );
 var pMstyle = new Monad( ['inline','inline','inline','inline'], 'pMstyle' );
@@ -232,9 +232,11 @@ function trav_state (ar) {
   next[0] = nums;
   next[1] = score;
   next[2] = goals;
-  next[3].unshift(ar);
+  next[3].splice( pMindex.x, 0, ar );
   return next;
 }
+
+travMonad.run([ [0,0,0,0], 0, 0 ]);
 
 function evalF(x) {
   var v;
@@ -1211,7 +1213,6 @@ function test10 () {
   .bnd(add,-m2.x + 3,'Mm3')
   .bnd(mult,100,'Mm4')
   .bnd(square,'Mm5')
-
   .bnd(add,m2.x,'Mm6') 
   .bnd(sqroot,'Mm7')
   .bnd(() => { 

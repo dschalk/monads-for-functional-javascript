@@ -203,9 +203,12 @@ function main(sources) {
   var numClickAction$ = numClick$.map(e => {
     console.log('In numClickAction. e.target.id, e, and pMnums are ', e.target.id, e, pMnums.x );
     if (mM3.x.length == 2) {return};
-    mMtemp.ret(pMnums.bnd(spliceM, e.target.id, 1).x)
-    .bnd(test3)
-    .bnd(pMstyle.ret)
+    pMnums.bnd(spliceM, e.target.id, 1)
+    .bnd(v => {
+      test3(v, 'MpMstyle')
+      travMonad.run([v, pMscore.x, pMgoals.x])
+    });
+    socket.send(`CG#$42,${pMgroup.x},${pMname.x},${pMscore.x},${pMgoals.x}`);
     mM3
     .bnd(push, e.target.innerHTML)
     .bnd(mM3.ret)
@@ -708,31 +711,40 @@ function main(sources) {
 
   
     var backAction$ = backClick$.map(() => {
-      if (pMindex.x > 1) {
-        let a = travMonad.a[travMonad.a.length + 1 - pMindex.x ];
-        mMtemp.ret(a[0]),bnd(pMnums.ret).bnd(test3).bnd(pMstyle.ret);
-        pMscore.ret(a[1]);
-        pMgoals.ret(a[2]);
-        pMindex.bnd(add,-1).bnd(pMindex.ret);
+      console.log('In backAction$.()()()()()()()()()()() pMindex.x is ', pMindex.x);
+      if (pMindex.x > 1) {   
+        var ind = pMindex.x - 1;
+        var a = travMonad.a[ind];
+        console.log('()()()()()()()() ind, a ', ind, a );
+        pMnums.ret(a[0]).bnd(test3, 'MpMstyle');
+        pMscore.ret(a[1])
+        pMgoals.ret(a[2])
+      console.log('Still in backAction$. ()()()()()()()()()()()pMindex.x is ', pMindex.x);
         if (pMnums.x.length == 4) {
           socket.send(`CG#$42,${pMgroup.x},${pMname.x},${pMscore.x},${pMgoals.x}`);
         }
-      }
+      pMindex.bnd(add,-1);
+      } 
     });
 
-    var forwardAction$ = forwardClick$.map(function () {
-      if (pMindex.x < travMonad.a.length.x) {
-        let a = travMonad.a[travMonad.a.length - pMindex.x -1 ]
-        mMtemp.ret(a[0]).bnd(pMnums.ret).bnd(mMtemp.ret).bnd(test3).bnd(pMstyle.ret);
-        updateScoreboard2(namesList);
-        pMscore.ret(a[1]);
-        pMgoals.ret(a[2]);
-        pMindex.bnd(add,1).bnd(pMindex.ret);
+    var forwardAction$ = forwardClick$.map(() => {
+      console.log('In backAction$.()()()()()()()()()()() pMindex.x is ', pMindex.x);
+      if (pMindex.x < travMonad.a.length - 1) {   
+        var ind = pMindex.x + 1;
+        var a = travMonad.a[ind];
+        console.log('()()()()()()()() ind, a ', ind, a );
+        pMnums.ret(a[0]).bnd(test3, 'MpMstyle');
+        pMscore.ret(a[1])
+        pMgoals.ret(a[2])
+      console.log('Still in backAction$. ()()()()()()()()()()()pMindex.x is ', pMindex.x);
         if (pMnums.x.length == 4) {
           socket.send(`CG#$42,${pMgroup.x},${pMname.x},${pMscore.x},${pMgoals.x}`);
         }
-      }
-    });  
+      pMindex.bnd(add, 1);
+      } 
+    });
+
+
   var calcStream$ = merge(  backAction$, forwardAction$, factorsAction$, primeFib$, fibPressAction$, quadAction$, edit1Action$, edit2Action$, testWAction$, testZAction$, testQAction$, colorAction$, deleteAction$, newTaskAction$, chatClickAction$, gameClickAction$, todoClickAction$, captionClickAction$, groupPressAction$, rollClickAction$, messagePressAction$, loginPressAction$, messages$, numClickAction$, opClickAction$);
   return {
   DOM: calcStream$.map(function () {
@@ -780,26 +792,36 @@ function main(sources) {
         h('div#messages', [
           h('span', 'Message: '),
           h('input.inputMessage'),
-          h('div', messageMonad.s[3] ) ])  ]) ]),
+          h('div', messageMonad.s[3] ) ])  ]),
+      h('br'),
+      h('br'),
+      h('br'),
+      h('br'),
+      h('div', 'mM3.x: ' + mM3.x.join(', ') ), 
+      h('div', 'mM8.x: ' + mM8.x ), 
+      h('div', 'pMindex.x: ' + pMindex.x ), 
+      h('div', 'travMonad.a.length: ' + travMonad.a.length  ),
+  
+  
+  ]),
   h('div#leftPanel', [  
       h('br'),
       h('div#captionDiv', { style: { display: mMcaptionDiv.x } },  [
           h('h1', 'Motorcycle.js With JS-monads') ]),
-          h('span#italic', ' Not category theory monads; monads in the Haskell monads tradition. See ' ),
+          h('span#italic', ' Not category theory monads. Monads like Haskell monads, using patterns found in category theory. See ' ),
       h('a', { props: { href: "http://math.andrej.com/2016/08/06/hask-is-not-a-category/", target: "_blank" } }, 'Hask is not a category.'),
           h('span', ' by Andrej Bauer and . ' ),
           h('a', { props: { href: '#discussion' } }, 'Discussion'),
           h('span', ' below. ' ),
           h('br'),
           h('br'),
-          h('div.red24', 'The definition of Monad has changed. The commentary and code examples will soon be up to date. ' ),
+          h('div.red24', 'The definition of Monad has changed. The examples all work as intended, but some of the commentary and code examples are still in the process of being updated. ' ),
           h('br'),
-          h('br'),
-          h('span.tao1', ' The demonstrations include persisternt, shared todo lists; '),
+          h('span.tao1a', ' The demonstrations include persisternt, shared todo lists; '),
           h('br'),
           h('span.tao1', ' An interactive simulated dice game with a traversable history (all group members see your score decrease or increase as you navegate backwards and forwards); '),
           h('br'),
-          h('span.tao1', ' Chat rooms where members can compete in the simulated dice game, chat, and share a project todo list; '),
+          h('span.tao1a', ' Chat rooms where members can compete in the simulated dice game, chat, and share a project todo list; '),
           h('br'),
           h('span.tao1', ' And other demonstrations of the power and convenience of JS-monads in a Motorcycle application.  '),
           h('br'),
@@ -851,21 +873,32 @@ h('hr'),
 h('h1', 'The Monads'),
 h('h3', ' Monad '),
 code.monad,
+h('span.tao#monad', ' Monad instances facilitate programming in a functional style. They facilitate the linking of computation sequences, memoization (see ' ),
+h('a', { props: { href: '#state' } }, 'MonadState'),
+h('span', '), error management (see ' ),
+h('a', { props: { href: '#error' } }, 'MonadE'),
+h('span', '), and preserving intermediate results sequences of operations (using the M prefix).'),    
 h('p', ' In most sequences of operationns, the arguments provided to each link\'s bnd() method are functions that return an instance of Monad. Here are some examples of functions that return instances of Monad: '),
 code.e1,
 h('p', ' These functions can be used with instances of Monad in many ways, for example: '),
 code.e7,    
 code.e7x,    
-h('p', ' I experimented with several definitions of Monad during the investigations that led to the current one. This version\'s bnd() method re-assigns the calling monad\'s identifyer (variable name) without clobbering previous versions with the same name. For example, m.bnd(cube) re-assigns "m" to the returned monad, which has an x attribute that is the calling monad\'s x attribute cubed. If the previous version is an array element, an object attribute, or has a reference to it, it persists as it was, with its x attribute unchanged. That feature is illustrated in the screen shot (below). Here are the functions associated with the screen shots:' ),
+code.e7y,    
+h('p', ' I experimented with several definitions of Monad during the investigations that culminated in the current definition. This version\'s bnd() method re-assigns the calling monad\'s identifyer (variable name) without mutating the calling monad. For example, m.bnd(cube) re-assigns "m" to the returned monad, which has id == "m" and an x attribute that is the calling monad\'s x attribute cubed. If the previous version is an array element, an object attribute, or has a reference to it, it persists as it was. That feature is illustrated in the screen shot (below). Here are the functions associated with the screen shots:' ),
     code.test10_11,
-h('p', ' The screen shot (below) demonstrates two things: ' ),
+h('p', ' The screen shot (below) demonstrates three things: ' ),
 h('pre.turk6', 
 `  (1) Immutability. When named monads are superseded by fresh instantiations, 
       previous instances that have been stored in an array do not change.
 
   (2) Convenient control. The monad m still has its initial value after test10() runs. 
-      Simply ppending ".bnd(m.ret)" to the end of the computation gives m its final value.  ` ), 
-h('p', ' In a similar function, m might obtain its value from a websocket or user input. The coder might want to preserve m for further use, might have a use for m with the final value, or might not care what value m has after the computation is finished. Here is the screen shot, taken in the Chrome console, comparing the monads returned by test10() and test11(). ' ),   
+      Simply appending ".bnd(m.ret)" to the end of the computation causes m to wind up with the final value.   
+
+  (3) Using "M" folowed by a string as an argument in the bnd() method causes a monad to appear in 
+      a sequence having the name and id of the string, and and an x element that is
+      the result of whatever computation, parsing, etc. the other arguments accomplish. 
+      The calling monad is left unchanged.  ` ),
+h('p', ' In a similar function, m might obtain its value from a websocket, user input, or some other unpredictable source. The coder might want to preserve m with that initial value for further use, might want to keep m with its inital value, or might not care what value m has after the computation is finished. Here is the screen showing the results of running test10() and test11() in the Chrome console. ' ),   
 h('img.image', {props: {src: "Immutable_a.png"}}  ),   
 h('h3', ' The Monad Laws '), 
 h('p', ' In the following discussion, "x == y" signifies that the expression x == y returns true. Let J be the collection of all Javascript values, including functions, instances of Monad, etc, and let F be the collection of all functions mapping values in J to instances of Monad with references (names) matching their ids; that is, with window[id] == m.id for some id which is a valid es2015 variable name. The collection of all such instances of Monad along and all of the functions in F is called "M". For any instances of Monad m, m1, and m2 in M and any functions f and g in F, the following relationships follow easily from the definition of Monad: '), 
@@ -892,11 +925,11 @@ h('span.turk6', `f \u2261 g` ),
 h('span', ' means that f x == g x for all Haskell values x of the appropriate type. That is the test applied to Javascript expressions in "Monad Laws" section (above). Neither the == nor the === operator would provide useful information about the behavior of instances of Monad, which are objects. Those operators test objects for location in memory. If the left and right sides of predicates create new instances of m, then the left side m and the right side m wind up in different locations in memory. So we expect m.ret(3) == m.ret(3) to return false, and it does. The question we want answered is the question \u2261 answers in Haskell: Can the left and right sides be substituted for one another and still yield the same results.'),
 h('br' ),
 h('br' ),
-h('span.tao', ' The Haskell programming language borrowed the term "monad" from the branch of mathematics known as category theory. This was apropriate because Haskell monads, along with the function return and the operator >>=, behave like category theory monads, and the inspiration for them came out of category theory. For Haskell monads to be category theory monads, they would need to reside in a category-theory category. It is an established fact that they do not, although the Haskell mystique tends to give the impression that they do. See ' ),
+h('span.tao', ' The Haskell programming language borrowed the term "monad" from the branch of mathematics known as category theory. This was apropriate because Haskell monads, along with the function return and the operator >>=, behave quite a bit like category theory monads, and the inspiration for them came out of category theory. For Haskell monads to be category theory monads, they would need to reside in a category-theory category. They don\'t, although the Haskell mystique tends to give newcommers to the language the impression that they do. See ' ),
 h('a', { props: { href: "http://math.andrej.com/2016/08/06/hask-is-not-a-category/", target: "_blank" } }, 'Hask is not a category.'),
 h('br' ),
 h('br' ),
-h('span', ' Attempts have been made to define a Haskell category, usually with special constraints, omitted features, and sometimes with definitions of morphisms that are not Haskell functions. Succeeding in that endeavor would be the first step toward proving that Haskell monads are, in some contrived context, category-theory monads. Devising such a scheme might be an instructive academic excercise, but I don\'t see how it could be of any value beyond that. Imitating definitions and patterns found in category theory, as Haskell does in defining the type classes functor, monoid, and monad, was a stroke of genius that vastly enriched the Haskell programming language. These category theory patterns are less needed, but neverthless useful, in Javascript. Code that adheres to them tends to be robust and versitile.'  ), 
+h('span', ' Attempts continue to be made to define a Haskell category, usually with special constraints, omitted features, and sometimes with definitions of morphisms that are not Haskell functions. Succeeding in that endeavor would be the first step toward proving that Haskell monads are, in some contrived context, category-theory monads. Devising such a scheme might be an instructive academic excercise, but I don\'t see how it could possibly be of any value beyond that. Imitating definitions and patterns found in category theory, as Haskell does in defining the functor, monoid, and monad type classes, was a stroke of genius that vastly enriched the Haskell programming language and brought it into the mainstream as a viable alternative to java, c++, etc.  This website runs efficiently on a Haskell websockets server. Category theory patterns are less needed, but neverthless useful, in Javascript. Code that adheres to them tends to be robust and versitile.  '  ), 
     
  // **************************************************************************** END MONAD       START MonadItter   
 h('h2', 'MonadItter'),
@@ -931,6 +964,7 @@ h('p', ' fmap (above) facilitated using qS4 in a monadic sequence. qS4 returns a
 h('p', ' The function solve() is recursive. It invokes itself after release() executes three times. The expression "solve()" resets solve to the top, where mMZ3.p becomes a function containing two nested occurrances of mMZ3.bnd. After mMZ3.release() executes, mMZ3.p becomes the function that is the argument to the next occurrance of mMZ3.bnd. That function contains yet another occurrance of mMZ3.bnd. MonadItter is syntactic sugar for nested callbacks. ' ),       
   
 // ************************************************************************** START MonadState
+h('a#state', { props: { href: '#monad' } }, 'Back to Monad discussion'),
 h('p#monadstate'),
 h('h2', 'MonadState and MonadState Transformers'),
 h('p', ' An instance of MonadState holds the current state and value of a computation. For any instance of MonadState, say m, these can be accessed through m.s and m.a, respectively.  '),
@@ -1006,6 +1040,7 @@ h('a', { props: { href: '#top' } }, 'Back To The Top'),
   h('p', ' The "mMZ" prefix designates instances of MonadItter. An instance\'s bnd() method assigns its argument to its "p" attribute. "p" runs if and when its release() method is called. The next() function releases a specified MonadItter instance when the calling monad\'s value matches the specified value in the expression. In the messages$ stream, the MonadItter instance\'s bnd methods do not take argumants, but next is capable of sending arguments when bnd() is called on functions requiring them. Here is an example: '),
   h('a#tdList2', { props: { href: '#itterLink' } }, 'release() with arguments'),
   h('br'),
+  h('a#error', { props: { href: '#monad' } }, 'Back to Monad discussion'),
   h('h2', ' MonadE - An Error-Catching Monad ' ),
   h('p', ' Instances of MonadE function much the same as instances of Monad, but when an instance of MonadE encounters an error, it ceases to perform any further computations. Instead, it passes through every subsequent stage of a sequence of MonadE expressions, reporting where it is and repeating the error message. It will continue to do this until it is re-instantiated or until its bnd() method runs on the function clean(). ' ),
   h('p', 'Functions used as arguments to the MonadE bnd() method are placed in quotation marks to prevent the browser engine from throwing reference errors. Arguments can be protected in the same manner. ' ), 
