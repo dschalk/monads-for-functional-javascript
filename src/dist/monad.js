@@ -264,72 +264,56 @@ function evalF(x) {
 }
 
   function MonadE (val, ID, er = []) {
-    var x = val;
-    var e = er;
-    var ob = {  
-      id: ID,
-  
-      getx: function () {return x},
-  
-      bnd: function (f, ...args) {
-
-        if (f == 'clean') {
-          ret2(x, ob.id, []);
-          return new MonadE(x, ob.id, [])
-        }
-  
-        if (e.length > 0) {
-          console.log('BYPASSING COMPUTATION in MonadE instance', ob.id, f, '.  PROPAGATING ERROR:',  e[0]); 
-          return ob;  
-        }
-  
-        if (f == 'log2') {
-          console.log(args[1])
-          return new MonadE ( args[0], args[2], [] )
-        }
-
-        var a = ("typeof " + f);
-
-        if (eval(a) == 'function') {
-          let b = '';
-          for (let v of args) {
-
-            b = "typeof " + v
-
-            if (eval(b) == 'undefined') {
-              console.log(v, "is undefined. No further computations will be attempted");
-              e.push(v + " is undefined." );
-              return ob;
-            }
-  
-            if (eval(b) == 'NaN') {
-              console.log(v, "is NaN. No further computations will be attempted");
-              e.push(v + " is NaN." );
-              return ob;
-            }
+    var _this = this;
+    this.x = val;
+    this.e = er;
+    this.id = ID;
+    this.bnd = function (f, ...args) {
+      if (f == 'clean') {
+        ret2(_this.x, _this.id, []);
+        return new MonadE(_this.x, _this.id, [])
+      }
+      if (_this.e.length > 0) {
+        console.log('BYPASSING COMPUTATION in MonadE instance', _this.id, f, '.  PROPAGATING ERROR:',  _this.e[0]); 
+        return _this;  
+      }
+      if (f == 'log2') {
+        console.log(args[1])
+        return new MonadE ( args[0], args[2], [] )
+      }
+      var a = ("typeof " + f);
+      if (eval(a) == 'function') {
+        let b = '';
+        for (let v of args) {
+          b = "typeof " + v
+          if (eval(b) == 'undefined') {
+            console.log(v, "is undefined. No further computations will be attempted");
+            _this.e.push(v + " is undefined." );
+            return _this;
           }
-
-          try {return eval(f)(x, ...args)}
-          catch (error) {
-            e.push(error);
-            console.log('MonadE instance',ob.id,'generated the following error message:');
-            console.log('Error ' + error);  
+          if (eval(b) == 'NaN') {
+            console.log(v, "is NaN. No further computations will be attempted");
+            _this.e.push(v + " is NaN." );
+            return _this;
           }
         }
-  
-        else {
-          e.push(f + ' is not a function. ');
-          console.log(f, 'is not a function. No further computations will be attempted');
-          return ob;
+        try {return eval(f)(_thisx, ...args)}
+        catch (error) {
+          _this.e.push(error);
+          console.log('MonadE instance', _this.id, 'generated the following error message:');
+          console.log('Error ' + error);  
         }
-      },
-  
-      ret: function (a) {
-        window[ob.id] = new MonadE(a, ob.id, []);
-        return window[ob.id];
-      }  
-    }
-    return ob;
+      }
+      else {
+        _this.e.push(f + ' is not a function. ');
+        console.log(f, 'is not a function. No further computations will be attempted');
+        return ob;
+      }
+    };
+    this.ret = function (a) {
+      window[_this.id] = new MonadE(a, _this.id, []);
+      return window[_this.id];
+    }  
   };
 
   function add2 (x, y, str ) {
@@ -391,7 +375,7 @@ function sliceM(x, howmany) {
 };
 
 var mMEa = new MonadE(0, 'mMEa');
-
+/*
 console.log('A MonadE instance running first without and nex with a reference error: ');
   ret2(0,'a')
   .bnd('add2',3, 'a')
@@ -421,7 +405,7 @@ console.log('A MonadE instance running first without and nex with a reference er
     .bnd('square2','e')
     .bnd('add2',c.getx(),'e')
     .bnd('sqroot2','e')
-
+*/
 
 var fpTransformer = function transformer(s, m) {
   var bound = Math.ceil(Math.sqrt(s[3][s[3].length - 1]));
