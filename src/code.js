@@ -44,19 +44,6 @@ var monad = h('pre.turk6',  `    var Monad = function Monad(z = 42, g = 'generic
       this.ret = function (a) {
         return window[_this.id] = new Monad(a,_this.id);
       };
-    };
-    
-    function testPrefix (x,y) {
-      var t = y;
-      var s;
-      if (Array.isArray(x)) {
-        x.some(v => {
-          if (typeof v == 'string' && v.charAt() == 'M') {
-            t = v.slice(1, v.length);
-          }
-        })
-      }
-      return t;
     };  `  )
 
 const monadIt = h('pre', {style: {color: '#AFEEEE' }}, `  const MonadItter = () => {
@@ -588,24 +575,21 @@ var add = h('pre',  `  var add = function(x,b,mon) {
   
 var seed = h('pre',  `  mM$prime.ret([[2],3])  `  )
 
-var MonadState = h('pre',  `  
-  function MonadState(g, state, p) {
-    var ob = {
-      id: g,
-      s: state,
-      a: s[3],
-      process: p,
-      bnd: (func, ...args) => func(ob.s, ...args),  
-      run: function (ar) {
-        var ar2 = ob.process(ar);
-        ob.s = ar2;
-        ob.a = ar2[3];
-        window[ob.id] = ob;
-        return window[ob.id];
+var MonadState = h('pre',  `    function MonadState(g, state, p) {
+      var _this = this;
+      this.id = g;
+      this.s = state;
+      this.process = p;
+      this.a = s[3];
+      this.bnd = (func, ...args) => func(_this.s, ...args);  
+      this.run = ar => { 
+        var ar2 = _this.process(ar);
+        _this.s = ar2;
+        _this.a = ar2[3];
+        window[_this.id] = _this;
+        return window[_this.id];
       }
-    };
-    return ob;
-  };  `  )
+    };  `  )
 
 var primesMonad = h('pre',  `  var primesMonad = new MonadState('primesMonad', [2, '', 3, [2]], [2],  primes_state) 
 
@@ -915,7 +899,7 @@ var travMonad = h('pre',  `  var travMonad = new MonadState("travMonad", [[8,8,8
     next[0] = nums;
     next[1] = score;
     next[2] = goals;
-    next[3].unshift(ar);
+    next[3].push(ar);
     return next;         // This results in travMonad.s == next.
   }  `  )
 

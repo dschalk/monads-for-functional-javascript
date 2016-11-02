@@ -202,7 +202,7 @@ var s = new Set();
 
 var sMplayers = MonadSet(s, 'sMplayers'); // holds currently online players
 
-function MonadState(g, state, p) {
+function JonadState(g, state, p) {
   var ob = {
     id: g,
     s: state,
@@ -218,6 +218,22 @@ function MonadState(g, state, p) {
     }
   };
   return ob;
+};
+
+function MonadState(g, state, p) {
+  var _this = this;
+  this.id = g;
+  this.s = state;
+  this.process = p;
+  this.a = s[3];
+  this.bnd = (func, ...args) => func(_this.s, ...args);  
+  this.run = ar => { 
+    var ar2 = _this.process(ar);
+    _this.s = ar2;
+    _this.a = ar2[3];
+    window[_this.id] = _this;
+    return window[_this.id];
+  }
 };
 
 var travMonad = new MonadState("travMonad", [[8,8,8,8], 0, 0, [ [ [], 0, 0 ] ] ], trav_state)

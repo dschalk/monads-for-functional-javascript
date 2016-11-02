@@ -92,8 +92,8 @@ function main(sources) {
     mMgoals2.ret('A player named ' + v[2] + ' is currently logged in. Page will refresh in 4 seconds.')
     refresh() });
   mMZ17.bnd( () => testTask(v[2], v[3], e.data) ); 
-    mMZ18.bnd( () => {
-      if (pMgroup.x != 'solo' || pMname.x == v[2] ) updatePlayers(e.data)  });
+  mMZ18.bnd( () => {
+    if (pMgroup.x != 'solo' || pMname.x == v[2] ) updatePlayers(e.data)  });
   })       
   mMtemp.ret(e.data.split(',')[0])
   .bnd(next, 'CA#$42', mMZ10)
@@ -711,35 +711,25 @@ function main(sources) {
 
   
     var backAction$ = backClick$.map(() => {
-      console.log('In backAction$.()()()()()()()()()()() pMindex.x is ', pMindex.x);
       if (pMindex.x > 1) {   
         var ind = pMindex.x - 1;
         var a = travMonad.a[ind];
-        console.log('()()()()()()()() ind, a ', ind, a );
         pMnums.ret(a[0]).bnd(test3, 'MpMstyle');
         pMscore.ret(a[1])
         pMgoals.ret(a[2])
-      console.log('Still in backAction$. ()()()()()()()()()()()pMindex.x is ', pMindex.x);
-        if (pMnums.x.length == 4) {
-          socket.send(`CG#$42,${pMgroup.x},${pMname.x},${pMscore.x},${pMgoals.x}`);
-        }
+        socket.send(`CG#$42,${pMgroup.x},${pMname.x},${pMscore.x},${pMgoals.x}`);
       pMindex.bnd(add,-1);
       } 
     });
 
     var forwardAction$ = forwardClick$.map(() => {
-      console.log('In backAction$.()()()()()()()()()()() pMindex.x is ', pMindex.x);
       if (pMindex.x < travMonad.a.length - 1) {   
         var ind = pMindex.x + 1;
         var a = travMonad.a[ind];
-        console.log('()()()()()()()() ind, a ', ind, a );
         pMnums.ret(a[0]).bnd(test3, 'MpMstyle');
         pMscore.ret(a[1])
         pMgoals.ret(a[2])
-      console.log('Still in backAction$. ()()()()()()()()()()()pMindex.x is ', pMindex.x);
-        if (pMnums.x.length == 4) {
           socket.send(`CG#$42,${pMgroup.x},${pMname.x},${pMscore.x},${pMgoals.x}`);
-        }
       pMindex.bnd(add, 1);
       } 
     });
@@ -801,6 +791,9 @@ function main(sources) {
       h('div', 'mM8.x: ' + mM8.x ), 
       h('div', 'pMindex.x: ' + pMindex.x ), 
       h('div', 'travMonad.a.length: ' + travMonad.a.length  ),
+      h('div', 'travMonad.a[0]: ' + travMonad.a[pMindex.x][0] ),
+      h('div', 'travMonad.a[1]: ' + travMonad.a[pMindex.x][1] ),
+      h('div', 'travMonad.a[2]: ' + travMonad.a[pMindex.x][2] ),
   
   
   ]),
@@ -854,10 +847,11 @@ function main(sources) {
           h('button#5.op', 'concat'),
           h('br'),
           h('div#dice', { style: { display: mMdice.x } }, [
-              h('button.roll', 'ROLL'),
-              h('br'),
-              h('button#back', 'BACK'),
-              h('button#forward', 'FORWARD'),])]),
+            h('button.roll', 'ROLL'),
+            h('br'),
+            h('button#back', 'BACK'),
+            h('button#forward', 'FORWARD'),
+          ])]),
 h('div#log1',  { style: { display: mMlog1.x } }, [
 h('p', 'IN ORDER TO SEE THE GAME, TODOLIST, AND CHAT DEMONSTRATIONS, YOU MUST ENTER SOMETHING .'),
 h('span', 'Name: '),
@@ -873,11 +867,13 @@ h('hr'),
 h('h1', 'The Monads'),
 h('h3', ' Monad '),
 code.monad,
+h('br' ),
 h('span.tao#monad', ' Monad instances facilitate programming in a functional style. They facilitate the linking of computation sequences, memoization (see ' ),
 h('a', { props: { href: '#state' } }, 'MonadState'),
 h('span', '), error management (see ' ),
 h('a', { props: { href: '#error' } }, 'MonadE'),
-h('span', '), and preserving intermediate results sequences of operations (using the M prefix).'),    
+h('span', '), and preserving intermediate results in linked sequences of operations ( ' ),
+h('a', { props: { href: '#demo' } }, 'M prefix demo).' ),    
 h('p', ' In most sequences of operationns, the arguments provided to each link\'s bnd() method are functions that return an instance of Monad. Here are some examples of functions that return instances of Monad: '),
 code.e1,
 h('p', ' These functions can be used with instances of Monad in many ways, for example: '),
@@ -886,7 +882,7 @@ code.e7x,
 code.e7y,    
 h('p', ' I experimented with several definitions of Monad during the investigations that culminated in the current definition. This version\'s bnd() method re-assigns the calling monad\'s identifyer (variable name) without mutating the calling monad. For example, m.bnd(cube) re-assigns "m" to the returned monad, which has id == "m" and an x attribute that is the calling monad\'s x attribute cubed. If the previous version is an array element, an object attribute, or has a reference to it, it persists as it was. That feature is illustrated in the screen shot (below). Here are the functions associated with the screen shots:' ),
     code.test10_11,
-h('p', ' The screen shot (below) demonstrates three things: ' ),
+h('p#demo', ' The screen shot (below) demonstrates three things: ' ),
 h('pre.turk6', 
 `  (1) Immutability. When named monads are superseded by fresh instantiations, 
       previous instances that have been stored in an array do not change.
@@ -899,6 +895,9 @@ h('pre.turk6',
       the result of whatever computation, parsing, etc. the other arguments accomplish. 
       The calling monad is left unchanged.  ` ),
 h('p', ' In a similar function, m might obtain its value from a websocket, user input, or some other unpredictable source. The coder might want to preserve m with that initial value for further use, might want to keep m with its inital value, or might not care what value m has after the computation is finished. Here is the screen showing the results of running test10() and test11() in the Chrome console. ' ),   
+h('a#error', { props: { href: '#monad' } }, 'Back to the top of the Monad discussion'),
+h('br' ),
+h('br' ),
 h('img.image', {props: {src: "Immutable_a.png"}}  ),   
 h('h3', ' The Monad Laws '), 
 h('p', ' In the following discussion, "x == y" signifies that the expression x == y returns true. Let J be the collection of all Javascript values, including functions, instances of Monad, etc, and let F be the collection of all functions mapping values in J to instances of Monad with references (names) matching their ids; that is, with window[id] == m.id for some id which is a valid es2015 variable name. The collection of all such instances of Monad along and all of the functions in F is called "M". For any instances of Monad m, m1, and m2 in M and any functions f and g in F, the following relationships follow easily from the definition of Monad: '), 
