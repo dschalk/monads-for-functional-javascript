@@ -1,7 +1,7 @@
 <a name="back"></a>
 
 #JS-monads-stable 
-Monads not in the sense of category theory monads; monads in the same spirit as the Haskell programming language constructs known as "monads". See [Hask is not a category](http://math.andrej.com/2016/08/06/hask-is-not-a-category/) by Andrej Bauer and [Discussion](#discuss) below.
+Not category theory monads. Monads like Haskell monads, using patterns found in category theory. See [Hask is not a category](http://math.andrej.com/2016/08/06/hask-is-not-a-category/) by Andrej Bauer and the discussion below.
 
 This is the repository for a [Motorcycle.js](https://github.com/motorcyclejs) application running online at [JS-monads-stable](http://schalk.net:3055). Motorcycle.js is essentially [Cycle.js](https://github.com/cyclejs/core) using [Most](https://github.com/cujojs/most) and [Snabbdom](https://github.com/paldepind/snabbdom) instead of RxJS and virtual-dom.
 
@@ -70,9 +70,6 @@ These functions can be used with instances of Monad in many ways, for example:
    3 cubed is 27  
    The monad cow holds the value 3  
 ```
-  
-[Back to the top](#back)
-
 I experimented with several definitions of Monad during the investigations that led to the current one. This version's bnd() method re-assigns the calling monad's identifyer (variable name) without clobbering previous versions with the same name. For example, m.bnd(cube) re-assigns "m" to the returned monad, which has an x attribute that is the calling monad's x attribute cubed. If the previous version is an array element, an object attribute, or has a reference to it, it persists as it was, with its x attribute unchanged. That feature is illustrated in the screen shot (below). Here are the functions associated with the screen shots:
 ```javascript
     function test10 () {
