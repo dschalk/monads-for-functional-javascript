@@ -1,7 +1,6 @@
 <a name="back"></a>
 
 #JS-monads-stable 
-#Down for repairs. Breaking changes in the definition of Monad require attention. I should have done this in a branch, but I got carried away, committed some broken code, and now I am bringing everything up to date. 
 Monads not in the sense of category theory monads; monads in the same spirit as the Haskell programming language constructs known as "monads". See [Hask is not a category](http://math.andrej.com/2016/08/06/hask-is-not-a-category/) by Andrej Bauer and [Discussion](#discuss) below.
 
 This is the repository for a [Motorcycle.js](https://github.com/motorcyclejs) application running online at [JS-monads-stable](http://schalk.net:3055). Motorcycle.js is essentially [Cycle.js](https://github.com/cyclejs/core) using [Most](https://github.com/cujojs/most) and [Snabbdom](https://github.com/paldepind/snabbdom) instead of RxJS and virtual-dom.
@@ -26,14 +25,6 @@ The code here is not annotated, but detailed examinations of the code behind the
         else return m;
       };
       this.ret = function (a) {
-  (1) Immutability. When named monads are superseded by fresh instantiations, 
-      previous instances that have been stored in an array do not change.
-
-  (2) Convenient control. The monad m still has its initial value after test10() runs. 
-      Simply ppending ".bnd(m.ret)" to the end of the computation gives m its final value.  
-        return window[_this.id] = new Monad(a,_this.id);
-      };
-    };
     
     function testPrefix (x,y) {
       var t = y;
@@ -63,10 +54,10 @@ In most chains of computations, the arguments provided to each link's bnd() meth
         return ret(v * v * v, id);
     };
   
-    function log(x, message) {     // message is an array
-        console.log(message.join(', '));
+    function log(x,y) {
+        console.log(y)
         return ret(x);
-    };  
+    };
 ```
 These functions can be used with instances of Monad in many ways, for example:
 ```javascript
@@ -79,38 +70,7 @@ These functions can be used with instances of Monad in many ways, for example:
    3 cubed is 27  
    The monad cow holds the value 3  
 ```
-In the following discussion, "x == y" signifies that x == y returns true. Let J be the collection of all Javascript values, including functions, instances of Monad, etc, and let F be the collection of all functions mapping values in J to instances of Monad m with references matching their ids; that is, with m[id] == m.id. M is defined as the collection of all such instances of Monad along and all of the functions in F. We speculate that there is a one to one correspondence between monads in Hask (The For any m (with id == "m"), f, and f' in M, J, F, and F, respectively, the following relationships hold:
-```javascript
-Left Identity
-
-  equals( m.ret(v).bnd(f), f(v) )   
-  equals( ret(v).bnd(f), f(v) ) 
-  Examples: equals( m.ret(3).bnd(cube), cube(3) )  Tested and verified  
-            equals( ret(3).bnd(cube), cube(3)      Tested and verified
-  Haskell monad law: (return x) >>= f ≡ f x  
-
-Right Identity
-
-  m.bnd(m.ret) === m      Tested and verified 
-  m.bnd(ret, "m") === m   Tested and verified
-  equals(m.bnd(m.ret), m)   Tested and verified
-  Haskell monad law: m >>= return ≡ m 
-
-Commutivity
-
-  equals( m.bnd(f1).bnd(f2), m.bnd(v => f1(v).bnd(f2)) ) 
-  Example: equals( m.ret(0).bnd(add, 3).bnd(cube), 
-           m.ret(0).bnd(v => add(v,3).bnd(cube)) )  Tested amd verified
-  Haskell monad law: (m >>= f) >>= g ≡ m >>= ( \x -> (f x >>= g) ) 
-```  
-<a name="discuss"></a>
-where equals is defined as:
-```javascript
-    var equals = function equals (mon1, mon2) {
-      if (mon1.id === mon2.id && mon1.x === mon2.x) return true;
-      else return false
-    }  
-```    
+  
 [Back to the top](#back)
 
 I experimented with several definitions of Monad during the investigations that led to the current one. This version's bnd() method re-assigns the calling monad's identifyer (variable name) without clobbering previous versions with the same name. For example, m.bnd(cube) re-assigns "m" to the returned monad, which has an x attribute that is the calling monad's x attribute cubed. If the previous version is an array element, an object attribute, or has a reference to it, it persists as it was, with its x attribute unchanged. That feature is illustrated in the screen shot (below). Here are the functions associated with the screen shots:
@@ -148,15 +108,20 @@ I experimented with several definitions of Monad during the investigations that 
    }  
    
 ```   
-The screen shot(below) demonstrates two things:
+The screen shot(below) demonstrates three things:
 ```javascript
   (1) Immutability. When named monads are superseded by fresh instantiations, 
       previous instances that have been stored in an array do not change.
 
   (2) Convenient control. The monad m still has its initial value after test10() runs. 
-      Simply ppending ".bnd(m.ret)" to the end of the computation gives m its final value.  
+      Simply appending ".bnd(m.ret)" to the end of the computation causes m to wind up with the final value.   
+
+  (3) Using "M" folowed by a string as an argument in the bnd() method causes a monad to appear in 
+      a sequence having the name and id of the string, and and an x element that is
+      the result of whatever computation, parsing, etc. the other arguments accomplish. 
+      The calling monad is left unchanged.  
 ```
-In a similar function, m might obtain its value from a websocket or user input. The coder might want to preserve m for further use, might have a use for m with the final value, or might not care what value m has after the computation is finished. Here is the screen shot, taken in the Chrome console, comparing the monads returned by test10() and test11().
+In a similar function, m might obtain its value from a websocket, user input, or some other unpredictable source. The coder might want to preserve m with that initial value for further use, might want to keep m with its inital value, or might not care what value m has after the computation is finished. Here is the screen showing the results of running test10() and test11() in the Chrome console.
 
 ![Alt text](Immutable_a.png?raw=true)
 
@@ -182,12 +147,11 @@ Commutivity
     Haskell monad law: (m >>= f) >>= g ≡ m >>= ( \x -> (f x >>= g) ) 
 
 ###Disussion
-
 The Haskell statement f ≡ g means that f x == g x for all Haskell values x of the appropriate type. That is the test applied to Javascript expressions in "Monad Laws" section (above). Neither the == nor the === operator would provide useful information about the behavior of instances of Monad, which are objects. Those operators test objects for location in memory. If the left and right sides of predicates create new instances of m, then the left side m and the right side m wind up in different locations in memory. So we expect m.ret(3) == m.ret(3) to return false, and it does. The question we want answered is the question ≡ answers in Haskell: Can the left and right sides be substituted for one another and still yield the same results.
 
-The Haskell programming language borrowed the term "monad" from the branch of mathematics known as category theory. This was apropriate because Haskell monads, along with the function return and the operator >>=, behave like category theory monads, and the inspiration for them came out of category theory. For Haskell monads to be category theory monads, they would need to reside in a category-theory category. It is an established fact that they do not, although the Haskell mystique tends to give the impression that they do. See Hask is not a category.
+The Haskell programming language borrowed the term "monad" from the branch of mathematics known as category theory. This was apropriate because Haskell monads, along with the function return and the operator >>=, behave quite a bit like category theory monads, and the inspiration for them came out of category theory. For Haskell monads to be category theory monads, they would need to reside in a category-theory category. They don't, although the Haskell mystique tends to give newcommers to the language the impression that they do. See Hask is not a category.
 
-Attempts have been made to define a Haskell category, usually with special constraints, omitted features, and sometimes with definitions of morphisms that are not Haskell functions. Succeeding in that endeavor would be the first step toward proving that Haskell monads are, in some contrived context, category-theory monads. Devising such a scheme might be an instructive academic excercise, but I don't see how it could be of any value beyond that. Imitating definitions and patterns found in category theory, as Haskell does in defining the type classes functor, monoid, and monad, was a stroke of genius that vastly enriched the Haskell programming language. These category theory patterns are less needed, but neverthless useful, in Javascript. Code that adheres to them tends to be robust and versitile.
+Attempts continue to be made to define a Haskell category, usually with special constraints, omitted features, and sometimes with definitions of morphisms that are not Haskell functions. Succeeding in that endeavor would be the first step toward proving that Haskell monads are, in some contrived context, category-theory monads. Devising such a scheme might be an instructive academic excercise, but I don't see how it could possibly be of any value beyond that. Imitating definitions and patterns found in category theory, as Haskell does in defining the functor, monoid, and monad type classes, was a stroke of genius that vastly enriched the Haskell programming language and brought it into the mainstream as a viable alternative to java, c++, etc. This website runs efficiently on a Haskell websockets server. Category theory patterns are less needed, but neverthless useful, in Javascript. Code that adheres to them tends to be robust and versitile.
 
 ##MonadItter
 
@@ -531,6 +495,102 @@ The code below shows how incoming websockets messages are routed. For example, m
   });
 ```  
 The "mMZ" prefix designates instances of MonadItter. An instance's bnd() method assigns its argument to its "p" attribute. "p" runs if and when its release() method is called. The next() function releases a specified MonadItter instance when the calling monad's value matches the specified value in the expression. In the messages$ stream, the MonadItter instance's bnd methods do not take argumants, but next is capable of sending arguments when bnd() is called on functions requiring them. Here is an example:
+MonadState and MonadState Transformers
+
+An instance of MonadState holds the current state and value of a computation. For any instance of MonadState, say m, these can be accessed through m.s and m.a, respectively.
+```javascript
+    function MonadState(g, state, p) {
+      var _this = this;
+      this.id = g;
+      this.s = state;
+      this.process = p;
+      this.a = s[3];
+      this.bnd = (func, ...args) => func(_this.s, ...args);  
+      this.run = ar => { 
+        var ar2 = _this.process(ar);
+        _this.s = ar2;
+        _this.a = ar2[3];
+        window[_this.id] = _this;
+        return window[_this.id];
+      }
+    };  
+``` 
+MonadState reproduces some of the functionality found in the Haskell Module "Control.Monad.State.Lazy", inspired by the paper "Functional Programming with Overloading and Higher-der Polymorphism", Mark P Jones (http://web.cecs.pdx.edu/~mpj/) Advanced School of Functional Programming, 1995. The following demonstrations use the MonadState instances fibsMonad and primesMonad to create and store arrays of Fibonacci numbers and arrays of prime numbers, respectively. fibsMonad and primesMonad provide a simple way to compute lists of prime Fibonacci numbers. Because the results of computations are stored in the a and s attributes of MonadState instances, it was easy to make sure that no prime number had to be computed more than once in the prime Fibonacci demonstration.
+
+Here is the definition of fibsMonad, along with the definition of the function that becomes fibsMonad.process.
+```javascript
+  var primesMonad = new MonadState('primesMonad', [3, '', 3, [2,3]], primes_state);
+
+  var fibs_state = function fibs_state(ar) {
+    var a = ar.slice();
+    while (a[3].length < a[2]) {
+      a = [a[1], a[0] + a[1], a[2], a[3].concat(a[0])];
+    }
+    return a
+  }  
+```  
+Another MonadState instance used in this demonstration is primesMonad. Here is its definition along with the function that becomes primesMonad.process:
+```javascript
+  var primesMonad = new MonadState('primesMonad', [2, '', 3, [2]], [2],  primes_state) 
+
+  var primes_state = function primes_state(x) {
+    var v = x.slice();
+      while (2 == 2) {
+        if (v[3].every(e => ((v[0]/e) != Math.floor(v[0]/e)))) {
+          v[3].push(v[0]);
+        }
+        if (v[3][v[3].length - 1] > v[2]) { break }; // Not an infinite loop afterall
+        v[0]+=2;
+      }
+    return v;
+  }  
+```  
+MonadState transformers
+
+Transformers take instances of MonadState and return different instances of MonadState, possibly in a modified state. The method call "fibsMonad.bnd(fpTransformer, primesMonad)" returns primesMonad. Here is the definition of fpTransformer:
+```javascrit
+  var fpTransformer = function fpTransformer (s, m) {
+    var bound = Math.ceil(Math.sqrt(s[3][s[3].length - 1]));
+    if (bound > m.a[m.a.length - 1] ) {
+      m.run([m.s[0], "from the fibKeyPress5$ handler", bound, primesMonad.a])
+    }
+    return m;
+  }  
+```  
+If the largest number in primesMonad.a is less than the square root of the largest number in fibsMonad.a, primesMonad is updated so that the largest number in primesMonad.a is greater than the square root of the largest number in fibsMonad.a. herwise, primesMonad is returned unchanged.
+
+The final computation in the prime Fibonacci numbers demonstration occurs when "tr3(fibsState[3],primesState[3]" is called. tr3() takes an array of Fibonacci numbers and an array of prime numbers and returns an array containing an array of Fibonacci numbers, an array of prime numbers, and an array of prime Fibonacci numbers. Here is the definition of tr3:
+```javascript
+  var tr3 = function tr (fibsArray, primesArray) {
+    var bound = Math.ceil(Math.sqrt(fibsArray[fibsArray.length - 1]))
+    var primes = primesArray.slice();
+    if (primesArray.slice(-1)[0] >= bound) {
+      primes = primesArray.filter(v => v <= bound);
+    } 
+    var ar = [];
+    var fibs = fibsArray.slice(3);
+    fibs.map (v => {
+      if (primesArray.every(p => (v % p || v == p))) ar.push(v);
+    })
+    return [fibsArray, primes, ar]
+  }  
+```  
+User input is handled by a chain of computations. first to update fibsMonad, second to extract fibsMonad.s, third to run fpTransformer to modify and then return primesMonad, and fourth to extract primesMonad.s and run tr3(fibsState[3],primesState[3]). Monad instance mMres obtains the result. mMres.x[0], mMres.x[1], and mMres.x[2], are permanent features of the virtual DOM. Here is the code:
+```javascript
+  const fibKeyPress5$ = sources.DOM
+    .select('input#fib92').events('keydown');
+
+  const primeFib$ = fibKeyPress5$.map(e => {
+    if( e.keyCode == 13 ) {
+      mMres.ret(fibsMonad
+      .run([0, 1, e.target.value, []])
+      .bnd(fibsState => fibsMonad
+      .bnd(fpTransformer, primesMonad)
+      .bnd(primesState => tr3(fibsState[3],primesState[3]))))var
+    }
+  });  
+```  
+Only 48 Fibonacci numbers need to be generated in order to get the eleventh prime Fibonacci number. But 5546 prime numbers need to be generated to test for divisibility into 2971215073. Finding the next Fibonacci number is just a matter of adding the previous two. Getting the next prime number is a more elaborate and time-consuming procedure. In this context, the time needed to compute 48 Fibonacci numbers is insignificant, so I didn't bother to save previously computed Fibonacci numbers in the prime Fibonacci demonstration. When a user enters a number smaller than the current length of fibsMonad.a, fibsMonad is modified such that its length becomes exactly what the user entered. It takes a couple of seconds to test 50 Fibonacci numbers in the online demo on my desktop computer. Beyond that, lag times start getting pretty long. 
 
 The online demonstration features a game with a traversible dice-roll history; group chat rooms; and a persistent, multi-user todo list. People in the same group share the game, chat messages, and whatever todo list they might have. Updating, adding, removing, or checking "Complete" by any member causes every member 's todo list to update. The Haskell websockets server preserves a unique text file for each group's todo list. Restarting the server does not affect the lists. Restarting or refreshing the browser window causes the list display to disappear, but signing in and re-joining the old group brings it back. If the final task is removed, the server deletes the group's todo text file. 
 
