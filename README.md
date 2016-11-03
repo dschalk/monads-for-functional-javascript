@@ -5,7 +5,11 @@ Not category theory monads. Monads like Haskell monads, using patterns found in 
 
 This is the repository for a [Motorcycle.js](https://github.com/motorcyclejs) application running online at [JS-monads-stable](http://schalk.net:3055). Motorcycle.js is essentially [Cycle.js](https://github.com/cyclejs/core) using [Most](https://github.com/cujojs/most) and [Snabbdom](https://github.com/paldepind/snabbdom) instead of RxJS and virtual-dom.
 
-Motorcycle is an ideal host for my JS-monads project, which is an exposition of functional programming using instances of constructors named "Monad", "MonadState", "MonadE", "MonadSet", and "MonadItter".
+The JS-monads constructors - "Monad", "MonadState", "MonadE", "MonadSet", and "MonadItter".project - are tools whic David Schalk devised for his personal use in front-end web development. They, and the the boilerplate funcntions they use, are in the ~/src/dist/monad.js file. In the online demonstration, monad.js resides in the index.html file as a script. Functions that interact with the virtual DOM are in the main.js file. 
+
+Aside from being a place to share my ideas and techniques with any developers who might be interested, the online demonstration is a tutorial for people who are interested in functional programming. It presents examples of devising abstractions to organize code into easily maintainable blocks. For example, tweaking how the application behaves when the simulated dice game's numbers display is traversed has been a matter of adjusting code in the trav_state.js file. For while, traveling backwards and clicking numbers or rolling the dice added new displays to the games mont recent history. Changing the line "next[3].unshift(ar)" to "next[3].splice( pMindex.x, 0, ar )" caused the new displays to be added wherever a player had traveled into the past. Whaxing whimsical for a moment, I'll say that the state that the player left behind is frozen exactly how it was, and the display shows the alternate reality being created, starting in the past.
+
+ctions they use, are not currently a library. has several purposes. David Schalk's functional programming using instances of
 The server is a modified clone of the Haskell Wai Websockets server. Haskell pattern matching and list comprehension made it easy to configure the server to broadcast selectively to members of groups, who share the dice game, todo list, and chat room. I use Babel and Webpack to prepare the front end and Stack to compile everything into a single executable which I upload to my Digital Ocean "droplet". 
 
 The code here is not annotated, but detailed examinations of the code behind the multiplayer simulated dice game, persistent todo list, chat feature, and several other demonstrations can be found at [http://schalk.net:3055](http://schalk.net:3055), where the code is running online. 
@@ -364,8 +368,9 @@ Here are the definitions of MonadE and the functions used in the demonstration:
     this.getx = function getx (x) {return _this.x};
     this.bnd = function (f, ...args) {
       if (f == 'clean') {
-        ret2(_this.x, _this.id, []);
-        return new MonadE(_this.x, _this.id, [])
+        _this.e = [];
+        window[_this.id] = new MonadE(_this.x, _this.id, []);
+        return window[_this.id];
       }
       if (_this.e.length > 0) {
         console.log('BYPASSING COMPUTATION in MonadE instance', _this.id, f, '.  PROPAGATING ERROR:',  _this.e[0]); 
@@ -378,30 +383,26 @@ Here are the definitions of MonadE and the functions used in the demonstration:
       var a = ("typeof " + f);
       if (eval(a) == 'function') {
         var m = eval(f)(_this.x, ...args)
-
-        if (m instanceof Monad) {
-          let mon = testPrefix(args,_this.id); 
-          return window[mon] = new Monad(m.x, mon);
-        }
-      for (let v of args) {
-          let b = "typeof " + v
-          if (eval(b) == 'undefined' &&  b.charAt() != 'M') {
+        if (m instanceof MonadE) {
+          let mon = testPrefix2(args, _this.id); 
+          if (mon == 'code4') {
             console.log(v, "is undefined. No further computations will be attempted");
             _this.e.push(v + " is undefined." );
             return _this;
           }
-          if (eval(b) == 'NaN') {
+          if (mon == 'code5') {
             console.log(v, "is NaN. No further computations will be attempted");
             _this.e.push(v + " is NaN." );
             return _this;
           }
+          window[mon] = new MonadE(m.x, mon);
+          return window[mon];
         }
-        else return m;
       }
       else {
         _this.e.push(f + ' is not a function. ');
         console.log(f, 'is not a function. No further computations will be attempted');
-        return ob;
+        return _this;
       }
     };
     this.ret = function (a) {
@@ -409,11 +410,11 @@ Here are the definitions of MonadE and the functions used in the demonstration:
       return window[_this.id];
     }  
   };
-    
+
   function add2 (x, y, str ) {
     window[str] = new MonadE(x+y, str, []);
     return window[str];
-  };
+  }
   
   function square2 (x, str) {
     window[str] = new MonadE(x*x, str, []);
@@ -428,19 +429,38 @@ Here are the definitions of MonadE and the functions used in the demonstration:
   function sqroot2 (x,str) {
     window[str] = new MonadE(Math.sqrt(x), str, []);
     return window[str];
-  };
+  }
 
   function log2(x, message, str) {
     window[str] = new MonadE(x, str, []);
     console.log(message);
-    return window[str];
+    return window[str]
   };
 
-  function ret2(v, id = 'ret2') {
+  function ret2(v, id) {
     window[id] = new MonadE(v, id, []);
     return window[id];
+
+  function testPrefix2 (x,y) {
+    var t = y;
+    var s;
+    var ar;
+    if (Array.isArray(x)) {
+      ar = x.filter(v => typeof v == 'string')
+      ar.map( v => {  
+        if (v.charAt() != 'M' && eval(eval('typeof v') == undefined)) {
+          return 'code4';
+        }
+        else if (v.charAt() != 'M' && eval('Number.isNaN(c)')) {
+           return 'code5';    
+        }
+        else if (v.charAt() == 'M') {
+            t = v.slice(1, v.length);
+        }
+      })   
+    }
+    return t;
   };  
-   }  
 ```
 When a MonadE instance encounters a function or an argument in quotation marks of types undefined or NaN, a message string gets pushed into its e attribue. After that, the bnd() method will not process any function other than clean() and log2(). It will stop at theif (e.length > 0)block. clean() resets an instance to normal functioning mode by setting its e attribute back to []. MonadE instances are created on the flyin the error-free version. In the version with an error, these MonadE instances have already been created and ret2, by creating fresh instances, effectively re-sets their values to 0. 
 

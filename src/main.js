@@ -808,7 +808,6 @@ function main(sources) {
           h('span', ' below. ' ),
           h('br'),
           h('br'),
-          h('div.red24', 'The definition of Monad has changed. The examples all work as intended, but some of the commentary and code examples are still in the process of being updated. ' ),
           h('br'),
           h('span.tao1a', ' The demonstrations include persisternt, shared todo lists; '),
           h('br'),
