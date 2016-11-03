@@ -180,7 +180,7 @@ MonadState("travMonad", [[8,8,8,8], 0, 0, [ [ [], 0, 0 ] ] ], trav_state)
     next[0] = nums;
     next[1] = score;
     next[2] = goals;
-    next[3].unshift(ar);
+    next[3].splice( pMindex.x, 0, ar );
     return next;         // This results in travMonad.s == next.
   }
 ```  
@@ -357,72 +357,59 @@ Next, I tried to define test2 in the Chrome developer scratch pad, which runs in
 Here are the definitions of MonadE and the functions used in the demonstration:
 ```Javascript
   function MonadE (val, ID, er = []) {
-    var x = val;
-    var e = er;
-    var ob = {  
-      id: ID,
-  
-      getx: function () {return x},
-  
-      bnd: function (f, ...args) {
+    var _this = this;
+    this.x = val;
+    this.e = er;
+    this.id = ID;
+    this.getx = function getx (x) {return _this.x};
+    this.bnd = function (f, ...args) {
+      if (f == 'clean') {
+        ret2(_this.x, _this.id, []);
+        return new MonadE(_this.x, _this.id, [])
+      }
+      if (_this.e.length > 0) {
+        console.log('BYPASSING COMPUTATION in MonadE instance', _this.id, f, '.  PROPAGATING ERROR:',  _this.e[0]); 
+        return _this;  
+      }
+      if (f == 'log2') {
+        console.log(args[1])
+        return new MonadE ( args[0], args[2], [] )
+      }
+      var a = ("typeof " + f);
+      if (eval(a) == 'function') {
+        var m = eval(f)(_this.x, ...args)
 
-        if (f == 'clean') {
-          ret2(x, ob.id, []);
-          return new MonadE(x, ob.id, [])
+        if (m instanceof Monad) {
+          let mon = testPrefix(args,_this.id); 
+          return window[mon] = new Monad(m.x, mon);
         }
-
-        if (e.length > 0) {
-          console.log('BYPASSING COMPUTATION in MonadE instance', ob.id, f, '.  PROPAGATING ERROR:',  e[0]); 
-          return ob;  
-        }
-  
-        if (f == 'log2') {
-          console.log(args[0]);
-          return new MonadE(args[0], 'log', [])
-        }
-  
-        var a = ("typeof " + f);
-
-        if (eval(a) == 'function') {
-          let b = '';
-          for (let v of args) {
-            b = "typeof " + v
-            if (eval(b) == 'undefined') {
-              console.log(v, "is undefined. No further computations will be attempted");
-              e.push(v + " is undefined." );
-              return ob;
-            }
-  
-            if (eval(b) == 'NaN') {i
-              console.log(v, "is NaN. No further computations will be attempted");
-              e.push(v + " is NaN." );
-              return ob;
-            }
+      for (let v of args) {
+          let b = "typeof " + v
+          if (eval(b) == 'undefined' &&  b.charAt() != 'M') {
+            console.log(v, "is undefined. No further computations will be attempted");
+            _this.e.push(v + " is undefined." );
+            return _this;
           }
-
-          try {return eval(f)(x, ...args)}
-          catch (error) {
-            e.push(error);
-            console.log('MonadE instance',ob.id,'generated the following error message:');
-            console.log('Error ' + error);  
+          if (eval(b) == 'NaN') {
+            console.log(v, "is NaN. No further computations will be attempted");
+            _this.e.push(v + " is NaN." );
+            return _this;
           }
         }
-        
-        else {
-          e.push(f + ' is not a function. ');
-          console.log(f, 'is not a function. No further computations will be attempted');
-          return ob;
-        }
-      },
-  
-      ret: function (a) {
-        window[ob.id] = new MonadE(a, ob.id, []);
-        return window[ob.id];
-      }  
-    }
-    return ob;
+        else return m;
+      }
+      else {
+        _this.e.push(f + ' is not a function. ');
+        console.log(f, 'is not a function. No further computations will be attempted');
+        return ob;
+      }
+    };
+    this.ret = function (a) {
+      window[_this.id] = new MonadE(a, _this.id, []);
+      return window[_this.id];
+    }  
   };
-   
+    
   function add2 (x, y, str ) {
     window[str] = new MonadE(x+y, str, []);
     return window[str];

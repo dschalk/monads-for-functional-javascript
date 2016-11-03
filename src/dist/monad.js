@@ -36,7 +36,7 @@ function testPrefix (x,y) {
   if (Array.isArray(x)) {
     x.some(v => {
       if (typeof v == 'string' && v.charAt() == 'M') {
-        t = v.slice(1, v.length);
+         t = v.slice(1, v.length);
       }
     })
   }
@@ -48,7 +48,7 @@ var c = testPrefix(jack)
 console.log(c)
 
 var Monad = function Monad(z = 42, g = 'generic') {
-  var _this = this;
+  var _this = this_;
   this.x = z;
   this.id = g;
   this.bnd = function (func, ...args) {
@@ -238,21 +238,22 @@ function MonadState(g, state, p) {
 
 var travMonad = new MonadState("travMonad", [[8,8,8,8], 0, 0, [ [ [], 0, 0 ] ] ], trav_state)
 
+
 function trav_state (ar) {
   pMindex.bnd(add,1).bnd(pMindex.ret);
-  var nums = ar[0];
-  var score = ar[1];
-  var goals = ar[2];
+  pMnums.ret(ar[0]);
+  pMscore.ret(ar[1]);
+  pMgoals.ret(ar[2]);
   var next = travMonad.s.slice();
-  var ar = [nums, score, goals];
-  next[0] = nums;
-  next[1] = score;
-  next[2] = goals;
+  var ar = [ ar[0], ar[1], ar[2] ];
+  next[0] = ar[0];
+  next[1] = ar[1];
+  next[2] = ar[2];
   next[3].splice( pMindex.x, 0, ar );
   return next;
 }
 
-travMonad.run([ [0,0,0,0], 0, 0 ]);
+console.log('s in travMonad ', travMonad.run([ [0,0,0,0], 0, 0 ]).s);
 
 function evalF(x) {
   var v;
@@ -263,11 +264,25 @@ function evalF(x) {
   return v;
 }
 
-  function MonadE (val, ID, er = []) {
+function testPrefix (x,y) {
+  var t = y;
+  var s;
+  if (Array.isArray(x)) {
+    x.some(v => {
+      if (typeof v == 'string' && v.charAt() == 'M') {
+         t = v.slice(1, v.length);
+      }
+    })
+  }
+  return t;
+}
+
+function MonadE (val, ID, er = []) {
     var _this = this;
     this.x = val;
     this.e = er;
     this.id = ID;
+    this.getx = function getx (x) {return _this.x};
     this.bnd = function (f, ...args) {
       if (f == 'clean') {
         ret2(_this.x, _this.id, []);
@@ -283,10 +298,15 @@ function evalF(x) {
       }
       var a = ("typeof " + f);
       if (eval(a) == 'function') {
-        let b = '';
-        for (let v of args) {
-          b = "typeof " + v
-          if (eval(b) == 'undefined') {
+        var m = eval(f)(_this.x, ...args)
+
+        if (m instanceof Monad) {
+          let mon = testPrefix(args,_this.id); 
+          return window[mon] = new Monad(m.x, mon);
+        }
+      for (let v of args) {
+          let b = "typeof " + v
+          if (eval(b) == 'undefined' &&  b.charAt() != 'M') {
             console.log(v, "is undefined. No further computations will be attempted");
             _this.e.push(v + " is undefined." );
             return _this;
@@ -297,12 +317,7 @@ function evalF(x) {
             return _this;
           }
         }
-        try {return eval(f)(_thisx, ...args)}
-        catch (error) {
-          _this.e.push(error);
-          console.log('MonadE instance', _this.id, 'generated the following error message:');
-          console.log('Error ' + error);  
-        }
+        else return m;
       }
       else {
         _this.e.push(f + ' is not a function. ');
@@ -375,7 +390,7 @@ function sliceM(x, howmany) {
 };
 
 var mMEa = new MonadE(0, 'mMEa');
-/*
+
 console.log('A MonadE instance running first without and nex with a reference error: ');
   ret2(0,'a')
   .bnd('add2',3, 'a')
@@ -405,7 +420,7 @@ console.log('A MonadE instance running first without and nex with a reference er
     .bnd('square2','e')
     .bnd('add2',c.getx(),'e')
     .bnd('sqroot2','e')
-*/
+
 
 var fpTransformer = function transformer(s, m) {
   var bound = Math.ceil(Math.sqrt(s[3][s[3].length - 1]));

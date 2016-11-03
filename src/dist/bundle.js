@@ -5040,7 +5040,7 @@
 
 	var updateMessages = (0, _dom.h)('pre', '    var updateMessages = function updateMessages(e) {\n        var ar = e.split(\',\');\n        var sender = ar[2];\n        ar.splice(0,3);\n        var str = ar.join(\',\');\n        messageMonad.run([ [h(\'br\'), sender + \': \' + str], [], [], messageMonad.s[3] ]);\n    }  ;  ');
 
-	var travMonad = (0, _dom.h)('pre', '  var travMonad = new MonadState("travMonad", [[8,8,8,8], 0, 0, [ [ [], 0, 0 ] ] ], trav_state)\n  \n  function trav_state (ar) {\n    pMindex.bnd(add,1).bnd(pMindex.ret);\n    var nums = ar[0];\n    var score = ar[1];\n    var goals = ar[2];\n    var next = travMonad.s.slice();\n    var ar = [nums, score, goals];\n    next[0] = nums;\n    next[1] = score;\n    next[2] = goals;\n    next[3].push(ar);\n    return next;         // This results in travMonad.s == next.\n  }  ');
+	var travMonad = (0, _dom.h)('pre', '  var travMonad = new MonadState("travMonad", [[8,8,8,8], 0, 0, [ [ [], 0, 0 ] ] ], trav_state)\n  \n  function trav_state (ar) {\n    pMindex.bnd(add,1).bnd(pMindex.ret);\n    var nums = ar[0];\n    var score = ar[1];\n    var goals = ar[2];\n    var next = travMonad.s.slice();\n    var ar = [nums, score, goals];\n    next[0] = nums;\n    next[1] = score;\n    next[2] = goals;\n    next[3].splice( pMindex.x, 0, ar );\n    return next;         // This results in travMonad.s == next.\n  }  ');
 
 	var test3 = (0, _dom.h)('pre', '  function test3 (a) {\n    var b = [];\n    for (let i of [0,1,2,3]) {\n      b[i] = (a[i] == undefined) ? \'none\' : \'inline\'\n    }\n    return ret(b);\n  }  \n  \n  pMnums.bnd(test3).bnd(pMstyle.ret);  ');
 
