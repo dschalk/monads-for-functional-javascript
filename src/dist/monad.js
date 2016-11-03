@@ -1169,11 +1169,14 @@ function acc (x, y, str) {
   return window[str] = new MonadAcc(x + y, str);0
 }
 
+  
+
 var mMob10 = new Monad ({}, 'mMob10');
 var mMob11 = new Monad ([], 'mMob11');
 var mMar10 = new Monad ([], 'mMar10');
 var mMar11 = new Monad ([], 'mMar11');
 var mMar12 = new Monad ([], 'mMar12');
+var mMar13 = new Monad ([], 'mMar13');
 var ob10;
 var ob11;
 var ob12;
@@ -1219,6 +1222,7 @@ function test11 () {
       ' squared and ', m4.x, ' squared is ', m7.x); });
   return mMar11;
 }  
+
 
 console.log('.');
 console.log('.');
@@ -1286,4 +1290,21 @@ console.log('.');
 console.log('.');
 console.log('.');
 console.log('.');
-
+console.log('.');
+console.log('*** First, the MonadE versions ***');
+console.log('.');
+ret2(0,'d1').bnd('add2', 3, 'Md2').bnd('mult2',100,'Md3').bnd('square2', 'Md4').bnd('add2',-d4.x + 4,'Md5').bnd('mult2', 100, 'Md6').bnd('square2', 'Md7').bnd('add2', d4.x, 'Md8').bnd('sqroot2',d4.x+d7.x,'d8').bnd(log, 'The square root of ' + d3.x + ' squared plus ' + d6.x + ' squared equals ' + d8.x)
+console.log('.');
+ret2(0,'d1').bnd('addd2', 3, 'Md2').bnd('mult2',100,'Md3').bnd('square2', 'Md4').bnd('add2',-d4.x + 4,'Md5').bnd('mult2', 100, 'Md6').bnd('square2', 'Md7').bnd('add2', d4.x, 'Md8').bnd('sqroot2',d4.x+d7.x,'d8').bnd(log, 'The square root of ' + d3.x + ' squared plus ' + d6.x + ' squared equals ' + d8.x)
+console.log('.');
+console.log('*** Now the plain Monad versions. ***');
+console.log('.');
+ret(0,'d1').bnd(add, 3, 'd2').bnd(mult,100,'d3').bnd(square, 'd4').bnd(add,-d4.x + 4,'d5').bnd(mult, 100, 'd6').bnd(square, 'd7').bnd(add, d4.x, 'd8').bnd(sqroot,d4.x+d7.x,'d8').bnd(log, 'The square root of ' + d3.x + ' squared plus ' + d6.x + ' squared equals ' + d8.x)
+console.log('.');
+ret(0,'d1').bnd(addd, 3, 'd2').bnd(mult,100,'d3').bnd(square, 'd4').bnd(add,-d4.x + 4,'d5').bnd(mult, 100, 'd6').bnd(square, 'd7').bnd(add, d4.x, 'd8').bnd(sqroot,d4.x+d7.x,'d8').bnd(log, 'The square root of ' + d3.x + ' squared plus ' + d6.x + ' squared equals ' + d8.x)
+console.log('.');
+console.log('*** CRASH! ***');
+console.log('.');
+console.log('.');
+console.log('.');
+console.log('.');

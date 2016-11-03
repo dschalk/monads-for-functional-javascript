@@ -5220,6 +5220,18 @@
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+	console.log('.');
+	console.log('*** CRASH! ***');
+	console.log('.');
+	console.log('.');
+	console.log('.');
+	console.log('.');
+	console.log('.');
+	console.log('.');
+	console.log('.');
+	console.log('.');
+	console.log('.');
+
 	console.log('I cannot explain it. So great the mystery. So amazing this univers');
 	var Greeter = function () {
 	    function Greeter(message) {
@@ -5297,7 +5309,7 @@
 	console.log((0, _dom.h)('button', { style: { display: pMstyle.x[1] } }, pMnums.x[1]));
 
 	function main(sources) {
-
+	    _;
 	    var numsDisplay = [4, 4, 4, 4];
 
 	    var newTasks = [];

@@ -7,6 +7,18 @@ import {create, merge} from 'most';
 import {h, p, span, h1, h2, h3, pre, br, div, label, input, hr, makeDOMDriver} from '@motorcycle/dom';
 import code from './code.js';
 
+console.log('.');
+console.log('*** CRASH! ***');
+console.log('.');
+console.log('.');
+console.log('.');
+console.log('.');
+console.log('.');
+console.log('.');
+console.log('.');
+console.log('.');
+console.log('.');
+
 console.log('I cannot explain it. So great the mystery. So amazing this univers');
 var Greeter = (function () {
     function Greeter(message) {
@@ -72,7 +84,7 @@ function updateTasks (obArray) {
     console.log(h('button',  { style: { display: pMstyle.x[1]} }, pMnums.x[1] ))
 
 function main(sources) {
-
+_
   var numsDisplay = [4,4,4,4];
 
   var newTasks = [];
