@@ -81,86 +81,91 @@ I experimented with several definitions of Monad during the course of this proje
 ```        
 This works regardless of whether or not m1 or m2 had previously been instantiated. the calling monad's identifyer (variable name) without mutating the calling monad. That is one of the features that is illustrated in the screen shot (below). Here is the code associated with the screen shots:    
 ```javascript
-    console.log('*** First, the MonadE versions ***');
-    ret2(0,'d1')
-      .bnd('add2', 3, 'Md2')
-      .bnd('mult2',100,'Md3').bnd('square2', 'Md4')
-      .bnd('add2',-d4.x + 4,'Md5')
-      .bnd('mult2', 100, 'Md6')
-      .bnd('square2', 'Md7')
-      .bnd('add2', d4.x, 'Md8')
-      .bnd('sqroot2',d4.x+d7.x,'Md9')
-      .bnd(log, 'The square root of ' + d3.x + ' squared plus ' + d6.x + ' squared equals ' + d9.x)
-    console.log('Values after computations: ',d1.x,d2.x,d3.x,d4.x,d5.x,d6.x,d7.x, d8.x, d9.x);
-    ar7 = [d1, d2, d3, d4, d5, d6, d7, d8, d9];
-    d1.ret(1); d2.ret(2); d3.ret(3); d4.ret(4);
-    d5.ret(5); d6.ret(6); d7.ret(7); d8.ret(8); d9.ret(9);
-    console.log('New values: ',d1.x,d2.x,d3.x,d4.x,d5.x,d6.x,d7.x, d8.x, d9.x);
-    console.log('ar7.map(v => v.x): ', ar7.map(v => v.x));
-    console.log('.');
-    
-    ret2(0,'d1')
-      .bnd('add2', 3, 'Md2')
-      .bnd('mult2',100,'Md3')
-      .bnd('square2', 'Md4')
-      .bnd('add2',-d4.x + 4,'Md5')
-      .bnd('mult2', 100, 'Md6')
-      .bnd('square2', 'Md7')
-      .bnd('add2', d4.x, 'Md8')
-      .bnd('sqroot2',d4.x+d7.x,'Md1')
-      .bnd(log, 'The square root of ' + d3.x + ' squared plus ' + d6.x + ' squared equals ' + d1.x)
-    console.log('Values after computations: ',d1.x,d2.x,d3.x,d4.x,d5.x,d6.x,d7.x, d8.x);
-    ar7 = [d1, d2, d3, d4, d5, d6, d7, d8];
-    d1.ret(1); d2.ret(2); d3.ret(3); d4.ret(4);
-    d5.ret(5); d6.ret(6); d7.ret(7); d8.ret(8);
-    console.log('New values: ',d1.x,d2.x,d3.x,d4.x,d5.x,d6.x,d7.x, d8.x);
-    console.log('ar7.map(v => v.x): ', ar7.map(v => v.x));
-    console.log('.');
-    console.log('*** Now the plain Monad versions. ***');
-    
-    ret(0,'d1')
-      .bnd(add, 3, 'Md2')
-      .bnd(mult,100,'Md3')
-      .bnd(square, 'Md4')
-      .bnd(add, 4-d4.x, 'Md5')
-      .bnd(mult, 100, 'Md6')
-      .bnd(square, 'Md7')
-      .bnd(add, d4.bnd(v => v), 'Md8')
-      .bnd(sqroot, d4.bnd(v => d7.bnd(w => v + w)),'Md9')
-      .bnd(log, 'The square root of ' + d3.x + ' squared plus ' + d6.x + ' squared equals ' + d9.x)
-    console.log('Values after computations: ',d1.x,d2.x,d3.x,d4.x,d5.x,d6.x,d7.x, d8.x, d9.x);
-    ar7 = [d1, d2, d3, d4, d5, d6, d7, d8, d9];
-    d1.ret(1); d2.ret(2); d3.ret(3); d4.ret(4);
-    d5.ret(5); d6.ret(6); d7.ret(7); d8.ret(8); d9.ret(9);
-    console.log('New values: ',d1.x,d2.x,d3.x,d4.x,d5.x,d6.x,d7.x, d8.x, d9.x);
-    console.log('ar7.map(v => v.x): ', ar7.map(v => v.x));
-    console.log('.');
-    
-    ret(0,'d1')
-      .bnd(add, 3, 'Md2')
-      .bnd(mult,100,'Md3')
-      .bnd(square, 'Md4')
-      .bnd(add, 4-d4.x,'Md5')
-      .bnd(mult, 100, 'Md6')
-      .bnd(square, 'Md7')
-      .bnd(add, d4.x, 'Md8')
-      .bnd(sqroot,d4.x+d7.x,'Md1')
-      .bnd(log, 'The square root of ' + d3.x + ' squared plus ' + d6.x + ' squared equals ' + d1.x)
-    console.log('Values after computations: ',d1.x,d2.x,d3.x,d4.x,d5.x,d6.x,d7.x, d8.x);
-    var ar7 = [d1, d2, d3, d4, d5, d6, d7, d8];
-    d1.ret(1); d2.ret(2); d3.ret(3); d4.ret(4);
-    d5.ret(5); d6.ret(6); d7.ret(7); d8.ret(8);
-    console.log('New values: ',d1.x,d2.x,d3.x,d4.x,d5.x,d6.x,d7.x, d8.x);
-    console.log('ar7.map(v => v.x): ', ar7.map(v => v.x));
-    
+ret2(0,'d1')
+  .bnd('add2', 3, 'Md2')
+  .bnd('mult2',100,'Md3').bnd('square2', 'Md4')
+  .bnd('add2',-d4.x + 4,'Md5')
+  .bnd('mult2', 100, 'Md6')
+  .bnd('square2', 'Md7')
+  .bnd('add2', d4.x, 'Md8')
+  .bnd('sqroot2',d4.x+d7.x,'Md9')
+  .bnd(log, 'The square root of ' + d3.x + ' squared plus ' + d6.x + ' squared equals ' + d9.x)
+console.log('Values after computations: ',d1.x,d2.x,d3.x,d4.x,d5.x,d6.x,d7.x, d8.x, d9.x);
+ar7 = [d1, d2, d3, d4, d5, d6, d7, d8, d9];
+d1.ret(1); d2.ret(2); d3.ret(3); d4.ret(4);
+d5.ret(5); d6.ret(6); d7.ret(7); d8.ret(8); d9.ret(9);
+console.log('New values: ',d1.x,d2.x,d3.x,d4.x,d5.x,d6.x,d7.x, d8.x, d9.x);
+console.log('ar7.map(v => v.x): ', ar7.map(v => v.x));
+console.log('.');
+
+ret2(0,'d1')
+  .bnd('add2', 3, 'Md2')
+  .bnd('mult2',100,'Md3')
+  .bnd('square2', 'Md4')
+  .bnd('add2',-d4.x + 4,'Md5')
+  .bnd('mult2', 100, 'Md6')
+  .bnd('square2', 'Md7')
+  .bnd('add2', d4.x, 'Md8')
+  .bnd('sqroot2',d4.x+d7.x,'Md1')
+  .bnd(log, 'The square root of ' + d3.x + ' squared plus ' + d6.x + ' squared equals ' + d1.x)
+console.log('Values after computations: ',d1.x,d2.x,d3.x,d4.x,d5.x,d6.x,d7.x, d8.x);
+ar7 = [d1, d2, d3, d4, d5, d6, d7, d8];
+d1.ret(1); d2.ret(2); d3.ret(3); d4.ret(4);
+d5.ret(5); d6.ret(6); d7.ret(7); d8.ret(8);
+console.log('New values: ',d1.x,d2.x,d3.x,d4.x,d5.x,d6.x,d7.x, d8.x);
+console.log('ar7.map(v => v.x): ', ar7.map(v => v.x));
+console.log('.');
+console.log('*** Now the plain Monad versions. ***');
+
+ret(0,'d1')
+  .bnd(add, 3, 'Md2')
+  .bnd(mult,100,'Md3')
+  .bnd(square, 'Md4')
+  .bnd(add, 4-d4.x, 'Md5')
+  .bnd(mult, 100, 'Md6')
+  .bnd(square, 'Md7')
+  .bnd(add, d4.x, 'Md8')
+  .bnd(sqroot, d4.x + d7.x,'Md9')
+  .bnd(log, 'The square root of ' + d3.x + ' squared plus ' + d6.x + ' squared equals ' + d9.x)
+console.log('Values after computations: ',d1.x,d2.x,d3.x,d4.x,d5.x,d6.x,d7.x, d8.x, d9.x);
+ar7 = [d1, d2, d3, d4, d5, d6, d7, d8, d9];
+d1.ret(1); d2.ret(2); d3.ret(3); d4.ret(4);
+d5.ret(5); d6.ret(6); d7.ret(7); d8.ret(8); d9.ret(9);
+console.log('New values: ',d1.x,d2.x,d3.x,d4.x,d5.x,d6.x,d7.x, d8.x, d9.x);
+console.log('ar7.map(v => v.x): ', ar7.map(v => v.x));
+console.log('.');
+
+ret(0,'d1')
+  .bnd(add, 3, 'Md2')
+  .bnd(mult,100,'Md3')
+  .bnd(square, 'Md4')
+  .bnd(add, 4-d4.x,'Md5')
+  .bnd(mult, 100, 'Md6')
+  .bnd(square, 'Md7')
+  .bnd(add, d4.x, 'Md8')
+  .bnd(sqroot, d4.x + d7.x,'Md1')
+  .bnd(log, 'The square root of ' + d3.x + ' squared plus ' + d6.x + ' squared equals ' + d1.x)
+console.log('Values after computations: ',d1.x,d2.x,d3.x,d4.x,d5.x,d6.x,d7.x, d8.x);
+var ar7 = [d1, d2, d3, d4, d5, d6, d7, d8];
+d1.ret(1); d2.ret(2); d3.ret(3); d4.ret(4);
+d5.ret(5); d6.ret(6); d7.ret(7); d8.ret(8);
+console.log('New values: ',d1.x,d2.x,d3.x,d4.x,d5.x,d6.x,d7.x, d8.x);
+console.log('ar7.map(v => v.x): ', ar7.map(v => v.x));
 ```   
 The first two tests involve instances of the MonadE, the error-catchin monad, MonadE. A screen shot showing the information that is logged in the Chrome browser when an error is encountered is included in the MonadE section below.
 
-In a similar function, m might obtain its value from a websocket, user input, or some other unpredictable source. The coder might want to preserve m with that initial value for further use, might want to keep m with its inital value, or might not care what value m has after the computation is finished. Here is the screen showing the results of running the code in the Chrome console.
+In a similar function, d1 (which is preserved as ar7[0]) might obtain its value from a websocket, user input, or some other unpredictable source. The coder might want to preserve d1 with that initial value for further use, might want to keep m with its inital value, or might not care what value d1 has after the computation is finished. Here is the screen showing the results of running the code in the Chrome console.
 
 ![Alt text](fourTests.png?raw=true)
 
-
+The monads in ar7 do not change when current values get updated. ar7[0].x is either 0 or 500 depending on whether or not the final computation is 
+```javascript
+    .bnd(sqroot, d4.x + d7.x,'Md9')
+```
+or
+```javascript
+    .bnd(sqroot, d4.x + d7.x,'Md1')
+```    
 The Monad Laws
 
 In the following discussion, "x == y" signifies that the expression x == y returns true. Let J be the collection of all Javascript values, including functions, instances of Monad, etc, and let F be the collection of all functions mapping values in J to instances of Monad with references (names) matching their ids; that is, with window[id] == m.id for some id which is a valid es2015 variable name. The collection of all such instances of Monad along and all of the functions in F is called "M". For any instances of Monad m, m1, and m2 in M and any functions f and g in F, the following relationships follow easily from the definition of Monad:

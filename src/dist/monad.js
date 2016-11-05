@@ -1383,8 +1383,8 @@ ret(0,'d1')
   .bnd(add, 4-d4.x, 'Md5')
   .bnd(mult, 100, 'Md6')
   .bnd(square, 'Md7')
-  .bnd(add, d4.bnd(v => v), 'Md8')
-  .bnd(sqroot, d4.bnd(v => d7.bnd(w => v + w)),'Md9')
+  .bnd(add, d4.x, 'Md8')
+  .bnd(sqroot, d4.x + d7.x,'Md9')
   .bnd(log, 'The square root of ' + d3.x + ' squared plus ' + d6.x + ' squared equals ' + d9.x)
 console.log('Values after computations: ',d1.x,d2.x,d3.x,d4.x,d5.x,d6.x,d7.x, d8.x, d9.x);
 ar7 = [d1, d2, d3, d4, d5, d6, d7, d8, d9];
@@ -1402,7 +1402,7 @@ ret(0,'d1')
   .bnd(mult, 100, 'Md6')
   .bnd(square, 'Md7')
   .bnd(add, d4.x, 'Md8')
-  .bnd(sqroot,d4.x+d7.x,'Md1')
+  .bnd(sqroot, d4.x + d7.x,'Md1')
   .bnd(log, 'The square root of ' + d3.x + ' squared plus ' + d6.x + ' squared equals ' + d1.x)
 console.log('Values after computations: ',d1.x,d2.x,d3.x,d4.x,d5.x,d6.x,d7.x, d8.x);
 var ar7 = [d1, d2, d3, d4, d5, d6, d7, d8];
