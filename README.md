@@ -5,11 +5,10 @@ Not category theory monads. Monads like Haskell monads, using patterns found in 
 
 This is the repository for a [Motorcycle.js](https://github.com/motorcyclejs) application running online at [JS-monads-stable](http://schalk.net:3055). Motorcycle.js is essentially [Cycle.js](https://github.com/cyclejs/core) using [Most](https://github.com/cujojs/most) and [Snabbdom](https://github.com/paldepind/snabbdom) instead of RxJS and virtual-dom.
 
-The JS-monads constructors - "Monad", "MonadState", "MonadE", "MonadSet", and "MonadItter".project - are tools whic David Schalk devised for his personal use in front-end web development. They, and the the boilerplate funcntions they use, are in the ~/src/dist/monad.js file. In the online demonstration, monad.js resides in the index.html file as a script. Functions that interact with the virtual DOM are in the main.js file. 
+The JS-monads constructors - "Monad", "MonadState", "MonadE", "MonadSet", and "MonadItter".project - are tools whic David Schalk devised for his personal use in front-end web development. They, and the boilerplate funcntions they use, are in the ~/src/dist/monad.js file. In the online demonstration, monad.js resides in the index.html file as a script. Functions that interact with the virtual DOM are in the main.js file. 
 
-Aside from being a place to share my ideas and techniques with any developers who might be interested, the online demonstration is a tutorial for people who are interested in functional programming. It presents examples of devising abstractions to organize code into easily maintainable blocks. For example, tweaking how the application behaves when the simulated dice game's numbers display is traversed has been a matter of adjusting code in the trav_state.js file. For while, traveling backwards and clicking numbers or rolling the dice added new displays to the games mont recent history. Changing the line "next[3].unshift(ar)" to "next[3].splice( pMindex.x, 0, ar )" caused the new displays to be added wherever a player had traveled into the past. Whaxing whimsical for a moment, I'll say that the state that the player left behind is frozen exactly how it was, and the display shows the alternate reality being created, starting in the past.
+Aside from being a place to share my ideas and techniques with any developers who might be interested, the online demonstration is a tutorial for people who are interested in functional programming. It presents examples of devising abstractions to organize code into blocks of code that are easy to reason about and maintaim. For example, tweaking how the application behaves when the simulated dice game's numbers display is traversed has been a matter of making adjuctment in trav_state, a function defined in monads.js, For while, traveling backwards and clicking numbers or rolling the dice added new displays to the games mont recent history. Changing the line "next[3].unshift(ar)" to "next[3].splice( pMindex.x, 0, ar )" caused the new displays to be added wherever a player happenes to be in in the history of displays. The state that the player left behind gets bumped up further into the future each time a new display if generated. In other words, the index number the array array that was left behind in travMonad.a gets incremented by 1 each time a new array is added. The abandoned array continues have index number == travMonad.a.length -1. The future is not altered. An alternative reality is created where the player can continue all the way to victory (goals == 3).
 
-ctions they use, are not currently a library. has several purposes. David Schalk's functional programming using instances of
 The server is a modified clone of the Haskell Wai Websockets server. Haskell pattern matching and list comprehension made it easy to configure the server to broadcast selectively to members of groups, who share the dice game, todo list, and chat room. I use Babel and Webpack to prepare the front end and Stack to compile everything into a single executable which I upload to my Digital Ocean "droplet". 
 
 The code here is not annotated, but detailed examinations of the code behind the multiplayer simulated dice game, persistent todo list, chat feature, and several other demonstrations can be found at [http://schalk.net:3055](http://schalk.net:3055), where the code is running online. 
@@ -74,7 +73,7 @@ These functions can be used with instances of Monad in many ways, for example:
    3 cubed is 27  
    The monad cow holds the value 3  
 ```
-I experimented with several definitions of Monad during the course of this project. The reader is encouraged to experiment with variations on the theme. If you come up with something that is useful to you, please let me know. The current version is the most useful for me. its bnd() method can assign the return value of bnd()'s argument to any valid Javascript variable name. For example,
+I experimented with several definitions of Monad during the course of this project. The reader is encouraged to experiment with variations on the theme. If you come up with something that is useful to you, please let me know. The current version is the most useful for me. Its bnd() method can assign the return value of bnd()'s argument to any valid Javascript variable name. For example,
 ```javascript
     ret(3, 'm1').bnd(cube, 'Mm2')
     Result: m1.x == 3
@@ -153,11 +152,15 @@ This works regardless of whether or not m1 or m2 had previously been instantiate
     d5.ret(5); d6.ret(6); d7.ret(7); d8.ret(8);
     console.log('New values: ',d1.x,d2.x,d3.x,d4.x,d5.x,d6.x,d7.x, d8.x);
     console.log('ar7.map(v => v.x): ', ar7.map(v => v.x));
-         }  
+    
 ```   
 
 
 ![Alt text](fourTests.png?raw=true)
+
+The first two tests involve instances of the MonadE, the error-catchin monad, MonadE. A screen shot showing the information that is logged in the Chrome browser when an error is encountered is included in the MonadE section below.
+
+In a similar function, m might obtain its value from a websocket, user input, or some other unpredictable source. The coder might want to preserve m with that initial value for further use, might want to keep m with its inital value, or might not care what value m has after the computation is finished. Here is the screen showing the results of running the code in the Chrome console.
 
 The Monad Laws
 
