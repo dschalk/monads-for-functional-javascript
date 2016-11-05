@@ -157,7 +157,7 @@ This works regardless of whether or not m1 or m2 had previously been instantiate
 ```   
 
 
-![Alt text](MonadE_a.png?raw=true)
+![Alt text](fourTests.png?raw=true)
 
 The Monad Laws
 
@@ -361,7 +361,7 @@ The variable test1 was defined as shown below. When test1 was entered in the Chr
 ```javascript
 
 ```
-  ![Alt text](fourTests.png?raw=true)
+  ![Alt text](MonadE_a.png?raw=true)
 Here are the definitions of MonadE and the functions used in the demonstration:
 ```Javascript
   function MonadE (val, ID, er = []) {
