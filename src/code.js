@@ -1011,7 +1011,8 @@ var e7y = h('pre',  `    Received the value 3
     3 cubed is 27  
     The monad cow holds the value 3  `  )
 
-var monadE = h('pre.turk',  `  function MonadE (val, ID, er = []) {
+var monadE = h('pre.turk',  `  
+  function MonadE (val, ID, er = []) {
     var _this = this;
     this.x = val;
     this.e = er;
@@ -1019,8 +1020,9 @@ var monadE = h('pre.turk',  `  function MonadE (val, ID, er = []) {
     this.getx = function getx (x) {return _this.x};
     this.bnd = function (f, ...args) {
       if (f == 'clean') {
-        ret2(_this.x, _this.id, []);
-        return new MonadE(_this.x, _this.id, [])
+        _this.e = [];
+        window[_this.id] = new MonadE(_this.x, _this.id, []);
+        return window[_this.id];
       }
       if (_this.e.length > 0) {
         console.log('BYPASSING COMPUTATION in MonadE instance', _this.id, f, '.  PROPAGATING ERROR:',  _this.e[0]); 
@@ -1033,30 +1035,26 @@ var monadE = h('pre.turk',  `  function MonadE (val, ID, er = []) {
       var a = ("typeof " + f);
       if (eval(a) == 'function') {
         var m = eval(f)(_this.x, ...args)
-
-        if (m instanceof Monad) {
-          let mon = testPrefix(args,_this.id); 
-          return window[mon] = new Monad(m.x, mon);
-        }
-      for (let v of args) {
-          let b = "typeof " + v
-          if (eval(b) == 'undefined' &&  b.charAt() != 'M') {
+        if (m instanceof MonadE) {
+          let mon = testPrefix2(args, _this.id); 
+          if (mon == 'code4') {
             console.log(v, "is undefined. No further computations will be attempted");
             _this.e.push(v + " is undefined." );
             return _this;
           }
-          if (eval(b) == 'NaN') {
+          if (mon == 'code5') {
             console.log(v, "is NaN. No further computations will be attempted");
             _this.e.push(v + " is NaN." );
             return _this;
           }
+          window[mon] = new MonadE(m.x, mon);
+          return window[mon];
         }
-        else return m;
       }
       else {
         _this.e.push(f + ' is not a function. ');
         console.log(f, 'is not a function. No further computations will be attempted');
-        return ob;
+        return _this;
       }
     };
     this.ret = function (a) {
@@ -1064,7 +1062,12 @@ var monadE = h('pre.turk',  `  function MonadE (val, ID, er = []) {
       return window[_this.id];
     }  
   };
-   
+
+  function add2 (x, y, str ) {
+    window[str] = new MonadE(x+y, str, []);
+    return window[str];
+  }
+  
   function square2 (x, str) {
     window[str] = new MonadE(x*x, str, []);
     return window[str];
@@ -1078,50 +1081,40 @@ var monadE = h('pre.turk',  `  function MonadE (val, ID, er = []) {
   function sqroot2 (x,str) {
     window[str] = new MonadE(Math.sqrt(x), str, []);
     return window[str];
-  };
+  }
 
   function log2(x, message, str) {
     window[str] = new MonadE(x, str, []);
     console.log(message);
-    return window[str];
+    return window[str]
   };
 
-  function ret2(v, id = 'ret2') {
+  function ret2(v, id) {
     window[id] = new MonadE(v, id, []);
     return window[id];
-  };  `  )
 
-var screenshot1 = h('pre.turk',  `  test1 = ret2(0,'a')
-    .bnd('add2',3, 'a')
-    .bnd('mult2',100,'a')
-    .bnd('square2','c')
-    .bnd('ret2','c')
-    .bnd('add2',-c.getx() + 4,'b')
-    .bnd('ret2','b')
-    .bnd('mult2',100,'b')
-    .bnd('ret2','e')
-    .bnd('square2','e')
-    .bnd('add2',c.getx(),'e')
-    .bnd('sqroot2','e')
-    .bnd('log2','The square root of the sum of ' + a.getx() + 
-      ' squared and ' + b.getx() + ' squared is ' + e.getx(), 'e')
-    .getx()  `  )
+  function testPrefix2 (x,y) {
+    var t = y;
+    var s;
+    var ar;
+    if (Array.isArray(x)) {
+      ar = x.filter(v => typeof v == 'string')
+      ar.map( v => {  
+        if (v.charAt() != 'M' && eval(eval('typeof v') == undefined)) {
+          return 'code4';
+        }
+        else if (v.charAt() != 'M' && eval('Number.isNaN(c)')) {
+           return 'code5';    
+        }
+        else if (v.charAt() == 'M') {
+            t = v.slice(1, v.length);
+        }
+      })   
+    }
+    return t;
+  };  
+  `  )
 
-var screenshot2= h('pre.turk',  `  test2 = ret2(0,'a')
-    .bnd('add22',3, 'a')     // The error occurs here.
-    .bnd('mult2',100,'a')
-    .bnd('square2','c')
-    .bnd('ret2','c')
-    .bnd('add2',-c.getx() + 4,'b')
-    .bnd('ret2','b')
-    .bnd('mult2',100,'b')
-    .bnd('ret2','e')
-    .bnd('square2','e')
-    .bnd('add2',c.getx(),'e')
-    .bnd('sqroot2','e')
-    .bnd('log2','The square root of the sum of ' + a.getx() + 
-      ' squared and ' + b.getx() + ' squared is ' + e.getx(), 'e')
-    .getx()  `  )
 
 var test10_11 = h('pre.turk5',  `    function test10 () {
       m.ret(4).bnd(mult,100,'Mm1')
@@ -1153,8 +1146,79 @@ var test10_11 = h('pre.turk5',  `    function test10 () {
       return mMar11;
     }  `  )
 
-var test = h('pre',  `  
-  `  )
+var tests = h('pre.red9',  `  
+    console.log('*** First, the MonadE versions ***');
+    ret2(0,'d1')
+      .bnd('add2', 3, 'Md2')
+      .bnd('mult2',100,'Md3').bnd('square2', 'Md4')
+      .bnd('add2',-d4.x + 4,'Md5')
+      .bnd('mult2', 100, 'Md6')
+      .bnd('square2', 'Md7')
+      .bnd('add2', d4.x, 'Md8')
+      .bnd('sqroot2',d4.x+d7.x,'Md9')
+      .bnd(log, 'The square root of ' + d3.x + ' squared plus ' + d6.x + ' squared equals ' + d9.x)
+    console.log('Values after computations: ',d1.x,d2.x,d3.x,d4.x,d5.x,d6.x,d7.x, d8.x, d9.x);
+    ar7 = [d1, d2, d3, d4, d5, d6, d7, d8, d9];
+    d1.ret(1); d2.ret(2); d3.ret(3); d4.ret(4);
+    d5.ret(5); d6.ret(6); d7.ret(7); d8.ret(8); d9.ret(9);
+    console.log('New values: ',d1.x,d2.x,d3.x,d4.x,d5.x,d6.x,d7.x, d8.x, d9.x);
+    console.log('ar7.map(v => v.x): ', ar7.map(v => v.x));
+    console.log('.');
+    
+    ret2(0,'d1')
+      .bnd('add2', 3, 'Md2')
+      .bnd('mult2',100,'Md3')
+      .bnd('square2', 'Md4')
+      .bnd('add2',-d4.x + 4,'Md5')
+      .bnd('mult2', 100, 'Md6')
+      .bnd('square2', 'Md7')
+      .bnd('add2', d4.x, 'Md8')
+      .bnd('sqroot2',d4.x+d7.x,'Md1')
+      .bnd(log, 'The square root of ' + d3.x + ' squared plus ' + d6.x + ' squared equals ' + d1.x)
+    console.log('Values after computations: ',d1.x,d2.x,d3.x,d4.x,d5.x,d6.x,d7.x, d8.x);
+    ar7 = [d1, d2, d3, d4, d5, d6, d7, d8];
+    d1.ret(1); d2.ret(2); d3.ret(3); d4.ret(4);
+    d5.ret(5); d6.ret(6); d7.ret(7); d8.ret(8);
+    console.log('New values: ',d1.x,d2.x,d3.x,d4.x,d5.x,d6.x,d7.x, d8.x);
+    console.log('ar7.map(v => v.x): ', ar7.map(v => v.x));
+    console.log('.');
+    console.log('*** Now the plain Monad versions. ***');
+    
+    ret(0,'d1')
+      .bnd(add, 3, 'Md2')
+      .bnd(mult,100,'Md3')
+      .bnd(square, 'Md4')
+      .bnd(add, 4-d4.x, 'Md5')
+      .bnd(mult, 100, 'Md6')
+      .bnd(square, 'Md7')
+      .bnd(add, d4.bnd(v => v), 'Md8')
+      .bnd(sqroot, d4.bnd(v => d7.bnd(w => v + w)),'Md9')
+      .bnd(log, 'The square root of ' + d3.x + ' squared plus ' + d6.x + ' squared equals ' + d9.x)
+    console.log('Values after computations: ',d1.x,d2.x,d3.x,d4.x,d5.x,d6.x,d7.x, d8.x, d9.x);
+    ar7 = [d1, d2, d3, d4, d5, d6, d7, d8, d9];
+    d1.ret(1); d2.ret(2); d3.ret(3); d4.ret(4);
+    d5.ret(5); d6.ret(6); d7.ret(7); d8.ret(8); d9.ret(9);
+    console.log('New values: ',d1.x,d2.x,d3.x,d4.x,d5.x,d6.x,d7.x, d8.x, d9.x);
+    console.log('ar7.map(v => v.x): ', ar7.map(v => v.x));
+    console.log('.');
+    
+    ret(0,'d1')
+      .bnd(add, 3, 'Md2')
+      .bnd(mult,100,'Md3')
+      .bnd(square, 'Md4')
+      .bnd(add, 4-d4.x,'Md5')
+      .bnd(mult, 100, 'Md6')
+      .bnd(square, 'Md7')
+      .bnd(add, d4.x, 'Md8')
+      .bnd(sqroot,d4.x+d7.x,'Md1')
+      .bnd(log, 'The square root of ' + d3.x + ' squared plus ' + d6.x + ' squared equals ' + d1.x)
+    console.log('Values after computations: ',d1.x,d2.x,d3.x,d4.x,d5.x,d6.x,d7.x, d8.x);
+    var ar7 = [d1, d2, d3, d4, d5, d6, d7, d8];
+    d1.ret(1); d2.ret(2); d3.ret(3); d4.ret(4);
+    d5.ret(5); d6.ret(6); d7.ret(7); d8.ret(8);
+    console.log('New values: ',d1.x,d2.x,d3.x,d4.x,d5.x,d6.x,d7.x, d8.x);
+    console.log('ar7.map(v => v.x): ', ar7.map(v => v.x));
+    `  )
 
 var p6 = h('pre',  `  
 `  )
@@ -1164,7 +1228,7 @@ var p9 = h('pre',  `
 
 
 
-  export default { test10_11, screenshot1, screenshot2, monadE, numClick1, numClick2, mMZ10, test3, travMonad, monad, equals, fmap, opM, e1, e2, e2x, e3, e4, e4x, e6, e6x, e7, e7x, e7y, driver, messages, monadIt, MonadSet, updateCalc, arrayFuncs, nums, cleanup, ret, C42, newTask, process, mM$task, colorClick, edit, testZ, quad, runTest, todoStream, inc, seed,  add, MonadState, primesMonad, fibsMonad, primeFibInterface, tr3, fpTransformer, factorsMonad, factorsInput, playerMonad, promise, promiseSnippet, timeout, timeoutSnippet, examples, examples2, async }
+  export default { tests, monadE, numClick1, numClick2, mMZ10, test3, travMonad, monad, equals, fmap, opM, e1, e2, e2x, e3, e4, e4x, e6, e6x, e7, e7x, e7y, driver, messages, monadIt, MonadSet, updateCalc, arrayFuncs, nums, cleanup, ret, C42, newTask, process, mM$task, colorClick, edit, testZ, quad, runTest, todoStream, inc, seed,  add, MonadState, primesMonad, fibsMonad, primeFibInterface, tr3, fpTransformer, factorsMonad, factorsInput, playerMonad, promise, promiseSnippet, timeout, timeoutSnippet, examples, examples2, async }
  
 
 

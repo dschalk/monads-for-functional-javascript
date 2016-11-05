@@ -112,6 +112,10 @@ h3 {
   width: 100px;
 }
 
+.yellow {
+  color: #e8e8ab;
+}
+
 .green {
   color: #00ffa5;
   font-size: 16x;
@@ -163,6 +167,11 @@ h3 {
   color: #ff0000;
   font-size: 16px;
 }
+
+.red9 {
+  color:#db8e8e;
+}
+
 .turk5 {
   margin: 1%;
   color: #ff7fac;

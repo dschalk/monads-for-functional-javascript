@@ -8,18 +8,8 @@ import {h, p, span, h1, h2, h3, pre, br, div, label, input, hr, makeDOMDriver} f
 import code from './code.js';
 
 console.log('.');
-console.log('*** CRASH! ***');
-console.log('.');
-console.log('.');
-console.log('.');
-console.log('.');
-console.log('.');
-console.log('.');
-console.log('.');
-console.log('.');
 console.log('.');
 
-console.log('I cannot explain it. So great the mystery. So amazing this univers');
 var Greeter = (function () {
     function Greeter(message) {
         this.greeting = message;
@@ -84,9 +74,7 @@ function updateTasks (obArray) {
     console.log(h('button',  { style: { display: pMstyle.x[1]} }, pMnums.x[1] ))
 
 function main(sources) {
-_
   var numsDisplay = [4,4,4,4];
-
   var newTasks = [];
 
   const messages$ = (sources.WS).map( e => {
@@ -882,7 +870,7 @@ h('br' ),
 h('span.tao#monad', ' Monad instances facilitate programming in a functional style. They facilitate the linking of computation sequences, memoization (see ' ),
 h('a', { props: { href: '#state' } }, 'MonadState'),
 h('span', '), error management (see ' ),
-h('a', { props: { href: '#error' } }, 'MonadE'),
+h('a', { props: { href: '#err' } }, 'MonadE'),
 h('span', '), and preserving intermediate results in linked sequences of operations ( ' ),
 h('a', { props: { href: '#demo' } }, 'M prefix demo).' ),    
 h('p', ' In most sequences of operationns, the arguments provided to each link\'s bnd() method are functions that return an instance of Monad. Here are some examples of functions that return instances of Monad: '),
@@ -891,29 +879,24 @@ h('p', ' These functions can be used with instances of Monad in many ways, for e
 code.e7,    
 code.e7x,    
 code.e7y,    
-h('p', ' I experimented with several definitions of Monad during the investigations that culminated in the current definition. This version\'s bnd() method re-assigns the calling monad\'s identifyer (variable name) without mutating the calling monad. For example, m.bnd(cube) re-assigns "m" to the returned monad, which has id == "m" and an x attribute that is the calling monad\'s x attribute cubed. If the previous version is an array element, an object attribute, or has a reference to it, it persists as it was. That feature is illustrated in the screen shot (below). Here are the functions associated with the screen shots:' ),
-    code.test10_11,
-h('p#demo', ' The screen shot (below) demonstrates three things: ' ),
-h('pre.turk6', 
-`  (1) Immutability. When named monads are superseded by fresh instantiations, 
-      previous instances that have been stored in an array do not change.
-
-  (2) Convenient control. The monad m still has its initial value after test10() runs. 
-      Simply appending ".bnd(m.ret)" to the end of the computation causes m to wind up with the final value.   
-
-  (3) Using "M" folowed by a string as an argument in the bnd() method causes a monad to appear in 
-      a sequence having the name and id of the string, and and an x element that is
-      the result of whatever computation, parsing, etc. the other arguments accomplish. 
-      The calling monad is left unchanged.  ` ),
-h('p', ' In a similar function, m might obtain its value from a websocket, user input, or some other unpredictable source. The coder might want to preserve m with that initial value for further use, might want to keep m with its inital value, or might not care what value m has after the computation is finished. Here is the screen showing the results of running test10() and test11() in the Chrome console. ' ),   
+h('p', ' I experimented with several definitions of Monad during the course of this project. The reader is encouraged to experiment with variations on the theme. If you come up with something that is useful to you, please let me know. The current version is the most useful for me. its bnd() method can assign the return value of bnd()\'s argument to any valid Javascript variable name. For example, ' ), 
+h('pre.turk24', `    ret(3, 'm1').bnd(cube, 'Mm2')
+    Result: m1.x == 3
+            m2.x == 27   ` ),
+h('p', ' This works regardless of whether or not m1 or m2 had previously been instantiated. the calling monad\'s identifyer (variable name) without mutating the calling monad. That is one of the features that is illustrated in the screen shot (below). Here is the code associated with the screen shots: ' ),
+    code.tests,
+h('span#demo', ' The first two tests involve instances of the MonadE, the error-catchin monad, MonadE. A screen shot showing the information that is logged in the Chrome browser when an error is encountered is included in the ' ),
+h('a', { props: { href: '#err' } }, 'MonadE'),
+h('span', ' section below.  ' ), 
+h('p', ' In a similar function, m might obtain its value from a websocket, user input, or some other unpredictable source. The coder might want to preserve m with that initial value for further use, might want to keep m with its inital value, or might not care what value m has after the computation is finished. Here is the screen showing the results of running the code in the Chrome console. ' ),   
 h('a#error', { props: { href: '#monad' } }, 'Back to the top of the Monad discussion'),
 h('br' ),
 h('br' ),
-h('img.image', {props: {src: "Immutable_a.png"}}  ),   
+h('img.image', {props: {src: "fourTests.png"}}  ),   
 h('h3', ' The Monad Laws '), 
 h('p', ' In the following discussion, "x == y" signifies that the expression x == y returns true. Let J be the collection of all Javascript values, including functions, instances of Monad, etc, and let F be the collection of all functions mapping values in J to instances of Monad with references (names) matching their ids; that is, with window[id] == m.id for some id which is a valid es2015 variable name. The collection of all such instances of Monad along and all of the functions in F is called "M". For any instances of Monad m, m1, and m2 in M and any functions f and g in F, the following relationships follow easily from the definition of Monad: '), 
 h('div', 'Left Identity ' ),
-h('pre.turk', `    m.ret(v, ...args).bnd(f, ...args).x == f(v, ...args).x   
+h('pre.turk', `    m.ret(v, ...args).bnd(f, ...args).x == f(v, ...args).x 
     ret(v, ...args).bnd(f, ...args).x == f(v, ...args).x 
     Examples: m.ret(3).bnd(cube).x == cube(3).x  Tested and verified  
     ret(3).bnd(cube).x == cube(3).x     Tested and verified
@@ -1047,7 +1030,7 @@ h('a', { props: { href: '#top' } }, 'Back To The Top'),
   h('p', ' Incoming websockets messages trigger updates to the game display, the chat display, and the todo list display. The members of a group see what other members are doing; and in the case of the todo list, they see the current list when they sign in to the group. When any member of a group adds a task, crosses it out as completed, edits its description, or removes it, the server updates the persistent file and all members of the group immediately see the revised list.  '),
   h('p', 'The code below shows how incoming websockets messages are routed. For example, mMZ10.release() is called when a new dice roll (prefixed by CA#$42) comes in.   '),
   code.messages,
-  h('p', ' The "mMZ" prefix designates instances of MonadItter. An instance\'s bnd() method assigns its argument to its "p" attribute. "p" runs if and when its release() method is called. The next() function releases a specified MonadItter instance when the calling monad\'s value matches the specified value in the expression. In the messages$ stream, the MonadItter instance\'s bnd methods do not take argumants, but next is capable of sending arguments when bnd() is called on functions requiring them. Here is an example: '),
+  h('p#err', ' The "mMZ" prefix designates instances of MonadItter. An instance\'s bnd() method assigns its argument to its "p" attribute. "p" runs if and when its release() method is called. The next() function releases a specified MonadItter instance when the calling monad\'s value matches the specified value in the expression. In the messages$ stream, the MonadItter instance\'s bnd methods do not take argumants, but next is capable of sending arguments when bnd() is called on functions requiring them. Here is an example: '),
   h('a#tdList2', { props: { href: '#itterLink' } }, 'release() with arguments'),
   h('br'),
   h('a#error', { props: { href: '#monad' } }, 'Back to Monad discussion'),

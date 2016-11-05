@@ -74,57 +74,90 @@ These functions can be used with instances of Monad in many ways, for example:
    3 cubed is 27  
    The monad cow holds the value 3  
 ```
-I experimented with several definitions of Monad during the investigations that led to the current one. This version's bnd() method re-assigns the calling monad's identifyer (variable name) without clobbering previous versions with the same name. For example, m.bnd(cube) re-assigns "m" to the returned monad, which has an x attribute that is the calling monad's x attribute cubed. If the previous version is an array element, an object attribute, or has a reference to it, it persists as it was, with its x attribute unchanged. That feature is illustrated in the screen shot (below). Here are the functions associated with the screen shots:
+I experimented with several definitions of Monad during the course of this project. The reader is encouraged to experiment with variations on the theme. If you come up with something that is useful to you, please let me know. The current version is the most useful for me. its bnd() method can assign the return value of bnd()'s argument to any valid Javascript variable name. For example,
 ```javascript
-    function test10 () {
-      m.ret(4).bnd(mult,100,'Mm1')
-      .bnd(square,'Mm2')
-      .bnd(add,-m2.x + 3,'Mm3')
-      .bnd(mult,100,'Mm4')
-      .bnd(square,'Mm5')
-      .bnd(add,m2.x,'Mm6') 
-      .bnd(sqroot,'Mm7')
-      .bnd(() => { 
-        mMar10.ret([m, m1, m2, m3, m4, m5, m6, m7]);
-        console.log('The square root of the sum of ', m1.x,
-          ' squared and ', m4.x, ' squared is ', m7.x); });
-      return mMar10;
-    }  
+    ret(3, 'm1').bnd(cube, 'Mm2')
+    Result: m1.x == 3
+            m2.x == 27  
+```        
+This works regardless of whether or not m1 or m2 had previously been instantiated. the calling monad's identifyer (variable name) without mutating the calling monad. That is one of the features that is illustrated in the screen shot (below). Here is the code associated with the screen shots:    
+```javascript
+    console.log('*** First, the MonadE versions ***');
+    ret2(0,'d1')
+      .bnd('add2', 3, 'Md2')
+      .bnd('mult2',100,'Md3').bnd('square2', 'Md4')
+      .bnd('add2',-d4.x + 4,'Md5')
+      .bnd('mult2', 100, 'Md6')
+      .bnd('square2', 'Md7')
+      .bnd('add2', d4.x, 'Md8')
+      .bnd('sqroot2',d4.x+d7.x,'Md9')
+      .bnd(log, 'The square root of ' + d3.x + ' squared plus ' + d6.x + ' squared equals ' + d9.x)
+    console.log('Values after computations: ',d1.x,d2.x,d3.x,d4.x,d5.x,d6.x,d7.x, d8.x, d9.x);
+    ar7 = [d1, d2, d3, d4, d5, d6, d7, d8, d9];
+    d1.ret(1); d2.ret(2); d3.ret(3); d4.ret(4);
+    d5.ret(5); d6.ret(6); d7.ret(7); d8.ret(8); d9.ret(9);
+    console.log('New values: ',d1.x,d2.x,d3.x,d4.x,d5.x,d6.x,d7.x, d8.x, d9.x);
+    console.log('ar7.map(v => v.x): ', ar7.map(v => v.x));
+    console.log('.');
     
-    function test11 () {
-      m.ret(4).bnd(v => 
-      ret(v)
-      .bnd(mult,100,'Mm1')
-      .bnd(square,'Mm2')
-      .bnd(add,-m2.x + 3,'Mm3')
-      .bnd(mult,100,'Mm4')
-      .bnd(square,'Mm5')
-      .bnd(add,m2.x,'Mm6') 
-      .bnd(sqroot,'Mm7').bnd(m.ret)
-      .bnd(() => { 
-        mMar11.ret([m, m1, m2, m3, m4, m5, m6, m7]);
-        console.log('The square root of the sum of ', m1.x,
-          ' squared and ', m4.x, ' squared is ', m7.x); }));
-      return mMar11;
-   }  
-   
+    ret2(0,'d1')
+      .bnd('add2', 3, 'Md2')
+      .bnd('mult2',100,'Md3')
+      .bnd('square2', 'Md4')
+      .bnd('add2',-d4.x + 4,'Md5')
+      .bnd('mult2', 100, 'Md6')
+      .bnd('square2', 'Md7')
+      .bnd('add2', d4.x, 'Md8')
+      .bnd('sqroot2',d4.x+d7.x,'Md1')
+      .bnd(log, 'The square root of ' + d3.x + ' squared plus ' + d6.x + ' squared equals ' + d1.x)
+    console.log('Values after computations: ',d1.x,d2.x,d3.x,d4.x,d5.x,d6.x,d7.x, d8.x);
+    ar7 = [d1, d2, d3, d4, d5, d6, d7, d8];
+    d1.ret(1); d2.ret(2); d3.ret(3); d4.ret(4);
+    d5.ret(5); d6.ret(6); d7.ret(7); d8.ret(8);
+    console.log('New values: ',d1.x,d2.x,d3.x,d4.x,d5.x,d6.x,d7.x, d8.x);
+    console.log('ar7.map(v => v.x): ', ar7.map(v => v.x));
+    console.log('.');
+    console.log('*** Now the plain Monad versions. ***');
+    
+    ret(0,'d1')
+      .bnd(add, 3, 'Md2')
+      .bnd(mult,100,'Md3')
+      .bnd(square, 'Md4')
+      .bnd(add, 4-d4.x, 'Md5')
+      .bnd(mult, 100, 'Md6')
+      .bnd(square, 'Md7')
+      .bnd(add, d4.bnd(v => v), 'Md8')
+      .bnd(sqroot, d4.bnd(v => d7.bnd(w => v + w)),'Md9')
+      .bnd(log, 'The square root of ' + d3.x + ' squared plus ' + d6.x + ' squared equals ' + d9.x)
+    console.log('Values after computations: ',d1.x,d2.x,d3.x,d4.x,d5.x,d6.x,d7.x, d8.x, d9.x);
+    ar7 = [d1, d2, d3, d4, d5, d6, d7, d8, d9];
+    d1.ret(1); d2.ret(2); d3.ret(3); d4.ret(4);
+    d5.ret(5); d6.ret(6); d7.ret(7); d8.ret(8); d9.ret(9);
+    console.log('New values: ',d1.x,d2.x,d3.x,d4.x,d5.x,d6.x,d7.x, d8.x, d9.x);
+    console.log('ar7.map(v => v.x): ', ar7.map(v => v.x));
+    console.log('.');
+    
+    ret(0,'d1')
+      .bnd(add, 3, 'Md2')
+      .bnd(mult,100,'Md3')
+      .bnd(square, 'Md4')
+      .bnd(add, 4-d4.x,'Md5')
+      .bnd(mult, 100, 'Md6')
+      .bnd(square, 'Md7')
+      .bnd(add, d4.x, 'Md8')
+      .bnd(sqroot,d4.x+d7.x,'Md1')
+      .bnd(log, 'The square root of ' + d3.x + ' squared plus ' + d6.x + ' squared equals ' + d1.x)
+    console.log('Values after computations: ',d1.x,d2.x,d3.x,d4.x,d5.x,d6.x,d7.x, d8.x);
+    var ar7 = [d1, d2, d3, d4, d5, d6, d7, d8];
+    d1.ret(1); d2.ret(2); d3.ret(3); d4.ret(4);
+    d5.ret(5); d6.ret(6); d7.ret(7); d8.ret(8);
+    console.log('New values: ',d1.x,d2.x,d3.x,d4.x,d5.x,d6.x,d7.x, d8.x);
+    console.log('ar7.map(v => v.x): ', ar7.map(v => v.x));
+         }  
 ```   
-The screen shot(below) demonstrates three things:
-```javascript
-  (1) Immutability. When named monads are superseded by fresh instantiations, 
-      previous instances that have been stored in an array do not change.
 
-  (2) Convenient control. The monad m still has its initial value after test10() runs. 
-      Simply appending ".bnd(m.ret)" to the end of the computation causes m to wind up with the final value.   
 
-  (3) Using "M" folowed by a string as an argument in the bnd() method causes a monad to appear in 
-      a sequence having the name and id of the string, and and an x element that is
-      the result of whatever computation, parsing, etc. the other arguments accomplish. 
-      The calling monad is left unchanged.  
-```
-In a similar function, m might obtain its value from a websocket, user input, or some other unpredictable source. The coder might want to preserve m with that initial value for further use, might want to keep m with its inital value, or might not care what value m has after the computation is finished. Here is the screen showing the results of running test10() and test11() in the Chrome console.
-
-![Alt text](Immutable_a.png?raw=true)
+![Alt text](MonadE_a.png?raw=true)
 
 The Monad Laws
 
@@ -255,7 +288,8 @@ The clicked number is removed from pMnums and added to mM3 in the numClickAction
     if (result == 20) { 
       pMscore.bnd(add,1)
       .bnd(testscore)
-      .bnd(pMscore.ret)
+      .bnd(pMscore.ret)Next, I tried to define test2 in the Chrome developer scratch pad, which runs in the Chrome developer tools. Like the console, it is accessable by pressing F12 while in the running application in Chrome. Firefox provides similar tools. The attempt to define test2 resulted in the sequence of reports shown in the screenshot below. I defined test2 in monad.js, which loads as a script in the index.html file. The application loaded successfully, and when I looked in the console, I saw the same series of reports (screenshot below). When I entered test2 in the console, 0 was displayed. That was the value of the MonadE instance "a" when the error occurred. Here is test2 and the screenshot:
+
       .bnd(v => score(v));
       return; 
     } 
@@ -323,41 +357,11 @@ Functions used as arguments to the MonadE bnd() method are placed in quotation m
 
 The variable test1 was defined as shown below. When test1 was entered in the Chrome developer console, "The square root of the sum of 300 squared and 400 squared is 500" was displayed. Here is the code. The screen shot is shown below.
 ```javascript
-  test1 = ret2(0,'a')
-    .bnd('add2',3, 'a')
-    .bnd('mult2',100,'a')
-    .bnd('square2','c')
-    .bnd('ret2','c')
-    .bnd('add2',-c.getx() + 4,'b')
-    .bnd('ret2','b')
-    .bnd('mult2',100,'b')
-    .bnd('ret2','e')
-    .bnd('square2','e')
-    .bnd('add2',c.getx(),'e')
-    .bnd('sqroot2','e')
-    .bnd('log2','The square root of the sum of ' + a.getx() + 
-      ' squared and ' + b.getx() + ' squared is ' + e.getx(), 'e')
-    .getx()  
 ```    
-Next, I tried to define test2 in the Chrome developer scratch pad, which runs in the Chrome developer tools. Like the console, it is accessable by pressing F12 while in the running application in Chrome. Firefox provides similar tools. The attempt to define test2 resulted in the sequence of reports shown in the screenshot below. I defined test2 in monad.js, which loads as a script in the index.html file. The application loaded successfully, and when I looked in the console, I saw the same series of reports (screenshot below). When I entered test2 in the console, 0 was displayed. That was the value of the MonadE instance "a" when the error occurred. Here is test2 and the screenshot:
 ```javascript
-  test2 = ret2(0,'a')
-    .bnd('add22',3, 'a')     // The error occurs here.
-    .bnd('mult2',100,'a')
-    .bnd('square2','c')
-    .bnd('ret2','c')
-    .bnd('add2',-c.getx() + 4,'b')
-    .bnd('ret2','b')
-    .bnd('mult2',100,'b')
-    .bnd('ret2','e')
-    .bnd('square2','e')
-    .bnd('add2',c.getx(),'e')
-    .bnd('sqroot2','e')
-    .bnd('log2','The square root of the sum of ' + a.getx() + 
-      ' squared and ' + b.getx() + ' squared is ' + e.getx(), 'e')
-    .getx()  
+
 ```
-![Alt text](MonadE_a.png?raw=true)
+  ![Alt text](fourTests.png?raw=true)
 Here are the definitions of MonadE and the functions used in the demonstration:
 ```Javascript
   function MonadE (val, ID, er = []) {

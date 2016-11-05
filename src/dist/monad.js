@@ -511,8 +511,6 @@ function factors_state3(a) {
 
 function checkpM () {
 
-console.log('VVVVVVVVVVVVVVVVVVVVVVVVVVVV  get(pMscore) and typeof get(pMscore) ', get(pMscore), typeof get(pMscore) );
-console.log('VVVVVVVVVVVVVVVVVVVVVVVVVVVV get(pMgoals) and typeof get(pMgoals) ', get(pMgoals), typeof get(pMgoals) );
 };
 
 checkpM();
@@ -1155,6 +1153,54 @@ var MonadAcc = function MonadAcc(z = 0, g = 'generic') {
   };
 };
 
+var demo1 = 
+  ret2(0,'d1')
+  .bnd('add2', 3, 'Md2')
+  .bnd('mult2',100,'Md3')
+  .bnd('square2', 'Md4')
+  .bnd('add2',-d4.x + 4,'Md5')
+  .bnd('mult2', 100, 'Md6')
+  .bnd('square2', 'Md7')
+  .bnd('add2', d4.x, 'Md8')
+  .bnd('sqroot2',d4.x+d7.x,'d8')
+  .bnd(log, 'The square root of ' + d3.x + ' squared plus ' + d6.x + ' squared equals ' + d8.x)
+
+var demo2 = 
+  ret2(0,'d1')
+  .bnd('add2', 3, 'Md2')
+  .bnd('mult2',100,'Md3')
+  .bnd('square2', 'Md4')
+  .bnd('add2',-d4.x + 4,'Md5')
+  .bnd('mult2', 100, 'Md6')
+  .bnd('square2', 'Md7')
+  .bnd('add2', d4.x, 'Md8')
+  .bnd('sqroot2',d4.x+d7.x,'d8')
+  .bnd(log, 'The square root of ' + d3.x + ' squared plus ' + d6.x + ' squared equals ' + d8.x)
+
+var demo3 = ret(0,'d1')
+  .bnd(add, 3, 'd2')
+  .bnd(mult,100,'d3')
+  .bnd(square, 'd4')
+  .bnd(add,-d4.x + 4,'d5')
+  .bnd(mult, 100, 'd6')
+  .bnd(square, 'd7')
+  .bnd(add, d4.x, 'd8')
+  .bnd(sqroot,d4.x+d7.x,'d8').bnd(log, 'The square root of ' + d3.x + 
+    ' squared plus ' + d6.x + ' squared equals ' + d8.x)
+
+var demo4 = ret(0,'d1')
+  .bnd(add, 3, 'd2')
+  .bnd(mult,100,'d3')
+  .bnd(square, 'd4')
+  .bnd(add,-d4.x + 4,'d5')
+  .bnd(mult, 100, 'd6')
+  .bnd(square, 'd7')
+  .bnd(add, d4.x, 'd8')
+  .bnd(sqroot,d4.x+d7.x,'d8').bnd(log, 'The square root of ' + d3.x + 
+    ' squared plus ' + d6.x + ' squared equals ' + d8.x)
+
+var demo4 = ret(0,'d1').bnd(add, 3, 'd2').bnd(mult,100,'d3').bnd(square, 'd4').bnd(add,-d4.x + 4,'d5').bnd(mult, 100, 'd6').bnd(square, 'd7').bnd(add, d4.x, 'd8').bnd(sqroot,d4.x+d7.x,'d8').bnd(log, 'The square root of ' + d3.x + ' squared plus ' + d6.x + ' squared equals ' + d8.x)
+
 var acc1 = new MonadAcc('', 'acc1');
 
 console.log('Test of MonadAcc, a logging monad:\n ',
@@ -1169,7 +1215,7 @@ function acc (x, y, str) {
   return window[str] = new MonadAcc(x + y, str);0
 }
 
-  
+ /* 
 
 var mMob10 = new Monad ({}, 'mMob10');
 var mMob11 = new Monad ([], 'mMob11');
@@ -1288,22 +1334,113 @@ console.log('.');
 console.log('.');
 console.log('.');
 console.log('.');
+*/
+var ar7;
 console.log('.');
 console.log('.');
 console.log('.');
 console.log('*** First, the MonadE versions ***');
+ret2(0,'d1')
+  .bnd('add2', 3, 'Md2')
+  .bnd('mult2',100,'Md3').bnd('square2', 'Md4')
+  .bnd('add2',-d4.x + 4,'Md5')
+  .bnd('mult2', 100, 'Md6')
+  .bnd('square2', 'Md7')
+  .bnd('add2', d4.x, 'Md8')
+  .bnd('sqroot2',d4.x+d7.x,'Md9')
+  .bnd(log, 'The square root of ' + d3.x + ' squared plus ' + d6.x + ' squared equals ' + d9.x)
+console.log('Values after computations: ',d1.x,d2.x,d3.x,d4.x,d5.x,d6.x,d7.x, d8.x, d9.x);
+ar7 = [d1, d2, d3, d4, d5, d6, d7, d8, d9];
+d1.ret(1); d2.ret(2); d3.ret(3); d4.ret(4);
+d5.ret(5); d6.ret(6); d7.ret(7); d8.ret(8); d9.ret(9);
+console.log('New values: ',d1.x,d2.x,d3.x,d4.x,d5.x,d6.x,d7.x, d8.x, d9.x);
+console.log('ar7.map(v => v.x): ', ar7.map(v => v.x));
 console.log('.');
-ret2(0,'d1').bnd('add2', 3, 'Md2').bnd('mult2',100,'Md3').bnd('square2', 'Md4').bnd('add2',-d4.x + 4,'Md5').bnd('mult2', 100, 'Md6').bnd('square2', 'Md7').bnd('add2', d4.x, 'Md8').bnd('sqroot2',d4.x+d7.x,'d8').bnd(log, 'The square root of ' + d3.x + ' squared plus ' + d6.x + ' squared equals ' + d8.x)
-console.log('.');
-ret2(0,'d1').bnd('addd2', 3, 'Md2').bnd('mult2',100,'Md3').bnd('square2', 'Md4').bnd('add2',-d4.x + 4,'Md5').bnd('mult2', 100, 'Md6').bnd('square2', 'Md7').bnd('add2', d4.x, 'Md8').bnd('sqroot2',d4.x+d7.x,'d8').bnd(log, 'The square root of ' + d3.x + ' squared plus ' + d6.x + ' squared equals ' + d8.x)
+
+ret2(0,'d1')
+  .bnd('add2', 3, 'Md2')
+  .bnd('mult2',100,'Md3')
+  .bnd('square2', 'Md4')
+  .bnd('add2',-d4.x + 4,'Md5')
+  .bnd('mult2', 100, 'Md6')
+  .bnd('square2', 'Md7')
+  .bnd('add2', d4.x, 'Md8')
+  .bnd('sqroot2',d4.x+d7.x,'Md1')
+  .bnd(log, 'The square root of ' + d3.x + ' squared plus ' + d6.x + ' squared equals ' + d1.x)
+console.log('Values after computations: ',d1.x,d2.x,d3.x,d4.x,d5.x,d6.x,d7.x, d8.x);
+ar7 = [d1, d2, d3, d4, d5, d6, d7, d8];
+d1.ret(1); d2.ret(2); d3.ret(3); d4.ret(4);
+d5.ret(5); d6.ret(6); d7.ret(7); d8.ret(8);
+console.log('New values: ',d1.x,d2.x,d3.x,d4.x,d5.x,d6.x,d7.x, d8.x);
+console.log('ar7.map(v => v.x): ', ar7.map(v => v.x));
 console.log('.');
 console.log('*** Now the plain Monad versions. ***');
+
+ret(0,'d1')
+  .bnd(add, 3, 'Md2')
+  .bnd(mult,100,'Md3')
+  .bnd(square, 'Md4')
+  .bnd(add, 4-d4.x, 'Md5')
+  .bnd(mult, 100, 'Md6')
+  .bnd(square, 'Md7')
+  .bnd(add, d4.bnd(v => v), 'Md8')
+  .bnd(sqroot, d4.bnd(v => d7.bnd(w => v + w)),'Md9')
+  .bnd(log, 'The square root of ' + d3.x + ' squared plus ' + d6.x + ' squared equals ' + d9.x)
+console.log('Values after computations: ',d1.x,d2.x,d3.x,d4.x,d5.x,d6.x,d7.x, d8.x, d9.x);
+ar7 = [d1, d2, d3, d4, d5, d6, d7, d8, d9];
+d1.ret(1); d2.ret(2); d3.ret(3); d4.ret(4);
+d5.ret(5); d6.ret(6); d7.ret(7); d8.ret(8); d9.ret(9);
+console.log('New values: ',d1.x,d2.x,d3.x,d4.x,d5.x,d6.x,d7.x, d8.x, d9.x);
+console.log('ar7.map(v => v.x): ', ar7.map(v => v.x));
 console.log('.');
-ret(0,'d1').bnd(add, 3, 'd2').bnd(mult,100,'d3').bnd(square, 'd4').bnd(add,-d4.x + 4,'d5').bnd(mult, 100, 'd6').bnd(square, 'd7').bnd(add, d4.x, 'd8').bnd(sqroot,d4.x+d7.x,'d8').bnd(log, 'The square root of ' + d3.x + ' squared plus ' + d6.x + ' squared equals ' + d8.x)
+
+ret(0,'d1')
+  .bnd(add, 3, 'Md2')
+  .bnd(mult,100,'Md3')
+  .bnd(square, 'Md4')
+  .bnd(add, 4-d4.x,'Md5')
+  .bnd(mult, 100, 'Md6')
+  .bnd(square, 'Md7')
+  .bnd(add, d4.x, 'Md8')
+  .bnd(sqroot,d4.x+d7.x,'Md1')
+  .bnd(log, 'The square root of ' + d3.x + ' squared plus ' + d6.x + ' squared equals ' + d1.x)
+console.log('Values after computations: ',d1.x,d2.x,d3.x,d4.x,d5.x,d6.x,d7.x, d8.x);
+var ar7 = [d1, d2, d3, d4, d5, d6, d7, d8];
+d1.ret(1); d2.ret(2); d3.ret(3); d4.ret(4);
+d5.ret(5); d6.ret(6); d7.ret(7); d8.ret(8);
+console.log('New values: ',d1.x,d2.x,d3.x,d4.x,d5.x,d6.x,d7.x, d8.x);
+console.log('ar7.map(v => v.x): ', ar7.map(v => v.x));
+console.log('.'); 
 console.log('.');
-ret(0,'d1').bnd(addd, 3, 'd2').bnd(mult,100,'d3').bnd(square, 'd4').bnd(add,-d4.x + 4,'d5').bnd(mult, 100, 'd6').bnd(square, 'd7').bnd(add, d4.x, 'd8').bnd(sqroot,d4.x+d7.x,'d8').bnd(log, 'The square root of ' + d3.x + ' squared plus ' + d6.x + ' squared equals ' + d8.x)
 console.log('.');
-console.log('*** CRASH! ***');
+console.log('.');
+ret2(0,'d1')
+  .bnd('add2', 3, 'Md2')
+  .bnd('mult2',100,'Md3').bnd('square2', 'Md4')
+  .bnd('add2',-d4.x + 4,'Md5')
+  .bnd('mult2', 100, 'Md6')
+  .bnd('square2', 'Md7')
+  .bnd('add2', d4.x, 'Md8')
+  .bnd('sqroot2',d4.x+d7.x,'Md9')
+  .bnd(log, 'The square root of ' + d3.x + ' squared plus ' + d6.x + ' squared equals ' + d9.x)
+console.log('Values after computations: ',d1.x,d2.x,d3.x,d4.x,d5.x,d6.x,d7.x, d8.x, d9.x);
+ar7 = [d1, d2, d3, d4, d5, d6, d7, d8, d9];
+d1.ret(1); d2.ret(2); d3.ret(3); d4.ret(4);
+d5.ret(5); d6.ret(6); d7.ret(7); d8.ret(8); d9.ret(9);
+console.log('New values: ',d1.x,d2.x,d3.x,d4.x,d5.x,d6.x,d7.x, d8.x, d9.x);
+console.log('ar7.map(v => v.x): ', ar7.map(v => v.x), ' unchanged');
+console.log('***** ERROR: addd2 instead of add2. Logged in the Chrome console: *****');
+ret2(0,'d1')
+  .bnd('addd2', 3, 'Md2')
+  .bnd('mult2',100,'Md3')
+  .bnd('square2', 'Md4')
+  .bnd('add2',-d4.x + 4,'Md5')
+  .bnd('mult2', 100, 'Md6')
+  .bnd('square2', 'Md7')
+  .bnd('add2', d4.x, 'Md8')
+  .bnd('sqroot2',d4.x+d7.x,'Md1')
+  .bnd(log, 'The square root of ' + d3.x + ' squared plus ' + d6.x + ' squared equals ' + d1.x)
+console.log('Values after computations: ',d1.x,d2.x,d3.x,d4.x,d5.x,d6.x,d7.x, d8.x, 'Only d1 changed.' );
 console.log('.');
 console.log('.');
 console.log('.');
