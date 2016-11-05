@@ -154,13 +154,12 @@ This works regardless of whether or not m1 or m2 had previously been instantiate
     console.log('ar7.map(v => v.x): ', ar7.map(v => v.x));
     
 ```   
-
-
-![Alt text](fourTests.png?raw=true)
-
 The first two tests involve instances of the MonadE, the error-catchin monad, MonadE. A screen shot showing the information that is logged in the Chrome browser when an error is encountered is included in the MonadE section below.
 
 In a similar function, m might obtain its value from a websocket, user input, or some other unpredictable source. The coder might want to preserve m with that initial value for further use, might want to keep m with its inital value, or might not care what value m has after the computation is finished. Here is the screen showing the results of running the code in the Chrome console.
+
+![Alt text](fourTests.png?raw=true)
+
 
 The Monad Laws
 
