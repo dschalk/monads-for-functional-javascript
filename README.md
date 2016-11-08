@@ -152,7 +152,7 @@ d5.ret(5); d6.ret(6); d7.ret(7); d8.ret(8);
 console.log('New values: ',d1.x,d2.x,d3.x,d4.x,d5.x,d6.x,d7.x, d8.x);
 console.log('ar7.map(v => v.x): ', ar7.map(v => v.x));
 ```   
-The first two tests involve instances of the MonadE, the error-catchin monad, MonadE. A screen shot showing the information that is logged in the Chrome browser when an error is encountered is included in the MonadE section below.
+The first two tests involve instances of the MonadE, the error-catching monad, MonadE. A screen shot showing the information that is logged in the Chrome browser when an error is encountered is included in the MonadE section below.
 
 In a similar function, d1 (which is preserved as ar7[0]) might obtain its value from a websocket, user input, or some other unpredictable source. The coder might want to preserve d1 with that initial value for further use, might want to keep m with its inital value, or might not care what value d1 has after the computation is finished. Here is the screen showing the results of running the code in the Chrome console.
 
@@ -368,7 +368,7 @@ The variable test1 was defined as shown below. When test1 was entered in the Chr
 ```javascript
 
 ```
-  ![Alt text](MonadE_a.png?raw=true)
+  ![Alt text](error.png?raw=true)
 Here are the definitions of MonadE and the functions used in the demonstration:
 ```Javascript
   function MonadE (val, ID, er = []) {

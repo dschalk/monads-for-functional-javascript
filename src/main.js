@@ -6,7 +6,7 @@ import Cycle from '@motorcycle/core';
 import {create, merge} from 'most';
 import {h, p, span, h1, h2, h3, pre, br, div, label, input, hr, makeDOMDriver} from '@motorcycle/dom';
 import code from './code.js';
-
+messageMonad = messageMonad;
 console.log('.');
 console.log('.');
 
@@ -48,8 +48,6 @@ socket.onclose = function (event) {
     console.log('<><><> New message <><><> ', event);
 };
 
-var messageMonad = new MonadState('messageMonad', [], message_state); 
-
 function updateTasks (obArray) {
   var todoData = [];
   for (let ob of obArray) {  
@@ -81,8 +79,8 @@ function main(sources) {
   mMtem.ret(e.data.split(',')).bnd( v => {
   console.log('<><><><><><><><><><><><><><><><>  INCOMING  <><><><><><><> >>> In messages. e amd v are ', e, v);
   mMZ10.bnd( () => {
-    mMtemp.ret([v[3], v[4], v[5], v[6]]).bnd(pMnums.ret).bnd(test3).bnd(pMstyle.ret)
-    travMonad.run([ [v[3], v[4], v[5], v[6]], v[7], v[8] ]);
+    pMnums.ret([v[3], v[4], v[5], v[6]]).bnd(test3,"MmpMstyle");
+    travMonad.run([ [v[3], v[4], v[5], v[6]], v[7], v[8], [], 0 ]);
     pMscore.ret(v[7]);
     pMgoals.ret(v[8]) }); 
   mMZ12.bnd( () => mM6.ret(v[2] + ' successfully logged in.'));
@@ -123,7 +121,7 @@ function main(sources) {
     if (e.keyCode == 13) {
       pMname.ret(v);
       socket.send('CC#$42' + v );
-      mM3.ret([]);
+      pMclicked.ret([]);
 
       mMdice.ret('block');
       mMrightPanel.ret('block');
@@ -152,11 +150,11 @@ function main(sources) {
 
   var groupPressAction$ = groupPress$.map(e => {
       if (e.keyCode == 13) {
-          socket.send(`CO#$42,${pMgroup.x},${pMname.x},${e.target.value}`);
-          pMgroup.ret(e.target.value)
-          .bnd(pMgroup.ret)
-          .bnd(gr =>
-          socket.send(`CG#$42,${pMgroup.x},${pMname.x},0,0`));
+        travMonad.run([ [], 0, 0 ]);
+        socket.send(`CO#$42,${pMgroup.x},${pMname.x},${e.target.value}`);
+        pMgroup.ret(e.target.value)
+        .bnd(gr =>
+        socket.send(`CG#$42,${pMgroup.x},${pMname.x},0,0`));
       }
   });
 
@@ -200,31 +198,37 @@ function main(sources) {
   var numClick$ = sources.DOM
       .select('.num').events('click'); 
 
+
   var numClickAction$ = numClick$.map(e => {
-    console.log('In numClickAction. e.target.id, e, and pMnums are ', e.target.id, e, pMnums.x );
-    if (mM3.x.length == 2) {return};
+    console.log('In numClickAction. @@@@@@@@@@@@@@@@@@@@@@@@ e.target.id, e, and pMnums are ', e.target.id, e, pMnums.x );
+    if (pMclicked.x.length == 2) {return};
     pMnums.bnd(spliceM, e.target.id, 1)
     .bnd(v => {
       test3(v, 'MpMstyle')
-      travMonad.run([v, pMscore.x, pMgoals.x])
-    });
-    socket.send(`CG#$42,${pMgroup.x},${pMname.x},${pMscore.x},${pMgoals.x}`);
-    mM3
-    .bnd(push, e.target.innerHTML)
-    .bnd(mM3.ret)
-    .bnd(v => {
-      if (v.length == 2 && mM8.x != 0) {
-        updateCalc(v, mM8.x) 
-      }
+      socket.send(`CG#$42,${pMgroup.x},${pMname.x},${pMscore.x},${pMgoals.x}`);
+      pMclicked
+      .bnd(push, e.target.innerHTML)
+      .bnd(pMclicked.ret)
+      .bnd(w => {
+        travMonad.run([v, pMscore.x, pMgoals.x, w, pMop.x])
+        if (w.length == 2 && pMop.x != 0) {
+          console.log('In numClickAction# if block >>>>>> @@@@@@@@@@@@@@@@@@@@@@ ' );
+          updateCalc(w, pMop.x) 
+        }
+      })
     })
-    }).startWith([0, 0, 0, 0]);
+  }).startWith([0, 0, 0, 0]);
+
+
+
+
 
   var opClick$ = sources.DOM
       .select('.op').events('click');
 
   var opClickAction$ = opClick$.map(e => {
-    mM8.ret(e.target.innerHTML).bnd(v => { 
-      var ar = mM3.x
+    pMop.ret(e.target.innerHTML).bnd(v => { 
+      var ar = pMclicked.x
       if (ar.length === 2) {
         updateCalc(ar, v)
       }
@@ -234,8 +238,7 @@ function main(sources) {
   function updateCalc(ar, op) {
     mMgoals2.ret('');
     var result = calc(ar[0], op, ar[1]);
-    mM3.ret([]);
-    mM8.ret(0)
+
     if (result == 20) { 
       pMscore.bnd(add,1)
       .bnd(testscore)
@@ -252,15 +255,10 @@ function main(sources) {
     }
     else {
       pMnums.bnd(push,result)
-      .bnd(mMtemp3.ret)
-      .bnd(pMnums.ret)
       .bnd(v => {
-        travMonad.run([v, pMscore.x, pMgoals.x])
-        test3(v)
-        .bnd(pMstyle.ret)
+        travMonad.run([v, pMscore.x, pMgoals.x, [], 0])
+        test3(v, 'MpMstyle')
       }); 
-      mM8.ret(0);
-      mM3.ret([]);
       console.log('in updateCalc 1111111111 pMnums.x, pMstyle.x ', pMnums.x, pMstyle.x );
     }
   };  
@@ -431,14 +429,6 @@ function main(sources) {
           document.getElementById('quad').value = null;
       }
   });
-
-    var updateMessages = function updateMessages(e) {
-      var ar = e.split(',');
-      var sender = ar[2];
-      ar.splice(0,3);
-      var str = ar.join(',');
-      messageMonad.run([ [h('br'), sender + ': ' + str], [], [], messageMonad.s[3] ]);
-    };
 
 // *******************************************************************BEGIN TODO LIST           
             
@@ -703,6 +693,16 @@ function main(sources) {
             mMgameDiv.ret('none') 
     });
 
+    var clearPicked$ = sources.DOM
+        .select('#clear').events('click');
+
+    var clearAction$ = clearPicked$.map( () => {
+      console.log('In clearAction$ @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ ', pMclicked.x  );
+      // pMclicked.ret([]);
+      travMonad.run([ pMnums.x, pMscore.x, pMgoals.x, [] ])
+      console.log('In clearAction$ @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ ', pMclicked.x  );
+    });
+
     var forwardClick$ = sources.DOM
         .select('#forward').events('click');
 
@@ -712,30 +712,38 @@ function main(sources) {
   
     var backAction$ = backClick$.map(() => {
       if (pMindex.x > 1) {   
+        pMop.ret(0);
         var ind = pMindex.x - 1;
-        var a = travMonad.a[ind];
-        pMnums.ret(a[0]).bnd(test3, 'MpMstyle');
-        pMscore.ret(a[1])
-        pMgoals.ret(a[2])
+        var s = travMonad.s[ind];
+        pMnums.ret(s[0]).bnd(test3, 'MpMstyle');
+        pMscore.ret(s[1]);
+        pMgoals.ret(s[2]);
+        pMclicked.ret(s[3]);
+        pMop.ret(s[4]);
         socket.send(`CG#$42,${pMgroup.x},${pMname.x},${pMscore.x},${pMgoals.x}`);
       pMindex.bnd(add,-1);
       } 
     });
 
     var forwardAction$ = forwardClick$.map(() => {
-      if (pMindex.x < travMonad.a.length - 1) {   
+      console.log('forward button clicked &&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&' );
+      if (pMindex.x < travMonad.s.length - 1) {   
+      console.log('n the if block &&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&' );
+        pMop.ret(0);
         var ind = pMindex.x + 1;
-        var a = travMonad.a[ind];
-        pMnums.ret(a[0]).bnd(test3, 'MpMstyle');
-        pMscore.ret(a[1])
-        pMgoals.ret(a[2])
-          socket.send(`CG#$42,${pMgroup.x},${pMname.x},${pMscore.x},${pMgoals.x}`);
-      pMindex.bnd(add, 1);
+        var s = travMonad.s[ind];
+        pMnums.ret(s[0]).bnd(test3, 'MpMstyle');
+        pMscore.ret(s[1]);
+        pMgoals.ret(s[2]);
+        pMclicked.ret(s[3]);
+        pMop.ret(s[4]);
+        socket.send(`CG#$42,${pMgroup.x},${pMname.x},${pMscore.x},${pMgoals.x}`);
+      pMindex.bnd(add, +1);
       } 
     });
 
-
-  var calcStream$ = merge(  backAction$, forwardAction$, factorsAction$, primeFib$, fibPressAction$, quadAction$, edit1Action$, edit2Action$, testWAction$, testZAction$, testQAction$, colorAction$, deleteAction$, newTaskAction$, chatClickAction$, gameClickAction$, todoClickAction$, captionClickAction$, groupPressAction$, rollClickAction$, messagePressAction$, loginPressAction$, messages$, numClickAction$, opClickAction$);
+  
+  var calcStream$ = merge( clearAction$, backAction$, forwardAction$, factorsAction$, primeFib$, fibPressAction$, quadAction$, edit1Action$, edit2Action$, testWAction$, testZAction$, testQAction$, colorAction$, deleteAction$, newTaskAction$, chatClickAction$, gameClickAction$, todoClickAction$, captionClickAction$, groupPressAction$, rollClickAction$, messagePressAction$, loginPressAction$, messages$, numClickAction$, opClickAction$);
   return {
   DOM: calcStream$.map(function () {
   return h('div.content', [
@@ -787,13 +795,15 @@ function main(sources) {
       h('br'),
       h('br'),
       h('br'),
-      h('div', 'mM3.x: ' + mM3.x.join(', ') ), 
-      h('div', 'mM8.x: ' + mM8.x ), 
+      h('div', 'pMclicked.x: ' + pMclicked.x.join(', ') ), 
+      h('div', 'pMop.x: ' + pMop.x ), 
       h('div', 'pMindex.x: ' + pMindex.x ), 
-      h('div', 'travMonad.a.length: ' + travMonad.a.length  ),
-      h('div', 'travMonad.a[0]: ' + travMonad.a[pMindex.x][0] ),
-      h('div', 'travMonad.a[1]: ' + travMonad.a[pMindex.x][1] ),
-      h('div', 'travMonad.a[2]: ' + travMonad.a[pMindex.x][2] ),
+      h('div', 'travMonad.s.length: ' + travMonad.s.length  ),
+      h('div', 'travMonad.s[pMindex.x][0]: ' + travMonad.s[pMindex.x][0] ),
+      h('div', 'travMonad.s[pMindex.x][1]: ' + travMonad.s[pMindex.x][1] ),
+      h('div', 'travMonad.s[pMindex.x][2]: ' + travMonad.s[pMindex.x][2] ),
+      h('div', 'travMonad.s[pMindex.x][3]: ' + travMonad.s[pMindex.x][3] ),
+      h('div', 'travMonad.s[pMindex.x][4]: ' + travMonad.s[pMindex.x][4] ),
   
   
   ]),
@@ -801,7 +811,7 @@ function main(sources) {
       h('br'),
       h('div#captionDiv', { style: { display: mMcaptionDiv.x } },  [
           h('h1', 'Motorcycle.js With JS-monads') ]),
-          h('span#italic', ' Not category theory monads. Monads like Haskell monads, using patterns found in category theory. See ' ),
+          h('span#italic', ' Not category theory monads. These monads are like the Haskell monads, They using patterns and conform to rules borrowed from category theory. See ' ),
       h('a', { props: { href: "http://math.andrej.com/2016/08/06/hask-is-not-a-category/", target: "_blank" } }, 'Hask is not a category.'),
           h('span', ' by Andrej Bauer and . ' ),
           h('a', { props: { href: '#discussion' } }, 'Discussion'),
@@ -809,11 +819,11 @@ function main(sources) {
           h('br'),
           h('br'),
           h('br'),
-          h('span.tao1a', ' The demonstrations include persisternt, shared todo lists; '),
+          h('span.tao1', ' The demonstrations include persisternt, shared todo lists; '),
           h('br'),
           h('span.tao1', ' An interactive simulated dice game with a traversable history (all group members see your score decrease or increase as you navegate backwards and forwards); '),
           h('br'),
-          h('span.tao1a', ' Chat rooms where members can compete in the simulated dice game, chat, and share a project todo list; '),
+          h('span.tao1', ' Chat rooms where members can compete in the simulated dice game, chat, and share a project todo list; '),
           h('br'),
           h('span.tao1', ' And other demonstrations of the power and convenience of JS-monads in a Motorcycle application.  '),
           h('br'),
@@ -850,6 +860,9 @@ function main(sources) {
             h('br'),
             h('button#back', 'BACK'),
             h('button#forward', 'FORWARD'),
+            h('div.tao', `Selected numbers: ${pMclicked.x.join(', ')} ` ),  
+            h('div.tao', `Operator: ${pMop.x} ` ),  
+            h('button#clear', 'Clear selected numbers (Possibly useful after clicking the BACK button) ' ),
           ])]),
 h('div#log1',  { style: { display: mMlog1.x } }, [
 h('p', 'IN ORDER TO SEE THE GAME, TODOLIST, AND CHAT DEMONSTRATIONS, YOU MUST ENTER SOMETHING .'),
@@ -879,11 +892,17 @@ h('p', ' These functions can be used with instances of Monad in many ways, for e
 code.e7,    
 code.e7x,    
 code.e7y,    
-h('p', ' I experimented with several definitions of Monad during the course of this project. The reader is encouraged to experiment with variations on the theme. If you come up with something that is useful to you, please let me know. The current version is the most useful for me. its bnd() method can assign the return value of bnd()\'s argument to any valid Javascript variable name. For example, ' ), 
-h('pre.turk24', `    ret(3, 'm1').bnd(cube, 'Mm2')
-    Result: m1.x == 3
-            m2.x == 27   ` ),
-h('p', ' This works regardless of whether or not m1 or m2 had previously been instantiated. the calling monad\'s identifyer (variable name) without mutating the calling monad. That is one of the features that is illustrated in the screen shot (below). Here is the code associated with the screen shots: ' ),
+h('p', ' I experimented with several definitions of Monad during the course of this project. The reader is encouraged to experiment with variations on the theme. If you come up with something that is useful to you, please let me know. The current version is the most useful for me. its bnd() method can assign the return value of bnd()\'s argument to any valid Javascript variable name. In the following example, m1, m2, and m3 have already been declared. Here is a comparrison of the results obtained when the "M" prefix is ommited and when it is used: ' ), 
+h('pre.red9', `    m1.ret(7).bnd(m2.ret).bnd(m3.ret)  // All three monads get the value 7.
+    m1.ret(0).bnd(add,3,'m2').bnd(cube,'m3')  // equivalent to m1.ret(0).bnd(add,3).bnd(cube)` ),
+h('pre', `    Result: m1.x == 27
+            m2.x == 7
+            m3.x == 7  ` ),
+h('pre.red9', `    m1.ret(0).bnd(add,3,'Mm2').bnd(cube,'Mm3')   ` ),
+h('pre', `    Result: m1.x == 0
+            m2.x == 3
+            m3.x == 27  ` ),
+h('p', ' If the prefix "M" is absent, bnd() ignores the string argument. But when the "M" prefix is present, m1 retains its initial value, m2 retains the value it gets from from adding m\'s value (which is 0) to 3, and m3.x is the result. Here is the code that causes the text in the screen shot (below) to appear in the Chrome console:' ),
     code.tests,
 h('span#demo', ' The first two tests involve instances of the MonadE, the error-catchin monad, MonadE. A screen shot showing the information that is logged in the Chrome browser when an error is encountered is included in the ' ),
 h('a', { props: { href: '#err' } }, 'MonadE'),
@@ -1007,21 +1026,38 @@ h('p#async', ' And this is how user input is handled: '),
 code.factorsInput,
 h('p', ' The expressions get(mMfactors) and get(mMfactors) are permanent fixtures of the virtual DOM. The click handler is a stream which receives input from the virtual DOM and is merged into the stream that feeds data to the virtual DOM. Since changes to mMfactors and mMfactors3 are in the cycle initiated by user input and culminating in a modification of the virtual DOM, there is no need to explicitly create observers. Reactivity stems from being in the cycle. ' ),   
 h('a', { props: { href: '#top' } }, 'Back To The Top'),
+
+
+// ***********************************************************************************************  MonadArchive
+
+
+h('h2', ' MonadArchive ' ),
 h('h3', ' Traversal of the dice game history. ' ),
-h('p', ' MonadState instance travMonad facilitates traversal of the game history. travMonad.s is a four member array holding the current numbers, current score, current goals, and an array of arrays containing numbers, score, and goals corresponding to past states of the game.. Here is the definition of travMonad and its auxiliary function:' ),
-  code.travMonad,
-h('p', ' The number display is generated  by four virtual button nodes with id = i, st yle: {display: get(pMstyle)[i]} and text get(pMnums)[i] for i = 0, 1, 2, and 3. The virtual button nodes rest permanently in the virtual DOM.  pMnums and pMstyle are updated in the messages$ stream whenever a new dice roll is received from the server. pMnums and pMstyle are also re-set when a user clicks a number, causing it to disappear from the display and when when a user clicks a number or an operator button prompting a call to updateCalc, which either causes a new roll or a computed number to be added to the display. numClickAction$ and opClickAction$ are merged into the stream that feeds the virtual DOM, so updates are seen almost instantaneously. '),
-h('p', ' Whenever pMnums changes, the expression pMnums.bnd(test3).bnd(pMstyle.ret) updates pMstyle so as to hide undefined values of get(pMnumes)[i] for i = 0, 1, 2, and 3. ' ),
+h('p', ' The state of the simulated dice game is maintained in travMonad, an instance of MonadArchive. Here are the definitions of MonadArchive, travMonad, and the helper function trav_archive: '),
+    code.monadArchive2,  
+h('p', ' The method travMonad.run() executes in: ' ),
+h('pre', `    messages$.          Runs when a new dice roll comes in from the websockets server.
+    groupPressAction$.  Clears game data when a new group is jointed.
+    nunClickAction$     Updates travMonad when numbers are clicked.
+    clearAction$        Clears saved data when the button under the display is clicked.
+    updateCalc          A function called by numsClickAction$ and opClickAction during game play.  ` ),
+h('p', ' travMonad keeps a record of the "x" attributes of pMnums (displayed numbers), pMscore, pMgoals, pMclicked (selected numbers), and pMop (the selected operator). Whenever pMnums changes, the expression pMnums.bnd(test3, "MpMstyle") executes, updating pMstyle in order to maintain a well-formated numbers display. In is, therefor, not necessary to keep a record of pMstyle in travMonad. Here is the definition of clear():' ),
   code.test3,
-h('p', ' New dice rolls always correspond to score changes. One point is lost each time a player clicks ROLL. Scores increase whenever players put together expressions that return 18 or 20. An increase in score is always accompanied by a call to newRoll() with two arguments: score and goals. The server updates its ServerState TMVar and broadcasts the new roll to all group members with the prefix "CA#$42. The server also broadcasts the updated score and goal information, with the prefix NN#$42. These messages are caught, parsed, and acted upon in the message$ stream in the Motorcycle front end. pMnums, pMstyle, and travMonad get updated during the course of this process.' ),
-  code.mMZ10,  
+h('p', ' Whenever a new roll is requested from the server, a player\'s score and the number of goals is sent to the server. The server responds by sending all group members two messages; one for updating their numbers display, the other for updating their scoreboards. Messages from browsers to the server requesting updated numbers and scoreboard information are prefixed by CA#$42. This serves the interests of efficiency because mew rolls are automaticlly requested when scores change, and score changes are always associate with requests for new numbers. One point is deducted when a player clickes ROLL. ' ),  
+h('p', ' Scores increase whenever players put together expressions that return 18 or 20. An increase in score is accompanied by a call to newRoll() with two arguments: score and goals. The Haskell server updates its ServerState TMVar and broadcasts the new numbers to all group members with the prefix "CA#$42, along with a message prefixed by NN#$42 containing the updated score and goal information. NN#$42 and CA#$42 messages are parsed and acted upon in the message$ stream, where each player\'s travMonad object is augmented by the addition of a new state information array. travMonad.s is an array of arrays containing the collection of these state arrays. ' ),
+h('p', ' Here is the code that runs when the back button is clicked: ' ),
+    code.backAction,
 h('h3', ' Updating the numbers ' ),
-h('p', ' The previous discusion was about traversal of the game history. This seems like a good place to look at the algorithm for generating new numbers when players click on the number and operator buttons. Here is the code: ' ),  
+h('p', ' The following code shows what happens when a player clicks a number: ' ),  
     code.numClick1,
-h('p', ' The clicked number is removed from pMnums and added to mM3 in the numClickAction$ stream. If two numbers and an operator have been selected, numClickAction$ and opClickAction$ call updateCalc, giving it the two member array (which is held in mM3) of selected numbers and the selected operator. After each roll, mM8 is given the value 0 so mM8.x != 0 means an operator has been selected. ' ),
+h('p', ' The clicked number is removed from pMnums and added to pMclicked in the numClickAction$ stream. If two numbers and an operator have been selected, numClickAction$ or opClickAction$ (depending on whether the most recent click was on a number or an operator) calls updateCalc with two arguments, the pMclicked.x array of selected numbers and the chosen operator. After each roll, pMop.x is updated to 0. pMop.x != 0 indicates that an operator has been selected. ' ),
   code.numClick2,
-h('p', ' updateCalc calls calc on the numbers and operater given to it by numCalcAction$ or opCalcAction$, giving the value to a variable named "result". If the value of result is 18 or 20, the resulting score is checked to see if it should be augmented by five and then score(scor) is called, providing the new score to the function score(). score() performs some more tests and calls for a new roll with the values of score and goals it has determined depending on whether or not there is a score and, if so, a winner. ' ),
-//************************************************************************** ENDOM MonadState
+h('p', ' updateCalc calls calc on the numbers and operater provided to it by numCalcAction$ or opCalcAction$.  The return value is assigned to the variable result. If the value of result is 18 or 20, pMscore.x is augmented by 3 or 1, respectively, and checked to see if another five points should be added. score() is then called with the new value of pMscore.x as its argument. score() performs some additional tests to determine whether or not pMgoals.x should be augmented or, if the result is 3, in which case pMgoals is set back to 0. newRoll is called in score() with the (possible newly calculated) values of pMscore.x and pMgoals.x. ' ),
+
+
+//************************************************************************** END MonadArchive 
+    
+
 h('h2', ' MonadSet '),
 h('p', ' The list of online group members at the bottom of the scoreboard is very responsive to change. When someone joins the group, changes to a different group, or closes a browser session, a message prefixed by NN#$42 goes out from the server providing group members with the updated list of group members. MonadSet acts upon messages prefixed by NN#$42. Here are the definitions of MonadSet and the MonadSet instance sMplayers '),
 code.MonadSet,
@@ -1042,7 +1078,7 @@ h('a', { props: { href: '#top' } }, 'Back To The Top'),
   h('p', ' Next, I tried to define test2 in the Chrome developer scratch pad, which runs in the Chrome developer tools. Like the console, it is accessable by pressing F12 while in the running application in Chrome. Firefox provides similar tools. The attempt to define test2 resulted in the sequence of reports shown in the screenshot below. I defined test2 in monad.js, which loads as a script in the index.html file. The application loaded successfully, and when I looked in the console, I saw the same series of reports (screenshot below). When I entered test2 in the console, 0 was displayed. That was the value of the MonadE instance "a" when the error occurred. Here is test2 and the screenshot: ' ),  
     code.screenshot2,
   h('br'),
-  h('img.image', {props: {src: "MonadE_a.png"}}  ),   
+  h('img.image', {props: {src: "error.png"}}  ),   
   h('br'),
   h('br'),
   h('div.tao1', ' Here are the definitions of MonadE and the functions used in the demonstration: ' ),

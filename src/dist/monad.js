@@ -9,23 +9,6 @@ var chatDiv = 'none';
 var captionDiv = 'none';
 function tst (x) {return x};
 
-function Snownad (z, ID = 'default') {
-    var x = z;
-    var ob = {
-    id: ID,
-    bnd: function (func, ...args) {
-      return func(x, ...args)
-    },
-    ret: function (a) {
-      return window[ob.id] = new Monad(a, ob.id);
-    }
-  };
-  return ob;
-}
-
-// string.replace(RegExp('['+chars+']','g'), 
-
-
 function stripchars(string, chars) {
   return string.replace(RegExp('['+chars+']','g'), '');
 }
@@ -43,11 +26,7 @@ function testPrefix (x,y) {
   return t;
 }
 
-var jack = ['7554','abcdefghi', 'car', 'Mm3']
-var c = testPrefix(jack)
-console.log(c)
-
-var Monad = function Monad(z = 42, g = 'generic') {
+var Monad = function Monad(z = 19, g = 'generic') {
   var _this = this;
   this.x = z;
   this.id = g;
@@ -65,7 +44,8 @@ var Monad = function Monad(z = 42, g = 'generic') {
   };
 };
 
-
+var pMop = new Monad (0, 'pMop');
+ 
 function Monad2 (z, ID = 'default') {
     var x = z;
     var ob = {
@@ -180,8 +160,8 @@ var isFunc = function isFunc (x) { return eval("typeof(" + x + ") == 'function'"
 
  function newR (ar) {
     mMnums.ret(ar[0]);
-    mM3.ret([]);
-    mM8.ret(0);   
+    pMclicked.ret([]);
+    pMop.ret(0);   
     rollMonad.run(ar[0],ar[1],ar[2]);
     return ret(ar);
   };
@@ -202,23 +182,41 @@ var s = new Set();
 
 var sMplayers = MonadSet(s, 'sMplayers'); // holds currently online players
 
-function JonadState(g, state, p) {
-  var ob = {
-    id: g,
-    s: state,
-    a: s[3],
-    process: p,
-    bnd: (func, ...args) => func(ob.s, ...args),  
-    run: function (ar) {
-      var ar2 = ob.process(ar);
-      ob.s = ar2;
-      ob.a = ar2[3];
-      window[ob.id] = ob;
-      return window[ob.id];
-    }
-  };
-  return ob;
+var pMclicked = new Monad ([], 'pMclicked');
+
+function MonadArchive(g, state, p) {
+  var _this = this;
+  this.id = g;
+  this.s = state;
+  this.process = p;
+  this.a = s[0];
+  this.bnd = (func, ...args) => func(_this.s, ...args);  
+  this.run = ar => { 
+    var ar2 = _this.process(ar);
+    _this.a = ar2[pMindex.x];
+    _this.s = ar2;
+    console.log('In MonadState instance _this.a, _this.s ', _this.a, _this.s) 
+    window[_this.id] = _this;
+    return window[_this.id];
+  }
 };
+
+var travMonad = new MonadArchive("travMonad", [ [ [ 0,0,0,0 ], 0, 0, [], 0 ] ] , trav_archive)
+
+function trav_archive (ar) {
+  var ind = pMindex.x + 1;
+  pMindex.ret(ind);
+  pMnums.ret(ar[0]);
+  pMscore.ret(ar[1]);
+  pMgoals.ret(ar[2]);
+  ar[3] = (typeof ar[3] == "undefined") ? pMclicked.x : ar[3]
+  ar[4] = (typeof ar[4] == "undefined") ? pMop.x : ar[4]
+  pMclicked.ret(ar[3]);
+  pMop.ret(ar[4]); 
+  var next = travMonad.s.slice();
+  next.splice( ind, 0, ar );
+  return next;
+}
 
 function MonadState(g, state, p) {
   var _this = this;
@@ -236,8 +234,7 @@ function MonadState(g, state, p) {
   }
 };
 
-var travMonad = new MonadState("travMonad", [[8,8,8,8], 0, 0, [ [ [], 0, 0 ] ] ], trav_state)
-
+// var travMonad = new MonadState("travMonad", [[8,8,8,8], 0, 0, [ [ [], 0, 0 ] ] ], trav_state)
 
 function trav_state (ar) {
   pMindex.bnd(add,1).bnd(pMindex.ret);
@@ -253,7 +250,7 @@ function trav_state (ar) {
   return next;
 }
 
-console.log('s in travMonad ', travMonad.run([ [0,0,0,0], 0, 0 ]).s);
+console.log('*** travMonad.s ***', travMonad.run([ [0,0,0,0], 0, 0 ]).s);
 
 function evalF(x) {
   var v;
@@ -337,24 +334,21 @@ function MonadE (val, ID, er = []) {
     }  
   };
 
-  function add2 (x, y, str ) {
-    window[str] = new MonadE(x+y, str, []);
-    return window[str];
-  }
+  function add2 (x, y) {
+    return ret2(x + y);
+  };
+
   
   function square2 (x, str) {
-    window[str] = new MonadE(x*x, str, []);
-    return window[str];
+    return ret2(x*x);
   };
   
   function mult2 (x,y,str) {
-    window[str] = new MonadE(x*y, str, []);
-    return window[str];
+    return ret2(x*y);
   };
   
-  function sqroot2 (x,str) {
-    window[str] = new MonadE(Math.sqrt(x), str, []);
-    return window[str];
+  function sqroot2 (x) {
+    return ret2(Math.sqrt(x));
   }
 
   function log2(x, message, str) {
@@ -363,14 +357,13 @@ function MonadE (val, ID, er = []) {
     return window[str]
   };
 
-  function ret2(v, id) {
+  function ret2(v, id = 'generic') {
     window[id] = new MonadE(v, id, []);
     return window[id];
   }
 
 function cube2 (x,id) {
-    window[id] = new MonadE(x*x*x, id, []);
-    return window[id];
+    return ret2(x*x*x);
 };
 
 function push2(x, v, id) {
@@ -534,8 +527,18 @@ function message_state(v) {
   return [ v[0], [], [], ar ];
 };
 
+var messageMonad = new MonadState('messageMonad', [], message_state); 
+
 var mMsetArchive = new Monad([], 'mMsetArchive');
 mMsetArchive.ret([]);
+
+var updateMessages = function updateMessages(e) {
+  var ar = e.split(',');
+  var sender = ar[2];
+  ar.splice(0,3);
+  var str = ar.join(',');
+  messageMonad.run([ [h('br'), sender + ': ' + str], [], [], messageMonad.s[3] ]);
+};
 
 function clean(x, mon) {
   if (mon === void 0) { mon = mMtemp; }
@@ -637,12 +640,10 @@ function primes(n, ar) {
   var mM1 = M([], 'mM1');
   var mMbound = M(0, 'mMbound');
   var mM2 = M(0, 'mM2');
-  var mM3 = M([], 'mM3');
   var mM4 = M([], 'mM4');
   var mM5 = M(0, 'mM5');
   var mM6 = M('', 'mM6');
   var mM7 = M(0, 'mM7');
-  var mM8 = M(0, 'mM8');
   var mM9 = M(0, 'mM9');
   var mM11 = M([], 'mM11');
   var mM12 = M(0, 'mM12');
@@ -688,7 +689,6 @@ function primes(n, ar) {
   var mMtem2 = new Monad(0, 'mMtem2');
   var mMt = new Monad(0, 'mMt');
   var mMtest = new Monad(0, 'mMtest');
-  var mMhistory = new Monad(0, 'mMhistory');
   var mMcursor = new Monad(0, 'mMcursor');
   var mMgroup = new Monad('solo', 'mMgroup');
   var mMgoals = new Monad(0, 'mMgoals');
@@ -700,10 +700,6 @@ function primes(n, ar) {
   var mMsave = new Monad({ x: 'start' }, 'mMsave');
   var mMindex = new Monad(0, 'mMindex');
   var mMindex3 = new Monad(0, 'mMindex3');
-  var mMhistory = new Monad([], 'mMhistory');
-  var mMhistorymM1 = new Monad([0, 0, 0, 0], 'mMhistorymM1');
-  var mMhistorymM3 = new Monad([], 'mMhistorymM3');
-  var mMhistorymMtask = new Monad([], 'mMhistorymMtask');
   var mMtemp = new Monad('temp', 'mMtemp');
   var mMtemp2 = new Monad('temp2', 'mMtemp2');
   var mMtemp3 = new Monad('temp3', 'mMtemp3');
@@ -1152,7 +1148,7 @@ var MonadAcc = function MonadAcc(z = 0, g = 'generic') {
     return window[_this.id] = new MonadAcc(str, _this.id);
   };
 };
-
+/*
 var demo1 = 
   ret2(0,'d1')
   .bnd('add2', 3, 'Md2')
@@ -1177,7 +1173,7 @@ var demo2 =
   .bnd('sqroot2',d4.x+d7.x,'d8')
   .bnd(log, 'The square root of ' + d3.x + ' squared plus ' + d6.x + ' squared equals ' + d8.x)
 
-var demo3 = ret(0,'d1')
+va0r demo3 = ret(0,'d1')
   .bnd(add, 3, 'd2')
   .bnd(mult,100,'d3')
   .bnd(square, 'd4')
@@ -1200,7 +1196,7 @@ var demo4 = ret(0,'d1')
     ' squared plus ' + d6.x + ' squared equals ' + d8.x)
 
 var demo4 = ret(0,'d1').bnd(add, 3, 'd2').bnd(mult,100,'d3').bnd(square, 'd4').bnd(add,-d4.x + 4,'d5').bnd(mult, 100, 'd6').bnd(square, 'd7').bnd(add, d4.x, 'd8').bnd(sqroot,d4.x+d7.x,'d8').bnd(log, 'The square root of ' + d3.x + ' squared plus ' + d6.x + ' squared equals ' + d8.x)
-
+*/
 var acc1 = new MonadAcc('', 'acc1');
 
 console.log('Test of MonadAcc, a logging monad:\n ',
@@ -1212,8 +1208,7 @@ acc1.reset().ret('The square root of the sum of ')
 .ret(' squared is ').bnd(() => m3.ret(m.x * m.x + m2.x * m2.x).bnd(sqroot).bnd(acc1.ret)).x);
 
 function acc (x, y, str) {
-  return window[str] = new MonadAcc(x + y, str);0
-}
+  return window[str] = new MonadAcc(x + y, str);}
 
  /* 
 
@@ -1228,6 +1223,7 @@ var ob11;
 var ob12;
 m.ret(4), m1.ret(1), m2.ret(2), m3.ret(3),
   m4.ret(4), m5.ret(5), m6.ret(6), m7.ret(7), m8.ret(8);
+    .bnd(sqroot, d4.x + d7.x,'Md1')
 
 m.bnd(m1.ret).bnd(cube)       // m1.x == 4
 .bnd(m2.ret).bnd(add,-m2.x)  // m2.x == 64
@@ -1242,7 +1238,7 @@ mMar10.ret([m, m1, m2, m3, m4, m5, m6, m7, m8]); });
 function test10 () {
   m.ret(4).bnd(mult,100,'Mm1')
   .bnd(square,'Mm2')
-  .bnd(add,-m2.x + 3,'Mm3')
+  .bnd(add,-m2.x + 3,'Mm3'. the calling monad\'s identifyer (variable name) without mutating the calling monad. That is one of the features that is illustrated in the screen shot (below). Here is the code associated with the screen shots:)
   .bnd(mult,100,'Mm4')
   .bnd(square,'Mm5')
   .bnd(add,m2.x,'Mm6') 
@@ -1340,6 +1336,7 @@ console.log('.');
 console.log('.');
 console.log('.');
 console.log('*** First, the MonadE versions ***');
+
 ret2(0,'d1')
   .bnd('add2', 3, 'Md2')
   .bnd('mult2',100,'Md3').bnd('square2', 'Md4')
@@ -1445,3 +1442,49 @@ console.log('.');
 console.log('.');
 console.log('.');
 console.log('.');
+console.log('.'); 
+console.log('.');
+console.log('.'); 
+ret2(0,'d1')
+  .bnd('add2', 3, 'Md2')
+  .bnd('mult2',100,'Md3').bnd('square2', 'Md4')
+  .bnd('add2',-d4.x + 4,'Md5')
+  .bnd('mult2', 100, 'Md6')
+  .bnd('square2', 'Md7')
+  .bnd('add2', d4.x, 'Md8')
+  .bnd('sqroot2',d4.x+d7.x,'Md9')
+  .bnd(log, 'The square root of ' + d3.x + ' squared plus ' + d6.x + ' squared equals ' + d9.x)
+console.log('Values after computations: ',d1.x,d2.x,d3.x,d4.x,d5.x,d6.x,d7.x, d8.x, d9.x);
+ar7 = [d1, d2, d3, d4, d5, d6, d7, d8, d9];
+d1.ret(1); d2.ret(2); d3.ret(3); d4.ret(4);
+d5.ret(5); d6.ret(6); d7.ret(7); d8.ret(8); d9.ret(9);
+console.log('New values: ',d1.x,d2.x,d3.x,d4.x,d5.x,d6.x,d7.x, d8.x, d9.x);
+console.log('ar7.map(v => v.x): ', ar7.map(v => v.x));
+console.log('.');
+
+ret2(0,'d1')
+  .bnd('addd2', 3, 'Md2')
+  .bnd('mult2',100,'Md3').bnd('square2', 'Md4')
+  .bnd('add2',-d4.x + 4,'Md5')
+  .bnd('mult2', 100, 'Md6')
+  .bnd('square2', 'Md7')
+  .bnd('add2', d4.x, 'Md8')
+  .bnd('sqroot2',d4.x+d7.x,'Md9')
+  .bnd(log, 'The square root of ' + d3.x + ' squared plus ' + d6.x + ' squared equals ' + d9.x)
+console.log('Values after computations: ',d1.x,d2.x,d3.x,d4.x,d5.x,d6.x,d7.x, d8.x, d9.x);
+ar7 = [d1, d2, d3, d4, d5, d6, d7, d8, d9];
+d1.ret(1); d2.ret(2); d3.ret(3); d4.ret(4);
+d5.ret(5); d6.ret(6); d7.ret(7); d8.ret(8); d9.ret(9);
+console.log('New values: ',d1.x,d2.x,d3.x,d4.x,d5.x,d6.x,d7.x, d8.x, d9.x);
+console.log('ar7.map(v => v.x): ', ar7.map(v => v.x));
+console.log('.');
+console.log('.');
+console.log('.');
+console.log('.');
+console.log('.');
+travMonad.run([[0,0,0,0],0,0])
+console.log(travMonad.s)
+travMonad.run([[7,7,7,7],0,0])
+console.log(travMonad.s)
+travMonad.run([[0,0,0,0],0,0])
+console.log(travMonad.s)

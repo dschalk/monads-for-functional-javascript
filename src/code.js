@@ -44,7 +44,20 @@ var monad = h('pre.turk6',  `    var Monad = function Monad(z = 42, g = 'generic
       this.ret = function (a) {
         return window[_this.id] = new Monad(a,_this.id);
       };
-    };  `  )
+    };  
+
+    function testPrefix (x,y) {
+      var t = y;
+      var s;
+      if (Array.isArray(x)) {
+        x.some(v => {
+          if (typeof v == 'string' && v.charAt() == 'M') {
+             t = v.slice(1, v.length);
+          }
+        })
+      }
+      return t;
+    }  `  )
 
 const monadIt = h('pre', {style: {color: '#AFEEEE' }}, `  const MonadItter = () => {
     this.p = function () {};
@@ -921,7 +934,7 @@ var mMZ10 = h('pre',  `  mMZ10.bnd( () => {
     pMscore.ret(v[7]);
     pMgoals.ret(v[8]) });  `  )
 
-var numClick1 = h('pre',  `  var numClick$ = sources.DOM
+var numClick1 = h('pre.blue',  `  var numClick$ = sources.DOM
       .select('.num').events('click'); 
 
   var numClickAction$ = numClick$.map(e => {
@@ -953,7 +966,7 @@ var numClick1 = h('pre',  `  var numClick$ = sources.DOM
     }) 
   });  `  )
 
-var numClick2 = h('pre',  `  function updateCalc(ar, op) {
+var numClick2 = h('pre.blue',  `  function updateCalc(ar, op) {
     var result = calc(ar[0], op, ar[1]);
     mM3.ret([]);
     mM8.ret(0)
@@ -1220,7 +1233,74 @@ var tests = h('pre.red9',  `
     console.log('ar7.map(v => v.x): ', ar7.map(v => v.x));
     `  )
 
+var monadArchive2 = h('pre.blue',  `    function MonadArchive(g, state, p) {
+      var _this = this;
+      this.id = g;
+      this.s = state;
+      this.process = p;
+      this.a = s[0];
+      this.bnd = (func, ...args) => func(_this.s, ...args);  
+      this.run = ar => { 
+        var ar2 = _this.process(ar);
+        _this.a = ar2[pMindex.x];
+        _this.s = ar2;             // The new value of s, assembled in trav_archive.
+        window[_this.id] = _this;
+        return window[_this.id];
+      }
+    };
+
+    var travMonad = new MonadArchive("travMonad", [ [ [ 0,0,0,0 ], 0, 0, [], 0 ] ] , trav_archive)
+    
+    function trav_archive (ar) {
+      var ind = pMindex.x + 1;
+      pMindex.ret(ind);
+      pMnums.ret(ar[0]);
+      pMscore.ret(ar[1]);
+      pMgoals.ret(ar[2]);
+      ar[3] = (typeof ar[3] == "undefined") ? pMclicked.x : ar[3]
+      ar[4] = (typeof ar[4] == "undefined") ? pMop.x : ar[4]
+      pMclicked.ret(ar[3]);
+      pMop.ret(ar[4]); 
+      var next = travMonad.s.slice();
+      next.splice( ind, 0, ar );
+      return next;                // The new value of travMonad.s.
+    }  `  )
+
+var backAction = h('pre',  `  
+    var backAction$ = backClick$.map(() => {
+      if (pMindex.x > 1) {   
+        pMop.ret(0);
+        var ind = pMindex.x - 1;
+        var s = travMonad.s[ind];
+        pMnums.ret(s[0]).bnd(test3, 'MpMstyle');
+        pMscore.ret(s[1]);
+        pMgoals.ret(s[2]);
+        pMclicked.ret(s[3]);
+        pMop.ret(s[4]);
+        socket.send(\`CG#$42,${pMgroup.x},${pMname.x},${pMscore.x},${pMgoals.x}\`);
+      pMindex.bnd(add,-1);
+      } 
+    });    `  )
+
+var p2 = h('pre',  `  
+`  )
+
+var p3 = h('pre',  `  
+`  )
+
+var p4 = h('pre',  `   
+`  )
+
+var p5 = h('pre',  `  
+`  )
+
 var p6 = h('pre',  `  
+`  )
+
+var p7 = h('pre',  `  
+`  )
+
+var p8 = h('pre',  `  
 `  )
 
 var p9 = h('pre',  `  
@@ -1228,7 +1308,7 @@ var p9 = h('pre',  `
 
 
 
-  export default { tests, monadE, numClick1, numClick2, mMZ10, test3, travMonad, monad, equals, fmap, opM, e1, e2, e2x, e3, e4, e4x, e6, e6x, e7, e7x, e7y, driver, messages, monadIt, MonadSet, updateCalc, arrayFuncs, nums, cleanup, ret, C42, newTask, process, mM$task, colorClick, edit, testZ, quad, runTest, todoStream, inc, seed,  add, MonadState, primesMonad, fibsMonad, primeFibInterface, tr3, fpTransformer, factorsMonad, factorsInput, playerMonad, promise, promiseSnippet, timeout, timeoutSnippet, examples, examples2, async }
+  export default { backAction, monadArchive2, tests, monadE, numClick1, numClick2, mMZ10, test3, travMonad, monad, equals, fmap, opM, e1, e2, e2x, e3, e4, e4x, e6, e6x, e7, e7x, e7y, driver, messages, monadIt, MonadSet, updateCalc, arrayFuncs, nums, cleanup, ret, C42, newTask, process, mM$task, colorClick, edit, testZ, quad, runTest, todoStream, inc, seed,  add, MonadState, primesMonad, fibsMonad, primeFibInterface, tr3, fpTransformer, factorsMonad, factorsInput, playerMonad, promise, promiseSnippet, timeout, timeoutSnippet, examples, examples2, async }
  
 
 

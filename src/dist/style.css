@@ -10,6 +10,10 @@ input {
   font-size: 16px;
 }
 
+.blue {
+  color: #AFEEEE;
+}
+  
 .tao {
   margin-left: 3%;
 }
@@ -19,6 +23,10 @@ input {
 }
 
 .lb {color: lightblue;}
+
+#clear {
+  font-size: 14px;
+}
 
 .bh3 {
  color: #00ffd8;
