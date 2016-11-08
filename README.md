@@ -242,7 +242,7 @@ The method travMonad.run() executes in:
     updateCalc          A function called by numsClickAction$ and opClickAction during game play.  
 ```
 travMonad keeps a record of the "x" attributes of pMnums (displayed numbers), pMscore, pMgoals, pMclicked (selected numbers), and pMop (the selected operator). Whenever pMnums changes, the expression pMnums.bnd(test3, "MpMstyle") executes, updating pMstyle in order to maintain a well-formated numbers display. In is, therefor, not necessary to keep a record of pMstyle in travMonad. Here is the definition of clear():
-```
+```js`
   function test3 (a) {
     var b = [];
     for (let i of [0,1,2,3]) {
@@ -309,7 +309,7 @@ The following code executes when a player clicks a number:
   });  
 ```
 The clicked number is removed from pMnums and added to pMclicked in the numClickAction$ stream. If two numbers and an operator have been selected, numClickAction$ or opClickAction$ (depending on whether the most recent click was on a number or an operator) calls updateCalc with two arguments, the pMclicked.x array of selected numbers and the chosen operator. After each roll, pMop.x is updated to 0. pMop.x != 0 indicates that an operator has been selected.
-```
+```js
   function updateCalc(ar, op) {
     var result = calc(ar[0], op, ar[1]);
     mM3.ret([]);
