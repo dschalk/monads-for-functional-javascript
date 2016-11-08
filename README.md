@@ -5,7 +5,7 @@ Not category theory monads. Monads like Haskell monads, using patterns found in 
 
 This is the repository for a [Motorcycle.js](https://github.com/motorcyclejs) application running online at [JS-monads-stable](http://schalk.net:3055). Motorcycle.js is essentially [Cycle.js](https://github.com/cyclejs/core) using [Most](https://github.com/cujojs/most) and [Snabbdom](https://github.com/paldepind/snabbdom) instead of RxJS and virtual-dom.
 
-The JS-monads constructors - "Monad", "MonadState", "MonadE", "MonadSet", and "MonadItter".project - are tools whic David Schalk devised for his personal use in front-end web development. They, and the boilerplate funcntions they use, are in the ~/src/dist/monad.js file. In the online demonstration, monad.js resides in the index.html file as a script. Functions that interact with the virtual DOM are in the main.js file. 
+The JS-monads constructors - "Monad", "MonadState", "MonadE", "MonadSet", MonadArchive, and "MonadItter".project - are tools whic David Schalk devised for his personal use in front-end web development. They, and the boilerplate funcntions they use, are in the ~/src/dist/monad.js file. In the online demonstration, monad.js resides in the index.html file as a script. Functions that interact with the virtual DOM are in the main.js file. 
 
 Aside from being a place to share my ideas and techniques with any developers who might be interested, the online demonstration is a tutorial for people who are interested in functional programming. It presents examples of devising abstractions to organize code into blocks of code that are easy to reason about and maintaim. For example, tweaking how the application behaves when the simulated dice game's numbers display is traversed has been a matter of making adjuctment in trav_state, a function defined in monads.js, For while, traveling backwards and clicking numbers or rolling the dice added new displays to the games mont recent history. Changing the line "next[3].unshift(ar)" to "next[3].splice( pMindex.x, 0, ar )" caused the new displays to be added wherever a player happenes to be in in the history of displays. The state that the player left behind gets bumped up further into the future each time a new display if generated. In other words, the index number the array array that was left behind in travMonad.a gets incremented by 1 each time a new array is added. The abandoned array continues have index number == travMonad.a.length -1. The future is not altered. An alternative reality is created where the player can continue all the way to victory (goals == 3).
 
@@ -193,6 +193,172 @@ The Haskell statement f ≡ g means that f x == g x for all Haskell values x of 
 The Haskell programming language borrowed the term "monad" from the branch of mathematics known as category theory. This was apropriate because Haskell monads, along with the function return and the operator >>=, behave quite a bit like category theory monads, and the inspiration for them came out of category theory. For Haskell monads to be category theory monads, they would need to reside in a category-theory category. They don't, although the Haskell mystique tends to give newcommers to the language the impression that they do. See Hask is not a category.
 
 Attempts continue to be made to define a Haskell category, usually with special constraints, omitted features, and sometimes with definitions of morphisms that are not Haskell functions. Succeeding in that endeavor would be the first step toward proving that Haskell monads are, in some contrived context, category-theory monads. Devising such a scheme might be an instructive academic excercise, but I don't see how it could possibly be of any value beyond that. Imitating definitions and patterns found in category theory, as Haskell does in defining the functor, monoid, and monad type classes, was a stroke of genius that vastly enriched the Haskell programming language and brought it into the mainstream as a viable alternative to java, c++, etc. This website runs efficiently on a Haskell websockets server. Category theory patterns are less needed, but neverthless useful, in Javascript. Code that adheres to them tends to be robust and versitile.
+
+##MonadArchive
+
+###Traversal of the dice game history.
+
+The state of the simulated dice game is maintained in travMonad, an instance of MonadArchive. Here are the definitions of MonadArchive, travMonad, and the helper function trav_archive:
+```javascript
+    function MonadArchive(g, state, p) {
+      var _this = this;
+      this.id = g;
+      this.s = state;
+      this.process = p;
+      this.a = s[0];
+      this.bnd = (func, ...args) => func(_this.s, ...args);  
+      this.run = ar => { 
+        var ar2 = _this.process(ar);
+        _this.a = ar2[pMindex.x];
+        _this.s = ar2;             // The new value of s, assembled in trav_archive.
+        window[_this.id] = _this;
+        return window[_this.id];
+      }
+    };
+
+    var travMonad = new MonadArchive("travMonad", [ [ [ 0,0,0,0 ], 0, 0, [], 0 ] ] , trav_archive)
+    
+    function trav_archive (ar) {
+      var ind = pMindex.x + 1;
+      pMindex.ret(ind);
+      pMnums.ret(ar[0]);
+      pMscore.ret(ar[1]);
+      pMgoals.ret(ar[2]);
+      ar[3] = (typeof ar[3] == "undefined") ? pMclicked.x : ar[3]
+      ar[4] = (typeof ar[4] == "undefined") ? pMop.x : ar[4]
+      pMclicked.ret(ar[3]);
+      pMop.ret(ar[4]); 
+      var next = travMonad.s.slice();
+      next.splice( ind, 0, ar );
+      return next;                // The new value of travMonad.s.
+    }  
+```
+The method travMonad.run() executes in:
+```js
+    messages$.          Runs when a new dice roll comes in from the websockets server.
+    groupPressAction$.  Clears game data when a new group is jointed.
+    nunClickAction$     Updates travMonad when numbers are clicked.
+    clearAction$        Clears saved data when the button under the display is clicked.
+    updateCalc          A function called by numsClickAction$ and opClickAction during game play.  
+```
+travMonad keeps a record of the "x" attributes of pMnums (displayed numbers), pMscore, pMgoals, pMclicked (selected numbers), and pMop (the selected operator). Whenever pMnums changes, the expression pMnums.bnd(test3, "MpMstyle") executes, updating pMstyle in order to maintain a well-formated numbers display. In is, therefor, not necessary to keep a record of pMstyle in travMonad. Here is the definition of clear():
+```
+  function test3 (a) {
+    var b = [];
+    for (let i of [0,1,2,3]) {
+      b[i] = (a[i] == undefined) ? 'none' : 'inline'
+    }
+    return ret(b);
+  }  
+```
+Whenever a new roll is requested from the server, a player's score and the number of goals is sent to the server. The server responds by sending all group members two messages; one for updating their numbers display, the other for updating their scoreboards. Messages from browsers to the server requesting updated numbers and scoreboard information are prefixed by CA#$42. This serves the interests of efficiency because mew rolls are automaticlly requested when scores change, and score changes are always associate with requests for new numbers. One point is deducted when a player clickes ROLL.
+
+Scores increase whenever players put together expressions that return 18 or 20. An increase in score is accompanied by a call to newRoll() with two arguments: score and goals. The Haskell server updates its ServerState TMVar and broadcasts the new numbers to all group members with the prefix "CA#$42, along with a message prefixed by NN#$42 containing the updated score and goal information. NN#$42 and CA#$42 messages are parsed and acted upon in the message$ stream, where each player's travMonad object is augmented by the addition of a new state information array. travMonad.s is an array of arrays containing the collection of these state arrays.
+
+Here is the code that runs when the back button is clicked:
+```javascript
+    var backAction$ = backClick$.map(() => {
+      if (pMindex.x > 1) {   
+        pMop.ret(0);
+        var ind = pMindex.x - 1;
+        var s = travMonad.s[ind];
+        pMnums.ret(s[0]).bnd(test3, 'MpMstyle');
+        pMscore.ret(s[1]);
+        pMgoals.ret(s[2]);
+        pMclicked.ret(s[3]);
+        pMop.ret(s[4]);
+        socket.send(`CG#$42,solo,1v65n$%pqw3*@#9,0,0`);
+      pMindex.bnd(add,-1);
+      } 
+    });    
+```
+Updating the numbers
+
+The following code executes when a player clicks a number:
+```javascript
+  var numClick$ = sources.DOM
+      .select('.num').events('click'); 
+
+  var numClickAction$ = numClick$.map(e => {
+    if (mM3.x.length == 2) {return};
+    pMnums    
+    .bnd(spliceM, e.target.id, 1)
+    .bnd(pMnums.ret)
+    .bnd(test3)
+    .bnd(pMstyle.ret)
+    mM3
+    .bnd(push, e.target.innerHTML)
+    .bnd(mM3.ret)
+    .bnd(v => {
+      if (v.length == 2 && mM8.x != 0) {
+        updateCalc(v, mM8.x) 
+      }
+    })
+    }).startWith([0, 0, 0, 0]);
+
+  var opClick$ = sources.DOM
+      .select('.op').events('click');
+
+  var opClickAction$ = opClick$.map(e => {
+    mM8.ret(e.target.innerHTML).bnd(v => { 
+      var ar = mM3.x
+      if (ar.length === 2) {
+        updateCalc(ar, v)
+      }
+    }) 
+  });  
+```
+The clicked number is removed from pMnums and added to pMclicked in the numClickAction$ stream. If two numbers and an operator have been selected, numClickAction$ or opClickAction$ (depending on whether the most recent click was on a number or an operator) calls updateCalc with two arguments, the pMclicked.x array of selected numbers and the chosen operator. After each roll, pMop.x is updated to 0. pMop.x != 0 indicates that an operator has been selected.
+```
+  function updateCalc(ar, op) {
+    var result = calc(ar[0], op, ar[1]);
+    mM3.ret([]);
+    mM8.ret(0)
+    if (result == 20) { 
+      pMscore.bnd(add,1)
+      .bnd(testscore)
+      .bnd(pMscore.ret)
+      .bnd(v => score(v));
+      return; 
+    } 
+    else if (result == 18) { 
+      pMscore.bnd(add,3)
+      .bnd(testscore)
+      .bnd(pMscore.ret)
+      .bnd(v => score(v));
+      return; 
+    }
+
+    else {
+      pMnums.bnd(push,result)
+      .bnd(pMnums.ret)
+      .bnd(v => {
+        travMonad.run([v, pMscore.x, pMgoals.x])
+        test3(v)
+        .bnd(pMstyle.ret)
+      }); 
+      mM8.ret(0);
+      mM3.ret([]);
+    }
+  };  
+
+  var testscore = function testscore(v) {
+    if ((v % 5) === 0) return ret(v+5)
+    else return ret(v);
+  };
+
+  function score(scor) {
+    if (scor != 25) {
+      newRoll(scor, pMgoals.x)
+    }
+    else if (pMgoals.x == 2) {
+      socket.send(`CE#$42,solo,1v65n$%pqw3*@#9`);
+      newRoll(0,0)
+    }
+    else {pMgoals.bnd(add, 1).bnd(pMgoals.ret).bnd(g => newRoll(0, g))};
+  };
+```
+updateCalc calls calc on the numbers and operater provided to it by numCalcAction$ or opCalcAction$. The return value is assigned to result. If the value of result is 18 or 20, pMscore.x is augmented by 3 or 1, respectively, and checked to see if another five points should be added. score() is then called with the new score as its argument. score() performs some additional tests and calls for a new roll with the values of score and goals it has determined depending on whether or not there is a score and, if so, a winner.
 
 ##MonadItter
 
