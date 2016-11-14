@@ -19,7 +19,7 @@ function testPrefix (x,y) {
   if (Array.isArray(x)) {
     x.some(v => {
       if (typeof v == 'string' && v.charAt() == 'M') {
-         t = v.slice(1, v.length);
+         t = v.slice(1);
       }
     })
   }
@@ -35,7 +35,8 @@ var Monad = function Monad(z = 19, g = 'generic') {
     var mon;
     if (m instanceof Monad) {
       mon = testPrefix(args,_this.id); 
-      return window[mon] = new Monad(m.x, mon);
+      window[mon] = new Monad(m.x, mon);
+      return window[mon];
     }
     else return m;
   };
@@ -166,21 +167,15 @@ var isFunc = function isFunc (x) { return eval("typeof(" + x + ") == 'function'"
     return ret(ar);
   };
 
-var MonadSet = function MonadSet(set, str) {
-  var ob = {
-    ID: str,
-    s: set,  
-    bnd: (func, ...args) => func(ob.s, ...args),
-    add: a => MonadSet(s.add(a), ob.id),
-    delete: a => MonadSet(s.delete(a), ob.id),
-    clear: () => MonadSet(s.clear(), ob.id)
-  };
-  return ob;
-};
-
 var s = new Set();
 
-var sMplayers = MonadSet(s, 'sMplayers'); // holds currently online players
+var MonadSet = function MonadSet(set, str) {
+  var _this = this;
+  this.id = str;
+  this.s = new Set();  
+};
+
+var sMplayers = new MonadSet(s, 'sMplayers'); // holds currently online players
 
 var pMclicked = new Monad ([], 'pMclicked');
 
@@ -252,6 +247,115 @@ function trav_state (ar) {
 
 console.log('*** travMonad.s ***', travMonad.run([ [0,0,0,0], 0, 0 ]).s);
 
+function tP (x) {
+  if (eval('typeof ' + x) === 'undefined') return "code4"
+  else if (eval(x) !== eval(x)) return "code5"
+  else return "code6"  
+}
+
+function testP (x) {
+  if ( eval('typeof ' + x) === 'undefined') return "code4"
+  else if (eval(x) !== eval(x)) return "code5"
+  else return "code6"  
+}
+
+function testPrefix3 (x,y) {
+  var t = y;
+  var s;
+  if ( eval('typeof ' + x) === 'undefined') return "code4"
+  else if (eval(x) !== eval(x)) return "code5"
+  else return "code6"  
+    x.some(v => {
+      if (typeof v == 'string' && v.charAt() == 'M') {
+         t = v.slice(1);
+      }
+    })
+  return t;
+}
+
+function testPrefix2 (x,y) {
+  ar.map( v => {  
+    code = testP(v);
+    if (code === 'code4') ar.push(v + ' is undefined.');
+    else if (code === 'code5') ar.push(v + ' is NaN.');
+    else if (code === 'code6') code = 'code6';
+  })
+  console.log('In testPrefix2 OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO y, ar ', y, ar);  
+  if (code === 'code6') return y;
+  else if (ar.length > 0) return ar;
+  else console.log("......I thought this was impossible.............. Tilt!");
+}   
+
+function MonadE (val, ID, er = []) {
+  var _this = this;
+  this.x = val;
+  this.e = er;
+  this.id = ID;
+  this.getx = function getx (x) {return _this.x};
+  this.bnd = function (f, ...args) {
+    if (f == 'clean') {
+      _this.e = [];
+      window[_this.id] = new MonadE ( _this.x, _this.id, [] );
+      return window[_this.id];
+    }
+    if (_this.e.length > 0) {
+      console.log('BYPASSING COMPUTATION in MonadE instance', _this.id, f, '.  PROPAGATING ERROR:',  _this.e[0]); 
+      return _this;  
+    }
+    var a;
+    if (typeof f == 'function') {
+      a = 'function';
+    }
+    else if (typeof f === 'string') {
+      var x = ("typeof " + f);
+      a = eval(x);
+    }
+    if (a == 'function') {
+      if (args.length > 0) {
+        var id = _this.id;
+        var arr = args.filter( v => !(typeof v === 'string' && v.slice(0,1) == 'M'))
+        console.log('In MonadE bnd(). args, arr OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO', args, arr)
+        arr.map(v => {
+          if ( eval('typeof ' + v) === 'undefined') {
+            _this.e.push(v + ' is undefined.') 
+            console.log(v,"is undefined. No further computations will be attempted");
+            return _this; 
+          }
+          else if (eval(v) !== eval(v)) {
+            e.push(v + ' is NaN.'); 
+            console.log(v, "is NaN. No further computations will be attempted");
+            return _this;
+          } 
+          else {
+            var art = args.filter( v => (typeof v === 'string' && v.slice(0,1) == 'M'))
+            if (art.length > 0) id = art[0];
+            console.log('In MonadE bnd(). id, art OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO', id, art)
+            var arm = args.slice(0, f.length)
+            var arm2 = arm.map(v => eval(v))
+            var m = eval(f)(_this.x, ...arm2); 
+            window[id] = m
+            return window[id]
+          }
+        }) 
+      } 
+      else {
+        var m = eval(f)(_this.x); 
+        window[_this.id] = m
+        return window[_this.id]
+      }
+    }
+    else {
+      _this.e.push(f + ' is not a function. ');
+      console.log(f, 'is not a function. No further computations will be attempted');
+      return _this;
+    }
+  }
+  this.ret = function (a) {
+    window[_this.id] = new MonadE(a, _this.id, []);
+    return window[_this.id];
+  }  
+};
+
 function evalF(x) {
   var v;
   if (typeof x == "string") {v = eval("typeof x")}  
@@ -261,81 +365,10 @@ function evalF(x) {
   return v;
 }
 
-function testPrefix2 (x,y) {
-  var t = y;
-  var s;
-  var ar;
-  if (Array.isArray(x)) {
-    ar = x.filter(v => typeof v == 'string')
-    ar.map( v => {  
-      if (v.charAt() != 'M' && eval(eval('typeof v') == undefined)) {
-        return 'code4';
-      }
-      else if (v.charAt() != 'M' && eval('Number.isNaN(c)')) {
-         return 'code5';    
-      }
-      else if (v.charAt() == 'M') {
-          t = v.slice(1, v.length);
-      }
-    })   
-  }
-  return t;
-  }   
-
-
-function MonadE (val, ID, er = []) {
-    var _this = this;
-    this.x = val;
-    this.e = er;
-    this.id = ID;
-    this.getx = function getx (x) {return _this.x};
-    this.bnd = function (f, ...args) {
-      if (f == 'clean') {
-        _this.e = [];
-        window[_this.id] = new MonadE(_this.x, _this.id, []);
-        return window[_this.id];
-      }
-      if (_this.e.length > 0) {
-        console.log('BYPASSING COMPUTATION in MonadE instance', _this.id, f, '.  PROPAGATING ERROR:',  _this.e[0]); 
-        return _this;  
-      }
-      if (f == 'log2') {
-        console.log(args[1])
-        return new MonadE ( args[0], args[2], [] )
-      }
-      var a = ("typeof " + f);
-      if (eval(a) == 'function') {
-        var m = eval(f)(_this.x, ...args)
-        if (m instanceof MonadE) {
-          let mon = testPrefix2(args, _this.id); 
-          if (mon == 'code4') {
-            console.log(v, "is undefined. No further computations will be attempted");
-            _this.e.push(v + " is undefined." );
-            return _this;
-          }
-          if (mon == 'code5') {
-            console.log(v, "is NaN. No further computations will be attempted");
-            _this.e.push(v + " is NaN." );
-            return _this;
-          }
-          window[mon] = new MonadE(m.x, mon);
-          return window[mon];
-        }
-      }
-      else {
-        _this.e.push(f + ' is not a function. ');
-        console.log(f, 'is not a function. No further computations will be attempted');
-        return _this;
-      }
-    };
-    this.ret = function (a) {
-      window[_this.id] = new MonadE(a, _this.id, []);
-      return window[_this.id];
-    }  
-  };
+var mMEa = new MonadE(0, 'mMEa');
 
   function add2 (x, y) {
-    return ret2(x + y);
+    return ret2(x*1 + y*1);
   };
 
   
@@ -391,9 +424,6 @@ function sliceM(x, howmany) {
     var ar = x.slice(howmany);
     return ret(ar);
 };
-
-var mMEa = new MonadE(0, 'mMEa');
-
 var fpTransformer = function transformer(s, m) {
   var bound = Math.ceil(Math.sqrt(s[3][s[3].length - 1]));
   if (bound > m.a[m.a.length - 1]) {
@@ -531,14 +561,6 @@ var messageMonad = new MonadState('messageMonad', [], message_state);
 
 var mMsetArchive = new Monad([], 'mMsetArchive');
 mMsetArchive.ret([]);
-
-var updateMessages = function updateMessages(e) {
-  var ar = e.split(',');
-  var sender = ar[2];
-  ar.splice(0,3);
-  var str = ar.join(',');
-  messageMonad.run([ [h('br'), sender + ': ' + str], [], [], messageMonad.s[3] ]);
-};
 
 function clean(x, mon) {
   if (mon === void 0) { mon = mMtemp; }
@@ -987,7 +1009,9 @@ var mMgame = new Monad('none','mMgameDiv');
       return ret(ar, 'pushFunc');
   };
 
-  var unshift = function unshift(x, y) {
+  var unshift2 = function unshift2(x, y, z) {
+    window[z] = new MonadE(x, z, []);
+    return window[z]
       var ar = x.slice();
       ar.unshift(y);
       return ret(ar);
@@ -1072,12 +1096,12 @@ function log3(x, message) {
 
 function log(x,y) {
     console.log(y)
-    return ret(x);
+    return ret(y);
 };
 
 function logX(x,y) {
     console.log(x)
-    return ret(x);
+    return ret(y);
 };
 
 function acc (x, y, str) {
@@ -1148,55 +1172,7 @@ var MonadAcc = function MonadAcc(z = 0, g = 'generic') {
     return window[_this.id] = new MonadAcc(str, _this.id);
   };
 };
-/*
-var demo1 = 
-  ret2(0,'d1')
-  .bnd('add2', 3, 'Md2')
-  .bnd('mult2',100,'Md3')
-  .bnd('square2', 'Md4')
-  .bnd('add2',-d4.x + 4,'Md5')
-  .bnd('mult2', 100, 'Md6')
-  .bnd('square2', 'Md7')
-  .bnd('add2', d4.x, 'Md8')
-  .bnd('sqroot2',d4.x+d7.x,'d8')
-  .bnd(log, 'The square root of ' + d3.x + ' squared plus ' + d6.x + ' squared equals ' + d8.x)
 
-var demo2 = 
-  ret2(0,'d1')
-  .bnd('add2', 3, 'Md2')
-  .bnd('mult2',100,'Md3')
-  .bnd('square2', 'Md4')
-  .bnd('add2',-d4.x + 4,'Md5')
-  .bnd('mult2', 100, 'Md6')
-  .bnd('square2', 'Md7')
-  .bnd('add2', d4.x, 'Md8')
-  .bnd('sqroot2',d4.x+d7.x,'d8')
-  .bnd(log, 'The square root of ' + d3.x + ' squared plus ' + d6.x + ' squared equals ' + d8.x)
-
-va0r demo3 = ret(0,'d1')
-  .bnd(add, 3, 'd2')
-  .bnd(mult,100,'d3')
-  .bnd(square, 'd4')
-  .bnd(add,-d4.x + 4,'d5')
-  .bnd(mult, 100, 'd6')
-  .bnd(square, 'd7')
-  .bnd(add, d4.x, 'd8')
-  .bnd(sqroot,d4.x+d7.x,'d8').bnd(log, 'The square root of ' + d3.x + 
-    ' squared plus ' + d6.x + ' squared equals ' + d8.x)
-
-var demo4 = ret(0,'d1')
-  .bnd(add, 3, 'd2')
-  .bnd(mult,100,'d3')
-  .bnd(square, 'd4')
-  .bnd(add,-d4.x + 4,'d5')
-  .bnd(mult, 100, 'd6')
-  .bnd(square, 'd7')
-  .bnd(add, d4.x, 'd8')
-  .bnd(sqroot,d4.x+d7.x,'d8').bnd(log, 'The square root of ' + d3.x + 
-    ' squared plus ' + d6.x + ' squared equals ' + d8.x)
-
-var demo4 = ret(0,'d1').bnd(add, 3, 'd2').bnd(mult,100,'d3').bnd(square, 'd4').bnd(add,-d4.x + 4,'d5').bnd(mult, 100, 'd6').bnd(square, 'd7').bnd(add, d4.x, 'd8').bnd(sqroot,d4.x+d7.x,'d8').bnd(log, 'The square root of ' + d3.x + ' squared plus ' + d6.x + ' squared equals ' + d8.x)
-*/
 var acc1 = new MonadAcc('', 'acc1');
 
 console.log('Test of MonadAcc, a logging monad:\n ',
@@ -1210,274 +1186,6 @@ acc1.reset().ret('The square root of the sum of ')
 function acc (x, y, str) {
   return window[str] = new MonadAcc(x + y, str);}
 
- /* 
-
-var mMob10 = new Monad ({}, 'mMob10');
-var mMob11 = new Monad ([], 'mMob11');
-var mMar10 = new Monad ([], 'mMar10');
-var mMar11 = new Monad ([], 'mMar11');
-var mMar12 = new Monad ([], 'mMar12');
-var mMar13 = new Monad ([], 'mMar13');
-var ob10;
-var ob11;
-var ob12;
-m.ret(4), m1.ret(1), m2.ret(2), m3.ret(3),
-  m4.ret(4), m5.ret(5), m6.ret(6), m7.ret(7), m8.ret(8);
-    .bnd(sqroot, d4.x + d7.x,'Md1')
-
-m.bnd(m1.ret).bnd(cube)       // m1.x == 4
-.bnd(m2.ret).bnd(add,-m2.x)  // m2.x == 64
-.bnd(m3.ret).bnd(add,3)      // m3.x == 0
-.bnd(m4.ret).bnd(cube)       // m4.x == 3
-.bnd(m5.ret).bnd(add,-m5.x)  // m5.x == 27
-.bnd(m6.ret).bnd(add,10)     // m6.x == 0
-.bnd(m7.ret).bnd(cube)       // m7.x == 10 
-.bnd(m8.ret).bnd(() => {     // m8.x == 1000
-mMar10.ret([m, m1, m2, m3, m4, m5, m6, m7, m8]); });
-
-function test10 () {
-  m.ret(4).bnd(mult,100,'Mm1')
-  .bnd(square,'Mm2')
-  .bnd(add,-m2.x + 3,'Mm3'. the calling monad\'s identifyer (variable name) without mutating the calling monad. That is one of the features that is illustrated in the screen shot (below). Here is the code associated with the screen shots:)
-  .bnd(mult,100,'Mm4')
-  .bnd(square,'Mm5')
-  .bnd(add,m2.x,'Mm6') 
-  .bnd(sqroot,'Mm7')
-  .bnd(() => { 
-    mMar10.ret([m, m1, m2, m3, m4, m5, m6, m7]);
-    console.log('The square root of the sum of ', m1.x,
-      ' squared and ', m4.x, ' squared is ', m7.x); });
-  return mMar10;
-}  
-
-function test11 () {
-  m.ret(4).bnd(mult,100,'Mm1')
-  .bnd(square,'Mm2')
-  .bnd(add,-m2.x + 3,'Mm3')
-  .bnd(mult,100,'Mm4')
-  .bnd(square,'Mm5')
-  .bnd(add,m2.x,'Mm6') 
-  .bnd(sqroot,'Mm7').bnd(m.ret)
-  .bnd(() => { 
-    mMar11.ret([m, m1, m2, m3, m4, m5, m6, m7]);
-    console.log('The square root of the sum of ', m1.x,
-      ' squared and ', m4.x, ' squared is ', m7.x); });
-  return mMar11;
-}  
-
-
-console.log('.');
-console.log('.');
-console.log('test10 ', test10());
-console.log('m.x, m1.x, m2.x, m3.x, m4.x, m5.x, m6.x, m7.x');
-console.log(m.x, m1.x, m2.x, m3.x, m4.x, m5.x, m6.x, m7.x);
-console.log( `m.ret(4), m1.ret(1), m2.ret(2), m3.ret(3),0
-  m4.ret(4), m5.ret(5), m6.ret(6)` );
-m.ret(4), m1.ret(1), m2.ret(2), m3.ret(3), m4.ret(4),
-  m5.ret(5), m6.ret(6), m7.ret(7);
-console.log('m.x, m1.x, m2.x, m3.x, m4.x, m5.x, m6.x, m7.x');
-console.log(m.x, m1.x, m2.x, m3.x, m4.x, m5.x, m6.x, m7.x);                             // The monads have new values.
-console.log(`mMar10.x[0].x, mMar10.x[1].x, mMar10.x[2].x, mMar10.x[3].x,
-  mMar10.x[4].x, mMar10.x[5].x, mMar10.x[6].x`); 
-console.log(mMar10.x[0].x, mMar10.x[1].x, mMar10.x[2].x, mMar10.x[3].x, mMar10.x[4].x, mMar10.x[5].x, mMar10.x[6].x, mMar10.x[7].x); // The st
-console.log('.');
-console.log('test11 ', test11());
-console.log('m.x, m1.x, m2.x, m3.x, m4.x, m5.x, m6.x, m7.x');
-console.log(m.x, m1.x, m2.x, m3.x, m4.x, m5.x, m6.x, m7.x);
-console.log( `m.ret(4), m1.ret(1), m2.ret(2), m3.ret(3),0
-  m4.ret(4), m5.ret(5), m6.ret(6)` );
-m.ret(4), m1.ret(1), m2.ret(2), m3.ret(3), m4.ret(4), m5.ret(5), m6.ret(6), m7.ret(7)
-console.log('m.x, m1.x, m2.x, m3.x, m4.x, m5.x, m6.x');                                
-console.log(m.x, m1.x, m2.x, m3.x, m4.x, m5.x, m6.x);                                    
-console.log(`mMar11.x[0].x, mMar11.x[1].x, mMar11.x[2].x, mMar11.x[3].x,
-  mMar11.x[4].x, mMar11.x[5].x, mMar11.x[6].x, mMar11.x[7].x`); 
-console.log('.');
-console.log("A MonadE instance running first without error and then with bnd('add22' ...") 
-console.log('add22 is not defined. ');
-console.log('.');
-console.log('.');
-console.log('.');
-  ret2(0,'a')
-  .bnd('add2',3, 'a')
-  .bnd('mult2',100,'a')
-    .bnd('square2','c')
-    .bnd('ret2','c')
-    .bnd('add2',-c.getx() + 4,'b')
-    .bnd('ret2','b')
-    .bnd('mult2',100,'b')
-    .bnd('ret2','e')
-    .bnd('square2','e')
-    .bnd('add2',c.getx(),'e')
-    .bnd('sqroot2','e')
-    .bnd(log,'The square root of the sum of ' + a.getx() + 
-      ' squared and ' + b.getx() + ' squared is ' + e.getx());
-console.log('.');
-  ret2(0,'a')
-  .bnd('add22',3, 'a')
-  .bnd('mult2',100,'a')
-    .bnd('square2','c')
-    .bnd('ret2','c')
-    .bnd('add2',-c.getx() + 4,'b')
-    .bnd('ret2','b')
-    .bnd('mult2',100,'b')
-    .bnd('ret2','e')
-    .bnd('square2','e')
-    .bnd('add2',c.getx(),'e')
-    .bnd('sqroot2','e')
-    .bnd(log,'The square root of the sum of ' + a.getx() + 
-      ' squared and ' + b.getx() + ' squared is ' + e.getx());
-console.log('.');
-console.log('.');
-console.log('.');
-console.log('.');
-*/
-var ar7;
-console.log('.');
-console.log('.');
-console.log('.');
-console.log('*** First, the MonadE versions ***');
-
-ret2(0,'d1')
-  .bnd('add2', 3, 'Md2')
-  .bnd('mult2',100,'Md3').bnd('square2', 'Md4')
-  .bnd('add2',-d4.x + 4,'Md5')
-  .bnd('mult2', 100, 'Md6')
-  .bnd('square2', 'Md7')
-  .bnd('add2', d4.x, 'Md8')
-  .bnd('sqroot2',d4.x+d7.x,'Md9')
-  .bnd(log, 'The square root of ' + d3.x + ' squared plus ' + d6.x + ' squared equals ' + d9.x)
-console.log('Values after computations: ',d1.x,d2.x,d3.x,d4.x,d5.x,d6.x,d7.x, d8.x, d9.x);
-ar7 = [d1, d2, d3, d4, d5, d6, d7, d8, d9];
-d1.ret(1); d2.ret(2); d3.ret(3); d4.ret(4);
-d5.ret(5); d6.ret(6); d7.ret(7); d8.ret(8); d9.ret(9);
-console.log('New values: ',d1.x,d2.x,d3.x,d4.x,d5.x,d6.x,d7.x, d8.x, d9.x);
-console.log('ar7.map(v => v.x): ', ar7.map(v => v.x));
-console.log('.');
-
-ret2(0,'d1')
-  .bnd('add2', 3, 'Md2')
-  .bnd('mult2',100,'Md3')
-  .bnd('square2', 'Md4')
-  .bnd('add2',-d4.x + 4,'Md5')
-  .bnd('mult2', 100, 'Md6')
-  .bnd('square2', 'Md7')
-  .bnd('add2', d4.x, 'Md8')
-  .bnd('sqroot2',d4.x+d7.x,'Md1')
-  .bnd(log, 'The square root of ' + d3.x + ' squared plus ' + d6.x + ' squared equals ' + d1.x)
-console.log('Values after computations: ',d1.x,d2.x,d3.x,d4.x,d5.x,d6.x,d7.x, d8.x);
-ar7 = [d1, d2, d3, d4, d5, d6, d7, d8];
-d1.ret(1); d2.ret(2); d3.ret(3); d4.ret(4);
-d5.ret(5); d6.ret(6); d7.ret(7); d8.ret(8);
-console.log('New values: ',d1.x,d2.x,d3.x,d4.x,d5.x,d6.x,d7.x, d8.x);
-console.log('ar7.map(v => v.x): ', ar7.map(v => v.x));
-console.log('.');
-console.log('*** Now the plain Monad versions. ***');
-
-ret(0,'d1')
-  .bnd(add, 3, 'Md2')
-  .bnd(mult,100,'Md3')
-  .bnd(square, 'Md4')
-  .bnd(add, 4-d4.x, 'Md5')
-  .bnd(mult, 100, 'Md6')
-  .bnd(square, 'Md7')
-  .bnd(add, d4.x, 'Md8')
-  .bnd(sqroot, d4.x + d7.x,'Md9')
-  .bnd(log, 'The square root of ' + d3.x + ' squared plus ' + d6.x + ' squared equals ' + d9.x)
-console.log('Values after computations: ',d1.x,d2.x,d3.x,d4.x,d5.x,d6.x,d7.x, d8.x, d9.x);
-ar7 = [d1, d2, d3, d4, d5, d6, d7, d8, d9];
-d1.ret(1); d2.ret(2); d3.ret(3); d4.ret(4);
-d5.ret(5); d6.ret(6); d7.ret(7); d8.ret(8); d9.ret(9);
-console.log('New values: ',d1.x,d2.x,d3.x,d4.x,d5.x,d6.x,d7.x, d8.x, d9.x);
-console.log('ar7.map(v => v.x): ', ar7.map(v => v.x));
-console.log('.');
-
-ret(0,'d1')
-  .bnd(add, 3, 'Md2')
-  .bnd(mult,100,'Md3')
-  .bnd(square, 'Md4')
-  .bnd(add, 4-d4.x,'Md5')
-  .bnd(mult, 100, 'Md6')
-  .bnd(square, 'Md7')
-  .bnd(add, d4.x, 'Md8')
-  .bnd(sqroot, d4.x + d7.x,'Md1')
-  .bnd(log, 'The square root of ' + d3.x + ' squared plus ' + d6.x + ' squared equals ' + d1.x)
-console.log('Values after computations: ',d1.x,d2.x,d3.x,d4.x,d5.x,d6.x,d7.x, d8.x);
-var ar7 = [d1, d2, d3, d4, d5, d6, d7, d8];
-d1.ret(1); d2.ret(2); d3.ret(3); d4.ret(4);
-d5.ret(5); d6.ret(6); d7.ret(7); d8.ret(8);
-console.log('New values: ',d1.x,d2.x,d3.x,d4.x,d5.x,d6.x,d7.x, d8.x);
-console.log('ar7.map(v => v.x): ', ar7.map(v => v.x));
-console.log('.'); 
-console.log('.');
-console.log('.');
-console.log('.');
-ret2(0,'d1')
-  .bnd('add2', 3, 'Md2')
-  .bnd('mult2',100,'Md3').bnd('square2', 'Md4')
-  .bnd('add2',-d4.x + 4,'Md5')
-  .bnd('mult2', 100, 'Md6')
-  .bnd('square2', 'Md7')
-  .bnd('add2', d4.x, 'Md8')
-  .bnd('sqroot2',d4.x+d7.x,'Md9')
-  .bnd(log, 'The square root of ' + d3.x + ' squared plus ' + d6.x + ' squared equals ' + d9.x)
-console.log('Values after computations: ',d1.x,d2.x,d3.x,d4.x,d5.x,d6.x,d7.x, d8.x, d9.x);
-ar7 = [d1, d2, d3, d4, d5, d6, d7, d8, d9];
-d1.ret(1); d2.ret(2); d3.ret(3); d4.ret(4);
-d5.ret(5); d6.ret(6); d7.ret(7); d8.ret(8); d9.ret(9);
-console.log('New values: ',d1.x,d2.x,d3.x,d4.x,d5.x,d6.x,d7.x, d8.x, d9.x);
-console.log('ar7.map(v => v.x): ', ar7.map(v => v.x), ' unchanged');
-console.log('***** ERROR: addd2 instead of add2. Logged in the Chrome console: *****');
-ret2(0,'d1')
-  .bnd('addd2', 3, 'Md2')
-  .bnd('mult2',100,'Md3')
-  .bnd('square2', 'Md4')
-  .bnd('add2',-d4.x + 4,'Md5')
-  .bnd('mult2', 100, 'Md6')
-  .bnd('square2', 'Md7')
-  .bnd('add2', d4.x, 'Md8')
-  .bnd('sqroot2',d4.x+d7.x,'Md1')
-  .bnd(log, 'The square root of ' + d3.x + ' squared plus ' + d6.x + ' squared equals ' + d1.x)
-console.log('Values after computations: ',d1.x,d2.x,d3.x,d4.x,d5.x,d6.x,d7.x, d8.x, 'Only d1 changed.' );
-console.log('.');
-console.log('.');
-console.log('.');
-console.log('.');
-console.log('.'); 
-console.log('.');
-console.log('.'); 
-ret2(0,'d1')
-  .bnd('add2', 3, 'Md2')
-  .bnd('mult2',100,'Md3').bnd('square2', 'Md4')
-  .bnd('add2',-d4.x + 4,'Md5')
-  .bnd('mult2', 100, 'Md6')
-  .bnd('square2', 'Md7')
-  .bnd('add2', d4.x, 'Md8')
-  .bnd('sqroot2',d4.x+d7.x,'Md9')
-  .bnd(log, 'The square root of ' + d3.x + ' squared plus ' + d6.x + ' squared equals ' + d9.x)
-console.log('Values after computations: ',d1.x,d2.x,d3.x,d4.x,d5.x,d6.x,d7.x, d8.x, d9.x);
-ar7 = [d1, d2, d3, d4, d5, d6, d7, d8, d9];
-d1.ret(1); d2.ret(2); d3.ret(3); d4.ret(4);
-d5.ret(5); d6.ret(6); d7.ret(7); d8.ret(8); d9.ret(9);
-console.log('New values: ',d1.x,d2.x,d3.x,d4.x,d5.x,d6.x,d7.x, d8.x, d9.x);
-console.log('ar7.map(v => v.x): ', ar7.map(v => v.x));
-console.log('.');
-
-ret2(0,'d1')
-  .bnd('addd2', 3, 'Md2')
-  .bnd('mult2',100,'Md3').bnd('square2', 'Md4')
-  .bnd('add2',-d4.x + 4,'Md5')
-  .bnd('mult2', 100, 'Md6')
-  .bnd('square2', 'Md7')
-  .bnd('add2', d4.x, 'Md8')
-  .bnd('sqroot2',d4.x+d7.x,'Md9')
-  .bnd(log, 'The square root of ' + d3.x + ' squared plus ' + d6.x + ' squared equals ' + d9.x)
-console.log('Values after computations: ',d1.x,d2.x,d3.x,d4.x,d5.x,d6.x,d7.x, d8.x, d9.x);
-ar7 = [d1, d2, d3, d4, d5, d6, d7, d8, d9];
-d1.ret(1); d2.ret(2); d3.ret(3); d4.ret(4);
-d5.ret(5); d6.ret(6); d7.ret(7); d8.ret(8); d9.ret(9);
-console.log('New values: ',d1.x,d2.x,d3.x,d4.x,d5.x,d6.x,d7.x, d8.x, d9.x);
-console.log('ar7.map(v => v.x): ', ar7.map(v => v.x));
-console.log('.');
 console.log('.');
 console.log('.');
 console.log('.');
@@ -1488,3 +1196,298 @@ travMonad.run([[7,7,7,7],0,0])
 console.log(travMonad.s)
 travMonad.run([[0,0,0,0],0,0])
 console.log(travMonad.s)
+console.log('.');
+console.log('.');
+console.log('.');
+ret(0,'a');ret2(0,'b');ret2(0,'c');
+console.log('.');
+
+function atest () {
+ret(2,'a')
+.bnd(add,1)
+a.bnd(v => ret(v*100,'b'))
+.bnd(v2 => ret(v2*v2,'c')
+.bnd(v3 => ret(4,'d')
+.bnd(v4 => ret(v4*100))
+.bnd(v5 => ret(v5*v5,'e')
+.bnd(v6 => ret(Math.sqrt(v6+v3),'f')
+.bnd(v7 => console.log('The square root of the sum of',v2,'and',v5,'is', v7,'.'))))))
+return [a,b,c,d,e,f]  
+}  
+
+ret2(7,'s');ret2(7,'t');ret2(7,'u');ret2(7,'v');ret2(7,'w');ret2(7,'x');  
+
+var b = new MonadE(7,'b',[]);
+
+function btest () {
+ret2(2,'a')
+.bnd('add2',1)
+a.bnd(v => ret2(v*100,'b'))
+.bnd(v2 => ret2(v2*v2,'c')
+.bnd(v3 => ret2(4,'d')
+.bnd(v4 => ret2(v4*100))
+.bnd(v5 => ret2(v5*v5,'e')
+.bnd(v6 => ret2(Math.sqrt(v6+v3),'f')
+.bnd(v7 => console.log('The square root of the sum of',v2,'and',v5,'is', v7,'.'))))))
+return [a,b,c,d,e,f]  
+}  
+
+function ctest () {
+ret2(2,'a')
+.bnd('addd2',1)
+a.bnd(v => ret2(v*100,'b'))
+.bnd(v2 => ret2(v2*v2,'c')
+.bnd(v3 => ret2(4,'d')
+.bnd(v4 => ret2(v4*100))
+.bnd(v5 => ret2(v5*v5,'e')
+.bnd(v6 => ret2(Math.sqrt(v6+v3),'f')
+.bnd(v7 => console.log('The square root of the sum of',v2,'and',v5,'is', v7,'.'))))))
+return [a,b,c,d,e,f]  
+}
+
+var mMdemo = ret('start','mMdemo');
+var demoAr = [6,6,6,6,6,6,6];
+
+var text = `Testing:
+ret(0,'a');ret2(0,'b');ret2(0,'c'),
+atest();btest();ctest();
+console.log('a.x;',a.x);console.log('b.x:', b.x);console.log('c.x:',c.x);
+in the Chrome console. `
+
+ret(7,'s');ret(7,'t');ret(7,'u');ret(7,'v');ret(7,'w');ret(7,'x');  
+ret(7,'a');ret(7,'b');ret(7,'c');ret(7,'d');ret(7,'e');ret(7,'f');  
+
+function demo100 () {
+  ret(3,'a')
+  .bnd(a.ret)
+  .bnd(sx => s.ret(sx*100)
+  .bnd(tx => t.ret(tx*tx)
+  .bnd(ux => u.ret(4)
+  .bnd(vx => v.ret(vx*100)
+  .bnd(wx => w.ret(wx*wx)
+  .bnd(xx => x.ret(Math.sqrt(ux+x))
+  .bnd(() => console.log(`The square root of the sum of ${tx} squared and ${wx} squared is ${xx}`)
+  )))))))
+}  
+
+console.log('.');
+console.log('.');
+console.log('.');
+console.log('.');
+console.log('Now running btest()');
+btest();
+console.log('.');
+console.log('Now running ctest()');
+ctest()
+console.log('.');
+console.log('.');
+console.log('.');
+console.log('.');
+console.log('// Now setting a, b, c, d, e and f to 7 and logging a.x, b.x, c.x, d.x, e.x, and f.x.)');
+ret(7,'a');ret(7,'b');ret(7,'c');ret(7,'d');ret(7,'e');ret(7,'f');  
+console.log(a.x, b.x, c.x, d.x, e.x,f.x)
+console.log('// Now running atest and making demoAr a reference to its return value. ');
+demoAr = atest();
+console.log('// Now logging a.x, b.x, c.x, d.x, e.x, and f.x.');
+console.log(a.x, b.x, c.x, d.x, e.x,f.x)
+console.log('// Now logging demoAr.map(v => v.x).join(", ").');
+console.log(demoAr.map(v => v.x).join(', '));
+console.log('// Now setting a, b, c, d, e and f to 7 and logging a.x, b.x, c.x, d.x, e.x, and f.x.)');
+ret(7,'a');ret(7,'b');ret(7,'c');ret(7,'d');ret(7,'e');ret(7,'f');  
+console.log(a.x, b.x, c.x, d.x, e.x,f.x)
+console.log('// Now logging demoAr.map(v => v.x).join(", ").');
+console.log(demoAr.map(v => v.x).join(', '));
+console.log('// Using the ret() method to update the monads left the monads in demoAr unchanged.');  
+console.log('.');
+console.log('.');
+console.log('.');
+console.log('.');
+
+var a = 'jack'
+var b = '0/"andy"'
+function testP (y) {
+  var x = eval(y)
+  if (eval('typeof ' + x) === 'undefined') return "code4"
+  else if (eval(x) !== eval(x)) return "code5"
+  else return "code6"  
+}
+
+var aa = 'jack'
+var bb = '0/"andy"'
+function testP (y) {
+  var x = eval(y)
+  if (eval('typeof ' + x) === 'undefined') return "code4"
+  else if (eval(x) !== eval(x)) return "code5"
+  else return "code6"  
+}
+function testf (func, ...args) {
+  var ar = args.slice(0,func.length)
+  var ar2 = args.slice(func.length,args.length)
+  var ar3 = [];
+  ar2.map(v => ar3.push(testP(v)));
+  console.log(ar3)
+  return func(...ar2)
+}
+/*
+testP(a, 'Mb', 'car')
+ testf(testP,'bb','aa','bb','bb','add')
+console.log(d)
+*/
+console.log('.');
+console.log('.');
+console.log('.');
+console.log('.');
+
+
+function ret3(v, id = 'generic') {
+    window[id] = new MonadEr(v, id, []);
+    return window[id];
+  }
+
+function add3(x, y) {
+    return ret3(x*1 + y*1);
+  }
+
+function cube3(x) {
+    return ret3(x*x*x);
+}
+
+function clean3 (x, id) {
+  window[id] = new MonadEr(x, id, []);
+  return window[id];
+}
+
+
+var a = 'jack'
+var b = '0/"andy"'
+
+function testPrefix (x,y) {
+  var t = y;
+  var s;
+  if (Array.isArray(x)) {
+    x.some(v => {
+      if (typeof v == 'string' && v.charAt() == 'M') {
+         t = v.slice(1);
+      }
+    })
+  }
+  return t;
+}
+
+function testP (x,id) {
+    if ( eval('typeof ' + x) === 'undefined') {
+      console.log(`............... ERROR parameter ${x} is not defined`);
+      window[id].e = [`${x} is not defined`]
+      return 'STOP';
+    }
+    if (eval(x) !== eval(x)) {
+      console.log(`............... ERROR parameter ${x} is not a number`);
+      window[id].e = [`${x} is not a number`]; 
+      return 'STOP';
+    } 
+    mMZ12.release([]);
+    return []  
+}
+
+
+function MonadEr (val, ID, er = []) {
+  var _this = this;
+  var test;
+  this.x = val;
+  this.e = er;
+  this.id = ID;
+  this.getx = function getx (x) {return _this.x};
+  this.bnd = function (f, ...args) {
+    var args = args;
+    if (f === 'clean3' || f === clean3) {
+      _this.e = [];
+      window[_this.id] = new MonadEr(_this.x, _this.id, []);
+      return window[_this.id];
+    }
+    if (_this.e.length > 0) {
+      console.log('BYPASSING COMPUTATION in MonadE instance', _this.id, f, '.  PROPAGATING ERROR:',  _this.e[0]); 
+      return _this;  
+    }
+    var a;
+    if (typeof f == 'function') {
+      a = 'function';
+    }
+    else if (typeof f === 'string') {
+      var x = ("typeof " + f);
+      a = eval(x);
+    }
+    if (a == 'function' && args.length > 0) {
+      var arr = args.filter(v => !(typeof v == 'string' && v.charAt() == 'M' && v.slice(0,4) !== 'Math'))
+        
+      arr.map(v => {
+        test = testP(v, _this.id)
+        if (test === 'STOP') {
+          console.log('\"STOP\" returned from testP. Ending code execution in ',_this.id, '.' ) 
+          _this.e.push('STOP');
+          return _this;
+        } 
+        }); 
+      if (_this.e.length > 0) return _this;
+      else {
+        var testId = testPrefix(args, _this.id);  
+        var ar = arr.map(v => eval(v))
+        var m = eval(f)(_this.x, ...ar); 
+        var id = testPrefix(ar, _this.id);
+        window[testId] = new MonadEr(m.x, testId, []);
+        return window[testId];      
+      }  
+      if (a == 'function' && args.length === 0) {
+        var m = eval(f)(_this.x); 
+        window[_this.id] = new MonadEr(m.x, _this.id, []);
+        return window[_this.id];  
+      }
+    } 
+    else {
+      _this.e.push(f + ' is not a function. ');
+      console.log(f, 'is not a function. No further computations will be attempted');
+      return _this;
+    }  
+  }
+  this.ret = function (a) {
+    window[_this.id] = new MonadEr(a, _this.id, []);
+    return window[_this.id];
+  }  
+};
+
+var t = new MonadEr(0,'t', []);
+var t2 = new MonadEr(0,'t2', []);
+var t3 = new MonadEr(0,'t3', []);
+console.log('Values of t, t2, and t3', t.x,t2.x,t3.x)
+console.log("executing t.bnd(\'add3\',3,\'Mt2\').bnd(cube3, \'Mt3\') ");
+t.bnd('add3',3,'Mt2').bnd(cube3, 'Mt3')
+console.log('Values of t, t2, and t3', t.x,t2.x,t3.x)
+var t = new MonadEr(0,'t', []);
+var t2 = new MonadEr(0,'t2', []);
+var t3 = new MonadEr(0,'t3', []); 
+console.log('Values of t, t2, and t3', t.x,t2.x,t3.x)
+
+console.log("executing t.bnd('add3','three', 'Mt2').bnd(cube3, 'Mt3') " );
+t.bnd('add3','three','Mt2').bnd(cube3, 'Mt3')
+console.log('Values of t, t2, and t3', t.x,t2.x,t3.x)
+
+console.log( 't.bnd(clean3)' );
+t.bnd(clean3);
+
+console.log("executing t.bnd('add3', 'Math.sqrt(-1)', 'Mt2').bnd(cube3, 'Mt3') " );
+t.bnd('add3','Math.sqrt(-1)','Mt2').bnd(cube3, 'Mt3')
+console.log('Values of t, t2, and t3', t.x,t2.x,t3.x)
+console.log( 't.bnd(clean3)' );
+t.bnd(clean3);
+console.log("executing t.bnd(\'addd3\',3,\'Mt2\').bnd(cube3, \'Mt3\') ");
+t.bnd('addd3',3,'Mt2').bnd(cube3, 'Mt3')
+console.log('Values of t, t2, and t3', t.x,t2.x,t3.x)
+console.log('.');
+console.log('.');
+console.log('.');
+console.log('.');
+console.log('.');
+console.log('.');
+console.log('.');
+console.log('.');
+
+

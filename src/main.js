@@ -7,6 +7,15 @@ import {create, merge} from 'most';
 import {h, p, span, h1, h2, h3, pre, br, div, label, input, hr, makeDOMDriver} from '@motorcycle/dom';
 import code from './code.js';
 messageMonad = messageMonad;
+
+var updateMessages = function updateMessages(e) {
+  var ar = e.split(',');
+  var sender = ar[2];
+  ar.splice(0,3);
+  var str = ar.join(',');
+  messageMonad.run([ [h('br'), sender + ': ' + str], [], [], messageMonad.s[3] ]);
+};
+
 console.log('.');
 console.log('.');
 
@@ -170,12 +179,12 @@ function main(sources) {
   });
 
   var updatePlayers = function updatePlayers (data) { 
-        sMplayers.clear();
+        sMplayers.s.clear();
         var namesL = data.split("<br>");
         var namesList = namesL.slice(1);
         updateScoreboard2(namesList);
-        namesList.forEach(player => sMplayers.add(player.trim()));
-        console.log('In mMZ19 <><><>OOO<><><> namesL, sMplayers.s, and namesList are ', namesL, sMplayers.s, namesList);
+        namesList.forEach(player => sMplayers.s.add(player.trim()));
+        console.log('In updatePlayers <><><>OOO<><><> namesL, sMplayers.s, and namesList are ', namesL, sMplayers.s, namesList);
   }
 
   var updateScoreboard2 = function updateScoreboard2(v) {
@@ -911,7 +920,7 @@ h('p', ' In a similar function, m might obtain its value from a websocket, user 
 h('a#error', { props: { href: '#monad' } }, 'Back to the top of the Monad discussion'),
 h('br' ),
 h('br' ),
-h('img.image', {props: {src: "fourTests.png"}}  ),   
+h('img.image', {props: {src: "demo_000.png"}}  ),   
 h('h3', ' The Monad Laws '), 
 h('p', ' In the following discussion, "x == y" signifies that the expression x == y returns true. Let J be the collection of all Javascript values, including functions, instances of Monad, etc, and let F be the collection of all functions mapping values in J to instances of Monad with references (names) matching their ids; that is, with window[id] == m.id for some id which is a valid es2015 variable name. The collection of all such instances of Monad along and all of the functions in F is called "M". For any instances of Monad m, m1, and m2 in M and any functions f and g in F, the following relationships follow easily from the definition of Monad: '), 
 h('div', 'Left Identity ' ),
@@ -1007,13 +1016,14 @@ h('span#PF_7.red6', 'Fibonacci Numbers'),
 h('br'),
 h('span#PF_9.turk', mMres.x[0]  ),
 h('br'),
+h('span#PF_8.red6', 'Prime Fibonacci Numbers'),
+h('br'),
+h('span#primeFibs.turk', mMres.x[2]  ),
+h('br'),
 h('span#PF_21.red6', 'Prime Numbers'),
 h('br'),
 h('span#PF_22.turk', mMres.x[1]  ),
 h('br'),
-h('span#PF_8.red6', 'Prime Fibonacci Numbers'),
-h('br'),
-h('span#primeFibs.turk', mMres.x[2]  ),
 h('p', ' The next demonstration uses two instances of MonadState to find the prime factors of numbers. Each prime factor is listed once.  On my desktop computer, it took several seconds to verify that 514229 is a prime number. After that, due to memoization, numbers below 514229 or not too far above it evaluated rapidly. Here\'s where you can enter a number to see its prime factors: '),
 h('input#factors_1'),
 h('br'),
@@ -1070,24 +1080,25 @@ h('a', { props: { href: '#top' } }, 'Back To The Top'),
   h('a#tdList2', { props: { href: '#itterLink' } }, 'release() with arguments'),
   h('br'),
   h('a#error', { props: { href: '#monad' } }, 'Back to Monad discussion'),
-  h('h2', ' MonadE - An Error-Catching Monad ' ),
-  h('p', ' Instances of MonadE function much the same as instances of Monad, but when an instance of MonadE encounters an error, it ceases to perform any further computations. Instead, it passes through every subsequent stage of a sequence of MonadE expressions, reporting where it is and repeating the error message. It will continue to do this until it is re-instantiated or until its bnd() method runs on the function clean(). ' ),
-  h('p', 'Functions used as arguments to the MonadE bnd() method are placed in quotation marks to prevent the browser engine from throwing reference errors. Arguments can be protected in the same manner. ' ), 
-  h('p', ' The variable test1 was defined as shown below. When test1 was entered in the Chrome developer console, "The square root of the sum of 300 squared and 400 squared is 500" was displayed. Here is the code. The screen shot is shown below. ' ),
-    code.screenshot1,
-  h('p', ' Next, I tried to define test2 in the Chrome developer scratch pad, which runs in the Chrome developer tools. Like the console, it is accessable by pressing F12 while in the running application in Chrome. Firefox provides similar tools. The attempt to define test2 resulted in the sequence of reports shown in the screenshot below. I defined test2 in monad.js, which loads as a script in the index.html file. The application loaded successfully, and when I looked in the console, I saw the same series of reports (screenshot below). When I entered test2 in the console, 0 was displayed. That was the value of the MonadE instance "a" when the error occurred. Here is test2 and the screenshot: ' ),  
-    code.screenshot2,
+  h('h2', ' MonadEr - An Error-Catching Monad ' ),
+  h('p', ' Instances of MonadEr function much the same as instances of Monad, but when an instance of MonadEr encounters an error, it ceases to perform any further computations. Instead, it passes through every subsequent stage of a sequence of MonadE expressions, reporting where it is and repeating the error message. It will continue to do this until it is re-instantiated or until its bnd() method runs on the function clean(). ' ),
+  h('p', 'Functions used as arguments to the MonadEr bnd() method can be placed in quotation marks to prevent the browser engine from throwing reference errors. Arguments can be protected in the same manner. ' ), 
+  h('p', ' The following demonstration shows the Chrome console log entries that result from running ' ),
+  h('pre', `    t.bnd('add3", 3, 'Mt2').bnd(cube3, 'Mt3'
+    t.bnd('add3",'three', 'Mt2').bnd(cube3, 'Mt3'    
+    t.bnd('add3",'Math.sqrt(-1)', 'Mt2').bnd(cube3, 'Mt3' 
+    t.bnd('addd3", 3, 'Mt2').bnd(cube3, 'Mt3' ` ),
   h('br'),
-  h('img.image', {props: {src: "error.png"}}  ),   
+  h('img.image', {props: {src: "error2.png"}}  ),   
   h('br'),
   h('br'),
-  h('div.tao1', ' Here are the definitions of MonadE and the functions used in the demonstration: ' ),
-    code.monadE,
-  h('span.tao', ' When  a MonadE instance encounters a function or an argument in quotation marks of types undefined or NaN, a message string gets pushed into its e attribue. After that, the  bnd() method will not process any function other than clean() and log2(). It will stop at the' ),
+  h('div.tao1', ' Here are the definitions of MonadEr, MonadE\'s helper functions, and the functions which serve as parameters to the bnd() method in the demonstration: ' ),
+    code.monadEr,
+  h('p', ' and here is the code that produced the Chrome console log entries: ' ),
+    code.errorDemo,  
+  h('span.tao', ' When  a MonadEr instance encounters a function or an argument in quotation marks of types undefined or NaN, a string gets pushed into the instance\'s e attribue. After that, the  bnd() method will not process any function other than clean(). It will stop at the' ),
   h('span.turk', 'if (e.length > 0)' ), 
-  h('span', 'block. clean() resets an instance to normal functioning mode by setting its e attribute back to []. MonadE instances are created on the flyin the error-free version. In the version with an error, these MonadE instances have already been created and ret2, by creating fresh instances, effectively re-sets their values to 0. . ' ), 
-  h('p', ' The final test in the bnd() method occurs in a try-catch block. If a function and its quoted arguments are not of types undefined or NaN but the system returns an error, the error message gets logged and a browser crash is averted. ' ),    
-  h('br'),
+  h('span', 'block. clean() resets an instance to normal functioning mode by setting its e attribute back to []. ' ), 
   h('br'),
   h('br'),
   h('a', { props: { href: '#top' } }, 'Back To The Top'),

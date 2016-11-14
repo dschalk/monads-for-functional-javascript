@@ -705,16 +705,10 @@ var playerMonad = h('pre',  `  var playerMonad = new MonadState('playerMonad', [
     return x; 
   };  `  )
 
-var MonadSet = h('pre',  `  var MonadSet = function MonadSet(set, str) {
-    var ob = {
-      ID: str,
-      s: set,  
-      bnd: (func, ...args) => func(ob.s, ...args),
-      add: a => MonadSet(s.add(a), ob.id),
-      delete: a => MonadSet(s.delete(a), ob.id),
-      clear: () => MonadSet(s.clear(), ob.id)
-    };
-    return ob;
+var MonadSet = h('pre',  `    var MonadSet = function MonadSet(set, str) {
+      var _this = this;
+      this.id = str;
+      this.s = new Set();  
   };
 
   var s = new Set();
@@ -1282,11 +1276,143 @@ var backAction = h('pre',  `
       } 
     });    `  )
 
-var p2 = h('pre',  `  
-`  )
+var monadEr = h('pre.red9',  `    function MonadEr (val, ID, er = []) {
+      var _this = this;
+      var test;
+      this.x = val;
+      this.e = er;
+      this.id = ID;
+      this.getx = function getx (x) {return _this.x};
+      this.bnd = function (f, ...args) {
+        var args = args;
+        if (f === 'clean3' || f === clean3) {
+          _this.e = [];
+          window[_this.id] = new MonadEr(_this.x, _this.id, []);
+          return window[_this.id];
+        }
+        if (_this.e.length > 0) {
+          console.log('BYPASSING COMPUTATION in MonadE instance', _this.id, f, '.  PROPAGATING ERROR:',  _this.e[0]); 
+          return _this;  
+        }
+        var a;
+        if (typeof f == 'function') {
+          a = 'function';
+        }
+        else if (typeof f === 'string') {
+          var x = ("typeof " + f);
+          a = eval(x);
+        }
+        if (a == 'function' && args.length > 0) {
+          var arr = args.filter(v => !(typeof v == 'string' && v.charAt() == 'M' && v.slice(0,4) !== 'Math'))
+            
+          arr.map(v => {
+            test = testP(v, _this.id)
+            if (test === 'STOP') {
+              console.log('\"STOP\" returned from testP. Ending code execution in ',_this.id, '.' ) 
+              _this.e.push('STOP');
+              return _this;
+            } 
+            }); 
+          if (_this.e.length > 0) return _this;
+          else {
+            var testId = testPrefix(args, _this.id);  
+            var ar = arr.map(v => eval(v))
+            var m = eval(f)(_this.x, ...ar); 
+            var id = testPrefix(ar, _this.id);
+            window[testId] = new MonadEr(m.x, testId, []);
+            return window[testId];      
+          }  
+          if (a == 'function' && args.length === 0) {
+            var m = eval(f)(_this.x); 
+            window[_this.id] = new MonadEr(m.x, _this.id, []);
+            return window[_this.id];  
+          }
+        } 
+        else {
+          _this.e.push(f + ' is not a function. ');
+          console.log(f, 'is not a function. No further computations will be attempted');
+          return _this;
+        }  
+      }
+      this.ret = function (a) {
+        window[_this.id] = new MonadEr(a, _this.id, []);
+        return window[_this.id];
+      }  
+    };
+    
+    function testPrefix (x,y) {
+      var t = y;
+      var s;
+      if (Array.isArray(x)) {
+        x.some(v => {
+          if (typeof v == 'string' && v.charAt() == 'M') {
+             t = v.slice(1);
+          }
+        })
+      }
+      return t;
+    }
+    
+    function testP (x,id) {
+        if ( eval('typeof ' + x) === 'undefined') {
+          console.log(\`............... ERROR parameter \${x} is not defined\`);
+          window[id].e = [\`\${x} is not defined\`]
+          return 'STOP';
+        }
+        if (eval(x) !== eval(x)) {
+          console.log(\`............... ERROR parameter ${x} is not a number\`);
+          window[id].e = [\`\${x} is not a number\`]; 
+          return 'STOP';
+        } 
+        mMZ12.release([]);
+        return []  
+    }
+    
+    function ret3(v, id = 'generic') {
+        window[id] = new MonadEr(v, id, []);
+        return window[id];
+      }
+    
+    function add3(x, y) {
+        return ret3(x*1 + y*1);
+      }
+    
+    function cube3(x) {
+        return ret3(x*x*x);
+    }
+    
+    function clean3 (x, id) {
+      window[id] = new MonadEr(x, id, []);
+      return window[id];
+    }    `  )
 
-var p3 = h('pre',  `  
-`  )
+var errorDemo = h('pre.turk5',  `    var t = new MonadEr(0,'t', []);
+    var t2 = new MonadEr(0,'t2', []);
+    var t3 = new MonadEr(0,'t3', []);
+    console.log('Values of t, t2, and t3', t.x,t2.x,t3.x)
+    console.log("executing t.bnd(\'add3\',3,\'Mt2\').bnd(cube3, \'Mt3\') ");
+    t.bnd('add3',3,'Mt2').bnd(cube3, 'Mt3')
+    console.log('Values of t, t2, and t3', t.x,t2.x,t3.x)
+    var t = new MonadEr(0,'t', []);
+    var t2 = new MonadEr(0,'t2', []);
+    var t3 = new MonadEr(0,'t3', []); 
+    console.log('Values of t, t2, and t3', t.x,t2.x,t3.x)
+    
+    console.log("executing t.bnd('add3','three', 'Mt2').bnd(cube3, 'Mt3') " );
+    t.bnd('add3','three','Mt2').bnd(cube3, 'Mt3')
+    console.log('Values of t, t2, and t3', t.x,t2.x,t3.x)
+    
+    console.log( 't.bnd(clean3)' );
+    t.bnd(clean3);
+    
+    console.log("executing t.bnd('add3', 'Math.sqrt(-1)', 'Mt2').bnd(cube3, 'Mt3') " );
+    t.bnd('add3','Math.sqrt(-1)','Mt2').bnd(cube3, 'Mt3')
+    console.log('Values of t, t2, and t3', t.x,t2.x,t3.x)
+    console.log( 't.bnd(clean3)' );
+    t.bnd(clean3);
+    console.log("executing t.bnd(\'addd3\',3,\'Mt2\').bnd(cube3, \'Mt3\') ");
+    t.bnd('addd3',3,'Mt2').bnd(cube3, 'Mt3')
+    console.log('Values of t, t2, and t3', t.x,t2.x,t3.x)    `  )
 
 var p4 = h('pre',  `   
 `  )
@@ -1308,7 +1434,7 @@ var p9 = h('pre',  `
 
 
 
-  export default { backAction, monadArchive2, tests, monadE, numClick1, numClick2, mMZ10, test3, travMonad, monad, equals, fmap, opM, e1, e2, e2x, e3, e4, e4x, e6, e6x, e7, e7x, e7y, driver, messages, monadIt, MonadSet, updateCalc, arrayFuncs, nums, cleanup, ret, C42, newTask, process, mM$task, colorClick, edit, testZ, quad, runTest, todoStream, inc, seed,  add, MonadState, primesMonad, fibsMonad, primeFibInterface, tr3, fpTransformer, factorsMonad, factorsInput, playerMonad, promise, promiseSnippet, timeout, timeoutSnippet, examples, examples2, async }
+  export default { errorDemo, monadEr, backAction, monadArchive2, tests, monadE, numClick1, numClick2, mMZ10, test3, travMonad, monad, equals, fmap, opM, e1, e2, e2x, e3, e4, e4x, e6, e6x, e7, e7x, e7y, driver, messages, monadIt, MonadSet, updateCalc, arrayFuncs, nums, cleanup, ret, C42, newTask, process, mM$task, colorClick, edit, testZ, quad, runTest, todoStream, inc, seed,  add, MonadState, primesMonad, fibsMonad, primeFibInterface, tr3, fpTransformer, factorsMonad, factorsInput, playerMonad, promise, promiseSnippet, timeout, timeoutSnippet, examples, examples2, async }
  
 
 
