@@ -526,64 +526,82 @@ The list of online group members at the bottom of the scoreboard is very respons
 
 Instances of MonadE function much the same as instances of Monad, but when an instance of MonadE encounters an error, it ceases to perform any further computations. Instead, it passes through every subsequent stage of a sequence of MonadE expressions, reporting where it is and repeating the error message. It will continue to do this until it is re-instantiated or until its bnd() method runs on the function clean().
 
-Functions used as arguments to the MonadE bnd() method are placed in quotation marks to prevent the browser engine from throwing reference errors. Arguments can be protected in the same manner.
+Functions used as arguments to the MonadE bnd() method can be placed in quotation marks to prevent the browser engine from throwing reference errors. Arguments can be protected in the same manner.
 
-The variable test1 was defined as shown below. When test1 was entered in the Chrome developer console, "The square root of the sum of 300 squared and 400 squared is 500" was displayed. Here is the code. The screen shot is shown below.
+The following demonstration shows the Chrome console log entries that result from running
 ```javascript
+    t.bnd('add3", 3, 'Mt2').bnd(cube3, 'Mt3'
+    t.bnd('add3",'three', 'Mt2').bnd(cube3, 'Mt3'    
+    t.bnd('add3",'Math.sqrt(-1)', 'Mt2').bnd(cube3, 'Mt3' 
+    t.bnd('addd3", 3, 'Mt2').bnd(cube3, 'Mt3' 
 ```    
 ```javascript
 
 ```
-  ![Alt text](error.png?raw=true)
+  ![Alt text](error2.png?raw=true)
 Here are the definitions of MonadE and the functions used in the demonstration:
 ```Javascript
-  function MonadE (val, ID, er = []) {
+
+  function MonadEr (val, ID, er = []) {
     var _this = this;
+    var test;
     this.x = val;
     this.e = er;
     this.id = ID;
     this.getx = function getx (x) {return _this.x};
     this.bnd = function (f, ...args) {
-      if (f == 'clean') {
+      var args = args;
+      if (f === 'clean3' || f === clean3) {
         _this.e = [];
-        window[_this.id] = new MonadE(_this.x, _this.id, []);
+        window[_this.id] = new MonadEr(_this.x, _this.id, []);
         return window[_this.id];
       }
       if (_this.e.length > 0) {
         console.log('BYPASSING COMPUTATION in MonadE instance', _this.id, f, '.  PROPAGATING ERROR:',  _this.e[0]); 
         return _this;  
       }
-      if (f == 'log2') {
-        console.log(args[1])
-        return new MonadE ( args[0], args[2], [] )
+      var a;
+      if (typeof f == 'undefined') {
+        a = 'undefined';
       }
-      var a = ("typeof " + f);
-      if (eval(a) == 'function') {
-        var m = eval(f)(_this.x, ...args)
-        if (m instanceof MonadE) {
-          let mon = testPrefix2(args, _this.id); 
-          if (mon == 'code4') {
-            console.log(v, "is undefined. No further computations will be attempted");
-            _this.e.push(v + " is undefined." );
+      else if (typeof f === 'string') {
+        var x = ("typeof " + f);
+        a = eval(x);
+      }
+      if (a !== 'undefined' && args.length > 0) {
+        var arr = args.filter(v => !(typeof v == 'string' && v.charAt() == 'M' && v.slice(0,4) !== 'Math'))
+          
+        arr.map(v => {
+          test = testP(v, _this.id)
+          if (test === 'STOP') {
+            console.log('\"STOP\" returned from testP. Ending code execution in ',_this.id, '.' ) 
+            _this.e.push('STOP');
             return _this;
-          }
-          if (mon == 'code5') {
-            console.log(v, "is NaN. No further computations will be attempted");
-            _this.e.push(v + " is NaN." );
-            return _this;
-          }
-          window[mon] = new MonadE(m.x, mon);
-          return window[mon];
+          } 
+          }); 
+        if (_this.e.length > 0) return _this;
+        else {
+          var testId = testPrefix(args, _this.id);  
+          var ar = arr.map(v => eval(v))
+          var m = eval(f)(_this.x, ...ar); 
+          var id = testPrefix(ar, _this.id);
+          window[testId] = new MonadEr(m.x, testId, []);
+          return window[testId];      
+        }  
+        if (a == 'function' && args.length === 0) {
+          var m = eval(f)(_this.x); 
+          window[_this.id] = new MonadEr(m.x, _this.id, []);
+          return window[_this.id];  
         }
-      }
+      } 
       else {
-        _this.e.push(f + ' is not a function. ');
-        console.log(f, 'is not a function. No further computations will be attempted');
+        _this.e.push(f + ' is not a defined. ');
+        console.log(f, 'is not defined. No further computations will be attempted');
         return _this;
-      }
-    };
+      }  
+    }
     this.ret = function (a) {
-      window[_this.id] = new MonadE(a, _this.id, []);
+      window[_this.id] = new MonadEr(a, _this.id, []);
       return window[_this.id];
     }  
   };

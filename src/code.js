@@ -1277,6 +1277,7 @@ var backAction = h('pre',  `
     });    `  )
 
 var monadEr = h('pre.red9',  `    function MonadEr (val, ID, er = []) {
+            
       var _this = this;
       var test;
       this.x = val;
@@ -1295,16 +1296,16 @@ var monadEr = h('pre.red9',  `    function MonadEr (val, ID, er = []) {
           return _this;  
         }
         var a;
-        if (typeof f == 'function') {
-          a = 'function';
+        if (typeof f == 'undefined') {
+          a = 'undefined';
         }
         else if (typeof f === 'string') {
           var x = ("typeof " + f);
           a = eval(x);
         }
-        if (a == 'function' && args.length > 0) {
+        if (a !== 'undefined' && args.length > 0) {
           var arr = args.filter(v => !(typeof v == 'string' && v.charAt() == 'M' && v.slice(0,4) !== 'Math'))
-            
+        
           arr.map(v => {
             test = testP(v, _this.id)
             if (test === 'STOP') {
