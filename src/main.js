@@ -88,7 +88,7 @@ function main(sources) {
   mMtem.ret(e.data.split(',')).bnd( v => {
   console.log('<><><><><><><><><><><><><><><><>  INCOMING  <><><><><><><> >>> In messages. e amd v are ', e, v);
   mMZ10.bnd( () => {
-    pMnums.ret([v[3], v[4], v[5], v[6]]).bnd(test3,"MmpMstyle");
+    pMnums.ret([v[3], v[4], v[5], v[6]]).bnd(test3,"MpMstyle");
     travMonad.run([ [v[3], v[4], v[5], v[6]], v[7], v[8], [], 0 ]);
     pMscore.ret(v[7]);
     pMgoals.ret(v[8]) }); 
@@ -820,7 +820,7 @@ function main(sources) {
       h('br'),
       h('div#captionDiv', { style: { display: mMcaptionDiv.x } },  [
           h('h1', 'Motorcycle.js With JS-monads') ]),
-          h('span#italic', ' Not category theory monads. These monads are like the Haskell monads, They using patterns and conform to rules borrowed from category theory. See ' ),
+          h('span#italic', ' Not category theory monads. These monads are like the Haskell monads, They use patterns and conform to rules borrowed from category theory. See ' ),
       h('a', { props: { href: "http://math.andrej.com/2016/08/06/hask-is-not-a-category/", target: "_blank" } }, 'Hask is not a category.'),
           h('span', ' by Andrej Bauer and . ' ),
           h('a', { props: { href: '#discussion' } }, 'Discussion'),
@@ -897,11 +897,8 @@ h('span', '), and preserving intermediate results in linked sequences of operati
 h('a', { props: { href: '#demo' } }, 'M prefix demo).' ),    
 h('p', ' In most sequences of operationns, the arguments provided to each link\'s bnd() method are functions that return an instance of Monad. Here are some examples of functions that return instances of Monad: '),
 code.e1,
-h('p', ' These functions can be used with instances of Monad in many ways, for example: '),
-code.e7,    
-code.e7x,    
-code.e7y,    
-h('p', ' I experimented with several definitions of Monad during the course of this project. The reader is encouraged to experiment with variations on the theme. If you come up with something that is useful to you, please let me know. The current version is the most useful for me. its bnd() method can assign the return value of bnd()\'s argument to any valid Javascript variable name. In the following example, m1, m2, and m3 have already been declared. Here is a comparrison of the results obtained when the "M" prefix is ommited and when it is used: ' ), 
+h('p', ' I experimented with several definitions of Monad during the course of this project. The reader is encouraged to experiment with variations on the theme. If you come up with something that is useful to you, please let me know. The current version is the most useful for me, so far. its bnd() method can assign the return value of bnd()\'s argument to any valid Javascript variable name. In the following example, m1, m2, and m3 have already been declared. Here is a comparrison of the results obtained when the "M" prefix is used and when it is omitted: ' ), 
+
 h('pre.red9', `    m1.ret(7).bnd(m2.ret).bnd(m3.ret)  // All three monads get the value 7.
     m1.ret(0).bnd(add,3,'m2').bnd(cube,'m3')  // equivalent to m1.ret(0).bnd(add,3).bnd(cube)` ),
 h('pre', `    Result: m1.x == 27
@@ -911,13 +908,9 @@ h('pre.red9', `    m1.ret(0).bnd(add,3,'Mm2').bnd(cube,'Mm3')   ` ),
 h('pre', `    Result: m1.x == 0
             m2.x == 3
             m3.x == 27  ` ),
-h('p', ' If the prefix "M" is absent, bnd() ignores the string argument. But when the "M" prefix is present, m1 retains its initial value, m2 retains the value it gets from from adding m\'s value (which is 0) to 3, and m3.x is the result. Here is the code that causes the text in the screen shot (below) to appear in the Chrome console:' ),
-    code.tests,
-h('span#demo', ' The first two tests involve instances of the MonadE, the error-catchin monad, MonadE. A screen shot showing the information that is logged in the Chrome browser when an error is encountered is included in the ' ),
-h('a', { props: { href: '#err' } }, 'MonadE'),
-h('span', ' section below.  ' ), 
-h('p', ' In a similar function, m might obtain its value from a websocket, user input, or some other unpredictable source. The coder might want to preserve m with that initial value for further use, might want to keep m with its inital value, or might not care what value m has after the computation is finished. Here is the screen showing the results of running the code in the Chrome console. ' ),   
+h('p', ' If the prefix "M" is absent, bnd() ignores the string argument. But when the "M" prefix is present, m1 retains its initial value, m2 retains the value it gets from from adding m\'s value (which is 0) to 3, and m3.x is the result. Both forms could be useful. ' ),
 h('a#error', { props: { href: '#monad' } }, 'Back to the top of the Monad discussion'),
+h('p', ' The following example shows lambda expressions sending variables v1 and v2 through a sequence of computations and v3 sending the final result to the string that is logged. It also shows monads a, b, c, d, e, f, and g being updated and preserved in an array that is not affected by further updates. That is because calling the ret() method does not mutate a monad, it creates a fresh instance with the same name. Here is the example, shown in a screen shot of the Chrome console log:. ' ),  
 h('br' ),
 h('br' ),
 h('img.image', {props: {src: "demo_000.png"}}  ),   
@@ -952,7 +945,50 @@ h('br' ),
 h('br' ),
 h('span', ' Attempts continue to be made to define a Haskell category, usually with special constraints, omitted features, and sometimes with definitions of morphisms that are not Haskell functions. Succeeding in that endeavor would be the first step toward proving that Haskell monads are, in some contrived context, category-theory monads. Devising such a scheme might be an instructive academic excercise, but I don\'t see how it could possibly be of any value beyond that. Imitating definitions and patterns found in category theory, as Haskell does in defining the functor, monoid, and monad type classes, was a stroke of genius that vastly enriched the Haskell programming language and brought it into the mainstream as a viable alternative to java, c++, etc.  This website runs efficiently on a Haskell websockets server. Category theory patterns are less needed, but neverthless useful, in Javascript. Code that adheres to them tends to be robust and versitile.  '  ), 
     
- // **************************************************************************** END MONAD       START MonadItter   
+ // **************************************************************************** END MONAD       START ERROR   
+    
+  h('h2', ' MonadEr - An Error-Catching Monad ' ),
+  h('p', ' Instances of MonadEr function much the same as instances of Monad, but when an instance of MonadEr encounters an error, it ceases to perform any further computations. Instead, it passes through every subsequent stage of a sequence of MonadE expressions, reporting where it is and repeating the error message. It will continue to do this until it is re-instantiated or until its bnd() method runs on the function clean(). ' ),
+  h('p', 'Functions used as arguments to the MonadEr bnd() method can be placed in quotation marks to prevent the browser engine from throwing reference errors. Arguments can be protected in the same manner. ' ), 
+  h('p', ' The following demonstration shows the Chrome console log entries that result from running ' ),
+  h('pre', `    t.bnd('add3", 3, 'Mt2').bnd(cube3, 'Mt3'
+    t.bnd('add3",'three', 'Mt2').bnd(cube3, 'Mt3'    
+    t.bnd('add3",'Math.sqrt(-1)', 'Mt2').bnd(cube3, 'Mt3' 
+    t.bnd('addd3", 3, 'Mt2').bnd(cube3, 'Mt3' ` ),
+  h('br'),
+  h('img.image', {props: {src: "error2.png"}}  ),   
+  h('br'),
+  h('p.tao1b', ' The monad laws hold for MonadVEr instances. The following relationships were verified in the Chrome console: ' ),  
+  h('pre', `    ret3(0,'t',[])  // t is now an instance of MonadEr with t.x = 0 and t.e = [].
+
+    t.ret(3).bnd(cube3).x === cube(3).x  
+    ret3(3).bnd(cube3).x === cube3(3).x    
+
+    t.bnd(t.ret) === t   
+    t.bnd(ret) === t  
+   
+    t.ret(0).bnd(add3, 3).bnd(cube3).x === 
+    t.ret(0).bnd(v => add3(v,3).bnd(cube3)).x  ` ),
+  h('br'),
+  h('div.tao1b', ' Here are the definitions of MonadEr, MonadE\'s helper functions, and the functions which serve as parameters to the bnd() method in the demonstration: ' ),
+    code.monadEr,
+  h('p', ' and here is the code that produced the Chrome console log entries: ' ),
+    code.errorDemo,  
+  h('span.tao', ' When  a MonadEr instance encounters a function or an argument in quotation marks of types undefined or NaN, a string gets pushed into the instance\'s e attribue. After that, the  bnd() method will not process any function other than clean(). It will stop at the' ),
+  h('span.turk', 'if (e.length > 0)' ), 
+  h('span', 'block. clean() resets an instance to normal functioning mode by setting its e attribute back to []. ' ), 
+  h('br'),    ret3(0, 't', []),
+
+
+
+
+
+
+    
+    
+    
+    
+
 h('h2', 'MonadItter'),
 code.monadIt,
 h('p', ' MonadItter instances don\'t link to one another. They exist to facilitate the work of instances of Monad, MonadState, etc. Here\'s how they work: '),
@@ -1080,26 +1116,6 @@ h('a', { props: { href: '#top' } }, 'Back To The Top'),
   h('a#tdList2', { props: { href: '#itterLink' } }, 'release() with arguments'),
   h('br'),
   h('a#error', { props: { href: '#monad' } }, 'Back to Monad discussion'),
-  h('h2', ' MonadEr - An Error-Catching Monad ' ),
-  h('p', ' Instances of MonadEr function much the same as instances of Monad, but when an instance of MonadEr encounters an error, it ceases to perform any further computations. Instead, it passes through every subsequent stage of a sequence of MonadE expressions, reporting where it is and repeating the error message. It will continue to do this until it is re-instantiated or until its bnd() method runs on the function clean(). ' ),
-  h('p', 'Functions used as arguments to the MonadEr bnd() method can be placed in quotation marks to prevent the browser engine from throwing reference errors. Arguments can be protected in the same manner. ' ), 
-  h('p', ' The following demonstration shows the Chrome console log entries that result from running ' ),
-  h('pre', `    t.bnd('add3", 3, 'Mt2').bnd(cube3, 'Mt3'
-    t.bnd('add3",'three', 'Mt2').bnd(cube3, 'Mt3'    
-    t.bnd('add3",'Math.sqrt(-1)', 'Mt2').bnd(cube3, 'Mt3' 
-    t.bnd('addd3", 3, 'Mt2').bnd(cube3, 'Mt3' ` ),
-  h('br'),
-  h('img.image', {props: {src: "error2.png"}}  ),   
-  h('br'),
-  h('br'),
-  h('div.tao1', ' Here are the definitions of MonadEr, MonadE\'s helper functions, and the functions which serve as parameters to the bnd() method in the demonstration: ' ),
-    code.monadEr,
-  h('p', ' and here is the code that produced the Chrome console log entries: ' ),
-    code.errorDemo,  
-  h('span.tao', ' When  a MonadEr instance encounters a function or an argument in quotation marks of types undefined or NaN, a string gets pushed into the instance\'s e attribue. After that, the  bnd() method will not process any function other than clean(). It will stop at the' ),
-  h('span.turk', 'if (e.length > 0)' ), 
-  h('span', 'block. clean() resets an instance to normal functioning mode by setting its e attribute back to []. ' ), 
-  h('br'),
   h('br'),
   h('a', { props: { href: '#top' } }, 'Back To The Top'),
   h('br'),

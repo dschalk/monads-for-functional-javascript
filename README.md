@@ -79,94 +79,14 @@ I experimented with several definitions of Monad during the course of this proje
     Result: m1.x == 3
             m2.x == 27  
 ```        
-This works regardless of whether or not m1 or m2 had previously been instantiated. the calling monad's identifyer (variable name) without mutating the calling monad. That is one of the features that is illustrated in the screen shot (below). Here is the code associated with the screen shots:    
-```javascript
-ret2(0,'d1')
-  .bnd('add2', 3, 'Md2')
-  .bnd('mult2',100,'Md3').bnd('square2', 'Md4')
-  .bnd('add2',-d4.x + 4,'Md5')
-  .bnd('mult2', 100, 'Md6')
-  .bnd('square2', 'Md7')
-  .bnd('add2', d4.x, 'Md8')
-  .bnd('sqroot2',d4.x+d7.x,'Md9')
-  .bnd(log, 'The square root of ' + d3.x + ' squared plus ' + d6.x + ' squared equals ' + d9.x)
-console.log('Values after computations: ',d1.x,d2.x,d3.x,d4.x,d5.x,d6.x,d7.x, d8.x, d9.x);
-ar7 = [d1, d2, d3, d4, d5, d6, d7, d8, d9];
-d1.ret(1); d2.ret(2); d3.ret(3); d4.ret(4);
-d5.ret(5); d6.ret(6); d7.ret(7); d8.ret(8); d9.ret(9);
-console.log('New values: ',d1.x,d2.x,d3.x,d4.x,d5.x,d6.x,d7.x, d8.x, d9.x);
-console.log('ar7.map(v => v.x): ', ar7.map(v => v.x));
-console.log('.');
+If the prefix "M" is absent, bnd() ignores the string argument. But when the "M" prefix is present, m1 retains its initial value, m2 retains the value it gets from from adding m's value (which is 0) to 3, and m3.x is the result. Both forms could be useful.
 
-ret2(0,'d1')
-  .bnd('add2', 3, 'Md2')
-  .bnd('mult2',100,'Md3')
-  .bnd('square2', 'Md4')
-  .bnd('add2',-d4.x + 4,'Md5')
-  .bnd('mult2', 100, 'Md6')
-  .bnd('square2', 'Md7')
-  .bnd('add2', d4.x, 'Md8')
-  .bnd('sqroot2',d4.x+d7.x,'Md1')
-  .bnd(log, 'The square root of ' + d3.x + ' squared plus ' + d6.x + ' squared equals ' + d1.x)
-console.log('Values after computations: ',d1.x,d2.x,d3.x,d4.x,d5.x,d6.x,d7.x, d8.x);
-ar7 = [d1, d2, d3, d4, d5, d6, d7, d8];
-d1.ret(1); d2.ret(2); d3.ret(3); d4.ret(4);
-d5.ret(5); d6.ret(6); d7.ret(7); d8.ret(8);
-console.log('New values: ',d1.x,d2.x,d3.x,d4.x,d5.x,d6.x,d7.x, d8.x);
-console.log('ar7.map(v => v.x): ', ar7.map(v => v.x));
-console.log('.');
-console.log('*** Now the plain Monad versions. ***');
+The following example shows lambda expressions sending variables v1 and v2 through a sequence of computations and v3 sending the final result to the string that is logged. It also shows monads a, b, c, d, e, f, and g being updated and preserved in an array that is not affected by further updates. That is because calling the ret() method does not mutate a monad, it creates a fresh instance with the same name. Here is the example, shown in a screen shot of the Chrome console log:.
 
-ret(0,'d1')
-  .bnd(add, 3, 'Md2')
-  .bnd(mult,100,'Md3')
-  .bnd(square, 'Md4')
-  .bnd(add, 4-d4.x, 'Md5')
-  .bnd(mult, 100, 'Md6')
-  .bnd(square, 'Md7')
-  .bnd(add, d4.x, 'Md8')
-  .bnd(sqroot, d4.x + d7.x,'Md9')
-  .bnd(log, 'The square root of ' + d3.x + ' squared plus ' + d6.x + ' squared equals ' + d9.x)
-console.log('Values after computations: ',d1.x,d2.x,d3.x,d4.x,d5.x,d6.x,d7.x, d8.x, d9.x);
-ar7 = [d1, d2, d3, d4, d5, d6, d7, d8, d9];
-d1.ret(1); d2.ret(2); d3.ret(3); d4.ret(4);
-d5.ret(5); d6.ret(6); d7.ret(7); d8.ret(8); d9.ret(9);
-console.log('New values: ',d1.x,d2.x,d3.x,d4.x,d5.x,d6.x,d7.x, d8.x, d9.x);
-console.log('ar7.map(v => v.x): ', ar7.map(v => v.x));
-console.log('.');
 
-ret(0,'d1')
-  .bnd(add, 3, 'Md2')
-  .bnd(mult,100,'Md3')
-  .bnd(square, 'Md4')
-  .bnd(add, 4-d4.x,'Md5')
-  .bnd(mult, 100, 'Md6')
-  .bnd(square, 'Md7')
-  .bnd(add, d4.x, 'Md8')
-  .bnd(sqroot, d4.x + d7.x,'Md1')
-  .bnd(log, 'The square root of ' + d3.x + ' squared plus ' + d6.x + ' squared equals ' + d1.x)
-console.log('Values after computations: ',d1.x,d2.x,d3.x,d4.x,d5.x,d6.x,d7.x, d8.x);
-var ar7 = [d1, d2, d3, d4, d5, d6, d7, d8];
-d1.ret(1); d2.ret(2); d3.ret(3); d4.ret(4);
-d5.ret(5); d6.ret(6); d7.ret(7); d8.ret(8);
-console.log('New values: ',d1.x,d2.x,d3.x,d4.x,d5.x,d6.x,d7.x, d8.x);
-console.log('ar7.map(v => v.x): ', ar7.map(v => v.x));
-```   
-The first two tests involve instances of the MonadE, the error-catching monad, MonadE. A screen shot showing the information that is logged in the Chrome browser when an error is encountered is included in the MonadE section below.
+![Alt text](demo_000.png?raw=true)
 
-In a similar function, d1 (which is preserved as ar7[0]) might obtain its value from a websocket, user input, or some other unpredictable source. The coder might want to preserve d1 with that initial value for further use, might want to keep m with its inital value, or might not care what value d1 has after the computation is finished. Here is the screen showing the results of running the code in the Chrome console.
-
-![Alt text](fourTests.png?raw=true)
-
-The monads in ar7 do not change when current values get updated. ar7[0].x is either 0 or 500 depending on whether or not the final computation is 
-```javascript
-    .bnd(sqroot, d4.x + d7.x,'Md9')
-```
-or
-```javascript
-    .bnd(sqroot, d4.x + d7.x,'Md1')
-```    
-The Monad Laws
+###The Monad Laws
 
 In the following discussion, "x == y" signifies that the expression x == y returns true. Let J be the collection of all Javascript values, including functions, instances of Monad, etc, and let F be the collection of all functions mapping values in J to instances of Monad with references (names) matching their ids; that is, with window[id] == m.id for some id which is a valid es2015 variable name. The collection of all such instances of Monad along and all of the functions in F is called "M". For any instances of Monad m, m1, and m2 in M and any functions f and g in F, the following relationships follow easily from the definition of Monad:
 
@@ -541,121 +461,143 @@ The following demonstration shows the Chrome console log entries that result fro
   ![Alt text](error2.png?raw=true)
 Here are the definitions of MonadE and the functions used in the demonstration:
 ```Javascript
-
-  function MonadEr (val, ID, er = []) {
-    var _this = this;
-    var test;
-    this.x = val;
-    this.e = er;
-    this.id = ID;
-    this.getx = function getx (x) {return _this.x};
-    this.bnd = function (f, ...args) {
-      var args = args;
-      if (f === 'clean3' || f === clean3) {
-        _this.e = [];
-        window[_this.id] = new MonadEr(_this.x, _this.id, []);
-        return window[_this.id];
-      }
-      if (_this.e.length > 0) {
-        console.log('BYPASSING COMPUTATION in MonadE instance', _this.id, f, '.  PROPAGATING ERROR:',  _this.e[0]); 
-        return _this;  
-      }
-      var a;
-      if (typeof f == 'undefined') {
-        a = 'undefined';
-      }
-      else if (typeof f === 'string') {
-        var x = ("typeof " + f);
-        a = eval(x);
-      }
-      if (a !== 'undefined' && args.length > 0) {
-        var arr = args.filter(v => !(typeof v == 'string' && v.charAt() == 'M' && v.slice(0,4) !== 'Math'))
-          
-        arr.map(v => {
-          test = testP(v, _this.id)
-          if (test === 'STOP') {
-            console.log('\"STOP\" returned from testP. Ending code execution in ',_this.id, '.' ) 
-            _this.e.push('STOP');
-            return _this;
-          } 
+    
+    function MonadEr (val, ID, er = []) {
+      var _this = this;
+      var test;
+      var arr = arr = [];
+      this.x = val;
+      this.e = er;
+      this.id = ID;
+      this.getx = function getx (x) {return _this.x};
+      this.bnd = function (f, ...args) {
+        var args = args;
+        if (f === 'clean3' || f === clean3) {
+          _this.e = [];
+          window[_this.id] = new MonadEr(_this.x, _this.id, []);
+          return window[_this.id];
+        }
+        if (_this.e.length > 0) {
+          console.log('BYPASSING COMPUTATION in MonadE instance', _this.id, f, '.  PROPAGATING ERROR:',  _this.e[0]); 
+          return _this;  
+        }
+        
+        if (args.length > 0) {
+          console.log('In MonadEr if block  args', arr );
+          arr = args.filter(v => !(typeof v == 'string' && v.charAt() == 'M' && v.slice(0,4) !== 'Math'))
+            
+          arr.map(v => {
+            test = testP(v, _this.id)
+            if (test === 'STOP') {
+              console.log('\"STOP\" returned from testP. Ending code execution in ',_this.id, '.' ) 
+              _this.e.push('STOP');
+              return _this;
+            } 
           }); 
-        if (_this.e.length > 0) return _this;
-        else {
+        }
+        if (test !== "STOP") {
+        try {
+          console.log('In try block of MonadEr. arr', arr );
           var testId = testPrefix(args, _this.id);  
           var ar = arr.map(v => eval(v))
-          var m = eval(f)(_this.x, ...ar); 
+          var m = eval(f)(_this.x, ...ar)  
           var id = testPrefix(ar, _this.id);
           window[testId] = new MonadEr(m.x, testId, []);
-          return window[testId];      
+          return window[testId];
+          }      
+          catch(error) {
+            _this.e.push('STOP -- Execution Aborted. ');
+            console.log(f, 'ERROR in ',id,error,' No further computations will be attempted');
+            return _this;
+          } 
+        }
+        else {
+          _this.e.push('STOP -- Execution Aborted. ');
+          console.log(f, 'ERROR "STOP" returned from testP. No further computations will be attempted');
+          return _this;
         }  
-        if (a == 'function' && args.length === 0) {
-          var m = eval(f)(_this.x); 
-          window[_this.id] = new MonadEr(m.x, _this.id, []);
-          return window[_this.id];  
-        }
-      } 
-      else {
-        _this.e.push(f + ' is not a defined. ');
-        console.log(f, 'is not defined. No further computations will be attempted');
-        return _this;
+      }
+      this.ret = function (a) {
+        window[_this.id] = new MonadEr(a, _this.id, []);
+        return window[_this.id];
       }  
+    };
+    
+    function testPrefix (x,y) {
+      var t = y;
+      var s;
+      if (Array.isArray(x)) {
+        x.some(v => {
+          if (typeof v == 'string' && v.charAt() == 'M') {
+             t = v.slice(1);
+          }
+        })
+      }
+      return t;
     }
-    this.ret = function (a) {
-      window[_this.id] = new MonadEr(a, _this.id, []);
-      return window[_this.id];
-    }  
-  };
-
-  function add2 (x, y, str ) {
-    window[str] = new MonadE(x+y, str, []);
-    return window[str];
-  }
-  
-  function square2 (x, str) {
-    window[str] = new MonadE(x*x, str, []);
-    return window[str];
-  };
-  
-  function mult2 (x,y,str) {
-    window[str] = new MonadE(x*y, str, []);
-    return window[str];
-  };
-  
-  function sqroot2 (x,str) {
-    window[str] = new MonadE(Math.sqrt(x), str, []);
-    return window[str];
-  }
-
-  function log2(x, message, str) {
-    window[str] = new MonadE(x, str, []);
-    console.log(message);
-    return window[str]
-  };
-
-  function ret2(v, id) {
-    window[id] = new MonadE(v, id, []);
-    return window[id];
-
-  function testPrefix2 (x,y) {
-    var t = y;
-    var s;
-    var ar;
-    if (Array.isArray(x)) {
-      ar = x.filter(v => typeof v == 'string')
-      ar.map( v => {  
-        if (v.charAt() != 'M' && eval(eval('typeof v') == undefined)) {
-          return 'code4';
+    
+    function testP (x,id) {
+        if ( eval('typeof ' + x) === 'undefined') {
+          console.log(`............... ERROR parameter ${x} is not defined`);
+          window[id].e = [`${x} is not defined`]
+          return 'STOP';
         }
-        else if (v.charAt() != 'M' && eval('Number.isNaN(c)')) {
-           return 'code5';    
-        }
-        else if (v.charAt() == 'M') {
-            t = v.slice(1, v.length);
-        }
-      })   
+        if (eval(x) !== eval(x)) {
+          console.log(`............... ERROR parameter ${x} is not a number`);
+          window[id].e = [`${x} is not a number`]; 
+          return 'STOP';
+        } 
+        mMZ12.release([]);
+        return []  
     }
-    return t;
-  };  
+    
+    function ret3(v, id = 'generic') {
+        window[id] = new MonadEr(v, id, []);
+        return window[id];
+      }
+    
+    function add3(x, y) {
+        return ret3(x*1 + y*1);
+      }
+    
+    function cube3(x) {
+        return ret3(x*x*x);
+    }
+    
+    function clean3 (x, id) {
+      window[id] = new MonadEr(x, id, []);
+      return window[id];
+    }
+```
+And here is the code that generated the log entries shown in the screen shot:
+```javascript
+    var t = new MonadEr(0,'t', []);
+    var t2 = new MonadEr(0,'t2', []);
+    var t3 = new MonadEr(0,'t3', []);
+    console.log('Values of t, t2, and t3', t.x,t2.x,t3.x)
+    console.log("executing t.bnd(\'add3\',3,\'Mt2\').bnd(cube3, \'Mt3\') ");
+    t.bnd('add3',3,'Mt2').bnd(cube3, 'Mt3')
+    console.log('Values of t, t2, and t3', t.x,t2.x,t3.x)
+    var t = new MonadEr(0,'t', []);
+    var t2 = new MonadEr(0,'t2', []);
+    var t3 = new MonadEr(0,'t3', []); 
+    console.log('Values of t, t2, and t3', t.x,t2.x,t3.x)
+    
+    console.log("executing t.bnd('add3','three', 'Mt2').bnd(cube3, 'Mt3') " );
+    t.bnd('add3','three','Mt2').bnd(cube3, 'Mt3')
+    console.log('Values of t, t2, and t3', t.x,t2.x,t3.x)
+    
+    console.log( 't.bnd(clean3)' );
+    t.bnd(clean3);
+    
+    console.log("executing t.bnd('add3', 'Math.sqrt(-1)', 'Mt2').bnd(cube3, 'Mt3') " );
+    t.bnd('add3','Math.sqrt(-1)','Mt2').bnd(cube3, 'Mt3')
+    console.log('Values of t, t2, and t3', t.x,t2.x,t3.x)
+    console.log( 't.bnd(clean3)' );
+    t.bnd(clean3);
+    console.log("executing t.bnd(\'addd3\',3,\'Mt2\').bnd(cube3, \'Mt3\') ");
+    t.bnd('addd3',3,'Mt2').bnd(cube3, 'Mt3')
+    console.log('Values of t, t2, and t3', t.x,t2.x,t3.x)
 ```
 When a MonadE instance encounters a function or an argument in quotation marks of types undefined or NaN, a message string gets pushed into its e attribue. After that, the bnd() method will not process any function other than clean() and log2(). It will stop at theif (e.length > 0)block. clean() resets an instance to normal functioning mode by setting its e attribute back to []. MonadE instances are created on the flyin the error-free version. In the version with an error, these MonadE instances have already been created and ret2, by creating fresh instances, effectively re-sets their values to 0. 
 

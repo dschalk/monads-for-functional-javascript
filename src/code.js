@@ -1153,7 +1153,7 @@ var test10_11 = h('pre.turk5',  `    function test10 () {
       return mMar11;
     }  `  )
 
-var tests = h('pre.red9',  `  
+var testsOLD = h('pre.red9',  `  
     console.log('*** First, the MonadE versions ***');
     ret2(0,'d1')
       .bnd('add2', 3, 'Md2')
@@ -1277,9 +1277,9 @@ var backAction = h('pre',  `
     });    `  )
 
 var monadEr = h('pre.red9',  `    function MonadEr (val, ID, er = []) {
-            
       var _this = this;
       var test;
+      var arr = arr = [];
       this.x = val;
       this.e = er;
       this.id = ID;
@@ -1295,17 +1295,11 @@ var monadEr = h('pre.red9',  `    function MonadEr (val, ID, er = []) {
           console.log('BYPASSING COMPUTATION in MonadE instance', _this.id, f, '.  PROPAGATING ERROR:',  _this.e[0]); 
           return _this;  
         }
-        var a;
-        if (typeof f == 'undefined') {
-          a = 'undefined';
-        }
-        else if (typeof f === 'string') {
-          var x = ("typeof " + f);
-          a = eval(x);
-        }
-        if (a !== 'undefined' && args.length > 0) {
-          var arr = args.filter(v => !(typeof v == 'string' && v.charAt() == 'M' && v.slice(0,4) !== 'Math'))
         
+        if (args.length > 0) {
+          console.log('In MonadEr if block  args', arr );
+          arr = args.filter(v => !(typeof v == 'string' && v.charAt() == 'M' && v.slice(0,4) !== 'Math'))
+            
           arr.map(v => {
             test = testP(v, _this.id)
             if (test === 'STOP') {
@@ -1313,25 +1307,27 @@ var monadEr = h('pre.red9',  `    function MonadEr (val, ID, er = []) {
               _this.e.push('STOP');
               return _this;
             } 
-            }); 
-          if (_this.e.length > 0) return _this;
-          else {
-            var testId = testPrefix(args, _this.id);  
-            var ar = arr.map(v => eval(v))
-            var m = eval(f)(_this.x, ...ar); 
-            var id = testPrefix(ar, _this.id);
-            window[testId] = new MonadEr(m.x, testId, []);
-            return window[testId];      
-          }  
-          if (a == 'function' && args.length === 0) {
-            var m = eval(f)(_this.x); 
-            window[_this.id] = new MonadEr(m.x, _this.id, []);
-            return window[_this.id];  
-          }
-        } 
+          }); 
+        }
+        if (test !== "STOP") {
+        try {
+          console.log('In try block of MonadEr. arr', arr );
+          var testId = testPrefix(args, _this.id);  
+          var ar = arr.map(v => eval(v))
+          var m = eval(f)(_this.x, ...ar)  
+          var id = testPrefix(ar, _this.id);
+          window[testId] = new MonadEr(m.x, testId, []);
+          return window[testId];
+          }      
+          catch(error) {
+            _this.e.push('STOP -- Execution Aborted. ');
+            console.log(f, 'ERROR in ',id,error,' No further computations will be attempted');
+            return _this;
+          } 
+        }
         else {
-          _this.e.push(f + ' is not a function. ');
-          console.log(f, 'is not a function. No further computations will be attempted');
+          _this.e.push('STOP -- Execution Aborted. ');
+          console.log(f, 'ERROR "STOP" returned from testP. No further computations will be attempted');
           return _this;
         }  
       }
@@ -1340,7 +1336,7 @@ var monadEr = h('pre.red9',  `    function MonadEr (val, ID, er = []) {
         return window[_this.id];
       }  
     };
-    
+
     function testPrefix (x,y) {
       var t = y;
       var s;
@@ -1361,7 +1357,7 @@ var monadEr = h('pre.red9',  `    function MonadEr (val, ID, er = []) {
           return 'STOP';
         }
         if (eval(x) !== eval(x)) {
-          console.log(\`............... ERROR parameter ${x} is not a number\`);
+          console.log(\`............... ERROR parameter \${x} is not a number\`);
           window[id].e = [\`\${x} is not a number\`]; 
           return 'STOP';
         } 
@@ -1415,8 +1411,36 @@ var errorDemo = h('pre.turk5',  `    var t = new MonadEr(0,'t', []);
     t.bnd('addd3',3,'Mt2').bnd(cube3, 'Mt3')
     console.log('Values of t, t2, and t3', t.x,t2.x,t3.x)    `  )
 
-var p4 = h('pre',  `   
-`  )
+var tests = h('pre',  `    function atest () {
+      ret(2,'a')
+      .bnd(add,1)
+      a.bnd(v => ret(v*100,'b'))
+      .bnd(v2 => ret(v2*v2,'c')
+      .bnd(v3 => ret(4,'d')
+      .bnd(v4 => ret(v4*100))
+      .bnd(v5 => ret(v5*v5,'e')
+      .bnd(v6 => ret(Math.sqrt(v6+v3),'f')
+      .bnd(v7 => console.log('The square root of the sum of',v2,'and',v5,'is', v7,'.'))))))
+      return [a,b,c,d,e,f]  
+    }
+
+    console.log('// Now setting a, b, c, d, e and f to 7 and logging a.x, b.x, c.x, d.x, e.x, and f.x.)');
+    ret(7,'a');ret(7,'b');ret(7,'c');ret(7,'d');ret(7,'e');ret(7,'f');  
+    console.log(a.x, b.x, c.x, d.x, e.x,f.x)
+    console.log('// Now running atest and making demoAr a reference to its return value. ');
+    demoAr = atest();
+    console.log('// Now logging a.x, b.x, c.x, d.x, e.x, and f.x.');
+    console.log(a.x, b.x, c.x, d.x, e.x,f.x)
+    console.log('// Now logging demoAr.map(v => v.x).join(", ").');
+    console.log(demoAr.map(v => v.x).join(', '));
+    console.log('// Now setting a, b, c, d, e and f to 6 and logging a.x, b.x, c.x, d.x, e.x, and f.x.)');
+    ret(6,'a');ret(6,'b');ret(6,'c');ret(6,'d');ret(6,'e');ret(6,'f');  
+    console.log(a.x, b.x, c.x, d.x, e.x,f.x)
+    console.log('// Now logging demoAr.map(v => v.x).join(", ").');
+    console.log(demoAr.map(v => v.x).join(', '));
+    console.log('// The monads in DemoAr were not mutated or replaced when monads with the same ' );
+    console.log('// names (a, b, c, d, and e) updated to 6, 6, 6, 6, 6, 6 by using their bnd() methods. '); 
+    }  `  )
 
 var p5 = h('pre',  `  
 `  )
