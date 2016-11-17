@@ -12,7 +12,6 @@ function tst (x) {return x};
 function stripchars(string, chars) {
   return string.replace(RegExp('['+chars+']','g'), '');
 }
-
 function testPrefix (x,y) {
   var t = y;
   var s;
@@ -27,21 +26,20 @@ function testPrefix (x,y) {
 }
 
 var Monad = function Monad(z = 19, g = 'generic') {
-  var _this = this;
   this.x = z;
   this.id = g;
   this.bnd = function (func, ...args) {
-    var m = func(_this.x, ...args)
-    var mon;
+    var m = func(this.x, ...args)
+    var ID;
     if (m instanceof Monad) {
-      mon = testPrefix(args,_this.id); 
-      window[mon] = new Monad(m.x, mon);
-      return window[mon];
+      ID = testPrefix(args, this.id); 
+      window[ID] = new Monad(m.x, ID);
+      return window[ID];
     }
     else return m;
   };
   this.ret = function (a) {
-    return window[_this.id] = new Monad(a,_this.id);
+    return window[this.id] = new Monad(a,this.id);
   };
 };
 
@@ -169,8 +167,7 @@ var isFunc = function isFunc (x) { return eval("typeof(" + x + ") == 'function'"
 
 var s = new Set();
 
-var MonadSet = function MonadSet(set, str) {
-  var _this = this;
+  var MonadSet = function MonadSet(set, str) {
   this.id = str;
   this.s = new Set();  
 };
@@ -180,19 +177,17 @@ var sMplayers = new MonadSet(s, 'sMplayers'); // holds currently online players
 var pMclicked = new Monad ([], 'pMclicked');
 
 function MonadArchive(g, state, p) {
-  var _this = this;
   this.id = g;
   this.s = state;
   this.process = p;
   this.a = s[0];
-  this.bnd = (func, ...args) => func(_this.s, ...args);  
+  this.bnd = (func, ...args) => func(this.s, ...args);  
   this.run = ar => { 
-    var ar2 = _this.process(ar);
-    _this.a = ar2[pMindex.x];
-    _this.s = ar2;
-    console.log('In MonadState instance _this.a, _this.s ', _this.a, _this.s) 
-    window[_this.id] = _this;
-    return window[_this.id];
+    var ar2 = this.process(ar);
+    this.a = ar2[pMindex.x];
+    this.s = ar2;
+    window[this.id] = this;
+    return window[this.id];
   }
 };
 
@@ -214,18 +209,17 @@ function trav_archive (ar) {
 }
 
 function MonadState(g, state, p) {
-  var _this = this;
   this.id = g;
   this.s = state;
   this.process = p;
   this.a = s[3];
-  this.bnd = (func, ...args) => func(_this.s, ...args);  
+  this.bnd = (func, ...args) => func(this.s, ...args);  
   this.run = ar => { 
-    var ar2 = _this.process(ar);
-    _this.s = ar2;
-    _this.a = ar2[3];
-    window[_this.id] = _this;
-    return window[_this.id];
+    var ar2 = this.process(ar);
+    this.s = ar2;
+    this.a = ar2[3];
+    window[this.id] = this;
+    return window[this.id];
   }
 };
 
@@ -285,77 +279,6 @@ function testPrefix2 (x,y) {
   else if (ar.length > 0) return ar;
   else console.log("......I thought this was impossible.............. Tilt!");
 }   
-
-function MonadE (val, ID, er = []) {
-  var _this = this;
-  this.x = val;
-  this.e = er;
-  this.id = ID;
-  this.getx = function getx (x) {return _this.x};
-  this.bnd = function (f, ...args) {
-    if (f == 'clean') {
-      _this.e = [];
-      window[_this.id] = new MonadE ( _this.x, _this.id, [] );
-      return window[_this.id];
-    }
-    if (_this.e.length > 0) {
-      console.log('BYPASSING COMPUTATION in MonadE instance', _this.id, f, '.  PROPAGATING ERROR:',  _this.e[0]); 
-      return _this;  
-    }
-    var a;
-    if (typeof f == 'function') {
-      a = 'function';
-    }
-    else if (typeof f === 'string') {
-      var x = ("typeof " + f);
-      a = eval(x);
-    }
-    if (a == 'function') {
-      if (args.length > 0) {
-        var id = _this.id;
-        var arr = args.filter( v => !(typeof v === 'string' && v.slice(0,1) == 'M'))
-        console.log('In MonadE bnd(). args, arr OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO', args, arr)
-        arr.map(v => {
-          if ( eval('typeof ' + v) === 'undefined') {
-            _this.e.push(v + ' is undefined.') 
-            console.log(v,"is undefined. No further computations will be attempted");
-            return _this; 
-          }
-          else if (eval(v) !== eval(v)) {
-            e.push(v + ' is NaN.'); 
-            console.log(v, "is NaN. No further computations will be attempted");
-            return _this;
-          } 
-          else {
-            var art = args.filter( v => (typeof v === 'string' && v.slice(0,1) == 'M'))
-            if (art.length > 0) id = art[0];
-            console.log('In MonadE bnd(). id, art OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO', id, art)
-            var arm = args.slice(0, f.length)
-            var arm2 = arm.map(v => eval(v))
-            var m = eval(f)(_this.x, ...arm2); 
-            window[id] = m
-            return window[id]
-          }
-        }) 
-      } 
-      else {
-        var m = eval(f)(_this.x); 
-        window[_this.id] = m
-        return window[_this.id]
-      }
-    }
-    else {
-      _this.e.push(f + ' is not a function. ');
-      console.log(f, 'is not a function. No further computations will be attempted');
-      return _this;
-    }
-  }
-  this.ret = function (a) {
-    window[_this.id] = new MonadE(a, _this.id, []);
-    return window[_this.id];
-  }  
-};
-
 function evalF(x) {
   var v;
   if (typeof x == "string") {v = eval("typeof x")}  
@@ -364,8 +287,6 @@ function evalF(x) {
   console.log('In evalF. ', x, ' is ', v );
   return v;
 }
-
-var mMEa = new MonadE(0, 'mMEa');
 
   function add2 (x, y) {
     return ret2(x*1 + y*1);
@@ -385,13 +306,13 @@ var mMEa = new MonadE(0, 'mMEa');
   }
 
   function log2(x, message, str) {
-    window[str] = new MonadE(x, str, []);
+    window[str] = new MonadEr(x, str, []);
     console.log(message);
     return window[str]
   };
 
   function ret2(v, id = 'generic') {
-    window[id] = new MonadE(v, id, []);
+    window[id] = new MonadEr(v, id, []);
     return window[id];
   }
 
@@ -402,21 +323,21 @@ function cube2 (x,id) {
 function push2(x, v, id) {
     var ar = x.slice();
     ar.push(v);
-    window[id] = new MonadE(ar, id, []);
+    window[id] = new MonadEr(ar, id, []);
     return window[id];
 };
 
 function unshift(x, y, id) {
   var ar = x.slice();
   ar.unshift(y);  
-    window[id] = new MonadE(ar, id, []);
+    window[id] = new MonadEr(ar, id, []);
     return window[id];
 }  
   
 function splice2(x, start, how_many, id) {
     var ar = x.slice();
     ar.splice(start, how_many)
-    window[id] = new MonadE(v, id, []);
+    window[id] = new MonadEr(v, id, []);
     return window[id];
 };
 
@@ -596,13 +517,12 @@ var emitevent;
 var data$;
 
 var MonadItter = function MonadItter() {
-var _this = this;
 this.p = function () {};
 this.release = function () {
-  return _this.p.apply(_this, arguments);
+  return this.p.apply(this, arguments);
 };
 this.bnd = function (func) {
-  return _this.p = func;
+  return this.p = func;
 };
 };
 function rang(n, m) {
@@ -1010,7 +930,7 @@ var mMgame = new Monad('none','mMgameDiv');
   };
 
   var unshift2 = function unshift2(x, y, z) {
-    window[z] = new MonadE(x, z, []);
+    window[z] = new MonadEr(x, z, []);
     return window[z]
       var ar = x.slice();
       ar.unshift(y);
@@ -1162,10 +1082,10 @@ var MonadAcc = function MonadAcc(z = 0, g = 'generic') {
   this.x = z;
   this.id = g;
   this.bnd = function(func, ...args) {
-    return func(_this.x, ...args);
+    return func(this.x, ...args);
   }
   this.reset = function () {
-    return window[_this.id] = new MonadAcc('', _this.id);
+    return window[this.id] = new MonadAcc('', this.id);
   };
   this.ret = function (a) {
     var str = _this.x + a;
@@ -1249,63 +1169,60 @@ function testP (x,id) {
 }
 
 function MonadEr (val, ID, er = []) {
-  var _this = this;
   var test;
   var arr = arr = [];
   this.x = val;
   this.e = er;
   this.id = ID;
-  this.getx = function getx (x) {return _this.x};
+  this.getx = function getx (x) {return this.x};
   this.bnd = function (f, ...args) {
     var args = args;
     if (f === 'clean3' || f === clean3) {
-      _this.e = [];
-      window[_this.id] = new MonadEr(_this.x, _this.id, []);
-      return window[_this.id];
+      this.e = [];
+      window[this.id] = new MonadEr(this.x, this.id, []);
+      return window[this.id];
     }
-    if (_this.e.length > 0) {
-      console.log('BYPASSING COMPUTATION in MonadE instance', _this.id, f, '.  PROPAGATING ERROR:',  _this.e[0]); 
-      return _this;  
+    if (this.e.length > 0) {
+      console.log('BYPASSING COMPUTATION in MonadE instance', this.id, f, '.  PROPAGATING ERROR:',  this.e[0]); 
+      return this;  
     }
     
     if (args.length > 0) {
-      console.log('In MonadEr if block  args', arr );
       arr = args.filter(v => !(typeof v == 'string' && v.charAt() == 'M' && v.slice(0,4) !== 'Math'))
         
       arr.map(v => {
-        test = testP(v, _this.id)
+        test = testP(v, this.id)
         if (test === 'STOP') {
-          console.log('\"STOP\" returned from testP. Ending code execution in ',_this.id, '.' ) 
-          _this.e.push('STOP');
-          return _this;
+          console.log('\"STOP\" returned from testP. Ending code execution in ',this.id, '.' ) 
+          this.e.push('STOP');
+          return this;
         } 
       }); 
     }
     if (test !== "STOP") {
     try {
-      console.log('In try block of MonadEr. arr', arr );
-      var testId = testPrefix(args, _this.id);  
+      var testId = testPrefix(args, this.id);  
       var ar = arr.map(v => eval(v))
-      var m = eval(f)(_this.x, ...ar)  
-      var id = testPrefix(ar, _this.id);
+      var m = eval(f)(this.x, ...ar)  
+      var id = testPrefix(ar, this.id);
       window[testId] = new MonadEr(m.x, testId, []);
       return window[testId];
       }      
       catch(error) {
-        _this.e.push('STOP -- Execution Aborted. ');
+        this.e.push('STOP -- Execution Aborted. ');
         console.log(f, 'ERROR in ',id,error,' No further computations will be attempted');
-        return _this;
+        return this;
       } 
     }
     else {
-      _this.e.push('STOP -- Execution Aborted. ');
+      this.e.push('STOP -- Execution Aborted. ');
       console.log(f, 'ERROR "STOP" returned from testP. No further computations will be attempted');
-      return _this;
+      return this;
     }  
   }
   this.ret = function (a) {
-    window[_this.id] = new MonadEr(a, _this.id, []);
-    return window[_this.id];
+    window[this.id] = new MonadEr(a, this.id, []);
+    return window[this.id];
   }  
 };
 
