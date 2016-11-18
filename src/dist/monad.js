@@ -26,6 +26,7 @@ function testPrefix (x,y) {
 }
 
 var Monad = function Monad(z = 19, g = 'generic') {
+  var _this = this;
   this.x = z;
   this.id = g;
   this.bnd = function (func, ...args) {
@@ -39,7 +40,7 @@ var Monad = function Monad(z = 19, g = 'generic') {
     else return m;
   };
   this.ret = function (a) {
-    return window[this.id] = new Monad(a,this.id);
+    return window[_this.id] = new Monad(a,_this.id);
   };
 };
 
@@ -1183,7 +1184,7 @@ function MonadEr (val, ID, er = []) {
       return window[this.id];
     }
     if (this.e.length > 0) {
-      console.log('BYPASSING COMPUTATION in MonadE instance', this.id, f, '.  PROPAGATING ERROR:',  this.e[0]); 
+      console.log('BYPASSING COMPUTATION in MonadEr instance', this.id, f, '.  PROPAGATING ERROR:',  this.e[0]); 
       return this;  
     }
     

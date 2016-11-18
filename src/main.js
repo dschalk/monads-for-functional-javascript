@@ -35,7 +35,7 @@ console.log(greeter.greet());
 
 function createWebSocket(path) {
     var host = window.location.hostname;
-    if (host == '')
+    if (host === '')
         host = 'localhost';
     var uri = 'ws://' + host + ':3055' + path;
     var Socket = "MozWebSocket" in window ? MozWebSocket : WebSocket;
@@ -100,7 +100,7 @@ function main(sources) {
     refresh() });
   mMZ17.bnd( () => testTask(v[2], v[3], e.data) ); 
   mMZ18.bnd( () => {
-    if (pMgroup.x != 'solo' || pMname.x == v[2] ) updatePlayers(e.data)  });
+    if (pMgroup.x != 'solo' || pMname.x === v[2] ) updatePlayers(e.data)  });
   })       
   mMtemp.ret(e.data.split(',')[0])
   .bnd(next, 'CA#$42', mMZ10)
@@ -112,7 +112,7 @@ function main(sources) {
   });
         
   function next(x, y, instance) {
-    if (x == y) {
+    if (x === y) {
         instance.release();
     }
     return ret(x);
@@ -127,7 +127,7 @@ function main(sources) {
 
   var loginPressAction$ = loginPress$.map(e => {
     var v = e.target.value;
-    if (e.keyCode == 13) {
+    if (e.keyCode === 13) {
       pMname.ret(v);
       socket.send('CC#$42' + v );
       pMclicked.ret([]);
@@ -158,7 +158,7 @@ function main(sources) {
       .select('input#group').events('keypress');
 
   var groupPressAction$ = groupPress$.map(e => {
-      if (e.keyCode == 13) {
+      if (e.keyCode === 13) {
         travMonad.run([ [], 0, 0 ]);
         socket.send(`CO#$42,${pMgroup.x},${pMname.x},${e.target.value}`);
         pMgroup.ret(e.target.value)
@@ -171,7 +171,7 @@ function main(sources) {
       .select('input.inputMessage').events('keydown');
 
   var messagePressAction$ = messagePress$.map(function (e) {
-      if (e.keyCode == 13) {
+      if (e.keyCode === 13) {
           socket.send(`CD#$42,${pMgroup.x},${pMname.x},${e.target.value}`);
           e.target.value = '';
           console.log('In messagePressAction$ ', socket.readyState);
@@ -210,7 +210,7 @@ function main(sources) {
 
   var numClickAction$ = numClick$.map(e => {
     console.log('In numClickAction. @@@@@@@@@@@@@@@@@@@@@@@@ e.target.id, e, and pMnums are ', e.target.id, e, pMnums.x );
-    if (pMclicked.x.length == 2) {return};
+    if (pMclicked.x.length === 2) {return};
     pMnums.bnd(spliceM, e.target.id, 1)
     .bnd(v => {
       test3(v, 'MpMstyle')
@@ -220,7 +220,7 @@ function main(sources) {
       .bnd(pMclicked.ret)
       .bnd(w => {
         travMonad.run([v, pMscore.x, pMgoals.x, w, pMop.x])
-        if (w.length == 2 && pMop.x != 0) {
+        if (w.length === 2 && pMop.x != 0) {
           console.log('In numClickAction# if block >>>>>> @@@@@@@@@@@@@@@@@@@@@@ ' );
           updateCalc(w, pMop.x) 
         }
@@ -248,14 +248,14 @@ function main(sources) {
     mMgoals2.ret('');
     var result = calc(ar[0], op, ar[1]);
 
-    if (result == 20) { 
+    if (result === 20) { 
       pMscore.bnd(add,1)
       .bnd(testscore)
       .bnd(pMscore.ret)
       .bnd(v => score(v));
       return; 
     } 
-    else if (result == 18) { 
+    else if (result === 18) { 
       pMscore.bnd(add,3)
       .bnd(testscore)
       .bnd(pMscore.ret)
@@ -268,7 +268,6 @@ function main(sources) {
         travMonad.run([v, pMscore.x, pMgoals.x, [], 0])
         test3(v, 'MpMstyle')
       }); 
-      console.log('in updateCalc 1111111111 pMnums.x, pMstyle.x ', pMnums.x, pMstyle.x );
     }
   };  
 
@@ -276,13 +275,12 @@ function main(sources) {
     if (scor != 25) {
       newRoll(scor, pMgoals.x)
     }
-    else if (pMgoals.x == 2) {
+    else if (pMgoals.x === 2) {
       socket.send(`CE#$42,${pMgroup.x},${pMname.x}`);
       newRoll(0,0)
     }
     else {pMgoals.bnd(add, 1).bnd(pMgoals.ret).bnd(g => newRoll(0, g))};
   };
-  // ************************************************************************* Original Fibonacci enter
   var fib2 = function fib2(v) {
       if (v[2] > 1) {
           mMfib.ret([v[1], v[0] + v[1], v[2] - 1]);
@@ -295,11 +293,11 @@ function main(sources) {
   var fibPress$ = sources.DOM
       .select('input#code').events('keydown');
   var fibPressAction$ = fibPress$.map(function (e) {
-      if (e.target.value == '') {
+      if (e.target.value === '') {
           return;
       }
       ;
-      if (e.keyCode == 13) {
+      if (e.keyCode === 13) {
           mM21.ret(e.target.value);
           fib2([0, 1, e.target.value]);
       }
@@ -312,7 +310,7 @@ function main(sources) {
   var primeFib$ = fibKeyPress5$.map(function (e) {
     console.log('In primeFib$ VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV primesMonad.s, primesMonad.a ', primesMonad.s, primesMonad.a );
     console.log('In primeFib$ VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV fibsMonad.s, fibsMonad.a ', fibsMonad.s, fibsMonad.a );
-      if (e.keyCode == 13) {
+      if (e.keyCode === 13) {
           mMres.ret(fibsMonad
               .run([1, 2 ,e.target.value, [0,1]])
               .bnd(fibsState => 
@@ -330,7 +328,7 @@ function main(sources) {
   var factorsAction$ = factorsPress$.map(function (e) {
     var factors = [];
     mMfactors3.ret('');
-    if (e.keyCode == 13) {
+    if (e.keyCode === 13) {
       var num = e.target.value
       if (!num.match(/^[0-9]+$/)) {
         mMfactors3.ret('This works only if you enter a number. ' + num + ' is not a number');
@@ -388,7 +386,7 @@ function main(sources) {
       .select('#testW').events('keypress');
 
   var testWAction$ = testW.map(function (e) {
-      if (e.keyCode == 13) {
+      if (e.keyCode === 13) {
           mMZ2.release(e.target.value);
       }
   });
@@ -406,13 +404,13 @@ function main(sources) {
     .bnd(result => {  
       let x = result[0]
       let y = result[1]
-      if (x == 0) {
+      if (x === 0) {
         mMquad5.ret('No solution', mMtemp)
         mMquad6.ret(' ');
         solve(); 
         return;
       }
-      if (y == 0) {
+      if (y === 0) {
         mMquad5.ret('No solution')
         mMquad6.ret(' ')   
         solve(); 
@@ -433,7 +431,7 @@ function main(sources) {
       .select('#quad').events('keypress');
 
   var quadAction$ = quad$.map(function (e) {
-      if (e.keyCode == 13) {
+      if (e.keyCode === 13) {
           mMZ3.release(e.target.value);
           document.getElementById('quad').value = null;
       }
@@ -452,7 +450,7 @@ function main(sources) {
         var ob = {};
         var alert = '';
         var task = '';
-        if (e.keyCode == 13) {
+        if (e.keyCode === 13) {
             var ar = e.target.value.split(',');
             if (ar.length < 3) {
               mMalert.ret('You should enter "author, responsible party, task" separated by commas');
@@ -460,13 +458,13 @@ function main(sources) {
             }
             var ar2 = ar.slice(2);
             console.log('*************  newTaskAction$  ************************$$$$$$$$$$$  ar ', ar);
-            if (ar2.length == 1) {
+            if (ar2.length === 1) {
                 task = ar[2];
             }
             if (ar2.length > 1) {
                 task = ar2.reduce(function (a, b) { return a + '$*$*$' + b; });
             }
-            if ((get(mMar2).filter(function (v) { return (v.task == task); }).length) > 0) {
+            if ((get(mMar2).filter(function (v) { return (v.task === task); }).length) > 0) {
                 mMalert.ret(task + " is already listed.");
             }
             else if (ar.length > 2) {
@@ -479,19 +477,19 @@ function main(sources) {
     });
 
   function testTask (v2, v3, data)  {
-    if (v3 == 'no file' || v3 == 'empty') {
+    if (v3 === 'no file' || v3 === 'empty') {
       mMtaskList.ret([]);
       taskL = h('span' ); 
       return;
     }
-    if (get(pMgroup) != 'solo' || get(pMgroup) == 'solo' &&  get(pMname) == v2) {   
+    if (get(pMgroup) != 'solo' || get(pMgroup) === 'solo' &&  get(pMname) === v2) {   
       process(data);  
     } 
   };
 
   var process = function (str) {
       var a = str.split(",");
-      if (a == undefined) {
+      if (a === undefined) {
           return;
       };
 
@@ -508,7 +506,7 @@ function main(sources) {
 
     var process3 = function (a) {
       var ar5 = [];
-      if (a.length % 6 == 0) {
+      if (a.length % 6 === 0) {
         var keys = rang(0, a.length / 6);
         keys.map( _ => {
           ar5.push({
@@ -561,7 +559,7 @@ function main(sources) {
         var j = 6 * index + 2;
         var k = 6 * index + 1;
         var checked = ar[n];
-        if (checked == 'true') {
+        if (checked === 'true') {
             ar[n] = 'false';
             ar[k] = 'yellow';
             ar[j] = 'none';
@@ -588,7 +586,7 @@ function main(sources) {
     var edit2Action$ = edit2$.map(function (e) {
         var v = noComma(e.target.value);
         var index = getIndex2(e);
-        if (e.keyCode == 13) {
+        if (e.keyCode === 13) {
             process2(v, index);
             mMtaskList.x[index].children[3].elm.style.display = 'none';
         updateScoreboard2(namesList);
@@ -626,7 +624,7 @@ function main(sources) {
 
     var chatClickAction$ = chatClick$.map(function () {
         var el = document.getElementById('chatDiv');
-        (el.style.display == 'none') ?
+        (el.style.display === 'none') ?
             el.style.display = 'inline' :
             el.style.display = 'none';
     });
@@ -635,7 +633,7 @@ function main(sources) {
         .select('#caption').events('click');
     var captionClickAction$ = captionClick$.map(function () {
         var el = document.getElementById('captionDiv');
-        (el.style.display == 'none') ?
+        (el.style.display === 'none') ?
             el.style.display = 'inline' :
             el.style.display = 'none';
     });
@@ -645,7 +643,7 @@ function main(sources) {
   
     var todoClickAction$ = todoClick$.map(function (e) {
         var el = document.getElementById('todoDiv');
-        (el.style.display == 'none') ?
+        (el.style.display === 'none') ?
             el.style.display = 'inline' :
             el.style.display = 'none';
     });
@@ -655,12 +653,12 @@ function main(sources) {
 
     var gameClickAction$ = gameClick$.map(function () {
         var el = document.getElementById('gameDiv');
-        (el.style.display == 'none') ?
+        (el.style.display === 'none') ?
         updateScoreboard2(namesList);
             el.style.display = 'inline' :
             el.style.display = 'none';
         var el2 = document.getElementById('gameDiv2');
-        (el2.style.display == 'none') ?
+        (el2.style.display === 'none') ?
             el2.style.display = 'inline' :
             el2.style.display = 'none';
     });
@@ -670,7 +668,7 @@ function main(sources) {
         .select('#todoButton').events('click');
   
     var todoClickAction$ = todoClick$.map(function (e) {
-        (get(mMtodoDiv)  == 'none') ?
+        (get(mMtodoDiv)  === 'none') ?
             mMtodoDiv.ret('block') :
             mMtodoDiv.ret('none') 
     });
@@ -679,7 +677,7 @@ function main(sources) {
         .select('#chat2').events('click');
 
     var chatClickAction$ = chatClick$.map(function () {
-        (get(mMchatDiv)  == 'none') ?
+        (get(mMchatDiv)  === 'none') ?
             mMchatDiv.ret('block') :
             mMchatDiv.ret('none') 
     });
@@ -688,7 +686,7 @@ function main(sources) {
         .select('#caption').events('click');
 
     var captionClickAction$ = captionClick$.map(function () {
-        (get(mMcaptionDiv)  == 'none') ?
+        (get(mMcaptionDiv)  === 'none') ?
             mMcaptionDiv.ret('block') :
             mMcaptionDiv.ret('none') 
     });
@@ -697,7 +695,7 @@ function main(sources) {
         .select('#game').events('click');
 
     var gameClickAction$ = gameClick$.map(function () {
-        (get(mMgameDiv)  == 'none') ?
+        (get(mMgameDiv)  === 'none') ?
             mMgameDiv.ret('block') :
             mMgameDiv.ret('none') 
     });
@@ -901,41 +899,41 @@ h('p', ' I experimented with several definitions of Monad during the course of t
 
 h('pre.red9', `    m1.ret(7).bnd(m2.ret).bnd(m3.ret)  // All three monads get the value 7.
     m1.ret(0).bnd(add,3,'m2').bnd(cube,'m3')  // equivalent to m1.ret(0).bnd(add,3).bnd(cube)` ),
-h('pre', `    Result: m1.x == 27
-            m2.x == 7
-            m3.x == 7  ` ),
+h('pre', `    Result: m1.x === 27
+            m2.x === 7
+            m3.x === 7  ` ),
 h('pre.red9', `    m1.ret(0).bnd(add,3,'Mm2').bnd(cube,'Mm3')   ` ),
-h('pre', `    Result: m1.x == 0
-            m2.x == 3
-            m3.x == 27  ` ),
+h('pre', `    Result: m1.x === 0
+            m2.x === 3
+            m3.x === 27  ` ),
 h('p', ' If the prefix "M" is absent, bnd() ignores the string argument. But when the "M" prefix is present, m1 retains its initial value, m2 retains the value it gets from from adding m\'s value (which is 0) to 3, and m3.x is the result. Both forms could be useful. ' ),
 h('p', ' The following example shows lambda expressions sending variables v1 and v2 through a sequence of computations and v3 sending the final result to the string that is logged. It also shows monads a, b, c, d, e, f, and g being updated and preserved in an array that is not affected by further updates. That is because calling the ret() method does not mutate a monad, it creates a fresh instance with the same name. Here is the example, shown in a screen shot of the Chrome console log:. ' ),  
 h('br' ),
 h('br' ),
 h('img.image', {props: {src: "demo_000.png"}}  ),   
 h('h3', ' The Monad Laws '), 
-h('p', ' In the following discussion, "x == y" signifies that the expression x == y returns true. Let J be the collection of all Javascript values, including functions, instances of Monad, etc, and let F be the collection of all functions mapping values in J to instances of Monad with references (names) matching their ids; that is, with window[id] == m.id for some id which is a valid es2015 variable name. The collection of all such instances of Monad along and all of the functions in F is called "M". For any instances of Monad m, m1, and m2 in M and any functions f and g in F, the following relationships follow easily from the definition of Monad: '), 
+h('p', ' In the following discussion, "x === y" signifies that the expression x === y returns true. Let J be the collection of all Javascript values, including functions, instances of Monad, etc, and let F be the collection of all functions mapping values in J to instances of Monad with references (names) matching their ids; that is, with window[id] === m.id for some id which is a valid es2015 variable name. The collection of all such instances of Monad along and all of the functions in F is called "M". For any instances of Monad m, m1, and m2 in M and any functions f and g in F, the following relationships follow easily from the definition of Monad: '), 
 h('div', 'Left Identity ' ),
-h('pre.turk', `    m.ret(v, ...args).bnd(f, ...args).x == f(v, ...args).x 
-    ret(v, ...args).bnd(f, ...args).x == f(v, ...args).x 
-    Examples: m.ret(3).bnd(cube).x == cube(3).x  Tested and verified  
-    ret(3).bnd(cube).x == cube(3).x     Tested and verified
+h('pre.turk', `    m.ret(v, ...args).bnd(f, ...args).x === f(v, ...args).x 
+    ret(v, ...args).bnd(f, ...args).x === f(v, ...args).x 
+    Examples: m.ret(3).bnd(cube).x === cube(3).x  Tested and verified  
+    ret(3).bnd(cube).x === cube(3).x     Tested and verified
     Haskell monad law: (return x) >>= f \u2261 f x  ` ),
 h('div#discussion', ' Right Identity  ' ),  
-h('pre.turk', `    m.bnd(m.ret) == m      Tested and verified 
+h('pre.turk', `    m.bnd(m.ret) === m      Tested and verified 
     m.bnd(m.ret) === m   Tested and verified
-    m.bnd(ret) == m  Tested and verified
+    m.bnd(ret) === m  Tested and verified
     Haskell monad law: m >>= return \u2261 m `  ),
     h('div', ' Commutivity  ' ),  
-    h('pre.turk', `    m.bnd(f1, ...args).bnd(f2, ...args).x == m.bnd(v => f1(v, ...args).bnd(f2, ...args)).x 
-    Example: m.ret(0).bnd(add, 3).bnd(cube).x == 
+    h('pre.turk', `    m.bnd(f1, ...args).bnd(f2, ...args).x === m.bnd(v => f1(v, ...args).bnd(f2, ...args)).x 
+    Example: m.ret(0).bnd(add, 3).bnd(cube).x === 
     m.ret(0).bnd(v => add(v,3).bnd(cube)).x  Tested amd verified
     Haskell monad law: (m >>= f) >>= g \u2261 m >>= ( \\x -> (f x >>= g) ) `),
 h('a', { props: { href: '#top' } }, 'Back To The Top'),
 h('h3', ' Disussion ' ),
 h('span.tao', ' The Haskell statement ' ),    
 h('span.turk6', `f \u2261 g` ),
-h('span', ' means that f x == g x for all Haskell values x of the appropriate type. That is the test applied to Javascript expressions in "Monad Laws" section (above). Neither the == nor the === operator would provide useful information about the behavior of instances of Monad, which are objects. Those operators test objects for location in memory. If the left and right sides of predicates create new instances of m, then the left side m and the right side m wind up in different locations in memory. So we expect m.ret(3) == m.ret(3) to return false, and it does. The question we want answered is the question \u2261 answers in Haskell: Can the left and right sides be substituted for one another and still yield the same results.'),
+h('span', ' means that f x === g x for all Haskell values x of the appropriate type. That is the test applied to Javascript expressions in "Monad Laws" section (above). Neither the === nor the === operator would provide useful information about the behavior of instances of Monad, which are objects. Those operators test objects for location in memory. If the left and right sides of predicates create new instances of m, then the left side m and the right side m wind up in different locations in memory. So we expect m.ret(3) === m.ret(3) to return false, and it does. The question we want answered is the question \u2261 answers in Haskell: Can the left and right sides be substituted for one another and still yield the same results.'),
 h('br' ),
 h('br' ),
 h('span.tao', ' The Haskell programming language borrowed the term "monad" from the branch of mathematics known as category theory. This was apropriate because Haskell monads, along with the function return and the operator >>=, behave quite a bit like category theory monads, and the inspiration for them came out of category theory. For Haskell monads to be category theory monads, they would need to reside in a category-theory category. They don\'t, although the Haskell mystique tends to give newcommers to the language the impression that they do. See ' ),
@@ -948,7 +946,7 @@ h('span#err', ' Attempts continue to be made to define a Haskell category, usual
     
   h('h2', ' MonadEr - An Error-Catching Monad ' ),
   h('p', ' Instances of MonadEr function much the same as instances of Monad, but when an instance of MonadEr encounters an error, it ceases to perform any further computations. Instead, it passes through every subsequent stage of a sequence of MonadEr expressions, reporting where it is and repeating the error message. It will continue to do this until it is re-instantiated or until its bnd() method runs on the function clean(). ' ),
-  h('p', 'Functions used as arguments to the MonadEr bnd() method can be placed in quotation marks to prevent the browser engine from throwing reference errors. Arguments can be protected in the same manner. ' ), 
+  h('p', 'Functions used as arguments to the MonadEr bnd() method can be placed in quotation marks to prevent the browser engine from throwing reference errors. Arguments can be protected in the same manner. Using MonadEr can prevent the silent proliferation of NaN results in math computations, and can prevent browser crashes due to attempts to evaluate undefined variables. Sometimes crashes are desired when testing code, but MonadEr provides instant feedback pinpointing the exact location of the error. ' ), 
   h('p', ' The following demonstration shows the Chrome console log entries that result from running ' ),
   h('pre', `    t.bnd('add3", 3, 'Mt2').bnd(cube3, 'Mt3'
     t.bnd('add3",'three', 'Mt2').bnd(cube3, 'Mt3'    
@@ -973,26 +971,15 @@ h('span#err', ' Attempts continue to be made to define a Haskell category, usual
     code.monadEr,
   h('p', ' and here is the code that produced the Chrome console log entries: ' ),
     code.errorDemo,  
-  h('span.tao', ' When  a MonadEr instance encounters a function or an argument in quotation marks of types undefined or NaN, a string gets pushed into the instance\'s e attribue. After that, the  bnd() method will not process any function other than clean(). It will stop at the' ),
+  h('span.tao', ' When  a MonadEr instance encounters a function or an argument in quotation marks of types "undefined" or "NaN", a string gets pushed into the instance\'s e attribue. After that, the  bnd() method will not process any function other than clean(). It will stop at the' ),
   h('span.turk', 'if (e.length > 0)' ), 
   h('span', 'block. clean() resets an instance to normal functioning mode by setting its e attribute back to []. ' ), 
-  h('br'),    ret3(0, 't', []),
+  h('br'),  
   h('a', { props: { href: '#top' } }, 'Back To The Top'),
-
-
-
-
-
-
-    
-    
-    
-    
-
 h('h2', 'MonadItter'),
 code.monadIt,
 h('p', ' MonadItter instances don\'t link to one another. They exist to facilitate the work of instances of Monad, MonadState, etc. Here\'s how they work: '),
-h('p', 'For any instance of MonadItter, say "it", "it.bnd(func)" causes it.p == func. Calling the method "it.release(...args)" causes p(...args) to run, possibly with arguments supplied by the caller. '),
+h('p', 'For any instance of MonadItter, say "it", "it.bnd(func)" causes it.p === func. Calling the method "it.release(...args)" causes p(...args) to run, possibly with arguments supplied by the caller. '),
 h('p', ' As shown later on this page, MonadItter instances control the routing of incoming websockets messages. In one of the demonstrations below, they behave much like ES2015 iterators. I prefer them over ES2015 iterators, at least for what I am demonstrating.'),
 h('h3#itterLink', ' A Basic Itterator '),
 h('p', 'The following example illustrates the use of release() with an argument. It also shows a lambda expressions being provided as an argument for the method mMZ1.bnd() (thereby becoming the value of mMZ1.p), and then mMZ1.release providing an arguments for the function mMZ1.p. The code is shown beneith the following two buttons. '),
@@ -1008,7 +995,7 @@ h('span', ' by entering a value for v below: '),
 h('br'),
 h('span', 'Please enter an integer here: '),
 h('input#testW'),
-h('p', ' cube() is defined in the Monad section (above). If you click "mMZ1.release(1)" several times, the code (above) will run several times, each time with v == 1. The result, mMt3.x, is shown below the button. mMZ1.p (bnd()\'s argument) remains constant while mMZ1.release(1) is repeatedly called, incrementing the number being cubed each time. '),
+h('p', ' cube() is defined in the Monad section (above). If you click "mMZ1.release(1)" several times, the code (above) will run several times, each time with v === 1. The result, mMt3.x, is shown below the button. mMZ1.p (bnd()\'s argument) remains constant while mMZ1.release(1) is repeatedly called, incrementing the number being cubed each time. '),
                   h('p', ' Here is another example. It demonstrates lambda expressions passing values to a remote location for use in a computation. If you enter three numbers consecutively below, call them a, b, and c, then the quadratic equation will be used to find solutions for a*x**2 + b*x + c = 0. The a, b, and c you select might not have a solution. If a and b are positive numbers, you are likely to see solutions if c is a negative number. For example, 12, 12, and -24 yields the solutions 1 and -2. '),
 h('p#quad4.red2', mMquad4.x  ),
 h('p#quad5.red2', mMquad5.x  ),
@@ -1098,7 +1085,7 @@ h('p', ' The following code shows what happens when a player clicks a number: ' 
     code.numClick1,
 h('p', ' The clicked number is removed from pMnums and added to pMclicked in the numClickAction$ stream. If two numbers and an operator have been selected, numClickAction$ or opClickAction$ (depending on whether the most recent click was on a number or an operator) calls updateCalc with two arguments, the pMclicked.x array of selected numbers and the chosen operator. After each roll, pMop.x is updated to 0. pMop.x != 0 indicates that an operator has been selected. ' ),
   code.numClick2,
-h('p', ' updateCalc calls calc on the numbers and operater provided to it by numCalcAction$ or opCalcAction$.  The return value is assigned to the variable result. If the value of result is 18 or 20, pMscore.x is augmented by 3 or 1, respectively, and checked to see if another five points should be added. score() is then called with the new value of pMscore.x as its argument. score() performs some additional tests to determine whether or not pMgoals.x should be augmented or, if the result is 3, in which case pMgoals is set back to 0. newRoll is called in score() with the (possible newly calculated) values of pMscore.x and pMgoals.x. ' ),
+h('p', ' updateCalc calls calc on the numbers and operater provided to it by numCalcAction$ or opCalcAction$.  The return value is assigned to the variable result. If the value of result is 18 or 20, pMscore.x is augmented by 3 or 1, respectively, and checked to see if another five points should be added. score() is then called with the new value of pMscore.x as its argument. score() performs some additional tests to determine whether or not pMgoals.x should be augmented or, if the result is 3, set back to 0 to begin another game. newRoll is called in score() with the (possible newly calculated) values of pMscore.x and pMgoals.x. ' ),
 
 
 //************************************************************************** END MonadArchive 

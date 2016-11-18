@@ -8,6 +8,7 @@ var stream = sub.stream;
 */
 
 var Monad = function Monad(z = 42, g = 'generic') {
+  var _this = this;
   this.x = z;
   this.id = g;
   this.bnd = function (func, ...args) {
@@ -18,7 +19,7 @@ var Monad = function Monad(z = 42, g = 'generic') {
     else return m;
   };
   this.ret = function (a) {
-    return window[this.id] = new Monad(a,this.id);
+    return window[_this.id] = new Monad(a,_this.id);
   };
 };
 
@@ -35,7 +36,7 @@ var monad = h('pre.turk6',  `    var Monad = function Monad(z = 42, g = 'generic
         else return m;
       };
       this.ret = function (a) {
-        return window[this.id] = new Monad(a,this.id);
+        return window[_this.id] = new Monad(a,_this.id);
       };
     };  
 
@@ -44,7 +45,7 @@ var monad = h('pre.turk6',  `    var Monad = function Monad(z = 42, g = 'generic
       var s;
       if (Array.isArray(x)) {
         x.some(v => {
-          if (typeof v == 'string' && v.charAt() == 'M') {
+          if (typeof v === 'string' && v.charAt() === 'M') {
              t = v.slice(1, v.length);
           }
         })
@@ -70,29 +71,30 @@ var driver = h('pre', `  var websocketsDriver = function () {
 ` )
 
 var messages = h('pre', `  const messages$ = (sources.WS).map( e => {
-    mMtem.ret(e.data.split(',')).bnd( v => {
-    console.log('<><><><><><><><><><><><><><><><>  INCOMING  <><><><><><><> >>> In messages. e amd v are ', e, v);
-    mMZ10.bnd( () => {
-      pMnums.ret([v[3], v[4], v[5], v[6]]).bnd(test3).bnd(pMstyle.ret)
-      travMonad.run([ [v[3], v[4], v[5], v[6]], v[7], v[8] ]);
-      pMscore.ret(v[7]);
-      pMgoals.ret(v[8]) }); 
-    mMZ12.bnd( () => mM6.ret(v[2] + ' successfully logged in.'));
-    mMZ13.bnd( () => updateMessages(e.data));
-    mMZ14.bnd( () => mMgoals2.ret('The winner is ' + v[2]));
-    mMZ15.bnd( () => {
-      mMgoals2.ret('A player named ' + v[2] + ' is currently logged in. Page will refresh in 4 seconds.')
-      refresh() });
-    mMZ17.bnd( () => testTask(v[2], v[3], e.data) ); 
-      mMZ18.bnd( () => {if (pMgroup) != 'solo' || pMname) == v[2]) {updatePlayers(e.data) } });
-    })       
-    mMtemp.ret(e.data.split(',')[0])
-    .bnd(next, 'CA#$42', mMZ10)
-    .bnd(next, 'CD#$42', mMZ13)
-    .bnd(next, 'CE#$42', mMZ14)
-    .bnd(next, 'EE#$42', mMZ15)
-    .bnd(next, 'DD#$42', mMZ17)
-    .bnd(next, 'NN#$42', mMZ18)
+  mMtem.ret(e.data.split(',')).bnd( v => {
+  console.log('<><><><><><><><><><><><><><><><>  INCOMING  <><><><><><><> >>> In messages. e amd v are ', e, v);
+  mMZ10.bnd( () => {
+    pMnums.ret([v[3], v[4], v[5], v[6]]).bnd(test3,"MpMstyle");
+    travMonad.run([ [v[3], v[4], v[5], v[6]], v[7], v[8], [], 0 ]);
+    pMscore.ret(v[7]);
+    pMgoals.ret(v[8]) }); 
+  mMZ12.bnd( () => mM6.ret(v[2] + ' successfully logged in.'));
+  mMZ13.bnd( () => updateMessages(e.data));
+  mMZ14.bnd( () => mMgoals2.ret('The winner is ' + v[2]));
+  mMZ15.bnd( () => {
+    mMgoals2.ret('A player named ' + v[2] + ' is currently logged in. Page will refresh in 4 seconds.')
+    refresh() });
+  mMZ17.bnd( () => testTask(v[2], v[3], e.data) ); 
+  mMZ18.bnd( () => {
+    if (pMgroup.x != 'solo' || pMname.x === v[2] ) updatePlayers(e.data)  });
+  })       
+  mMtemp.ret(e.data.split(',')[0])
+  .bnd(next, 'CA#$42', mMZ10)
+  .bnd(next, 'CD#$42', mMZ13)
+  .bnd(next, 'CE#$42', mMZ14)
+  .bnd(next, 'EE#$42', mMZ15)
+  .bnd(next, 'DD#$42', mMZ17)
+  .bnd(next, 'NN#$42', mMZ18)
   });  `  )
 
 var MonadSet = h('pre',  `  var MonadSet = function MonadSet(set, ID) {
@@ -214,7 +216,7 @@ var cleanup = h('pre',  `  function cleanup (x) {
       let target3 = document.getElementById('3');
       let targetAr = [target0, target1, target2, target3];
       for (let i in [0,1,2,3]) {
-        if (targetAr[i].innerHTML == 'undefined' )    {
+        if (targetAr[i].innerHTML === 'undefined' )    {
           targetAr[i].style.display = 'none';
         }
         else {
@@ -253,13 +255,13 @@ var cleanup = h('pre',  `  function cleanup (x) {
       if (ar.length > 3) {
         task = ar2.reduce((a,b) => a + '$*$*$' + b);
       }
-      if( e.keyCode == 13 ) {
+      if( e.keyCode === 13 ) {
         if ( ar.length < 3 ) {
           alert = 'You should enter "author, responsible party, task" separated by commas';
           document.getElementById('alert').innerHTML = alert;
         }
 
-        else if ( (mMar2.x.filter(v => (v.task == task)).length) > 0 ) {
+        else if ( (mMar2.x.filter(v => (v.task === task)).length) > 0 ) {
           document.getElementById('alert').innerHTML = task + " is already listed.";
         }
 
@@ -274,7 +276,7 @@ var cleanup = h('pre',  `  function cleanup (x) {
   var process = h('pre',  `  const process = function(str) {
     let a = str.split(",");
     console.log('In process. str and a are: ', str, a);
-    if (a == undefined) {
+    if (a === undefined) {
       return;
     };
     if (a.length < 9) {
@@ -340,7 +342,7 @@ var cleanup = h('pre',  `  function cleanup (x) {
     let j = 6 * index + 2;
     let k = 6 * index + 1;
     let checked = ar[n];
-    if (checked == 'true')  {
+    if (checked === 'true')  {
       ar[n] = 'false'; 
       ar[k] = 'yellow'; 
       ar[j] = 'none'; 
@@ -358,7 +360,7 @@ var cleanup = h('pre',  `  function cleanup (x) {
     var possibilities = event_object.currentTarget.parentNode.parentNode.childNodes;
     var keys = Object.keys(possibilities);
     for (let k in keys) {
-      if (task == possibilities[k].innerText) {
+      if (task === possibilities[k].innerText) {
         return k
       }
     }
@@ -379,7 +381,7 @@ var cleanup = h('pre',  `  function cleanup (x) {
   const edit2Action$ = edit2$.map(e => {
     let v = e.target.value;
     let index = getIndex2(e);
-    if( e.keyCode == 13 ) {
+    if( e.keyCode === 13 ) {
       process2(v, index);
     mMtaskList.x[index].children[3].elm.style.display = 'none';
     }
@@ -397,7 +399,7 @@ var cleanup = h('pre',  `  function cleanup (x) {
     var elem2 = e.currentTarget.parentNode.parentNode.childNodes
     var keys = Object.keys(elem2);
     for (let k in keys) {
-      if (elem == elem2[k].childNodes[0].innerHTML) {
+      if (elem === elem2[k].childNodes[0].innerHTML) {
         return k
       }
       console.log('In getIndex2. No match');
@@ -415,8 +417,8 @@ var cleanup = h('pre',  `  function cleanup (x) {
     .bnd(result =>   // The return value of calc(), which is mM7.x, is used three times.
       {  mM1.bnd(push, result, mM1).bnd(z =>
          mM$1.ret(z));                         // Updates the display.             
-        if (result == 20) {score(mM13.x, 1)}; 
-        if (result == 18) {score(mM13.x, 3)};
+        if (result === 20) {score(mM13.x, 1)}; 
+        if (result === 18) {score(mM13.x, 3)};
       }
     )) 
     reset()
@@ -424,12 +426,12 @@ var cleanup = h('pre',  `  function cleanup (x) {
 
   var score = function score(x,j) {
     socket.send('CA#$42,' + pMgroup.x + ',' + pMname.x + ',6,6,12,20');
-    if ((x + j) == 20) {
+    if ((x + j) === 20) {
       mMplayer.ret([]);
       mM13.ret(0).bnd(mMindex.ret);
       mMhistorymM1.ret([0,0,0,0]);   
       mMgoals.bnd(add, 1, mMgoals).bnd(v => {
-        if (v == 3) {
+        if (v === 3) {
           socket.send('CG#$42,' + pMgroup.x + ',' + pMname.x + ',' + -x + ',' + 0); 
           socket.send('CE#$42,' + pMgroup.x + ',' + pMname.x + ',nothing ')
           mMgoals.ret(0);
@@ -438,7 +440,7 @@ var cleanup = h('pre',  `  function cleanup (x) {
       })
       return;
     }
-    if ((x + j) % 5 == 0) {
+    if ((x + j) % 5 === 0) {
       socket.send('CG#$42,' + pMgroup.x + ',' + pMname.x + ','+ (j+5)+',' + mMgoals.x); 
       mM13.ret(x + j + 5);
       return;
@@ -474,7 +476,7 @@ var cleanup = h('pre',  `  function cleanup (x) {
     .select('#quad').events('keypress')  // Motorcycle way to get user input.
   
   const quadAction$ = quad$.map((e) => {
-    if( e.keyCode == 13 ) {
+    if( e.keyCode === 13 ) {
       mMZ3.release(e.target.value)       // Releases mMZ (below).
       document.getElementById('quad').value = null;
     }
@@ -493,13 +495,13 @@ var cleanup = h('pre',  `  function cleanup (x) {
     .bnd(result => {  
       let x = result[0]
       let y = result[1]
-      if (x == 0) {
+      if (x === 0) {
         mMquad5.ret('No solution', mMtemp)
         mMquad6.ret(' ');
         solve(); 
         return;
       }
-      if (y == 0) {
+      if (y === 0) {
         mMquad5.ret('No solution')
         mMquad6.ret(' ')   
         solve(); 
@@ -600,7 +602,7 @@ var primesMonad = h('pre',  `  var primesMonad = new MonadState('primesMonad', [
 
   var primes_state = function primes_state(x) {
     var v = x.slice();
-      while (2 == 2) {
+      while (2 === 2) {
         if (v[3].every(e => ((v[0]/e) != Math.floor(v[0]/e)))) {
           v[3].push(v[0]);
         }
@@ -629,7 +631,7 @@ var tr3 = h('pre',  `  var tr3 = function tr (fibsArray, primesArray) {
     var ar = [];
     var fibs = fibsArray.slice(3);
     fibs.map (v => {
-      if (primesArray.every(p => (v % p || v == p))) ar.push(v);
+      if (primesArray.every(p => (v % p || v === p))) ar.push(v);
     })
     return [fibsArray, primes, ar]
   }  `  )
@@ -638,7 +640,7 @@ var primeFibInterface = h('pre',  `  const fibKeyPress5$ = sources.DOM
     .select('input#fib92').events('keydown');
 
   const primeFib$ = fibKeyPress5$.map(e => {
-    if( e.keyCode == 13 ) {
+    if( e.keyCode === 13 ) {
       mMres.ret(fibsMonad
       .run([0, 1, e.target.value, []])
       .bnd(fibsState => fibsMonad
@@ -659,7 +661,7 @@ var factorsMonad = h('pre',  `  var factorsMonad = new MonadState('factorsMonad'
   
   function factor_state(v) {
     v[3].map(function (p) {
-      if (v[2] / p == Math.floor(v[2] / p)) {
+      if (v[2] / p === Math.floor(v[2] / p)) {
           v[0].push(p);
       }
     });
@@ -672,7 +674,7 @@ var factorsInput = h('pre',  `  var factorsPress$ = sources.DOM
   var factorsAction$ = factorsPress$.map(function (e) {
     var factors = [];
     mMfactors3.ret('');
-    if (e.keyCode == 13) {
+    if (e.keyCode === 13) {
       var num = e.target.value
       if (!num.match(/^[0-9]+$/)) {
         mMfactors3.ret('This works only if you enter a number. ' + num + ' is not a number');
@@ -812,7 +814,7 @@ var e2 = h('pre.turk',  `  var c = m.ret(0).bnd(add,3).bnd(cube).bnd(log, "The v
 
 var e2x = h('pre', `   Output: The values of m\'s and c\'s x attributes are 0 and 27 respectively.  ` )
 
-   var e3 = h('p',  ' Note: m\'s x attribute keeps its initial value of 0 because each computation creates a fresh instance of Monad with id == "default". In the next example, m\'s x attribute becomes the computation result due to the addition of ".bnd(m.ret)". '  )   
+   var e3 = h('p',  ' Note: m\'s x attribute keeps its initial value of 0 because each computation creates a fresh instance of Monad with id === "default". In the next example, m\'s x attribute becomes the computation result due to the addition of ".bnd(m.ret)". '  )   
   
  var e4 = h('pre.turk',  `  var c = m.ret(0).bnd(add,3).bnd(cube).bnd(m.ret).bnd(log, 
    "The values m\'s and c\'s x attributes are " + m.x + " and " + c.x + " respectively.") ` )
@@ -899,7 +901,7 @@ var travMonad = h('pre',  `  var travMonad = new MonadState("travMonad", [[8,8,8
     next[1] = score;
     next[2] = goals;
     next[3].splice( pMindex.x, 0, ar );
-    return next;         // This results in travMonad.s == next.
+    return next;         // This results in travMonad.s === next.
   }  `  )
 
 
@@ -907,7 +909,7 @@ var travMonad = h('pre',  `  var travMonad = new MonadState("travMonad", [[8,8,8
 var test3 = h('pre',  `  function test3 (a) {
     var b = [];
     for (let i of [0,1,2,3]) {
-      b[i] = (a[i] == undefined) ? 'none' : 'inline'
+      b[i] = (a[i] === undefined) ? 'none' : 'inline'
     }
     return ret(b);
   }  
@@ -924,28 +926,31 @@ var numClick1 = h('pre.blue',  `  var numClick$ = sources.DOM
       .select('.num').events('click'); 
 
   var numClickAction$ = numClick$.map(e => {
-    if (mM3.x.length == 2) {return};
-    pMnums    
-    .bnd(spliceM, e.target.id, 1)
-    .bnd(pMnums.ret)
-    .bnd(test3)
-    .bnd(pMstyle.ret)
-    mM3
-    .bnd(push, e.target.innerHTML)
-    .bnd(mM3.ret)
+    console.log('In numClickAction. @@@@@@@@@@@@@@@@@@@@@@@@ e.target.id, e, and pMnums are ', e.target.id, e, pMnums.x );
+    if (pMclicked.x.length === 2) {return};
+    pMnums.bnd(spliceM, e.target.id, 1)
     .bnd(v => {
-      if (v.length == 2 && mM8.x != 0) {
-        updateCalc(v, mM8.x) 
-      }
+      test3(v, 'MpMstyle')
+      socket.send(\`CG#$42,\${pMgroup.x},\${pMname.x},\${pMscore.x},\${pMgoals.x}\`);
+      pMclicked
+      .bnd(push, e.target.innerHTML)
+      .bnd(pMclicked.ret)
+      .bnd(w => {
+        travMonad.run([v, pMscore.x, pMgoals.x, w, pMop.x])
+        if (w.length === 2 && pMop.x != 0) {
+          console.log('In numClickAction# if block >>>>>> @@@@@@@@@@@@@@@@@@@@@@ ' );
+          updateCalc(w, pMop.x) 
+        }
+      })
     })
-    }).startWith([0, 0, 0, 0]);
+  }).startWith([0, 0, 0, 0]);
 
   var opClick$ = sources.DOM
       .select('.op').events('click');
 
   var opClickAction$ = opClick$.map(e => {
-    mM8.ret(e.target.innerHTML).bnd(v => { 
-      var ar = mM3.x
+    pMop.ret(e.target.innerHTML).bnd(v => { 
+      var ar = pMclicked.x
       if (ar.length === 2) {
         updateCalc(ar, v)
       }
@@ -956,14 +961,14 @@ var numClick2 = h('pre.blue',  `  function updateCalc(ar, op) {
     var result = calc(ar[0], op, ar[1]);
     mM3.ret([]);
     mM8.ret(0)
-    if (result == 20) { 
+    if (result === 20) { 
       pMscore.bnd(add,1)
       .bnd(testscore)
       .bnd(pMscore.ret)
       .bnd(v => score(v));
       return; 
     } 
-    else if (result == 18) { 
+    else if (result === 18) { 
       pMscore.bnd(add,3)
       .bnd(testscore)
       .bnd(pMscore.ret)
@@ -973,14 +978,10 @@ var numClick2 = h('pre.blue',  `  function updateCalc(ar, op) {
 
     else {
       pMnums.bnd(push,result)
-      .bnd(pMnums.ret)
       .bnd(v => {
-        travMonad.run([v, pMscore.x, pMgoals.x])
-        test3(v)
-        .bnd(pMstyle.ret)
+        travMonad.run([v, pMscore.x, pMgoals.x, [], 0])
+        test3(v, 'MpMstyle')
       }); 
-      mM8.ret(0);
-      mM3.ret([]);
     }
   };  
 
@@ -993,7 +994,7 @@ var numClick2 = h('pre.blue',  `  function updateCalc(ar, op) {
     if (scor != 25) {
       newRoll(scor, pMgoals.x)
     }
-    else if (pMgoals.x == 2) {
+    else if (pMgoals.x === 2) {
       socket.send(\`CE#$42,${pMgroup.x},${pMname.x}\`);
       newRoll(0,0)
     }
@@ -1054,8 +1055,8 @@ var monadArchive2 = h('pre.blue',  `    function MonadArchive(g, state, p) {
       pMnums.ret(ar[0]);
       pMscore.ret(ar[1]);
       pMgoals.ret(ar[2]);
-      ar[3] = (typeof ar[3] == "undefined") ? pMclicked.x : ar[3]
-      ar[4] = (typeof ar[4] == "undefined") ? pMop.x : ar[4]
+      ar[3] = (typeof ar[3] === "undefined") ? pMclicked.x : ar[3]
+      ar[4] = (typeof ar[4] === "undefined") ? pMop.x : ar[4]
       pMclicked.ret(ar[3]);
       pMop.ret(ar[4]); 
       var next = travMonad.s.slice();
@@ -1099,7 +1100,7 @@ var monadEr = h('pre.red9',  `    function MonadEr (val, ID, er = []) {
           }
           
           if (args.length > 0) {
-            arr = args.filter(v => !(typeof v == 'string' && v.charAt() == 'M' && v.slice(0,4) !== 'Math'))
+            arr = args.filter(v => !(typeof v === 'string' && v.charAt() === 'M' && v.slice(0,4) !== 'Math'))
               
             arr.map(v => {
               test = testP(v, this.id)
@@ -1142,7 +1143,7 @@ var monadEr = h('pre.red9',  `    function MonadEr (val, ID, er = []) {
       var s;
       if (Array.isArray(x)) {
         x.some(v => {
-          if (typeof v == 'string' && v.charAt() == 'M') {
+          if (typeof v === 'string' && v.charAt() === 'M') {
              t = v.slice(1);
           }
         })
