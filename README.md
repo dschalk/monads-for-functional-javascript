@@ -7,7 +7,7 @@
 
   The JS-monads constructors - "Monad", "MonadState", "MonadE", "MonadSet", MonadArchive, and "MonadItter".project - are tools whic David Schalk devised for his personal use in front-end web development. They, and the boilerplate funcntions they use, are in the ~/src/dist/monad.js file. In the online demonstration, monad.js resides in the index.html file as a script. Functions that interact with the virtual DOM are in the main.js file. 
 
-  Aside from being a place to share my ideas and techniques with any developers who might be interested, the online demonstration is a tutorial for people who are interested in functional programming. It presents examples of devising abstractions to organize code into blocks of code that are easy to reason about and maintaim. For example, tweaking how the application behaves when the simulated dice game's numbers display is traversed has been a matter of making adjuctment in trav_state, a function defined in monads.js, For while, traveling backwards and clicking numbers or rolling the dice added new displays to the games mont recent history. Changing the line "next[3].unshift(ar)" to "next[3].splice( pMindex.x, 0, ar )" caused the new displays to be added wherever a player happenes to be in in the history of displays. The state that the player left behind gets bumped up further into the future each time a new display if generated. In other words, the index number the array array that was left behind in travMonad.a gets incremented by 1 each time a new array is added. The abandoned array continues have index number == travMonad.a.length -1. The future is not altered. An alternative reality is created where the player can continue all the way to victory (goals == 3).
+  Aside from being a place to share my ideas and techniques with any developers who might be interested, the online demonstration is a tutorial for people who are interested in functional programming. It presents examples of devising abstractions to organize code into blocks of code that are easy to reason about and maintaim. For example, tweaking how the application behaves when the simulated dice game's numbers display is traversed has been a matter of making adjuctment in trav_state, a function defined in monads.js, For while, traveling backwards and clicking numbers or rolling the dice added new displays to the games mont recent history. Changing the line "next[3].unshift(ar)" to "next[3].splice( pMindex.x, 0, ar )" caused the new displays to be added wherever a player happenes to be in in the history of displays. The state that the player left behind gets bumped up further into the future each time a new display if generated. In other words, the index number the array array that was left behind in travMonad.a gets incremented by 1 each time a new array is added. The abandoned array continues have index number === travMonad.a.length -1. The future is not altered. An alternative reality is created where the player can continue all the way to victory (goals === 3).
 
   The server is a modified clone of the Haskell Wai Websockets server. Haskell pattern matching and list comprehension made it easy to configure the server to broadcast selectively to members of groups, who share the dice game, todo list, and chat room. I use Babel and Webpack to prepare the front end and Stack to compile everything into a single executable which I upload to my Digital Ocean "droplet". 
 
@@ -28,7 +28,7 @@
         else return m;
       };
       this.ret = function (a) {
-        return window[this.id] = new Monad(a,this.id);
+        return window[_this.id] = new Monad(a,_this.id);
       };
     };
 
@@ -37,7 +37,7 @@
       var s;
       if (Array.isArray(x)) {
         x.some(v => {
-          if (typeof v == 'string' && v.charAt() == 'M') {
+          if (typeof v === 'string' && v.charAt() === 'M') {
             t = v.slice(1, v.length);
           }
         })
@@ -79,8 +79,8 @@
   I experimented with several definitions of Monad during the course of this project. The reader is encouraged to experiment with variations on the theme. If you come up with something that is useful to you, please let me know. The current version is the most useful for me. Its bnd() method can assign the return value of bnd()'s argument to any valid Javascript variable name. For example,
   ```javascript
       ret(3, 'm1').bnd(cube, 'Mm2')
-      Result: m1.x == 3
-              m2.x == 27  
+      Result: m1.x === 3
+              m2.x === 27  
   ```        
   If the prefix "M" is absent, bnd() ignores the string argument. But when the "M" prefix is present, m1 retains its initial value, m2 retains the value it gets from from adding m's value (which is 0) to 3, and m3.x is the result. Both forms could be useful.
 
@@ -91,27 +91,27 @@
 
   ###The Monad Laws
 
-  In the following discussion, "x == y" signifies that the expression x == y returns true. Let J be the collection of all Javascript values, including functions, instances of Monad, etc, and let F be the collection of all functions mapping values in J to instances of Monad with references (names) matching their ids; that is, with window[id] == m.id for some id which is a valid es2015 variable name. The collection of all such instances of Monad along and all of the functions in F is called "M". For any instances of Monad m, m1, and m2 in M and any functions f and g in F, the following relationships follow easily from the definition of Monad:
+  In the following discussion, "x === y" signifies that the expression x === y returns true. Let J be the collection of all Javascript values, including functions, instances of Monad, etc, and let F be the collection of all functions mapping values in J to instances of Monad with references (names) matching their ids; that is, with window[id] === m.id for some id which is a valid es2015 variable name. The collection of all such instances of Monad along and all of the functions in F is called "M". For any instances of Monad m, m1, and m2 in M and any functions f and g in F, the following relationships follow easily from the definition of Monad:
 
   Left Identity
-      m.ret(v, ...args).bnd(f, ...args).x == f(v, ...args).x   
-      ret(v, ...args).bnd(f, ...args).x == f(v, ...args).x 
-      Examples: m.ret(3).bnd(cube).x == cube(3).x  Tested and verified  
-      ret(3).bnd(cube).x == cube(3).x     Tested and verified
+      m.ret(v, ...args).bnd(f, ...args).x === f(v, ...args).x   
+      ret(v, ...args).bnd(f, ...args).x === f(v, ...args).x 
+      Examples: m.ret(3).bnd(cube).x === cube(3).x  Tested and verified  
+      ret(3).bnd(cube).x === cube(3).x     Tested and verified
       Haskell monad law: (return x) >>= f ≡ f x  
   Right Identity
-      m.bnd(m.ret) == m      Tested and verified 
+      m.bnd(m.ret) === m      Tested and verified 
       m.bnd(m.ret) === m   Tested and verified
-      m.bnd(ret) == m  Tested and verified
+      m.bnd(ret) === m  Tested and verified
       Haskell monad law: m >>= return ≡ m 
   Commutivity
-      m.bnd(f1, ...args).bnd(f2, ...args).x == m.bnd(v => f1(v, ...args).bnd(f2, ...args)).x 
-      Example: m.ret(0).bnd(add, 3).bnd(cube).x == 
+      m.bnd(f1, ...args).bnd(f2, ...args).x === m.bnd(v => f1(v, ...args).bnd(f2, ...args)).x 
+      Example: m.ret(0).bnd(add, 3).bnd(cube).x === 
       m.ret(0).bnd(v => add(v,3).bnd(cube)).x  Tested amd verified
       Haskell monad law: (m >>= f) >>= g ≡ m >>= ( \x -> (f x >>= g) ) 
 
   ###Disussion
-  The Haskell statement f ≡ g means that f x == g x for all Haskell values x of the appropriate type. That is the test applied to Javascript expressions in "Monad Laws" section (above). Neither the == nor the === operator would provide useful information about the behavior of instances of Monad, which are objects. Those operators test objects for location in memory. If the left and right sides of predicates create new instances of m, then the left side m and the right side m wind up in different locations in memory. So we expect m.ret(3) == m.ret(3) to return false, and it does. The question we want answered is the question ≡ answers in Haskell: Can the left and right sides be substituted for one another and still yield the same results.
+  The Haskell statement f ≡ g means that f x === g x for all Haskell values x of the appropriate type. That is the test applied to Javascript expressions in "Monad Laws" section (above). Neither the === nor the === operator would provide useful information about the behavior of instances of Monad, which are objects. Those operators test objects for location in memory. If the left and right sides of predicates create new instances of m, then the left side m and the right side m wind up in different locations in memory. So we expect m.ret(3) === m.ret(3) to return false, and it does. The question we want answered is the question ≡ answers in Haskell: Can the left and right sides be substituted for one another and still yield the same results.
 
   The Haskell programming language borrowed the term "monad" from the branch of mathematics known as category theory. This was apropriate because Haskell monads, along with the function return and the operator >>=, behave quite a bit like category theory monads, and the inspiration for them came out of category theory. For Haskell monads to be category theory monads, they would need to reside in a category-theory category. They don't, although the Haskell mystique tends to give newcommers to the language the impression that they do. See Hask is not a category.
 
@@ -144,8 +144,8 @@
       pMnums.ret(ar[0]);
       pMscore.ret(ar[1]);
       pMgoals.ret(ar[2]);
-      ar[3] = (typeof ar[3] == "undefined") ? pMclicked.x : ar[3]
-      ar[4] = (typeof ar[4] == "undefined") ? pMop.x : ar[4]
+      ar[3] = (typeof ar[3] === "undefined") ? pMclicked.x : ar[3]
+      ar[4] = (typeof ar[4] === "undefined") ? pMop.x : ar[4]
       pMclicked.ret(ar[3]);
       pMop.ret(ar[4]); 
       var next = travMonad.s.slice();
@@ -166,7 +166,7 @@
     function test3 (a) {
       var b = [];
       for (let i of [0,1,2,3]) {
-        b[i] = (a[i] == undefined) ? 'none' : 'inline'
+        b[i] = (a[i] === undefined) ? 'none' : 'inline'
       }
       return ret(b);
     }  
@@ -200,7 +200,7 @@
         .select('.num').events('click'); 
 
     var numClickAction$ = numClick$.map(e => {
-      if (mM3.x.length == 2) {return};
+      if (mM3.x.length === 2) {return};
       pMnums    
       .bnd(spliceM, e.target.id, 1)
       .bnd(pMnums.ret)
@@ -210,7 +210,7 @@
       .bnd(push, e.target.innerHTML)
       .bnd(mM3.ret)
       .bnd(v => {
-        if (v.length == 2 && mM8.x != 0) {
+        if (v.length === 2 && mM8.x != 0) {
           updateCalc(v, mM8.x) 
         }
       })
@@ -234,14 +234,14 @@
       var result = calc(ar[0], op, ar[1]);
       mM3.ret([]);
       mM8.ret(0)
-      if (result == 20) { 
+      if (result === 20) { 
         pMscore.bnd(add,1)
         .bnd(testscore)
         .bnd(pMscore.ret)
         .bnd(v => score(v));
         return; 
       } 
-      else if (result == 18) { 
+      else if (result === 18) { 
         pMscore.bnd(add,3)
         .bnd(testscore)
         .bnd(pMscore.ret)
@@ -271,7 +271,7 @@
       if (scor != 25) {
         newRoll(scor, pMgoals.x)
       }
-      else if (pMgoals.x == 2) {
+      else if (pMgoals.x === 2) {
         socket.send(`CE#$42,solo,1v65n$%pqw3*@#9`);
         newRoll(0,0)
       }
@@ -284,7 +284,7 @@
 
   MonadItter instances do not have monadic properties, but they facilitate the work of monads. Here's how they work:
 
-  For any instance of MonadItter, say "it", "it.bnd(func)" causes it.p == func. Calling the method "it.release(...args)" causes p(...args) to run, possibly with arguments supplied by the caller. Here is the definition:
+  For any instance of MonadItter, say "it", "it.bnd(func)" causes it.p === func. Calling the method "it.release(...args)" causes p(...args) to run, possibly with arguments supplied by the caller. Here is the definition:
   ```javascript
   const MonadItter = function ()  {
     this.p = function () {};
@@ -311,7 +311,7 @@
       next[1] = score;
       next[2] = goals;
       next[3].splice( pMindex.x, 0, ar );
-      return next;         // This results in travMonad.s == next.
+      return next;         // This results in travMonad.s === next.
     }
   ```  
   The number display is generated by four virtual button nodes with id = i, st yle: {display: pMstyle.x[i]} and text pMnums.x[i] for i = 0, 1, 2, and 3. The virtual button nodes rest permanently in the virtual DOM. pMnums and pMstyle are updated in the messages$ stream whenever a new dice roll is received from the server. pMnums and pMstyle are also re-set when a user clicks a number, causing it to disappear from the display and when when a user clicks a number or an operator button prompting a call to updateCalc, which either causes a new roll or a computed number to be added to the display. numClickAction$ and opClickAction$ are merged into the stream that feeds the virtual DOM, so updates are seen almost instantaneously.
@@ -321,7 +321,7 @@
     function test3 (a) {
       var b = [];
       for (let i of [0,1,2,3]) {
-        b[i] = (a[i] == undefined) ? 'none' : 'inline'
+        b[i] = (a[i] === undefined) ? 'none' : 'inline'
       }
       return ret(b);
     }  
@@ -344,7 +344,7 @@
         .select('.num').events('click'); 
 
     var numClickAction$ = numClick$.map(e => {
-      if (mM3.x.length == 2) {return};
+      if (mM3.x.length === 2) {return};
       pMnums    
       .bnd(spliceM, e.target.id, 1)
       .bnd(pMnums.ret)
@@ -354,7 +354,7 @@
       .bnd(push, e.target.innerHTML)
       .bnd(mM3.ret)
       .bnd(v => {
-        if (v.length == 2 && mM8.x != 0) {
+        if (v.length === 2 && mM8.x != 0) {
           updateCalc(v, mM8.x) 
         }
       })
@@ -378,7 +378,7 @@
       var result = calc(ar[0], op, ar[1]);
       mM3.ret([]);
       mM8.ret(0)
-      if (result == 20) { 
+      if (result === 20) { 
         pMscore.bnd(add,1)
         .bnd(testscore)
         .bnd(pMscore.ret)Next, I tried to define test2 in the Chrome developer scratch pad, which runs in the Chrome developer tools. Like the console, it is accessable by pressing F12 while in the running application in Chrome. Firefox provides similar tools. The attempt to define test2 resulted in the sequence of reports shown in the screenshot below. I defined test2 in monad.js, which loads as a script in the index.html file. The application loaded successfully, and when I looked in the console, I saw the same series of reports (screenshot below). When I entered test2 in the console, 0 was displayed. That was the value of the MonadE instance "a" when the error occurred. Here is test2 and the screenshot:
@@ -386,7 +386,7 @@
         .bnd(v => score(v));
         return; 
       } 
-      else if (result == 18) { 
+      else if (result === 18) { 
         pMscore.bnd(add,3)
         .bnd(testscore)
         .bnd(pMscore.ret)
@@ -415,7 +415,7 @@
       if (scor != 25) {
         newRoll(scor, pMgoals.x)
       }
-      else if (pMgoals.x == 2) {
+      else if (pMgoals.x === 2) {
         newRoll(0,0)
       }
       else {pMgoals.bnd(add, 1).bnd(pMgoals.ret).bnd(g => newRoll(0, g))};
@@ -481,7 +481,7 @@
         }
         
         if (args.length > 0) {
-          arr = args.filter(v => !(typeof v == 'string' && v.charAt() == 'M' && v.slice(0,4) !== 'Math'))
+          arr = args.filter(v => !(typeof v === 'string' && v.charAt() === 'M' && v.slice(0,4) !== 'Math'))
             
           arr.map(v => {
             test = testP(v, this.id)
@@ -525,7 +525,7 @@
       var s;
       if (Array.isArray(x)) {
         x.some(v => {
-          if (typeof v == 'string' && v.charAt() == 'M') {
+          if (typeof v === 'string' && v.charAt() === 'M') {
              t = v.slice(1);
           }
         })
@@ -621,7 +621,7 @@
       mMgoals2.ret('A player named ' + v[2] + ' is currently logged in. Page will refresh in 4 seconds.')
       refresh() });
     mMZ17.bnd( () => testTask(v[2], v[3], e.data) ); 
-    mMZ18.bnd( () => {if (pMgroup.x != 'solo' || pMname.x == v[2]) {updatePlayers(e.data) } });
+    mMZ18.bnd( () => {if (pMgroup.x != 'solo' || pMname.x === v[2]) {updatePlayers(e.data) } });
     })       
     mMtemp.ret(e.data.split(',')[0])
     .bnd(next, 'CA#$42', mMZ10)
@@ -672,7 +672,7 @@ Another MonadState instance used in this demonstration is primesMonad. Here is i
 
   var primes_state = function primes_state(x) {
     var v = x.slice();
-      while (2 == 2) {
+      while (2 === 2) {
         if (v[3].every(e => ((v[0]/e) != Math.floor(v[0]/e)))) {
           v[3].push(v[0]);
         }
@@ -707,7 +707,7 @@ The final computation in the prime Fibonacci numbers demonstration occurs when "
     var ar = [];
     var fibs = fibsArray.slice(3);
     fibs.map (v => {
-      if (primesArray.every(p => (v % p || v == p))) ar.push(v);
+      if (primesArray.every(p => (v % p || v === p))) ar.push(v);
     })
     return [fibsArray, primes, ar]
   }  
@@ -718,7 +718,7 @@ User input is handled by a chain of computations. first to update fibsMonad, sec
     .select('input#fib92').events('keydown');
 
   const primeFib$ = fibKeyPress5$.map(e => {
-    if( e.keyCode == 13 ) {
+    if( e.keyCode === 13 ) {
       mMres.ret(fibsMonad
       .run([0, 1, e.target.value, []])
       .bnd(fibsState => fibsMonad

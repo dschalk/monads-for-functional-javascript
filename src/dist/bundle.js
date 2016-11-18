@@ -5409,7 +5409,6 @@
 	        namesList.forEach(function (player) {
 	            return sMplayers.s.add(player.trim());
 	        });
-	        console.log('In updatePlayers <><><>OOO<><><> namesL, sMplayers.s, and namesList are ', namesL, sMplayers.s, namesList);
 	    };
 
 	    var updateScoreboard2 = function updateScoreboard2(v) {
@@ -5464,7 +5463,6 @@
 	            pMclicked.bnd(push, e.target.innerHTML).bnd(pMclicked.ret).bnd(function (w) {
 	                travMonad.run([v, pMscore.x, pMgoals.x, w, pMop.x]);
 	                if (w.length === 2 && pMop.x != 0) {
-	                    console.log('In numClickAction# if block >>>>>> @@@@@@@@@@@@@@@@@@@@@@ ');
 	                    updateCalc(w, pMop.x);
 	                }
 	            });
@@ -5485,13 +5483,16 @@
 	    function updateCalc(ar, op) {
 	        mMgoals2.ret('');
 	        var result = calc(ar[0], op, ar[1]);
+	        console.log('RESULT var result in updateCalc *******************************************************', result);
 
-	        if (result === 20) {
+	        if (result === 20 || result === '20') {
+	            console.log('IN result == 20 ?????????????????????????????????????????????????????????');
 	            pMscore.bnd(add, 1).bnd(testscore).bnd(pMscore.ret).bnd(function (v) {
 	                return score(v);
 	            });
 	            return;
-	        } else if (result === 18) {
+	        } else if (result === 18 || result === '18') {
+	            console.log('IN result == 18 ##################i ?????????????????????????????????????????????????????????');
 	            pMscore.bnd(add, 3).bnd(testscore).bnd(pMscore.ret).bnd(function (v) {
 	                return score(v);
 	            });
