@@ -7,23 +7,7 @@ var todoDiv = 'none';
 var gameDiv = 'none';
 var chatDiv = 'none';
 var captionDiv = 'none';
-function tst (x) {return x};
-
-function stripchars(string, chars) {
-  return string.replace(RegExp('['+chars+']','g'), '');
-}
-function testPrefix (x,y) {
-  var t = y;
-  var s;
-  if (Array.isArray(x)) {
-    x.some(v => {
-      if (typeof v == 'string' && v.charAt() == 'M') {
-         t = v.slice(1);
-      }
-    })
-  }
-  return t;
-}
+var CHANGE = 'cow';
 
 var Monad = function Monad(z = 19, g = 'generic') {
   var _this = this;
@@ -213,7 +197,7 @@ function MonadState(g, state, p) {
   this.id = g;
   this.s = state;
   this.process = p;
-  this.a = s[3];
+  this.a = this.s[3];
   this.bnd = (func, ...args) => func(this.s, ...args);  
   this.run = ar => { 
     var ar2 = this.process(ar);
@@ -240,7 +224,6 @@ function trav_state (ar) {
   return next;
 }
 
-console.log('*** travMonad.s ***', travMonad.run([ [0,0,0,0], 0, 0 ]).s);
 
 function tP (x) {
   if (eval('typeof ' + x) === 'undefined') return "code4"
@@ -275,17 +258,13 @@ function testPrefix2 (x,y) {
     else if (code === 'code5') ar.push(v + ' is NaN.');
     else if (code === 'code6') code = 'code6';
   })
-  console.log('In testPrefix2 OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO y, ar ', y, ar);  
   if (code === 'code6') return y;
   else if (ar.length > 0) return ar;
-  else console.log("......I thought this was impossible.............. Tilt!");
 }   
 function evalF(x) {
   var v;
   if (typeof x == "string") {v = eval("typeof x")}  
   else if (isNaN(x)) v = "NaN";
-  else v = typeof x;
-  console.log('In evalF. ', x, ' is ', v );
   return v;
 }
 
@@ -308,7 +287,6 @@ function evalF(x) {
 
   function log2(x, message, str) {
     window[str] = new MonadEr(x, str, []);
-    console.log(message);
     return window[str]
   };
 
@@ -366,7 +344,6 @@ var tr3 = function tr3(fibsArray, primesArray) {
       if (primesArray.every(function (p) { return (v % p || v == p); }))
           ar.push(v);
   });
-  console.log([fibsArray, primes, ar]);
   return [fibsArray.join(', '), primes.join(', '), ar.join(', ')];
 };
 
@@ -442,7 +419,6 @@ function factors_state3(a) {
         v[2] = v[2]/p;
         if (v[2] != 1) {
           func(v);
-          console.log(v[2], v[1].slice());
         }
       };
       v[1].sort(function(a, b) {
@@ -498,11 +474,10 @@ var runFib = function runFib(x) {
   fibsMonad.run([fibsMonad.s[0], fibsMonad.s[1], x, fibsMonad.a]);
   return fibsMonad.a;
 };
+
 var primesMonad = new MonadState('primesMonad', [3, '', 3, [2,3]], primes_state);
 primesMonad.run([3, '', 12, [2, 3]]);
-console.log('UUUUUUUUUU primesMonad initiated - - - primesMonad.a, primesMonad.s ', primesMonad.a, primesMonad.s );
 function pFib(fibs, primes) {
-  console.log('Hello from pFib fibs, primes: ', fibs, primes);
   var ar = [];
   fibs.map(function (f) {
       if (f < 2)
@@ -587,12 +562,13 @@ function primes(n, ar) {
   var mM5 = M(0, 'mM5');
   var mM6 = M('', 'mM6');
   var mM7 = M(0, 'mM7');
-  var mM9 = M(0, 'mM9');
-  var mM11 = M([], 'mM11');
-  var mM12 = M(0, 'mM12');
-  var mM13 = M(0, 'mM13');
-  var mM14 = M(0, 'mM14');
-  var mM15 = M(0, 'mM15');
+  var mM9 = M(3, 'mM9');
+  var mM10 = M(4, 'mM10');
+  var mM11 = M(5, 'mM11');
+  var mM12 = M(7, 'mM12');
+  var mM13 = M(12, 'mM13');
+  var mM14 = M(12, 'mM14');
+  var mM15 = M(12, 'mM15');
   var mM16 = M(0, 'mM16');
   var mM17 = M(0, 'mM17');
   var mM18 = M(0, 'mM18');
@@ -715,7 +691,9 @@ function primes(n, ar) {
   var mMquad6 = new Monad('', 'mMquad6');
   var mMfactors3 = new Monad('', 'mMfactors3');
   var mMfactors4 = new Monad('', 'mMfactors4');
-
+  var mMchange = new Monad(0, 'mMchange')
+  var mMchange2 = new Monad(0, 'mMchange2')
+  var mMchange3 = new Monad(0, 'mMchange3')
 
 
   var mMZ1 = MI();
@@ -780,6 +758,46 @@ var mMchat = new Monad('inline','mMchatDiv');
 var mMcaption = new Monad('inline','mMcaptionDiv');
 var mMtodo = new Monad('inline','mMtodoDiv');
 var mMgame = new Monad('none','mMgameDiv');
+
+function factors (num) {
+  return primesMonad.run([primesMonad.s[0], [], num, primesMonad.a])
+  .bnd(s => prFactTransformer3(s, num))
+}
+
+function lcm (c1,d1) {
+  var ar= [];
+  var c = c1.slice()
+  var d = d1.slice()
+  var r;
+  d1.map(v => {
+    if (c.some(x => x === v)) {
+      ar.push(v)
+      c.splice(c.indexOf(v),1)
+      d.splice(d.indexOf(v),1)}
+      r = ar.concat(d).concat(c).reduce(function (a,b) {return a*b})
+    }
+  )
+  return r
+}
+
+function stripchars(string, chars) {
+  return string.replace(RegExp('['+chars+']','g'), '');
+}
+
+function testPrefix (x,y) {
+  var t = y;
+  var s;
+  if (Array.isArray(x)) {
+    x.some(v => {
+      if (typeof v == 'string' && v.charAt() == 'M') {
+         t = v.slice(1);
+      }
+    })
+  }
+  return t;
+}
+
+  function id (x) {return ret(x)};
 
   function numProtect (x) {return (new Number (x))*1; }; 
 
@@ -854,7 +872,6 @@ var mMgame = new Monad('none','mMgameDiv');
   };
 
   var calc = function calc(a, op, b) {
-      console.log('CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC   in calc  a,op,b', a, op, b );
       var result;
       switch (op) {
           case "add":
@@ -950,7 +967,6 @@ var mMgame = new Monad('none','mMgameDiv');
   };
 
   var spliceM = function spliceM(x, start, how_many) {
-    console.log('In spliceM. x, start, how_many ', x, start, how_many );
       var ar = x.slice();
       ar.splice(start, how_many)
       return ret(ar);
@@ -981,7 +997,6 @@ var mMgame = new Monad('none','mMgameDiv');
       return ret(ar);
   };
   var intersperse = function intersperse(x) {
-      console.log('In intersperse (.)(.)(.)(.)(.)(.)(.)(.)(.) x is ', x);
       var ar = x.reduce(function (a, b) { return (a + ', ' + b); });
       return ret(ar);
   };
@@ -1011,17 +1026,14 @@ var mMgame = new Monad('none','mMgameDiv');
     }
 
 function log3(x, message) {
-    console.log(message.join(', '));
     return ret(x);
 };
 
 function log(x,y) {
-    console.log(y)
     return ret(y);
 };
 
 function logX(x,y) {
-    console.log(x)
     return ret(y);
 };
 
@@ -1030,7 +1042,6 @@ function acc (x, y, str) {
 }
 
 var lg = function lg(x) {
-    console.log(x);
     return ret(x);
 };
 var getIndex = function getIndex(event_object) {
@@ -1042,7 +1053,6 @@ var getIndex = function getIndex(event_object) {
             return k;
         }
     }
-    console.log('In getIndex. No match');
 };
 var getIndex2 = function getIndex2(e) {
     var elem = e.currentTarget.parentNode.children[0].innerHTML;
@@ -1052,7 +1062,6 @@ var getIndex2 = function getIndex2(e) {
         if (elem == elem2[k].childNodes[0].innerHTML) {
             return k;
         }
-        console.log('In getIndex2. No match');
     }
 };
 var tempstyle = { display: 'inline' };

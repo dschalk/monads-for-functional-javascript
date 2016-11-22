@@ -57,6 +57,12 @@ socket.onclose = function (event) {
     console.log('<><><> New message <><><> ', event);
 };
 
+var workerA = new Worker("worker.js");
+
+const workerDriver = function () {
+    return create((add) => workerA.onmessage = msg => add(msg))
+}
+
 function updateTasks (obArray) {
   var todoData = [];
   for (let ob of obArray) {  
@@ -74,7 +80,6 @@ function updateTasks (obArray) {
     h('br'),
     h('hr') ])   
     }
-    console.log('In updateTasks uuuuuuuuuuuuuuuuuu  todoData ', todoData );
 }; 
 
 
@@ -84,9 +89,27 @@ function main(sources) {
   var numsDisplay = [4,4,4,4];
   var newTasks = [];
 
-  const messages$ = (sources.WS).map( e => {
-  mMtem.ret(e.data.split(',')).bnd( v => {
-  console.log('<><><><><><><><><><><><><><><><>  INCOMING  <><><><><><><> >>> In messages. e amd v are ', e, v);
+  const worker$ = sources.WK.map(v => {
+    mMZ21.bnd(() => {
+      mM11.ret(v.data[1]);
+      }); 
+    mMZ22.bnd(() => {
+      mM12.ret(v.data[1])
+    }); 
+    mMZ23.bnd(() => {
+      mM13.ret(v.data[1])
+    }); 
+    mMZ24.bnd(() => {
+      mM14.ret(v.data[1])
+    }); 
+    next(v.data[0], 'CA#$41', mMZ21)
+    next(v.data[0], 'CB#$41', mMZ22)
+    next(v.data[0], 'CC#$41', mMZ23)
+    next(v.data[0], 'CD#$41', mMZ24)
+    });
+   
+  const messages$ = sources.WS.map( e => {
+    mMtem.ret(e.data.split(',')).bnd( v => {
   mMZ10.bnd( () => {
     pMnums.ret([v[3], v[4], v[5], v[6]]).bnd(test3,"MpMstyle");
     travMonad.run([ [v[3], v[4], v[5], v[6]], v[7], v[8], [], 0 ]);
@@ -112,7 +135,7 @@ function main(sources) {
   });
         
   function next(x, y, instance) {
-    if (x === y) {
+    if (x == y) {
         instance.release();
     }
     return ret(x);
@@ -174,7 +197,6 @@ function main(sources) {
       if (e.keyCode === 13) {
           socket.send(`CD#$42,${pMgroup.x},${pMname.x},${e.target.value}`);
           e.target.value = '';
-          console.log('In messagePressAction$ ', socket.readyState);
       }
   });
 
@@ -208,7 +230,6 @@ function main(sources) {
 
 
   var numClickAction$ = numClick$.map(e => {
-    console.log('In numClickAction. @@@@@@@@@@@@@@@@@@@@@@@@ e.target.id, e, and pMnums are ', e.target.id, e, pMnums.x );
     if (pMclicked.x.length === 2) {return};
     pMnums.bnd(spliceM, e.target.id, 1)
     .bnd(v => {
@@ -241,10 +262,8 @@ function main(sources) {
   function updateCalc(ar, op) {
     mMgoals2.ret('');
     var result = calc(ar[0], op, ar[1]);
-    console.log('RESULT var result in updateCalc *******************************************************', result);
 
     if (result === 20 || result === '20') { 
-      console.log('IN result == 20 ?????????????????????????????????????????????????????????');
       pMscore.bnd(add,1)
       .bnd(testscore)
       .bnd(pMscore.ret)
@@ -252,7 +271,6 @@ function main(sources) {
       return; 
     } 
     else if (result === 18 || result === '18') { 
-      console.log('IN result == 18 ##################i ?????????????????????????????????????????????????????????');
       pMscore.bnd(add,3)
       .bnd(testscore)
       .bnd(pMscore.ret)
@@ -278,17 +296,19 @@ function main(sources) {
     }
     else {pMgoals.bnd(add, 1).bnd(pMgoals.ret).bnd(g => newRoll(0, g))};
   };
+
   var fib2 = function fib2(v) {
       if (v[2] > 1) {
           mMfib.ret([v[1], v[0] + v[1], v[2] - 1]);
       }
       else {
-          console.log(v[0]);
           mM19.ret(v[0]);
       }
   };
+
   var fibPress$ = sources.DOM
       .select('input#code').events('keydown');
+
   var fibPressAction$ = fibPress$.map(function (e) {
       if (e.target.value === '') {
           return;
@@ -305,8 +325,6 @@ function main(sources) {
       .select('input#fib92').events('keydown');
 
   var primeFib$ = fibKeyPress5$.map(function (e) {
-    console.log('In primeFib$ VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV primesMonad.s, primesMonad.a ', primesMonad.s, primesMonad.a );
-    console.log('In primeFib$ VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV fibsMonad.s, fibsMonad.a ', fibsMonad.s, fibsMonad.a );
       if (e.keyCode === 13) {
           mMres.ret(fibsMonad
               .run([1, 2 ,e.target.value, [0,1]])
@@ -348,13 +366,13 @@ function main(sources) {
       document.getElementById(a).blur(); 
       document.getElementById(b).focus(); 
     };
+  }
 
     // document.getElementById('login').focus(); 
-  };
   // <>>><>><><><><>>>><><><  traversal  ><><><><><><>>><><><><><><><><><><><>< ENDOM traversal  
   // <>>><>><><><><>>>><><><  traversal  ><><><><><><>>><><><><><><><><><><><>< START Itterator 
   
-
+  
    mMZ1.bnd(v => mMt1
   .bnd(add,v).bnd(w => {
     mMt1.ret(w)
@@ -368,7 +386,6 @@ function main(sources) {
       .select('#testZ').events('click');
 
   var testZAction$ = testZ.map(function () {
-      console.log('WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW in testZaction$')
       mMZ1.release(1);
   });
   
@@ -454,7 +471,6 @@ function main(sources) {
               return;
             }
             var ar2 = ar.slice(2);
-            console.log('*************  newTaskAction$  ************************$$$$$$$$$$$  ar ', ar);
             if (ar2.length === 1) {
                 task = ar[2];
             }
@@ -516,7 +532,6 @@ function main(sources) {
           });
         });
       }
-      else console.log(a, "is not an appropriate size");
       mMar2.ret(ar5);
       process4(ar5);
     };
@@ -592,7 +607,6 @@ function main(sources) {
 
     var process2 = function (str, index) {
         var a = mMcurrentList.x.split(',');
-        console.log('In process2 VVVVVVVVVVVV a is ', a );
         a[6 * index] = str;
         var b = a.reduce(function (a, b) { return a + ',' + b; });
         task2(b);
@@ -701,10 +715,6 @@ function main(sources) {
         .select('#clear').events('click');
 
     var clearAction$ = clearPicked$.map( () => {
-      console.log('In clearAction$ @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ ', pMclicked.x  );
-      // pMclicked.ret([]);
-      travMonad.run([ pMnums.x, pMscore.x, pMgoals.x, [] ])
-      console.log('In clearAction$ @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ ', pMclicked.x  );
     });
 
     var forwardClick$ = sources.DOM
@@ -730,9 +740,7 @@ function main(sources) {
     });
 
     var forwardAction$ = forwardClick$.map(() => {
-      console.log('forward button clicked &&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&' );
       if (pMindex.x < travMonad.s.length - 1) {   
-      console.log('n the if block &&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&' );
         pMop.ret(0);
         var ind = pMindex.x + 1;
         var s = travMonad.s[ind];
@@ -746,8 +754,20 @@ function main(sources) {
       } 
     });
 
-  
-  var calcStream$ = merge( clearAction$, backAction$, forwardAction$, factorsAction$, primeFib$, fibPressAction$, quadAction$, edit1Action$, edit2Action$, testWAction$, testZAction$, testQAction$, colorAction$, deleteAction$, newTaskAction$, chatClickAction$, gameClickAction$, todoClickAction$, captionClickAction$, groupPressAction$, rollClickAction$, messagePressAction$, loginPressAction$, messages$, numClickAction$, opClickAction$);
+var elemA$ = sources.DOM.select('input#message1').events('keyup')
+  .map(e => {
+  mM9.ret(e.target.value);  
+  workerA.postMessage([e.target.value,mM10.x]);
+});
+
+var elemB$ = sources.DOM.select('input#message2').events('keyup')
+  .map(e => {
+  mM10.ret(e.target.value);
+  workerA.postMessage([mM9.x,e.target.value]);
+});
+
+  var calcStream$ = merge( elemA$, elemB$, worker$, clearAction$, backAction$, forwardAction$, factorsAction$, primeFib$, fibPressAction$, quadAction$, edit1Action$, edit2Action$, testWAction$, testZAction$, testQAction$, colorAction$, deleteAction$, newTaskAction$, chatClickAction$, gameClickAction$, todoClickAction$, captionClickAction$, groupPressAction$, rollClickAction$, messagePressAction$, loginPressAction$, messages$, numClickAction$, opClickAction$);
+   
   return {
   DOM: calcStream$.map(function () {
   return h('div.content', [
@@ -797,9 +817,17 @@ function main(sources) {
           h('div', messageMonad.s[3] ) ])  ]),
       h('br'),
       h('br'),
-      h('br'),
-      h('br'),
-      h('div', 'pMclicked.x: ' + pMclicked.x.join(', ') ), 
+
+      h('input#message1'  ),
+      h('input#message2'  ),
+      h('div#result', 'a: ' + mM9.x  ),
+      h('div#result2', 'b: ' + mM10.x ),
+      h('div#result3', 'Math.sqrt(a*a+b*b): ' + mM11.x ),
+      h('div#result4', 'a + b: ' + mM12.x ),
+      h('div#result5', 'a * b: ' + mM13.x ),
+      h('div#result6', 'lcm: ' + mM14.x ),
+
+      h('div', `pMclicked.x: ${pMclicked.x.join(', ')}`    ), 
       h('div', 'pMop.x: ' + pMop.x ), 
       h('div', 'pMindex.x: ' + pMindex.x ), 
       h('div', 'travMonad.s.length: ' + travMonad.s.length  ),
@@ -940,7 +968,22 @@ h('br' ),
 h('span#err', ' Attempts continue to be made to define a Haskell category, usually with special constraints, omitted features, and sometimes with definitions of morphisms that are not Haskell functions. Succeeding in that endeavor would be the first step toward proving that Haskell monads are, in some contrived context, category-theory monads. Devising such a scheme might be an instructive academic excercise, but I don\'t see how it could possibly be of any value beyond that. Imitating definitions and patterns found in category theory, as Haskell does in defining the functor, monoid, and monad type classes, was a stroke of genius that vastly enriched the Haskell programming language and brought it into the mainstream as a viable alternative to java, c++, etc.  This website runs efficiently on a Haskell websockets server. Category theory patterns are less needed, but neverthless useful, in Javascript. Code that adheres to them tends to be robust and versitile.  '  ), 
     
  // **************************************************************************** END MONAD       START ERROR   
-    
+  h('h2', ' Web Worker ' ),
+  h('p', ' After signing in, you will observe a column under the chat box. Numbers entered in the top two input boxes prompt a web worker to compute the square root of the sum of the squares, the sum, the product, and the least common multiple ("lcm"). If the numbers were fraction denominators, the lcm would be least common denominator, the number that would make addition and subtraction convenient. ' ),
+  h( 'p', ' Here is the code that creates the web worker the Motorcycle driver: ' ),  
+    code.wDriver,
+  h('p', ' The driver is an attribute of the sources object. It is named WK. The stream that receives messages from the worker and feeds data into the virtual dom is named worker$. This is worker$\'s definition: ' ),
+    code.worker$,
+  h('span', ' mM11.x, mM12.x, mM13.x, and mM14.x are fixtures of the virtual DOM. The web worker sends messages prefixed by mMA#$41, mMB#$41, mMC#$41, and mMD#$41, next() releases MonadItter instances mMZ21, mMZ22, mMZ23, mMZ24, causing code to execute with updates mM11.x, mM12.x, mM13.x, and mM14.x. More details are available in the MonadItter section of this page and at the ' ),
+  h('a', { props: { href: "https://github.com/dschalk/JS-monads-stable", target: "_blank" } }, 'project repository' ), 
+  h('span', '.' ),  
+  h('p', ' The other items in the list in the right column pertain to the game. pMclicked.x is a list of the numbers which have been clicked. pMop.x is the operator which has been chosen. pMindex.x shows where you are during traversal of the game history. There can\'t be a selected operator and two numbers in pMclicked - at least not for long. The game automatically performs a mathematical calculation whenever two numbers and an operator have been chosen. ' ),
+  h('span', ' The worker.js file can be vied in the ' ),   
+  h('a', { props: { href: "https://github.com/dschalk/JS-monads-stable", target: "_blank" } }, 'project repository' ), 
+  h('span', ', and further down on this page in the MonadItter discussion. ' ),  
+  h('br', ),  
+  h('br', ),  
+      
   h('h2', ' MonadEr - An Error-Catching Monad ' ),
   h('p', ' Instances of MonadEr function much the same as instances of Monad, but when an instance of MonadEr encounters an error, it ceases to perform any further computations. Instead, it passes through every subsequent stage of a sequence of MonadEr expressions, reporting where it is and repeating the error message. It will continue to do this until it is re-instantiated or until its bnd() method runs on the function clean(). ' ),
   h('p', 'Functions used as arguments to the MonadEr bnd() method can be placed in quotation marks to prevent the browser engine from throwing reference errors. Arguments can be protected in the same manner. Using MonadEr can prevent the silent proliferation of NaN results in math computations, and can prevent browser crashes due to attempts to evaluate undefined variables. Sometimes crashes are desired when testing code, but MonadEr provides instant feedback pinpointing the exact location of the error. ' ), 
@@ -1002,7 +1045,11 @@ h('input#quad'),
 h('p', 'Here is the code:'),
 code.quad,
 h('p', ' fmap (above) facilitated using qS4 in a monadic sequence. qS4 returns an array, not an instance of Monad, but fmap lifts qS4 into the monadic sequence. '),
-h('p', ' The function solve() is recursive. It invokes itself after release() executes three times. The expression "solve()" resets solve to the top, where mMZ3.p becomes a function containing two nested occurrances of mMZ3.bnd. After mMZ3.release() executes, mMZ3.p becomes the function that is the argument to the next occurrance of mMZ3.bnd. That function contains yet another occurrance of mMZ3.bnd. MonadItter is syntactic sugar for nested callbacks. ' ),       
+h('p', ' The function solve() is recursive. It invokes itself after release() executes three times. The expression "solve()" resets solve to the top, where mMZ3.p becomes a function containing two nested occurrances of mMZ3.bnd. After mMZ3.release() executes, mMZ3.p becomes the function that is the argument to the next occurrance of mMZ3.bnd. That function contains yet another occurrance of mMZ3.bnd. MonadItter is syntactic sugar for nested callbacks. ' ), 
+h('p', ' The final example before moving on to MonadState shows how the web worker file, worker.js, handles messages it recieves. worker$ and the worker driver are shown again for the reader\'s convenience. ' ),
+    code.wDriver,
+    code.worker$,
+    code.worker_js,
   
 // ************************************************************************** START MonadState
 h('a#state', { props: { href: '#monad' } }, 'Back to Monad discussion'),
@@ -1122,10 +1169,10 @@ h('a', { props: { href: '#top' } }, 'Back To The Top'),
   })     
 }
 }
-
 const sources = {
   DOM: makeDOMDriver('#main-container'),
   WS: websocketsDriver,
+  WK: workerDriver
 }
 
 Cycle.run(main, sources);

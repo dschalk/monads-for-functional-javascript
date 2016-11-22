@@ -117,6 +117,43 @@
 
   Attempts continue to be made to define a Haskell category, usually with special constraints, omitted features, and sometimes with definitions of morphisms that are not Haskell functions. Succeeding in that endeavor would be the first step toward proving that Haskell monads are, in some contrived context, category-theory monads. Devising such a scheme might be an instructive academic excercise, but I don't see how it could possibly be of any value beyond that. Imitating definitions and patterns found in category theory, as Haskell does in defining the functor, monoid, and monad type classes, was a stroke of genius that vastly enriched the Haskell programming language and brought it into the mainstream as a viable alternative to java, c++, etc. This website runs efficiently on a Haskell websockets server. Category theory patterns are less needed, but neverthless useful, in Javascript. Code that adheres to them tends to be robust and versitile.
 
+##Web Worker
+
+After signing in, you will observe a column under the chat box. Numbers entered in the top two input boxes prompt a web worker to compute the square root of the sum of the squares, the sum, the product, and the least common multiple ("lcm"). If the numbers were fraction denominators, the lcm would be least common denominator, the number that would make addition and subtraction convenient.
+
+Here is the code that creates the web worker the Motorcycle driver:
+```js
+  const workerA = new Worker("worker.js");
+
+  const workerDriver = function () {
+    return create((add) => workerA.onmessage = msg => add(msg))
+  }  
+```  
+The driver is an attribute of the sources object. It is named WK. The stream that receives messages from the worker and feeds data into the virtual dom is named worker$. This is worker$'s definition:
+```js
+  const worker$ = sources.WK.map(v => {
+    mMZ21.bnd(() => {
+      mM11.ret(v.data[1]);
+      }); 
+    mMZ22.bnd(() => {
+      mM12.ret(v.data[1])
+    }); 
+    mMZ23.bnd(() => {
+      mM13.ret(v.data[1])
+    }); 
+    mMZ24.bnd(() => {
+      mM14.ret(v.data[1])
+    }); 
+    next(v.data[0], 'CA#$41', mMZ21)
+    next(v.data[0], 'CB#$41', mMZ22)
+    next(v.data[0], 'CC#$41', mMZ23)
+    next(v.data[0], 'CD#$41', mMZ24)
+    });
+```    
+mM11.x, mM12.x, mM13.x, and mM14.x are fixtures of the virtual DOM. The web worker sends messages prefixed by mMA#$41, mMB#$41, mMC#$41, and mMD#$41, next() releases MonadItter instances mMZ21, mMZ22, mMZ23, mMZ24, causing code to execute with updates mM11.x, mM12.x, mM13.x, and mM14.x. More details are available in the MonadItter section of this page and at the project repository.
+The other items in the list in the right column pertain to the game. pMclicked.x is a list of the numbers which have been clicked. pMop.x is the operator which has been chosen. pMindex.x shows where you are during traversal of the game history. There can't be a selected operator and two numbers in pMclicked - at least not for long. The game automatically performs a mathematical calculation whenever two numbers and an operator have been chosen.
+
+The worker.js file can be vied in the project repository, and further down on this page in the MonadItter discussion. 
   ##MonadArchive
 
   ###Traversal of the dice game history.
@@ -237,7 +274,7 @@
       if (result === 20) { 
         pMscore.bnd(add,1)
         .bnd(testscore)
-        .bnd(pMscore.ret)
+   ?     .bnd(pMscore.ret)
         .bnd(v => score(v));
         return; 
       } 
@@ -733,6 +770,118 @@ The online demonstration features a game with a traversible dice-roll history; g
 
 With Motorcycle.js, the application runs smoothly and is easy to understand and maintain. I say "easy to understand", but for people coming from an imperitive programming background, some effort must first be invested into getting used to functions that take functions as arguments, which are at the heart of Motorcycle and JS-monads-stable. After that, seeing how the monads work is a matter of contemplating their definitions and experimenting a little. Most of the monads and the functions they use in this demonstration are readily available in the browser console. If you have the right dev tools in Chrome or Firefox, just load [http://schalk.net:3055](http://schalk.net:3055) and press F12. You might need to enter Ctrl-R to re-load with access to the monad.js script. I do this to troubleshoot and experiment. 
 
-.
-.
+
+##APPENDIX
+
+###worker.js
+
+onmessage = function(v) {
+
+  function MonadState(g, state, p) {
+    this.id = g;
+    this.s = state;
+    this.process = p;
+    this.a = this.s[3];
+    this.bnd = (func, ...args) => func(this.s, ...args);  
+    this.run = ar => { 
+      var ar2 = this.process(ar);
+      this.s = ar2;
+      this.a = ar2[3];
+      self[this.id] = this;
+      return self[this.id];
+    }
+  };
+  
+  function primes_state(x) {
+    var v = x.slice();
+    while (2 == 2) {
+        if ( v[3].every(e =>  (v[0] / e) != Math.floor(v[0] / e)) ) {
+            v[3].push(v[0]);
+        }
+        if (v[3][v[3].length - 1] > v[2]) {
+            break;
+        };
+        v[0] += 2;
+    }
+    return v;
+  };
+  
+  var primesMonad = new MonadState('primesMonad', [3, '', 3, [2,3]], primes_state);
+  primesMonad.run([3, '', 12, [2, 3]]);
+  function pFib(fibs, primes) {
+    var ar = [];
+    fibs.map(function (f) {
+        if (f < 2)
+            return;
+        if (primes.every(function (p) { return (f % p != 0 || f == p); }))
+            ar.push(f);
+    });
+    return ar;
+  };
+  
+  function prFactTransformer3(s, n) {
+    return factors_state3([[], [], n, s[3]]);
+  };
+  
+  function factors_state3(a) {
+    var b = a.slice();
+    var result;
+    func(b);
+    function func (v) {
+      for (let p of v[3]) {
+        if (v[2] / p == Math.floor(v[2] / p)) {
+          v[1].push(p);
+          v[2] = v[2]/p;
+          if (v[2] != 1) {
+            func(v);
+          }
+        };
+        v[1].sort(function(a, b) {
+          return a - b;
+        });
+        result = v[1];
+      }; 
+    }
+    return result;
+  }
+  
+  function checkpM () {
+  
+  };
+  
+  function factors (num) {
+    return primesMonad.run([primesMonad.s[0], [], num, primesMonad.a])
+    .bnd(s => prFactTransformer3(s, num))
+  }
+  
+  function lcm (c1,d1) {
+    var ar= [];
+    var c = c1.slice()
+    var d = d1.slice()
+    var r;
+    d1.map(v => {
+      if (c.some(x => x === v)) {
+        ar.push(v)
+        c.splice(c.indexOf(v),1)
+        d.splice(d.indexOf(v),1)}
+        r = ar.concat(d).concat(c).reduce(function (a,b) {return a*b})
+      }
+    )
+    return r
+  }
+
+  var a = v.data[0];
+  var b = v.data[1];
+  var r = Math.sqrt(a*a + b*b);
+  console.log('In worker.js a,b',a,b )
+  postMessage(["CA#$41", r]); 
+  postMessage(["CB#$41", parseInt(a,10) + parseInt(b,10)]); 
+  postMessage(["CC#$41", a * b]); 
+  postMessage(["CD#$41", lcm(factors(a),factors(b))]);
+};
+// EOF
+
+
+
+
 
