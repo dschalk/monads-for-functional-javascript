@@ -28,6 +28,12 @@ var Monad = function Monad(z = 19, g = 'generic') {
   };
 };
 
+var mMfactors = new Monad('', 'mMfactors');
+
+mMfactors.ret(42);
+
+console.log('mMfactors.x',mMfactors.x);
+
 var pMop = new Monad (0, 'pMop');
  
 function Monad2 (z, ID = 'default') {
@@ -202,7 +208,6 @@ function MonadState(g, state, p) {
   this.run = ar => { 
     var ar2 = this.process(ar);
     this.s = ar2;
-    this.a = ar2[3];
     window[this.id] = this;
     return window[this.id];
   }
@@ -324,6 +329,11 @@ function sliceM(x, howmany) {
     var ar = x.slice(howmany);
     return ret(ar);
 };
+
+var mMroll = new Monad([0,0,0,0], 'rollMonad');
+
+var mMplayer = new Monad([0,0,0,0], 'mMplayer');
+
 var fpTransformer = function transformer(s, m) {
   var bound = Math.ceil(Math.sqrt(s[3][s[3].length - 1]));
   if (bound > m.a[m.a.length - 1]) {
@@ -344,7 +354,7 @@ var tr3 = function tr3(fibsArray, primesArray) {
       if (primesArray.every(function (p) { return (v % p || v == p); }))
           ar.push(v);
   });
-  return [fibsArray.join(', '), primes.join(', '), ar.join(', ')];
+  return ret([fibsArray.join(', '), primes.join(', '), ar.join(', ')]);
 };
 
 var fibs_state = function fibs_state(ar) {
@@ -354,10 +364,6 @@ var fibs_state = function fibs_state(ar) {
   }
   return a;
 };
-
-var mMroll = new Monad([0,0,0,0], 'rollMonad');
-
-var mMplayer = new Monad([0,0,0,0], 'mMplayer');
 
 var fibsMonad = new MonadState('fibsMonad', [0, 1, 2, [0]], fibs_state);
  
@@ -394,7 +400,6 @@ function factor_state2(a) {
   return result;
 }
 
-var mMfactors = new Monad('', 'mMfactors');
 
 var prFactTransformer = function prFactTransformer(s, n) {
   return factorsMonad.run([[], [], n, s[3]]);
@@ -430,13 +435,15 @@ function factors_state3(a) {
   return result;
 }
 
-function checkpM () {
-
-};
-
-checkpM();
+var workerA = new Worker("worker.js");
+var workerB = new Worker("workerB.js");
+var workerC = new Worker("workerC.js");
 
 function primes_state(x) {
+  workerA.postMessage(x)
+}
+
+/*function primes_state(x) {
   var v = x.slice();
   while (2 == 2) {
       if ( v[3].every(e =>  (v[0] / e) != Math.floor(v[0] / e)) ) {
@@ -448,7 +455,7 @@ function primes_state(x) {
       v[0] += 2;
   }
   return v;
-};
+}; */
 
 function message_state(v) {
   var ar = v[0].concat(v[3]);
@@ -475,8 +482,13 @@ var runFib = function runFib(x) {
   return fibsMonad.a;
 };
 
-var primesMonad = new MonadState('primesMonad', [3, '', 3, [2,3]], primes_state);
-primesMonad.run([3, '', 12, [2, 3]]);
+var primesMonad = new MonadState('primesMonad', [3, [], 3, [2,3]], primes_state);
+
+console.log('.');
+console.log('primesMonad.run([3, [], 1000, [2, 3]]).s');
+console.log(primesMonad.run([3, [], 1000, [2, 3]]).s);
+console.log('.');
+
 function pFib(fibs, primes) {
   var ar = [];
   fibs.map(function (f) {

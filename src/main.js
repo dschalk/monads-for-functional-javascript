@@ -57,10 +57,16 @@ socket.onclose = function (event) {
     console.log('<><><> New message <><><> ', event);
 };
 
-var workerA = new Worker("worker.js");
-
 const workerDriver = function () {
     return create((add) => workerA.onmessage = msg => add(msg))
+}
+
+const workerDriverB = function () {
+    return create((add) => workerB.onmessage = msg => add(msg))
+}
+
+const workerDriverC = function () {
+    return create((add) => workerC.onmessage = msg => add(msg))
 }
 
 function updateTasks (obArray) {
@@ -89,7 +95,19 @@ function main(sources) {
   var numsDisplay = [4,4,4,4];
   var newTasks = [];
 
+  const workerB$ = sources.WWB.map(m => {
+    mMres.ret(m.data);
+  });
+
+  const workerC$ = sources.WWC.map(m => {
+    mMfactors.ret(m.data[0]);
+    primesMonad.s = m.data[1];
+    primesMonad.a = m.data[1][3];
+  });
+
   const worker$ = sources.WK.map(v => {
+    v.preventDefault();
+    console.log('In worker$  v is ', v );
     mMZ21.bnd(() => {
       mM11.ret(v.data[1]);
       }); 
@@ -102,10 +120,15 @@ function main(sources) {
     mMZ24.bnd(() => {
       mM14.ret(v.data[1])
     }); 
+    mMZ25.bnd(() => {
+      primesMonad.s = v.data[1];
+      primesMonad.a = v.data[1][3];
+    });
     next(v.data[0], 'CA#$41', mMZ21)
     next(v.data[0], 'CB#$41', mMZ22)
     next(v.data[0], 'CC#$41', mMZ23)
     next(v.data[0], 'CD#$41', mMZ24)
+    next(v.data[0], 'CE#$41', mMZ25)
     });
    
   const messages$ = sources.WS.map( e => {
@@ -321,24 +344,18 @@ function main(sources) {
   });
   // *******************************************n****************************** ENDOM iginal Fibonacci END
   // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> START PRIME FIB  
+  
   var fibKeyPress5$ = sources.DOM
-      .select('input#fib92').events('keydown');
+      .select('input#fib92').events('keyup');
 
-  var primeFib$ = fibKeyPress5$.map(function (e) {
-      if (e.keyCode === 13) {
-          mMres.ret(fibsMonad
-              .run([1, 2 ,e.target.value, [0,1]])
-              .bnd(fibsState => 
-              fibsMonad
-              .bnd(fpTransformer, primesMonad)
-              .bnd(primesState => tr3(fibsState[3], primesState[3]) ) ) );
-      }
+  var primeFib$ = fibKeyPress5$.map(e => {
+    workerB.postMessage(e.target.value);
   });
+
   // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> ENDOM basic prime END
   // <>>><>><><><><>>>><><><   prime factors   ><><><><><><>>><<><><><><><><>< START prime factors  
   var factorsPress$ = sources.DOM
       .select('input#factors_1').events('keydown');
-
 
   var factorsAction$ = factorsPress$.map(function (e) {
     var factors = [];
@@ -349,13 +366,14 @@ function main(sources) {
         mMfactors3.ret('This works only if you enter a number. ' + num + ' is not a number');
       }
       else {
-        factors = primesMonad.run([primesMonad.s[0], [], num, primesMonad.a])
-        .bnd(s => prFactTransformer3(s, num));
-        mMfactors.ret("The prime factors of " + num + " are " + factors.join(', '));
+        var ar = primesMonad.s.slice();
+        ar[2] = num;
+        workerA.postMessage(['CE#$41', ar])
+        workerC.postMessage(num);
       }
     }
   });
-
+  
   // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> ENDOM prime factors END
   // ?<>>><>><><><><>>>><><><  traversal  ><><><><><><>>><><><><><><><><><><><>< START traversal  
   document.onload = function (event) {
@@ -766,7 +784,7 @@ var elemB$ = sources.DOM.select('input#message2').events('keyup')
   workerA.postMessage([mM9.x,e.target.value]);
 });
 
-  var calcStream$ = merge( elemA$, elemB$, worker$, clearAction$, backAction$, forwardAction$, factorsAction$, primeFib$, fibPressAction$, quadAction$, edit1Action$, edit2Action$, testWAction$, testZAction$, testQAction$, colorAction$, deleteAction$, newTaskAction$, chatClickAction$, gameClickAction$, todoClickAction$, captionClickAction$, groupPressAction$, rollClickAction$, messagePressAction$, loginPressAction$, messages$, numClickAction$, opClickAction$);
+  var calcStream$ = merge( elemA$, elemB$, worker$, workerB$, workerC$, clearAction$, backAction$, forwardAction$, factorsAction$, primeFib$, fibPressAction$, quadAction$, edit1Action$, edit2Action$, testWAction$, testZAction$, testQAction$, colorAction$, deleteAction$, newTaskAction$, chatClickAction$, gameClickAction$, todoClickAction$, captionClickAction$, groupPressAction$, rollClickAction$, messagePressAction$, loginPressAction$, messages$, numClickAction$, opClickAction$);
    
   return {
   DOM: calcStream$.map(function () {
@@ -1095,7 +1113,7 @@ h('p', ' The next demonstration uses two instances of MonadState to find the pri
 h('input#factors_1'),
 h('br'),
 h('br'),
-h('div.tao3', mMfactors.x ),    
+h('div.tao3', `${mMfactors.x}` ),    
 h('div.tao3', mMfactors3.x ),    
 h('p', ' The demonstration uses primesMonad and factorsMonad. Here are the definitions of factosMonad and factor_state, the function that is factorsMonad.process: '),
 code.factorsMonad,
@@ -1167,12 +1185,14 @@ h('a', { props: { href: '#top' } }, 'Back To The Top'),
        ])
     ])
   })     
-}
-}
+}}
+       
 const sources = {
   DOM: makeDOMDriver('#main-container'),
   WS: websocketsDriver,
-  WK: workerDriver
+  WK: workerDriver,
+  WWB: workerDriverB,
+  WWC: workerDriverC
 }
 
 Cycle.run(main, sources);
