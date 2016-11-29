@@ -2,8 +2,11 @@
 // import xs from 'xstream';
 // import {run} from '@cycle/xstream-run';
 // import {makeDOMDriver} from '@cycle/dom';
-import Cycle from '@motorcycle/core';
-import {create, merge} from 'most';
+// import Cycle from '@motorcycle/core';
+
+import {run} from '@cycle/most-run'
+import {merge} from 'most';
+import {create} from '@most/create';
 import {h, p, span, h1, h2, h3, pre, br, div, label, input, hr, makeDOMDriver} from '@motorcycle/dom';
 import code from './code.js';
 messageMonad = messageMonad;
@@ -15,9 +18,6 @@ var updateMessages = function updateMessages(e) {
   var str = ar.join(',');
   messageMonad.run([ [h('br'), sender + ': ' + str], [], [], messageMonad.s[3] ]);
 };
-
-console.log('.');
-console.log('.');
 
 var Greeter = (function () {
     function Greeter(message) {
@@ -52,7 +52,7 @@ const websocketsDriver = function () {
 socket.onmessage = function (event) {
     console.log(event);
 };
-
+  
 socket.onclose = function (event) {
     console.log('<><><> New message <><><> ', event);
 };
@@ -107,7 +107,6 @@ function main(sources) {
 
   const worker$ = sources.WK.map(v => {
     v.preventDefault();
-    console.log('In worker$  v is ', v );
     mMZ21.bnd(() => {
       mM11.ret(v.data[1]);
       }); 
@@ -123,6 +122,7 @@ function main(sources) {
     mMZ25.bnd(() => {
       primesMonad.s = v.data[1];
       primesMonad.a = v.data[1][3];
+      console.log('Back in main thread, in worker$. Prime number', primesMonad.a.length,'is', primesMonad.s[0] )
     });
     next(v.data[0], 'CA#$41', mMZ21)
     next(v.data[0], 'CB#$41', mMZ22)
@@ -775,13 +775,13 @@ function main(sources) {
 var elemA$ = sources.DOM.select('input#message1').events('keyup')
   .map(e => {
   mM9.ret(e.target.value);  
-  workerA.postMessage([e.target.value,mM10.x]);
+  workerA.postMessage([e.target.value, mM10.x]);
 });
 
 var elemB$ = sources.DOM.select('input#message2').events('keyup')
   .map(e => {
   mM10.ret(e.target.value);
-  workerA.postMessage([mM9.x,e.target.value]);
+  workerA.postMessage([mM9.x, e.target.value]);
 });
 
   var calcStream$ = merge( elemA$, elemB$, worker$, workerB$, workerC$, clearAction$, backAction$, forwardAction$, factorsAction$, primeFib$, fibPressAction$, quadAction$, edit1Action$, edit2Action$, testWAction$, testZAction$, testQAction$, colorAction$, deleteAction$, newTaskAction$, chatClickAction$, gameClickAction$, todoClickAction$, captionClickAction$, groupPressAction$, rollClickAction$, messagePressAction$, loginPressAction$, messages$, numClickAction$, opClickAction$);
@@ -837,6 +837,7 @@ var elemB$ = sources.DOM.select('input#message2').events('keyup')
       h('br'),
 
       h('input#message1'  ),
+      h('br'),
       h('input#message2'  ),
       h('div#result', 'a: ' + mM9.x  ),
       h('div#result2', 'b: ' + mM10.x ),
@@ -930,18 +931,19 @@ h('h1', 'The Monads'),
 h('h3', ' Monad '),
 code.monad,
 h('br' ),
-h('span.tao#monad', ' Monad instances facilitate programming in a functional style. They facilitate the linking of computation sequences, memoization (see ' ),
+h('span.tao#monad', ' Instances of Monad, MonadState, MonadItter, and MonadEr facilitate programming in a functional style. Additional constructors can be invented as special needs arise. In this presentation we see, among other things, Monad instances linking computations and assigning results to Monad instances, ' ),
 h('a', { props: { href: '#state' } }, 'MonadState'),
-h('span', '), error management (see ' ), 
-h('a', { props: { href: '#err' } }, 'MonadEr'),
-h('span', '), and preserving intermediate results in linked sequences of operations ( ' ),
-h('a', { props: { href: '#demo' } }, 'M prefix demo).' ),    
-h('p', ' In most sequences of operationns, the arguments provided to each link\'s bnd() method are functions that return an instance of Monad. Here are some examples of functions that return instances of Monad: '),
+h('span', ' instances memoizing computation results, '),
+h('a', { props: { href: '#itterLink' } }, 'MonadItter'),
+h('span', ' instances organizing nested callbacks into neat, easily maintainable blocks of code, and '),
+h('a', { props: { href: '#err' } }, 'MonadEr' ),
+h('span', ' catching NaN and preventing crashes when undefined variables are encountered. ' ),
+h('p', ' Computations are easy to link if each result is returned in an instance of Monad. Here are a few examples of functions that return instances of Monad: '),
 code.e1,
-h('p', ' I experimented with several definitions of Monad during the course of this project. The reader is encouraged to experiment with variations on the theme. If you come up with something that is useful to you, please let me know. The current version is the most useful for me, so far. its bnd() method can assign the return value of bnd()\'s argument to any valid Javascript variable name. In the following example, m1, m2, and m3 have already been declared. Here is a comparrison of the results obtained when the "M" prefix is used and when it is omitted: ' ), 
+h('p', ' The "M" prefix provides constrol over the destination of computation results. In the following example, m1, m2, and m3 have already been declared. Here is a comparrison of the results obtained when the "M" prefix is used and when it is omitted: ' ), 
 
 h('pre.red9', `    m1.ret(7).bnd(m2.ret).bnd(m3.ret)  // All three monads get the value 7.
-    m1.ret(0).bnd(add,3,'m2').bnd(cube,'m3')  // equivalent to m1.ret(0).bnd(add,3).bnd(cube)` ),
+    m1.ret(0).bnd(add,3,'m2').bnd(cube,'m3')  // \'m1\', \'m2\', and \'m3\' are ignored` ),
 h('pre', `    Result: m1.x === 27
             m2.x === 7
             m3.x === 7  ` ),
@@ -976,117 +978,51 @@ h('a', { props: { href: '#top' } }, 'Back To The Top'),
 h('h3', ' Disussion ' ),
 h('span.tao', ' The Haskell statement ' ),    
 h('span.turk6', `f \u2261 g` ),
-h('span', ' means that f x === g x for all Haskell values x of the appropriate type. That is the test applied to Javascript expressions in "Monad Laws" section (above). Neither the === nor the === operator would provide useful information about the behavior of instances of Monad, which are objects. Those operators test objects for location in memory. If the left and right sides of predicates create new instances of m, then the left side m and the right side m wind up in different locations in memory. So we expect m.ret(3) === m.ret(3) to return false, and it does. The question we want answered is the question \u2261 answers in Haskell: Can the left and right sides be substituted for one another and still yield the same results.'),
+h('span', ' means that f x == g x for all Haskell values x of the appropriate type. That is the test applied to Javascript expressions in "Monad Laws" section (above). Neither the === nor the === operator would provide useful information about the behavior of instances of Monad, which are objects. Those operators test objects for location in memory. If the left and right sides of predicates create new instances of m, then the left side m and the right side m wind up in different locations in memory. So we expect m.ret(3) === m.ret(3) to return false, and it does. The question we want answered is the question \u2261 answers in Haskell: Can the left and right sides be substituted for one another and still yield the same results.'),
 h('br' ),
 h('br' ),
 h('span.tao', ' The Haskell programming language borrowed the term "monad" from the branch of mathematics known as category theory. This was apropriate because Haskell monads, along with the function return and the operator >>=, behave quite a bit like category theory monads, and the inspiration for them came out of category theory. For Haskell monads to be category theory monads, they would need to reside in a category-theory category. They don\'t, although the Haskell mystique tends to give newcommers to the language the impression that they do. See ' ),
 h('a', { props: { href: "http://math.andrej.com/2016/08/06/hask-is-not-a-category/", target: "_blank" } }, 'Hask is not a category.'),
 h('br' ),
-h('br' ),
-h('span#err', ' Attempts continue to be made to define a Haskell category, usually with special constraints, omitted features, and sometimes with definitions of morphisms that are not Haskell functions. Succeeding in that endeavor would be the first step toward proving that Haskell monads are, in some contrived context, category-theory monads. Devising such a scheme might be an instructive academic excercise, but I don\'t see how it could possibly be of any value beyond that. Imitating definitions and patterns found in category theory, as Haskell does in defining the functor, monoid, and monad type classes, was a stroke of genius that vastly enriched the Haskell programming language and brought it into the mainstream as a viable alternative to java, c++, etc.  This website runs efficiently on a Haskell websockets server. Category theory patterns are less needed, but neverthless useful, in Javascript. Code that adheres to them tends to be robust and versitile.  '  ), 
+h('p', ' Attempts continue to be made to define a Haskell category, usually with special constraints, omitted features, and sometimes with definitions of morphisms that are not Haskell functions. Succeeding in that endeavor would be the first step toward proving that Haskell monads are, in some contrived context, category-theory monads. Devising such a scheme might be an instructive academic excercise, but I don\'t see how it could possibly be of any value beyond that. Imitating definitions and patterns found in category theory, as Haskell does in defining the functor, monoid, and monad type classes, was a stroke of genius that vastly enriched the Haskell programming language and brought it into the mainstream as a viable alternative to java, c++, etc.  This website runs efficiently on a Haskell websockets server. Category theory patterns are less needed, but neverthless useful, in Javascript. Code that adheres to them tends to be robust and versitile.  '  ), 
     
  // **************************************************************************** END MONAD       START ERROR   
-  h('h2', ' Web Worker ' ),
+  h('h3', ' Web Worker ' ),
   h('p', ' After signing in, you will observe a column under the chat box. Numbers entered in the top two input boxes prompt a web worker to compute the square root of the sum of the squares, the sum, the product, and the least common multiple ("lcm"). If the numbers were fraction denominators, the lcm would be least common denominator, the number that would make addition and subtraction convenient. ' ),
   h( 'p', ' Here is the code that creates the web worker the Motorcycle driver: ' ),  
     code.wDriver,
   h('p', ' The driver is an attribute of the sources object. It is named WK. The stream that receives messages from the worker and feeds data into the virtual dom is named worker$. This is worker$\'s definition: ' ),
     code.worker$,
   h('span', ' mM11.x, mM12.x, mM13.x, and mM14.x are fixtures of the virtual DOM. The web worker sends messages prefixed by mMA#$41, mMB#$41, mMC#$41, and mMD#$41, next() releases MonadItter instances mMZ21, mMZ22, mMZ23, mMZ24, causing code to execute with updates mM11.x, mM12.x, mM13.x, and mM14.x. More details are available in the MonadItter section of this page and at the ' ),
-  h('a', { props: { href: "https://github.com/dschalk/JS-monads-stable", target: "_blank" } }, 'project repository' ), 
-  h('span', '.' ),  
-  h('p', ' The other items in the list in the right column pertain to the game. pMclicked.x is a list of the numbers which have been clicked. pMop.x is the operator which has been chosen. pMindex.x shows where you are during traversal of the game history. There can\'t be a selected operator and two numbers in pMclicked - at least not for long. The game automatically performs a mathematical calculation whenever two numbers and an operator have been chosen. ' ),
-  h('span', ' The worker.js file can be vied in the ' ),   
-  h('a', { props: { href: "https://github.com/dschalk/JS-monads-stable", target: "_blank" } }, 'project repository' ), 
-  h('span', ', and further down on this page in the MonadItter discussion. ' ),  
-  h('br', ),  
-  h('br', ),  
-      
-  h('h2', ' MonadEr - An Error-Catching Monad ' ),
-  h('p', ' Instances of MonadEr function much the same as instances of Monad, but when an instance of MonadEr encounters an error, it ceases to perform any further computations. Instead, it passes through every subsequent stage of a sequence of MonadEr expressions, reporting where it is and repeating the error message. It will continue to do this until it is re-instantiated or until its bnd() method runs on the function clean(). ' ),
-  h('p', 'Functions used as arguments to the MonadEr bnd() method can be placed in quotation marks to prevent the browser engine from throwing reference errors. Arguments can be protected in the same manner. Using MonadEr can prevent the silent proliferation of NaN results in math computations, and can prevent browser crashes due to attempts to evaluate undefined variables. Sometimes crashes are desired when testing code, but MonadEr provides instant feedback pinpointing the exact location of the error. ' ), 
-  h('p', ' The following demonstration shows the Chrome console log entries that result from running ' ),
-  h('pre', `    t.bnd('add3", 3, 'Mt2').bnd(cube3, 'Mt3'
-    t.bnd('add3",'three', 'Mt2').bnd(cube3, 'Mt3'    
-    t.bnd('add3",'Math.sqrt(-1)', 'Mt2').bnd(cube3, 'Mt3' 
-    t.bnd('addd3", 3, 'Mt2').bnd(cube3, 'Mt3' ` ),
-  h('br'),
-  h('img.image', {props: {src: "error2.png"}}  ),   
-  h('br'),
-  h('p.tao1b', ' The monad laws hold for MonadVEr instances. The following relationships were verified in the Chrome console: ' ),  
-  h('pre', `    ret3(0,'t',[])  // t is now an instance of MonadEr with t.x = 0 and t.e = [].
-
-    t.ret(3).bnd(cube3).x === cube(3).x  
-    ret3(3).bnd(cube3).x === cube3(3).x    
-
-    t.bnd(t.ret) === t   
-    t.bnd(ret) === t  
-   
-    t.ret(0).bnd(add3, 3).bnd(cube3).x === 
-    t.ret(0).bnd(v => add3(v,3).bnd(cube3)).x  ` ),
-  h('br'),
-  h('div.tao1b', ' Here are the definitions of MonadEr, MonadE\'s helper functions, and the functions which serve as parameters to the bnd() method in the demonstration: ' ),
-    code.monadEr,
-  h('p', ' and here is the code that produced the Chrome console log entries: ' ),
-    code.errorDemo,  
-  h('span.tao', ' When  a MonadEr instance encounters a function or an argument in quotation marks of types "undefined" or "NaN", a string gets pushed into the instance\'s e attribue. After that, the  bnd() method will not process any function other than clean(). It will stop at the' ),
-  h('span.turk', 'if (e.length > 0)' ), 
-  h('span', 'block. clean() resets an instance to normal functioning mode by setting its e attribute back to []. ' ), 
-  h('br'),  
-  h('a', { props: { href: '#top' } }, 'Back To The Top'),
-h('h2', 'MonadItter'),
-code.monadIt,
-h('p', ' MonadItter instances don\'t link to one another. They exist to facilitate the work of instances of Monad, MonadState, etc. Here\'s how they work: '),
-h('p', 'For any instance of MonadItter, say "it", "it.bnd(func)" causes it.p === func. Calling the method "it.release(...args)" causes p(...args) to run, possibly with arguments supplied by the caller. '),
-h('p', ' As shown later on this page, MonadItter instances control the routing of incoming websockets messages. In one of the demonstrations below, they behave much like ES2015 iterators. I prefer them over ES2015 iterators, at least for what I am demonstrating.'),
-h('h3#itterLink', ' A Basic Itterator '),
-h('p', 'The following example illustrates the use of release() with an argument. It also shows a lambda expressions being provided as an argument for the method mMZ1.bnd() (thereby becoming the value of mMZ1.p), and then mMZ1.release providing an arguments for the function mMZ1.p. The code is shown beneith the following two buttons. '),
-h('button#testZ', 'mMZ1.release(1)'),
-h('p.code2', mMt3.x  ) ,
-h('span', 'Refresh button: '),
-h('button#testQ', 'mMt1.ret(0).bnd(v => mMZ2.release(v)) '),
-h('br'),
-code.testZ,
-h('span.tao', ' The expression mMt3.x sits permanently in the Motorcycle virtual DOM description. You can call '),
-h('span.green', 'mMZ2.release(v)'),
-h('span', ' by entering a value for v below: '),
-h('br'),
-h('span', 'Please enter an integer here: '),
-h('input#testW'),
-h('p', ' cube() is defined in the Monad section (above). If you click "mMZ1.release(1)" several times, the code (above) will run several times, each time with v === 1. The result, mMt3.x, is shown below the button. mMZ1.p (bnd()\'s argument) remains constant while mMZ1.release(1) is repeatedly called, incrementing the number being cubed each time. '),
-                  h('p', ' Here is another example. It demonstrates lambda expressions passing values to a remote location for use in a computation. If you enter three numbers consecutively below, call them a, b, and c, then the quadratic equation will be used to find solutions for a*x**2 + b*x + c = 0. The a, b, and c you select might not have a solution. If a and b are positive numbers, you are likely to see solutions if c is a negative number. For example, 12, 12, and -24 yields the solutions 1 and -2. '),
-h('p#quad4.red2', mMquad4.x  ),
-h('p#quad5.red2', mMquad5.x  ),
-h('p#quad6.red2', mMquad6.x  ),
-h('p', 'Run mMZ3.release(v) three times for three numbers. The numbers are a, b, and c in ax*x + b*x + c = 0: '),
-h('input#quad'),
-h('p', 'Here is the code:'),
-code.quad,
-h('p', ' fmap (above) facilitated using qS4 in a monadic sequence. qS4 returns an array, not an instance of Monad, but fmap lifts qS4 into the monadic sequence. '),
-h('p', ' The function solve() is recursive. It invokes itself after release() executes three times. The expression "solve()" resets solve to the top, where mMZ3.p becomes a function containing two nested occurrances of mMZ3.bnd. After mMZ3.release() executes, mMZ3.p becomes the function that is the argument to the next occurrance of mMZ3.bnd. That function contains yet another occurrance of mMZ3.bnd. MonadItter is syntactic sugar for nested callbacks. ' ), 
-h('p', ' The final example before moving on to MonadState shows how the web worker file, worker.js, handles messages it recieves. worker$ and the worker driver are shown again for the reader\'s convenience. ' ),
-    code.wDriver,
-    code.worker$,
+  h('p', ' User input invokes workerA.postMessage([mM9.x, e.target.value]) or workerA.postMessage([e.target.value, mM10.x]). This starts the execution of code in a file named worker.js, which is defined as follows: ' ),
     code.worker_js,
+  h('p', ' In the main thread, primes_state (the function called by primesMonad.run()) is defined as: ' ),   
+  h('pre', `    function primes_state(x) {
+      workerA.postMessage(x)
+    } ` ),
+  h('p', ' worker.js imports its definition of primes_state from script2.js. That definition is: ' ),
+      code.primes_state,
+  h('p', ' Most of the work is delegated to the worker thread. The following screen shot demonstrates primesMonad\'s momoization featire: ' ),  
+  h('img.image', {props: {src: "primesMonad.png"}}  ),   
+  h('p', ' In the Chrome browser, The time elapsed between entering primes_state and leaving primes_state is over nine seconds the first time primesMonad.run is called. The second time, it is one millisecond. In the Firefox browser, no memoization takes effect and the elapsed time is around 19 seconds in both cases. ' ),
+  h('p', ' The other items in the list in the right column pertain to the game. pMclicked.x is a list of the numbers which have been clicked. pMop.x is the operator which has been chosen. pMindex.x shows where you are during traversal of the game history. There can\'t be a selected operator and two numbers in pMclicked - at least not for long. The game automatically performs a mathematical calculation whenever two numbers and an operator have been chosen. Here is the definition of worker.js: ' ),
+  h('br' ),  
   
-// ************************************************************************** START MonadState
-h('a#state', { props: { href: '#monad' } }, 'Back to Monad discussion'),
+// ********************************************************************** Begin MonadState
+
 h('p#monadstate'),
+h('a#state', { props: { href: '#monad' } }, 'Back to Monad discussion'),
 h('h2', 'MonadState and MonadState Transformers'),
 h('p', ' An instance of MonadState holds the current state and value of a computation. For any instance of MonadState, say m, these can be accessed through m.s and m.a, respectively.  '),
 code.MonadState,
-h('p', ' MonadState reproduces some of the functionality found in the Haskell Module "Control.Monad.State.Lazy", inspired by the paper "Functional Programming with Overloading and Higher-der Polymorphism", Mark P Jones (http://web.cecs.pdx.edu/~mpj/) Advanced School of Functional Programming, 1995. The following demonstrations use the MonadState instances fibsMonad and primesMonad to create and store arrays of Fibonacci numbers and arrays of prime numbers, respectively. fibsMonad and primesMonad provide a simple way to compute lists of prime Fibonacci numbers.  Because the results of computations are stored in the a and s attributes of MonadState instances, it was easy to make sure that no prime number had to be computed more than once in the prime Fibonacci demonstration. '),
+h('p', ' MonadState reproduces some of the functionality found in the Haskell Module "Control.Monad.State.Lazy", inspired by the paper "Functional Programming with Overloading and Higher-der Polymorphism", Mark P Jones (http://web.cecs.pdx.edu/~mpj/) Advanced School of Functional Programming, 1995. The following demonstrations use the MonadState instances fibsMonad and primesMonad to create and store arrays of Fibonacci numbers and arrays of prime numbers, respectively. fibsMonad and primesMonad combine, with the help of prFactTransformer3, to produce arrays of prime Fibonacci numbers. Until a browser tab is closed, the largest arrays of prime numbers that have been computed are stored in primesMonad.a and primesMonad.s[3]. When smaller arrays of prime numbers are required, thay are obtained from the large arrays and are not re-computed. '),
 h('p', ' Here is the definition of fibsMonad, along with the definition of the function that becomes fibsMonad.process. '),
-code.fibsMonad,
-h('p', ' Another MonadState instance used in this demonstration is primesMonad. Here is its definition along with the function that becomes primesMonad.process:  '),
-code.primesMonad,
-h('h3', ' MonadState transformers '),
 h('p', ' Transformers take instances of MonadState and return different instances of MonadState, possibly in a modified state. The method call "fibsMonad.bnd(fpTransformer, primesMonad)" returns primesMonad. Here is the definition of fpTransformer: '),
 code.fpTransformer,
 h('p', ' If the largest number in primesMonad.a is less than the square root of the largest number in fibsMonad.a, primesMonad is updated so that the largest number in primesMonad.a is greater than the square root of the largest number in fibsMonad.a. herwise, primesMonad is returned unchanged.  '),
 h('p', ' The final computation in the prime Fibonacci numbers demonstration occurs when "tr3(fibsState[3],primesState[3]" is called. tr3() takes an array of Fibonacci numbers and an array of prime numbers and returns an array containing an array of Fibonacci numbers, an array of prime numbers, and an array of prime Fibonacci numbers. Here is the definition of tr3: '),
 code.tr3,
-h('p', ' User input is handled by a chain of computations. first to update fibsMonad, second to extract fibsMonad.s, third to run fpTransformer to modify and then return primesMonad, and fourth to extract primesMonad.s and run tr3(fibsState[3],primesState[3]). Monad instance mMres obtains the result. mMres.x[0], mMres.x[1], and mMres.x[2], are permanent features of the virtual DOM.  Here is the code: '),
+h('p', ' User input is handled by a chain of computations in a web worker named workerB. first to update fibsMonad, second to extract fibsMonad.s, third to run fpTransformer to modify and then return primesMonad, and fourth to extract primesMonad.s and run tr3(fibsState[3],primesState[3]). Monad instance mMres obtains the result. mMres.x[0], mMres.x[1], and mMres.x[2], are permanent features of the virtual DOM.  Here is the code: '),
 code.primeFibInterface,
 h('p', 'Only 48 Fibonacci numbers need to be generated in order to get the eleventh prime Fibonacci number. But 5546 prime numbers need to be generated to test for divisibility into 2971215073. Finding the next Fibonacci number is just a matter of adding the previous two. Getting the next prime number is a more elaborate and time-consuming procedure. In this context, the time needed to compute 48 Fibonacci numbers is insignificant, so I didn\'t bother to save previously computed Fibonacci numbers in the prime Fibonacci demonstration. When a user enters a number smaller than the current length of fibsMonad.a, fibsMonad is modified such that its length becomes exactly what the user entered.'),
 h('p', ' Entering 50 in my desktop Ubuntu Chrome and Firefox browsers got the first eleven prime Fibonacci numbers in about one second. I tried gradually incrementing upwards from 50, but when I got to 61 I stopped due to impatience with the lag time. The 61st Fibonacci number was computed to be 1,548,008,755,920. 76,940 prime numbers were needed to check the 60th Fibonacci number. 96,043 prime numbers were needed to check the 61st Fibonacci number.  At Fibonacci number 61, no new prime Fibonacci numbers had appeared.'),
@@ -1121,6 +1057,73 @@ h('p#async', ' And this is how user input is handled: '),
 code.factorsInput,
 h('p', ' The expressions get(mMfactors) and get(mMfactors) are permanent fixtures of the virtual DOM. The click handler is a stream which receives input from the virtual DOM and is merged into the stream that feeds data to the virtual DOM. Since changes to mMfactors and mMfactors3 are in the cycle initiated by user input and culminating in a modification of the virtual DOM, there is no need to explicitly create observers. Reactivity stems from being in the cycle. ' ),   
 h('a', { props: { href: '#top' } }, 'Back To The Top'),
+
+// ********************************************************************** End MonadState
+
+  h('br', ),  
+  h('a#itterLink', { props: { href: '#monad' } }, 'Back to Monad discussion'), 
+  h('h2', ' MonadEr - An Error-Catching Monad ' ),
+  h('p', ' Instances of MonadEr function much the same as instances of Monad, but when an instance of MonadEr encounters an error, it ceases to perform any further computations. Instead, it passes through every subsequent stage of a sequence of MonadEr expressions, reporting where it is and repeating the error message. It will continue to do this until it is re-instantiated or until its bnd() method runs on the function clean(). ' ),
+  h('p', 'Functions used as arguments to the MonadEr bnd() method can be placed in quotation marks to prevent the browser engine from throwing reference errors. Arguments can be protected in the same manner. Using MonadEr can prevent the silent proliferation of NaN results in math computations, and can prevent browser crashes due to attempts to evaluate undefined variables. Sometimes crashes are desired when testing code, but MonadEr provides instant feedback pinpointing the exact location of the error. ' ), 
+  h('p', ' The following demonstration shows the Chrome console log entries that result from running ' ),
+  h('pre', `    t.bnd('add3", 3, 'Mt2').bnd(cube3, 'Mt3'
+    t.bnd('add3",'three', 'Mt2').bnd(cube3, 'Mt3'    
+    t.bnd('add3",'Math.sqrt(-1)', 'Mt2').bnd(cube3, 'Mt3' 
+    t.bnd('addd3", 3, 'Mt2').bnd(cube3, 'Mt3' ` ),
+  h('br'),
+  h('img.image', {props: {src: "error2.png"}}  ),   
+  h('br'),
+  h('p.tao1b', ' The monad laws hold for MonadVEr instances. The following relationships were verified in the Chrome console: ' ),  
+  h('pre', `    ret3(0,'t',[])  // t is now an instance of MonadEr with t.x = 0 and t.e = [].
+
+    t.ret(3).bnd(cube3).x === cube(3).x  
+    ret3(3).bnd(cube3).x === cube3(3).x    
+
+    t.bnd(t.ret) === t   
+    t.bnd(ret) === t  
+   
+    t.ret(0).bnd(add3, 3).bnd(cube3).x === 
+    t.ret(0).bnd(v => add3(v,3).bnd(cube3)).x  ` ),
+  h('br'),
+  h('a#itterLink', { props: { href: '#monad' } }, 'Back to Monad discussion'), 
+  h('br'),  
+  h('a', { props: { href: '#top' } }, 'Back To The Top'),
+h('h2', 'MonadItter'),
+code.monadIt,
+h('p', ' MonadItter instances don\'t link to one another. They exist to facilitate the work of instances of Monad, MonadState, etc. Here\'s how they work: '),
+h('p', 'For any instance of MonadItter, say "it", "it.bnd(func)" causes it.p === func. Calling the method "it.release(...args)" causes p(...args) to run, possibly with arguments supplied by the caller. '),
+h('p',' As shown later on this page, MonadItter instances control the routing of incoming websockets messages. In one of the demonstrations below, they behave much like ES2015 iterators. I prefer them over ES2015 iterators, at least for what I am demonstrating.'),
+h('h3', ' A Basic Itterator '),
+h('p', 'The following example illustrates the use of release() with an argument. It also shows a lambda expressions being provided as an argument for the method mMZ1.bnd() (thereby becoming the value of mMZ1.p), and then mMZ1.release providing an arguments for the function mMZ1.p. The code is shown beneith the following two buttons. '),
+h('button#testZ', 'mMZ1.release(1)'),
+h('p.code2', mMt3.x  ) ,
+h('span', 'Refresh button: '),
+h('button#testQ', 'mMt1.ret(0).bnd(v => mMZ2.release(v)) '),
+h('br'),
+code.testZ,
+h('span.tao', ' The expression mMt3.x sits permanently in the Motorcycle virtual DOM description. You can call '),
+h('span.green', 'mMZ2.release(v)'),
+h('span', ' by entering a value for v below: '),
+h('br'),
+h('span', 'Please enter an integer here: '),
+h('input#testW'),
+h('p', ' cube() is defined in the Monad section (above). If you click "mMZ1.release(1)" several times, the code (above) will run several times, each time with v === 1. The result, mMt3.x, is shown below the button. mMZ1.p (bnd()\'s argument) remains constant while mMZ1.release(1) is repeatedly called, incrementing the number being cubed each time. '),
+                  h('p', ' Here is another example. It demonstrates lambda expressions passing values to a remote location for use in a computation. If you enter three numbers consecutively below, call them a, b, and c, then the quadratic equation will be used to find solutions for a*x**2 + b*x + c = 0. The a, b, and c you select might not have a solution. If a and b are positive numbers, you are likely to see solutions if c is a negative number. For example, 12, 12, and -24 yields the solutions 1 and -2. '),
+h('p#quad4.red2', mMquad4.x  ),
+h('p#quad5.red2', mMquad5.x  ),
+h('p#quad6.red2', mMquad6.x  ),
+h('p', 'Run mMZ3.release(v) three times for three numbers. The numbers are a, b, and c in ax*x + b*x + c = 0: '),
+h('input#quad'),
+h('p', 'Here is the code:'),
+code.quad,
+h('p', ' fmap (above) facilitated using qS4 in a monadic sequence. qS4 returns an array, not an instance of Monad, but fmap lifts qS4 into the monadic sequence. '),
+h('p', ' The function solve() is recursive. It invokes itself after release() executes three times. The expression "solve()" resets solve to the top, where mMZ3.p becomes a function containing two nested occurrances of mMZ3.bnd. After mMZ3.release() executes, mMZ3.p becomes the function that is the argument to the next occurrance of mMZ3.bnd. That function contains yet another occurrance of mMZ3.bnd. MonadItter is syntactic sugar for nested callbacks. ' ), 
+h('p', ' The final example before moving on to MonadState shows how the web worker file, worker.js, handles messages it recieves. worker$ and the worker driver are shown again for the reader\'s convenience. ' ),
+    code.wDriver,
+    code.worker$,
+    code.worker_js,
+  
+// ************************************************************************** START MonadState
 
 
 // ***********************************************************************************************  MonadArchive
@@ -1166,8 +1169,26 @@ h('a', { props: { href: '#top' } }, 'Back To The Top'),
   h('br'),
   h('br'),
   h('a', { props: { href: '#top' } }, 'Back To The Top'),
+
+
+  h('h2', 'Appendix A - MonadState and Transformers' ),
+  h('h3', 'Prime Numbers and the Fibonacci Series Examples' ),
+code.fibsMonad,
+  h('p', '.'),
+code.primesMonad,
   h('br'),
-  h('br'),
+  h('h2', 'Appendix B - MonadEr ' ),
+  h('h3', 'The functions that produce the examples' ),  
+    
+
+  h('p', ' Here are the definitions of MonadEr, its helper functions, and the function that serve as parameters to the bnd() method in the demonstration. ' ),
+    code.monadEr,
+  h('p', ' and here is the code that produced the Chrome console log entries: ' ),
+    code.errorDemo,  
+  h('span.tao', ' When  a MonadEr instance encounters a function or an argument in quotation marks of types "undefined" or "NaN", a string gets pushed into the instance\'s e attribue. After that, the  bnd() method will not process any function other than clean(). It will stop at the' ),
+  h('span.turk', 'if (e.length > 0)' ), 
+  h('span', 'block. clean() resets an instance to normal functioning mode by setting its e attribute back to []. ' ), 
+
   h('br'),
   h('p'),
   h('p'),
@@ -1195,4 +1216,4 @@ const sources = {
   WWC: workerDriverC
 }
 
-Cycle.run(main, sources);
+run(main, sources);

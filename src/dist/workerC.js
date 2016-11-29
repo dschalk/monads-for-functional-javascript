@@ -2,8 +2,6 @@
 onmessage = function(m) {
   
   console.log('In workerC.js m.data is ', m.data );
-  var _self = self;
-  var res;
   importScripts('script2.js');
 
   primesMonad.run([primesMonad.s[0], [], m.data, primesMonad.s[3]])

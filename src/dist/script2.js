@@ -48,7 +48,6 @@ function ret(v, id = 'generic') {
 var tr3 = function tr3(fibsArray, primesArray) {
   var bound = Math.ceil(Math.sqrt(fibsArray[fibsArray.length - 1]));
   var primes;
-  console.log('In tr3 primesArray.slice(-1)[0], bound', primesArray.slice(-1)[0], bound);
   if (primesArray.slice(-1)[0] >= bound) {
       primes = primesArray.filter(function (v) { return v <= bound; });
   }
@@ -138,23 +137,21 @@ var mMplayer = new Monad([0,0,0,0], 'mMplayer');
   };
   
   function primes_state(x) {
+    console.log('Entering primes_state. x is', x );
     var v = x.slice();
-    console.log('In workerC.js >>> primes_state v is ', v );
     while (2 == 2) {
         if ( v[3].every(e =>  (v[0] / e) != Math.floor(v[0] / e)) ) {
             v[3].push(v[0]);
         }
         if (v[3][v[3].length - 1] > v[2]) {
-            break;
+           console.log('Leaving primes_state. x is', x );
+           return v; 
         };
         v[0] += 2;
     }
-    return v;
   };
   
   var primesMonad = new MonadState('primesMonad', [3, [], 3, [2,3]], primes_state);
-
-  primesMonad.run([3, [], 1000, [2, 3]]);
 
   function pFib(fibs, primes) {
     var ar = [];

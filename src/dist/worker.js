@@ -2,21 +2,19 @@
 
 
 onmessage = function(v) {
-  console.log('In worker.js v is ', v );
-  
+  console.log('In worker.js, receiving message text v.data', v.data ), 
   importScripts('script2.js');
 
   if(Array.isArray(v.data) && v.data.length === 4) {
-    postMessage(["CE#$41", primesMonad.run(v.data).s]);
+    postMessage(["CE#$41", primesMonad.run(v.data).s])
   }
 
   if (v.data.length === 2 && typeof v.data[0] === 'string' && typeof v.data[1] === 'string') {
-    function lcm (c1,d1) {
+    function lcm (c,d) {
+      console.log('In worker.js c, d ', c, d );
       var ar= [];
-      var c = c1.slice()
-      var d = d1.slice()
       var r;
-      d1.map(v => {
+      d.map(v => {
         if (c.some(x => x === v)) {
           ar.push(v)
           c.splice(c.indexOf(v),1)
@@ -34,7 +32,7 @@ onmessage = function(v) {
     postMessage(["CA#$41", r]); 
     postMessage(["CB#$41", parseInt(a,10) + parseInt(b,10)]); 
     postMessage(["CC#$41", a * b]); 
-    postMessage(["CD#$41", lcm(factors(a),factors(b))]);
+    postMessage(["CD#$41", lcm(factors(a).x, factors(b).x)]);
   };
 };
 

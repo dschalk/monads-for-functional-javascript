@@ -598,21 +598,24 @@ var MonadState = h('pre',  `    function MonadState(g, state, p) {
       }
     };  `  )
 
-var primesMonad = h('pre',  `  var primesMonad = new MonadState('primesMonad', [2, '', 3, [2]], [2],  primes_state) 
+var primesMonad = h('pre',  `    var primesMonad = new MonadState('primesMonad', [2, '', 3, [2]], [2],  primes_state) 
 
-  var primes_state = function primes_state(x) {
-    var v = x.slice();
-      while (2 === 2) {
-        if (v[3].every(e => ((v[0]/e) != Math.floor(v[0]/e)))) {
-          v[3].push(v[0]);
-        }
-        if (v[3][v[3].length - 1] > v[2]) { break }; // Not an infinite loop afterall
-        v[0]+=2;
+    var primes_state = function primes_state(x) {
+      var v = x.slice();
+      console.log('In script2.js >>> primes_state v is ', v );
+      while (2 == 2) {
+          if ( v[3].every(e =>  (v[0] / e) != Math.floor(v[0] / e)) ) {
+              v[3].push(v[0]);
+          }
+          if (v[3][v[3].length - 1] > v[2]) {
+             return v; 
+          };
+          v[0] += 2;
       }
-    return v;
-  }  `  )
+    }  `  )
 
 var fibsMonad = h('pre',  `  var primesMonad = new MonadState('primesMonad', [3, '', 3, [2,3]], primes_state);
+
 
   var fibs_state = function fibs_state(ar) {
     var a = ar.slice();
@@ -1249,128 +1252,137 @@ var wDriver = h('pre.green2',  `  const workerA = new Worker("worker.js");
     return create((add) => workerA.onmessage = msg => add(msg))
   }  `  )
 
-var worker_js = h('pre.green2',  `  onmessage = function(v) {
-    function MonadState(g, state, p) {
-      this.id = g;
-      this.s = state;
-      this.process = p;
-      this.a = this.s[3];
-      this.bnd = (func, ...args) => func(this.s, ...args);  
-      this.run = ar => { 
-        var ar2 = this.process(ar);
-        this.s = ar2;
-        this.a = ar2[3];
-        self[this.id] = this;
-        return self[this.id];
-      }
-    };
+
+var worker$ = h('pre.green2',  `  
+    const worker$ = sources.WK.map(v => {
+      v.preventDefault();
+      console.log('In worker$  v is ', v );
+      mMZ21.bnd(() => {
+        mM11.ret(v.data[1]);
+        }); 
+      mMZ22.bnd(() => {
+        mM12.ret(v.data[1])
+      }); 
+      mMZ23.bnd(() => {
+        mM13.ret(v.data[1])
+      }); 
+      mMZ24.bnd(() => {
+        mM14.ret(v.data[1])
+      }); 
+      mMZ25.bnd(() => {
+        primesMonad.s = v.data[1];
+        primesMonad.a = v.data[1][3];
+        console.log('Prime number', primesMonad.a.length,'is', primesMonad.s[0] )
+      });
+      next(v.data[0], 'CA#$41', mMZ21)
+      next(v.data[0], 'CB#$41', mMZ22)
+      next(v.data[0], 'CC#$41', mMZ23)
+      next(v.data[0], 'CD#$41', mMZ24)
+      next(v.data[0], 'CE#$41', mMZ25)
+    });   `  )
+
+var workerPrimeFibs_2 = h('pre.green2',  `    const workerDriverB = function () {
+        return create((add) => workerB.onmessage = msg => add(msg))
+    }
+
+    const workerB$ = sources.WWB.map(m => {
+      mMres.ret(m.data);
+    });   `  )
+
+var workerPrimeFibsjs = h('pre.green2',  `    onmessage = function(m) {
+      console.log('In workerB.js m is ', m );
+      var _self = self;
+      var res;
+      importScripts('script2.js');
     
-    function primes_state(x) {
+      fibsMonad.run([1, 2 , parseInt(m.data,10), [0,1]])
+      .bnd(fibsState => fibsMonad
+        .bnd(fpTransformer, primesMonad)
+          .bnd(primesState => tr3(fibsState[3], primesState[3])
+          .bnd(ar => {
+            console.log('In workerB.js __ ar is ', ar );
+            _self.postMessage(ar);
+          }) 
+        ) 
+      );
+    };   `  )
+
+var workerFactors_2 = h('pre',  `    const workerDriverC = function () {
+      return create((add) => workerC.onmessage = msg => add(msg));
+    ;}
+
+    const workerC$ = sources.WWC.map(m => {
+      mMfactors.ret(m.data[0]);
+      primesMonad.s = m.data[1];
+      primesMonad.a = m.data[1][3];
+    });    `  )
+
+var workerFactorsjs = h('pre',  `  
+onmessage = function(m) {
+  
+  console.log('In workerC.js m.data is ', m.data );
+  importScripts('script2.js');
+
+  primesMonad.run([primesMonad.s[0], [], m.data, primesMonad.s[3]])
+  .bnd(s => prFactTransformer3(s, m.data)
+  .bnd(factors => postMessage(["The prime factors of " + m.data + " are " + factors.join(', '), s])));
+ } 
+`  )
+
+var worker_js = h('pre',  ` onmessage = function(v) {
+  
+    importScripts('script2.js');
+  
+    if(Array.isArray(v.data) && v.data.length === 4) {
+      postMessage(["CE#$41", primesMonad.run(v.data).s])
+    }
+  
+    if (v.data.length === 2 && typeof v.data[0] === 'string' && typeof v.data[1] === 'string') {
+      function lcm (c,d) {
+        console.log('In worker.js c, d ', c, d );
+        var ar= [];
+        var r;
+        d.map(v => {
+          if (c.some(x => x === v)) {
+            ar.push(v)
+            c.splice(c.indexOf(v),1)
+            d.splice(d.indexOf(v),1)}
+            r = ar.concat(d).concat(c).reduce(function (a,b) {return a*b})
+          }
+        )
+        return r
+      }
+    
+      var a = v.data[0];
+      var b = v.data[1];
+      var r = Math.sqrt(a*a + b*b);
+      console.log('In worker.js a,b',a,b )
+      postMessage(["CA#$41", r]); 
+      postMessage(["CB#$41", parseInt(a,10) + parseInt(b,10)]); 
+      postMessage(["CC#$41", a * b]); 
+      postMessage(["CD#$41", lcm(factors(a).x, factors(b).x)]);
+    };  `  )
+
+var primes_state = h('pre',  `    function primes_state(x) {
+      console.log('Entering primes_state. x is', x );
       var v = x.slice();
       while (2 == 2) {
           if ( v[3].every(e =>  (v[0] / e) != Math.floor(v[0] / e)) ) {
               v[3].push(v[0]);
           }
           if (v[3][v[3].length - 1] > v[2]) {
-              break;
+             console.log('Leaving primes_state. x is', x );
+             return v; 
           };
           v[0] += 2;
       }
-      return v;
-    };
-    
-    var primesMonad = new MonadState('primesMonad', [3, '', 3, [2,3]], primes_state);
-    primesMonad.run([3, '', 12, [2, 3]]);
-    function pFib(fibs, primes) {
-      var ar = [];
-      fibs.map(function (f) {
-          if (f < 2)
-              return;
-          if (primes.every(function (p) { return (f % p != 0 || f == p); }))
-              ar.push(f);
-      });
-      return ar;
-    };
-    
-    function prFactTransformer3(s, n) {
-      return factors_state3([[], [], n, s[3]]);
-    };
-    
-    function factors_state3(a) {
-      var b = a.slice();
-      var result;
-      func(b);
-      function func (v) {
-        for (let p of v[3]) {
-          if (v[2] / p == Math.floor(v[2] / p)) {
-            v[1].push(p);
-            v[2] = v[2]/p;
-            if (v[2] != 1) {
-              func(v);
-            }
-          };
-          v[1].sort(function(a, b) {
-            return a - b;
-          });
-          result = v[1];
-        }; 
-      }
-      return result;
-    }
-    
-    function checkpM () {
-    
-    };
-    
-    function factors (num) {
-      return primesMonad.run([primesMonad.s[0], [], num, primesMonad.a])
-      .bnd(s => prFactTransformer3(s, num))
-    }
-    
-    function lcm (c1,d1) {
-      var ar= [];
-      var c = c1.slice()
-      var d = d1.slice()
-      var r;
-      d1.map(v => {
-        if (c.some(x => x === v)) {
-          ar.push(v)
-          c.splice(c.indexOf(v),1)
-          d.splice(d.indexOf(v),1)}
-          r = ar.concat(d).concat(c).reduce(function (a,b) {return a*b})
-        }
-      )
-      return r
-    }
-  
-    var a = v.data[0];
-    var b = v.data[1];
-    var r = Math.sqrt(a*a + b*b);
-    console.log('In worker.js a,b',a,b )
-    postMessage(["CA#$41", r]); 
-    postMessage(["CB#$41", parseInt(a,10) + parseInt(b,10)]); 
-    postMessage(["CC#$41", a * b]); 
-    postMessage(["CD#$41", lcm(factors(a),factors(b))]);
-  };    `  )
+    };    `  )
 
-var worker$ = h('pre.green2',  `  const worker$ = sources.WK.map(v => {
-    mMZ21.bnd(() => {
-      mM11.ret(v.data[1]);
-      }); 
-    mMZ22.bnd(() => {
-      mM12.ret(v.data[1])
-    }); 
-    mMZ23.bnd(() => {
-      mM13.ret(v.data[1])
-    }); 
-    mMZ24.bnd(() => {
-      mM14.ret(v.data[1])
-    }); 
-    next(v.data[0], 'CA#$41', mMZ21)
-    next(v.data[0], 'CB#$41', mMZ22)
-    next(v.data[0], 'CC#$41', mMZ23)
-    next(v.data[0], 'CD#$41', mMZ24)
-    });    `  )
+var p3 = h('pre',  `  
+`  )
+
+var p4 = h('pre',  `  
+`  )
 
 var p8 = h('pre',  `  
 `  )
@@ -1380,7 +1392,7 @@ var p9 = h('pre',  `
 
 
 
-  export default { wDriver, worker_js, worker$, errorDemo, monadEr, backAction, monadArchive2, tests, numClick1, numClick2, mMZ10, test3, travMonad, monad, equals, fmap, opM, e1, e2, e2x, e3, e4, e4x, e6, e6x, driver, messages, monadIt, MonadSet, updateCalc, arrayFuncs, nums, cleanup, ret, C42, newTask, process, mM$task, colorClick, edit, testZ, quad, runTest, todoStream, inc, seed,  add, MonadState, primesMonad, fibsMonad, primeFibInterface, tr3, fpTransformer, factorsMonad, factorsInput, playerMonad, promise, promiseSnippet, timeout, timeoutSnippet, examples, examples2, async }
+  export default { primes_state, workerPrimeFibsjs, workerPrimeFibs_2, workerFactors_2, workerFactorsjs, worker_js, worker$, errorDemo, monadEr, backAction, monadArchive2, tests, numClick1, numClick2, mMZ10, test3, travMonad, monad, equals, fmap, opM, e1, e2, e2x, e3, e4, e4x, e6, e6x, driver, messages, monadIt, MonadSet, updateCalc, arrayFuncs, nums, cleanup, ret, C42, newTask, process, mM$task, colorClick, edit, testZ, quad, runTest, todoStream, inc, seed,  add, MonadState, primesMonad, fibsMonad, primeFibInterface, tr3, fpTransformer, factorsMonad, factorsInput, playerMonad, promise, promiseSnippet, timeout, timeoutSnippet, examples, examples2, async }
  
 
 

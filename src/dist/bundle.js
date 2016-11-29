@@ -39,7 +39,7 @@
 /******/ 	// __webpack_public_path__
 /******/ 	__webpack_require__.p = "";
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 62);
+/******/ 	return __webpack_require__(__webpack_require__.s = 64);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -365,8 +365,8 @@
 	/** @author Brian Cavalier */
 	/** @author John Hann */
 
-	var Disposable = __webpack_require__(160);
-	var SettableDisposable = __webpack_require__(161);
+	var Disposable = __webpack_require__(163);
+	var SettableDisposable = __webpack_require__(164);
 	var isPromise = __webpack_require__(28).isPromise;
 	var base = __webpack_require__(0);
 
@@ -504,15 +504,15 @@
 	exports.settable = settable;
 	exports.once = once;
 
-	var _Disposable = __webpack_require__(116);
+	var _Disposable = __webpack_require__(119);
 
 	var _Disposable2 = _interopRequireDefault(_Disposable);
 
-	var _SettableDisposable = __webpack_require__(117);
+	var _SettableDisposable = __webpack_require__(120);
 
 	var _SettableDisposable2 = _interopRequireDefault(_SettableDisposable);
 
-	var _Promise = __webpack_require__(94);
+	var _Promise = __webpack_require__(97);
 
 	var _prelude = __webpack_require__(0);
 
@@ -919,6 +919,725 @@
 	/** @author Brian Cavalier */
 	/** @author John Hann */
 
+	var Stream = __webpack_require__(1);
+	var base = __webpack_require__(0);
+	var core = __webpack_require__(12);
+	var from = __webpack_require__(176).from;
+	var periodic = __webpack_require__(182).periodic;
+	var symbolObservable = __webpack_require__(60);
+
+	/**
+	 * Core stream type
+	 * @type {Stream}
+	 */
+	exports.Stream = Stream;
+
+	// Add of and empty to constructor for fantasy-land compat
+	exports.of = Stream.of = core.of;
+	exports.just = core.of; // easier ES6 import alias
+	exports.empty = Stream.empty = core.empty;
+	exports.never = core.never;
+	exports.from = from;
+	exports.periodic = periodic;
+
+	//-----------------------------------------------------------------------
+	// Draft ES Observable proposal interop
+	// https://github.com/zenparsing/es-observable
+
+	var subscribe = __webpack_require__(168).subscribe;
+
+	Stream.prototype.subscribe = function (subscriber) {
+	  return subscribe(subscriber, this);
+	};
+
+	Stream.prototype[symbolObservable] = function () {
+	  return this;
+	};
+
+	//-----------------------------------------------------------------------
+	// Fluent adapter
+
+	var thru = __webpack_require__(158).thru;
+
+	/**
+	 * Adapt a functional stream transform to fluent style.
+	 * It applies f to the this stream object
+	 * @param  {function(s: Stream): Stream} f function that
+	 * receives the stream itself and must return a new stream
+	 * @return {Stream}
+	 */
+	Stream.prototype.thru = function (f) {
+	  return thru(f, this);
+	};
+
+	//-----------------------------------------------------------------------
+	// Creating
+
+	var create = __webpack_require__(175);
+
+	/**
+	 * @deprecated
+	 * Create a stream by imperatively pushing events.
+	 * @param {function(add:function(x), end:function(e)):function} run function
+	 *  that will receive 2 functions as arguments, the first to add new values to the
+	 *  stream and the second to end the stream. It may *return* a function that
+	 *  will be called once all consumers have stopped observing the stream.
+	 * @returns {Stream} stream containing all events added by run before end
+	 */
+	exports.create = create.create;
+
+	//-----------------------------------------------------------------------
+	// Adapting other sources
+
+	var events = __webpack_require__(178);
+
+	/**
+	 * Create a stream of events from the supplied EventTarget or EventEmitter
+	 * @param {String} event event name
+	 * @param {EventTarget|EventEmitter} source EventTarget or EventEmitter. The source
+	 *  must support either addEventListener/removeEventListener (w3c EventTarget:
+	 *  http://www.w3.org/TR/DOM-Level-2-Events/events.html#Events-EventTarget),
+	 *  or addListener/removeListener (node EventEmitter: http://nodejs.org/api/events.html)
+	 * @returns {Stream} stream of events of the specified type from the source
+	 */
+	exports.fromEvent = events.fromEvent;
+
+	//-----------------------------------------------------------------------
+	// Observing
+
+	var observe = __webpack_require__(153);
+
+	exports.observe = observe.observe;
+	exports.forEach = observe.observe;
+	exports.drain = observe.drain;
+
+	/**
+	 * Process all the events in the stream
+	 * @returns {Promise} promise that fulfills when the stream ends, or rejects
+	 *  if the stream fails with an unhandled error.
+	 */
+	Stream.prototype.observe = Stream.prototype.forEach = function (f) {
+	  return observe.observe(f, this);
+	};
+
+	/**
+	 * Consume all events in the stream, without providing a function to process each.
+	 * This causes a stream to become active and begin emitting events, and is useful
+	 * in cases where all processing has been setup upstream via other combinators, and
+	 * there is no need to process the terminal events.
+	 * @returns {Promise} promise that fulfills when the stream ends, or rejects
+	 *  if the stream fails with an unhandled error.
+	 */
+	Stream.prototype.drain = function () {
+	  return observe.drain(this);
+	};
+
+	//-------------------------------------------------------
+
+	var loop = __webpack_require__(151).loop;
+
+	exports.loop = loop;
+
+	/**
+	 * Generalized feedback loop. Call a stepper function for each event. The stepper
+	 * will be called with 2 params: the current seed and the an event value.  It must
+	 * return a new { seed, value } pair. The `seed` will be fed back into the next
+	 * invocation of stepper, and the `value` will be propagated as the event value.
+	 * @param {function(seed:*, value:*):{seed:*, value:*}} stepper loop step function
+	 * @param {*} seed initial seed value passed to first stepper call
+	 * @returns {Stream} new stream whose values are the `value` field of the objects
+	 * returned by the stepper
+	 */
+	Stream.prototype.loop = function (stepper, seed) {
+	  return loop(stepper, seed, this);
+	};
+
+	//-------------------------------------------------------
+
+	var accumulate = __webpack_require__(143);
+
+	exports.scan = accumulate.scan;
+	exports.reduce = accumulate.reduce;
+
+	/**
+	 * Create a stream containing successive reduce results of applying f to
+	 * the previous reduce result and the current stream item.
+	 * @param {function(result:*, x:*):*} f reducer function
+	 * @param {*} initial initial value
+	 * @returns {Stream} new stream containing successive reduce results
+	 */
+	Stream.prototype.scan = function (f, initial) {
+	  return accumulate.scan(f, initial, this);
+	};
+
+	/**
+	 * Reduce the stream to produce a single result.  Note that reducing an infinite
+	 * stream will return a Promise that never fulfills, but that may reject if an error
+	 * occurs.
+	 * @param {function(result:*, x:*):*} f reducer function
+	 * @param {*} initial optional initial value
+	 * @returns {Promise} promise for the file result of the reduce
+	 */
+	Stream.prototype.reduce = function (f, initial) {
+	  return accumulate.reduce(f, initial, this);
+	};
+
+	//-----------------------------------------------------------------------
+	// Building and extending
+
+	var unfold = __webpack_require__(183);
+	var iterate = __webpack_require__(181);
+	var generate = __webpack_require__(180);
+	var build = __webpack_require__(145);
+
+	exports.unfold = unfold.unfold;
+	exports.iterate = iterate.iterate;
+	exports.generate = generate.generate;
+	exports.cycle = build.cycle;
+	exports.concat = build.concat;
+	exports.startWith = build.cons;
+
+	/**
+	 * @deprecated
+	 * Tie this stream into a circle, thus creating an infinite stream
+	 * @returns {Stream} new infinite stream
+	 */
+	Stream.prototype.cycle = function () {
+	  return build.cycle(this);
+	};
+
+	/**
+	 * @param {Stream} tail
+	 * @returns {Stream} new stream containing all items in this followed by
+	 *  all items in tail
+	 */
+	Stream.prototype.concat = function (tail) {
+	  return build.concat(this, tail);
+	};
+
+	/**
+	 * @param {*} x value to prepend
+	 * @returns {Stream} a new stream with x prepended
+	 */
+	Stream.prototype.startWith = function (x) {
+	  return build.cons(x, this);
+	};
+
+	//-----------------------------------------------------------------------
+	// Transforming
+
+	var transform = __webpack_require__(16);
+	var applicative = __webpack_require__(144);
+
+	exports.map = transform.map;
+	exports.constant = transform.constant;
+	exports.tap = transform.tap;
+	exports.ap = applicative.ap;
+
+	/**
+	 * Transform each value in the stream by applying f to each
+	 * @param {function(*):*} f mapping function
+	 * @returns {Stream} stream containing items transformed by f
+	 */
+	Stream.prototype.map = function (f) {
+	  return transform.map(f, this);
+	};
+
+	/**
+	 * Assume this stream contains functions, and apply each function to each item
+	 * in the provided stream.  This generates, in effect, a cross product.
+	 * @param {Stream} xs stream of items to which
+	 * @returns {Stream} stream containing the cross product of items
+	 */
+	Stream.prototype.ap = function (xs) {
+	  return applicative.ap(this, xs);
+	};
+
+	/**
+	 * Replace each value in the stream with x
+	 * @param {*} x
+	 * @returns {Stream} stream containing items replaced with x
+	 */
+	Stream.prototype.constant = function (x) {
+	  return transform.constant(x, this);
+	};
+
+	/**
+	 * Perform a side effect for each item in the stream
+	 * @param {function(x:*):*} f side effect to execute for each item. The
+	 *  return value will be discarded.
+	 * @returns {Stream} new stream containing the same items as this stream
+	 */
+	Stream.prototype.tap = function (f) {
+	  return transform.tap(f, this);
+	};
+
+	//-----------------------------------------------------------------------
+	// Transducer support
+
+	var transduce = __webpack_require__(161);
+
+	exports.transduce = transduce.transduce;
+
+	/**
+	 * Transform this stream by passing its events through a transducer.
+	 * @param  {function} transducer transducer function
+	 * @return {Stream} stream of events transformed by the transducer
+	 */
+	Stream.prototype.transduce = function (transducer) {
+	  return transduce.transduce(transducer, this);
+	};
+
+	//-----------------------------------------------------------------------
+	// FlatMapping
+
+	var flatMap = __webpack_require__(54);
+
+	exports.flatMap = exports.chain = flatMap.flatMap;
+	exports.join = flatMap.join;
+
+	/**
+	 * Map each value in the stream to a new stream, and merge it into the
+	 * returned outer stream. Event arrival times are preserved.
+	 * @param {function(x:*):Stream} f chaining function, must return a Stream
+	 * @returns {Stream} new stream containing all events from each stream returned by f
+	 */
+	Stream.prototype.flatMap = Stream.prototype.chain = function (f) {
+	  return flatMap.flatMap(f, this);
+	};
+
+	/**
+	 * Monadic join. Flatten a Stream<Stream<X>> to Stream<X> by merging inner
+	 * streams to the outer. Event arrival times are preserved.
+	 * @returns {Stream<X>} new stream containing all events of all inner streams
+	 */
+	Stream.prototype.join = function () {
+	  return flatMap.join(this);
+	};
+
+	var continueWith = __webpack_require__(53).continueWith;
+
+	exports.continueWith = continueWith;
+	exports.flatMapEnd = continueWith;
+
+	/**
+	 * Map the end event to a new stream, and begin emitting its values.
+	 * @param {function(x:*):Stream} f function that receives the end event value,
+	 * and *must* return a new Stream to continue with.
+	 * @returns {Stream} new stream that emits all events from the original stream,
+	 * followed by all events from the stream returned by f.
+	 */
+	Stream.prototype.continueWith = Stream.prototype.flatMapEnd = function (f) {
+	  return continueWith(f, this);
+	};
+
+	var concatMap = __webpack_require__(146).concatMap;
+
+	exports.concatMap = concatMap;
+
+	Stream.prototype.concatMap = function (f) {
+	  return concatMap(f, this);
+	};
+
+	//-----------------------------------------------------------------------
+	// Concurrent merging
+
+	var mergeConcurrently = __webpack_require__(15);
+
+	exports.mergeConcurrently = mergeConcurrently.mergeConcurrently;
+
+	/**
+	 * Flatten a Stream<Stream<X>> to Stream<X> by merging inner
+	 * streams to the outer, limiting the number of inner streams that may
+	 * be active concurrently.
+	 * @param {number} concurrency at most this many inner streams will be
+	 *  allowed to be active concurrently.
+	 * @return {Stream<X>} new stream containing all events of all inner
+	 *  streams, with limited concurrency.
+	 */
+	Stream.prototype.mergeConcurrently = function (concurrency) {
+	  return mergeConcurrently.mergeConcurrently(concurrency, this);
+	};
+
+	//-----------------------------------------------------------------------
+	// Merging
+
+	var merge = __webpack_require__(152);
+
+	exports.merge = merge.merge;
+	exports.mergeArray = merge.mergeArray;
+
+	/**
+	 * Merge this stream and all the provided streams
+	 * @returns {Stream} stream containing items from this stream and s in time
+	 * order.  If two events are simultaneous they will be merged in
+	 * arbitrary order.
+	 */
+	Stream.prototype.merge = function () /*...streams*/{
+	  return merge.mergeArray(base.cons(this, arguments));
+	};
+
+	//-----------------------------------------------------------------------
+	// Combining
+
+	var combine = __webpack_require__(52);
+
+	exports.combine = combine.combine;
+	exports.combineArray = combine.combineArray;
+
+	/**
+	 * Combine latest events from all input streams
+	 * @param {function(...events):*} f function to combine most recent events
+	 * @returns {Stream} stream containing the result of applying f to the most recent
+	 *  event of each input stream, whenever a new event arrives on any stream.
+	 */
+	Stream.prototype.combine = function (f /*, ...streams*/) {
+	  return combine.combineArray(f, base.replace(this, 0, arguments));
+	};
+
+	//-----------------------------------------------------------------------
+	// Sampling
+
+	var sample = __webpack_require__(155);
+
+	exports.sample = sample.sample;
+	exports.sampleWith = sample.sampleWith;
+
+	/**
+	 * When an event arrives on sampler, emit the latest event value from stream.
+	 * @param {Stream} sampler stream of events at whose arrival time
+	 *  signal's latest value will be propagated
+	 * @returns {Stream} sampled stream of values
+	 */
+	Stream.prototype.sampleWith = function (sampler) {
+	  return sample.sampleWith(sampler, this);
+	};
+
+	/**
+	 * When an event arrives on this stream, emit the result of calling f with the latest
+	 * values of all streams being sampled
+	 * @param {function(...values):*} f function to apply to each set of sampled values
+	 * @returns {Stream} stream of sampled and transformed values
+	 */
+	Stream.prototype.sample = function (f /* ...streams */) {
+	  return sample.sampleArray(f, this, base.tail(arguments));
+	};
+
+	//-----------------------------------------------------------------------
+	// Zipping
+
+	var zip = __webpack_require__(162);
+
+	exports.zip = zip.zip;
+
+	/**
+	 * Pair-wise combine items with those in s. Given 2 streams:
+	 * [1,2,3] zipWith f [4,5,6] -> [f(1,4),f(2,5),f(3,6)]
+	 * Note: zip causes fast streams to buffer and wait for slow streams.
+	 * @param {function(a:Stream, b:Stream, ...):*} f function to combine items
+	 * @returns {Stream} new stream containing pairs
+	 */
+	Stream.prototype.zip = function (f /*, ...streams*/) {
+	  return zip.zipArray(f, base.replace(this, 0, arguments));
+	};
+
+	//-----------------------------------------------------------------------
+	// Switching
+
+	var switchLatest = __webpack_require__(157).switch;
+
+	exports.switch = switchLatest;
+	exports.switchLatest = switchLatest;
+
+	/**
+	 * Given a stream of streams, return a new stream that adopts the behavior
+	 * of the most recent inner stream.
+	 * @returns {Stream} switching stream
+	 */
+	Stream.prototype.switch = Stream.prototype.switchLatest = function () {
+	  return switchLatest(this);
+	};
+
+	//-----------------------------------------------------------------------
+	// Filtering
+
+	var filter = __webpack_require__(149);
+
+	exports.filter = filter.filter;
+	exports.skipRepeats = exports.distinct = filter.skipRepeats;
+	exports.skipRepeatsWith = exports.distinctBy = filter.skipRepeatsWith;
+
+	/**
+	 * Retain only items matching a predicate
+	 * stream:                           -12345678-
+	 * filter(x => x % 2 === 0, stream): --2-4-6-8-
+	 * @param {function(x:*):boolean} p filtering predicate called for each item
+	 * @returns {Stream} stream containing only items for which predicate returns truthy
+	 */
+	Stream.prototype.filter = function (p) {
+	  return filter.filter(p, this);
+	};
+
+	/**
+	 * Skip repeated events, using === to compare items
+	 * stream:           -abbcd-
+	 * distinct(stream): -ab-cd-
+	 * @returns {Stream} stream with no repeated events
+	 */
+	Stream.prototype.skipRepeats = function () {
+	  return filter.skipRepeats(this);
+	};
+
+	/**
+	 * Skip repeated events, using supplied equals function to compare items
+	 * @param {function(a:*, b:*):boolean} equals function to compare items
+	 * @returns {Stream} stream with no repeated events
+	 */
+	Stream.prototype.skipRepeatsWith = function (equals) {
+	  return filter.skipRepeatsWith(equals, this);
+	};
+
+	//-----------------------------------------------------------------------
+	// Slicing
+
+	var slice = __webpack_require__(156);
+
+	exports.take = slice.take;
+	exports.skip = slice.skip;
+	exports.slice = slice.slice;
+	exports.takeWhile = slice.takeWhile;
+	exports.skipWhile = slice.skipWhile;
+
+	/**
+	 * stream:          -abcd-
+	 * take(2, stream): -ab|
+	 * @param {Number} n take up to this many events
+	 * @returns {Stream} stream containing at most the first n items from this stream
+	 */
+	Stream.prototype.take = function (n) {
+	  return slice.take(n, this);
+	};
+
+	/**
+	 * stream:          -abcd->
+	 * skip(2, stream): ---cd->
+	 * @param {Number} n skip this many events
+	 * @returns {Stream} stream not containing the first n events
+	 */
+	Stream.prototype.skip = function (n) {
+	  return slice.skip(n, this);
+	};
+
+	/**
+	 * Slice a stream by event index. Equivalent to, but more efficient than
+	 * stream.take(end).skip(start);
+	 * NOTE: Negative start and end are not supported
+	 * @param {Number} start skip all events before the start index
+	 * @param {Number} end allow all events from the start index to the end index
+	 * @returns {Stream} stream containing items where start <= index < end
+	 */
+	Stream.prototype.slice = function (start, end) {
+	  return slice.slice(start, end, this);
+	};
+
+	/**
+	 * stream:                        -123451234->
+	 * takeWhile(x => x < 5, stream): -1234|
+	 * @param {function(x:*):boolean} p predicate
+	 * @returns {Stream} stream containing items up to, but not including, the
+	 * first item for which p returns falsy.
+	 */
+	Stream.prototype.takeWhile = function (p) {
+	  return slice.takeWhile(p, this);
+	};
+
+	/**
+	 * stream:                        -123451234->
+	 * skipWhile(x => x < 5, stream): -----51234->
+	 * @param {function(x:*):boolean} p predicate
+	 * @returns {Stream} stream containing items following *and including* the
+	 * first item for which p returns falsy.
+	 */
+	Stream.prototype.skipWhile = function (p) {
+	  return slice.skipWhile(p, this);
+	};
+
+	//-----------------------------------------------------------------------
+	// Time slicing
+
+	var timeslice = __webpack_require__(159);
+
+	exports.until = exports.takeUntil = timeslice.takeUntil;
+	exports.since = exports.skipUntil = timeslice.skipUntil;
+	exports.during = timeslice.during;
+
+	/**
+	 * stream:                    -a-b-c-d-e-f-g->
+	 * signal:                    -------x
+	 * takeUntil(signal, stream): -a-b-c-|
+	 * @param {Stream} signal retain only events in stream before the first
+	 * event in signal
+	 * @returns {Stream} new stream containing only events that occur before
+	 * the first event in signal.
+	 */
+	Stream.prototype.until = Stream.prototype.takeUntil = function (signal) {
+	  return timeslice.takeUntil(signal, this);
+	};
+
+	/**
+	 * stream:                    -a-b-c-d-e-f-g->
+	 * signal:                    -------x
+	 * takeUntil(signal, stream): -------d-e-f-g->
+	 * @param {Stream} signal retain only events in stream at or after the first
+	 * event in signal
+	 * @returns {Stream} new stream containing only events that occur after
+	 * the first event in signal.
+	 */
+	Stream.prototype.since = Stream.prototype.skipUntil = function (signal) {
+	  return timeslice.skipUntil(signal, this);
+	};
+
+	/**
+	 * stream:                    -a-b-c-d-e-f-g->
+	 * timeWindow:                -----s
+	 * s:                               -----t
+	 * stream.during(timeWindow): -----c-d-e-|
+	 * @param {Stream<Stream>} timeWindow a stream whose first event (s) represents
+	 *  the window start time.  That event (s) is itself a stream whose first event (t)
+	 *  represents the window end time
+	 * @returns {Stream} new stream containing only events within the provided timespan
+	 */
+	Stream.prototype.during = function (timeWindow) {
+	  return timeslice.during(timeWindow, this);
+	};
+
+	//-----------------------------------------------------------------------
+	// Delaying
+
+	var delay = __webpack_require__(147).delay;
+
+	exports.delay = delay;
+
+	/**
+	 * @param {Number} delayTime milliseconds to delay each item
+	 * @returns {Stream} new stream containing the same items, but delayed by ms
+	 */
+	Stream.prototype.delay = function (delayTime) {
+	  return delay(delayTime, this);
+	};
+
+	//-----------------------------------------------------------------------
+	// Getting event timestamp
+
+	var timestamp = __webpack_require__(160).timestamp;
+
+	exports.timestamp = timestamp;
+
+	/**
+	 * Expose event timestamps into the stream. Turns a Stream<X> into
+	 * Stream<{time:t, value:X}>
+	 * @returns {Stream<{time:number, value:*}>}
+	 */
+	Stream.prototype.timestamp = function () {
+	  return timestamp(this);
+	};
+
+	//-----------------------------------------------------------------------
+	// Rate limiting
+
+	var limit = __webpack_require__(150);
+
+	exports.throttle = limit.throttle;
+	exports.debounce = limit.debounce;
+
+	/**
+	 * Limit the rate of events
+	 * stream:              abcd----abcd----
+	 * throttle(2, stream): a-c-----a-c-----
+	 * @param {Number} period time to suppress events
+	 * @returns {Stream} new stream that skips events for throttle period
+	 */
+	Stream.prototype.throttle = function (period) {
+	  return limit.throttle(period, this);
+	};
+
+	/**
+	 * Wait for a burst of events to subside and emit only the last event in the burst
+	 * stream:              abcd----abcd----
+	 * debounce(2, stream): -----d-------d--
+	 * @param {Number} period events occuring more frequently than this
+	 *  on the provided scheduler will be suppressed
+	 * @returns {Stream} new debounced stream
+	 */
+	Stream.prototype.debounce = function (period) {
+	  return limit.debounce(period, this);
+	};
+
+	//-----------------------------------------------------------------------
+	// Awaiting Promises
+
+	var promises = __webpack_require__(154);
+
+	exports.fromPromise = promises.fromPromise;
+	exports.await = promises.awaitPromises;
+
+	/**
+	 * Await promises, turning a Stream<Promise<X>> into Stream<X>.  Preserves
+	 * event order, but timeshifts events based on promise resolution time.
+	 * @returns {Stream<X>} stream containing non-promise values
+	 */
+	Stream.prototype.await = function () {
+	  return promises.awaitPromises(this);
+	};
+
+	//-----------------------------------------------------------------------
+	// Error handling
+
+	var errors = __webpack_require__(148);
+
+	exports.recoverWith = errors.flatMapError;
+	exports.flatMapError = errors.flatMapError;
+	exports.throwError = errors.throwError;
+
+	/**
+	 * If this stream encounters an error, recover and continue with items from stream
+	 * returned by f.
+	 * stream:                  -a-b-c-X-
+	 * f(X):                           d-e-f-g-
+	 * flatMapError(f, stream): -a-b-c-d-e-f-g-
+	 * @param {function(error:*):Stream} f function which returns a new stream
+	 * @returns {Stream} new stream which will recover from an error by calling f
+	 */
+	Stream.prototype.recoverWith = Stream.prototype.flatMapError = function (f) {
+	  return errors.flatMapError(f, this);
+	};
+
+	//-----------------------------------------------------------------------
+	// Multicasting
+
+	var multicast = __webpack_require__(7).default;
+
+	exports.multicast = multicast;
+
+	/**
+	 * Transform the stream into multicast stream.  That means that many subscribers
+	 * to the stream will not cause multiple invocations of the internal machinery.
+	 * @returns {Stream} new stream which will multicast events to all observers.
+	 */
+	Stream.prototype.multicast = function () {
+	  return multicast(this);
+	};
+
+/***/ },
+/* 10 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	/** @license MIT License (c) copyright 2010-2016 original author or authors */
+	/** @author Brian Cavalier */
+	/** @author John Hann */
+
 	var fatal = __webpack_require__(29);
 
 	module.exports = PropagateTask;
@@ -973,7 +1692,7 @@
 	}
 
 /***/ },
-/* 10 */
+/* 11 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -1077,7 +1796,7 @@
 	var NEVER = new _Stream2.default(new NeverSource());
 
 /***/ },
-/* 11 */
+/* 12 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -1088,7 +1807,7 @@
 
 	var Stream = __webpack_require__(1);
 	var dispose = __webpack_require__(3);
-	var PropagateTask = __webpack_require__(9);
+	var PropagateTask = __webpack_require__(10);
 
 	exports.of = streamOf;
 	exports.empty = empty;
@@ -1154,725 +1873,6 @@
 	};
 
 	var NEVER = new Stream(new NeverSource());
-
-/***/ },
-/* 12 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	/** @license MIT License (c) copyright 2010-2016 original author or authors */
-	/** @author Brian Cavalier */
-	/** @author John Hann */
-
-	var Stream = __webpack_require__(1);
-	var base = __webpack_require__(0);
-	var core = __webpack_require__(11);
-	var from = __webpack_require__(173).from;
-	var periodic = __webpack_require__(179).periodic;
-	var symbolObservable = __webpack_require__(58);
-
-	/**
-	 * Core stream type
-	 * @type {Stream}
-	 */
-	exports.Stream = Stream;
-
-	// Add of and empty to constructor for fantasy-land compat
-	exports.of = Stream.of = core.of;
-	exports.just = core.of; // easier ES6 import alias
-	exports.empty = Stream.empty = core.empty;
-	exports.never = core.never;
-	exports.from = from;
-	exports.periodic = periodic;
-
-	//-----------------------------------------------------------------------
-	// Draft ES Observable proposal interop
-	// https://github.com/zenparsing/es-observable
-
-	var subscribe = __webpack_require__(165).subscribe;
-
-	Stream.prototype.subscribe = function (subscriber) {
-	  return subscribe(subscriber, this);
-	};
-
-	Stream.prototype[symbolObservable] = function () {
-	  return this;
-	};
-
-	//-----------------------------------------------------------------------
-	// Fluent adapter
-
-	var thru = __webpack_require__(155).thru;
-
-	/**
-	 * Adapt a functional stream transform to fluent style.
-	 * It applies f to the this stream object
-	 * @param  {function(s: Stream): Stream} f function that
-	 * receives the stream itself and must return a new stream
-	 * @return {Stream}
-	 */
-	Stream.prototype.thru = function (f) {
-	  return thru(f, this);
-	};
-
-	//-----------------------------------------------------------------------
-	// Creating
-
-	var create = __webpack_require__(172);
-
-	/**
-	 * @deprecated
-	 * Create a stream by imperatively pushing events.
-	 * @param {function(add:function(x), end:function(e)):function} run function
-	 *  that will receive 2 functions as arguments, the first to add new values to the
-	 *  stream and the second to end the stream. It may *return* a function that
-	 *  will be called once all consumers have stopped observing the stream.
-	 * @returns {Stream} stream containing all events added by run before end
-	 */
-	exports.create = create.create;
-
-	//-----------------------------------------------------------------------
-	// Adapting other sources
-
-	var events = __webpack_require__(175);
-
-	/**
-	 * Create a stream of events from the supplied EventTarget or EventEmitter
-	 * @param {String} event event name
-	 * @param {EventTarget|EventEmitter} source EventTarget or EventEmitter. The source
-	 *  must support either addEventListener/removeEventListener (w3c EventTarget:
-	 *  http://www.w3.org/TR/DOM-Level-2-Events/events.html#Events-EventTarget),
-	 *  or addListener/removeListener (node EventEmitter: http://nodejs.org/api/events.html)
-	 * @returns {Stream} stream of events of the specified type from the source
-	 */
-	exports.fromEvent = events.fromEvent;
-
-	//-----------------------------------------------------------------------
-	// Observing
-
-	var observe = __webpack_require__(150);
-
-	exports.observe = observe.observe;
-	exports.forEach = observe.observe;
-	exports.drain = observe.drain;
-
-	/**
-	 * Process all the events in the stream
-	 * @returns {Promise} promise that fulfills when the stream ends, or rejects
-	 *  if the stream fails with an unhandled error.
-	 */
-	Stream.prototype.observe = Stream.prototype.forEach = function (f) {
-	  return observe.observe(f, this);
-	};
-
-	/**
-	 * Consume all events in the stream, without providing a function to process each.
-	 * This causes a stream to become active and begin emitting events, and is useful
-	 * in cases where all processing has been setup upstream via other combinators, and
-	 * there is no need to process the terminal events.
-	 * @returns {Promise} promise that fulfills when the stream ends, or rejects
-	 *  if the stream fails with an unhandled error.
-	 */
-	Stream.prototype.drain = function () {
-	  return observe.drain(this);
-	};
-
-	//-------------------------------------------------------
-
-	var loop = __webpack_require__(148).loop;
-
-	exports.loop = loop;
-
-	/**
-	 * Generalized feedback loop. Call a stepper function for each event. The stepper
-	 * will be called with 2 params: the current seed and the an event value.  It must
-	 * return a new { seed, value } pair. The `seed` will be fed back into the next
-	 * invocation of stepper, and the `value` will be propagated as the event value.
-	 * @param {function(seed:*, value:*):{seed:*, value:*}} stepper loop step function
-	 * @param {*} seed initial seed value passed to first stepper call
-	 * @returns {Stream} new stream whose values are the `value` field of the objects
-	 * returned by the stepper
-	 */
-	Stream.prototype.loop = function (stepper, seed) {
-	  return loop(stepper, seed, this);
-	};
-
-	//-------------------------------------------------------
-
-	var accumulate = __webpack_require__(140);
-
-	exports.scan = accumulate.scan;
-	exports.reduce = accumulate.reduce;
-
-	/**
-	 * Create a stream containing successive reduce results of applying f to
-	 * the previous reduce result and the current stream item.
-	 * @param {function(result:*, x:*):*} f reducer function
-	 * @param {*} initial initial value
-	 * @returns {Stream} new stream containing successive reduce results
-	 */
-	Stream.prototype.scan = function (f, initial) {
-	  return accumulate.scan(f, initial, this);
-	};
-
-	/**
-	 * Reduce the stream to produce a single result.  Note that reducing an infinite
-	 * stream will return a Promise that never fulfills, but that may reject if an error
-	 * occurs.
-	 * @param {function(result:*, x:*):*} f reducer function
-	 * @param {*} initial optional initial value
-	 * @returns {Promise} promise for the file result of the reduce
-	 */
-	Stream.prototype.reduce = function (f, initial) {
-	  return accumulate.reduce(f, initial, this);
-	};
-
-	//-----------------------------------------------------------------------
-	// Building and extending
-
-	var unfold = __webpack_require__(180);
-	var iterate = __webpack_require__(178);
-	var generate = __webpack_require__(177);
-	var build = __webpack_require__(142);
-
-	exports.unfold = unfold.unfold;
-	exports.iterate = iterate.iterate;
-	exports.generate = generate.generate;
-	exports.cycle = build.cycle;
-	exports.concat = build.concat;
-	exports.startWith = build.cons;
-
-	/**
-	 * @deprecated
-	 * Tie this stream into a circle, thus creating an infinite stream
-	 * @returns {Stream} new infinite stream
-	 */
-	Stream.prototype.cycle = function () {
-	  return build.cycle(this);
-	};
-
-	/**
-	 * @param {Stream} tail
-	 * @returns {Stream} new stream containing all items in this followed by
-	 *  all items in tail
-	 */
-	Stream.prototype.concat = function (tail) {
-	  return build.concat(this, tail);
-	};
-
-	/**
-	 * @param {*} x value to prepend
-	 * @returns {Stream} a new stream with x prepended
-	 */
-	Stream.prototype.startWith = function (x) {
-	  return build.cons(x, this);
-	};
-
-	//-----------------------------------------------------------------------
-	// Transforming
-
-	var transform = __webpack_require__(16);
-	var applicative = __webpack_require__(141);
-
-	exports.map = transform.map;
-	exports.constant = transform.constant;
-	exports.tap = transform.tap;
-	exports.ap = applicative.ap;
-
-	/**
-	 * Transform each value in the stream by applying f to each
-	 * @param {function(*):*} f mapping function
-	 * @returns {Stream} stream containing items transformed by f
-	 */
-	Stream.prototype.map = function (f) {
-	  return transform.map(f, this);
-	};
-
-	/**
-	 * Assume this stream contains functions, and apply each function to each item
-	 * in the provided stream.  This generates, in effect, a cross product.
-	 * @param {Stream} xs stream of items to which
-	 * @returns {Stream} stream containing the cross product of items
-	 */
-	Stream.prototype.ap = function (xs) {
-	  return applicative.ap(this, xs);
-	};
-
-	/**
-	 * Replace each value in the stream with x
-	 * @param {*} x
-	 * @returns {Stream} stream containing items replaced with x
-	 */
-	Stream.prototype.constant = function (x) {
-	  return transform.constant(x, this);
-	};
-
-	/**
-	 * Perform a side effect for each item in the stream
-	 * @param {function(x:*):*} f side effect to execute for each item. The
-	 *  return value will be discarded.
-	 * @returns {Stream} new stream containing the same items as this stream
-	 */
-	Stream.prototype.tap = function (f) {
-	  return transform.tap(f, this);
-	};
-
-	//-----------------------------------------------------------------------
-	// Transducer support
-
-	var transduce = __webpack_require__(158);
-
-	exports.transduce = transduce.transduce;
-
-	/**
-	 * Transform this stream by passing its events through a transducer.
-	 * @param  {function} transducer transducer function
-	 * @return {Stream} stream of events transformed by the transducer
-	 */
-	Stream.prototype.transduce = function (transducer) {
-	  return transduce.transduce(transducer, this);
-	};
-
-	//-----------------------------------------------------------------------
-	// FlatMapping
-
-	var flatMap = __webpack_require__(52);
-
-	exports.flatMap = exports.chain = flatMap.flatMap;
-	exports.join = flatMap.join;
-
-	/**
-	 * Map each value in the stream to a new stream, and merge it into the
-	 * returned outer stream. Event arrival times are preserved.
-	 * @param {function(x:*):Stream} f chaining function, must return a Stream
-	 * @returns {Stream} new stream containing all events from each stream returned by f
-	 */
-	Stream.prototype.flatMap = Stream.prototype.chain = function (f) {
-	  return flatMap.flatMap(f, this);
-	};
-
-	/**
-	 * Monadic join. Flatten a Stream<Stream<X>> to Stream<X> by merging inner
-	 * streams to the outer. Event arrival times are preserved.
-	 * @returns {Stream<X>} new stream containing all events of all inner streams
-	 */
-	Stream.prototype.join = function () {
-	  return flatMap.join(this);
-	};
-
-	var continueWith = __webpack_require__(51).continueWith;
-
-	exports.continueWith = continueWith;
-	exports.flatMapEnd = continueWith;
-
-	/**
-	 * Map the end event to a new stream, and begin emitting its values.
-	 * @param {function(x:*):Stream} f function that receives the end event value,
-	 * and *must* return a new Stream to continue with.
-	 * @returns {Stream} new stream that emits all events from the original stream,
-	 * followed by all events from the stream returned by f.
-	 */
-	Stream.prototype.continueWith = Stream.prototype.flatMapEnd = function (f) {
-	  return continueWith(f, this);
-	};
-
-	var concatMap = __webpack_require__(143).concatMap;
-
-	exports.concatMap = concatMap;
-
-	Stream.prototype.concatMap = function (f) {
-	  return concatMap(f, this);
-	};
-
-	//-----------------------------------------------------------------------
-	// Concurrent merging
-
-	var mergeConcurrently = __webpack_require__(15);
-
-	exports.mergeConcurrently = mergeConcurrently.mergeConcurrently;
-
-	/**
-	 * Flatten a Stream<Stream<X>> to Stream<X> by merging inner
-	 * streams to the outer, limiting the number of inner streams that may
-	 * be active concurrently.
-	 * @param {number} concurrency at most this many inner streams will be
-	 *  allowed to be active concurrently.
-	 * @return {Stream<X>} new stream containing all events of all inner
-	 *  streams, with limited concurrency.
-	 */
-	Stream.prototype.mergeConcurrently = function (concurrency) {
-	  return mergeConcurrently.mergeConcurrently(concurrency, this);
-	};
-
-	//-----------------------------------------------------------------------
-	// Merging
-
-	var merge = __webpack_require__(149);
-
-	exports.merge = merge.merge;
-	exports.mergeArray = merge.mergeArray;
-
-	/**
-	 * Merge this stream and all the provided streams
-	 * @returns {Stream} stream containing items from this stream and s in time
-	 * order.  If two events are simultaneous they will be merged in
-	 * arbitrary order.
-	 */
-	Stream.prototype.merge = function () /*...streams*/{
-	  return merge.mergeArray(base.cons(this, arguments));
-	};
-
-	//-----------------------------------------------------------------------
-	// Combining
-
-	var combine = __webpack_require__(50);
-
-	exports.combine = combine.combine;
-	exports.combineArray = combine.combineArray;
-
-	/**
-	 * Combine latest events from all input streams
-	 * @param {function(...events):*} f function to combine most recent events
-	 * @returns {Stream} stream containing the result of applying f to the most recent
-	 *  event of each input stream, whenever a new event arrives on any stream.
-	 */
-	Stream.prototype.combine = function (f /*, ...streams*/) {
-	  return combine.combineArray(f, base.replace(this, 0, arguments));
-	};
-
-	//-----------------------------------------------------------------------
-	// Sampling
-
-	var sample = __webpack_require__(152);
-
-	exports.sample = sample.sample;
-	exports.sampleWith = sample.sampleWith;
-
-	/**
-	 * When an event arrives on sampler, emit the latest event value from stream.
-	 * @param {Stream} sampler stream of events at whose arrival time
-	 *  signal's latest value will be propagated
-	 * @returns {Stream} sampled stream of values
-	 */
-	Stream.prototype.sampleWith = function (sampler) {
-	  return sample.sampleWith(sampler, this);
-	};
-
-	/**
-	 * When an event arrives on this stream, emit the result of calling f with the latest
-	 * values of all streams being sampled
-	 * @param {function(...values):*} f function to apply to each set of sampled values
-	 * @returns {Stream} stream of sampled and transformed values
-	 */
-	Stream.prototype.sample = function (f /* ...streams */) {
-	  return sample.sampleArray(f, this, base.tail(arguments));
-	};
-
-	//-----------------------------------------------------------------------
-	// Zipping
-
-	var zip = __webpack_require__(159);
-
-	exports.zip = zip.zip;
-
-	/**
-	 * Pair-wise combine items with those in s. Given 2 streams:
-	 * [1,2,3] zipWith f [4,5,6] -> [f(1,4),f(2,5),f(3,6)]
-	 * Note: zip causes fast streams to buffer and wait for slow streams.
-	 * @param {function(a:Stream, b:Stream, ...):*} f function to combine items
-	 * @returns {Stream} new stream containing pairs
-	 */
-	Stream.prototype.zip = function (f /*, ...streams*/) {
-	  return zip.zipArray(f, base.replace(this, 0, arguments));
-	};
-
-	//-----------------------------------------------------------------------
-	// Switching
-
-	var switchLatest = __webpack_require__(154).switch;
-
-	exports.switch = switchLatest;
-	exports.switchLatest = switchLatest;
-
-	/**
-	 * Given a stream of streams, return a new stream that adopts the behavior
-	 * of the most recent inner stream.
-	 * @returns {Stream} switching stream
-	 */
-	Stream.prototype.switch = Stream.prototype.switchLatest = function () {
-	  return switchLatest(this);
-	};
-
-	//-----------------------------------------------------------------------
-	// Filtering
-
-	var filter = __webpack_require__(146);
-
-	exports.filter = filter.filter;
-	exports.skipRepeats = exports.distinct = filter.skipRepeats;
-	exports.skipRepeatsWith = exports.distinctBy = filter.skipRepeatsWith;
-
-	/**
-	 * Retain only items matching a predicate
-	 * stream:                           -12345678-
-	 * filter(x => x % 2 === 0, stream): --2-4-6-8-
-	 * @param {function(x:*):boolean} p filtering predicate called for each item
-	 * @returns {Stream} stream containing only items for which predicate returns truthy
-	 */
-	Stream.prototype.filter = function (p) {
-	  return filter.filter(p, this);
-	};
-
-	/**
-	 * Skip repeated events, using === to compare items
-	 * stream:           -abbcd-
-	 * distinct(stream): -ab-cd-
-	 * @returns {Stream} stream with no repeated events
-	 */
-	Stream.prototype.skipRepeats = function () {
-	  return filter.skipRepeats(this);
-	};
-
-	/**
-	 * Skip repeated events, using supplied equals function to compare items
-	 * @param {function(a:*, b:*):boolean} equals function to compare items
-	 * @returns {Stream} stream with no repeated events
-	 */
-	Stream.prototype.skipRepeatsWith = function (equals) {
-	  return filter.skipRepeatsWith(equals, this);
-	};
-
-	//-----------------------------------------------------------------------
-	// Slicing
-
-	var slice = __webpack_require__(153);
-
-	exports.take = slice.take;
-	exports.skip = slice.skip;
-	exports.slice = slice.slice;
-	exports.takeWhile = slice.takeWhile;
-	exports.skipWhile = slice.skipWhile;
-
-	/**
-	 * stream:          -abcd-
-	 * take(2, stream): -ab|
-	 * @param {Number} n take up to this many events
-	 * @returns {Stream} stream containing at most the first n items from this stream
-	 */
-	Stream.prototype.take = function (n) {
-	  return slice.take(n, this);
-	};
-
-	/**
-	 * stream:          -abcd->
-	 * skip(2, stream): ---cd->
-	 * @param {Number} n skip this many events
-	 * @returns {Stream} stream not containing the first n events
-	 */
-	Stream.prototype.skip = function (n) {
-	  return slice.skip(n, this);
-	};
-
-	/**
-	 * Slice a stream by event index. Equivalent to, but more efficient than
-	 * stream.take(end).skip(start);
-	 * NOTE: Negative start and end are not supported
-	 * @param {Number} start skip all events before the start index
-	 * @param {Number} end allow all events from the start index to the end index
-	 * @returns {Stream} stream containing items where start <= index < end
-	 */
-	Stream.prototype.slice = function (start, end) {
-	  return slice.slice(start, end, this);
-	};
-
-	/**
-	 * stream:                        -123451234->
-	 * takeWhile(x => x < 5, stream): -1234|
-	 * @param {function(x:*):boolean} p predicate
-	 * @returns {Stream} stream containing items up to, but not including, the
-	 * first item for which p returns falsy.
-	 */
-	Stream.prototype.takeWhile = function (p) {
-	  return slice.takeWhile(p, this);
-	};
-
-	/**
-	 * stream:                        -123451234->
-	 * skipWhile(x => x < 5, stream): -----51234->
-	 * @param {function(x:*):boolean} p predicate
-	 * @returns {Stream} stream containing items following *and including* the
-	 * first item for which p returns falsy.
-	 */
-	Stream.prototype.skipWhile = function (p) {
-	  return slice.skipWhile(p, this);
-	};
-
-	//-----------------------------------------------------------------------
-	// Time slicing
-
-	var timeslice = __webpack_require__(156);
-
-	exports.until = exports.takeUntil = timeslice.takeUntil;
-	exports.since = exports.skipUntil = timeslice.skipUntil;
-	exports.during = timeslice.during;
-
-	/**
-	 * stream:                    -a-b-c-d-e-f-g->
-	 * signal:                    -------x
-	 * takeUntil(signal, stream): -a-b-c-|
-	 * @param {Stream} signal retain only events in stream before the first
-	 * event in signal
-	 * @returns {Stream} new stream containing only events that occur before
-	 * the first event in signal.
-	 */
-	Stream.prototype.until = Stream.prototype.takeUntil = function (signal) {
-	  return timeslice.takeUntil(signal, this);
-	};
-
-	/**
-	 * stream:                    -a-b-c-d-e-f-g->
-	 * signal:                    -------x
-	 * takeUntil(signal, stream): -------d-e-f-g->
-	 * @param {Stream} signal retain only events in stream at or after the first
-	 * event in signal
-	 * @returns {Stream} new stream containing only events that occur after
-	 * the first event in signal.
-	 */
-	Stream.prototype.since = Stream.prototype.skipUntil = function (signal) {
-	  return timeslice.skipUntil(signal, this);
-	};
-
-	/**
-	 * stream:                    -a-b-c-d-e-f-g->
-	 * timeWindow:                -----s
-	 * s:                               -----t
-	 * stream.during(timeWindow): -----c-d-e-|
-	 * @param {Stream<Stream>} timeWindow a stream whose first event (s) represents
-	 *  the window start time.  That event (s) is itself a stream whose first event (t)
-	 *  represents the window end time
-	 * @returns {Stream} new stream containing only events within the provided timespan
-	 */
-	Stream.prototype.during = function (timeWindow) {
-	  return timeslice.during(timeWindow, this);
-	};
-
-	//-----------------------------------------------------------------------
-	// Delaying
-
-	var delay = __webpack_require__(144).delay;
-
-	exports.delay = delay;
-
-	/**
-	 * @param {Number} delayTime milliseconds to delay each item
-	 * @returns {Stream} new stream containing the same items, but delayed by ms
-	 */
-	Stream.prototype.delay = function (delayTime) {
-	  return delay(delayTime, this);
-	};
-
-	//-----------------------------------------------------------------------
-	// Getting event timestamp
-
-	var timestamp = __webpack_require__(157).timestamp;
-
-	exports.timestamp = timestamp;
-
-	/**
-	 * Expose event timestamps into the stream. Turns a Stream<X> into
-	 * Stream<{time:t, value:X}>
-	 * @returns {Stream<{time:number, value:*}>}
-	 */
-	Stream.prototype.timestamp = function () {
-	  return timestamp(this);
-	};
-
-	//-----------------------------------------------------------------------
-	// Rate limiting
-
-	var limit = __webpack_require__(147);
-
-	exports.throttle = limit.throttle;
-	exports.debounce = limit.debounce;
-
-	/**
-	 * Limit the rate of events
-	 * stream:              abcd----abcd----
-	 * throttle(2, stream): a-c-----a-c-----
-	 * @param {Number} period time to suppress events
-	 * @returns {Stream} new stream that skips events for throttle period
-	 */
-	Stream.prototype.throttle = function (period) {
-	  return limit.throttle(period, this);
-	};
-
-	/**
-	 * Wait for a burst of events to subside and emit only the last event in the burst
-	 * stream:              abcd----abcd----
-	 * debounce(2, stream): -----d-------d--
-	 * @param {Number} period events occuring more frequently than this
-	 *  on the provided scheduler will be suppressed
-	 * @returns {Stream} new debounced stream
-	 */
-	Stream.prototype.debounce = function (period) {
-	  return limit.debounce(period, this);
-	};
-
-	//-----------------------------------------------------------------------
-	// Awaiting Promises
-
-	var promises = __webpack_require__(151);
-
-	exports.fromPromise = promises.fromPromise;
-	exports.await = promises.awaitPromises;
-
-	/**
-	 * Await promises, turning a Stream<Promise<X>> into Stream<X>.  Preserves
-	 * event order, but timeshifts events based on promise resolution time.
-	 * @returns {Stream<X>} stream containing non-promise values
-	 */
-	Stream.prototype.await = function () {
-	  return promises.awaitPromises(this);
-	};
-
-	//-----------------------------------------------------------------------
-	// Error handling
-
-	var errors = __webpack_require__(145);
-
-	exports.recoverWith = errors.flatMapError;
-	exports.flatMapError = errors.flatMapError;
-	exports.throwError = errors.throwError;
-
-	/**
-	 * If this stream encounters an error, recover and continue with items from stream
-	 * returned by f.
-	 * stream:                  -a-b-c-X-
-	 * f(X):                           d-e-f-g-
-	 * flatMapError(f, stream): -a-b-c-d-e-f-g-
-	 * @param {function(error:*):Stream} f function which returns a new stream
-	 * @returns {Stream} new stream which will recover from an error by calling f
-	 */
-	Stream.prototype.recoverWith = Stream.prototype.flatMapError = function (f) {
-	  return errors.flatMapError(f, this);
-	};
-
-	//-----------------------------------------------------------------------
-	// Multicasting
-
-	var multicast = __webpack_require__(7).default;
-
-	exports.multicast = multicast;
-
-	/**
-	 * Transform the stream into multicast stream.  That means that many subscribers
-	 * to the stream will not cause multiple invocations of the internal machinery.
-	 * @returns {Stream} new stream which will multicast events to all observers.
-	 */
-	Stream.prototype.multicast = function () {
-	  return multicast(this);
-	};
 
 /***/ },
 /* 13 */
@@ -1988,7 +1988,7 @@
 
 	var Stream = __webpack_require__(1);
 	var dispose = __webpack_require__(3);
-	var LinkedList = __webpack_require__(138);
+	var LinkedList = __webpack_require__(141);
 	var identity = __webpack_require__(0).id;
 
 	exports.mergeConcurrently = mergeConcurrently;
@@ -2246,7 +2246,7 @@
 
 	var dispose = _interopRequireWildcard(_dispose);
 
-	var _LinkedList = __webpack_require__(93);
+	var _LinkedList = __webpack_require__(96);
 
 	var _LinkedList2 = _interopRequireDefault(_LinkedList);
 
@@ -2424,11 +2424,11 @@
 
 	var _Pipe2 = _interopRequireDefault(_Pipe);
 
-	var _Filter = __webpack_require__(47);
+	var _Filter = __webpack_require__(49);
 
 	var _Filter2 = _interopRequireDefault(_Filter);
 
-	var _FilterMap = __webpack_require__(118);
+	var _FilterMap = __webpack_require__(121);
 
 	var _FilterMap2 = _interopRequireDefault(_FilterMap);
 
@@ -2509,7 +2509,7 @@
 	});
 	exports.PropagateTask = exports.defaultScheduler = exports.multicast = exports.throwError = exports.flatMapError = exports.recoverWith = exports.await = exports.awaitPromises = exports.fromPromise = exports.debounce = exports.throttle = exports.timestamp = exports.delay = exports.during = exports.since = exports.skipUntil = exports.until = exports.takeUntil = exports.skipWhile = exports.takeWhile = exports.slice = exports.skip = exports.take = exports.distinctBy = exports.skipRepeatsWith = exports.distinct = exports.skipRepeats = exports.filter = exports.switch = exports.switchLatest = exports.zipArray = exports.zip = exports.sampleWith = exports.sampleArray = exports.sample = exports.combineArray = exports.combine = exports.mergeArray = exports.merge = exports.mergeConcurrently = exports.concatMap = exports.flatMapEnd = exports.continueWith = exports.join = exports.chain = exports.flatMap = exports.transduce = exports.ap = exports.tap = exports.constant = exports.map = exports.startWith = exports.concat = exports.generate = exports.iterate = exports.unfold = exports.reduce = exports.scan = exports.loop = exports.drain = exports.forEach = exports.observe = exports.fromEvent = exports.periodic = exports.from = exports.never = exports.empty = exports.just = exports.of = exports.Stream = undefined;
 
-	var _fromEvent = __webpack_require__(132);
+	var _fromEvent = __webpack_require__(135);
 
 	Object.defineProperty(exports, 'fromEvent', {
 	  enumerable: true,
@@ -2518,7 +2518,7 @@
 	  }
 	});
 
-	var _unfold = __webpack_require__(137);
+	var _unfold = __webpack_require__(140);
 
 	Object.defineProperty(exports, 'unfold', {
 	  enumerable: true,
@@ -2527,7 +2527,7 @@
 	  }
 	});
 
-	var _iterate = __webpack_require__(135);
+	var _iterate = __webpack_require__(138);
 
 	Object.defineProperty(exports, 'iterate', {
 	  enumerable: true,
@@ -2536,7 +2536,7 @@
 	  }
 	});
 
-	var _generate = __webpack_require__(134);
+	var _generate = __webpack_require__(137);
 
 	Object.defineProperty(exports, 'generate', {
 	  enumerable: true,
@@ -2553,67 +2553,67 @@
 
 	var base = _interopRequireWildcard(_prelude);
 
-	var _core = __webpack_require__(10);
+	var _core = __webpack_require__(11);
 
-	var _from = __webpack_require__(130);
+	var _from = __webpack_require__(133);
 
-	var _periodic = __webpack_require__(136);
+	var _periodic = __webpack_require__(139);
 
-	var _symbolObservable = __webpack_require__(59);
+	var _symbolObservable = __webpack_require__(61);
 
 	var _symbolObservable2 = _interopRequireDefault(_symbolObservable);
 
-	var _subscribe = __webpack_require__(121);
+	var _subscribe = __webpack_require__(124);
 
-	var _thru = __webpack_require__(111);
+	var _thru = __webpack_require__(114);
 
-	var _observe = __webpack_require__(106);
+	var _observe = __webpack_require__(109);
 
-	var _loop = __webpack_require__(104);
+	var _loop = __webpack_require__(107);
 
-	var _accumulate = __webpack_require__(96);
+	var _accumulate = __webpack_require__(99);
 
-	var _build = __webpack_require__(98);
+	var _build = __webpack_require__(101);
 
 	var _transform = __webpack_require__(14);
 
-	var _applicative = __webpack_require__(97);
+	var _applicative = __webpack_require__(100);
 
-	var _transduce = __webpack_require__(114);
+	var _transduce = __webpack_require__(117);
 
-	var _flatMap = __webpack_require__(46);
+	var _flatMap = __webpack_require__(48);
 
-	var _continueWith = __webpack_require__(45);
+	var _continueWith = __webpack_require__(47);
 
-	var _concatMap = __webpack_require__(99);
+	var _concatMap = __webpack_require__(102);
 
 	var _mergeConcurrently = __webpack_require__(19);
 
-	var _merge = __webpack_require__(105);
+	var _merge = __webpack_require__(108);
 
-	var _combine = __webpack_require__(44);
+	var _combine = __webpack_require__(46);
 
-	var _sample = __webpack_require__(108);
+	var _sample = __webpack_require__(111);
 
-	var _zip = __webpack_require__(115);
+	var _zip = __webpack_require__(118);
 
-	var _switch = __webpack_require__(110);
+	var _switch = __webpack_require__(113);
 
-	var _filter = __webpack_require__(102);
+	var _filter = __webpack_require__(105);
 
-	var _slice = __webpack_require__(109);
+	var _slice = __webpack_require__(112);
 
-	var _timeslice = __webpack_require__(112);
+	var _timeslice = __webpack_require__(115);
 
-	var _delay = __webpack_require__(100);
+	var _delay = __webpack_require__(103);
 
-	var _timestamp = __webpack_require__(113);
+	var _timestamp = __webpack_require__(116);
 
-	var _limit = __webpack_require__(103);
+	var _limit = __webpack_require__(106);
 
-	var _promises = __webpack_require__(107);
+	var _promises = __webpack_require__(110);
 
-	var _errors = __webpack_require__(101);
+	var _errors = __webpack_require__(104);
 
 	var _multicast = __webpack_require__(7);
 
@@ -3348,15 +3348,15 @@
 	  value: true
 	});
 
-	var _Scheduler = __webpack_require__(124);
+	var _Scheduler = __webpack_require__(127);
 
 	var _Scheduler2 = _interopRequireDefault(_Scheduler);
 
-	var _ClockTimer = __webpack_require__(122);
+	var _ClockTimer = __webpack_require__(125);
 
 	var _ClockTimer2 = _interopRequireDefault(_ClockTimer);
 
-	var _Timeline = __webpack_require__(125);
+	var _Timeline = __webpack_require__(128);
 
 	var _Timeline2 = _interopRequireDefault(_Timeline);
 
@@ -3521,8 +3521,8 @@
 	/** @author John Hann */
 
 	var Pipe = __webpack_require__(5);
-	var Filter = __webpack_require__(54);
-	var FilterMap = __webpack_require__(162);
+	var Filter = __webpack_require__(56);
+	var FilterMap = __webpack_require__(165);
 	var base = __webpack_require__(0);
 
 	module.exports = Map;
@@ -3612,14 +3612,14 @@
 	/** @author Brian Cavalier */
 	/** @author John Hann */
 
-	var Scheduler = __webpack_require__(166);
-	var setTimeoutTimer = __webpack_require__(168);
-	var nodeTimer = __webpack_require__(167);
+	var Scheduler = __webpack_require__(169);
+	var setTimeoutTimer = __webpack_require__(171);
+	var nodeTimer = __webpack_require__(170);
 
 	var isNode = (typeof process === 'undefined' ? 'undefined' : _typeof(process)) === 'object' && typeof process.nextTick === 'function';
 
 	module.exports = new Scheduler(isNode ? nodeTimer : setTimeoutTimer);
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(35)))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(36)))
 
 /***/ },
 /* 33 */
@@ -3664,6 +3664,185 @@
 /* 34 */
 /***/ function(module, exports, __webpack_require__) {
 
+	var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
+
+	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+
+	(function (global, factory) {
+	  ( false ? 'undefined' : _typeof(exports)) === 'object' && typeof module !== 'undefined' ? factory(exports, __webpack_require__(9), __webpack_require__(7)) :  true ? !(__WEBPACK_AMD_DEFINE_ARRAY__ = [exports, __webpack_require__(9), __webpack_require__(7)], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__)) : factory(global.mostCreate = global.mostCreate || {}, global.most, global.mostMulticast);
+	})(undefined, function (exports, most, _most_multicast) {
+	  'use strict';
+
+	  /** @license MIT License (c) copyright 2010-2016 original author or authors */
+
+	  function defer(task) {
+	    return Promise.resolve(task).then(runTask);
+	  }
+
+	  function runTask(task) {
+	    try {
+	      return task.run();
+	    } catch (e) {
+	      return task.error(e);
+	    }
+	  }
+
+	  /** @license MIT License (c) copyright 2010-2016 original author or authors */
+
+	  var PropagateAllTask = function PropagateAllTask(sink, time, events) {
+	    this.sink = sink;
+	    this.time = time;
+	    this.events = events;
+	  };
+
+	  PropagateAllTask.prototype.run = function run() {
+	    var this$1 = this;
+
+	    var events = this.events;
+	    var sink = this.sink;
+	    var event;
+
+	    for (var i = 0, l = events.length; i < l; ++i) {
+	      event = events[i];
+	      this$1.time = event.time;
+	      sink.event(event.time, event.value);
+	    }
+
+	    events.length = 0;
+	  };
+
+	  PropagateAllTask.prototype.error = function error(e) {
+	    this.sink.error(this.time, e);
+	  };
+
+	  /** @license MIT License (c) copyright 2010-2016 original author or authors */
+
+	  var EndTask = function EndTask(t, x, sink) {
+	    this.time = t;
+	    this.value = x;
+	    this.sink = sink;
+	  };
+
+	  EndTask.prototype.run = function run() {
+	    this.sink.end(this.time, this.value);
+	  };
+
+	  EndTask.prototype.error = function error(e) {
+	    this.sink.error(this.time, e);
+	  };
+
+	  /** @license MIT License (c) copyright 2010-2016 original author or authors */
+
+	  var ErrorTask = function ErrorTask(t, e, sink) {
+	    this.time = t;
+	    this.value = e;
+	    this.sink = sink;
+	  };
+
+	  ErrorTask.prototype.run = function run() {
+	    this.sink.error(this.time, this.value);
+	  };
+
+	  ErrorTask.prototype.error = function error(e) {
+	    throw e;
+	  };
+
+	  /** @license MIT License (c) copyright 2010-2016 original author or authors */
+
+	  var DeferredSink = function DeferredSink(sink) {
+	    this.sink = sink;
+	    this.events = [];
+	    this.active = true;
+	  };
+
+	  DeferredSink.prototype.event = function event(t, x) {
+	    if (!this.active) {
+	      return;
+	    }
+
+	    if (this.events.length === 0) {
+	      defer(new PropagateAllTask(this.sink, t, this.events));
+	    }
+
+	    this.events.push({ time: t, value: x });
+	  };
+
+	  DeferredSink.prototype.end = function end(t, x) {
+	    if (!this.active) {
+	      return;
+	    }
+
+	    this._end(new EndTask(t, x, this.sink));
+	  };
+
+	  DeferredSink.prototype.error = function error(t, e) {
+	    this._end(new ErrorTask(t, e, this.sink));
+	  };
+
+	  DeferredSink.prototype._end = function _end(task) {
+	    this.active = false;
+	    defer(task);
+	  };
+
+	  /** @license MIT License (c) copyright 2010-2016 original author or authors */
+
+	  var CreateSubscriber = function CreateSubscriber(sink, scheduler, subscribe) {
+	    this.sink = sink;
+	    this.scheduler = scheduler;
+	    this._unsubscribe = this._init(subscribe);
+	  };
+
+	  CreateSubscriber.prototype._init = function _init(subscribe) {
+	    var this$1 = this;
+
+	    var add = function add(x) {
+	      return this$1.sink.event(this$1.scheduler.now(), x);
+	    };
+	    var end = function end(x) {
+	      return this$1.sink.end(this$1.scheduler.now(), x);
+	    };
+	    var error = function error(e) {
+	      return this$1.sink.error(this$1.scheduler.now(), e);
+	    };
+
+	    try {
+	      return subscribe(add, end, error);
+	    } catch (e) {
+	      error(e);
+	    }
+	  };
+
+	  CreateSubscriber.prototype.dispose = function dispose() {
+	    if (typeof this._unsubscribe === 'function') {
+	      return this._unsubscribe.call(void 0);
+	    }
+	  };
+
+	  /** @license MIT License (c) copyright 2010-2016 original author or authors */
+
+	  var Create = function Create(subscribe) {
+	    this._subscribe = subscribe;
+	  };
+
+	  Create.prototype.run = function run(sink, scheduler) {
+	    return new CreateSubscriber(new DeferredSink(sink), scheduler, this._subscribe);
+	  };
+
+	  /** @license MIT License (c) copyright 2016 original author or authors */
+
+	  function create(run) {
+	    return new most.Stream(new _most_multicast.MulticastSource(new Create(run)));
+	  }
+
+	  exports.create = create;
+
+	  Object.defineProperty(exports, '__esModule', { value: true });
+	});
+
+/***/ },
+/* 35 */
+/***/ function(module, exports, __webpack_require__) {
+
 	'use strict';
 
 	Object.defineProperty(exports, "__esModule", {
@@ -3671,7 +3850,7 @@
 	});
 	exports.mockDOMSource = exports.makeDOMDriver = exports.video = exports.ul = exports.u = exports.tr = exports.title = exports.thead = exports.th = exports.tfoot = exports.textarea = exports.td = exports.tbody = exports.table = exports.sup = exports.sub = exports.style = exports.strong = exports.span = exports.source = exports.small = exports.select = exports.section = exports.script = exports.samp = exports.s = exports.ruby = exports.rt = exports.rp = exports.q = exports.pre = exports.param = exports.p = exports.option = exports.optgroup = exports.ol = exports.object = exports.noscript = exports.nav = exports.meta = exports.menu = exports.mark = exports.map = exports.main = exports.link = exports.li = exports.legend = exports.label = exports.keygen = exports.kbd = exports.ins = exports.input = exports.img = exports.iframe = exports.i = exports.html = exports.hr = exports.hgroup = exports.header = exports.head = exports.h6 = exports.h5 = exports.h4 = exports.h3 = exports.h2 = exports.h1 = exports.form = exports.footer = exports.figure = exports.figcaption = exports.fieldset = exports.embed = exports.em = exports.dt = exports.dl = exports.div = exports.dir = exports.dfn = exports.del = exports.dd = exports.colgroup = exports.col = exports.code = exports.cite = exports.caption = exports.canvas = exports.button = exports.br = exports.body = exports.blockquote = exports.bdo = exports.bdi = exports.base = exports.b = exports.audio = exports.aside = exports.article = exports.area = exports.address = exports.abbr = exports.a = exports.h = exports.thunk = exports.modules = undefined;
 
-	var _makeDOMDriver = __webpack_require__(66);
+	var _makeDOMDriver = __webpack_require__(69);
 
 	Object.defineProperty(exports, 'makeDOMDriver', {
 	  enumerable: true,
@@ -3680,7 +3859,7 @@
 	  }
 	});
 
-	var _mockDOMSource = __webpack_require__(67);
+	var _mockDOMSource = __webpack_require__(70);
 
 	Object.defineProperty(exports, 'mockDOMSource', {
 	  enumerable: true,
@@ -3689,19 +3868,19 @@
 	  }
 	});
 
-	var _modules = __webpack_require__(39);
+	var _modules = __webpack_require__(41);
 
 	var modules = _interopRequireWildcard(_modules);
 
-	var _thunk = __webpack_require__(79);
+	var _thunk = __webpack_require__(82);
 
 	var _thunk2 = _interopRequireDefault(_thunk);
 
-	var _hyperscript = __webpack_require__(65);
+	var _hyperscript = __webpack_require__(68);
 
 	var _hyperscript2 = _interopRequireDefault(_hyperscript);
 
-	var _hyperscriptHelpers = __webpack_require__(81);
+	var _hyperscriptHelpers = __webpack_require__(84);
 
 	var _hyperscriptHelpers2 = _interopRequireDefault(_hyperscriptHelpers);
 
@@ -3927,7 +4106,7 @@
 	exports.video = video;
 
 /***/ },
-/* 35 */
+/* 36 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -4113,7 +4292,111 @@
 	};
 
 /***/ },
-/* 36 */
+/* 37 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
+
+	(function (global, factory) {
+	  if (true) {
+	    !(__WEBPACK_AMD_DEFINE_ARRAY__ = [exports, __webpack_require__(7)], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+	  } else if (typeof exports !== "undefined") {
+	    factory(exports, require('@most/multicast'));
+	  } else {
+	    var mod = {
+	      exports: {}
+	    };
+	    factory(mod.exports, global.multicast);
+	    global.mostHold = mod.exports;
+	  }
+	})(undefined, function (exports, _multicast) {
+	  'use strict';
+
+	  Object.defineProperty(exports, "__esModule", {
+	    value: true
+	  });
+
+	  function _classCallCheck(instance, Constructor) {
+	    if (!(instance instanceof Constructor)) {
+	      throw new TypeError("Cannot call a class as a function");
+	    }
+	  }
+
+	  var _createClass = function () {
+	    function defineProperties(target, props) {
+	      for (var i = 0; i < props.length; i++) {
+	        var descriptor = props[i];
+	        descriptor.enumerable = descriptor.enumerable || false;
+	        descriptor.configurable = true;
+	        if ("value" in descriptor) descriptor.writable = true;
+	        Object.defineProperty(target, descriptor.key, descriptor);
+	      }
+	    }
+
+	    return function (Constructor, protoProps, staticProps) {
+	      if (protoProps) defineProperties(Constructor.prototype, protoProps);
+	      if (staticProps) defineProperties(Constructor, staticProps);
+	      return Constructor;
+	    };
+	  }();
+
+	  // hold :: Stream a -> Stream a
+	  var index = function index(stream) {
+	    return new stream.constructor(new _multicast.MulticastSource(new Hold(stream.source)));
+	  };
+
+	  var Hold = function () {
+	    function Hold(source) {
+	      _classCallCheck(this, Hold);
+
+	      this.source = source;
+	      this.time = -Infinity;
+	      this.value = void 0;
+	    }
+
+	    _createClass(Hold, [{
+	      key: 'run',
+	      value: function run(sink, scheduler) {
+	        /* istanbul ignore else */
+	        if (sink._hold !== this) {
+	          sink._hold = this;
+	          sink._holdAdd = sink.add;
+	          sink.add = holdAdd;
+
+	          sink._holdEvent = sink.event;
+	          sink.event = holdEvent;
+	        }
+
+	        return this.source.run(sink, scheduler);
+	      }
+	    }]);
+
+	    return Hold;
+	  }();
+
+	  function holdAdd(sink) {
+	    var len = this._holdAdd(sink);
+	    /* istanbul ignore else */
+	    if (this._hold.time >= 0) {
+	      sink.event(this._hold.time, this._hold.value);
+	    }
+	    return len;
+	  }
+
+	  function holdEvent(t, x) {
+	    /* istanbul ignore else */
+	    if (t >= this._hold.time) {
+	      this._hold.time = t;
+	      this._hold.value = x;
+	    }
+	    return this._holdEvent(t, x);
+	  }
+
+	  exports.default = index;
+	});
+
+/***/ },
+/* 38 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -4123,13 +4406,13 @@
 	});
 	exports.makeEventsSelector = undefined;
 
-	var _domEvent = __webpack_require__(63);
+	var _domEvent = __webpack_require__(67);
 
-	var _makeIsStrictlyInRootScope = __webpack_require__(38);
+	var _makeIsStrictlyInRootScope = __webpack_require__(40);
 
 	var matchesSelector = void 0;
 	try {
-	  matchesSelector = __webpack_require__(82);
+	  matchesSelector = __webpack_require__(85);
 	} catch (e) {
 	  matchesSelector = function matchesSelector() {};
 	}
@@ -4223,7 +4506,7 @@
 	exports.makeEventsSelector = makeEventsSelector;
 
 /***/ },
-/* 37 */
+/* 39 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -4233,7 +4516,7 @@
 	});
 	exports.isolateSource = exports.isolateSink = undefined;
 
-	var _utils = __webpack_require__(40);
+	var _utils = __webpack_require__(42);
 
 	var isolateSource = function isolateSource(source_, scope) {
 	  return source_.select('.' + _utils.SCOPE_PREFIX + scope);
@@ -4260,7 +4543,7 @@
 	exports.isolateSource = isolateSource;
 
 /***/ },
-/* 38 */
+/* 40 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -4296,7 +4579,7 @@
 	exports.makeIsStrictlyInRootScope = makeIsStrictlyInRootScope;
 
 /***/ },
-/* 39 */
+/* 41 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -4306,27 +4589,27 @@
 	});
 	exports.EventsModule = exports.HeroModule = exports.AttrsModule = exports.PropsModule = exports.ClassModule = exports.StyleModule = undefined;
 
-	var _class = __webpack_require__(73);
+	var _class = __webpack_require__(76);
 
 	var _class2 = _interopRequireDefault(_class);
 
-	var _props = __webpack_require__(76);
+	var _props = __webpack_require__(79);
 
 	var _props2 = _interopRequireDefault(_props);
 
-	var _attributes = __webpack_require__(72);
+	var _attributes = __webpack_require__(75);
 
 	var _attributes2 = _interopRequireDefault(_attributes);
 
-	var _eventlisteners = __webpack_require__(74);
+	var _eventlisteners = __webpack_require__(77);
 
 	var _eventlisteners2 = _interopRequireDefault(_eventlisteners);
 
-	var _style = __webpack_require__(77);
+	var _style = __webpack_require__(80);
 
 	var _style2 = _interopRequireDefault(_style);
 
-	var _hero = __webpack_require__(75);
+	var _hero = __webpack_require__(78);
 
 	var _hero2 = _interopRequireDefault(_hero);
 
@@ -4343,7 +4626,7 @@
 	exports.EventsModule = _eventlisteners2.default;
 
 /***/ },
-/* 40 */
+/* 42 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -4374,7 +4657,7 @@
 	exports.SCOPE_PREFIX = SCOPE_PREFIX;
 
 /***/ },
-/* 41 */
+/* 43 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -4384,7 +4667,7 @@
 	});
 	exports.default = selectorParser;
 
-	var _browserSplit = __webpack_require__(80);
+	var _browserSplit = __webpack_require__(83);
 
 	var _browserSplit2 = _interopRequireDefault(_browserSplit);
 
@@ -4438,7 +4721,7 @@
 	}
 
 /***/ },
-/* 42 */
+/* 44 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -4488,7 +4771,7 @@
 	};
 
 /***/ },
-/* 43 */
+/* 45 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -4498,11 +4781,11 @@
 	        if (!exports.hasOwnProperty(p)) exports[p] = m[p];
 	    }
 	}
-	__export(__webpack_require__(89));
+	__export(__webpack_require__(92));
 	//# sourceMappingURL=index.js.map
 
 /***/ },
-/* 44 */
+/* 46 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -4521,7 +4804,7 @@
 
 	var transform = _interopRequireWildcard(_transform);
 
-	var _core = __webpack_require__(10);
+	var _core = __webpack_require__(11);
 
 	var core = _interopRequireWildcard(_core);
 
@@ -4669,7 +4952,7 @@
 	};
 
 /***/ },
-/* 45 */
+/* 47 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -4766,7 +5049,7 @@
 	};
 
 /***/ },
-/* 46 */
+/* 48 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -4805,7 +5088,7 @@
 	}
 
 /***/ },
-/* 47 */
+/* 49 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -4870,7 +5153,7 @@
 	}
 
 /***/ },
-/* 48 */
+/* 50 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -4909,7 +5192,7 @@
 	}
 
 /***/ },
-/* 49 */
+/* 51 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -4994,7 +5277,7 @@
 	}
 
 /***/ },
-/* 50 */
+/* 52 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -5005,7 +5288,7 @@
 
 	var Stream = __webpack_require__(1);
 	var transform = __webpack_require__(16);
-	var core = __webpack_require__(11);
+	var core = __webpack_require__(12);
 	var Pipe = __webpack_require__(5);
 	var IndexSink = __webpack_require__(33);
 	var dispose = __webpack_require__(3);
@@ -5115,7 +5398,7 @@
 	};
 
 /***/ },
-/* 51 */
+/* 53 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -5188,7 +5471,7 @@
 	};
 
 /***/ },
-/* 52 */
+/* 54 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -5225,7 +5508,7 @@
 	}
 
 /***/ },
-/* 53 */
+/* 55 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -5249,7 +5532,7 @@
 	}
 
 /***/ },
-/* 54 */
+/* 56 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -5305,7 +5588,7 @@
 	}
 
 /***/ },
-/* 55 */
+/* 57 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -5342,7 +5625,7 @@
 	}
 
 /***/ },
-/* 56 */
+/* 58 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -5403,7 +5686,7 @@
 	}
 
 /***/ },
-/* 57 */
+/* 59 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -5412,7 +5695,7 @@
 	/** @author Brian Cavalier */
 	/** @author John Hann */
 
-	var defer = __webpack_require__(53);
+	var defer = __webpack_require__(55);
 
 	module.exports = DeferredSink;
 
@@ -5499,25 +5782,25 @@
 	};
 
 /***/ },
-/* 58 */
+/* 60 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(global) {/* global window */
 	'use strict';
 
-	module.exports = __webpack_require__(181)(global || window || undefined);
+	module.exports = __webpack_require__(184)(global || window || undefined);
 	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }())))
 
 /***/ },
-/* 59 */
+/* 61 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	module.exports = __webpack_require__(182);
+	module.exports = __webpack_require__(185);
 
 /***/ },
-/* 60 */
+/* 62 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -5526,7 +5809,7 @@
 	  value: true
 	});
 
-	var _dom = __webpack_require__(34);
+	var _dom = __webpack_require__(35);
 
 	/*
 	import {subject} from 'most-subject'
@@ -5609,9 +5892,9 @@
 
 	var MonadState = (0, _dom.h)('pre', '    function MonadState(g, state, p) {\n      this.id = g;\n      this.s = state;\n      this.process = p;\n      this.a = s[3];\n      this.bnd = (func, ...args) => func(this.s, ...args);  \n      this.run = ar => { \n        var ar2 = this.process(ar);\n        this.s = ar2;\n        this.a = ar2[3];\n        window[this.id] = this;\n        return window[this.id];\n      }\n    };  ');
 
-	var primesMonad = (0, _dom.h)('pre', '  var primesMonad = new MonadState(\'primesMonad\', [2, \'\', 3, [2]], [2],  primes_state) \n\n  var primes_state = function primes_state(x) {\n    var v = x.slice();\n      while (2 === 2) {\n        if (v[3].every(e => ((v[0]/e) != Math.floor(v[0]/e)))) {\n          v[3].push(v[0]);\n        }\n        if (v[3][v[3].length - 1] > v[2]) { break }; // Not an infinite loop afterall\n        v[0]+=2;\n      }\n    return v;\n  }  ');
+	var primesMonad = (0, _dom.h)('pre', '    var primesMonad = new MonadState(\'primesMonad\', [2, \'\', 3, [2]], [2],  primes_state) \n\n    var primes_state = function primes_state(x) {\n      var v = x.slice();\n      console.log(\'In script2.js >>> primes_state v is \', v );\n      while (2 == 2) {\n          if ( v[3].every(e =>  (v[0] / e) != Math.floor(v[0] / e)) ) {\n              v[3].push(v[0]);\n          }\n          if (v[3][v[3].length - 1] > v[2]) {\n             return v; \n          };\n          v[0] += 2;\n      }\n    }  ');
 
-	var fibsMonad = (0, _dom.h)('pre', '  var primesMonad = new MonadState(\'primesMonad\', [3, \'\', 3, [2,3]], primes_state);\n\n  var fibs_state = function fibs_state(ar) {\n    var a = ar.slice();\n    while (a[3].length < a[2]) {\n      a = [a[1], a[0] + a[1], a[2], a[3].concat(a[0])];\n    }\n    return a\n  }  ');
+	var fibsMonad = (0, _dom.h)('pre', '  var primesMonad = new MonadState(\'primesMonad\', [3, \'\', 3, [2,3]], primes_state);\n\n\n  var fibs_state = function fibs_state(ar) {\n    var a = ar.slice();\n    while (a[3].length < a[2]) {\n      a = [a[1], a[0] + a[1], a[2], a[3].concat(a[0])];\n    }\n    return a\n  }  ');
 
 	var tr3 = (0, _dom.h)('pre', '  var tr3 = function tr (fibsArray, primesArray) {\n    var bound = Math.ceil(Math.sqrt(fibsArray[fibsArray.length - 1]))\n    var primes = primesArray.slice();\n    if (primesArray.slice(-1)[0] >= bound) {\n      primes = primesArray.filter(v => v <= bound);\n    } \n    var ar = [];\n    var fibs = fibsArray.slice(3);\n    fibs.map (v => {\n      if (primesArray.every(p => (v % p || v === p))) ar.push(v);\n    })\n    return [fibsArray, primes, ar]\n  }  ');
 
@@ -5692,123 +5975,124 @@
 
 	var wDriver = (0, _dom.h)('pre.green2', '  const workerA = new Worker("worker.js");\n\n  const workerDriver = function () {\n    return create((add) => workerA.onmessage = msg => add(msg))\n  }  ');
 
-	var worker_js = (0, _dom.h)('pre.green2', '  onmessage = function(v) {\n    function MonadState(g, state, p) {\n      this.id = g;\n      this.s = state;\n      this.process = p;\n      this.a = this.s[3];\n      this.bnd = (func, ...args) => func(this.s, ...args);  \n      this.run = ar => { \n        var ar2 = this.process(ar);\n        this.s = ar2;\n        this.a = ar2[3];\n        self[this.id] = this;\n        return self[this.id];\n      }\n    };\n    \n    function primes_state(x) {\n      var v = x.slice();\n      while (2 == 2) {\n          if ( v[3].every(e =>  (v[0] / e) != Math.floor(v[0] / e)) ) {\n              v[3].push(v[0]);\n          }\n          if (v[3][v[3].length - 1] > v[2]) {\n              break;\n          };\n          v[0] += 2;\n      }\n      return v;\n    };\n    \n    var primesMonad = new MonadState(\'primesMonad\', [3, \'\', 3, [2,3]], primes_state);\n    primesMonad.run([3, \'\', 12, [2, 3]]);\n    function pFib(fibs, primes) {\n      var ar = [];\n      fibs.map(function (f) {\n          if (f < 2)\n              return;\n          if (primes.every(function (p) { return (f % p != 0 || f == p); }))\n              ar.push(f);\n      });\n      return ar;\n    };\n    \n    function prFactTransformer3(s, n) {\n      return factors_state3([[], [], n, s[3]]);\n    };\n    \n    function factors_state3(a) {\n      var b = a.slice();\n      var result;\n      func(b);\n      function func (v) {\n        for (let p of v[3]) {\n          if (v[2] / p == Math.floor(v[2] / p)) {\n            v[1].push(p);\n            v[2] = v[2]/p;\n            if (v[2] != 1) {\n              func(v);\n            }\n          };\n          v[1].sort(function(a, b) {\n            return a - b;\n          });\n          result = v[1];\n        }; \n      }\n      return result;\n    }\n    \n    function checkpM () {\n    \n    };\n    \n    function factors (num) {\n      return primesMonad.run([primesMonad.s[0], [], num, primesMonad.a])\n      .bnd(s => prFactTransformer3(s, num))\n    }\n    \n    function lcm (c1,d1) {\n      var ar= [];\n      var c = c1.slice()\n      var d = d1.slice()\n      var r;\n      d1.map(v => {\n        if (c.some(x => x === v)) {\n          ar.push(v)\n          c.splice(c.indexOf(v),1)\n          d.splice(d.indexOf(v),1)}\n          r = ar.concat(d).concat(c).reduce(function (a,b) {return a*b})\n        }\n      )\n      return r\n    }\n  \n    var a = v.data[0];\n    var b = v.data[1];\n    var r = Math.sqrt(a*a + b*b);\n    console.log(\'In worker.js a,b\',a,b )\n    postMessage(["CA#$41", r]); \n    postMessage(["CB#$41", parseInt(a,10) + parseInt(b,10)]); \n    postMessage(["CC#$41", a * b]); \n    postMessage(["CD#$41", lcm(factors(a),factors(b))]);\n  };    ');
+	var worker$ = (0, _dom.h)('pre.green2', '  \n    const worker$ = sources.WK.map(v => {\n      v.preventDefault();\n      console.log(\'In worker$  v is \', v );\n      mMZ21.bnd(() => {\n        mM11.ret(v.data[1]);\n        }); \n      mMZ22.bnd(() => {\n        mM12.ret(v.data[1])\n      }); \n      mMZ23.bnd(() => {\n        mM13.ret(v.data[1])\n      }); \n      mMZ24.bnd(() => {\n        mM14.ret(v.data[1])\n      }); \n      mMZ25.bnd(() => {\n        primesMonad.s = v.data[1];\n        primesMonad.a = v.data[1][3];\n        console.log(\'Prime number\', primesMonad.a.length,\'is\', primesMonad.s[0] )\n      });\n      next(v.data[0], \'CA#$41\', mMZ21)\n      next(v.data[0], \'CB#$41\', mMZ22)\n      next(v.data[0], \'CC#$41\', mMZ23)\n      next(v.data[0], \'CD#$41\', mMZ24)\n      next(v.data[0], \'CE#$41\', mMZ25)\n    });   ');
 
-	var worker$ = (0, _dom.h)('pre.green2', '  const worker$ = sources.WK.map(v => {\n    mMZ21.bnd(() => {\n      mM11.ret(v.data[1]);\n      }); \n    mMZ22.bnd(() => {\n      mM12.ret(v.data[1])\n    }); \n    mMZ23.bnd(() => {\n      mM13.ret(v.data[1])\n    }); \n    mMZ24.bnd(() => {\n      mM14.ret(v.data[1])\n    }); \n    next(v.data[0], \'CA#$41\', mMZ21)\n    next(v.data[0], \'CB#$41\', mMZ22)\n    next(v.data[0], \'CC#$41\', mMZ23)\n    next(v.data[0], \'CD#$41\', mMZ24)\n    });    ');
+	var workerPrimeFibs_2 = (0, _dom.h)('pre.green2', '    const workerDriverB = function () {\n        return create((add) => workerB.onmessage = msg => add(msg))\n    }\n\n    const workerB$ = sources.WWB.map(m => {\n      mMres.ret(m.data);\n    });   ');
+
+	var workerPrimeFibsjs = (0, _dom.h)('pre.green2', '    onmessage = function(m) {\n      console.log(\'In workerB.js m is \', m );\n      var _self = self;\n      var res;\n      importScripts(\'script2.js\');\n    \n      fibsMonad.run([1, 2 , parseInt(m.data,10), [0,1]])\n      .bnd(fibsState => fibsMonad\n        .bnd(fpTransformer, primesMonad)\n          .bnd(primesState => tr3(fibsState[3], primesState[3])\n          .bnd(ar => {\n            console.log(\'In workerB.js __ ar is \', ar );\n            _self.postMessage(ar);\n          }) \n        ) \n      );\n    };   ');
+
+	var workerFactors_2 = (0, _dom.h)('pre', '    const workerDriverC = function () {\n      return create((add) => workerC.onmessage = msg => add(msg));\n    ;}\n\n    const workerC$ = sources.WWC.map(m => {\n      mMfactors.ret(m.data[0]);\n      primesMonad.s = m.data[1];\n      primesMonad.a = m.data[1][3];\n    });    ');
+
+	var workerFactorsjs = (0, _dom.h)('pre', '  \nonmessage = function(m) {\n  \n  console.log(\'In workerC.js m.data is \', m.data );\n  importScripts(\'script2.js\');\n\n  primesMonad.run([primesMonad.s[0], [], m.data, primesMonad.s[3]])\n  .bnd(s => prFactTransformer3(s, m.data)\n  .bnd(factors => postMessage(["The prime factors of " + m.data + " are " + factors.join(\', \'), s])));\n } \n');
+
+	var worker_js = (0, _dom.h)('pre', ' onmessage = function(v) {\n  \n    importScripts(\'script2.js\');\n  \n    if(Array.isArray(v.data) && v.data.length === 4) {\n      postMessage(["CE#$41", primesMonad.run(v.data).s])\n    }\n  \n    if (v.data.length === 2 && typeof v.data[0] === \'string\' && typeof v.data[1] === \'string\') {\n      function lcm (c,d) {\n        console.log(\'In worker.js c, d \', c, d );\n        var ar= [];\n        var r;\n        d.map(v => {\n          if (c.some(x => x === v)) {\n            ar.push(v)\n            c.splice(c.indexOf(v),1)\n            d.splice(d.indexOf(v),1)}\n            r = ar.concat(d).concat(c).reduce(function (a,b) {return a*b})\n          }\n        )\n        return r\n      }\n    \n      var a = v.data[0];\n      var b = v.data[1];\n      var r = Math.sqrt(a*a + b*b);\n      console.log(\'In worker.js a,b\',a,b )\n      postMessage(["CA#$41", r]); \n      postMessage(["CB#$41", parseInt(a,10) + parseInt(b,10)]); \n      postMessage(["CC#$41", a * b]); \n      postMessage(["CD#$41", lcm(factors(a).x, factors(b).x)]);\n    };  ');
+
+	var primes_state = (0, _dom.h)('pre', '    function primes_state(x) {\n      console.log(\'Entering primes_state. x is\', x );\n      var v = x.slice();\n      while (2 == 2) {\n          if ( v[3].every(e =>  (v[0] / e) != Math.floor(v[0] / e)) ) {\n              v[3].push(v[0]);\n          }\n          if (v[3][v[3].length - 1] > v[2]) {\n             console.log(\'Leaving primes_state. x is\', x );\n             return v; \n          };\n          v[0] += 2;\n      }\n    };    ');
+
+	var p3 = (0, _dom.h)('pre', '  \n');
+
+	var p4 = (0, _dom.h)('pre', '  \n');
 
 	var p8 = (0, _dom.h)('pre', '  \n');
 
 	var p9 = (0, _dom.h)('pre', '  \n');
 
-	exports.default = { wDriver: wDriver, worker_js: worker_js, worker$: worker$, errorDemo: errorDemo, monadEr: monadEr, backAction: backAction, monadArchive2: monadArchive2, tests: tests, numClick1: numClick1, numClick2: numClick2, mMZ10: mMZ10, test3: test3, travMonad: travMonad, monad: monad, equals: equals, fmap: fmap, opM: opM, e1: e1, e2: e2, e2x: e2x, e3: e3, e4: e4, e4x: e4x, e6: e6, e6x: e6x, driver: driver, messages: messages, monadIt: monadIt, MonadSet: MonadSet, updateCalc: updateCalc, arrayFuncs: arrayFuncs, nums: nums, cleanup: cleanup, ret: ret, C42: C42, newTask: newTask, process: process, mM$task: mM$task, colorClick: colorClick, edit: edit, testZ: testZ, quad: quad, runTest: runTest, todoStream: todoStream, inc: inc, seed: seed, add: add, MonadState: MonadState, primesMonad: primesMonad, fibsMonad: fibsMonad, primeFibInterface: primeFibInterface, tr3: tr3, fpTransformer: fpTransformer, factorsMonad: factorsMonad, factorsInput: factorsInput, playerMonad: playerMonad, promise: promise, promiseSnippet: promiseSnippet, timeout: timeout, timeoutSnippet: timeoutSnippet, examples: examples, examples2: examples2, async: async };
+	exports.default = { primes_state: primes_state, workerPrimeFibsjs: workerPrimeFibsjs, workerPrimeFibs_2: workerPrimeFibs_2, workerFactors_2: workerFactors_2, workerFactorsjs: workerFactorsjs, worker_js: worker_js, worker$: worker$, errorDemo: errorDemo, monadEr: monadEr, backAction: backAction, monadArchive2: monadArchive2, tests: tests, numClick1: numClick1, numClick2: numClick2, mMZ10: mMZ10, test3: test3, travMonad: travMonad, monad: monad, equals: equals, fmap: fmap, opM: opM, e1: e1, e2: e2, e2x: e2x, e3: e3, e4: e4, e4x: e4x, e6: e6, e6x: e6x, driver: driver, messages: messages, monadIt: monadIt, MonadSet: MonadSet, updateCalc: updateCalc, arrayFuncs: arrayFuncs, nums: nums, cleanup: cleanup, ret: ret, C42: C42, newTask: newTask, process: process, mM$task: mM$task, colorClick: colorClick, edit: edit, testZ: testZ, quad: quad, runTest: runTest, todoStream: todoStream, inc: inc, seed: seed, add: add, MonadState: MonadState, primesMonad: primesMonad, fibsMonad: fibsMonad, primeFibInterface: primeFibInterface, tr3: tr3, fpTransformer: fpTransformer, factorsMonad: factorsMonad, factorsInput: factorsInput, playerMonad: playerMonad, promise: promise, promiseSnippet: promiseSnippet, timeout: timeout, timeoutSnippet: timeoutSnippet, examples: examples, examples2: examples2, async: async };
 
 /***/ },
-/* 61 */
+/* 63 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
 
-	var most_subject_1 = __webpack_require__(88);
-	function run(component, drivers) {
-	    var disposableSubject = most_subject_1.sync();
-	    var sinkProxies = createSinkProxies(drivers);
-	    var sources = callDrivers(drivers, sinkProxies);
-	    var sinks = callComponent(component, sources, disposableSubject);
-	    var subscriptions = replicateSinks(sinks, sinkProxies);
-	    function dispose() {
-	        most_subject_1.next(void 0, disposableSubject);
-	        disposeSinkProxies(sinkProxies);
-	        disposeSources(sources);
-	        subscriptions.forEach(unsubscribe);
-	    }
-	    return { sinks: sinks, sources: sources, dispose: dispose };
+	var base_1 = __webpack_require__(65);
+	var most_adapter_1 = __webpack_require__(66);
+	/**
+	 * Takes a `main` function and circularly connects it to the given collection
+	 * of driver functions.
+	 *
+	 * **Example:**
+	 * ```js
+	 * import {run} from '@cycle/most-run';
+	 * const dispose = run(main, drivers);
+	 * // ...
+	 * dispose();
+	 * ```
+	 *
+	 * The `main` function expects a collection of "source" streams (returned from
+	 * drivers) as input, and should return a collection of "sink" streams (to be
+	 * given to drivers). A "collection of streams" is a JavaScript object where
+	 * keys match the driver names registered by the `drivers` object, and values
+	 * are the streams. Refer to the documentation of each driver to see more
+	 * details on what types of sources it outputs and sinks it receives.
+	 *
+	 * @param {Function} main a function that takes `sources` as input and outputs
+	 * `sinks`.
+	 * @param {Object} drivers an object where keys are driver names and values
+	 * are driver functions.
+	 * @return {Function} a dispose function, used to terminate the execution of the
+	 * Cycle.js program, cleaning up resources used.
+	 * @function run
+	 */
+	function run(main, drivers) {
+	  return base_1.default(main, drivers, { streamAdapter: most_adapter_1.default }).run();
 	}
 	exports.run = run;
-	function createSinkProxies(drivers) {
-	    return Object.keys(drivers).reduce(function setSinkProxies(sinkProxies, driverName) {
-	        return set(sinkProxies, driverName, most_subject_1.sync());
-	    }, {});
-	}
-	function callDrivers(drivers, sinkProxies) {
-	    return Object.keys(drivers).reduce(function setSources(sources, driverName) {
-	        var source = drivers[driverName](get(sinkProxies, driverName));
-	        return source ? set(sources, driverName, source) : sources;
-	    }, {});
-	}
-	function callComponent(component, sources, disposableSubject) {
-	    var sinks = component(sources);
-	    return Object.keys(sinks).reduce(function createDisposableSink(disposableSinks, sinkName) {
-	        var disposableSink = get(sinks, sinkName).until(disposableSubject);
-	        return set(disposableSinks, sinkName, disposableSink);
-	    }, {});
-	}
-	function replicateSinks(sinks, sinkProxies) {
-	    return Object.keys(sinks).filter(function (sinkName) {
-	        return get(sinkProxies, sinkName);
-	    }).map(function createSubscription(sinkName) {
-	        var sink = get(sinks, sinkName);
-	        var sinkProxy = get(sinkProxies, sinkName);
-	        return sink.subscribe(createSubscriber(sinkProxy, sinkName));
-	    });
-	}
-	function createSubscriber(subject, sinkName) {
-	    return {
-	        next: function next(value) {
-	            most_subject_1.next(value, subject);
-	        },
-	        error: function error(err) {
-	            most_subject_1.error(err, subject);
-	            logError(err, sinkName);
-	        },
-	        complete: function complete(value) {
-	            most_subject_1.complete(value, subject);
-	        }
-	    };
-	}
-	function logError(err, driverName) {
-	    console.error(driverName + " has failed for the following reason" + ("" + err.message) + ("" + (err.stack || err)));
-	}
-	function disposeSinkProxies(sinkProxies) {
-	    Object.keys(sinkProxies).forEach(function disposeSinkProxy(sinkProxyName) {
-	        get(sinkProxies, sinkProxyName).complete();
-	    });
-	}
-	function unsubscribe(subscription) {
-	    subscription.unsubscribe();
-	}
-	function disposeSources(sources) {
-	    Object.keys(sources).forEach(function disposeSource(sourceName) {
-	        var source = get(sources, sourceName);
-	        return source.dispose && source.dispose();
-	    });
-	}
-	function get(object, key) {
-	    return object[key];
-	}
-	function set(object, key, value) {
-	    object[key] = value;
-	    return object;
-	}
+	/**
+	 * A function that prepares the Cycle application to be executed. Takes a `main`
+	 * function and prepares to circularly connects it to the given collection of
+	 * driver functions. As an output, `Cycle()` returns an object with three
+	 * properties: `sources`, `sinks` and `run`. Only when `run()` is called will
+	 * the application actually execute. Refer to the documentation of `run()` for
+	 * more details.
+	 *
+	 * **Example:**
+	 * ```js
+	 * import Cycle from '@cycle/most-run';
+	 * const {sources, sinks, run} = Cycle(main, drivers);
+	 * // ...
+	 * const dispose = run(); // Executes the application
+	 * // ...
+	 * dispose();
+	 * ```
+	 *
+	 * @param {Function} main a function that takes `sources` as input
+	 * and outputs `sinks`.
+	 * @param {Object} drivers an object where keys are driver names and values
+	 * are driver functions.
+	 * @return {Object} an object with three properties: `sources`, `sinks` and
+	 * `run`. `sources` is the collection of driver sources, `sinks` is the
+	 * collection of driver sinks, these can be used for debugging or testing. `run`
+	 * is the function that once called will execute the application.
+	 * @function Cycle
+	 */
+	var Cycle = function Cycle(main, drivers) {
+	  return base_1.default(main, drivers, { streamAdapter: most_adapter_1.default });
+	};
+	Cycle.run = run;
+	Object.defineProperty(exports, "__esModule", { value: true });
+	exports.default = Cycle;
 	//# sourceMappingURL=index.js.map
 
 /***/ },
-/* 62 */
+/* 64 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {"use strict";
 	// import xs from 'xstream';
 	// import {run} from '@cycle/xstream-run';
 	// import {makeDOMDriver} from '@cycle/dom';
+	// import Cycle from '@motorcycle/core';
 
-	var _core = __webpack_require__(61);
+	var _mostRun = __webpack_require__(63);
 
-	var _core2 = _interopRequireDefault(_core);
+	var _most = __webpack_require__(9);
 
-	var _most = __webpack_require__(12);
+	var _create = __webpack_require__(34);
 
-	var _dom = __webpack_require__(34);
+	var _dom = __webpack_require__(35);
 
-	var _code = __webpack_require__(60);
+	var _code = __webpack_require__(62);
 
 	var _code2 = _interopRequireDefault(_code);
 
@@ -5823,9 +6107,6 @@
 	    var str = ar.join(',');
 	    messageMonad.run([[(0, _dom.h)('br'), sender + ': ' + str], [], [], messageMonad.s[3]]);
 	};
-
-	console.log('.');
-	console.log('.');
 
 	var Greeter = function () {
 	    function Greeter(message) {
@@ -5853,7 +6134,7 @@
 	console.log('########## socket: ', socket);
 
 	var websocketsDriver = function websocketsDriver() {
-	    return (0, _most.create)(function (add) {
+	    return (0, _create.create)(function (add) {
 	        return socket.onmessage = function (msg) {
 	            return add(msg);
 	        };
@@ -5869,7 +6150,7 @@
 	};
 
 	var workerDriver = function workerDriver() {
-	    return (0, _most.create)(function (add) {
+	    return (0, _create.create)(function (add) {
 	        return workerA.onmessage = function (msg) {
 	            return add(msg);
 	        };
@@ -5877,7 +6158,7 @@
 	};
 
 	var workerDriverB = function workerDriverB() {
-	    return (0, _most.create)(function (add) {
+	    return (0, _create.create)(function (add) {
 	        return workerB.onmessage = function (msg) {
 	            return add(msg);
 	        };
@@ -5885,7 +6166,7 @@
 	};
 
 	var workerDriverC = function workerDriverC() {
-	    return (0, _most.create)(function (add) {
+	    return (0, _create.create)(function (add) {
 	        return workerC.onmessage = function (msg) {
 	            return add(msg);
 	        };
@@ -5938,7 +6219,6 @@
 
 	    var worker$ = sources.WK.map(function (v) {
 	        v.preventDefault();
-	        console.log('In worker$  v is ', v);
 	        mMZ21.bnd(function () {
 	            mM11.ret(v.data[1]);
 	        });
@@ -5954,6 +6234,7 @@
 	        mMZ25.bnd(function () {
 	            primesMonad.s = v.data[1];
 	            primesMonad.a = v.data[1][3];
+	            console.log('Back in main thread, in worker$. Prime number', primesMonad.a.length, 'is', primesMonad.s[0]);
 	        });
 	        next(v.data[0], 'CA#$41', mMZ21);
 	        next(v.data[0], 'CB#$41', mMZ22);
@@ -6604,13 +6885,21 @@
 
 	    return {
 	        DOM: calcStream$.map(function () {
-	            return (0, _dom.h)('div.content', [(0, _dom.h)('div#rightPanel', { style: { display: '' + mMrightPanel.x } }, [(0, _dom.h)('span#tog', [(0, _dom.h)('button#game', { style: { fontSize: '16px', display: 'inline' } }, 'TOGGLE GAME'), (0, _dom.h)('span.tao', ' '), (0, _dom.h)('button#todoButton', { style: { fontSize: '16px', display: 'inline' } }, 'TOGGLE TODO_LIST'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('button#chat2', { style: { fontSize: '16px', display: 'inline' } }, 'TOGGLE CHAT'), (0, _dom.h)('span.tao', ' '), (0, _dom.h)('button#caption', { style: { fontSize: '16px', display: 'inline' } }, 'TOGGLE CAPTION')]), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('div#gameDiv', { style: { display: 'mMgameDiv.x' } }, [(0, _dom.h)('div.game', 'Name: ' + pMname.x), (0, _dom.h)('div.game', 'Group: ' + pMgroup.x), (0, _dom.h)('div.game', 'Currently online: Name score | goals'), (0, _dom.h)('div.game', '' + pMdata.x)]), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('div#todoDiv', { style: { display: mMtodoDiv.x } }, [(0, _dom.h)('div#taskList', taskL), (0, _dom.h)('span', 'Author, Responsible Person, Task: '), (0, _dom.h)('input.newTask')]), (0, _dom.h)('br'), (0, _dom.h)('span#alert', mMalert.x), (0, _dom.h)('br'), (0, _dom.h)('span#alert2'), (0, _dom.h)('br'), (0, _dom.h)('div#chatDiv', { style: { display: mMchatDiv.x } }, [(0, _dom.h)('div#messages', [(0, _dom.h)('span', 'Message: '), (0, _dom.h)('input.inputMessage'), (0, _dom.h)('div', messageMonad.s[3])])]), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('input#message1'), (0, _dom.h)('input#message2'), (0, _dom.h)('div#result', 'a: ' + mM9.x), (0, _dom.h)('div#result2', 'b: ' + mM10.x), (0, _dom.h)('div#result3', 'Math.sqrt(a*a+b*b): ' + mM11.x), (0, _dom.h)('div#result4', 'a + b: ' + mM12.x), (0, _dom.h)('div#result5', 'a * b: ' + mM13.x), (0, _dom.h)('div#result6', 'lcm: ' + mM14.x), (0, _dom.h)('div', 'pMclicked.x: ' + pMclicked.x.join(', ')), (0, _dom.h)('div', 'pMop.x: ' + pMop.x), (0, _dom.h)('div', 'pMindex.x: ' + pMindex.x), (0, _dom.h)('div', 'travMonad.s.length: ' + travMonad.s.length), (0, _dom.h)('div', 'travMonad.s[pMindex.x][0]: ' + travMonad.s[pMindex.x][0]), (0, _dom.h)('div', 'travMonad.s[pMindex.x][1]: ' + travMonad.s[pMindex.x][1]), (0, _dom.h)('div', 'travMonad.s[pMindex.x][2]: ' + travMonad.s[pMindex.x][2]), (0, _dom.h)('div', 'travMonad.s[pMindex.x][3]: ' + travMonad.s[pMindex.x][3]), (0, _dom.h)('div', 'travMonad.s[pMindex.x][4]: ' + travMonad.s[pMindex.x][4])]), (0, _dom.h)('div#leftPanel', [(0, _dom.h)('br'), (0, _dom.h)('div#captionDiv', { style: { display: mMcaptionDiv.x } }, [(0, _dom.h)('h1', 'Motorcycle.js With JS-monads')]), (0, _dom.h)('span#italic', ' Not category theory monads. These monads are like the Haskell monads, They use patterns and conform to rules borrowed from category theory. See '), (0, _dom.h)('a', { props: { href: "http://math.andrej.com/2016/08/06/hask-is-not-a-category/", target: "_blank" } }, 'Hask is not a category.'), (0, _dom.h)('span', ' by Andrej Bauer and . '), (0, _dom.h)('a', { props: { href: '#discussion' } }, 'Discussion'), (0, _dom.h)('span', ' below. '), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('span.tao1', ' The demonstrations include persisternt, shared todo lists; '), (0, _dom.h)('br'), (0, _dom.h)('span.tao1', ' An interactive simulated dice game with a traversable history (all group members see your score decrease or increase as you navegate backwards and forwards); '), (0, _dom.h)('br'), (0, _dom.h)('span.tao1', ' Chat rooms where members can compete in the simulated dice game, chat, and share a project todo list; '), (0, _dom.h)('br'), (0, _dom.h)('span.tao1', ' And other demonstrations of the power and convenience of JS-monads in a Motorcycle application.  '), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('span.tao', 'This is a '), (0, _dom.h)('a', { props: { href: "https://github.com/motorcyclejs", target: "_blank" } }, 'Motorcycle.js'), (0, _dom.h)('span', ' application. Motorcycle.js is '), (0, _dom.h)('a', { props: { href: "https://github.com/cyclejs/core", target: "_blank" } }, 'Cycle.js'), (0, _dom.h)('span', ' using '), (0, _dom.h)('a', { props: { href: "https://github.com/cujojs/most", target: "_blank" } }, 'Most'), (0, _dom.h)('span', ' , '), (0, _dom.h)('span', ' and '), (0, _dom.h)('a', { props: { href: "https://github.com/paldepind/snabbdom", target: "_blank" } }, 'Snabbdom'), (0, _dom.h)('span', ' instead of RxJS and virtual-dom.  The code for this repository is at '), (0, _dom.h)('a', { props: { href: "https://github.com/dschalk/JS-monads-stable", target: "_blank" } }, 'JS-monads-stable'), (0, _dom.h)('div#gameDiv2', { style: { display: mMgameDiv2.x } }, [(0, _dom.h)('br'), (0, _dom.h)('span', ' Here are the basic rules:'), (0, _dom.h)('p', 'RULES: If clicking two numbers and an operator (in any order) results in 20 or 18, the score increases by 1 or 3, respectively. If the score becomes 0 or is evenly divisible by 5, 5 points are added. A score of 25 results in one goal. That can only be achieved by arriving at a score of 20, which jumps the score to 25. Directly computing 25 results in a score of 30, and no goal. Each time RL is clicked, one point is deducted. Three goals wins the game. '), (0, _dom.h)('p.red4', mMgoals2.x), (0, _dom.h)('button#0.num', { style: { display: pMstyle.x[0] } }, pMnums.x[0]), (0, _dom.h)('button#1.num', { style: { display: pMstyle.x[1] } }, pMnums.x[1]), (0, _dom.h)('button#2.num', { style: { display: pMstyle.x[2] } }, pMnums.x[2]), (0, _dom.h)('button#3.num', { style: { display: pMstyle.x[3] } }, pMnums.x[3]), (0, _dom.h)('br'), (0, _dom.h)('button#4.op', 'add'), (0, _dom.h)('button#5.op', 'subtract'), (0, _dom.h)('button#5.op', 'mult'), (0, _dom.h)('button#5.op', 'div'), (0, _dom.h)('button#5.op', 'concat'), (0, _dom.h)('br'), (0, _dom.h)('div#dice', { style: { display: mMdice.x } }, [(0, _dom.h)('button.roll', 'ROLL'), (0, _dom.h)('br'), (0, _dom.h)('button#back', 'BACK'), (0, _dom.h)('button#forward', 'FORWARD'), (0, _dom.h)('div.tao', 'Selected numbers: ' + pMclicked.x.join(', ') + ' '), (0, _dom.h)('div.tao', 'Operator: ' + pMop.x + ' '), (0, _dom.h)('button#clear', 'Clear selected numbers (Possibly useful after clicking the BACK button) ')])]), (0, _dom.h)('div#log1', { style: { display: mMlog1.x } }, [(0, _dom.h)('p', 'IN ORDER TO SEE THE GAME, TODOLIST, AND CHAT DEMONSTRATIONS, YOU MUST ENTER SOMETHING .'), (0, _dom.h)('span', 'Name: '), (0, _dom.h)('input#login')]), (0, _dom.h)('p', mM6.x), (0, _dom.h)('div#log2', { style: { display: mMlog2.x } }, [(0, _dom.h)('span', 'Change group: '), (0, _dom.h)('input#group')]), (0, _dom.h)('p', mMsoloAlert.x), (0, _dom.h)('p', 'People who are in the same group, other than solo, share the same todo list, messages, and simulated dice game. In order to see any of these, you must establish an identity on the server by loggin g in. The websockets connection terminates if the first message the server receives does not come from the sign in form. You can enter any random numbers or letters you like. The only check is to make sure someone hasn\t already signed in with whatever you have selected. If you log in with a name that is already in use, a message will appear and this page will be re-loaded in the browser after a four-second pause. '), (0, _dom.h)('p', ' Data for the traversable game history accumulates until a player scores three goals and wins. The data array is then erased and the application is ready to start accumulating a new history. '), (0, _dom.h)('hr'), (0, _dom.h)('h1', 'The Monads'), (0, _dom.h)('h3', ' Monad '), _code2.default.monad, (0, _dom.h)('br'), (0, _dom.h)('span.tao#monad', ' Monad instances facilitate programming in a functional style. They facilitate the linking of computation sequences, memoization (see '), (0, _dom.h)('a', { props: { href: '#state' } }, 'MonadState'), (0, _dom.h)('span', '), error management (see '), (0, _dom.h)('a', { props: { href: '#err' } }, 'MonadEr'), (0, _dom.h)('span', '), and preserving intermediate results in linked sequences of operations ( '), (0, _dom.h)('a', { props: { href: '#demo' } }, 'M prefix demo).'), (0, _dom.h)('p', ' In most sequences of operationns, the arguments provided to each link\'s bnd() method are functions that return an instance of Monad. Here are some examples of functions that return instances of Monad: '), _code2.default.e1, (0, _dom.h)('p', ' I experimented with several definitions of Monad during the course of this project. The reader is encouraged to experiment with variations on the theme. If you come up with something that is useful to you, please let me know. The current version is the most useful for me, so far. its bnd() method can assign the return value of bnd()\'s argument to any valid Javascript variable name. In the following example, m1, m2, and m3 have already been declared. Here is a comparrison of the results obtained when the "M" prefix is used and when it is omitted: '), (0, _dom.h)('pre.red9', '    m1.ret(7).bnd(m2.ret).bnd(m3.ret)  // All three monads get the value 7.\n    m1.ret(0).bnd(add,3,\'m2\').bnd(cube,\'m3\')  // equivalent to m1.ret(0).bnd(add,3).bnd(cube)'), (0, _dom.h)('pre', '    Result: m1.x === 27\n            m2.x === 7\n            m3.x === 7  '), (0, _dom.h)('pre.red9', '    m1.ret(0).bnd(add,3,\'Mm2\').bnd(cube,\'Mm3\')   '), (0, _dom.h)('pre', '    Result: m1.x === 0\n            m2.x === 3\n            m3.x === 27  '), (0, _dom.h)('p', ' If the prefix "M" is absent, bnd() ignores the string argument. But when the "M" prefix is present, m1 retains its initial value, m2 retains the value it gets from from adding m\'s value (which is 0) to 3, and m3.x is the result. Both forms could be useful. '), (0, _dom.h)('p', ' The following example shows lambda expressions sending variables v1 and v2 through a sequence of computations and v3 sending the final result to the string that is logged. It also shows monads a, b, c, d, e, f, and g being updated and preserved in an array that is not affected by further updates. That is because calling the ret() method does not mutate a monad, it creates a fresh instance with the same name. Here is the example, shown in a screen shot of the Chrome console log:. '), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('img.image', { props: { src: "demo_000.png" } }), (0, _dom.h)('h3', ' The Monad Laws '), (0, _dom.h)('p', ' In the following discussion, "x === y" signifies that the expression x === y returns true. Let J be the collection of all Javascript values, including functions, instances of Monad, etc, and let F be the collection of all functions mapping values in J to instances of Monad with references (names) matching their ids; that is, with window[id] === m.id for some id which is a valid es2015 variable name. The collection of all such instances of Monad along and all of the functions in F is called "M". For any instances of Monad m, m1, and m2 in M and any functions f and g in F, the following relationships follow easily from the definition of Monad: '), (0, _dom.h)('div', 'Left Identity '), (0, _dom.h)('pre.turk', '    m.ret(v, ...args).bnd(f, ...args).x === f(v, ...args).x \n    ret(v, ...args).bnd(f, ...args).x === f(v, ...args).x \n    Examples: m.ret(3).bnd(cube).x === cube(3).x  Tested and verified  \n    ret(3).bnd(cube).x === cube(3).x     Tested and verified\n    Haskell monad law: (return x) >>= f \u2261 f x  '), (0, _dom.h)('div#discussion', ' Right Identity  '), (0, _dom.h)('pre.turk', '    m.bnd(m.ret) === m      Tested and verified \n    m.bnd(m.ret) === m   Tested and verified\n    m.bnd(ret) === m  Tested and verified\n    Haskell monad law: m >>= return \u2261 m '), (0, _dom.h)('div', ' Commutivity  '), (0, _dom.h)('pre.turk', '    m.bnd(f1, ...args).bnd(f2, ...args).x === m.bnd(v => f1(v, ...args).bnd(f2, ...args)).x \n    Example: m.ret(0).bnd(add, 3).bnd(cube).x === \n    m.ret(0).bnd(v => add(v,3).bnd(cube)).x  Tested amd verified\n    Haskell monad law: (m >>= f) >>= g \u2261 m >>= ( \\x -> (f x >>= g) ) '), (0, _dom.h)('a', { props: { href: '#top' } }, 'Back To The Top'), (0, _dom.h)('h3', ' Disussion '), (0, _dom.h)('span.tao', ' The Haskell statement '), (0, _dom.h)('span.turk6', 'f \u2261 g'), (0, _dom.h)('span', ' means that f x === g x for all Haskell values x of the appropriate type. That is the test applied to Javascript expressions in "Monad Laws" section (above). Neither the === nor the === operator would provide useful information about the behavior of instances of Monad, which are objects. Those operators test objects for location in memory. If the left and right sides of predicates create new instances of m, then the left side m and the right side m wind up in different locations in memory. So we expect m.ret(3) === m.ret(3) to return false, and it does. The question we want answered is the question \u2261 answers in Haskell: Can the left and right sides be substituted for one another and still yield the same results.'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('span.tao', ' The Haskell programming language borrowed the term "monad" from the branch of mathematics known as category theory. This was apropriate because Haskell monads, along with the function return and the operator >>=, behave quite a bit like category theory monads, and the inspiration for them came out of category theory. For Haskell monads to be category theory monads, they would need to reside in a category-theory category. They don\'t, although the Haskell mystique tends to give newcommers to the language the impression that they do. See '), (0, _dom.h)('a', { props: { href: "http://math.andrej.com/2016/08/06/hask-is-not-a-category/", target: "_blank" } }, 'Hask is not a category.'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('span#err', ' Attempts continue to be made to define a Haskell category, usually with special constraints, omitted features, and sometimes with definitions of morphisms that are not Haskell functions. Succeeding in that endeavor would be the first step toward proving that Haskell monads are, in some contrived context, category-theory monads. Devising such a scheme might be an instructive academic excercise, but I don\'t see how it could possibly be of any value beyond that. Imitating definitions and patterns found in category theory, as Haskell does in defining the functor, monoid, and monad type classes, was a stroke of genius that vastly enriched the Haskell programming language and brought it into the mainstream as a viable alternative to java, c++, etc.  This website runs efficiently on a Haskell websockets server. Category theory patterns are less needed, but neverthless useful, in Javascript. Code that adheres to them tends to be robust and versitile.  '),
+	            return (0, _dom.h)('div.content', [(0, _dom.h)('div#rightPanel', { style: { display: '' + mMrightPanel.x } }, [(0, _dom.h)('span#tog', [(0, _dom.h)('button#game', { style: { fontSize: '16px', display: 'inline' } }, 'TOGGLE GAME'), (0, _dom.h)('span.tao', ' '), (0, _dom.h)('button#todoButton', { style: { fontSize: '16px', display: 'inline' } }, 'TOGGLE TODO_LIST'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('button#chat2', { style: { fontSize: '16px', display: 'inline' } }, 'TOGGLE CHAT'), (0, _dom.h)('span.tao', ' '), (0, _dom.h)('button#caption', { style: { fontSize: '16px', display: 'inline' } }, 'TOGGLE CAPTION')]), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('div#gameDiv', { style: { display: 'mMgameDiv.x' } }, [(0, _dom.h)('div.game', 'Name: ' + pMname.x), (0, _dom.h)('div.game', 'Group: ' + pMgroup.x), (0, _dom.h)('div.game', 'Currently online: Name score | goals'), (0, _dom.h)('div.game', '' + pMdata.x)]), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('div#todoDiv', { style: { display: mMtodoDiv.x } }, [(0, _dom.h)('div#taskList', taskL), (0, _dom.h)('span', 'Author, Responsible Person, Task: '), (0, _dom.h)('input.newTask')]), (0, _dom.h)('br'), (0, _dom.h)('span#alert', mMalert.x), (0, _dom.h)('br'), (0, _dom.h)('span#alert2'), (0, _dom.h)('br'), (0, _dom.h)('div#chatDiv', { style: { display: mMchatDiv.x } }, [(0, _dom.h)('div#messages', [(0, _dom.h)('span', 'Message: '), (0, _dom.h)('input.inputMessage'), (0, _dom.h)('div', messageMonad.s[3])])]), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('input#message1'), (0, _dom.h)('br'), (0, _dom.h)('input#message2'), (0, _dom.h)('div#result', 'a: ' + mM9.x), (0, _dom.h)('div#result2', 'b: ' + mM10.x), (0, _dom.h)('div#result3', 'Math.sqrt(a*a+b*b): ' + mM11.x), (0, _dom.h)('div#result4', 'a + b: ' + mM12.x), (0, _dom.h)('div#result5', 'a * b: ' + mM13.x), (0, _dom.h)('div#result6', 'lcm: ' + mM14.x), (0, _dom.h)('div', 'pMclicked.x: ' + pMclicked.x.join(', ')), (0, _dom.h)('div', 'pMop.x: ' + pMop.x), (0, _dom.h)('div', 'pMindex.x: ' + pMindex.x), (0, _dom.h)('div', 'travMonad.s.length: ' + travMonad.s.length), (0, _dom.h)('div', 'travMonad.s[pMindex.x][0]: ' + travMonad.s[pMindex.x][0]), (0, _dom.h)('div', 'travMonad.s[pMindex.x][1]: ' + travMonad.s[pMindex.x][1]), (0, _dom.h)('div', 'travMonad.s[pMindex.x][2]: ' + travMonad.s[pMindex.x][2]), (0, _dom.h)('div', 'travMonad.s[pMindex.x][3]: ' + travMonad.s[pMindex.x][3]), (0, _dom.h)('div', 'travMonad.s[pMindex.x][4]: ' + travMonad.s[pMindex.x][4])]), (0, _dom.h)('div#leftPanel', [(0, _dom.h)('br'), (0, _dom.h)('div#captionDiv', { style: { display: mMcaptionDiv.x } }, [(0, _dom.h)('h1', 'Motorcycle.js With JS-monads')]), (0, _dom.h)('span#italic', ' Not category theory monads. These monads are like the Haskell monads, They use patterns and conform to rules borrowed from category theory. See '), (0, _dom.h)('a', { props: { href: "http://math.andrej.com/2016/08/06/hask-is-not-a-category/", target: "_blank" } }, 'Hask is not a category.'), (0, _dom.h)('span', ' by Andrej Bauer and . '), (0, _dom.h)('a', { props: { href: '#discussion' } }, 'Discussion'), (0, _dom.h)('span', ' below. '), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('span.tao1', ' The demonstrations include persisternt, shared todo lists; '), (0, _dom.h)('br'), (0, _dom.h)('span.tao1', ' An interactive simulated dice game with a traversable history (all group members see your score decrease or increase as you navegate backwards and forwards); '), (0, _dom.h)('br'), (0, _dom.h)('span.tao1', ' Chat rooms where members can compete in the simulated dice game, chat, and share a project todo list; '), (0, _dom.h)('br'), (0, _dom.h)('span.tao1', ' And other demonstrations of the power and convenience of JS-monads in a Motorcycle application.  '), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('span.tao', 'This is a '), (0, _dom.h)('a', { props: { href: "https://github.com/motorcyclejs", target: "_blank" } }, 'Motorcycle.js'), (0, _dom.h)('span', ' application. Motorcycle.js is '), (0, _dom.h)('a', { props: { href: "https://github.com/cyclejs/core", target: "_blank" } }, 'Cycle.js'), (0, _dom.h)('span', ' using '), (0, _dom.h)('a', { props: { href: "https://github.com/cujojs/most", target: "_blank" } }, 'Most'), (0, _dom.h)('span', ' , '), (0, _dom.h)('span', ' and '), (0, _dom.h)('a', { props: { href: "https://github.com/paldepind/snabbdom", target: "_blank" } }, 'Snabbdom'), (0, _dom.h)('span', ' instead of RxJS and virtual-dom.  The code for this repository is at '), (0, _dom.h)('a', { props: { href: "https://github.com/dschalk/JS-monads-stable", target: "_blank" } }, 'JS-monads-stable'), (0, _dom.h)('div#gameDiv2', { style: { display: mMgameDiv2.x } }, [(0, _dom.h)('br'), (0, _dom.h)('span', ' Here are the basic rules:'), (0, _dom.h)('p', 'RULES: If clicking two numbers and an operator (in any order) results in 20 or 18, the score increases by 1 or 3, respectively. If the score becomes 0 or is evenly divisible by 5, 5 points are added. A score of 25 results in one goal. That can only be achieved by arriving at a score of 20, which jumps the score to 25. Directly computing 25 results in a score of 30, and no goal. Each time RL is clicked, one point is deducted. Three goals wins the game. '), (0, _dom.h)('p.red4', mMgoals2.x), (0, _dom.h)('button#0.num', { style: { display: pMstyle.x[0] } }, pMnums.x[0]), (0, _dom.h)('button#1.num', { style: { display: pMstyle.x[1] } }, pMnums.x[1]), (0, _dom.h)('button#2.num', { style: { display: pMstyle.x[2] } }, pMnums.x[2]), (0, _dom.h)('button#3.num', { style: { display: pMstyle.x[3] } }, pMnums.x[3]), (0, _dom.h)('br'), (0, _dom.h)('button#4.op', 'add'), (0, _dom.h)('button#5.op', 'subtract'), (0, _dom.h)('button#5.op', 'mult'), (0, _dom.h)('button#5.op', 'div'), (0, _dom.h)('button#5.op', 'concat'), (0, _dom.h)('br'), (0, _dom.h)('div#dice', { style: { display: mMdice.x } }, [(0, _dom.h)('button.roll', 'ROLL'), (0, _dom.h)('br'), (0, _dom.h)('button#back', 'BACK'), (0, _dom.h)('button#forward', 'FORWARD'), (0, _dom.h)('div.tao', 'Selected numbers: ' + pMclicked.x.join(', ') + ' '), (0, _dom.h)('div.tao', 'Operator: ' + pMop.x + ' '), (0, _dom.h)('button#clear', 'Clear selected numbers (Possibly useful after clicking the BACK button) ')])]), (0, _dom.h)('div#log1', { style: { display: mMlog1.x } }, [(0, _dom.h)('p', 'IN ORDER TO SEE THE GAME, TODOLIST, AND CHAT DEMONSTRATIONS, YOU MUST ENTER SOMETHING .'), (0, _dom.h)('span', 'Name: '), (0, _dom.h)('input#login')]), (0, _dom.h)('p', mM6.x), (0, _dom.h)('div#log2', { style: { display: mMlog2.x } }, [(0, _dom.h)('span', 'Change group: '), (0, _dom.h)('input#group')]), (0, _dom.h)('p', mMsoloAlert.x), (0, _dom.h)('p', 'People who are in the same group, other than solo, share the same todo list, messages, and simulated dice game. In order to see any of these, you must establish an identity on the server by loggin g in. The websockets connection terminates if the first message the server receives does not come from the sign in form. You can enter any random numbers or letters you like. The only check is to make sure someone hasn\t already signed in with whatever you have selected. If you log in with a name that is already in use, a message will appear and this page will be re-loaded in the browser after a four-second pause. '), (0, _dom.h)('p', ' Data for the traversable game history accumulates until a player scores three goals and wins. The data array is then erased and the application is ready to start accumulating a new history. '), (0, _dom.h)('hr'), (0, _dom.h)('h1', 'The Monads'), (0, _dom.h)('h3', ' Monad '), _code2.default.monad, (0, _dom.h)('br'), (0, _dom.h)('span.tao#monad', ' Instances of Monad, MonadState, MonadItter, and MonadEr facilitate programming in a functional style. Additional constructors can be invented as special needs arise. In this presentation we see, among other things, Monad instances linking computations and assigning results to Monad instances, '), (0, _dom.h)('a', { props: { href: '#state' } }, 'MonadState'), (0, _dom.h)('span', ' instances memoizing computation results, '), (0, _dom.h)('a', { props: { href: '#itterLink' } }, 'MonadItter'), (0, _dom.h)('span', ' instances organizing nested callbacks into neat, easily maintainable blocks of code, and '), (0, _dom.h)('a', { props: { href: '#err' } }, 'MonadEr'), (0, _dom.h)('span', ' catching NaN and preventing crashes when undefined variables are encountered. '), (0, _dom.h)('p', ' Computations are easy to link if each result is returned in an instance of Monad. Here are a few examples of functions that return instances of Monad: '), _code2.default.e1, (0, _dom.h)('p', ' The "M" prefix provides constrol over the destination of computation results. In the following example, m1, m2, and m3 have already been declared. Here is a comparrison of the results obtained when the "M" prefix is used and when it is omitted: '), (0, _dom.h)('pre.red9', '    m1.ret(7).bnd(m2.ret).bnd(m3.ret)  // All three monads get the value 7.\n    m1.ret(0).bnd(add,3,\'m2\').bnd(cube,\'m3\')  // \'m1\', \'m2\', and \'m3\' are ignored'), (0, _dom.h)('pre', '    Result: m1.x === 27\n            m2.x === 7\n            m3.x === 7  '), (0, _dom.h)('pre.red9', '    m1.ret(0).bnd(add,3,\'Mm2\').bnd(cube,\'Mm3\')   '), (0, _dom.h)('pre', '    Result: m1.x === 0\n            m2.x === 3\n            m3.x === 27  '), (0, _dom.h)('p', ' If the prefix "M" is absent, bnd() ignores the string argument. But when the "M" prefix is present, m1 retains its initial value, m2 retains the value it gets from from adding m\'s value (which is 0) to 3, and m3.x is the result. Both forms could be useful. '), (0, _dom.h)('p', ' The following example shows lambda expressions sending variables v1 and v2 through a sequence of computations and v3 sending the final result to the string that is logged. It also shows monads a, b, c, d, e, f, and g being updated and preserved in an array that is not affected by further updates. That is because calling the ret() method does not mutate a monad, it creates a fresh instance with the same name. Here is the example, shown in a screen shot of the Chrome console log:. '), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('img.image', { props: { src: "demo_000.png" } }), (0, _dom.h)('h3', ' The Monad Laws '), (0, _dom.h)('p', ' In the following discussion, "x === y" signifies that the expression x === y returns true. Let J be the collection of all Javascript values, including functions, instances of Monad, etc, and let F be the collection of all functions mapping values in J to instances of Monad with references (names) matching their ids; that is, with window[id] === m.id for some id which is a valid es2015 variable name. The collection of all such instances of Monad along and all of the functions in F is called "M". For any instances of Monad m, m1, and m2 in M and any functions f and g in F, the following relationships follow easily from the definition of Monad: '), (0, _dom.h)('div', 'Left Identity '), (0, _dom.h)('pre.turk', '    m.ret(v, ...args).bnd(f, ...args).x === f(v, ...args).x \n    ret(v, ...args).bnd(f, ...args).x === f(v, ...args).x \n    Examples: m.ret(3).bnd(cube).x === cube(3).x  Tested and verified  \n    ret(3).bnd(cube).x === cube(3).x     Tested and verified\n    Haskell monad law: (return x) >>= f \u2261 f x  '), (0, _dom.h)('div#discussion', ' Right Identity  '), (0, _dom.h)('pre.turk', '    m.bnd(m.ret) === m      Tested and verified \n    m.bnd(m.ret) === m   Tested and verified\n    m.bnd(ret) === m  Tested and verified\n    Haskell monad law: m >>= return \u2261 m '), (0, _dom.h)('div', ' Commutivity  '), (0, _dom.h)('pre.turk', '    m.bnd(f1, ...args).bnd(f2, ...args).x === m.bnd(v => f1(v, ...args).bnd(f2, ...args)).x \n    Example: m.ret(0).bnd(add, 3).bnd(cube).x === \n    m.ret(0).bnd(v => add(v,3).bnd(cube)).x  Tested amd verified\n    Haskell monad law: (m >>= f) >>= g \u2261 m >>= ( \\x -> (f x >>= g) ) '), (0, _dom.h)('a', { props: { href: '#top' } }, 'Back To The Top'), (0, _dom.h)('h3', ' Disussion '), (0, _dom.h)('span.tao', ' The Haskell statement '), (0, _dom.h)('span.turk6', 'f \u2261 g'), (0, _dom.h)('span', ' means that f x == g x for all Haskell values x of the appropriate type. That is the test applied to Javascript expressions in "Monad Laws" section (above). Neither the === nor the === operator would provide useful information about the behavior of instances of Monad, which are objects. Those operators test objects for location in memory. If the left and right sides of predicates create new instances of m, then the left side m and the right side m wind up in different locations in memory. So we expect m.ret(3) === m.ret(3) to return false, and it does. The question we want answered is the question \u2261 answers in Haskell: Can the left and right sides be substituted for one another and still yield the same results.'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('span.tao', ' The Haskell programming language borrowed the term "monad" from the branch of mathematics known as category theory. This was apropriate because Haskell monads, along with the function return and the operator >>=, behave quite a bit like category theory monads, and the inspiration for them came out of category theory. For Haskell monads to be category theory monads, they would need to reside in a category-theory category. They don\'t, although the Haskell mystique tends to give newcommers to the language the impression that they do. See '), (0, _dom.h)('a', { props: { href: "http://math.andrej.com/2016/08/06/hask-is-not-a-category/", target: "_blank" } }, 'Hask is not a category.'), (0, _dom.h)('br'), (0, _dom.h)('p', ' Attempts continue to be made to define a Haskell category, usually with special constraints, omitted features, and sometimes with definitions of morphisms that are not Haskell functions. Succeeding in that endeavor would be the first step toward proving that Haskell monads are, in some contrived context, category-theory monads. Devising such a scheme might be an instructive academic excercise, but I don\'t see how it could possibly be of any value beyond that. Imitating definitions and patterns found in category theory, as Haskell does in defining the functor, monoid, and monad type classes, was a stroke of genius that vastly enriched the Haskell programming language and brought it into the mainstream as a viable alternative to java, c++, etc.  This website runs efficiently on a Haskell websockets server. Category theory patterns are less needed, but neverthless useful, in Javascript. Code that adheres to them tends to be robust and versitile.  '),
 
 	            // **************************************************************************** END MONAD       START ERROR   
-	            (0, _dom.h)('h2', ' Web Worker '), (0, _dom.h)('p', ' After signing in, you will observe a column under the chat box. Numbers entered in the top two input boxes prompt a web worker to compute the square root of the sum of the squares, the sum, the product, and the least common multiple ("lcm"). If the numbers were fraction denominators, the lcm would be least common denominator, the number that would make addition and subtraction convenient. '), (0, _dom.h)('p', ' Here is the code that creates the web worker the Motorcycle driver: '), _code2.default.wDriver, (0, _dom.h)('p', ' The driver is an attribute of the sources object. It is named WK. The stream that receives messages from the worker and feeds data into the virtual dom is named worker$. This is worker$\'s definition: '), _code2.default.worker$, (0, _dom.h)('span', ' mM11.x, mM12.x, mM13.x, and mM14.x are fixtures of the virtual DOM. The web worker sends messages prefixed by mMA#$41, mMB#$41, mMC#$41, and mMD#$41, next() releases MonadItter instances mMZ21, mMZ22, mMZ23, mMZ24, causing code to execute with updates mM11.x, mM12.x, mM13.x, and mM14.x. More details are available in the MonadItter section of this page and at the '), (0, _dom.h)('a', { props: { href: "https://github.com/dschalk/JS-monads-stable", target: "_blank" } }, 'project repository'), (0, _dom.h)('span', '.'), (0, _dom.h)('p', ' The other items in the list in the right column pertain to the game. pMclicked.x is a list of the numbers which have been clicked. pMop.x is the operator which has been chosen. pMindex.x shows where you are during traversal of the game history. There can\'t be a selected operator and two numbers in pMclicked - at least not for long. The game automatically performs a mathematical calculation whenever two numbers and an operator have been chosen. '), (0, _dom.h)('span', ' The worker.js file can be vied in the '), (0, _dom.h)('a', { props: { href: "https://github.com/dschalk/JS-monads-stable", target: "_blank" } }, 'project repository'), (0, _dom.h)('span', ', and further down on this page in the MonadItter discussion. '), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('h2', ' MonadEr - An Error-Catching Monad '), (0, _dom.h)('p', ' Instances of MonadEr function much the same as instances of Monad, but when an instance of MonadEr encounters an error, it ceases to perform any further computations. Instead, it passes through every subsequent stage of a sequence of MonadEr expressions, reporting where it is and repeating the error message. It will continue to do this until it is re-instantiated or until its bnd() method runs on the function clean(). '), (0, _dom.h)('p', 'Functions used as arguments to the MonadEr bnd() method can be placed in quotation marks to prevent the browser engine from throwing reference errors. Arguments can be protected in the same manner. Using MonadEr can prevent the silent proliferation of NaN results in math computations, and can prevent browser crashes due to attempts to evaluate undefined variables. Sometimes crashes are desired when testing code, but MonadEr provides instant feedback pinpointing the exact location of the error. '), (0, _dom.h)('p', ' The following demonstration shows the Chrome console log entries that result from running '), (0, _dom.h)('pre', '    t.bnd(\'add3", 3, \'Mt2\').bnd(cube3, \'Mt3\'\n    t.bnd(\'add3",\'three\', \'Mt2\').bnd(cube3, \'Mt3\'    \n    t.bnd(\'add3",\'Math.sqrt(-1)\', \'Mt2\').bnd(cube3, \'Mt3\' \n    t.bnd(\'addd3", 3, \'Mt2\').bnd(cube3, \'Mt3\' '), (0, _dom.h)('br'), (0, _dom.h)('img.image', { props: { src: "error2.png" } }), (0, _dom.h)('br'), (0, _dom.h)('p.tao1b', ' The monad laws hold for MonadVEr instances. The following relationships were verified in the Chrome console: '), (0, _dom.h)('pre', '    ret3(0,\'t\',[])  // t is now an instance of MonadEr with t.x = 0 and t.e = [].\n\n    t.ret(3).bnd(cube3).x === cube(3).x  \n    ret3(3).bnd(cube3).x === cube3(3).x    \n\n    t.bnd(t.ret) === t   \n    t.bnd(ret) === t  \n   \n    t.ret(0).bnd(add3, 3).bnd(cube3).x === \n    t.ret(0).bnd(v => add3(v,3).bnd(cube3)).x  '), (0, _dom.h)('br'), (0, _dom.h)('div.tao1b', ' Here are the definitions of MonadEr, MonadE\'s helper functions, and the functions which serve as parameters to the bnd() method in the demonstration: '), _code2.default.monadEr, (0, _dom.h)('p', ' and here is the code that produced the Chrome console log entries: '), _code2.default.errorDemo, (0, _dom.h)('span.tao', ' When  a MonadEr instance encounters a function or an argument in quotation marks of types "undefined" or "NaN", a string gets pushed into the instance\'s e attribue. After that, the  bnd() method will not process any function other than clean(). It will stop at the'), (0, _dom.h)('span.turk', 'if (e.length > 0)'), (0, _dom.h)('span', 'block. clean() resets an instance to normal functioning mode by setting its e attribute back to []. '), (0, _dom.h)('br'), (0, _dom.h)('a', { props: { href: '#top' } }, 'Back To The Top'), (0, _dom.h)('h2', 'MonadItter'), _code2.default.monadIt, (0, _dom.h)('p', ' MonadItter instances don\'t link to one another. They exist to facilitate the work of instances of Monad, MonadState, etc. Here\'s how they work: '), (0, _dom.h)('p', 'For any instance of MonadItter, say "it", "it.bnd(func)" causes it.p === func. Calling the method "it.release(...args)" causes p(...args) to run, possibly with arguments supplied by the caller. '), (0, _dom.h)('p', ' As shown later on this page, MonadItter instances control the routing of incoming websockets messages. In one of the demonstrations below, they behave much like ES2015 iterators. I prefer them over ES2015 iterators, at least for what I am demonstrating.'), (0, _dom.h)('h3#itterLink', ' A Basic Itterator '), (0, _dom.h)('p', 'The following example illustrates the use of release() with an argument. It also shows a lambda expressions being provided as an argument for the method mMZ1.bnd() (thereby becoming the value of mMZ1.p), and then mMZ1.release providing an arguments for the function mMZ1.p. The code is shown beneith the following two buttons. '), (0, _dom.h)('button#testZ', 'mMZ1.release(1)'), (0, _dom.h)('p.code2', mMt3.x), (0, _dom.h)('span', 'Refresh button: '), (0, _dom.h)('button#testQ', 'mMt1.ret(0).bnd(v => mMZ2.release(v)) '), (0, _dom.h)('br'), _code2.default.testZ, (0, _dom.h)('span.tao', ' The expression mMt3.x sits permanently in the Motorcycle virtual DOM description. You can call '), (0, _dom.h)('span.green', 'mMZ2.release(v)'), (0, _dom.h)('span', ' by entering a value for v below: '), (0, _dom.h)('br'), (0, _dom.h)('span', 'Please enter an integer here: '), (0, _dom.h)('input#testW'), (0, _dom.h)('p', ' cube() is defined in the Monad section (above). If you click "mMZ1.release(1)" several times, the code (above) will run several times, each time with v === 1. The result, mMt3.x, is shown below the button. mMZ1.p (bnd()\'s argument) remains constant while mMZ1.release(1) is repeatedly called, incrementing the number being cubed each time. '), (0, _dom.h)('p', ' Here is another example. It demonstrates lambda expressions passing values to a remote location for use in a computation. If you enter three numbers consecutively below, call them a, b, and c, then the quadratic equation will be used to find solutions for a*x**2 + b*x + c = 0. The a, b, and c you select might not have a solution. If a and b are positive numbers, you are likely to see solutions if c is a negative number. For example, 12, 12, and -24 yields the solutions 1 and -2. '), (0, _dom.h)('p#quad4.red2', mMquad4.x), (0, _dom.h)('p#quad5.red2', mMquad5.x), (0, _dom.h)('p#quad6.red2', mMquad6.x), (0, _dom.h)('p', 'Run mMZ3.release(v) three times for three numbers. The numbers are a, b, and c in ax*x + b*x + c = 0: '), (0, _dom.h)('input#quad'), (0, _dom.h)('p', 'Here is the code:'), _code2.default.quad, (0, _dom.h)('p', ' fmap (above) facilitated using qS4 in a monadic sequence. qS4 returns an array, not an instance of Monad, but fmap lifts qS4 into the monadic sequence. '), (0, _dom.h)('p', ' The function solve() is recursive. It invokes itself after release() executes three times. The expression "solve()" resets solve to the top, where mMZ3.p becomes a function containing two nested occurrances of mMZ3.bnd. After mMZ3.release() executes, mMZ3.p becomes the function that is the argument to the next occurrance of mMZ3.bnd. That function contains yet another occurrance of mMZ3.bnd. MonadItter is syntactic sugar for nested callbacks. '), (0, _dom.h)('p', ' The final example before moving on to MonadState shows how the web worker file, worker.js, handles messages it recieves. worker$ and the worker driver are shown again for the reader\'s convenience. '), _code2.default.wDriver, _code2.default.worker$, _code2.default.worker_js,
+	            (0, _dom.h)('h3', ' Web Worker '), (0, _dom.h)('p', ' After signing in, you will observe a column under the chat box. Numbers entered in the top two input boxes prompt a web worker to compute the square root of the sum of the squares, the sum, the product, and the least common multiple ("lcm"). If the numbers were fraction denominators, the lcm would be least common denominator, the number that would make addition and subtraction convenient. '), (0, _dom.h)('p', ' Here is the code that creates the web worker the Motorcycle driver: '), _code2.default.wDriver, (0, _dom.h)('p', ' The driver is an attribute of the sources object. It is named WK. The stream that receives messages from the worker and feeds data into the virtual dom is named worker$. This is worker$\'s definition: '), _code2.default.worker$, (0, _dom.h)('span', ' mM11.x, mM12.x, mM13.x, and mM14.x are fixtures of the virtual DOM. The web worker sends messages prefixed by mMA#$41, mMB#$41, mMC#$41, and mMD#$41, next() releases MonadItter instances mMZ21, mMZ22, mMZ23, mMZ24, causing code to execute with updates mM11.x, mM12.x, mM13.x, and mM14.x. More details are available in the MonadItter section of this page and at the '), (0, _dom.h)('p', ' User input invokes workerA.postMessage([mM9.x, e.target.value]) or workerA.postMessage([e.target.value, mM10.x]). This starts the execution of code in a file named worker.js, which is defined as follows: '), _code2.default.worker_js, (0, _dom.h)('p', ' In the main thread, primes_state (the function called by primesMonad.run()) is defined as: '), (0, _dom.h)('pre', '    function primes_state(x) {\n      workerA.postMessage(x)\n    } '), (0, _dom.h)('p', ' worker.js imports its definition of primes_state from script2.js. That definition is: '), _code2.default.primes_state, (0, _dom.h)('p', ' Most of the work is delegated to the worker thread. The following screen shot demonstrates primesMonad\'s momoization featire: '), (0, _dom.h)('img.image', { props: { src: "primesMonad.png" } }), (0, _dom.h)('p', ' In the Chrome browser, The time elapsed between entering primes_state and leaving primes_state is over nine seconds the first time primesMonad.run is called. The second time, it is one millisecond. In the Firefox browser, no memoization takes effect and the elapsed time is around 19 seconds in both cases. '), (0, _dom.h)('p', ' The other items in the list in the right column pertain to the game. pMclicked.x is a list of the numbers which have been clicked. pMop.x is the operator which has been chosen. pMindex.x shows where you are during traversal of the game history. There can\'t be a selected operator and two numbers in pMclicked - at least not for long. The game automatically performs a mathematical calculation whenever two numbers and an operator have been chosen. Here is the definition of worker.js: '), (0, _dom.h)('br'),
+
+	            // ********************************************************************** Begin MonadState
+
+	            (0, _dom.h)('p#monadstate'), (0, _dom.h)('a#state', { props: { href: '#monad' } }, 'Back to Monad discussion'), (0, _dom.h)('h2', 'MonadState and MonadState Transformers'), (0, _dom.h)('p', ' An instance of MonadState holds the current state and value of a computation. For any instance of MonadState, say m, these can be accessed through m.s and m.a, respectively.  '), _code2.default.MonadState, (0, _dom.h)('p', ' MonadState reproduces some of the functionality found in the Haskell Module "Control.Monad.State.Lazy", inspired by the paper "Functional Programming with Overloading and Higher-der Polymorphism", Mark P Jones (http://web.cecs.pdx.edu/~mpj/) Advanced School of Functional Programming, 1995. The following demonstrations use the MonadState instances fibsMonad and primesMonad to create and store arrays of Fibonacci numbers and arrays of prime numbers, respectively. fibsMonad and primesMonad combine, with the help of prFactTransformer3, to produce arrays of prime Fibonacci numbers. Until a browser tab is closed, the largest arrays of prime numbers that have been computed are stored in primesMonad.a and primesMonad.s[3]. When smaller arrays of prime numbers are required, thay are obtained from the large arrays and are not re-computed. '), (0, _dom.h)('p', ' Here is the definition of fibsMonad, along with the definition of the function that becomes fibsMonad.process. '), (0, _dom.h)('p', ' Transformers take instances of MonadState and return different instances of MonadState, possibly in a modified state. The method call "fibsMonad.bnd(fpTransformer, primesMonad)" returns primesMonad. Here is the definition of fpTransformer: '), _code2.default.fpTransformer, (0, _dom.h)('p', ' If the largest number in primesMonad.a is less than the square root of the largest number in fibsMonad.a, primesMonad is updated so that the largest number in primesMonad.a is greater than the square root of the largest number in fibsMonad.a. herwise, primesMonad is returned unchanged.  '), (0, _dom.h)('p', ' The final computation in the prime Fibonacci numbers demonstration occurs when "tr3(fibsState[3],primesState[3]" is called. tr3() takes an array of Fibonacci numbers and an array of prime numbers and returns an array containing an array of Fibonacci numbers, an array of prime numbers, and an array of prime Fibonacci numbers. Here is the definition of tr3: '), _code2.default.tr3, (0, _dom.h)('p', ' User input is handled by a chain of computations in a web worker named workerB. first to update fibsMonad, second to extract fibsMonad.s, third to run fpTransformer to modify and then return primesMonad, and fourth to extract primesMonad.s and run tr3(fibsState[3],primesState[3]). Monad instance mMres obtains the result. mMres.x[0], mMres.x[1], and mMres.x[2], are permanent features of the virtual DOM.  Here is the code: '), _code2.default.primeFibInterface, (0, _dom.h)('p', 'Only 48 Fibonacci numbers need to be generated in order to get the eleventh prime Fibonacci number. But 5546 prime numbers need to be generated to test for divisibility into 2971215073. Finding the next Fibonacci number is just a matter of adding the previous two. Getting the next prime number is a more elaborate and time-consuming procedure. In this context, the time needed to compute 48 Fibonacci numbers is insignificant, so I didn\'t bother to save previously computed Fibonacci numbers in the prime Fibonacci demonstration. When a user enters a number smaller than the current length of fibsMonad.a, fibsMonad is modified such that its length becomes exactly what the user entered.'), (0, _dom.h)('p', ' Entering 50 in my desktop Ubuntu Chrome and Firefox browsers got the first eleven prime Fibonacci numbers in about one second. I tried gradually incrementing upwards from 50, but when I got to 61 I stopped due to impatience with the lag time. The 61st Fibonacci number was computed to be 1,548,008,755,920. 76,940 prime numbers were needed to check the 60th Fibonacci number. 96,043 prime numbers were needed to check the 61st Fibonacci number.  At Fibonacci number 61, no new prime Fibonacci numbers had appeared.'), (0, _dom.h)('p', ' According to multiple sources, these are the first eleven proven prime Fibonacci numbers:'), (0, _dom.h)('span.lb', ' 2, 3, 5, 13, 89, 233, 1597, 28657, 514229, 433494437, and 2971215073 '), (0, _dom.h)('br'), (0, _dom.h)('p', ' The number you enter below is the length of the list of Fibonacci numbers you want to generate.  '), (0, _dom.h)('p'), (0, _dom.h)('input#fib92'), (0, _dom.h)('br'), (0, _dom.h)('span#PF_7.red6', 'Fibonacci Numbers'), (0, _dom.h)('br'), (0, _dom.h)('span#PF_9.turk', mMres.x[0]), (0, _dom.h)('br'), (0, _dom.h)('span#PF_8.red6', 'Prime Fibonacci Numbers'), (0, _dom.h)('br'), (0, _dom.h)('span#primeFibs.turk', mMres.x[2]), (0, _dom.h)('br'), (0, _dom.h)('span#PF_21.red6', 'Prime Numbers'), (0, _dom.h)('br'), (0, _dom.h)('span#PF_22.turk', mMres.x[1]), (0, _dom.h)('br'), (0, _dom.h)('p', ' The next demonstration uses two instances of MonadState to find the prime factors of numbers. Each prime factor is listed once.  On my desktop computer, it took several seconds to verify that 514229 is a prime number. After that, due to memoization, numbers below 514229 or not too far above it evaluated rapidly. Here\'s where you can enter a number to see its prime factors: '), (0, _dom.h)('input#factors_1'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('div.tao3', '' + mMfactors.x), (0, _dom.h)('div.tao3', mMfactors3.x), (0, _dom.h)('p', ' The demonstration uses primesMonad and factorsMonad. Here are the definitions of factosMonad and factor_state, the function that is factorsMonad.process: '), _code2.default.factorsMonad, (0, _dom.h)('p#async', ' And this is how user input is handled: '), _code2.default.factorsInput, (0, _dom.h)('p', ' The expressions get(mMfactors) and get(mMfactors) are permanent fixtures of the virtual DOM. The click handler is a stream which receives input from the virtual DOM and is merged into the stream that feeds data to the virtual DOM. Since changes to mMfactors and mMfactors3 are in the cycle initiated by user input and culminating in a modification of the virtual DOM, there is no need to explicitly create observers. Reactivity stems from being in the cycle. '), (0, _dom.h)('a', { props: { href: '#top' } }, 'Back To The Top'),
+
+	            // ********************************************************************** End MonadState
+
+	            (0, _dom.h)('br'), (0, _dom.h)('a#itterLink', { props: { href: '#monad' } }, 'Back to Monad discussion'), (0, _dom.h)('h2', ' MonadEr - An Error-Catching Monad '), (0, _dom.h)('p', ' Instances of MonadEr function much the same as instances of Monad, but when an instance of MonadEr encounters an error, it ceases to perform any further computations. Instead, it passes through every subsequent stage of a sequence of MonadEr expressions, reporting where it is and repeating the error message. It will continue to do this until it is re-instantiated or until its bnd() method runs on the function clean(). '), (0, _dom.h)('p', 'Functions used as arguments to the MonadEr bnd() method can be placed in quotation marks to prevent the browser engine from throwing reference errors. Arguments can be protected in the same manner. Using MonadEr can prevent the silent proliferation of NaN results in math computations, and can prevent browser crashes due to attempts to evaluate undefined variables. Sometimes crashes are desired when testing code, but MonadEr provides instant feedback pinpointing the exact location of the error. '), (0, _dom.h)('p', ' The following demonstration shows the Chrome console log entries that result from running '), (0, _dom.h)('pre', '    t.bnd(\'add3", 3, \'Mt2\').bnd(cube3, \'Mt3\'\n    t.bnd(\'add3",\'three\', \'Mt2\').bnd(cube3, \'Mt3\'    \n    t.bnd(\'add3",\'Math.sqrt(-1)\', \'Mt2\').bnd(cube3, \'Mt3\' \n    t.bnd(\'addd3", 3, \'Mt2\').bnd(cube3, \'Mt3\' '), (0, _dom.h)('br'), (0, _dom.h)('img.image', { props: { src: "error2.png" } }), (0, _dom.h)('br'), (0, _dom.h)('p.tao1b', ' The monad laws hold for MonadVEr instances. The following relationships were verified in the Chrome console: '), (0, _dom.h)('pre', '    ret3(0,\'t\',[])  // t is now an instance of MonadEr with t.x = 0 and t.e = [].\n\n    t.ret(3).bnd(cube3).x === cube(3).x  \n    ret3(3).bnd(cube3).x === cube3(3).x    \n\n    t.bnd(t.ret) === t   \n    t.bnd(ret) === t  \n   \n    t.ret(0).bnd(add3, 3).bnd(cube3).x === \n    t.ret(0).bnd(v => add3(v,3).bnd(cube3)).x  '), (0, _dom.h)('br'), (0, _dom.h)('a#itterLink', { props: { href: '#monad' } }, 'Back to Monad discussion'), (0, _dom.h)('br'), (0, _dom.h)('a', { props: { href: '#top' } }, 'Back To The Top'), (0, _dom.h)('h2', 'MonadItter'), _code2.default.monadIt, (0, _dom.h)('p', ' MonadItter instances don\'t link to one another. They exist to facilitate the work of instances of Monad, MonadState, etc. Here\'s how they work: '), (0, _dom.h)('p', 'For any instance of MonadItter, say "it", "it.bnd(func)" causes it.p === func. Calling the method "it.release(...args)" causes p(...args) to run, possibly with arguments supplied by the caller. '), (0, _dom.h)('p', ' As shown later on this page, MonadItter instances control the routing of incoming websockets messages. In one of the demonstrations below, they behave much like ES2015 iterators. I prefer them over ES2015 iterators, at least for what I am demonstrating.'), (0, _dom.h)('h3', ' A Basic Itterator '), (0, _dom.h)('p', 'The following example illustrates the use of release() with an argument. It also shows a lambda expressions being provided as an argument for the method mMZ1.bnd() (thereby becoming the value of mMZ1.p), and then mMZ1.release providing an arguments for the function mMZ1.p. The code is shown beneith the following two buttons. '), (0, _dom.h)('button#testZ', 'mMZ1.release(1)'), (0, _dom.h)('p.code2', mMt3.x), (0, _dom.h)('span', 'Refresh button: '), (0, _dom.h)('button#testQ', 'mMt1.ret(0).bnd(v => mMZ2.release(v)) '), (0, _dom.h)('br'), _code2.default.testZ, (0, _dom.h)('span.tao', ' The expression mMt3.x sits permanently in the Motorcycle virtual DOM description. You can call '), (0, _dom.h)('span.green', 'mMZ2.release(v)'), (0, _dom.h)('span', ' by entering a value for v below: '), (0, _dom.h)('br'), (0, _dom.h)('span', 'Please enter an integer here: '), (0, _dom.h)('input#testW'), (0, _dom.h)('p', ' cube() is defined in the Monad section (above). If you click "mMZ1.release(1)" several times, the code (above) will run several times, each time with v === 1. The result, mMt3.x, is shown below the button. mMZ1.p (bnd()\'s argument) remains constant while mMZ1.release(1) is repeatedly called, incrementing the number being cubed each time. '), (0, _dom.h)('p', ' Here is another example. It demonstrates lambda expressions passing values to a remote location for use in a computation. If you enter three numbers consecutively below, call them a, b, and c, then the quadratic equation will be used to find solutions for a*x**2 + b*x + c = 0. The a, b, and c you select might not have a solution. If a and b are positive numbers, you are likely to see solutions if c is a negative number. For example, 12, 12, and -24 yields the solutions 1 and -2. '), (0, _dom.h)('p#quad4.red2', mMquad4.x), (0, _dom.h)('p#quad5.red2', mMquad5.x), (0, _dom.h)('p#quad6.red2', mMquad6.x), (0, _dom.h)('p', 'Run mMZ3.release(v) three times for three numbers. The numbers are a, b, and c in ax*x + b*x + c = 0: '), (0, _dom.h)('input#quad'), (0, _dom.h)('p', 'Here is the code:'), _code2.default.quad, (0, _dom.h)('p', ' fmap (above) facilitated using qS4 in a monadic sequence. qS4 returns an array, not an instance of Monad, but fmap lifts qS4 into the monadic sequence. '), (0, _dom.h)('p', ' The function solve() is recursive. It invokes itself after release() executes three times. The expression "solve()" resets solve to the top, where mMZ3.p becomes a function containing two nested occurrances of mMZ3.bnd. After mMZ3.release() executes, mMZ3.p becomes the function that is the argument to the next occurrance of mMZ3.bnd. That function contains yet another occurrance of mMZ3.bnd. MonadItter is syntactic sugar for nested callbacks. '), (0, _dom.h)('p', ' The final example before moving on to MonadState shows how the web worker file, worker.js, handles messages it recieves. worker$ and the worker driver are shown again for the reader\'s convenience. '), _code2.default.wDriver, _code2.default.worker$, _code2.default.worker_js,
 
 	            // ************************************************************************** START MonadState
-	            (0, _dom.h)('a#state', { props: { href: '#monad' } }, 'Back to Monad discussion'), (0, _dom.h)('p#monadstate'), (0, _dom.h)('h2', 'MonadState and MonadState Transformers'), (0, _dom.h)('p', ' An instance of MonadState holds the current state and value of a computation. For any instance of MonadState, say m, these can be accessed through m.s and m.a, respectively.  '), _code2.default.MonadState, (0, _dom.h)('p', ' MonadState reproduces some of the functionality found in the Haskell Module "Control.Monad.State.Lazy", inspired by the paper "Functional Programming with Overloading and Higher-der Polymorphism", Mark P Jones (http://web.cecs.pdx.edu/~mpj/) Advanced School of Functional Programming, 1995. The following demonstrations use the MonadState instances fibsMonad and primesMonad to create and store arrays of Fibonacci numbers and arrays of prime numbers, respectively. fibsMonad and primesMonad provide a simple way to compute lists of prime Fibonacci numbers.  Because the results of computations are stored in the a and s attributes of MonadState instances, it was easy to make sure that no prime number had to be computed more than once in the prime Fibonacci demonstration. '), (0, _dom.h)('p', ' Here is the definition of fibsMonad, along with the definition of the function that becomes fibsMonad.process. '), _code2.default.fibsMonad, (0, _dom.h)('p', ' Another MonadState instance used in this demonstration is primesMonad. Here is its definition along with the function that becomes primesMonad.process:  '), _code2.default.primesMonad, (0, _dom.h)('h3', ' MonadState transformers '), (0, _dom.h)('p', ' Transformers take instances of MonadState and return different instances of MonadState, possibly in a modified state. The method call "fibsMonad.bnd(fpTransformer, primesMonad)" returns primesMonad. Here is the definition of fpTransformer: '), _code2.default.fpTransformer, (0, _dom.h)('p', ' If the largest number in primesMonad.a is less than the square root of the largest number in fibsMonad.a, primesMonad is updated so that the largest number in primesMonad.a is greater than the square root of the largest number in fibsMonad.a. herwise, primesMonad is returned unchanged.  '), (0, _dom.h)('p', ' The final computation in the prime Fibonacci numbers demonstration occurs when "tr3(fibsState[3],primesState[3]" is called. tr3() takes an array of Fibonacci numbers and an array of prime numbers and returns an array containing an array of Fibonacci numbers, an array of prime numbers, and an array of prime Fibonacci numbers. Here is the definition of tr3: '), _code2.default.tr3, (0, _dom.h)('p', ' User input is handled by a chain of computations. first to update fibsMonad, second to extract fibsMonad.s, third to run fpTransformer to modify and then return primesMonad, and fourth to extract primesMonad.s and run tr3(fibsState[3],primesState[3]). Monad instance mMres obtains the result. mMres.x[0], mMres.x[1], and mMres.x[2], are permanent features of the virtual DOM.  Here is the code: '), _code2.default.primeFibInterface, (0, _dom.h)('p', 'Only 48 Fibonacci numbers need to be generated in order to get the eleventh prime Fibonacci number. But 5546 prime numbers need to be generated to test for divisibility into 2971215073. Finding the next Fibonacci number is just a matter of adding the previous two. Getting the next prime number is a more elaborate and time-consuming procedure. In this context, the time needed to compute 48 Fibonacci numbers is insignificant, so I didn\'t bother to save previously computed Fibonacci numbers in the prime Fibonacci demonstration. When a user enters a number smaller than the current length of fibsMonad.a, fibsMonad is modified such that its length becomes exactly what the user entered.'), (0, _dom.h)('p', ' Entering 50 in my desktop Ubuntu Chrome and Firefox browsers got the first eleven prime Fibonacci numbers in about one second. I tried gradually incrementing upwards from 50, but when I got to 61 I stopped due to impatience with the lag time. The 61st Fibonacci number was computed to be 1,548,008,755,920. 76,940 prime numbers were needed to check the 60th Fibonacci number. 96,043 prime numbers were needed to check the 61st Fibonacci number.  At Fibonacci number 61, no new prime Fibonacci numbers had appeared.'), (0, _dom.h)('p', ' According to multiple sources, these are the first eleven proven prime Fibonacci numbers:'), (0, _dom.h)('span.lb', ' 2, 3, 5, 13, 89, 233, 1597, 28657, 514229, 433494437, and 2971215073 '), (0, _dom.h)('br'), (0, _dom.h)('p', ' The number you enter below is the length of the list of Fibonacci numbers you want to generate.  '), (0, _dom.h)('p'), (0, _dom.h)('input#fib92'), (0, _dom.h)('br'), (0, _dom.h)('span#PF_7.red6', 'Fibonacci Numbers'), (0, _dom.h)('br'), (0, _dom.h)('span#PF_9.turk', mMres.x[0]), (0, _dom.h)('br'), (0, _dom.h)('span#PF_8.red6', 'Prime Fibonacci Numbers'), (0, _dom.h)('br'), (0, _dom.h)('span#primeFibs.turk', mMres.x[2]), (0, _dom.h)('br'), (0, _dom.h)('span#PF_21.red6', 'Prime Numbers'), (0, _dom.h)('br'), (0, _dom.h)('span#PF_22.turk', mMres.x[1]), (0, _dom.h)('br'), (0, _dom.h)('p', ' The next demonstration uses two instances of MonadState to find the prime factors of numbers. Each prime factor is listed once.  On my desktop computer, it took several seconds to verify that 514229 is a prime number. After that, due to memoization, numbers below 514229 or not too far above it evaluated rapidly. Here\'s where you can enter a number to see its prime factors: '), (0, _dom.h)('input#factors_1'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('div.tao3', '' + mMfactors.x), (0, _dom.h)('div.tao3', mMfactors3.x), (0, _dom.h)('p', ' The demonstration uses primesMonad and factorsMonad. Here are the definitions of factosMonad and factor_state, the function that is factorsMonad.process: '), _code2.default.factorsMonad, (0, _dom.h)('p#async', ' And this is how user input is handled: '), _code2.default.factorsInput, (0, _dom.h)('p', ' The expressions get(mMfactors) and get(mMfactors) are permanent fixtures of the virtual DOM. The click handler is a stream which receives input from the virtual DOM and is merged into the stream that feeds data to the virtual DOM. Since changes to mMfactors and mMfactors3 are in the cycle initiated by user input and culminating in a modification of the virtual DOM, there is no need to explicitly create observers. Reactivity stems from being in the cycle. '), (0, _dom.h)('a', { props: { href: '#top' } }, 'Back To The Top'),
+
 
 	            // ***********************************************************************************************  MonadArchive
 
@@ -6620,7 +6909,7 @@
 	            //************************************************************************** END MonadArchive 
 
 
-	            (0, _dom.h)('h2', ' MonadSet '), (0, _dom.h)('p', ' The list of online group members at the bottom of the scoreboard is very responsive to change. When someone joins the group, changes to a different group, or closes a browser session, a message prefixed by NN#$42 goes out from the server providing group members with the updated list of group members. MonadSet acts upon messages prefixed by NN#$42. Here are the definitions of MonadSet and the MonadSet instance sMplayers '), _code2.default.MonadSet, (0, _dom.h)('a', { props: { href: '#top' } }, 'Back To The Top'), (0, _dom.h)('h3', ' Websocket messages'), (0, _dom.h)('p#demo', ' Incoming websockets messages trigger updates to the game display, the chat display, and the todo list display. The members of a group see what other members are doing; and in the case of the todo list, they see the current list when they sign in to the group. When any member of a group adds a task, crosses it out as completed, edits its description, or removes it, the server updates the persistent file and all members of the group immediately see the revised list.  '), (0, _dom.h)('p', 'The code below shows how incoming websockets messages are routed. For example, mMZ10.release() is called when a new dice roll (prefixed by CA#$42) comes in.   '), _code2.default.messages, (0, _dom.h)('p', ' The "mMZ" prefix designates instances of MonadItter. An instance\'s bnd() method assigns its argument to its "p" attribute. "p" runs if and when its release() method is called. The next() function releases a specified MonadItter instance when the calling monad\'s value matches the specified value in the expression. In the messages$ stream, the MonadItter instance\'s bnd methods do not take argumants, but next is capable of sending arguments when bnd() is called on functions requiring them. Here is an example: '), (0, _dom.h)('a#tdList2', { props: { href: '#itterLink' } }, 'release() with arguments'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('a', { props: { href: '#top' } }, 'Back To The Top'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('p'), (0, _dom.h)('p'), (0, _dom.h)('p', '.'), (0, _dom.h)('p', '.'), (0, _dom.h)('p', '.'), (0, _dom.h)('p', '.'), (0, _dom.h)('p', '.'), (0, _dom.h)('p'), (0, _dom.h)('p'), (0, _dom.h)('p'), (0, _dom.h)('p'), (0, _dom.h)('p')])]);
+	            (0, _dom.h)('h2', ' MonadSet '), (0, _dom.h)('p', ' The list of online group members at the bottom of the scoreboard is very responsive to change. When someone joins the group, changes to a different group, or closes a browser session, a message prefixed by NN#$42 goes out from the server providing group members with the updated list of group members. MonadSet acts upon messages prefixed by NN#$42. Here are the definitions of MonadSet and the MonadSet instance sMplayers '), _code2.default.MonadSet, (0, _dom.h)('a', { props: { href: '#top' } }, 'Back To The Top'), (0, _dom.h)('h3', ' Websocket messages'), (0, _dom.h)('p#demo', ' Incoming websockets messages trigger updates to the game display, the chat display, and the todo list display. The members of a group see what other members are doing; and in the case of the todo list, they see the current list when they sign in to the group. When any member of a group adds a task, crosses it out as completed, edits its description, or removes it, the server updates the persistent file and all members of the group immediately see the revised list.  '), (0, _dom.h)('p', 'The code below shows how incoming websockets messages are routed. For example, mMZ10.release() is called when a new dice roll (prefixed by CA#$42) comes in.   '), _code2.default.messages, (0, _dom.h)('p', ' The "mMZ" prefix designates instances of MonadItter. An instance\'s bnd() method assigns its argument to its "p" attribute. "p" runs if and when its release() method is called. The next() function releases a specified MonadItter instance when the calling monad\'s value matches the specified value in the expression. In the messages$ stream, the MonadItter instance\'s bnd methods do not take argumants, but next is capable of sending arguments when bnd() is called on functions requiring them. Here is an example: '), (0, _dom.h)('a#tdList2', { props: { href: '#itterLink' } }, 'release() with arguments'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('a', { props: { href: '#top' } }, 'Back To The Top'), (0, _dom.h)('h2', 'Appendix A - MonadState and Transformers'), (0, _dom.h)('h3', 'Prime Numbers and the Fibonacci Series Examples'), _code2.default.fibsMonad, (0, _dom.h)('p', '.'), _code2.default.primesMonad, (0, _dom.h)('br'), (0, _dom.h)('h2', 'Appendix B - MonadEr '), (0, _dom.h)('h3', 'The functions that produce the examples'), (0, _dom.h)('p', ' Here are the definitions of MonadEr, its helper functions, and the function that serve as parameters to the bnd() method in the demonstration. '), _code2.default.monadEr, (0, _dom.h)('p', ' and here is the code that produced the Chrome console log entries: '), _code2.default.errorDemo, (0, _dom.h)('span.tao', ' When  a MonadEr instance encounters a function or an argument in quotation marks of types "undefined" or "NaN", a string gets pushed into the instance\'s e attribue. After that, the  bnd() method will not process any function other than clean(). It will stop at the'), (0, _dom.h)('span.turk', 'if (e.length > 0)'), (0, _dom.h)('span', 'block. clean() resets an instance to normal functioning mode by setting its e attribute back to []. '), (0, _dom.h)('br'), (0, _dom.h)('p'), (0, _dom.h)('p'), (0, _dom.h)('p', '.'), (0, _dom.h)('p', '.'), (0, _dom.h)('p', '.'), (0, _dom.h)('p', '.'), (0, _dom.h)('p', '.'), (0, _dom.h)('p'), (0, _dom.h)('p'), (0, _dom.h)('p'), (0, _dom.h)('p'), (0, _dom.h)('p')])]);
 	        })
 	    };
 	}
@@ -6633,11 +6922,186 @@
 	    WWC: workerDriverC
 	};
 
-	_core2.default.run(main, sources);
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(35)))
+	(0, _mostRun.run)(main, sources);
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(36)))
 
 /***/ },
-/* 63 */
+/* 65 */
+/***/ function(module, exports) {
+
+	"use strict";
+
+	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+
+	function logToConsoleError(err) {
+	    var target = err.stack || err;
+	    if (console && console.error) {
+	        console.error(target);
+	    } else if (console && console.log) {
+	        console.log(target);
+	    }
+	}
+	function makeSinkProxies(drivers, streamAdapter) {
+	    var sinkProxies = {};
+	    for (var name_1 in drivers) {
+	        if (drivers.hasOwnProperty(name_1)) {
+	            var holdSubject = streamAdapter.makeSubject();
+	            var driverStreamAdapter = drivers[name_1].streamAdapter || streamAdapter;
+	            var stream = driverStreamAdapter.adapt(holdSubject.stream, streamAdapter.streamSubscribe);
+	            sinkProxies[name_1] = {
+	                stream: stream,
+	                observer: holdSubject.observer
+	            };
+	        }
+	    }
+	    return sinkProxies;
+	}
+	function callDrivers(drivers, sinkProxies, streamAdapter) {
+	    var sources = {};
+	    for (var name_2 in drivers) {
+	        if (drivers.hasOwnProperty(name_2)) {
+	            var driverOutput = drivers[name_2](sinkProxies[name_2].stream, streamAdapter, name_2);
+	            var driverStreamAdapter = drivers[name_2].streamAdapter;
+	            if (driverStreamAdapter && driverStreamAdapter.isValidStream(driverOutput)) {
+	                sources[name_2] = streamAdapter.adapt(driverOutput, driverStreamAdapter.streamSubscribe);
+	            } else {
+	                sources[name_2] = driverOutput;
+	            }
+	            if (sources[name_2] && _typeof(sources[name_2]) === 'object') {
+	                sources[name_2]._isCycleSource = name_2;
+	            }
+	        }
+	    }
+	    return sources;
+	}
+	function replicateMany(sinks, sinkProxies, streamAdapter) {
+	    var results = Object.keys(sinks).filter(function (name) {
+	        return !!sinkProxies[name];
+	    }).map(function (name) {
+	        return streamAdapter.streamSubscribe(sinks[name], {
+	            next: function next(x) {
+	                sinkProxies[name].observer.next(x);
+	            },
+	            error: function error(err) {
+	                logToConsoleError(err);
+	                sinkProxies[name].observer.error(err);
+	            },
+	            complete: function complete(x) {
+	                sinkProxies[name].observer.complete(x);
+	            }
+	        });
+	    });
+	    var disposeFunctions = results.filter(function (dispose) {
+	        return typeof dispose === 'function';
+	    });
+	    return function () {
+	        disposeFunctions.forEach(function (dispose) {
+	            return dispose();
+	        });
+	    };
+	}
+	function disposeSources(sources) {
+	    for (var k in sources) {
+	        if (sources.hasOwnProperty(k) && sources[k] && typeof sources[k].dispose === 'function') {
+	            sources[k].dispose();
+	        }
+	    }
+	}
+	var isObjectEmpty = function isObjectEmpty(obj) {
+	    return Object.keys(obj).length === 0;
+	};
+	function Cycle(main, drivers, options) {
+	    if (typeof main !== "function") {
+	        throw new Error("First argument given to Cycle must be the 'main' " + "function.");
+	    }
+	    if ((typeof drivers === 'undefined' ? 'undefined' : _typeof(drivers)) !== "object" || drivers === null) {
+	        throw new Error("Second argument given to Cycle must be an object " + "with driver functions as properties.");
+	    }
+	    if (isObjectEmpty(drivers)) {
+	        throw new Error("Second argument given to Cycle must be an object " + "with at least one driver function declared as a property.");
+	    }
+	    var streamAdapter = options.streamAdapter;
+	    if (!streamAdapter || isObjectEmpty(streamAdapter)) {
+	        throw new Error("Third argument given to Cycle must be an options object " + "with the streamAdapter key supplied with a valid stream adapter.");
+	    }
+	    var sinkProxies = makeSinkProxies(drivers, streamAdapter);
+	    var sources = callDrivers(drivers, sinkProxies, streamAdapter);
+	    var sinks = main(sources);
+	    if (typeof window !== 'undefined') {
+	        window.Cyclejs = { sinks: sinks };
+	    }
+	    var run = function run() {
+	        var disposeReplication = replicateMany(sinks, sinkProxies, streamAdapter);
+	        return function () {
+	            disposeSources(sources);
+	            disposeReplication();
+	        };
+	    };
+	    return { sinks: sinks, sources: sources, run: run };
+	}
+	Object.defineProperty(exports, "__esModule", { value: true });
+	exports.default = Cycle;
+	//# sourceMappingURL=index.js.map
+
+/***/ },
+/* 66 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+
+	var most_subject_1 = __webpack_require__(91);
+	var hold_1 = __webpack_require__(37);
+	var create_1 = __webpack_require__(34);
+	var MostAdapter = {
+	    adapt: function adapt(originStream, originStreamSubscribe) {
+	        if (MostAdapter.isValidStream(originStream)) {
+	            return originStream;
+	        }
+	        ;
+	        var stream = create_1.create(function (add, end, error) {
+	            var disposer = originStreamSubscribe(originStream, {
+	                next: add,
+	                error: error,
+	                complete: end
+	            });
+	            return disposer;
+	        });
+	        return stream;
+	    },
+	    remember: function remember(stream) {
+	        return hold_1.default(stream);
+	    },
+	    makeSubject: function makeSubject() {
+	        var stream = most_subject_1.sync();
+	        var observer = {
+	            next: function next(x) {
+	                stream.next(x);
+	            },
+	            error: function error(err) {
+	                stream.error(err);
+	            },
+	            complete: function complete(x) {
+	                stream.complete(x);
+	            }
+	        };
+	        return { observer: observer, stream: stream };
+	    },
+	    isValidStream: function isValidStream(stream) {
+	        return typeof stream.drain === 'function' && typeof stream.subscribe === 'function';
+	    },
+	    streamSubscribe: function streamSubscribe(stream, observer) {
+	        var subscription = stream.subscribe(observer);
+	        return function () {
+	            return subscription.unsubscribe();
+	        };
+	    }
+	};
+	Object.defineProperty(exports, "__esModule", { value: true });
+	exports.default = MostAdapter;
+	//# sourceMappingURL=index.js.map
+
+/***/ },
+/* 67 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
@@ -6645,7 +7109,7 @@
 	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
 	(function (global, factory) {
-	  ( false ? 'undefined' : _typeof(exports)) === 'object' && typeof module !== 'undefined' ? factory(exports, __webpack_require__(12)) :  true ? !(__WEBPACK_AMD_DEFINE_ARRAY__ = [exports, __webpack_require__(12)], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__)) : factory(global.mostDomEvent = global.mostDomEvent || {}, global.most);
+	  ( false ? 'undefined' : _typeof(exports)) === 'object' && typeof module !== 'undefined' ? factory(exports, __webpack_require__(9)) :  true ? !(__WEBPACK_AMD_DEFINE_ARRAY__ = [exports, __webpack_require__(9)], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__)) : factory(global.mostDomEvent = global.mostDomEvent || {}, global.most);
 	})(undefined, function (exports, most) {
 	  'use strict';
 
@@ -6931,111 +7395,7 @@
 	//# sourceMappingURL=mostDomEvent.js.map
 
 /***/ },
-/* 64 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
-
-	(function (global, factory) {
-	  if (true) {
-	    !(__WEBPACK_AMD_DEFINE_ARRAY__ = [exports, __webpack_require__(7)], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-	  } else if (typeof exports !== "undefined") {
-	    factory(exports, require('@most/multicast'));
-	  } else {
-	    var mod = {
-	      exports: {}
-	    };
-	    factory(mod.exports, global.multicast);
-	    global.mostHold = mod.exports;
-	  }
-	})(undefined, function (exports, _multicast) {
-	  'use strict';
-
-	  Object.defineProperty(exports, "__esModule", {
-	    value: true
-	  });
-
-	  function _classCallCheck(instance, Constructor) {
-	    if (!(instance instanceof Constructor)) {
-	      throw new TypeError("Cannot call a class as a function");
-	    }
-	  }
-
-	  var _createClass = function () {
-	    function defineProperties(target, props) {
-	      for (var i = 0; i < props.length; i++) {
-	        var descriptor = props[i];
-	        descriptor.enumerable = descriptor.enumerable || false;
-	        descriptor.configurable = true;
-	        if ("value" in descriptor) descriptor.writable = true;
-	        Object.defineProperty(target, descriptor.key, descriptor);
-	      }
-	    }
-
-	    return function (Constructor, protoProps, staticProps) {
-	      if (protoProps) defineProperties(Constructor.prototype, protoProps);
-	      if (staticProps) defineProperties(Constructor, staticProps);
-	      return Constructor;
-	    };
-	  }();
-
-	  // hold :: Stream a -> Stream a
-	  var index = function index(stream) {
-	    return new stream.constructor(new _multicast.MulticastSource(new Hold(stream.source)));
-	  };
-
-	  var Hold = function () {
-	    function Hold(source) {
-	      _classCallCheck(this, Hold);
-
-	      this.source = source;
-	      this.time = -Infinity;
-	      this.value = void 0;
-	    }
-
-	    _createClass(Hold, [{
-	      key: 'run',
-	      value: function run(sink, scheduler) {
-	        /* istanbul ignore else */
-	        if (sink._hold !== this) {
-	          sink._hold = this;
-	          sink._holdAdd = sink.add;
-	          sink.add = holdAdd;
-
-	          sink._holdEvent = sink.event;
-	          sink.event = holdEvent;
-	        }
-
-	        return this.source.run(sink, scheduler);
-	      }
-	    }]);
-
-	    return Hold;
-	  }();
-
-	  function holdAdd(sink) {
-	    var len = this._holdAdd(sink);
-	    /* istanbul ignore else */
-	    if (this._hold.time >= 0) {
-	      sink.event(this._hold.time, this._hold.value);
-	    }
-	    return len;
-	  }
-
-	  function holdEvent(t, x) {
-	    /* istanbul ignore else */
-	    if (t >= this._hold.time) {
-	      this._hold.time = t;
-	      this._hold.value = x;
-	    }
-	    return this._holdEvent(t, x);
-	  }
-
-	  exports.default = index;
-	});
-
-/***/ },
-/* 65 */
+/* 68 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -7116,7 +7476,7 @@
 	exports.default = h;
 
 /***/ },
-/* 66 */
+/* 69 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -7126,39 +7486,39 @@
 	});
 	exports.makeDOMDriver = undefined;
 
-	var _most = __webpack_require__(12);
+	var _most = __webpack_require__(9);
 
-	var _hold = __webpack_require__(64);
+	var _hold = __webpack_require__(37);
 
 	var _hold2 = _interopRequireDefault(_hold);
 
-	var _snabbdom = __webpack_require__(78);
+	var _snabbdom = __webpack_require__(81);
 
-	var _h = __webpack_require__(42);
+	var _h = __webpack_require__(44);
 
 	var _h2 = _interopRequireDefault(_h);
 
-	var _classNameFromVNode = __webpack_require__(70);
+	var _classNameFromVNode = __webpack_require__(73);
 
 	var _classNameFromVNode2 = _interopRequireDefault(_classNameFromVNode);
 
-	var _selectorParser2 = __webpack_require__(41);
+	var _selectorParser2 = __webpack_require__(43);
 
 	var _selectorParser3 = _interopRequireDefault(_selectorParser2);
 
-	var _utils = __webpack_require__(40);
+	var _utils = __webpack_require__(42);
 
-	var _modules = __webpack_require__(39);
+	var _modules = __webpack_require__(41);
 
 	var _modules2 = _interopRequireDefault(_modules);
 
-	var _transposition = __webpack_require__(69);
+	var _transposition = __webpack_require__(72);
 
-	var _isolate = __webpack_require__(37);
+	var _isolate = __webpack_require__(39);
 
-	var _select = __webpack_require__(68);
+	var _select = __webpack_require__(71);
 
-	var _events = __webpack_require__(36);
+	var _events = __webpack_require__(38);
 
 	function _interopRequireDefault(obj) {
 	  return obj && obj.__esModule ? obj : { default: obj };
@@ -7262,7 +7622,7 @@
 	exports.makeDOMDriver = makeDOMDriver;
 
 /***/ },
-/* 67 */
+/* 70 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -7272,7 +7632,7 @@
 	});
 	exports.mockDOMSource = undefined;
 
-	var _most = __webpack_require__(12);
+	var _most = __webpack_require__(9);
 
 	var _most2 = _interopRequireDefault(_most);
 
@@ -7333,7 +7693,7 @@
 	exports.mockDOMSource = mockDOMSource;
 
 /***/ },
-/* 68 */
+/* 71 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -7343,11 +7703,11 @@
 	});
 	exports.makeIsStrictlyInRootScope = exports.makeElementSelector = undefined;
 
-	var _makeIsStrictlyInRootScope = __webpack_require__(38);
+	var _makeIsStrictlyInRootScope = __webpack_require__(40);
 
-	var _events = __webpack_require__(36);
+	var _events = __webpack_require__(38);
 
-	var _isolate = __webpack_require__(37);
+	var _isolate = __webpack_require__(39);
 
 	var isValidString = function isValidString(param) {
 	  return typeof param === 'string' && param.length > 0;
@@ -7430,7 +7790,7 @@
 	exports.makeIsStrictlyInRootScope = _makeIsStrictlyInRootScope.makeIsStrictlyInRootScope;
 
 /***/ },
-/* 69 */
+/* 72 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -7442,7 +7802,7 @@
 	});
 	exports.transposeVTree = undefined;
 
-	var _most = __webpack_require__(12);
+	var _most = __webpack_require__(9);
 
 	var _most2 = _interopRequireDefault(_most);
 
@@ -7492,7 +7852,7 @@
 	exports.transposeVTree = transposeVTree;
 
 /***/ },
-/* 70 */
+/* 73 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -7502,7 +7862,7 @@
 	});
 	exports.default = classNameFromVNode;
 
-	var _selectorParser2 = __webpack_require__(41);
+	var _selectorParser2 = __webpack_require__(43);
 
 	var _selectorParser3 = _interopRequireDefault(_selectorParser2);
 
@@ -7538,7 +7898,7 @@
 	}
 
 /***/ },
-/* 71 */
+/* 74 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -7597,7 +7957,7 @@
 	};
 
 /***/ },
-/* 72 */
+/* 75 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -7639,7 +7999,7 @@
 	module.exports = { create: updateAttrs, update: updateAttrs };
 
 /***/ },
-/* 73 */
+/* 76 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -7666,7 +8026,7 @@
 	module.exports = { create: updateClass, update: updateClass };
 
 /***/ },
-/* 74 */
+/* 77 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -7721,7 +8081,7 @@
 	module.exports = { create: updateEventListeners, update: updateEventListeners };
 
 /***/ },
-/* 75 */
+/* 78 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -7882,7 +8242,7 @@
 	module.exports = { pre: pre, create: create, destroy: destroy, post: post };
 
 /***/ },
-/* 76 */
+/* 79 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -7911,7 +8271,7 @@
 	module.exports = { create: updateProps, update: updateProps };
 
 /***/ },
-/* 77 */
+/* 80 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -8000,7 +8360,7 @@
 	module.exports = { create: updateStyle, update: updateStyle, destroy: applyDestroyStyle, remove: applyRemoveStyle };
 
 /***/ },
-/* 78 */
+/* 81 */
 /***/ function(module, exports, __webpack_require__) {
 
 	// jshint newcap: false
@@ -8009,7 +8369,7 @@
 
 	var VNode = __webpack_require__(18);
 	var is = __webpack_require__(13);
-	var domApi = __webpack_require__(71);
+	var domApi = __webpack_require__(74);
 
 	function isUndef(s) {
 	  return s === undefined;
@@ -8300,12 +8660,12 @@
 	module.exports = { init: init };
 
 /***/ },
-/* 79 */
+/* 82 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var h = __webpack_require__(42);
+	var h = __webpack_require__(44);
 
 	function init(thunk) {
 	  var i,
@@ -8345,7 +8705,7 @@
 	};
 
 /***/ },
-/* 80 */
+/* 83 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -8464,7 +8824,7 @@
 	}();
 
 /***/ },
-/* 81 */
+/* 84 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -8514,7 +8874,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 82 */
+/* 85 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -8543,7 +8903,7 @@
 	}
 
 /***/ },
-/* 83 */
+/* 86 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -8555,7 +8915,7 @@
 	//# sourceMappingURL=complete.js.map
 
 /***/ },
-/* 84 */
+/* 87 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -8567,20 +8927,20 @@
 	//# sourceMappingURL=error.js.map
 
 /***/ },
-/* 85 */
+/* 88 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
 
 	var prelude_1 = __webpack_require__(0);
-	var sources_1 = __webpack_require__(43);
+	var sources_1 = __webpack_require__(45);
 	exports.hold = prelude_1.curry2(function hold(bufferSize, subject) {
 	    return new subject.constructor(new sources_1.HoldSubjectSource(subject.source, bufferSize));
 	});
 	//# sourceMappingURL=hold.js.map
 
 /***/ },
-/* 86 */
+/* 89 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -8590,14 +8950,14 @@
 	        if (!exports.hasOwnProperty(p)) exports[p] = m[p];
 	    }
 	}
+	__export(__webpack_require__(90));
 	__export(__webpack_require__(87));
-	__export(__webpack_require__(84));
-	__export(__webpack_require__(83));
-	__export(__webpack_require__(85));
+	__export(__webpack_require__(86));
+	__export(__webpack_require__(88));
 	//# sourceMappingURL=index.js.map
 
 /***/ },
-/* 87 */
+/* 90 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -8609,7 +8969,7 @@
 	//# sourceMappingURL=next.js.map
 
 /***/ },
-/* 88 */
+/* 91 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -8619,13 +8979,13 @@
 	        if (!exports.hasOwnProperty(p)) exports[p] = m[p];
 	    }
 	}
-	__export(__webpack_require__(43));
-	__export(__webpack_require__(91));
-	__export(__webpack_require__(86));
+	__export(__webpack_require__(45));
+	__export(__webpack_require__(94));
+	__export(__webpack_require__(89));
 	//# sourceMappingURL=index.js.map
 
 /***/ },
-/* 89 */
+/* 92 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -8679,7 +9039,7 @@
 	//# sourceMappingURL=HoldSubjectSource.js.map
 
 /***/ },
-/* 90 */
+/* 93 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -8725,7 +9085,7 @@
 	//# sourceMappingURL=index.js.map
 
 /***/ },
-/* 91 */
+/* 94 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -8735,12 +9095,12 @@
 	        if (!exports.hasOwnProperty(p)) exports[p] = m[p];
 	    }
 	}
-	__export(__webpack_require__(90));
-	__export(__webpack_require__(92));
+	__export(__webpack_require__(93));
+	__export(__webpack_require__(95));
 	//# sourceMappingURL=index.js.map
 
 /***/ },
-/* 92 */
+/* 95 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -8786,7 +9146,7 @@
 	//# sourceMappingURL=index.js.map
 
 /***/ },
-/* 93 */
+/* 96 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -8872,7 +9232,7 @@
 	};
 
 /***/ },
-/* 94 */
+/* 97 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -8892,7 +9252,7 @@
 	}
 
 /***/ },
-/* 95 */
+/* 98 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -8965,7 +9325,7 @@
 	}
 
 /***/ },
-/* 96 */
+/* 99 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -8984,7 +9344,7 @@
 
 	var _Pipe2 = _interopRequireDefault(_Pipe);
 
-	var _runSource = __webpack_require__(49);
+	var _runSource = __webpack_require__(51);
 
 	var _dispose = __webpack_require__(4);
 
@@ -9093,7 +9453,7 @@
 	};
 
 /***/ },
-/* 97 */
+/* 100 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -9103,7 +9463,7 @@
 	});
 	exports.ap = ap;
 
-	var _combine = __webpack_require__(44);
+	var _combine = __webpack_require__(46);
 
 	var _prelude = __webpack_require__(0);
 
@@ -9126,7 +9486,7 @@
 	}
 
 /***/ },
-/* 98 */
+/* 101 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -9137,9 +9497,9 @@
 	exports.cons = cons;
 	exports.concat = concat;
 
-	var _core = __webpack_require__(10);
+	var _core = __webpack_require__(11);
 
-	var _continueWith = __webpack_require__(45);
+	var _continueWith = __webpack_require__(47);
 
 	/**
 	 * @param {*} x value to prepend
@@ -9167,7 +9527,7 @@
 	}
 
 /***/ },
-/* 99 */
+/* 102 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -9197,7 +9557,7 @@
 	/** @author John Hann */
 
 /***/ },
-/* 100 */
+/* 103 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -9286,7 +9646,7 @@
 	DelaySink.prototype.error = _Pipe2.default.prototype.error;
 
 /***/ },
-/* 101 */
+/* 104 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -9302,7 +9662,7 @@
 
 	var _Stream2 = _interopRequireDefault(_Stream);
 
-	var _SafeSink = __webpack_require__(127);
+	var _SafeSink = __webpack_require__(130);
 
 	var _SafeSink2 = _interopRequireDefault(_SafeSink);
 
@@ -9419,7 +9779,7 @@
 	};
 
 /***/ },
-/* 102 */
+/* 105 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -9439,7 +9799,7 @@
 
 	var _Pipe2 = _interopRequireDefault(_Pipe);
 
-	var _Filter = __webpack_require__(47);
+	var _Filter = __webpack_require__(49);
 
 	var _Filter2 = _interopRequireDefault(_Filter);
 
@@ -9515,7 +9875,7 @@
 	}
 
 /***/ },
-/* 103 */
+/* 106 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -9676,7 +10036,7 @@
 	};
 
 /***/ },
-/* 104 */
+/* 107 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -9746,7 +10106,7 @@
 	};
 
 /***/ },
-/* 105 */
+/* 108 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -9769,7 +10129,7 @@
 
 	var _IndexSink2 = _interopRequireDefault(_IndexSink);
 
-	var _core = __webpack_require__(10);
+	var _core = __webpack_require__(11);
 
 	var _dispose = __webpack_require__(4);
 
@@ -9881,7 +10241,7 @@
 	};
 
 /***/ },
-/* 106 */
+/* 109 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -9892,7 +10252,7 @@
 	exports.observe = observe;
 	exports.drain = drain;
 
-	var _runSource = __webpack_require__(49);
+	var _runSource = __webpack_require__(51);
 
 	var _transform = __webpack_require__(14);
 
@@ -9923,7 +10283,7 @@
 	}
 
 /***/ },
-/* 107 */
+/* 110 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -9942,7 +10302,7 @@
 
 	var _fatalError2 = _interopRequireDefault(_fatalError);
 
-	var _core = __webpack_require__(10);
+	var _core = __webpack_require__(11);
 
 	function _interopRequireDefault(obj) {
 	  return obj && obj.__esModule ? obj : { default: obj };
@@ -10033,7 +10393,7 @@
 	};
 
 /***/ },
-/* 108 */
+/* 111 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -10186,7 +10546,7 @@
 	}
 
 /***/ },
-/* 109 */
+/* 112 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -10208,7 +10568,7 @@
 
 	var _Pipe2 = _interopRequireDefault(_Pipe);
 
-	var _core = __webpack_require__(10);
+	var _core = __webpack_require__(11);
 
 	var core = _interopRequireWildcard(_core);
 
@@ -10403,7 +10763,7 @@
 	};
 
 /***/ },
-/* 110 */
+/* 113 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -10547,7 +10907,7 @@
 	};
 
 /***/ },
-/* 111 */
+/* 114 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -10565,7 +10925,7 @@
 	}
 
 /***/ },
-/* 112 */
+/* 115 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -10589,7 +10949,7 @@
 
 	var dispose = _interopRequireWildcard(_dispose);
 
-	var _flatMap = __webpack_require__(46);
+	var _flatMap = __webpack_require__(48);
 
 	function _interopRequireWildcard(obj) {
 	  if (obj && obj.__esModule) {
@@ -10716,7 +11076,7 @@
 	function noop() {}
 
 /***/ },
-/* 113 */
+/* 116 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -10766,7 +11126,7 @@
 	};
 
 /***/ },
-/* 114 */
+/* 117 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -10899,7 +11259,7 @@
 	};
 
 /***/ },
-/* 115 */
+/* 118 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -10918,7 +11278,7 @@
 
 	var transform = _interopRequireWildcard(_transform);
 
-	var _core = __webpack_require__(10);
+	var _core = __webpack_require__(11);
 
 	var core = _interopRequireWildcard(_core);
 
@@ -10942,7 +11302,7 @@
 
 	var _invoke2 = _interopRequireDefault(_invoke);
 
-	var _Queue = __webpack_require__(95);
+	var _Queue = __webpack_require__(98);
 
 	var _Queue2 = _interopRequireDefault(_Queue);
 
@@ -11084,7 +11444,7 @@
 	}
 
 /***/ },
-/* 116 */
+/* 119 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -11113,7 +11473,7 @@
 	};
 
 /***/ },
-/* 117 */
+/* 120 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -11164,7 +11524,7 @@
 	};
 
 /***/ },
-/* 118 */
+/* 121 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -11210,7 +11570,7 @@
 	FilterMapSink.prototype.error = _Pipe2.default.prototype.error;
 
 /***/ },
-/* 119 */
+/* 122 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -11291,7 +11651,7 @@
 	}
 
 /***/ },
-/* 120 */
+/* 123 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -11301,7 +11661,7 @@
 	});
 	exports.default = getObservable;
 
-	var _symbolObservable = __webpack_require__(59);
+	var _symbolObservable = __webpack_require__(61);
 
 	var _symbolObservable2 = _interopRequireDefault(_symbolObservable);
 
@@ -11329,7 +11689,7 @@
 	/** @author John Hann */
 
 /***/ },
-/* 121 */
+/* 124 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -11429,7 +11789,7 @@
 	}
 
 /***/ },
-/* 122 */
+/* 125 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -11481,7 +11841,7 @@
 	}
 
 /***/ },
-/* 123 */
+/* 126 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -11516,7 +11876,7 @@
 	};
 
 /***/ },
-/* 124 */
+/* 127 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -11526,7 +11886,7 @@
 	});
 	exports.default = Scheduler;
 
-	var _ScheduledTask = __webpack_require__(123);
+	var _ScheduledTask = __webpack_require__(126);
 
 	var _ScheduledTask2 = _interopRequireDefault(_ScheduledTask);
 
@@ -11632,7 +11992,7 @@
 	};
 
 /***/ },
-/* 125 */
+/* 128 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -11788,7 +12148,7 @@
 	}
 
 /***/ },
-/* 126 */
+/* 129 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -11892,7 +12252,7 @@
 	};
 
 /***/ },
-/* 127 */
+/* 130 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -11936,7 +12296,7 @@
 	};
 
 /***/ },
-/* 128 */
+/* 131 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -11946,7 +12306,7 @@
 	});
 	exports.default = EventEmitterSource;
 
-	var _DeferredSink = __webpack_require__(126);
+	var _DeferredSink = __webpack_require__(129);
 
 	var _DeferredSink2 = _interopRequireDefault(_DeferredSink);
 
@@ -12015,7 +12375,7 @@
 	}
 
 /***/ },
-/* 129 */
+/* 132 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -12071,7 +12431,7 @@
 	}
 
 /***/ },
-/* 130 */
+/* 133 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -12085,17 +12445,17 @@
 
 	var _Stream2 = _interopRequireDefault(_Stream);
 
-	var _fromArray = __webpack_require__(131);
+	var _fromArray = __webpack_require__(134);
 
-	var _iterable = __webpack_require__(48);
+	var _iterable = __webpack_require__(50);
 
-	var _fromIterable = __webpack_require__(133);
+	var _fromIterable = __webpack_require__(136);
 
-	var _getObservable = __webpack_require__(120);
+	var _getObservable = __webpack_require__(123);
 
 	var _getObservable2 = _interopRequireDefault(_getObservable);
 
-	var _fromObservable = __webpack_require__(119);
+	var _fromObservable = __webpack_require__(122);
 
 	var _prelude = __webpack_require__(0);
 
@@ -12128,7 +12488,7 @@
 	/** @author John Hann */
 
 /***/ },
-/* 131 */
+/* 134 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -12179,7 +12539,7 @@
 	}
 
 /***/ },
-/* 132 */
+/* 135 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -12193,11 +12553,11 @@
 
 	var _Stream2 = _interopRequireDefault(_Stream);
 
-	var _EventTargetSource = __webpack_require__(129);
+	var _EventTargetSource = __webpack_require__(132);
 
 	var _EventTargetSource2 = _interopRequireDefault(_EventTargetSource);
 
-	var _EventEmitterSource = __webpack_require__(128);
+	var _EventEmitterSource = __webpack_require__(131);
 
 	var _EventEmitterSource2 = _interopRequireDefault(_EventEmitterSource);
 
@@ -12236,7 +12596,7 @@
 	/** @author John Hann */
 
 /***/ },
-/* 133 */
+/* 136 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -12250,7 +12610,7 @@
 
 	var _Stream2 = _interopRequireDefault(_Stream);
 
-	var _iterable = __webpack_require__(48);
+	var _iterable = __webpack_require__(50);
 
 	var _PropagateTask = __webpack_require__(8);
 
@@ -12297,7 +12657,7 @@
 	}
 
 /***/ },
-/* 134 */
+/* 137 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -12398,7 +12758,7 @@
 	};
 
 /***/ },
-/* 135 */
+/* 138 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -12480,7 +12840,7 @@
 	}
 
 /***/ },
-/* 136 */
+/* 139 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -12526,7 +12886,7 @@
 	};
 
 /***/ },
-/* 137 */
+/* 140 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -12613,7 +12973,7 @@
 	}
 
 /***/ },
-/* 138 */
+/* 141 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -12696,7 +13056,7 @@
 	};
 
 /***/ },
-/* 139 */
+/* 142 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -12767,7 +13127,7 @@
 	}
 
 /***/ },
-/* 140 */
+/* 143 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -12778,9 +13138,9 @@
 
 	var Stream = __webpack_require__(1);
 	var Pipe = __webpack_require__(5);
-	var runSource = __webpack_require__(56).withDefaultScheduler;
+	var runSource = __webpack_require__(58).withDefaultScheduler;
 	var dispose = __webpack_require__(3);
-	var PropagateTask = __webpack_require__(9);
+	var PropagateTask = __webpack_require__(10);
 
 	exports.scan = scan;
 	exports.reduce = reduce;
@@ -12868,7 +13228,7 @@
 	function noop() {}
 
 /***/ },
-/* 141 */
+/* 144 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -12877,7 +13237,7 @@
 	/** @author Brian Cavalier */
 	/** @author John Hann */
 
-	var combine = __webpack_require__(50).combine;
+	var combine = __webpack_require__(52).combine;
 	var apply = __webpack_require__(0).apply;
 
 	exports.ap = ap;
@@ -12897,7 +13257,7 @@
 	}
 
 /***/ },
-/* 142 */
+/* 145 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -12906,8 +13266,8 @@
 	/** @author Brian Cavalier */
 	/** @author John Hann */
 
-	var streamOf = __webpack_require__(11).of;
-	var continueWith = __webpack_require__(51).continueWith;
+	var streamOf = __webpack_require__(12).of;
+	var continueWith = __webpack_require__(53).continueWith;
 
 	exports.concat = concat;
 	exports.cycle = cycle;
@@ -12947,7 +13307,7 @@
 	}
 
 /***/ },
-/* 143 */
+/* 146 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -12976,7 +13336,7 @@
 	}
 
 /***/ },
-/* 144 */
+/* 147 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -12988,7 +13348,7 @@
 	var Stream = __webpack_require__(1);
 	var Sink = __webpack_require__(5);
 	var dispose = __webpack_require__(3);
-	var PropagateTask = __webpack_require__(9);
+	var PropagateTask = __webpack_require__(10);
 
 	exports.delay = delay;
 
@@ -13035,7 +13395,7 @@
 	DelaySink.prototype.error = Sink.prototype.error;
 
 /***/ },
-/* 145 */
+/* 148 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -13045,12 +13405,12 @@
 	/** @author John Hann */
 
 	var Stream = __webpack_require__(1);
-	var SafeSink = __webpack_require__(169);
+	var SafeSink = __webpack_require__(172);
 	var Pipe = __webpack_require__(5);
 	var dispose = __webpack_require__(3);
 	var tryEvent = __webpack_require__(17);
 	var isPromise = __webpack_require__(28).isPromise;
-	var PropagateTask = __webpack_require__(9);
+	var PropagateTask = __webpack_require__(10);
 
 	exports.flatMapError = recoverWith;
 	exports.recoverWith = recoverWith;
@@ -13137,7 +13497,7 @@
 	};
 
 /***/ },
-/* 146 */
+/* 149 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -13148,7 +13508,7 @@
 
 	var Stream = __webpack_require__(1);
 	var Sink = __webpack_require__(5);
-	var Filter = __webpack_require__(54);
+	var Filter = __webpack_require__(56);
 
 	exports.filter = filter;
 	exports.skipRepeats = skipRepeats;
@@ -13218,7 +13578,7 @@
 	}
 
 /***/ },
-/* 147 */
+/* 150 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -13230,7 +13590,7 @@
 	var Stream = __webpack_require__(1);
 	var Sink = __webpack_require__(5);
 	var dispose = __webpack_require__(3);
-	var PropagateTask = __webpack_require__(9);
+	var PropagateTask = __webpack_require__(10);
 	var Map = __webpack_require__(30);
 
 	exports.throttle = throttle;
@@ -13348,7 +13708,7 @@
 	};
 
 /***/ },
-/* 148 */
+/* 151 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -13406,7 +13766,7 @@
 	};
 
 /***/ },
-/* 149 */
+/* 152 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -13418,7 +13778,7 @@
 	var Stream = __webpack_require__(1);
 	var Pipe = __webpack_require__(5);
 	var IndexSink = __webpack_require__(33);
-	var empty = __webpack_require__(11).empty;
+	var empty = __webpack_require__(12).empty;
 	var dispose = __webpack_require__(3);
 	var base = __webpack_require__(0);
 
@@ -13505,7 +13865,7 @@
 	};
 
 /***/ },
-/* 150 */
+/* 153 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -13514,7 +13874,7 @@
 	/** @author Brian Cavalier */
 	/** @author John Hann */
 
-	var run = __webpack_require__(56).withDefaultScheduler;
+	var run = __webpack_require__(58).withDefaultScheduler;
 	var tap = __webpack_require__(16).tap;
 
 	exports.observe = observe;
@@ -13546,7 +13906,7 @@
 	}
 
 /***/ },
-/* 151 */
+/* 154 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -13557,7 +13917,7 @@
 
 	var Stream = __webpack_require__(1);
 	var fatal = __webpack_require__(29);
-	var just = __webpack_require__(11).of;
+	var just = __webpack_require__(12).of;
 
 	exports.fromPromise = fromPromise;
 	exports.awaitPromises = awaitPromises;
@@ -13643,7 +14003,7 @@
 	};
 
 /***/ },
-/* 152 */
+/* 155 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -13761,7 +14121,7 @@
 	}
 
 /***/ },
-/* 153 */
+/* 156 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -13772,7 +14132,7 @@
 
 	var Stream = __webpack_require__(1);
 	var Sink = __webpack_require__(5);
-	var core = __webpack_require__(11);
+	var core = __webpack_require__(12);
 	var dispose = __webpack_require__(3);
 	var Map = __webpack_require__(30);
 
@@ -13944,7 +14304,7 @@
 	};
 
 /***/ },
-/* 154 */
+/* 157 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -14061,7 +14421,7 @@
 	};
 
 /***/ },
-/* 155 */
+/* 158 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -14075,7 +14435,7 @@
 	};
 
 /***/ },
-/* 156 */
+/* 159 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -14087,7 +14447,7 @@
 	var Stream = __webpack_require__(1);
 	var Pipe = __webpack_require__(5);
 	var dispose = __webpack_require__(3);
-	var join = __webpack_require__(52).join;
+	var join = __webpack_require__(54).join;
 
 	exports.during = during;
 	exports.takeUntil = takeUntil;
@@ -14198,7 +14558,7 @@
 	function noop() {}
 
 /***/ },
-/* 157 */
+/* 160 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -14236,7 +14596,7 @@
 	};
 
 /***/ },
-/* 158 */
+/* 161 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -14362,7 +14722,7 @@
 	};
 
 /***/ },
-/* 159 */
+/* 162 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -14373,13 +14733,13 @@
 
 	var Stream = __webpack_require__(1);
 	var transform = __webpack_require__(16);
-	var core = __webpack_require__(11);
+	var core = __webpack_require__(12);
 	var Sink = __webpack_require__(5);
 	var IndexSink = __webpack_require__(33);
 	var dispose = __webpack_require__(3);
 	var base = __webpack_require__(0);
 	var invoke = __webpack_require__(31);
-	var Queue = __webpack_require__(139);
+	var Queue = __webpack_require__(142);
 
 	var map = base.map;
 	var tail = base.tail;
@@ -14500,7 +14860,7 @@
 	}
 
 /***/ },
-/* 160 */
+/* 163 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -14527,7 +14887,7 @@
 	};
 
 /***/ },
-/* 161 */
+/* 164 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -14576,7 +14936,7 @@
 	};
 
 /***/ },
-/* 162 */
+/* 165 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -14615,7 +14975,7 @@
 	FilterMapSink.prototype.error = Pipe.prototype.error;
 
 /***/ },
-/* 163 */
+/* 166 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -14672,7 +15032,7 @@
 	}
 
 /***/ },
-/* 164 */
+/* 167 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -14683,7 +15043,7 @@
 	/** @author Brian Cavalier */
 	/** @author John Hann */
 
-	var symbolObservable = __webpack_require__(58);
+	var symbolObservable = __webpack_require__(60);
 
 	module.exports = getObservable;
 
@@ -14703,7 +15063,7 @@
 	}
 
 /***/ },
-/* 165 */
+/* 168 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -14778,7 +15138,7 @@
 	}
 
 /***/ },
-/* 166 */
+/* 169 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -15006,7 +15366,7 @@
 	}
 
 /***/ },
-/* 167 */
+/* 170 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -15015,7 +15375,7 @@
 	/** @author Brian Cavalier */
 	/** @author John Hann */
 
-	var defer = __webpack_require__(53);
+	var defer = __webpack_require__(55);
 
 	/*global setTimeout, clearTimeout*/
 
@@ -15057,7 +15417,7 @@
 	};
 
 /***/ },
-/* 168 */
+/* 171 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -15079,7 +15439,7 @@
 	};
 
 /***/ },
-/* 169 */
+/* 172 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -15121,7 +15481,7 @@
 	};
 
 /***/ },
-/* 170 */
+/* 173 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -15130,7 +15490,7 @@
 	/** @author Brian Cavalier */
 	/** @author John Hann */
 
-	var DeferredSink = __webpack_require__(57);
+	var DeferredSink = __webpack_require__(59);
 	var dispose = __webpack_require__(3);
 	var tryEvent = __webpack_require__(17);
 
@@ -15173,7 +15533,7 @@
 	}
 
 /***/ },
-/* 171 */
+/* 174 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -15209,7 +15569,7 @@
 	}
 
 /***/ },
-/* 172 */
+/* 175 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -15220,7 +15580,7 @@
 
 	var Stream = __webpack_require__(1);
 	var MulticastSource = __webpack_require__(7).MulticastSource;
-	var DeferredSink = __webpack_require__(57);
+	var DeferredSink = __webpack_require__(59);
 	var tryEvent = __webpack_require__(17);
 
 	exports.create = create;
@@ -15295,7 +15655,7 @@
 	};
 
 /***/ },
-/* 173 */
+/* 176 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -15305,11 +15665,11 @@
 	/** @author John Hann */
 
 	var Stream = __webpack_require__(1);
-	var fromArray = __webpack_require__(174).fromArray;
-	var isIterable = __webpack_require__(55).isIterable;
-	var fromIterable = __webpack_require__(176).fromIterable;
-	var getObservable = __webpack_require__(164);
-	var fromObservable = __webpack_require__(163).fromObservable;
+	var fromArray = __webpack_require__(177).fromArray;
+	var isIterable = __webpack_require__(57).isIterable;
+	var fromIterable = __webpack_require__(179).fromIterable;
+	var getObservable = __webpack_require__(167);
+	var fromObservable = __webpack_require__(166).fromObservable;
 	var isArrayLike = __webpack_require__(0).isArrayLike;
 
 	exports.from = from;
@@ -15337,7 +15697,7 @@
 	}
 
 /***/ },
-/* 174 */
+/* 177 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -15347,7 +15707,7 @@
 	/** @author John Hann */
 
 	var Stream = __webpack_require__(1);
-	var PropagateTask = __webpack_require__(9);
+	var PropagateTask = __webpack_require__(10);
 
 	exports.fromArray = fromArray;
 
@@ -15376,7 +15736,7 @@
 	}
 
 /***/ },
-/* 175 */
+/* 178 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -15387,8 +15747,8 @@
 
 	var Stream = __webpack_require__(1);
 	var MulticastSource = __webpack_require__(7).MulticastSource;
-	var EventTargetSource = __webpack_require__(171);
-	var EventEmitterSource = __webpack_require__(170);
+	var EventTargetSource = __webpack_require__(174);
+	var EventEmitterSource = __webpack_require__(173);
 
 	exports.fromEvent = fromEvent;
 
@@ -15417,7 +15777,7 @@
 	}
 
 /***/ },
-/* 176 */
+/* 179 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -15427,8 +15787,8 @@
 	/** @author John Hann */
 
 	var Stream = __webpack_require__(1);
-	var getIterator = __webpack_require__(55).getIterator;
-	var PropagateTask = __webpack_require__(9);
+	var getIterator = __webpack_require__(57).getIterator;
+	var PropagateTask = __webpack_require__(10);
 
 	exports.fromIterable = fromIterable;
 
@@ -15467,7 +15827,7 @@
 	}
 
 /***/ },
-/* 177 */
+/* 180 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -15544,7 +15904,7 @@
 	};
 
 /***/ },
-/* 178 */
+/* 181 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -15619,7 +15979,7 @@
 	}
 
 /***/ },
-/* 179 */
+/* 182 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -15631,7 +15991,7 @@
 	var Stream = __webpack_require__(1);
 	var dispose = __webpack_require__(3);
 	var MulticastSource = __webpack_require__(7).MulticastSource;
-	var PropagateTask = __webpack_require__(9);
+	var PropagateTask = __webpack_require__(10);
 
 	exports.periodic = periodic;
 
@@ -15659,7 +16019,7 @@
 	}
 
 /***/ },
-/* 180 */
+/* 183 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -15739,7 +16099,7 @@
 	}
 
 /***/ },
-/* 181 */
+/* 184 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -15763,7 +16123,7 @@
 	};
 
 /***/ },
-/* 182 */
+/* 185 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(global, module) {'use strict';
@@ -15772,7 +16132,7 @@
 	  value: true
 	});
 
-	var _ponyfill = __webpack_require__(183);
+	var _ponyfill = __webpack_require__(186);
 
 	var _ponyfill2 = _interopRequireDefault(_ponyfill);
 
@@ -15796,10 +16156,10 @@
 
 	var result = (0, _ponyfill2['default'])(root);
 	exports['default'] = result;
-	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }()), __webpack_require__(184)(module)))
+	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }()), __webpack_require__(187)(module)))
 
 /***/ },
-/* 183 */
+/* 186 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -15827,7 +16187,7 @@
 	};
 
 /***/ },
-/* 184 */
+/* 187 */
 /***/ function(module, exports) {
 
 	"use strict";

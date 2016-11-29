@@ -440,6 +440,7 @@ var workerB = new Worker("workerB.js");
 var workerC = new Worker("workerC.js");
 
 function primes_state(x) {
+  console.log('In main thread primes_state. x is ', x );
   workerA.postMessage(x)
 }
 
@@ -483,11 +484,6 @@ var runFib = function runFib(x) {
 };
 
 var primesMonad = new MonadState('primesMonad', [3, [], 3, [2,3]], primes_state);
-
-console.log('.');
-console.log('primesMonad.run([3, [], 1000, [2, 3]]).s');
-console.log(primesMonad.run([3, [], 1000, [2, 3]]).s);
-console.log('.');
 
 function pFib(fibs, primes) {
   var ar = [];
