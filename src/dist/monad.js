@@ -1065,6 +1065,11 @@ function log3(x, message) {
     return ret(x);
 };
 
+function log4(x, message) {
+  console.log(message[0]);
+  return ret(x);
+};
+
 function log(x,y) {
     return ret(y);
 };

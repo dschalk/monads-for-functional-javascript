@@ -98,10 +98,6 @@ function main(sources) {
   next(x[0], 'EC42', mMZ33)
   });
 
-  const workerB$ = sources.WWB.map(m => mMres.ret(m.data)
-    .bnd(v => mM36.ret('Asynchronous addendum. The largest computed ' +
-      'prime Fibonacci number is ' + v[2].split(',')[v[2].split(',').length - 1]), 'MmM36'));
-
   const workerC$ = sources.WWC.map(m => {
     mMfactors.ret(m.data[0]);
     primesMonad.s = m.data[1];
@@ -354,6 +350,10 @@ function main(sources) {
   var primeFib$ = fibKeyPress5$.map(e => {
     workerB.postMessage(e.target.value)
   });
+
+  const workerB$ = sources.WWB.map(m => mMres.ret(m.data)
+    .bnd(v => mM36.ret('Asynchronous addendum. The largest computed ' +
+      'prime Fibonacci number is ' + v[2].split(',')[v[2].split(',').length - 1]), 'MmM36'));
 
   // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> ENDOM basic prime END
   // <>>><>><><><><>>>><><><   prime factors   ><><><><><><>>><<><><><><><><>< START prime factors  
@@ -839,16 +839,6 @@ var elemB$ = sources.DOM.select('input#message2').events('keyup')
       h('br'),
       h('br'),
 
-      h('input#message1'  ),
-      h('br'),
-      h('input#message2'  ),
-      h('div#result', 'a: ' + mM9.x  ),
-      h('div#result2', 'b: ' + mM10.x ),
-      h('div#result3', 'Math.sqrt(a*a+b*b): ' + mM11.x ),
-      h('div#result4', 'a + b: ' + mM12.x ),
-      h('div#result5', 'a * b: ' + mM13.x ),
-      h('div#result6', 'lcm: ' + mM14.x ),
-
       h('div', `pMclicked.x: ${pMclicked.x.join(', ')}`    ), 
       h('div', 'pMop.x: ' + pMop.x ), 
       h('div', 'pMindex.x: ' + pMindex.x ), 
@@ -987,29 +977,41 @@ h('br' ),
 h('span.tao', ' The Haskell programming language borrowed the term "monad" from the branch of mathematics known as category theory. This was apropriate because Haskell monads, along with the function return and the operator >>=, behave quite a bit like category theory monads, and the inspiration for them came out of category theory. For Haskell monads to be category theory monads, they would need to reside in a category-theory category. They don\'t, although the Haskell mystique tends to give newcommers to the language the impression that they do. See ' ),
 h('a', { props: { href: "http://math.andrej.com/2016/08/06/hask-is-not-a-category/", target: "_blank" } }, 'Hask is not a category.'),
 h('br' ),
-h('p', ' Attempts continue to be made to define a Haskell category, usually with special constraints, omitted features, and sometimes with definitions of morphisms that are not Haskell functions. Succeeding in that endeavor would be the first step toward proving that Haskell monads are, in some contrived context, category-theory monads. Devising such a scheme might be an instructive academic excercise, but I don\'t see how it could possibly be of any value beyond that. Imitating definitions and patterns found in category theory, as Haskell does in defining the functor, monoid, and monad type classes, was a stroke of genius that vastly enriched the Haskell programming language and brought it into the mainstream as a viable alternative to java, c++, etc.  This website runs efficiently on a Haskell websockets server. Category theory patterns are less needed, but neverthless useful, in Javascript. Code that adheres to them tends to be robust and versitile.  '  ), 
+h('p', ' Research into ways of defining a Haskell category appears to be ongoing. It involves tinkering with special constraints, omitted features, and definitions of morphisms that are not Haskell functions. When a definition of the category is established, Haskell monads are then be shown to be, in some contrived context, category-theory monads. Devising such schemes are instructive academic excercises, but I don\'t think they can provide anything useful to programmers working on applications for industry, commerce, and the Internet. ' ),
+h('p', ' However, imitating definitions and patterns found in category theory, as Haskell does in defining the functor, monoid, and monad type classes, was a stroke of genius that vastly enriched the Haskell programming language and brought it into the mainstream as a viable alternative to java, c++, etc.  This website runs efficiently on a Haskell websockets server. Category theory patterns are less needed, but neverthless useful, in Javascript. Code that adheres to them tends to be robust and predictable. '  ), 
     
  // **************************************************************************** END MONAD       START ERROR   
-  h('h3', ' Web Worker ' ),
-  h('p', ' After signing in, you will observe a column under the chat box. Numbers entered in the top two input boxes prompt a web worker to compute the square root of the sum of the squares, the sum, the product, and the least common multiple ("lcm"). If the numbers were fraction denominators, the lcm would be least common denominator, the number that would make addition and subtraction convenient. ' ),
-  h( 'p', ' Here is the code that creates the web worker the Motorcycle driver: ' ),  
-    code.wDriver,
-  h('p', ' The driver is an attribute of the sources object. It is named WK. The stream that receives messages from the worker and feeds data into the virtual dom is named worker$. This is worker$\'s definition: ' ),
-    code.worker$,
-  h('span', ' mM11.x, mM12.x, mM13.x, and mM14.x are fixtures of the virtual DOM. The web worker sends messages prefixed by mMA#$41, mMB#$41, mMC#$41, and mMD#$41, next() releases MonadItter instances mMZ21, mMZ22, mMZ23, mMZ24, causing code to execute with updates mM11.x, mM12.x, mM13.x, and mM14.x. More details are available in the MonadItter section of this page and at the ' ),
-  h('p', ' User input invokes workerA.postMessage([mM9.x, e.target.value]) or workerA.postMessage([e.target.value, mM10.x]). This starts the execution of code in a file named worker.js, which is defined as follows: ' ),
-    code.worker_js,
-  h('p', ' In the main thread, primes_state (the function called by primesMonad.run()) is defined as: ' ),   
-  h('pre', `    function primes_state(x) {
-      workerA.postMessage(x)
-    } ` ),
-  h('p', ' worker.js imports its definition of primes_state from script2.js. That definition is: ' ),
-      code.primes_state,
-  h('p', ' Most of the work is delegated to the worker thread. The following screen shot demonstrates primesMonad\'s momoization featire: ' ),  
-  h('img.image', {props: {src: "primesMonad.png"}}  ),   
-  h('p', ' In the Chrome browser, The time elapsed between entering primes_state and leaving primes_state is over nine seconds the first time primesMonad.run is called. The second time, it is one millisecond. In the Firefox browser, no memoization takes effect and the elapsed time is around 19 seconds in both cases. ' ),
-  h('p', ' The other items in the list in the right column pertain to the game. pMclicked.x is a list of the numbers which have been clicked. pMop.x is the operator which has been chosen. pMindex.x shows where you are during traversal of the game history. There can\'t be a selected operator and two numbers in pMclicked - at least not for long. The game automatically performs a mathematical calculation whenever two numbers and an operator have been chosen. Here is the definition of worker.js: ' ),
-  h('br' ),  
+    //
+    //
+    //
+    //
+    //
+    //
+  h('h2', ' Asynchronous Processes ' ),
+  h('h3', ' Conveniently handled in the Motorcycle / Cycle framework.' ),
+  h('p', ' The next demonstration involves a computation that can take a while to complete. I want the process to be non-blocking and I want the code to provide an interface to code that is linked to it. Promises are an option, but see if you think the following Motorcycle solution is better. First, here is the demonstration we will be discussing: ' ),
+h('p', ' The number you enter below is the length of the list of Fibonacci numbers you want to generate. Don\'t enter a number much over 50 unless you are prepared to wait. If a computation is taking too long, just reload and try a smaller number. '),
+h('p.red',  mM36.x),
+h('input#fib92'),
+h('br'),
+h('span#PF_7.red6', 'Fibonacci Numbers'),
+h('br'),
+h('span#PF_9.turk', mMres.x[0]  ),
+h('br'),
+h('span#PF_8.red6', 'Prime Fibonacci Numbers'),
+h('br'),
+h('span#primeFibs.turk', mMres.x[2]  ),
+h('br'),
+h('span#PF_21.red6', 'Prime Numbers'),
+h('br'),
+h('span#PF_22.turk', mMres.x[1]  ),
+h('br'),
+h('p', ' The code runs in two threads, a main thread and a web worker thread. Here is a look at what happens in the main thread. A driver is defined as follows: ' ), 
+    code.wWorker,
+h('p', ' The driver is merged into the stream that feeds the virtual DOM, and it is also an element of an element of the resources object (named WWB) which supports the user interface. I still marvel at the sublime elegance of the cycle provided by the Motorcycle and Cycle libraries. Having the driver receive messages from the worker assures timely browser updates. Here is the code that runs in the main thread: ' ), 
+    code.primeFibInterface,
+h('p', ' Later, we will see how instances of MonadState and MonadTransformer perform the computations in the workerB thread. ' ),
+
   
 // ********************************************************************** Begin MonadState
 

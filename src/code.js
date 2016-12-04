@@ -640,17 +640,16 @@ var tr3 = h('pre',  `  var tr3 = function tr (fibsArray, primesArray) {
   }  `  )
 
 var primeFibInterface = h('pre',  `  const fibKeyPress5$ = sources.DOM
-    .select('input#fib92').events('keydown');
+    .select('input#fib92').events('keyup');
 
-  const primeFib$ = fibKeyPress5$.map(e => {
-    if( e.keyCode === 13 ) {
-      mMres.ret(fibsMonad
-      .run([0, 1, e.target.value, []])
-      .bnd(fibsState => fibsMonad
-      .bnd(fpTransformer, primesMonad)
-      .bnd(primesState => tr3(fibsState[3],primesState[3]))))var
-    }
-  });  `  )
+  var primeFib$ = fibKeyPress5$.map(e => {
+    workerB.postMessage(e.target.value)
+  });
+
+  const workerB$ = sources.WWB.map(m => mMres.ret(m.data) 
+    .bnd(v => mM36.ret('Asynchronous addendum. The largest computed ' +
+    'prime Fibonacci number is ' + v[2].split(',')[v[2].split(',').length - 1]), 'MmM36')
+  );  `  )
 
 var fpTransformer = h('pre',  `  var fpTransformer = function fpTransformer (s, m) {
     var bound = Math.ceil(Math.sqrt(s[3][s[3].length - 1]));
