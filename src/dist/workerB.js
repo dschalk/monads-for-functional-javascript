@@ -1,11 +1,11 @@
 
 
 
-onmessage = function(m) {
+self.onmessage = function(m) {
   console.log('In workerB.js m is ', m );
   var _self = self;
   var res;
-  importScripts('script2.js');
+  self.importScripts('script2.js');
 
   fibsMonad.run([1, 2 , parseInt(m.data,10), [0,1]])
   .bnd(fibsState => fibsMonad

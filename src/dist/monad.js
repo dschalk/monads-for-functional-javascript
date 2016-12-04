@@ -28,13 +28,21 @@ var Monad = function Monad(z = 19, g = 'generic') {
   };
 };
 
-var mMfactors = new Monad('', 'mMfactors');
-
-mMfactors.ret(42);
-
-console.log('mMfactors.x',mMfactors.x);
+function testPrefix (x,y) {
+  var t = y;
+  var s;
+  if (Array.isArray(x)) {
+    x.some(v => {
+      if (typeof v == 'string' && v.charAt() == 'M') {
+         t = v.slice(1);
+      }
+    })
+  }
+  return t;
+}
 
 var pMop = new Monad (0, 'pMop');
+var mMfactors = new Monad ([], 'mMfactors');
  
 function Monad2 (z, ID = 'default') {
     var x = z;
@@ -586,11 +594,21 @@ function primes(n, ar) {
   var mM22 = M(0, 'mM22');
   var mM23 = M([0, 1, 1], 'mM23');
   var mM24 = M([[2, 3], 4, 9], 'mM24');
-  var mM25 = M(0, 'mM25');
+  var mM25 = M(3, 'mM25');
   var mM26 = M(0, 'mM26');
   var mM27 = M(0, 'mM27');
   var mM28 = M([], 'mM28');
   var mM29 = M([], 'mM29');
+  var mM30 = M(0, 'mM30');
+  var mM31 = M(0, 'mM31');
+  var m322 = M(0, 'mM32');
+  var mM33 = M(0, 'mM33');
+  var mM33 = M(0, 'mM34');
+  var mM35 = M(3, 'mM35');
+  var mM36 = M('', 'mM36');
+  var mM37 = M(0, 'mM37');
+  var mM38 = M(0, 'mM38');
+  var mM39 = M(0, 'mM39');
   var mMscbd = M([], 'mMscbd');
   var mMmessages = M([], 'mMmessages');
   var mMscoreboard = M([], 'mMscoreboard');
@@ -733,7 +751,17 @@ function primes(n, ar) {
   var mMZ27 = MI();
   var mMZ28 = MI();
   var mMZ29 = MI();
-  var mMitterPrime = MI();
+  var mMZ30 = MI();
+  var mMZ31 = MI();
+  var mMZ32 = MI();
+  var mMZ33 = MI();
+  var mMZ34 = MI();
+  var mMZ35 = MI();
+  var mMZ36 = MI();
+  var mMZ37 = MI();
+  var mMZ38 = MI();
+  var mMZ39 = MI();
+  var mMi3terPrime = MI();
   var mMitterPrime4 = MI();
   var mMitterPrime5 = MI();
   var mMitterFib = MI();
@@ -1158,19 +1186,6 @@ function clean3 (x, id) {
 var a = 'jack'
 var b = '0/"andy"'
 
-function testPrefix (x,y) {
-  var t = y;
-  var s;
-  if (Array.isArray(x)) {
-    x.some(v => {
-      if (typeof v == 'string' && v.charAt() == 'M') {
-         t = v.slice(1);
-      }
-    })
-  }
-  return t;
-}
-
 function testP (x,id) {
     if ( eval('typeof ' + x) === 'undefined') {
       console.log(`............... ERROR parameter ${x} is not defined`);
@@ -1222,7 +1237,7 @@ function MonadEr (val, ID, er = []) {
       var testId = testPrefix(args, this.id);  
       var ar = arr.map(v => eval(v))
       var m = eval(f)(this.x, ...ar)  
-      var id = testPrefix(ar, this.id);
+      var id = testPrefix(ar, c.id);
       window[testId] = new MonadEr(m.x, testId, []);
       return window[testId];
       }      
@@ -1302,5 +1317,61 @@ console.log('The monads in testArray were not replaced or mutated.');
 console.log('When monads call their ret() methods, new instances of Monad are created.' );
 console.log('.');
 console.log('.');
+
+function oF (func, mon) {
+  return mon.bnd(func);
+};
+
+oF ( cube, mM25 );
+console.log('oF ( cube, mM25 ) ... mM25.x is', mM25.x );
+
+class Polygon {
+  constructor(height, width) {
+    this.height = height;
+    this.width = width;
+  }
+}
+ 
+class G extends Polygon {
+  constructor (na) {
+    this.name = na;
+  }
+};
+
+class MonadEmitter extends EventEmitter {};
+
+function monadConstructor (a,b) {
+  var c = new MonadEmitter();
+  c.x = a;
+  c.id = b;
+  c.bnd = (func, ...args) => {
+    var m = func(c.x, ...args)
+    var ID;
+    if (m instanceof Monad) {
+      ID = testPrefix(args, c.id); 
+      window[ID] = monadConstructor(m.x, ID);
+      return window[ID];
+    }
+    else return m;
+  };
+  c.ret = a => {
+    return window[c.id] = monadConstructor(a, c.id);
+    c.emit(c.id, a);
+  };
+  return c;
+};
+
+var eM1 = monadConstructor(0,'eM1');
+var eM2 = monadConstructor(0,'eM2');
+var eM3 = monadConstructor(0,'eM3');
+var eM4 = monadConstructor(0,'eM4');
+eM2.on('EC42', x => console.log('Yes. It looks like a rainy day. Here is the message:', x));
+eM2.emit('EC42', 256000- 255997) 
+  
+
+
+
+
+
 
 

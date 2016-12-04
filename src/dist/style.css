@@ -130,6 +130,8 @@ h3 {
   color: #e8e8ab;
 }
 c7f7a5
+
+f76565
 .green2 {
   color: #c7f7a5;
   font-size: 16x;
@@ -138,6 +140,11 @@ c7f7a5
 .green {
   color: #00ffa5;
   font-size: 16x;
+}
+
+.red0 {
+  color: #f76565;
+  font-size: 18px;
 }
 
 .red {

@@ -1,15 +1,10 @@
 "use strict";
-// import xs from 'xstream';
-// import {run} from '@cycle/xstream-run';
-// import {makeDOMDriver} from '@cycle/dom';
-// import Cycle from '@motorcycle/core';
-
 import {run} from '@cycle/most-run'
 import {merge} from 'most';
 import {create} from '@most/create';
 import {h, p, span, h1, h2, h3, pre, br, div, label, input, hr, makeDOMDriver} from '@motorcycle/dom';
 import code from './code.js';
-messageMonad = messageMonad;
+// import {EventEmitter} from 'events'
 
 var updateMessages = function updateMessages(e) {
   var ar = e.split(',');
@@ -18,20 +13,6 @@ var updateMessages = function updateMessages(e) {
   var str = ar.join(',');
   messageMonad.run([ [h('br'), sender + ': ' + str], [], [], messageMonad.s[3] ]);
 };
-
-var Greeter = (function () {
-    function Greeter(message) {
-        this.greeting = message;
-    }
-    Greeter.prototype.greet = function () {
-        return "Hello, " + this.greeting;
-    };
-    return Greeter;
-})();
-
-var greeter;
-greeter = new Greeter("world");
-console.log(greeter.greet());
 
 function createWebSocket(path) {
     var host = window.location.hostname;
@@ -57,21 +38,34 @@ socket.onclose = function (event) {
     console.log('<><><> New message <><><> ', event);
 };
 
+console.log('socket.onmessage',socket.onmessage);
+
 const workerDriver = function () {
     return create((add) => workerA.onmessage = msg => add(msg))
 }
+
+console.log('workerA.onmessage',workerA.onmessage);
 
 const workerDriverB = function () {
     return create((add) => workerB.onmessage = msg => add(msg))
 }
 
 const workerDriverC = function () {
-    return create((add) => workerC.onmessage = msg => add(msg))
+    return create((add) => workerC.onmessage = msg => {
+      add(msg)
+    })
 }
+
+const eM2Driver = function () {
+  return create((add) => eM2.on = msg => {
+    console.log('In eM2Driver');
+    add(msg)
+  })
+};
 
 function updateTasks (obArray) {
   var todoData = [];
-  for (let ob of obArray) {  
+  for (let ob of obArray) { 
   todoData = todoData.concat([ 
     h('span.task3', `{ style: { color: ${ob.color}, textDecoration: ${ob.textDecoration} } }, 'Task: ' + ${ob.task}`),
     h('br'),
@@ -88,16 +82,25 @@ function updateTasks (obArray) {
     }
 }; 
 
-
-    console.log(h('button',  { style: { display: pMstyle.x[1]} }, pMnums.x[1] ))
+// window.postMessage("Can you hear me?","http://localhost:3055") 
 
 function main(sources) {
   var numsDisplay = [4,4,4,4];
   var newTasks = [];
 
-  const workerB$ = sources.WWB.map(m => {
-    mMres.ret(m.data);
+  const eM2$ = sources.EM2.map(x => {
+   console.log('______** ! **_______eM2$ received message: ', x) 
+  mMZ31.bnd(v => mM34.ret(mM31.ret(v).x + mM32.x + mM33.x));
+  mMZ32.bnd(v => mM34.ret(mM32.x + mM32.ret(v).x + mM33.x));
+  mMZ33.bnd(v => mM34.ret(mM33.x + mM32.x + mM33.ret(v).x));
+  next(x[0], 'EA42', mMZ31)
+  next(x[0], 'EB42', mMZ32)
+  next(x[0], 'EC42', mMZ33)
   });
+
+  const workerB$ = sources.WWB.map(m => mMres.ret(m.data)
+    .bnd(v => mM36.ret('Asynchronous addendum. The largest computed ' +
+      'prime Fibonacci number is ' + v[2].split(',')[v[2].split(',').length - 1]), 'MmM36'));
 
   const workerC$ = sources.WWC.map(m => {
     mMfactors.ret(m.data[0]);
@@ -157,9 +160,9 @@ function main(sources) {
   .bnd(next, 'NN#$42', mMZ18)
   });
         
-  function next(x, y, instance) {
+  function next(x, y, instance, z) {
     if (x == y) {
-        instance.release();
+        instance.release(z);
     }
     return ret(x);
   };
@@ -349,7 +352,7 @@ function main(sources) {
       .select('input#fib92').events('keyup');
 
   var primeFib$ = fibKeyPress5$.map(e => {
-    workerB.postMessage(e.target.value);
+    workerB.postMessage(e.target.value)
   });
 
   // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> ENDOM basic prime END
@@ -784,7 +787,7 @@ var elemB$ = sources.DOM.select('input#message2').events('keyup')
   workerA.postMessage([mM9.x, e.target.value]);
 });
 
-  var calcStream$ = merge( elemA$, elemB$, worker$, workerB$, workerC$, clearAction$, backAction$, forwardAction$, factorsAction$, primeFib$, fibPressAction$, quadAction$, edit1Action$, edit2Action$, testWAction$, testZAction$, testQAction$, colorAction$, deleteAction$, newTaskAction$, chatClickAction$, gameClickAction$, todoClickAction$, captionClickAction$, groupPressAction$, rollClickAction$, messagePressAction$, loginPressAction$, messages$, numClickAction$, opClickAction$);
+  var calcStream$ = merge( eM2$, elemA$, elemB$, worker$, workerB$, workerC$, clearAction$, backAction$, forwardAction$, factorsAction$, primeFib$, fibPressAction$, quadAction$, edit1Action$, edit2Action$, testWAction$, testZAction$, testQAction$, colorAction$, deleteAction$, newTaskAction$, chatClickAction$, gameClickAction$, todoClickAction$, captionClickAction$, groupPressAction$, rollClickAction$, messagePressAction$, loginPressAction$, messages$, numClickAction$, opClickAction$);
    
   return {
   DOM: calcStream$.map(function () {
@@ -1030,7 +1033,7 @@ h('p', ' According to multiple sources, these are the first eleven proven prime 
 h('span.lb', ' 2, 3, 5, 13, 89, 233, 1597, 28657, 514229, 433494437, and 2971215073 '),
 h('br'),
 h('p', ' The number you enter below is the length of the list of Fibonacci numbers you want to generate.  '),
-h('p'),
+h('p.red',  mM36.x),
 h('input#fib92'),
 h('br'),
 h('span#PF_7.red6', 'Fibonacci Numbers'),
@@ -1213,7 +1216,8 @@ const sources = {
   WS: websocketsDriver,
   WK: workerDriver,
   WWB: workerDriverB,
-  WWC: workerDriverC
+  WWC: workerDriverC,
+  EM2: eM2Driver
 }
 
 run(main, sources);

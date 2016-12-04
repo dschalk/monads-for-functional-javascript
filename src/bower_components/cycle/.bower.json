@@ -1,0 +1,15 @@
+{
+  "name": "cycle",
+  "homepage": "https://github.com/staltz/cycle",
+  "version": "7.0.0",
+  "_release": "7.0.0",
+  "_resolution": {
+    "type": "version",
+    "tag": "v7.0.0",
+    "commit": "d3ce007a60c5f3bf5e389b611675c12771c5d521"
+  },
+  "_source": "https://github.com/staltz/cycle.git",
+  "_target": "^7.0.0",
+  "_originalSource": "cycle",
+  "_direct": true
+}
