@@ -5977,7 +5977,7 @@
 
 	var worker$ = (0, _dom.h)('pre.green2', '  \n    const worker$ = sources.WK.map(v => {\n      v.preventDefault();\n      console.log(\'In worker$  v is \', v );\n      mMZ21.bnd(() => {\n        mM11.ret(v.data[1]);\n        }); \n      mMZ22.bnd(() => {\n        mM12.ret(v.data[1])\n      }); \n      mMZ23.bnd(() => {\n        mM13.ret(v.data[1])\n      }); \n      mMZ24.bnd(() => {\n        mM14.ret(v.data[1])\n      }); \n      mMZ25.bnd(() => {\n        primesMonad.s = v.data[1];\n        primesMonad.a = v.data[1][3];\n        console.log(\'Prime number\', primesMonad.a.length,\'is\', primesMonad.s[0] )\n      });\n      next(v.data[0], \'CA#$41\', mMZ21)\n      next(v.data[0], \'CB#$41\', mMZ22)\n      next(v.data[0], \'CC#$41\', mMZ23)\n      next(v.data[0], \'CD#$41\', mMZ24)\n      next(v.data[0], \'CE#$41\', mMZ25)\n    });   ');
 
-	var workerPrimeFibs_2 = (0, _dom.h)('pre.green2', '    const workerDriverB = function () {\n        return create((add) => workerB.onmessage = msg => add(msg))\n    }\n\n    const workerB$ = sources.WWB.map(m => {\n      mMres.ret(m.data);\n    });   ');
+	var workerPrimeFibs_2 = (0, _dom.h)('pre.red0', '    const workerDriverB = function () {\n      return create((add) => workerB.onmessage = msg => add(msg))   \n    }    ');
 
 	var workerPrimeFibsjs = (0, _dom.h)('pre.green2', '    onmessage = function(m) {\n      console.log(\'In workerB.js m is \', m );\n      var _self = self;\n      var res;\n      importScripts(\'script2.js\');\n    \n      fibsMonad.run([1, 2 , parseInt(m.data,10), [0,1]])\n      .bnd(fibsState => fibsMonad\n        .bnd(fpTransformer, primesMonad)\n          .bnd(primesState => tr3(fibsState[3], primesState[3])\n          .bnd(ar => {\n            console.log(\'In workerB.js __ ar is \', ar );\n            _self.postMessage(ar);\n          }) \n        ) \n      );\n    };   ');
 
@@ -6161,7 +6161,7 @@
 
 	var eM2Driver = function eM2Driver() {
 	    return (0, _create.create)(function (add) {
-	        return eM2.on = function (msg) {
+	        return eM2.emit = function (msg) {
 	            console.log('In eM2Driver');
 	            add(msg);
 	        };
@@ -6202,21 +6202,27 @@
 	    var numsDisplay = [4, 4, 4, 4];
 	    var newTasks = [];
 
-	    var eM2$ = sources.EM2.map(function (x) {
-	        console.log('______** ! **_______eM2$ received message: ', x);
-	        mMZ31.bnd(function (v) {
-	            return mM34.ret(mM31.ret(v).x + mM32.x + mM33.x);
+	    var eM2$ = sources.EM2.map(function (v) {
+	        console.log('______** ! **_______eM2$ received message: ', v);
+	        mMZ31.bnd(function () {
+	            return mM34.ret(mM31.ret(v[1]).x + mM32.x + mM33.x).bnd(log5);
 	        });
-	        mMZ32.bnd(function (v) {
-	            return mM34.ret(mM32.x + mM32.ret(v).x + mM33.x);
+	        mMZ32.bnd(function () {
+	            return mM34.ret(mM31.x + mM32.ret(v[1]).x + mM33.x).bnd(log5);
 	        });
-	        mMZ33.bnd(function (v) {
-	            return mM34.ret(mM33.x + mM32.x + mM33.ret(v).x);
+	        mMZ33.bnd(function () {
+	            return mM34.ret(mM31.x + mM32.x + mM33.ret(v[1]).x).bnd(log5);
 	        });
-	        next(x[0], 'EA42', mMZ31);
-	        next(x[0], 'EB42', mMZ32);
-	        next(x[0], 'EC42', mMZ33);
+	        next(v[0], '1', mMZ31);
+	        next(v[0], '2', mMZ32);
+	        next(v[0], '3', mMZ33);
 	    });
+
+	    // eM2.on('3', (x,y,z) => m.ret(z*z*z).bnd((a) => console.log(a,x,y))) 
+
+	    eM2.emit(['1', 1]);
+	    eM2.emit(['2', 1]);
+	    eM2.emit(['3', 1]);
 
 	    var workerC$ = sources.WWC.map(function (m) {
 	        mMfactors.ret(m.data[0]);
@@ -6907,7 +6913,7 @@
 	            //
 	            //
 	            //
-	            (0, _dom.h)('h2', ' Asynchronous Processes '), (0, _dom.h)('h3', ' Conveniently handled in the Motorcycle / Cycle framework.'), (0, _dom.h)('p', ' The next demonstration involves a computation that can take a while to complete. I want the process to be non-blocking and I want the code to provide an interface to code that is linked to it. Promises are an option, but see if you think the following Motorcycle solution is better. First, here is the demonstration we will be discussing: '), (0, _dom.h)('p', ' The number you enter below is the length of the list of Fibonacci numbers you want to generate. Don\'t enter a number much over 50 unless you are prepared to wait. If a computation is taking too long, just reload and try a smaller number. '), (0, _dom.h)('p.red', mM36.x), (0, _dom.h)('input#fib92'), (0, _dom.h)('br'), (0, _dom.h)('span#PF_7.red6', 'Fibonacci Numbers'), (0, _dom.h)('br'), (0, _dom.h)('span#PF_9.turk', mMres.x[0]), (0, _dom.h)('br'), (0, _dom.h)('span#PF_8.red6', 'Prime Fibonacci Numbers'), (0, _dom.h)('br'), (0, _dom.h)('span#primeFibs.turk', mMres.x[2]), (0, _dom.h)('br'), (0, _dom.h)('span#PF_21.red6', 'Prime Numbers'), (0, _dom.h)('br'), (0, _dom.h)('span#PF_22.turk', mMres.x[1]), (0, _dom.h)('br'), (0, _dom.h)('p', ' The code runs in two threads, a main thread and a web worker thread. Here is a look at what happens in the main thread. A driver is defined as follows: '), _code2.default.wWorker, (0, _dom.h)('p', ' The driver is merged into the stream that feeds the virtual DOM, and it is also an element of an element of the resources object (named WWB) which supports the user interface. I still marvel at the sublime elegance of the cycle provided by the Motorcycle and Cycle libraries. Having the driver receive messages from the worker assures timely browser updates. Here is the code that runs in the main thread: '), _code2.default.primeFibInterface, (0, _dom.h)('p', ' Later, we will see how instances of MonadState and MonadTransformer perform the computations in the workerB thread. '),
+	            (0, _dom.h)('h2', ' Asynchronous Processes '), (0, _dom.h)('h3', ' Conveniently handled in the Motorcycle / Cycle framework.'), (0, _dom.h)('p', ' The next demonstration involves a computation that can take a while to complete. I want the process to be non-blocking and I want the code to provide an interface to code that is linked to it. Promises are an option, but see if you think the following Motorcycle solution is better. First, here is the demonstration we will be discussing: '), (0, _dom.h)('p', ' The number you enter below is the length of the list of Fibonacci numbers you want to generate. Don\'t enter a number much over 50 unless you are prepared to wait. If a computation is taking too long, just reload and try a smaller number. '), (0, _dom.h)('p.red', mM36.x), (0, _dom.h)('input#fib92'), (0, _dom.h)('br'), (0, _dom.h)('span#PF_7.red6', 'Fibonacci Numbers'), (0, _dom.h)('br'), (0, _dom.h)('span#PF_9.turk', mMres.x[0]), (0, _dom.h)('br'), (0, _dom.h)('span#PF_8.red6', 'Prime Fibonacci Numbers'), (0, _dom.h)('br'), (0, _dom.h)('span#primeFibs.turk', mMres.x[2]), (0, _dom.h)('br'), (0, _dom.h)('span#PF_21.red6', 'Prime Numbers'), (0, _dom.h)('br'), (0, _dom.h)('span#PF_22.turk', mMres.x[1]), (0, _dom.h)('br'), (0, _dom.h)('p', ' The code runs in two threads, a main thread and a web worker thread. Here is a look at what happens in the main thread. A driver, using create and add from the most library, is defined as follows: '), _code2.default.workerPrimeFibs_2, (0, _dom.h)('p', ' The driver is merged into the stream that feeds the virtual DOM, and it is also an element of the resources object (named WWB) which supports the user interface. I still marvel at the sublime elegance of the cycle provided by the Motorcycle and Cycle libraries. Having the driver receive messages from the worker assures timely browser updates. Here is the code that runs in the main thread: '), _code2.default.primeFibInterface, (0, _dom.h)('p', ' The addendum doesn\'t try to run before the computation completes. In the final analysis, this code, like Promises, is syntactic sugar for callbacks. Next, we will see how instances of MonadState and MonadTransformer perform the computations in the workerB thread. '),
 
 	            // ********************************************************************** Begin MonadState
 

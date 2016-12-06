@@ -1280,13 +1280,9 @@ var worker$ = h('pre.green2',  `
       next(v.data[0], 'CE#$41', mMZ25)
     });   `  )
 
-var workerPrimeFibs_2 = h('pre.green2',  `    const workerDriverB = function () {
-        return create((add) => workerB.onmessage = msg => add(msg))
-    }
-
-    const workerB$ = sources.WWB.map(m => {
-      mMres.ret(m.data);
-    });   `  )
+var workerPrimeFibs_2 = h('pre.red0',  `    const workerDriverB = function () {
+      return create((add) => workerB.onmessage = msg => add(msg))   
+    }    `  )
 
 var workerPrimeFibsjs = h('pre.green2',  `    onmessage = function(m) {
       console.log('In workerB.js m is ', m );

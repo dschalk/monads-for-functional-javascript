@@ -57,7 +57,7 @@ const workerDriverC = function () {
 }
 
 const eM2Driver = function () {
-  return create((add) => eM2.on = msg => {
+  return create((add) => eM2.emit = msg => {
     console.log('In eM2Driver');
     add(msg)
   })
@@ -88,15 +88,21 @@ function main(sources) {
   var numsDisplay = [4,4,4,4];
   var newTasks = [];
 
-  const eM2$ = sources.EM2.map(x => {
-   console.log('______** ! **_______eM2$ received message: ', x) 
-  mMZ31.bnd(v => mM34.ret(mM31.ret(v).x + mM32.x + mM33.x));
-  mMZ32.bnd(v => mM34.ret(mM32.x + mM32.ret(v).x + mM33.x));
-  mMZ33.bnd(v => mM34.ret(mM33.x + mM32.x + mM33.ret(v).x));
-  next(x[0], 'EA42', mMZ31)
-  next(x[0], 'EB42', mMZ32)
-  next(x[0], 'EC42', mMZ33)
+  const eM2$ = sources.EM2.map(v => {
+   console.log('______** ! **_______eM2$ received message: ', v) 
+  mMZ31.bnd(() => mM34.ret(mM31.ret(v[1]).x + mM32.x + mM33.x).bnd(log5));
+  mMZ32.bnd(() => mM34.ret(mM31.x + mM32.ret(v[1]).x + mM33.x).bnd(log5));
+  mMZ33.bnd(() => mM34.ret(mM31.x + mM32.x + mM33.ret(v[1]).x).bnd(log5));
+  next(v[0], '1', mMZ31)
+  next(v[0], '2', mMZ32)
+  next(v[0], '3', mMZ33)
   });
+
+  // eM2.on('3', (x,y,z) => m.ret(z*z*z).bnd((a) => console.log(a,x,y))) 
+
+  eM2.emit(['1', 1])
+  eM2.emit(['2', 1])
+  eM2.emit(['3', 1])
 
   const workerC$ = sources.WWC.map(m => {
     mMfactors.ret(m.data[0]);
@@ -1006,11 +1012,11 @@ h('span#PF_21.red6', 'Prime Numbers'),
 h('br'),
 h('span#PF_22.turk', mMres.x[1]  ),
 h('br'),
-h('p', ' The code runs in two threads, a main thread and a web worker thread. Here is a look at what happens in the main thread. A driver is defined as follows: ' ), 
-    code.wWorker,
-h('p', ' The driver is merged into the stream that feeds the virtual DOM, and it is also an element of an element of the resources object (named WWB) which supports the user interface. I still marvel at the sublime elegance of the cycle provided by the Motorcycle and Cycle libraries. Having the driver receive messages from the worker assures timely browser updates. Here is the code that runs in the main thread: ' ), 
+h('p', ' The code runs in two threads, a main thread and a web worker thread. Here is a look at what happens in the main thread. A driver, using create and add from the most library, is defined as follows: ' ), 
+    code.workerPrimeFibs_2,
+h('p', ' The driver is merged into the stream that feeds the virtual DOM, and it is also an element of the resources object (named WWB) which supports the user interface. I still marvel at the sublime elegance of the cycle provided by the Motorcycle and Cycle libraries. Having the driver receive messages from the worker assures timely browser updates. Here is the code that runs in the main thread: ' ), 
     code.primeFibInterface,
-h('p', ' Later, we will see how instances of MonadState and MonadTransformer perform the computations in the workerB thread. ' ),
+h('p', ' The addendum doesn\'t try to run before the computation completes. In the final analysis, this code, like Promises, is syntactic sugar for callbacks. Next, we will see how instances of MonadState and MonadTransformer perform the computations in the workerB thread. ' ),
 
   
 // ********************************************************************** Begin MonadState
@@ -1105,7 +1111,7 @@ h('p.code2', mMt3.x  ) ,
 h('span', 'Refresh button: '),
 h('button#testQ', 'mMt1.ret(0).bnd(v => mMZ2.release(v)) '),
 h('br'),
-code.testZ,
+    code.testZ,
 h('span.tao', ' The expression mMt3.x sits permanently in the Motorcycle virtual DOM description. You can call '),
 h('span.green', 'mMZ2.release(v)'),
 h('span', ' by entering a value for v below: '),

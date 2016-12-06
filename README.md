@@ -1,6 +1,6 @@
   <a name="back"></a>
 
-  #JS-monads-stable 
+  # JS-monads-stable 
   Not category theory monads. Monads like Haskell monads, using patterns found in category theory. See [Hask is not a category](http://math.andrej.com/2016/08/06/hask-is-not-a-category/) by Andrej Bauer and the discussion below.
 
   This is the repository for a [Motorcycle.js](https://github.com/motorcyclejs) application running online at [JS-monads-stable](http://schalk.net:3055). Motorcycle.js is essentially [Cycle.js](https://github.com/cyclejs/core) using [Most](https://github.com/cujojs/most) and [Snabbdom](https://github.com/paldepind/snabbdom) instead of RxJS and virtual-dom.
@@ -89,7 +89,7 @@
 
   ![Alt text](demo_000.png?raw=true)
 
-  ###The Monad Laws
+  ### The Monad Laws
 
   In the following discussion, "x === y" signifies that the expression x === y returns true. Let J be the collection of all Javascript values, including functions, instances of Monad, etc, and let F be the collection of all functions mapping values in J to instances of Monad with references (names) matching their ids; that is, with window[id] === m.id for some id which is a valid es2015 variable name. The collection of all such instances of Monad along and all of the functions in F is called "M". For any instances of Monad m, m1, and m2 in M and any functions f and g in F, the following relationships follow easily from the definition of Monad:
 
@@ -110,53 +110,44 @@
       m.ret(0).bnd(v => add(v,3).bnd(cube)).x  Tested amd verified
       Haskell monad law: (m >>= f) >>= g ≡ m >>= ( \x -> (f x >>= g) ) 
 
-  ###Disussion
+  ### Disussion
   The Haskell statement f ≡ g means that f x === g x for all Haskell values x of the appropriate type. That is the test applied to Javascript expressions in "Monad Laws" section (above). Neither the === nor the === operator would provide useful information about the behavior of instances of Monad, which are objects. Those operators test objects for location in memory. If the left and right sides of predicates create new instances of m, then the left side m and the right side m wind up in different locations in memory. So we expect m.ret(3) === m.ret(3) to return false, and it does. The question we want answered is the question ≡ answers in Haskell: Can the left and right sides be substituted for one another and still yield the same results.
 
-  The Haskell programming language borrowed the term "monad" from the branch of mathematics known as category theory. This was apropriate because Haskell monads, along with the function return and the operator >>=, behave quite a bit like category theory monads, and the inspiration for them came out of category theory. For Haskell monads to be category theory monads, they would need to reside in a category-theory category. They don't, although the Haskell mystique tends to give newcommers to the language the impression that they do. See Hask is not a category.
+Research into ways of defining a Haskell category appears to be ongoing. It involves tinkering with special constraints, omitted features, and definitions of morphisms that are not Haskell functions. When a definition of the category is established, Haskell monads are then be shown to be, in some contrived context, category-theory monads. Devising such schemes are instructive academic excercises, but I don't think they can provide anything useful to programmers working on applications for industry, commerce, and the Internet.
 
-  Attempts continue to be made to define a Haskell category, usually with special constraints, omitted features, and sometimes with definitions of morphisms that are not Haskell functions. Succeeding in that endeavor would be the first step toward proving that Haskell monads are, in some contrived context, category-theory monads. Devising such a scheme might be an instructive academic excercise, but I don't see how it could possibly be of any value beyond that. Imitating definitions and patterns found in category theory, as Haskell does in defining the functor, monoid, and monad type classes, was a stroke of genius that vastly enriched the Haskell programming language and brought it into the mainstream as a viable alternative to java, c++, etc. This website runs efficiently on a Haskell websockets server. Category theory patterns are less needed, but neverthless useful, in Javascript. Code that adheres to them tends to be robust and versitile.
+However, imitating definitions and patterns found in category theory, as Haskell does in defining the functor, monoid, and monad type classes, was a stroke of genius that vastly enriched the Haskell programming language and brought it into the mainstream as a viable alternative to java, c++, etc. This website runs efficiently on a Haskell websockets server. Category theory patterns are less needed, but neverthless useful, in Javascript. Code that adheres to them tends to be robust and predictable.
 
-##Web Worker
+## Asynchronous Processes
 
-After signing in, you will observe a column under the chat box. Numbers entered in the top two input boxes prompt a web worker to compute the square root of the sum of the squares, the sum, the product, and the least common multiple ("lcm"). If the numbers were fraction denominators, the lcm would be least common denominator, the number that would make addition and subtraction convenient.
+### Conveniently handled in the Motorcycle / Cycle framework.
 
-Here is the code that creates the web worker the Motorcycle driver:
-```js
-  const workerA = new Worker("worker.js");
+An online demonstration involves a computation that can take a while to complete. I want the process to be non-blocking and I want the code to provide an interface to code that is linked to it. Promises are an option, but see if you think the following Motorcycle solution is better. 
 
-  const workerDriver = function () {
-    return create((add) => workerA.onmessage = msg => add(msg))
-  }  
-```  
-The driver is an attribute of the sources object. It is named WK. The stream that receives messages from the worker and feeds data into the virtual dom is named worker$. This is worker$'s definition:
-```js
-  const worker$ = sources.WK.map(v => {
-    mMZ21.bnd(() => {
-      mM11.ret(v.data[1]);
-      }); 
-    mMZ22.bnd(() => {
-      mM12.ret(v.data[1])
-    }); 
-    mMZ23.bnd(() => {
-      mM13.ret(v.data[1])
-    }); 
-    mMZ24.bnd(() => {
-      mM14.ret(v.data[1])
-    }); 
-    next(v.data[0], 'CA#$41', mMZ21)
-    next(v.data[0], 'CB#$41', mMZ22)
-    next(v.data[0], 'CC#$41', mMZ23)
-    next(v.data[0], 'CD#$41', mMZ24)
-    });
+The code runs in two threads, a main thread and a web worker thread. Here is a look at what happens in the main thread. A driver, using create and add from the most library, is defined as follows:
+
+```javascript    
+  const workerDriverB = function () {
+    return create((add) => workerB.onmessage = msg => add(msg))   
+  }   
 ```    
-mM11.x, mM12.x, mM13.x, and mM14.x are fixtures of the virtual DOM. The web worker sends messages prefixed by mMA#$41, mMB#$41, mMC#$41, and mMD#$41, next() releases MonadItter instances mMZ21, mMZ22, mMZ23, mMZ24, causing code to execute with updates mM11.x, mM12.x, mM13.x, and mM14.x. More details are available in the MonadItter section of this page and at the project repository.
-The other items in the list in the right column pertain to the game. pMclicked.x is a list of the numbers which have been clicked. pMop.x is the operator which has been chosen. pMindex.x shows where you are during traversal of the game history. There can't be a selected operator and two numbers in pMclicked - at least not for long. The game automatically performs a mathematical calculation whenever two numbers and an operator have been chosen.
+The driver is merged into the stream that feeds the virtual DOM, and it is also an element of an the resources object (named WWB) which supports the user interface. I still marvel at the sublime elegance of the cycle provided by the Motorcycle and Cycle libraries. Having the driver receive messages from the worker assures timely browser updates. Here is the code that runs in the main thread:
 
-The worker.js file can be vied in the project repository, and further down on this page in the MonadItter discussion. 
-  ##MonadArchive
+  const fibKeyPress5$ = sources.DOM
+    .select('input#fib92').events('keyup');
 
-  ###Traversal of the dice game history.
+  var primeFib$ = fibKeyPress5$.map(e => {
+    workerB.postMessage(e.target.value)
+  });
+
+  const workerB$ = sources.WWB.map(m => mMres.ret(m.data) 
+    .bnd(v => mM36.ret('Asynchronous addendum. The largest computed ' +
+    'prime Fibonacci number is ' + v[2].split(',')[v[2].split(',').length - 1]), 'MmM36')
+  );  
+Later, we will see how instances of MonadState and MonadTransformer perform the computations in the workerB thread.
+
+  ## MonadArchive
+
+  ### Traversal of the dice game history.
 
   The state of the simulated dice game is maintained in travMonad, an instance of MonadArchive. Here are the definitions of MonadArchive, travMonad, and the helper function trav_archive:
   ```javascript
@@ -317,7 +308,7 @@ The worker.js file can be vied in the project repository, and further down on th
   ```
   updateCalc calls calc on the numbers and operater provided to it by numCalcAction$ or opCalcAction$. The return value is assigned to result. If the value of result is 18 or 20, pMscore.x is augmented by 3 or 1, respectively, and checked to see if another five points should be added. score() is then called with the new score as its argument. score() performs some additional tests and calls for a new roll with the values of score and goals it has determined depending on whether or not there is a score and, if so, a winner.
 
-  ##MonadItter
+  ## MonadItter
 
   MonadItter instances do not have monadic properties, but they facilitate the work of monads. Here's how they work:
 
@@ -331,7 +322,7 @@ The worker.js file can be vied in the project repository, and further down on th
   ```
   As shown later in the online demonstration, MonadItter instances control the routing of incoming websockets messages and the flow of action in the simulated dice game. In one of the demonstrations, they behave much like ES2015 iterators. I prefer them over ES2015 iterators. They can also help to provide promises-like functionality without promises.
 
-  ###Traversal of the dice game history.
+  ### Traversal of the dice game history.
 
   MonadState instance travMonad facilitates traversal of the game history. travMonad.s is a four member array holding the current numbers, current score, current goals, and an array of arrays containing numbers, score, and goals corresponding to past states of the game.. Here is the definition of travMonad and its auxiliary function:
   ```javascript
@@ -373,7 +364,7 @@ The worker.js file can be vied in the project repository, and further down on th
       pMscore.ret(v[7]);
       pMgoals.ret(v[8]) });  
   ```
-  ###Updating the numbers
+  ### Updating the numbers
 
   The previous discusion was about traversal of the game history. This seems like a good place to look at the algorithm for generating new numbers when players click on the number and operator buttons. Here is the code:
   ```javascript
@@ -637,7 +628,7 @@ The worker.js file can be vied in the project repository, and further down on th
 
   The final test in the bnd() method occurs in a try-catch block. If a function and its quoted arguments are not of types undefined or NaN but the system returns an error, the error message gets logged and a browser crash is averted.
 
-  ##Websocket messages
+  ## Websocket messages
 
   Incoming websockets messages trigger updates to the game display, the chat display, and the todo list display. The members of a group see what other members are doing; and in the case of the todo list, they see the current list when they sign in to the group. When any member of a group adds a task, crosses it out as completed, edits its description, or removes it, the server updates the persistent file and all members of the group immediately see the revised list.
 
@@ -771,9 +762,9 @@ The online demonstration features a game with a traversible dice-roll history; g
 With Motorcycle.js, the application runs smoothly and is easy to understand and maintain. I say "easy to understand", but for people coming from an imperitive programming background, some effort must first be invested into getting used to functions that take functions as arguments, which are at the heart of Motorcycle and JS-monads-stable. After that, seeing how the monads work is a matter of contemplating their definitions and experimenting a little. Most of the monads and the functions they use in this demonstration are readily available in the browser console. If you have the right dev tools in Chrome or Firefox, just load [http://schalk.net:3055](http://schalk.net:3055) and press F12. You might need to enter Ctrl-R to re-load with access to the monad.js script. I do this to troubleshoot and experiment. 
 
 
-##APPENDIX
+## APPENDIX
 
-###worker.js
+### worker.js
 
 onmessage = function(v) {
 

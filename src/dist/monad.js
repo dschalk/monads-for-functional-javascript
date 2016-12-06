@@ -601,9 +601,9 @@ function primes(n, ar) {
   var mM29 = M([], 'mM29');
   var mM30 = M(0, 'mM30');
   var mM31 = M(0, 'mM31');
-  var m322 = M(0, 'mM32');
+  var mM32 = M(0, 'mM32');
   var mM33 = M(0, 'mM33');
-  var mM33 = M(0, 'mM34');
+  var mM34 = M(0, 'mM34');
   var mM35 = M(3, 'mM35');
   var mM36 = M('', 'mM36');
   var mM37 = M(0, 'mM37');
@@ -1066,7 +1066,12 @@ function log3(x, message) {
 };
 
 function log4(x, message) {
-  console.log(message[0]);
+  console.log(message);
+  return ret(x);
+};
+
+function log5(x) {
+  console.log(x);
   return ret(x);
 };
 
@@ -1349,6 +1354,7 @@ function monadConstructor (a,b) {
   var c = new MonadEmitter();
   c.x = a;
   c.id = b;
+  c.nums = [];
   c.bnd = (func, ...args) => {
     var m = func(c.x, ...args)
     var ID;
@@ -1366,17 +1372,36 @@ function monadConstructor (a,b) {
   return c;
 };
 
-var eM1 = monadConstructor(0,'eM1');
+
+var ops = ['+','-','*','/', 'concat'];
+var nums = [3,4,5,6];
+
+
+var eM1 = monadConstructor(0,'eM1') ;
 var eM2 = monadConstructor(0,'eM2');
 var eM3 = monadConstructor(0,'eM3');
 var eM4 = monadConstructor(0,'eM4');
-eM2.on('EC42', x => console.log('Yes. It looks like a rainy day. Here is the message:', x));
-eM2.emit('EC42', 256000- 255997) 
-  
+eM2.on('EC42', x => console.log('Here is a received message:', x));
+eM2.emit('EC42', 256000 - 255997) 
 
+eM3.on('3', (x,y,z) => m.ret(z*z*z).bnd((a) => console.log(a,x,y)))
 
+eM3.emit('3', 23, 44, 3)   // 27, 23, 44
 
-
-
+var f7 = function f7 () {
+var ar = [];
+for (var a of [2,4,6,8]) {
+  for (var b of [3,6,9,12]) {
+    if (a + b === 18) {
+      ar.push([a,b])
+      break;
+    }
+  }
+}
+return ar  
+}
+ 
+var x = f7();
+console.log(x)
 
 
