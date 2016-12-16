@@ -119,9 +119,10 @@ However, imitating definitions and patterns found in category theory, as Haskell
 
 ## Asynchronous Processes
 
-### Conveniently handled in the Motorcycle / Cycle framework.
+An online demonstration involves a computation that can take a while to complete. It memoizes computed prime numbers and does not block the browser engine's primary execuation thread. The number you enter is a cap on the size of the largest number in the Fibonacci sequence which is produced. If you enter 3 and then, one at a time, 0's until you reach three billion (3000000000), you should see the display updating quickly until the final 0. That will get you the prime number 2971215073. If you add another 0, you can expect a descernable lag time. Removing the final 0 and then putting it back demonstrates the effectiveness of memoization.
 
-An online demonstration involves a computation that can take a while to complete. I want the process to be non-blocking and I want the code to provide an interface to code that is linked to it. Promises are an option, but see if you think the following Motorcycle solution is better. 
+
+According to the The On-Line Encyclopedia of Integer Sequences these are the first eleven proven prime Fibonacci numbers: 2, 3, 5, 13, 89, 233, 1597, 28657, 514229, 433494437, 2971215073, and 99194853094755497. The eleventh number, 2971215073, is as far as you can go on an ordinary desktop computer. 
 
 The code runs in two threads, a main thread and a web worker thread. Here is a look at what happens in the main thread. A driver, using create and add from the most library, is defined as follows:
 
@@ -131,7 +132,7 @@ The code runs in two threads, a main thread and a web worker thread. Here is a l
   }   
 ```    
 The driver is merged into the stream that feeds the virtual DOM, and it is also an element of an the resources object (named WWB) which supports the user interface. I still marvel at the sublime elegance of the cycle provided by the Motorcycle and Cycle libraries. Having the driver receive messages from the worker assures timely browser updates. Here is the code that runs in the main thread:
-
+```js
   const fibKeyPress5$ = sources.DOM
     .select('input#fib92').events('keyup');
 
@@ -139,10 +140,27 @@ The driver is merged into the stream that feeds the virtual DOM, and it is also 
     workerB.postMessage(e.target.value)
   });
 
-  const workerB$ = sources.WWB.map(m => mMres.ret(m.data) 
+  const workerB$ = sources.WWB.map(m => {
+    console.log('In workerB$ stream in the main thread. m is ', m );
+    mMres.ret(m.data)
     .bnd(v => mM36.ret('Asynchronous addendum. The largest computed ' +
-    'prime Fibonacci number is ' + v[2].split(',')[v[2].split(',').length - 1]), 'MmM36')
-  );  
+      'prime Fibonacci number is ' + v[2].split(',')[v[2].split(',').length - 1]), 'MmM36')
+    primesMonad.s = JSON.parse(JSON.stringify(primesMonad.s));
+    primesMonad.a = JSON.parse(JSON.stringify(primesMonad.a));
+    primesMonad.s = m.data[3];
+    primesMonad.a = m.data[3][3];
+  });
+```
+As expected, the addendum doesn't try to run before the computation completes. Here is the definition of workerB.js. MonadState and fpTransformer are discussed in the MonadState and MonadStart Transformers section below.
+```js
+    onmessage = function(m) {
+    var ar = m.data;
+    importScripts('script2.js');
+  
+    var result = fibsMonad.run([1, 2 , ar[0], [0,1]])
+    .bnd(fpTransformer, ar[1])
+    postMessage(result);    
+```
 Later, we will see how instances of MonadState and MonadTransformer perform the computations in the workerB thread.
 
   ## MonadArchive

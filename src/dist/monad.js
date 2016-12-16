@@ -1312,7 +1312,7 @@ console.log(".bnd(add, d.x,'Mg').bnd(sqroot,'Mf')");
 console.log(".bnd(v3 => console.log('The sum of',v1,'squared and',v2,'squared is',v3) )" );
 ret(0,'a').bnd(add,3,'Mb').bnd(mult,100,'Mc').bnd(v1 => d.ret(v1*v1)
 .bnd(add, v1 - d.x + 100,'Me').bnd(v2 => f.ret(v2*v2).bnd(add, d.x,'Mg').bnd(sqroot,'Mf')
-.bnd(v3 => console.log('The sum of',v1,'squared and',v2,'squared is',v3))));
+.bnd(v3 => console.log('The square root of the sum of',v1,'squared and',v2,'squared is',v3))));
 console.log('.');
 console.log('Current values of the monads:', a.x,b.x,c.x,d.x,e.x,f.x,g.x);
 var testArray = [a.x,b.x,c.x,d.x,e.x,f.x,g.x];
@@ -1323,7 +1323,10 @@ console.log('Current values of the monads:',a.x,b.x,c.x,d.x,e.x,f.x,g.x);
 console.log("'testArray:',testArray.join(', ')");
 console.log('testArray:',testArray.join(', '));
 console.log('.');
-console.log('The monads in testArray were not replaced or mutated.');
+console.log('The monads in testArray were not replaced or mutated when the x attributes of a, b, c, d, e, f and g were were assigned the value of 7.');
+console.log('.');
+console.log('.');
+console.log('.');
 console.log('When monads call their ret() methods, new instances of Monad are created.' );
 console.log('.');
 console.log('.');
