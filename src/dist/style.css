@@ -62,6 +62,10 @@ h3 {
   font-size: 16px;
 }
 
+#clearprimes {
+  font-size: 16px;
+}
+
 #timeout3 {
   color: #ffaa00;
   margin-left: 3%;
@@ -89,6 +93,10 @@ h3 {
 #spread2 {
   margin-left: 3%;
   width: 100px;
+}
+
+.purp {
+  color: #f97af9;
 }
 
 .tao1 {

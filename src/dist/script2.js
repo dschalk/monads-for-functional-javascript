@@ -32,37 +32,29 @@ var Monad = function Monad(z = 19, g = 'generic') {
   };
 };
 
-var fpTransformer = function transformer(s, m) {
-  var bound = Math.ceil(Math.sqrt(s[3][s[3].length - 1]));
-  if (bound > m.a[m.a.length - 1]) {
-      m.run([m.s[0], "from the fibKeyPress5$ handler", bound, primesMonad.a]);
-  }
-  return m;
+//*************************************** BEGIN prime Fibonacci numbers
+
+var fpTransformer = function fpTransformer(x, s) {
+  s[2] = Math.ceil(Math.sqrt(x[3].slice(-1)[0]));
+  var m = primesMonad.run(s);
+  var ar = [];
+  x[3].map(function (v) {
+    if (m.s[3].every(function (p) { return (v % p || v == p); }))
+      ar.push(v);
+  });
+  return [x[3].join(', '), m.s[3].join(', '), ar.join(', '), m.s];
 };
+
+//*************************************** END prime Fibonacci numbers
 
 function ret(v, id = 'generic') {
   self[id] = new Monad(v, id);
   return self[id];
 }
 
-var tr3 = function tr3(fibsArray, primesArray) {
-  var bound = Math.ceil(Math.sqrt(fibsArray[fibsArray.length - 1]));
-  var primes;
-  if (primesArray.slice(-1)[0] >= bound) {
-      primes = primesArray.filter(function (v) { return v <= bound; });
-  }
-  var ar = [];
-  var fibs = fibsArray.slice(3);
-  fibs.map(function (v) {
-      if (primesArray.every(function (p) { return (v % p || v == p); }))
-          ar.push(v);
-  });
-  return ret([fibsArray.join(', '), primes.join(', '), ar.join(', ')]);
-};
-
 var fibs_state = function fibs_state(ar) {
   var a = ar.slice();
-  while (a[3].length < a[2]) {
+  while (a[0] < a[2]) {
       a = [a[1], a[0] + a[1], a[2], a[3].concat(a[0])];
   }
   return a;

@@ -40,11 +40,11 @@ socket.onclose = function (event) {
 
 console.log('socket.onmessage',socket.onmessage);
 
-const workerDriver = function () {
-    return create((add) => workerA.onmessage = msg => add(msg))
+const workerDriverA = function () {
+    return create((add) => worker.onmessage = msg => add(msg))
 }
 
-console.log('workerA.onmessage',workerA.onmessage);
+console.log('worker.onmessage',worker.onmessage);
 
 const workerDriverB = function () {
     return create((add) => workerB.onmessage = msg => add(msg))
@@ -111,6 +111,7 @@ function main(sources) {
   });
 
   const worker$ = sources.WK.map(v => {
+    console.log('Message from worker: ', v );
     v.preventDefault();
     mMZ21.bnd(() => {
       mM11.ret(v.data[1]);
@@ -350,16 +351,29 @@ function main(sources) {
   // *******************************************n****************************** ENDOM iginal Fibonacci END
   // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> START PRIME FIB  
   
+  const workerB$ = sources.WWB.map(m => {
+    console.log('In workerB$ stream in the main thread. m is ', m );
+    mMres.ret(m.data)
+    .bnd(v => mM36.ret('Asynchronous addendum. The largest computed ' +
+      'prime Fibonacci number is ' + v[2].split(',')[v[2].split(',').length - 1]), 'MmM36')
+    primesMonad.s = JSON.parse(JSON.stringify(primesMonad.s));
+    primesMonad.a = JSON.parse(JSON.stringify(primesMonad.a));
+    primesMonad.s = m.data[3];
+    primesMonad.a = m.data[3][3];
+  });
+
   var fibKeyPress5$ = sources.DOM
       .select('input#fib92').events('keyup');
 
   var primeFib$ = fibKeyPress5$.map(e => {
-    workerB.postMessage(e.target.value)
+    workerB.postMessage([e.target.value, primesMonad.s]);
   });
 
-  const workerB$ = sources.WWB.map(m => mMres.ret(m.data)
-    .bnd(v => mM36.ret('Asynchronous addendum. The largest computed ' +
-      'prime Fibonacci number is ' + v[2].split(',')[v[2].split(',').length - 1]), 'MmM36'));
+  var clearprimes$ = sources.DOM
+    .select('#clearprimes').events('click')
+    .map(() => mMres.ret([mMres.x[0], '', mMres.x[2], mMres.x[3]])); 
+
+
 
   // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> ENDOM basic prime END
   // <>>><>><><><><>>>><><><   prime factors   ><><><><><><>>><<><><><><><><>< START prime factors  
@@ -377,7 +391,7 @@ function main(sources) {
       else {
         var ar = primesMonad.s.slice();
         ar[2] = num;
-        workerA.postMessage(['CE#$41', ar])
+        worker.postMessage(['CE#$41', ar])
         workerC.postMessage(num);
       }
     }
@@ -784,16 +798,16 @@ function main(sources) {
 var elemA$ = sources.DOM.select('input#message1').events('keyup')
   .map(e => {
   mM9.ret(e.target.value);  
-  workerA.postMessage([e.target.value, mM10.x]);
+  worker.postMessage([e.target.value, mM10.x]);
 });
 
 var elemB$ = sources.DOM.select('input#message2').events('keyup')
   .map(e => {
   mM10.ret(e.target.value);
-  workerA.postMessage([mM9.x, e.target.value]);
+  worker.postMessage([mM9.x, e.target.value]);
 });
 
-  var calcStream$ = merge( eM2$, elemA$, elemB$, worker$, workerB$, workerC$, clearAction$, backAction$, forwardAction$, factorsAction$, primeFib$, fibPressAction$, quadAction$, edit1Action$, edit2Action$, testWAction$, testZAction$, testQAction$, colorAction$, deleteAction$, newTaskAction$, chatClickAction$, gameClickAction$, todoClickAction$, captionClickAction$, groupPressAction$, rollClickAction$, messagePressAction$, loginPressAction$, messages$, numClickAction$, opClickAction$);
+  var calcStream$ = merge( clearprimes$, eM2$, elemA$, elemB$, worker$, workerB$, workerC$, clearAction$, backAction$, forwardAction$, factorsAction$, primeFib$, fibPressAction$, quadAction$, edit1Action$, edit2Action$, testWAction$, testZAction$, testQAction$, colorAction$, deleteAction$, newTaskAction$, chatClickAction$, gameClickAction$, todoClickAction$, captionClickAction$, groupPressAction$, rollClickAction$, messagePressAction$, loginPressAction$, messages$, numClickAction$, opClickAction$);
    
   return {
   DOM: calcStream$.map(function () {
@@ -854,8 +868,6 @@ var elemB$ = sources.DOM.select('input#message2').events('keyup')
       h('div', 'travMonad.s[pMindex.x][2]: ' + travMonad.s[pMindex.x][2] ),
       h('div', 'travMonad.s[pMindex.x][3]: ' + travMonad.s[pMindex.x][3] ),
       h('div', 'travMonad.s[pMindex.x][4]: ' + travMonad.s[pMindex.x][4] ),
-  
-  
   ]),
   h('div#leftPanel', [  
       h('br'),
@@ -992,11 +1004,15 @@ h('p', ' However, imitating definitions and patterns found in category theory, a
     //
     //
     //
-    //
+   //
   h('h2', ' Asynchronous Processes ' ),
-  h('h3', ' Conveniently handled in the Motorcycle / Cycle framework.' ),
-  h('p', ' The next demonstration involves a computation that can take a while to complete. I want the process to be non-blocking and I want the code to provide an interface to code that is linked to it. Promises are an option, but see if you think the following Motorcycle solution is better. First, here is the demonstration we will be discussing: ' ),
-h('p', ' The number you enter below is the length of the list of Fibonacci numbers you want to generate. Don\'t enter a number much over 50 unless you are prepared to wait. If a computation is taking too long, just reload and try a smaller number. '),
+  h('p', ' The next demonstration involves a computation that can take a while to complete. It memoizes computed prime numbers and does not block the browser engine\'s primary execuation thread. The number you enter below is a cap on the size of the largest number in the Fibonacci sequence which is produced. If you enter 3 and then, one at a time, 0\'s until you reach three billion (3000000000), you should see the display updating quickly until the final 0. That will get you the prime number 2971215073. If you add another 0, you can expect a descernable lag time. Removing the final 0 and then putting it back demonstrates the effectiveness of memoization. '),
+h('br' ),
+h('span', ' According to the '), 
+h('a', { props: { href: "https://oeis.org/A005478", target: "_blank" } }, 'The On-Line Encyclopedia of Integer Sequences '),
+h('span', ' these are the first eleven proven prime Fibonacci numbers:'),
+h('span.purp', ' 2, 3, 5, 13, 89, 233, 1597, 28657, 514229, 433494437, 2971215073, and 99194853094755497. The eleventh number, 2971215073, is as far as you can go on an ordinary desktop computer. '),
+h('br' ),
 h('p.red',  mM36.x),
 h('input#fib92'),
 h('br'),
@@ -1009,14 +1025,24 @@ h('br'),
 h('span#primeFibs.turk', mMres.x[2]  ),
 h('br'),
 h('span#PF_21.red6', 'Prime Numbers'),
+h('button#clearprimes', 'Clear primes display' ),    
 h('br'),
 h('span#PF_22.turk', mMres.x[1]  ),
 h('br'),
 h('p', ' The code runs in two threads, a main thread and a web worker thread. Here is a look at what happens in the main thread. A driver, using create and add from the most library, is defined as follows: ' ), 
     code.workerPrimeFibs_2,
-h('p', ' The driver is merged into the stream that feeds the virtual DOM, and it is also an element of the resources object (named WWB) which supports the user interface. I still marvel at the sublime elegance of the cycle provided by the Motorcycle and Cycle libraries. Having the driver receive messages from the worker assures timely browser updates. Here is the code that runs in the main thread: ' ), 
+h('p', ' The driver is merged into the stream that feeds the virtual DOM, and it is also an element of the resources object (named WWB) which supports the user interface. I still marvel at the elegance of the cycle provided by the Motorcycle and Cycle libraries. The driver listens for messages from the worker, updating primesMonad and the browser display whenever one come in. Here is the code that runs in the main thread: ' ), 
     code.primeFibInterface,
-h('p', ' The addendum doesn\'t try to run before the computation completes. In the final analysis, this code, like Promises, is syntactic sugar for callbacks. Next, we will see how instances of MonadState and MonadTransformer perform the computations in the workerB thread. ' ),
+h('p', ' As expected, the addendum doesn\'t try to run before the computation completes. Here is the definition of workerB.js. MonadState and fpTransformer are discussed in the MonadState and MonadStart Transformers section below.' ),
+    code.workerPrimeFibsjs,
+
+
+  
+h('p', ' The next demonstration uses two instances of MonadState to find the prime factors of numbers. Each prime factor is listed once.  On my desktop computer, it took several seconds to verify that 514229 is a prime number. After that, due to memoization, numbers below 514229 or not too far above it evaluated rapidly. Here\'s where you can enter a number to see its prime factors: '),
+h('input#factors_1'),
+h('br'),
+h('div.tao3', `${mMfactors.x}` ),    
+h('div.tao3', mMfactors3.x ),    
 
   
 // ********************************************************************** Begin MonadState
@@ -1024,7 +1050,9 @@ h('p', ' The addendum doesn\'t try to run before the computation completes. In t
 h('p#monadstate'),
 h('a#state', { props: { href: '#monad' } }, 'Back to Monad discussion'),
 h('h2', 'MonadState and MonadState Transformers'),
-h('p', ' An instance of MonadState holds the current state and value of a computation. For any instance of MonadState, say m, these can be accessed through m.s and m.a, respectively.  '),
+p(' The preceding demonstrations used three instances of MonadState: primesMonad, fibsMonad, and factorsMonad. The chat message demonstration uses another instance of MonadState; namely, messageMonadn. Here is messageMonad along with some more information about MonadState. '),
+    code.messageMonad,    
+h('p', ' An instance of MonadState holds the current state along with a method for updating state. For any instance of MonadState, say m, these can be accessed through m.a and m.p, respectively.  '),
 code.MonadState,
 h('p', ' MonadState reproduces some of the functionality found in the Haskell Module "Control.Monad.State.Lazy", inspired by the paper "Functional Programming with Overloading and Higher-der Polymorphism", Mark P Jones (http://web.cecs.pdx.edu/~mpj/) Advanced School of Functional Programming, 1995. The following demonstrations use the MonadState instances fibsMonad and primesMonad to create and store arrays of Fibonacci numbers and arrays of prime numbers, respectively. fibsMonad and primesMonad combine, with the help of prFactTransformer3, to produce arrays of prime Fibonacci numbers. Until a browser tab is closed, the largest arrays of prime numbers that have been computed are stored in primesMonad.a and primesMonad.s[3]. When smaller arrays of prime numbers are required, thay are obtained from the large arrays and are not re-computed. '),
 h('p', ' Here is the definition of fibsMonad, along with the definition of the function that becomes fibsMonad.process. '),
@@ -1035,33 +1063,8 @@ h('p', ' The final computation in the prime Fibonacci numbers demonstration occu
 code.tr3,
 h('p', ' User input is handled by a chain of computations in a web worker named workerB. first to update fibsMonad, second to extract fibsMonad.s, third to run fpTransformer to modify and then return primesMonad, and fourth to extract primesMonad.s and run tr3(fibsState[3],primesState[3]). Monad instance mMres obtains the result. mMres.x[0], mMres.x[1], and mMres.x[2], are permanent features of the virtual DOM.  Here is the code: '),
 code.primeFibInterface,
-h('p', 'Only 48 Fibonacci numbers need to be generated in order to get the eleventh prime Fibonacci number. But 5546 prime numbers need to be generated to test for divisibility into 2971215073. Finding the next Fibonacci number is just a matter of adding the previous two. Getting the next prime number is a more elaborate and time-consuming procedure. In this context, the time needed to compute 48 Fibonacci numbers is insignificant, so I didn\'t bother to save previously computed Fibonacci numbers in the prime Fibonacci demonstration. When a user enters a number smaller than the current length of fibsMonad.a, fibsMonad is modified such that its length becomes exactly what the user entered.'),
+h('p', 'Only 48 Fibonacci numbers need to be generated in order to get the eleventh prime Fibonacci number. But 5546 prime numbers need to be generated to test for divisibility into 2971215073. Finding the next Fibonacci number is just a matter of adding the previous two. Getting the next prime number is a more elaborate and time-consuming procedure. In this context, the time needed to compute 48 Fibonacci numbers is insignificant, so I didn\'t bother to save previously computed Fibonacci numbers in the prime Fibonacci demonstration. '),
 h('p', ' Entering 50 in my desktop Ubuntu Chrome and Firefox browsers got the first eleven prime Fibonacci numbers in about one second. I tried gradually incrementing upwards from 50, but when I got to 61 I stopped due to impatience with the lag time. The 61st Fibonacci number was computed to be 1,548,008,755,920. 76,940 prime numbers were needed to check the 60th Fibonacci number. 96,043 prime numbers were needed to check the 61st Fibonacci number.  At Fibonacci number 61, no new prime Fibonacci numbers had appeared.'),
-h('p', ' According to multiple sources, these are the first eleven proven prime Fibonacci numbers:'),
-h('span.lb', ' 2, 3, 5, 13, 89, 233, 1597, 28657, 514229, 433494437, and 2971215073 '),
-h('br'),
-h('p', ' The number you enter below is the length of the list of Fibonacci numbers you want to generate.  '),
-h('p.red',  mM36.x),
-h('input#fib92'),
-h('br'),
-h('span#PF_7.red6', 'Fibonacci Numbers'),
-h('br'),
-h('span#PF_9.turk', mMres.x[0]  ),
-h('br'),
-h('span#PF_8.red6', 'Prime Fibonacci Numbers'),
-h('br'),
-h('span#primeFibs.turk', mMres.x[2]  ),
-h('br'),
-h('span#PF_21.red6', 'Prime Numbers'),
-h('br'),
-h('span#PF_22.turk', mMres.x[1]  ),
-h('br'),
-h('p', ' The next demonstration uses two instances of MonadState to find the prime factors of numbers. Each prime factor is listed once.  On my desktop computer, it took several seconds to verify that 514229 is a prime number. After that, due to memoization, numbers below 514229 or not too far above it evaluated rapidly. Here\'s where you can enter a number to see its prime factors: '),
-h('input#factors_1'),
-h('br'),
-h('br'),
-h('div.tao3', `${mMfactors.x}` ),    
-h('div.tao3', mMfactors3.x ),    
 h('p', ' The demonstration uses primesMonad and factorsMonad. Here are the definitions of factosMonad and factor_state, the function that is factorsMonad.process: '),
 code.factorsMonad,
 h('p#async', ' And this is how user input is handled: '),
@@ -1072,7 +1075,21 @@ h('a', { props: { href: '#top' } }, 'Back To The Top'),
 // ********************************************************************** End MonadState
 
   h('br', ),  
-  h('a#itterLink', { props: { href: '#monad' } }, 'Back to Monad discussion'), 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
   h('h2', ' MonadEr - An Error-Catching Monad ' ),
   h('p', ' Instances of MonadEr function much the same as instances of Monad, but when an instance of MonadEr encounters an error, it ceases to perform any further computations. Instead, it passes through every subsequent stage of a sequence of MonadEr expressions, reporting where it is and repeating the error message. It will continue to do this until it is re-instantiated or until its bnd() method runs on the function clean(). ' ),
   h('p', 'Functions used as arguments to the MonadEr bnd() method can be placed in quotation marks to prevent the browser engine from throwing reference errors. Arguments can be protected in the same manner. Using MonadEr can prevent the silent proliferation of NaN results in math computations, and can prevent browser crashes due to attempts to evaluate undefined variables. Sometimes crashes are desired when testing code, but MonadEr provides instant feedback pinpointing the exact location of the error. ' ), 
@@ -1222,7 +1239,7 @@ code.primesMonad,
 const sources = {
   DOM: makeDOMDriver('#main-container'),
   WS: websocketsDriver,
-  WK: workerDriver,
+  WK: workerDriverA,
   WWB: workerDriverB,
   WWC: workerDriverC,
   EM2: eM2Driver

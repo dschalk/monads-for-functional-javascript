@@ -639,463 +639,469 @@ var tr3 = h('pre',  `  var tr3 = function tr (fibsArray, primesArray) {
     return [fibsArray, primes, ar]
   }  `  )
 
-var primeFibInterface = h('pre',  `  const fibKeyPress5$ = sources.DOM
-    .select('input#fib92').events('keyup');
+  var primeFibInterface = h('pre',  `    const fibKeyPress5$ = sources.DOM
+      .select('input#fib92').events('keyup');
 
-  var primeFib$ = fibKeyPress5$.map(e => {
-    workerB.postMessage(e.target.value)
-  });
-
-  const workerB$ = sources.WWB.map(m => mMres.ret(m.data) 
-    .bnd(v => mM36.ret('Asynchronous addendum. The largest computed ' +
-    'prime Fibonacci number is ' + v[2].split(',')[v[2].split(',').length - 1]), 'MmM36')
-  );  `  )
-
-var fpTransformer = h('pre',  `  var fpTransformer = function fpTransformer (s, m) {
-    var bound = Math.ceil(Math.sqrt(s[3][s[3].length - 1]));
-    if (bound > m.a[m.a.length - 1] ) {
-      m.run([m.s[0], "from the fibKeyPress5$ handler", bound, primesMonad.a])
-    }
-    return m;
-  }  `  )
-
-var factorsMonad = h('pre',  `  var factorsMonad = new MonadState('factorsMonad', [[], [], 2, []], factor_state);
-  
-  function factor_state(v) {
-    v[3].map(function (p) {
-      if (v[2] / p === Math.floor(v[2] / p)) {
-          v[0].push(p);
-      }
+    var primeFib$ = fibKeyPress5$.map(e => {
+      workerB.postMessage(e.target.value)
     });
-    return v;
-  }  `  )
 
-var factorsInput = h('pre',  `  var factorsPress$ = sources.DOM
-      .select('input#factors_1').events('keydown');
+    const workerB$ = sources.WWB.map(m => {
+      console.log('In workerB$ stream in the main thread. m is ', m );
+      mMres.ret(m.data)
+      .bnd(v => mM36.ret('Asynchronous addendum. The largest computed ' +
+        'prime Fibonacci number is ' + v[2].split(',')[v[2].split(',').length - 1]), 'MmM36')
+      primesMonad.s = JSON.parse(JSON.stringify(primesMonad.s));
+      primesMonad.a = JSON.parse(JSON.stringify(primesMonad.a));
+      primesMonad.s = m.data[3];
+      primesMonad.a = m.data[3][3];
+    });  `  )
 
-  var factorsAction$ = factorsPress$.map(function (e) {
-    var factors = [];
-    mMfactors3.ret('');
-    if (e.keyCode === 13) {
-      var num = e.target.value
-      if (!num.match(/^[0-9]+$/)) {
-        mMfactors3.ret('This works only if you enter a number. ' + num + ' is not a number');
+  var fpTransformer = h('pre',  `  var fpTransformer = function fpTransformer (s, m) {
+      var bound = Math.ceil(Math.sqrt(s[3][s[3].length - 1]));
+      if (bound > m.a[m.a.length - 1] ) {
+        m.run([m.s[0], "from the fibKeyPress5$ handler", bound, primesMonad.a])
       }
-      else {
-        factors = primesMonad.run([primesMonad.s[0], [], num, primesMonad.a])
-        .bnd(s => prFactTransformer3(s, num));
-        mMfactors.ret("The prime factors of " + num + " are " + factors.join(', '));
-      }
-    }
-  });  `  )
-
-var playerMonad = h('pre',  `  var playerMonad = new MonadState('playerMonad', [0,0], [0,0], player_state);
-
-  function player_state (v) {
-    var x = v.slice();
-    let ar = [ 
-    pMscore.ret(x[0]),
-    pMgoals.ret(x[1]) ]
-    playerMonad.a = ar;
-    playerMonad.s = ar;  
-    return x; 
-  };  `  )
-
-var MonadSet = h('pre',  `    var MonadSet = function MonadSet(set, str) {
-      var this = this;
-      this.id = str;
-      this.s = new Set();  
-  };
-
-  var s = new Set();
-
-  var sMplayers = MonadSet(s, 'sMplayers'); // holds currently online players  `  );
-
-var promise = h('pre',  `      var promise = function promise(x, t, mon, args) {
-        return (new Promise((resolve) => {
-          setTimeout(function() {
-            resolve(eval("mon.ret(x).bnd(" + args + ")"))   // eval! Get over it, Douglas.
-          },t*1000  );
-        }));
-      };  `  )
-
-var promiseSnippet = h('pre',  `  m.ret(3).bnd(promise, 2, m, "cube").then(data => m.ret(data.x).bnd(add, 15, m))  `  )
-
-var timeoutSnippet = h('pre',  `  const timeoutClicks$ = sources.DOM.select('#timeout').events('click')
-    const timeoutAction$ = timeoutClicks$.map(() => {
-      document.getElementById('timeout2').innerHTML = ''
-      document.getElementById('timeout3').innerHTML = ''
-      m.ret(3).bnd(m.ret)
-        .bnd(display, 'timeout2', 'm) is ' + ' ' + m)).bnd(m.ret)
-        .bnd(timeout2, 1, m, [() => m
-        .bnd(cube).bnd(m.ret)
-        .bnd(display, 'timeout2', 'm) is ' + ' ' + m)).bnd(m.ret)
-        .bnd(timeout2, 2, m, [() => m
-        .bnd(add, 15).bnd(m.ret)
-        .bnd(display, 'timeout2',  'm) is ' + ' ' + m)).bnd(m.ret)
-        .bnd(display, 'timeout3', 'The meaning of everything was computed to be' + ' ' + m))   
-      ])]);  
-    });  
-  });  `  )
-
-var timeout = h('pre',  `  var timeout2 = function timeout (x, t, m, args) {
-    setTimeout(function () {
-      mMZ9.release();
-    }, t * 1000  );
-    return mMZ9.bnd(() => m.bnd(... args))
-  };  `  )
-
-var examples = h('pre',  ` 
-             ret('m1Val','m1')
-             m1.x === 'm1Val'   // true
-             ret('m2Val', 'm2')
-             m2.x === 'm2Val'   // true
-
-             m1.bnd(m2.ret)
-             m2.x === 'm1Val' // true
-             m2.x === 'm2Val'   // still true
-
-             m1.ret('newVal')
-             m1.bnd(v => ret(v, 'm2'))
-             m2.x === 'newVal'  // true
-             m2.x === 'm1Val' // true   still the same  `   )
-
-var examples2 = h('pre',  ` 
-  var m = new Monad(v, "m");
-  ret(v, "m");
-             `  )
-
-  var async = h('pre',  `  const LOCKED = ret(true, 'LOCKED');
-  LOCKED.ret(true);   // Creates LOCKED
-
-  const messages2$ = (sources.WS).map(e => {
-    if (!LOCKED.x) {
-      var v2 = e.data.split(',');
-      ret(v2.slice(3))
-      .bnd(v => mMtemp.bnd(display,'request2', 'The current online members of ' + pMgroup.x + ' are:')
-      .bnd(() => mMtemp.bnd(display,'request3', v) 
-      .bnd(() => mMtemp.bnd(log, "The members are " + v )
-      .bnd(() => LOCKED.ret(true)))))
-    }
-  });
-
-  const requestClicks$ = sources.DOM.select('#request').events('click');
-
-  const requestAction$ = requestClicks$.map(() => {
-    if (pMgroup.x != 'solo') {         // The default non-group
-      LOCKED.ret(false);
-      socket.send('NN#$42,' + pMgroup.x  + ',' + pMname.x + ',' + pMgroup ); 
-    }
-  });
-
-  var display = function display (x, id, string) {
-    document.getElementById(id).innerHTML = string;
-    return ret(x);
-  }  `  )
-
-var e1 = h('pre.turk',  `  function ret(v, id = 'generic') {
-    window[id] = new Monad(v, id);
-    return window[id];
-  }
-
-  function cube (v, id) {
-    return ret(v * v * v);
-  };
-
-  function add (x, b) {
-    return ret(parseInt(x,10) + parseInt(b,10) );
-  };
-
-  function log(x,y) {
-      console.log(y)
-      return ret(x);
-  };  `  )
-
-var e2 = h('pre.turk',  `  var c = m.ret(0).bnd(add,3).bnd(cube).bnd(log, "The values of m\'s and c\'s 
-  x attributes are " + m.x + " and " + c.x + " respectively." )   ` )   
-
-var e2x = h('pre', `   Output: The values of m\'s and c\'s x attributes are 0 and 27 respectively.  ` )
-
-   var e3 = h('p',  ' Note: m\'s x attribute keeps its initial value of 0 because each computation creates a fresh instance of Monad with id === "default". In the next example, m\'s x attribute becomes the computation result due to the addition of ".bnd(m.ret)". '  )   
-  
- var e4 = h('pre.turk',  `  var c = m.ret(0).bnd(add,3).bnd(cube).bnd(m.ret).bnd(log, 
-   "The values m\'s and c\'s x attributes are " + m.x + " and " + c.x + " respectively.") ` )
-
- var e4x = h('pre', `   Output: The values of m\'s and c\'s x attributes are 27 and 27 respectively.  ` )
-
- var e6 = h('pre.turk',  `  m.ret(0).bnd(add,3).bnd(m2.ret).bnd(cube,m3).bnd(m3.ret)
-  .bnd(log,"m), m2.x, and m3.x are  " + m.x + ", " + m2.x + " and " + 
-  m3.x + " respectively. "); ` )
-var e6x = h('pre', `   Output: m.x and m2.x and m3) are  0, 3 and 27 respectively.  ` )
-
-var equals = h('pre',  `    var equals = function equals (mon1, mon2) {
-      if (mon1.id === mon2.id && mon1) === mon2)) return true;
-      else return false
+      return m;
     }  `  )
 
-var fmap = h('pre',  `    function fmap (x, g, id) {window[id] = new Monad(g(x), id); return window[id]}
-  
-    var qS1 = function qS1 (a, b, c) {
-      let n = (b*(-1)) + (Math.sqrt(b*b - 4*a*c));
-      if (n != n) {
-        return "No solution";
-      }
-      return n/(2*a);
-    }
-  
-    var qS2 = function qS2 (a, b, c) {
-      let n = (b*(-1)) - (Math.sqrt(b*b - 4*a*c));
-      if (n != n) {
-        return "No solution";
-      }
-      return n/(2*a);
-    }
-  
-    var qS4 = function qS4 ([x,y,z]) {
-      let [a,b,c] = [x,y,z]
-      return [qS1(a,b,c), qS2(a,b,c)]    
-    }  
+  var factorsMonad = h('pre',  `  var factorsMonad = new MonadState('factorsMonad', [[], [], 2, []], factor_state);
     
-    m.ret([12,12,-144])
-  
-    m.bnd(fmap, qS4, "temp").bnd(lg)   logs [3, -4] `  )
+    function factor_state(v) {
+      v[3].map(function (p) {
+        if (v[2] / p === Math.floor(v[2] / p)) {
+            v[0].push(p);
+        }
+      });
+      return v;
+    }  `  )
 
-var opM = h('pre',  `    function opM (a, op, b, id) {
-      window[id] = new Monad(eval(a.x + op + b.x), id); 
-      return window[id];
-    }  
-    
-    m1.ret(42)
+  var factorsInput = h('pre',  `  var factorsPress$ = sources.DOM
+        .select('input#factors_1').events('keydown');
 
-    m2.ret(7)
+    var factorsAction$ = factorsPress$.map(function (e) {
+      var factors = [];
+      mMfactors3.ret('');
+      if (e.keyCode === 13) {
+        var num = e.target.value
+        if (!num.match(/^[0-9]+$/)) {
+          mMfactors3.ret('This works only if you enter a number. ' + num + ' is not a number');
+        }
+        else {
+          factors = primesMonad.run([primesMonad.s[0], [], num, primesMonad.a])
+          .bnd(s => prFactTransformer3(s, num));
+          mMfactors.ret("The prime factors of " + num + " are " + factors.join(', '));
+        }
+      }
+    });  `  )
 
-    opM(m1, "%", m2, "ok").bnd(lg)  logs 0
+  var playerMonad = h('pre',  `  var playerMonad = new MonadState('playerMonad', [0,0], [0,0], player_state);
 
-    opM(m1, "+", m2, "ok").bnd(lg)  logs 49  `  )
-
-var a = 'acorn'
-
-var messageMonad = h('pre',  `    var messageMonad = new MonadState('messageMonad', messages, messages, message_state); 
-
-    function message_state(v) {
-      var ar = v[0].concat(v[3]);
-      return [ v[0], [], [], ar ];
+    function player_state (v) {
+      var x = v.slice();
+      let ar = [ 
+      pMscore.ret(x[0]),
+      pMgoals.ret(x[1]) ]
+      playerMonad.a = ar;
+      playerMonad.s = ar;  
+      return x; 
     };  `  )
 
-var updateMessages = h('pre',  `    var updateMessages = function updateMessages(e) {
-        var ar = e.split(',');
-        var sender = ar[2];
-        ar.splice(0,3);
-        var str = ar.join(',');
-        messageMonad.run([ [h('br'), sender + ': ' + str], [], [], messageMonad.s[3] ]);
-    }  ;  `  )
-
-var travMonad = h('pre',  `  var travMonad = new MonadState("travMonad", [[8,8,8,8], 0, 0, [ [ [], 0, 0 ] ] ], trav_state)
-  
-  function trav_state (ar) {
-    pMindex.bnd(add,1).bnd(pMindex.ret);
-    var nums = ar[0];
-    var score = ar[1];
-    var goals = ar[2];
-    var next = travMonad.s.slice();
-    var ar = [nums, score, goals];
-    next[0] = nums;
-    next[1] = score;
-    next[2] = goals;
-    next[3].splice( pMindex.x, 0, ar );
-    return next;         // This results in travMonad.s === next.
-  }  `  )
-
-
-
-var test3 = h('pre',  `  function test3 (a) {
-    var b = [];
-    for (let i of [0,1,2,3]) {
-      b[i] = (a[i] === undefined) ? 'none' : 'inline'
-    }
-    return ret(b);
-  }  
-  
-  pMnums.bnd(test3).bnd(pMstyle.ret);  `  )
-
-var mMZ10 = h('pre',  `  mMZ10.bnd( () => {
-    pMnums.ret([v[3], v[4], v[5], v[6]]).bnd(test3).bnd(pMstyle.ret)
-    travMonad.run([ [v[3], v[4], v[5], v[6]], v[7], v[8] ]);
-    pMscore.ret(v[7]);
-    pMgoals.ret(v[8]) });  `  )
-
-var numClick1 = h('pre.blue',  `  var numClick$ = sources.DOM
-      .select('.num').events('click'); 
-
-  var numClickAction$ = numClick$.map(e => {
-    console.log('In numClickAction. @@@@@@@@@@@@@@@@@@@@@@@@ e.target.id, e, and pMnums are ', e.target.id, e, pMnums.x );
-    if (pMclicked.x.length === 2) {return};
-    pMnums.bnd(spliceM, e.target.id, 1)
-    .bnd(v => {
-      test3(v, 'MpMstyle')
-      socket.send(\`CG#$42,\${pMgroup.x},\${pMname.x},\${pMscore.x},\${pMgoals.x}\`);
-      pMclicked
-      .bnd(push, e.target.innerHTML)
-      .bnd(pMclicked.ret)
-      .bnd(w => {
-        travMonad.run([v, pMscore.x, pMgoals.x, w, pMop.x])
-        if (w.length === 2 && pMop.x != 0) {
-          console.log('In numClickAction# if block >>>>>> @@@@@@@@@@@@@@@@@@@@@@ ' );
-          updateCalc(w, pMop.x) 
-        }
-      })
-    })
-  }).startWith([0, 0, 0, 0]);
-
-  var opClick$ = sources.DOM
-      .select('.op').events('click');
-
-  var opClickAction$ = opClick$.map(e => {
-    pMop.ret(e.target.innerHTML).bnd(v => { 
-      var ar = pMclicked.x
-      if (ar.length === 2) {
-        updateCalc(ar, v)
-      }
-    }) 
-  });  `  )
-
-var numClick2 = h('pre.blue',  `  function updateCalc(ar, op) {
-    var result = calc(ar[0], op, ar[1]);
-    mM3.ret([]);
-    mM8.ret(0)
-    if (result === 20) { 
-      pMscore.bnd(add,1)
-      .bnd(testscore)
-      .bnd(pMscore.ret)
-      .bnd(v => score(v));
-      return; 
-    } 
-    else if (result === 18) { 
-      pMscore.bnd(add,3)
-      .bnd(testscore)
-      .bnd(pMscore.ret)
-      .bnd(v => score(v));
-      return; 
-    }
-
-    else {
-      pMnums.bnd(push,result)
-      .bnd(v => {
-        travMonad.run([v, pMscore.x, pMgoals.x, [], 0])
-        test3(v, 'MpMstyle')
-      }); 
-    }
-  };  
-
-  var testscore = function testscore(v) {
-    if ((v % 5) === 0) return ret(v+5)
-    else return ret(v);
-  };
-
-  function score(scor) {
-    if (scor != 25) {
-      newRoll(scor, pMgoals.x)
-    }
-    else if (pMgoals.x === 2) {
-      socket.send(\`CE#$42,${pMgroup.x},${pMname.x}\`);
-      newRoll(0,0)
-    }
-    else {pMgoals.bnd(add, 1).bnd(pMgoals.ret).bnd(g => newRoll(0, g))};
-  };  `  )
-
-var test10_11 = h('pre.turk5',  `    function test10 () {
-      m.ret(4).bnd(mult,100,'Mm1')
-      .bnd(square,'Mm2')
-      .bnd(add,-m2.x + 3,'Mm3')
-      .bnd(mult,100,'Mm4')
-      .bnd(square,'Mm5')
-      .bnd(add,m2.x,'Mm6') 
-      .bnd(sqroot,'Mm7')
-      .bnd(() => { 
-        mMar10.ret([m, m1, m2, m3, m4, m5, m6, m7]);
-        console.log('The square root of the sum of ', m1.x,
-          ' squared and ', m4.x, ' squared is ', m7.x); });
-      return mMar10;
-    }  
-    
-    function test11 () {
-      m.ret(4).bnd(mult,100,'Mm1')
-      .bnd(square,'Mm2')
-      .bnd(add,-m2.x + 3,'Mm3')
-      .bnd(mult,100,'Mm4')
-      .bnd(square,'Mm5')
-      .bnd(add,m2.x,'Mm6') 
-      .bnd(sqroot,'Mm7').bnd(m.ret)
-      .bnd(() => { 
-        mMar11.ret([m, m1, m2, m3, m4, m5, m6, m7]);
-        console.log('The square root of the sum of ', m1.x,
-          ' squared and ', m4.x, ' squared is ', m7.x); });
-      return mMar11;
-    }  `  )
-
-var monadArchive2 = h('pre.blue',  `    function MonadArchive(g, state, p) {
-      this.id = g;
-      this.s = state;
-      this.process = p;
-      this.a = s[0];
-      this.bnd = (func, ...args) => func(this.s, ...args);  
-      this.run = ar => { 
-        var ar2 = this.process(ar);
-        this.a = ar2[pMindex.x];
-        this.s = ar2;
-        console.log('In MonadState instance this.a, this.s ', this.a, this.s) 
-        window[this.id] = this;
-        return window[this.id];
-      }
+  var MonadSet = h('pre',  `    var MonadSet = function MonadSet(set, str) {
+        var this = this;
+        this.id = str;
+        this.s = new Set();  
     };
 
-    var travMonad = new MonadArchive("travMonad", [ [ [ 0,0,0,0 ], 0, 0, [], 0 ] ] , trav_archive)
-    
-    function trav_archive (ar) {
-      var ind = pMindex.x + 1;
-      pMindex.ret(ind);
-      pMnums.ret(ar[0]);
-      pMscore.ret(ar[1]);
-      pMgoals.ret(ar[2]);
-      ar[3] = (typeof ar[3] === "undefined") ? pMclicked.x : ar[3]
-      ar[4] = (typeof ar[4] === "undefined") ? pMop.x : ar[4]
-      pMclicked.ret(ar[3]);
-      pMop.ret(ar[4]); 
-      var next = travMonad.s.slice();
-      next.splice( ind, 0, ar );
-      return next;                // The new value of travMonad.s.
+    var s = new Set();
+
+    var sMplayers = MonadSet(s, 'sMplayers'); // holds currently online players  `  );
+
+  var promise = h('pre',  `      var promise = function promise(x, t, mon, args) {
+          return (new Promise((resolve) => {
+            setTimeout(function() {
+              resolve(eval("mon.ret(x).bnd(" + args + ")"))   // eval! Get over it, Douglas.
+            },t*1000  );
+          }));
+        };  `  )
+
+  var promiseSnippet = h('pre',  `  m.ret(3).bnd(promise, 2, m, "cube").then(data => m.ret(data.x).bnd(add, 15, m))  `  )
+
+  var timeoutSnippet = h('pre',  `  const timeoutClicks$ = sources.DOM.select('#timeout').events('click')
+      const timeoutAction$ = timeoutClicks$.map(() => {
+        document.getElementById('timeout2').innerHTML = ''
+        document.getElementById('timeout3').innerHTML = ''
+        m.ret(3).bnd(m.ret)
+          .bnd(display, 'timeout2', 'm) is ' + ' ' + m)).bnd(m.ret)
+          .bnd(timeout2, 1, m, [() => m
+          .bnd(cube).bnd(m.ret)
+          .bnd(display, 'timeout2', 'm) is ' + ' ' + m)).bnd(m.ret)
+          .bnd(timeout2, 2, m, [() => m
+          .bnd(add, 15).bnd(m.ret)
+          .bnd(display, 'timeout2',  'm) is ' + ' ' + m)).bnd(m.ret)
+          .bnd(display, 'timeout3', 'The meaning of everything was computed to be' + ' ' + m))   
+        ])]);  
+      });  
+    });  `  )
+
+  var timeout = h('pre',  `  var timeout2 = function timeout (x, t, m, args) {
+      setTimeout(function () {
+        mMZ9.release();
+      }, t * 1000  );
+      return mMZ9.bnd(() => m.bnd(... args))
+    };  `  )
+
+  var examples = h('pre',  ` 
+               ret('m1Val','m1')
+               m1.x === 'm1Val'   // true
+               ret('m2Val', 'm2')
+               m2.x === 'm2Val'   // true
+
+               m1.bnd(m2.ret)
+               m2.x === 'm1Val' // true
+               m2.x === 'm2Val'   // still true
+
+               m1.ret('newVal')
+               m1.bnd(v => ret(v, 'm2'))
+               m2.x === 'newVal'  // true
+               m2.x === 'm1Val' // true   still the same  `   )
+
+  var examples2 = h('pre',  ` 
+    var m = new Monad(v, "m");
+    ret(v, "m");
+               `  )
+
+    var async = h('pre',  `  const LOCKED = ret(true, 'LOCKED');
+    LOCKED.ret(true);   // Creates LOCKED
+
+    const messages2$ = (sources.WS).map(e => {
+      if (!LOCKED.x) {
+        var v2 = e.data.split(',');
+        ret(v2.slice(3))
+        .bnd(v => mMtemp.bnd(display,'request2', 'The current online members of ' + pMgroup.x + ' are:')
+        .bnd(() => mMtemp.bnd(display,'request3', v) 
+        .bnd(() => mMtemp.bnd(log, "The members are " + v )
+        .bnd(() => LOCKED.ret(true)))))
+      }
+    });
+
+    const requestClicks$ = sources.DOM.select('#request').events('click');
+
+    const requestAction$ = requestClicks$.map(() => {
+      if (pMgroup.x != 'solo') {         // The default non-group
+        LOCKED.ret(false);
+        socket.send('NN#$42,' + pMgroup.x  + ',' + pMname.x + ',' + pMgroup ); 
+      }
+    });
+
+    var display = function display (x, id, string) {
+      document.getElementById(id).innerHTML = string;
+      return ret(x);
     }  `  )
 
-var backAction = h('pre',  `  
-    var backAction$ = backClick$.map(() => {
-      if (pMindex.x > 1) {   
-        pMop.ret(0);
-        var ind = pMindex.x - 1;
-        var s = travMonad.s[ind];
-        pMnums.ret(s[0]).bnd(test3, 'MpMstyle');
-        pMscore.ret(s[1]);
-        pMgoals.ret(s[2]);
-        pMclicked.ret(s[3]);
-        pMop.ret(s[4]);
-        socket.send(\`CG#$42,${pMgroup.x},${pMname.x},${pMscore.x},${pMgoals.x}\`);
-      pMindex.bnd(add,-1);
-      } 
-    });    `  )
+  var e1 = h('pre.turk',  `  function ret(v, id = 'generic') {
+      window[id] = new Monad(v, id);
+      return window[id];
+    }
 
-var monadEr = h('pre.red9',  `    function MonadEr (val, ID, er = []) {
-        var test;
-        var arr = arr = [];
-        this.x = val;
-        this.e = er;
-        this.id = ID;
-        this.getx = function getx (x) {return this.x};
-        this.bnd = function (f, ...args) {
-          var args = args;
-          if (f === 'clean3' || f === clean3) {
-            this.e = [];
-            window[this.id] = new MonadEr(this.x, this.id, []);
-            return window[this.id];
+    function cube (v, id) {
+      return ret(v * v * v);
+    };
+
+    function add (x, b) {
+      return ret(parseInt(x,10) + parseInt(b,10) );
+    };
+
+    function log(x,y) {
+        console.log(y)
+        return ret(x);
+    };  `  )
+
+  var e2 = h('pre.turk',  `  var c = m.ret(0).bnd(add,3).bnd(cube).bnd(log, "The values of m\'s and c\'s 
+    x attributes are " + m.x + " and " + c.x + " respectively." )   ` )   
+
+  var e2x = h('pre', `   Output: The values of m\'s and c\'s x attributes are 0 and 27 respectively.  ` )
+
+     var e3 = h('p',  ' Note: m\'s x attribute keeps its initial value of 0 because each computation creates a fresh instance of Monad with id === "default". In the next example, m\'s x attribute becomes the computation result due to the addition of ".bnd(m.ret)". '  )   
+    
+   var e4 = h('pre.turk',  `  var c = m.ret(0).bnd(add,3).bnd(cube).bnd(m.ret).bnd(log, 
+     "The values m\'s and c\'s x attributes are " + m.x + " and " + c.x + " respectively.") ` )
+
+   var e4x = h('pre', `   Output: The values of m\'s and c\'s x attributes are 27 and 27 respectively.  ` )
+
+   var e6 = h('pre.turk',  `  m.ret(0).bnd(add,3).bnd(m2.ret).bnd(cube,m3).bnd(m3.ret)
+    .bnd(log,"m), m2.x, and m3.x are  " + m.x + ", " + m2.x + " and " + 
+    m3.x + " respectively. "); ` )
+  var e6x = h('pre', `   Output: m.x and m2.x and m3) are  0, 3 and 27 respectively.  ` )
+
+  var equals = h('pre',  `    var equals = function equals (mon1, mon2) {
+        if (mon1.id === mon2.id && mon1) === mon2)) return true;
+        else return false
+      }  `  )
+
+  var fmap = h('pre',  `    function fmap (x, g, id) {window[id] = new Monad(g(x), id); return window[id]}
+    
+      var qS1 = function qS1 (a, b, c) {
+        let n = (b*(-1)) + (Math.sqrt(b*b - 4*a*c));
+        if (n != n) {
+          return "No solution";
+        }
+        return n/(2*a);
+      }
+    
+      var qS2 = function qS2 (a, b, c) {
+        let n = (b*(-1)) - (Math.sqrt(b*b - 4*a*c));
+        if (n != n) {
+          return "No solution";
+        }
+        return n/(2*a);
+      }
+    
+      var qS4 = function qS4 ([x,y,z]) {
+        let [a,b,c] = [x,y,z]
+        return [qS1(a,b,c), qS2(a,b,c)]    
+      }  
+      
+      m.ret([12,12,-144])
+    
+      m.bnd(fmap, qS4, "temp").bnd(lg)   logs [3, -4] `  )
+
+  var opM = h('pre',  `    function opM (a, op, b, id) {
+        window[id] = new Monad(eval(a.x + op + b.x), id); 
+        return window[id];
+      }  
+      
+      m1.ret(42)
+
+      m2.ret(7)
+
+      opM(m1, "%", m2, "ok").bnd(lg)  logs 0
+
+      opM(m1, "+", m2, "ok").bnd(lg)  logs 49  `  )
+
+  var a = 'acorn'
+
+  var messageMonad = h('pre',  `    var messageMonad = new MonadState('messageMonad', messages, messages, message_state); 
+
+      function message_state(v) {
+        var ar = v[0].concat(v[3]);
+        return [ v[0], [], [], ar ];
+      };  `  )
+
+  var updateMessages = h('pre',  `    var updateMessages = function updateMessages(e) {
+          var ar = e.split(',');
+          var sender = ar[2];
+          ar.splice(0,3);
+          var str = ar.join(',');
+          messageMonad.run([ [h('br'), sender + ': ' + str], [], [], messageMonad.s[3] ]);
+      }  ;  `  )
+
+  var travMonad = h('pre',  `  var travMonad = new MonadState("travMonad", [[8,8,8,8], 0, 0, [ [ [], 0, 0 ] ] ], trav_state)
+    
+    function trav_state (ar) {
+      pMindex.bnd(add,1).bnd(pMindex.ret);
+      var nums = ar[0];
+      var score = ar[1];
+      var goals = ar[2];
+      var next = travMonad.s.slice();
+      var ar = [nums, score, goals];
+      next[0] = nums;
+      next[1] = score;
+      next[2] = goals;
+      next[3].splice( pMindex.x, 0, ar );
+      return next;         // This results in travMonad.s === next.
+    }  `  )
+
+
+
+  var test3 = h('pre',  `  function test3 (a) {
+      var b = [];
+      for (let i of [0,1,2,3]) {
+        b[i] = (a[i] === undefined) ? 'none' : 'inline'
+      }
+      return ret(b);
+    }  
+    
+    pMnums.bnd(test3).bnd(pMstyle.ret);  `  )
+
+  var mMZ10 = h('pre',  `  mMZ10.bnd( () => {
+      pMnums.ret([v[3], v[4], v[5], v[6]]).bnd(test3).bnd(pMstyle.ret)
+      travMonad.run([ [v[3], v[4], v[5], v[6]], v[7], v[8] ]);
+      pMscore.ret(v[7]);
+      pMgoals.ret(v[8]) });  `  )
+
+  var numClick1 = h('pre.blue',  `  var numClick$ = sources.DOM
+        .select('.num').events('click'); 
+
+    var numClickAction$ = numClick$.map(e => {
+      console.log('In numClickAction. @@@@@@@@@@@@@@@@@@@@@@@@ e.target.id, e, and pMnums are ', e.target.id, e, pMnums.x );
+      if (pMclicked.x.length === 2) {return};
+      pMnums.bnd(spliceM, e.target.id, 1)
+      .bnd(v => {
+        test3(v, 'MpMstyle')
+        socket.send(\`CG#$42,\${pMgroup.x},\${pMname.x},\${pMscore.x},\${pMgoals.x}\`);
+        pMclicked
+        .bnd(push, e.target.innerHTML)
+        .bnd(pMclicked.ret)
+        .bnd(w => {
+          travMonad.run([v, pMscore.x, pMgoals.x, w, pMop.x])
+          if (w.length === 2 && pMop.x != 0) {
+            console.log('In numClickAction# if block >>>>>> @@@@@@@@@@@@@@@@@@@@@@ ' );
+            updateCalc(w, pMop.x) 
           }
+        })
+      })
+    }).startWith([0, 0, 0, 0]);
+
+    var opClick$ = sources.DOM
+        .select('.op').events('click');
+
+    var opClickAction$ = opClick$.map(e => {
+      pMop.ret(e.target.innerHTML).bnd(v => { 
+        var ar = pMclicked.x
+        if (ar.length === 2) {
+          updateCalc(ar, v)
+        }
+      }) 
+    });  `  )
+
+  var numClick2 = h('pre.blue',  `  function updateCalc(ar, op) {
+      var result = calc(ar[0], op, ar[1]);
+      mM3.ret([]);
+      mM8.ret(0)
+      if (result === 20) { 
+        pMscore.bnd(add,1)
+        .bnd(testscore)
+        .bnd(pMscore.ret)
+        .bnd(v => score(v));
+        return; 
+      } 
+      else if (result === 18) { 
+        pMscore.bnd(add,3)
+        .bnd(testscore)
+        .bnd(pMscore.ret)
+        .bnd(v => score(v));
+        return; 
+      }
+
+      else {
+        pMnums.bnd(push,result)
+        .bnd(v => {
+          travMonad.run([v, pMscore.x, pMgoals.x, [], 0])
+          test3(v, 'MpMstyle')
+        }); 
+      }
+    };  
+
+    var testscore = function testscore(v) {
+      if ((v % 5) === 0) return ret(v+5)
+      else return ret(v);
+    };
+
+    function score(scor) {
+      if (scor != 25) {
+        newRoll(scor, pMgoals.x)
+      }
+      else if (pMgoals.x === 2) {
+        socket.send(\`CE#$42,${pMgroup.x},${pMname.x}\`);
+        newRoll(0,0)
+      }
+      else {pMgoals.bnd(add, 1).bnd(pMgoals.ret).bnd(g => newRoll(0, g))};
+    };  `  )
+
+  var test10_11 = h('pre.turk5',  `    function test10 () {
+        m.ret(4).bnd(mult,100,'Mm1')
+        .bnd(square,'Mm2')
+        .bnd(add,-m2.x + 3,'Mm3')
+        .bnd(mult,100,'Mm4')
+        .bnd(square,'Mm5')
+        .bnd(add,m2.x,'Mm6') 
+        .bnd(sqroot,'Mm7')
+        .bnd(() => { 
+          mMar10.ret([m, m1, m2, m3, m4, m5, m6, m7]);
+          console.log('The square root of the sum of ', m1.x,
+            ' squared and ', m4.x, ' squared is ', m7.x); });
+        return mMar10;
+      }  
+      
+      function test11 () {
+        m.ret(4).bnd(mult,100,'Mm1')
+        .bnd(square,'Mm2')
+        .bnd(add,-m2.x + 3,'Mm3')
+        .bnd(mult,100,'Mm4')
+        .bnd(square,'Mm5')
+        .bnd(add,m2.x,'Mm6') 
+        .bnd(sqroot,'Mm7').bnd(m.ret)
+        .bnd(() => { 
+          mMar11.ret([m, m1, m2, m3, m4, m5, m6, m7]);
+          console.log('The square root of the sum of ', m1.x,
+            ' squared and ', m4.x, ' squared is ', m7.x); });
+        return mMar11;
+      }  `  )
+
+  var monadArchive2 = h('pre.blue',  `    function MonadArchive(g, state, p) {
+        this.id = g;
+        this.s = state;
+        this.process = p;
+        this.a = s[0];
+        this.bnd = (func, ...args) => func(this.s, ...args);  
+        this.run = ar => { 
+          var ar2 = this.process(ar);
+          this.a = ar2[pMindex.x];
+          this.s = ar2;
+          console.log('In MonadState instance this.a, this.s ', this.a, this.s) 
+          window[this.id] = this;
+          return window[this.id];
+        }
+      };
+
+      var travMonad = new MonadArchive("travMonad", [ [ [ 0,0,0,0 ], 0, 0, [], 0 ] ] , trav_archive)
+      
+      function trav_archive (ar) {
+        var ind = pMindex.x + 1;
+        pMindex.ret(ind);
+        pMnums.ret(ar[0]);
+        pMscore.ret(ar[1]);
+        pMgoals.ret(ar[2]);
+        ar[3] = (typeof ar[3] === "undefined") ? pMclicked.x : ar[3]
+        ar[4] = (typeof ar[4] === "undefined") ? pMop.x : ar[4]
+        pMclicked.ret(ar[3]);
+        pMop.ret(ar[4]); 
+        var next = travMonad.s.slice();
+        next.splice( ind, 0, ar );
+        return next;                // The new value of travMonad.s.
+      }  `  )
+
+  var backAction = h('pre',  `  
+      var backAction$ = backClick$.map(() => {
+        if (pMindex.x > 1) {   
+          pMop.ret(0);
+          var ind = pMindex.x - 1;
+          var s = travMonad.s[ind];
+          pMnums.ret(s[0]).bnd(test3, 'MpMstyle');
+          pMscore.ret(s[1]);
+          pMgoals.ret(s[2]);
+          pMclicked.ret(s[3]);
+          pMop.ret(s[4]);
+          socket.send(\`CG#$42,${pMgroup.x},${pMname.x},${pMscore.x},${pMgoals.x}\`);
+        pMindex.bnd(add,-1);
+        } 
+      });    `  )
+
+  var monadEr = h('pre.red9',  `    function MonadEr (val, ID, er = []) {
+          var test;
+          var arr = arr = [];
+          this.x = val;
+          this.e = er;
+          this.id = ID;
+          this.getx = function getx (x) {return this.x};
+          this.bnd = function (f, ...args) {
+            var args = args;
+            if (f === 'clean3' || f === clean3) {
+              this.e = [];
+              window[this.id] = new MonadEr(this.x, this.id, []);
+              return window[this.id];
+            }
           if (this.e.length > 0) {
             console.log('BYPASSING COMPUTATION in MonadEr instance', this.id, f, '.  PROPAGATING ERROR:',  this.e[0]); 
             return this;  
@@ -1285,22 +1291,12 @@ var workerPrimeFibs_2 = h('pre.red0',  `    const workerDriverB = function () {
     }    `  )
 
 var workerPrimeFibsjs = h('pre.green2',  `    onmessage = function(m) {
-      console.log('In workerB.js m is ', m );
-      var _self = self;
-      var res;
-      importScripts('script2.js');
-    
-      fibsMonad.run([1, 2 , parseInt(m.data,10), [0,1]])
-      .bnd(fibsState => fibsMonad
-        .bnd(fpTransformer, primesMonad)
-          .bnd(primesState => tr3(fibsState[3], primesState[3])
-          .bnd(ar => {
-            console.log('In workerB.js __ ar is ', ar );
-            _self.postMessage(ar);
-          }) 
-        ) 
-      );
-    };   `  )
+    var ar = m.data;
+    importScripts('script2.js');
+  
+    var result = fibsMonad.run([1, 2 , ar[0], [0,1]])
+    .bnd(fpTransformer, ar[1])
+    postMessage(result);    `  )
 
 var workerFactors_2 = h('pre',  `    const workerDriverC = function () {
       return create((add) => workerC.onmessage = msg => add(msg));

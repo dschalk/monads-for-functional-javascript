@@ -3,6 +3,7 @@
 
 onmessage = function(v) {
   console.log('In worker.js, receiving message text v.data', v.data ), 
+  postMessage("Fuck you too");
   importScripts('script2.js');
 
   if(Array.isArray(v.data) && v.data.length === 4) {

@@ -443,13 +443,13 @@ function factors_state3(a) {
   return result;
 }
 
-var workerA = new Worker("worker.js");
+var worker = new Worker("worker.js");
 var workerB = new Worker("workerB.js");
 var workerC = new Worker("workerC.js");
 
 function primes_state(x) {
   console.log('In main thread primes_state. x is ', x );
-  workerA.postMessage(x)
+  worker.postMessage(x)
 }
 
 /*function primes_state(x) {
