@@ -1,6 +1,6 @@
 "use strict";
 import {run} from '@cycle/most-run'
-import {merge} from 'most';
+import {merge, fromEvent} from 'most';
 import {create} from '@most/create';
 import {h, p, span, h1, h2, h3, pre, br, div, label, input, hr, makeDOMDriver} from '@motorcycle/dom';
 import code from './code.js';
@@ -40,6 +40,11 @@ socket.onclose = function (event) {
 
 console.log('socket.onmessage',socket.onmessage);
 
+
+const emDriver = function () {
+    return em.on = msg => msg.subscribe(msg => console.log('message:', msg))
+}
+
 const workerDriverA = function () {
     return create((add) => worker.onmessage = msg => add(msg))
 }
@@ -63,6 +68,10 @@ const eM2Driver = function () {
   })
 };
 
+em.emit("em says Hello World");
+em.emit("emDriver says Hello World?");
+em.emit("emDriver says Hello World");
+
 function updateTasks (obArray) {
   var todoData = [];
   for (let ob of obArray) { 
@@ -85,6 +94,7 @@ function updateTasks (obArray) {
 // window.postMessage("Can you hear me?","http://localhost:3055") 
 
 function main(sources) {
+  console.log('In main. sources.WWB is', sources.WWB);
   var numsDisplay = [4,4,4,4];
   var newTasks = [];
 
@@ -807,6 +817,11 @@ var elemB$ = sources.DOM.select('input#message2').events('keyup')
   worker.postMessage([mM9.x, e.target.value]);
 });
 
+
+clog.emit("A")
+clog.emit("B")
+clog.emit(5000);
+
   var calcStream$ = merge( clearprimes$, eM2$, elemA$, elemB$, worker$, workerB$, workerC$, clearAction$, backAction$, forwardAction$, factorsAction$, primeFib$, fibPressAction$, quadAction$, edit1Action$, edit2Action$, testWAction$, testZAction$, testQAction$, colorAction$, deleteAction$, newTaskAction$, chatClickAction$, gameClickAction$, todoClickAction$, captionClickAction$, groupPressAction$, rollClickAction$, messagePressAction$, loginPressAction$, messages$, numClickAction$, opClickAction$);
    
   return {
@@ -1006,12 +1021,12 @@ h('p', ' However, imitating definitions and patterns found in category theory, a
     //
    //
   h('h2', ' Asynchronous Processes ' ),
-  h('p', ' The next demonstration involves a computation that can take a while to complete. It memoizes computed prime numbers and does not block the browser engine\'s primary execuation thread. The number you enter below is a cap on the size of the largest number in the Fibonacci sequence which is produced. If you enter 3 and then, one at a time, 0\'s until you reach three billion (3000000000), you should see the display updating quickly until the final 0. That will get you the prime number 2971215073. If you add another 0, you can expect a descernable lag time. Removing the final 0 and then putting it back demonstrates the effectiveness of memoization. '),
+  h('p', ' The next demonstration involves a computation that can take a while to complete. It memoizes computed prime numbers and does not block the browser engine\'s primary execuation thread. The number you enter below is a cap on the size of the largest number in the Fibonacci sequence which is produced. If you enter 3 and then, one at a time, 0\'s until you reach three billion (3000000000), you should see the display updating quickly until the final 0. That will get you the prime number 2971215073. If you add another 0, you can expect a descernable lag time. Removing the final 0 and then putting it back demonstrates the effectiveness of memoization. I incrementally took the cap up to five billion (5,000,000,000,000). The largest Fibonacci number obtained was 4,052,739,537,881. The largest prime number generated during the computation was 2013163. ' ),
 h('br' ),
 h('span', ' According to the '), 
 h('a', { props: { href: "https://oeis.org/A005478", target: "_blank" } }, 'The On-Line Encyclopedia of Integer Sequences '),
 h('span', ' these are the first eleven proven prime Fibonacci numbers:'),
-h('span.purp', ' 2, 3, 5, 13, 89, 233, 1597, 28657, 514229, 433494437, 2971215073, and 99194853094755497. The eleventh number, 2971215073, is as far as you can go on an ordinary desktop computer. '),
+h('span.purp', ' 2, 3, 5, 13, 89, 233, 1597, 28657, 514229, 433494437, 2971215073, and 99194853094755497. The eleventh number, 2971215073, is as far as you can go on an ordinary desktop computer. Incrementally taking the cap up to five trillion didn\'t get me close. ' ),
 h('br' ),
 h('p.red',  mM36.x),
 h('input#fib92'),
@@ -1029,11 +1044,11 @@ h('button#clearprimes', 'Clear primes display' ),
 h('br'),
 h('span#PF_22.turk', mMres.x[1]  ),
 h('br'),
-h('p', ' The code runs in two threads, a main thread and a web worker thread. Here is a look at what happens in the main thread. A driver, using create and add from the most library, is defined as follows: ' ), 
+h('p', ' The code runs in two threads, a main thread and a web worker thread. Here is a look at what happens in the main thread. A function named workerDriverB is an attribute (with key "WWB") of the the object named "source" which, along with main, is ab argynebt of the function "ru". The sources object      cycle object provides a stream of message events from workerB to the virtual DOM, which is listens for messages from workerB., using create and add from the most library, is defined as follows: ' ), 
     code.workerPrimeFibs_2,
 h('p', ' The driver is merged into the stream that feeds the virtual DOM, and it is also an element of the resources object (named WWB) which supports the user interface. I still marvel at the elegance of the cycle provided by the Motorcycle and Cycle libraries. The driver listens for messages from the worker, updating primesMonad and the browser display whenever one come in. Here is the code that runs in the main thread: ' ), 
     code.primeFibInterface,
-h('p', ' As expected, the addendum doesn\'t try to run before the computation completes. Here is the definition of workerB.js. MonadState and fpTransformer are discussed in the MonadState and MonadStart Transformers section below.' ),
+h('p', ' Here is the definition of workerB.js. MonadState and fpTransformer are discussed in the MonadState and MonadStart Transformers section below.' ),
     code.workerPrimeFibsjs,
 
 

@@ -9,6 +9,8 @@ var chatDiv = 'none';
 var captionDiv = 'none';
 var CHANGE = 'cow';
 
+var xs = xstream.default;
+
 var Monad = function Monad(z = 19, g = 'generic') {
   var _this = this;
   this.x = z;
@@ -505,7 +507,7 @@ function pFib(fibs, primes) {
 };
 
 var CURRENT_ROLL = [];
-var emitevent;
+var emit;
 var data$;
 
 var MonadItter = function MonadItter() {
@@ -1353,9 +1355,11 @@ class G extends Polygon {
 
 class MonadEmitter extends EventEmitter {};
 
-function monadConstructor (a,b) {
+function monadConstructor (v,b) {
   var c = new MonadEmitter();
-  c.x = a;
+  var e = 'e';
+  c.on(e, x => console.log(x));
+  c.x = v;
   c.id = b;
   c.nums = [];
   c.bnd = (func, ...args) => {
@@ -1369,8 +1373,9 @@ function monadConstructor (a,b) {
     else return m;
   };
   c.ret = a => {
-    return window[c.id] = monadConstructor(a, c.id);
-    c.emit(c.id, a);
+    c._events.e(a);
+    window[b] = monadConstructor(a, b);
+    return window[b];
   };
   return c;
 };
@@ -1388,8 +1393,11 @@ eM2.on('EC42', x => console.log('Here is a received message:', x));
 eM2.emit('EC42', 256000 - 255997) 
 
 eM3.on('3', (x,y,z) => m.ret(z*z*z).bnd((a) => console.log(a,x,y)))
-
 eM3.emit('3', 23, 44, 3)   // 27, 23, 44
+var a = 'a';
+var clog = new monadConstructor(0,'clog');
+clog.ret('How about that? I have all the functionality of Monad and I can emit events.');
+
 
 var f7 = function f7 () {
 var ar = [];
@@ -1406,5 +1414,39 @@ return ar
  
 var x = f7();
 console.log(x)
+
+
+var em = new EventEmitter;
+
+
+var producer = {
+  start: function (listener) {
+    this.id = em.emit('cow',45)
+  },
+
+  stop: function () {
+  },
+
+  id: 0,
+}
+
+var listener = {
+  next: (x) => {
+    em.on('cow',x => console.log('Yes sir.',x))
+  },
+  error: (err) => {
+    console.error('The Stream gave me an error: ', err);
+  },
+  complete: () => {
+    console.log('The Stream told me it is done.');
+  },
+}
+
+var stream$ = xs.of(producer)
+
+stream$.addListener(listener)
+
+em.emit('cow','Whatever you say, sir.');
+
 
 

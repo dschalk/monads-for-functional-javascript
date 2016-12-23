@@ -6118,6 +6118,14 @@
 
 	console.log('socket.onmessage', socket.onmessage);
 
+	var emDriver = function emDriver() {
+	    return em.on = function (msg) {
+	        return msg.subscribe(function (msg) {
+	            return console.log('message:', msg);
+	        });
+	    };
+	};
+
 	var workerDriverA = function workerDriverA() {
 	    return (0, _create.create)(function (add) {
 	        return worker.onmessage = function (msg) {
@@ -6153,6 +6161,10 @@
 	    });
 	};
 
+	em.emit("em says Hello World");
+	em.emit("emDriver says Hello World?");
+	em.emit("emDriver says Hello World");
+
 	function updateTasks(obArray) {
 	    var todoData = [];
 	    var _iteratorNormalCompletion = true;
@@ -6184,6 +6196,7 @@
 	// window.postMessage("Can you hear me?","http://localhost:3055") 
 
 	function main(sources) {
+	    console.log('In main. sources.WWB is', sources.WWB);
 	    var numsDisplay = [4, 4, 4, 4];
 	    var newTasks = [];
 
@@ -6895,6 +6908,10 @@
 	        worker.postMessage([mM9.x, e.target.value]);
 	    });
 
+	    clog.emit("A");
+	    clog.emit("B");
+	    clog.emit(5000);
+
 	    var calcStream$ = (0, _most.merge)(clearprimes$, eM2$, elemA$, elemB$, worker$, workerB$, workerC$, clearAction$, backAction$, forwardAction$, factorsAction$, primeFib$, fibPressAction$, quadAction$, edit1Action$, edit2Action$, testWAction$, testZAction$, testQAction$, colorAction$, deleteAction$, newTaskAction$, chatClickAction$, gameClickAction$, todoClickAction$, captionClickAction$, groupPressAction$, rollClickAction$, messagePressAction$, loginPressAction$, messages$, numClickAction$, opClickAction$);
 
 	    return {
@@ -6908,7 +6925,7 @@
 	            //
 	            //
 	            //
-	            (0, _dom.h)('h2', ' Asynchronous Processes '), (0, _dom.h)('p', ' The next demonstration involves a computation that can take a while to complete. It memoizes computed prime numbers and does not block the browser engine\'s primary execuation thread. The number you enter below is a cap on the size of the largest number in the Fibonacci sequence which is produced. If you enter 3 and then, one at a time, 0\'s until you reach three billion (3000000000), you should see the display updating quickly until the final 0. That will get you the prime number 2971215073. If you add another 0, you can expect a descernable lag time. Removing the final 0 and then putting it back demonstrates the effectiveness of memoization. '), (0, _dom.h)('br'), (0, _dom.h)('span', ' According to the '), (0, _dom.h)('a', { props: { href: "https://oeis.org/A005478", target: "_blank" } }, 'The On-Line Encyclopedia of Integer Sequences '), (0, _dom.h)('span', ' these are the first eleven proven prime Fibonacci numbers:'), (0, _dom.h)('span.purp', ' 2, 3, 5, 13, 89, 233, 1597, 28657, 514229, 433494437, 2971215073, and 99194853094755497. The eleventh number, 2971215073, is as far as you can go on an ordinary desktop computer. '), (0, _dom.h)('br'), (0, _dom.h)('p.red', mM36.x), (0, _dom.h)('input#fib92'), (0, _dom.h)('br'), (0, _dom.h)('span#PF_7.red6', 'Fibonacci Numbers'), (0, _dom.h)('br'), (0, _dom.h)('span#PF_9.turk', mMres.x[0]), (0, _dom.h)('br'), (0, _dom.h)('span#PF_8.red6', 'Prime Fibonacci Numbers'), (0, _dom.h)('br'), (0, _dom.h)('span#primeFibs.turk', mMres.x[2]), (0, _dom.h)('br'), (0, _dom.h)('span#PF_21.red6', 'Prime Numbers'), (0, _dom.h)('button#clearprimes', 'Clear primes display'), (0, _dom.h)('br'), (0, _dom.h)('span#PF_22.turk', mMres.x[1]), (0, _dom.h)('br'), (0, _dom.h)('p', ' The code runs in two threads, a main thread and a web worker thread. Here is a look at what happens in the main thread. A driver, using create and add from the most library, is defined as follows: '), _code2.default.workerPrimeFibs_2, (0, _dom.h)('p', ' The driver is merged into the stream that feeds the virtual DOM, and it is also an element of the resources object (named WWB) which supports the user interface. I still marvel at the elegance of the cycle provided by the Motorcycle and Cycle libraries. The driver listens for messages from the worker, updating primesMonad and the browser display whenever one come in. Here is the code that runs in the main thread: '), _code2.default.primeFibInterface, (0, _dom.h)('p', ' As expected, the addendum doesn\'t try to run before the computation completes. Here is the definition of workerB.js. MonadState and fpTransformer are discussed in the MonadState and MonadStart Transformers section below.'), _code2.default.workerPrimeFibsjs, (0, _dom.h)('p', ' The next demonstration uses two instances of MonadState to find the prime factors of numbers. Each prime factor is listed once.  On my desktop computer, it took several seconds to verify that 514229 is a prime number. After that, due to memoization, numbers below 514229 or not too far above it evaluated rapidly. Here\'s where you can enter a number to see its prime factors: '), (0, _dom.h)('input#factors_1'), (0, _dom.h)('br'), (0, _dom.h)('div.tao3', '' + mMfactors.x), (0, _dom.h)('div.tao3', mMfactors3.x),
+	            (0, _dom.h)('h2', ' Asynchronous Processes '), (0, _dom.h)('p', ' The next demonstration involves a computation that can take a while to complete. It memoizes computed prime numbers and does not block the browser engine\'s primary execuation thread. The number you enter below is a cap on the size of the largest number in the Fibonacci sequence which is produced. If you enter 3 and then, one at a time, 0\'s until you reach three billion (3000000000), you should see the display updating quickly until the final 0. That will get you the prime number 2971215073. If you add another 0, you can expect a descernable lag time. Removing the final 0 and then putting it back demonstrates the effectiveness of memoization. '), (0, _dom.h)('br'), (0, _dom.h)('span', ' According to the '), (0, _dom.h)('a', { props: { href: "https://oeis.org/A005478", target: "_blank" } }, 'The On-Line Encyclopedia of Integer Sequences '), (0, _dom.h)('span', ' these are the first eleven proven prime Fibonacci numbers:'), (0, _dom.h)('span.purp', ' 2, 3, 5, 13, 89, 233, 1597, 28657, 514229, 433494437, 2971215073, and 99194853094755497. The eleventh number, 2971215073, is as far as you can go on an ordinary desktop computer. '), (0, _dom.h)('br'), (0, _dom.h)('p.red', mM36.x), (0, _dom.h)('input#fib92'), (0, _dom.h)('br'), (0, _dom.h)('span#PF_7.red6', 'Fibonacci Numbers'), (0, _dom.h)('br'), (0, _dom.h)('span#PF_9.turk', mMres.x[0]), (0, _dom.h)('br'), (0, _dom.h)('span#PF_8.red6', 'Prime Fibonacci Numbers'), (0, _dom.h)('br'), (0, _dom.h)('span#primeFibs.turk', mMres.x[2]), (0, _dom.h)('br'), (0, _dom.h)('span#PF_21.red6', 'Prime Numbers'), (0, _dom.h)('button#clearprimes', 'Clear primes display'), (0, _dom.h)('br'), (0, _dom.h)('span#PF_22.turk', mMres.x[1]), (0, _dom.h)('br'), (0, _dom.h)('p', ' The code runs in two threads, a main thread and a web worker thread. Here is a look at what happens in the main thread. A function named workerDriverB is an attribute (with key "WWB") of the the object named "source" which, along with main, is ab argynebt of the function "ru". The sources object      cycle object provides a stream of message events from workerB to the virtual DOM, which is listens for messages from workerB., using create and add from the most library, is defined as follows: '), _code2.default.workerPrimeFibs_2, (0, _dom.h)('p', ' The driver is merged into the stream that feeds the virtual DOM, and it is also an element of the resources object (named WWB) which supports the user interface. I still marvel at the elegance of the cycle provided by the Motorcycle and Cycle libraries. The driver listens for messages from the worker, updating primesMonad and the browser display whenever one come in. Here is the code that runs in the main thread: '), _code2.default.primeFibInterface, (0, _dom.h)('p', ' Here is the definition of workerB.js. MonadState and fpTransformer are discussed in the MonadState and MonadStart Transformers section below.'), _code2.default.workerPrimeFibsjs, (0, _dom.h)('p', ' The next demonstration uses two instances of MonadState to find the prime factors of numbers. Each prime factor is listed once.  On my desktop computer, it took several seconds to verify that 514229 is a prime number. After that, due to memoization, numbers below 514229 or not too far above it evaluated rapidly. Here\'s where you can enter a number to see its prime factors: '), (0, _dom.h)('input#factors_1'), (0, _dom.h)('br'), (0, _dom.h)('div.tao3', '' + mMfactors.x), (0, _dom.h)('div.tao3', mMfactors3.x),
 
 	            // ********************************************************************** Begin MonadState
 

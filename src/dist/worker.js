@@ -3,10 +3,10 @@
 
 onmessage = function(v) {
   console.log('In worker.js, receiving message text v.data', v.data ), 
-  postMessage("Fuck you too");
   importScripts('script2.js');
 
   if(Array.isArray(v.data) && v.data.length === 4) {
+    console.log('In worker.js primesMonad.s = ', primesMonad.s )
     postMessage(["CE#$41", primesMonad.run(v.data).s])
   }
 
