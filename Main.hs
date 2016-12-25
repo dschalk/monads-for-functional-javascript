@@ -165,6 +165,7 @@ application state pending = do
     print "App is fired up"
     conn <- WS.acceptRequest pending
     msg <- WS.receiveData conn
+    print $ (T.unpack msg)
     clients <- atomically $ readTMVar state
     case msg of
         _   | not (prefix `T.isPrefixOf` msg) ->

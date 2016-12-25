@@ -1,4 +1,4 @@
-import {h, pre} from '@motorcycle/dom'; 
+import {h, pre} from '@cycle/dom'; 
 
 /*
 import {subject} from 'most-subject'

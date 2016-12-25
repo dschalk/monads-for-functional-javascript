@@ -10,6 +10,17 @@
 
 
 
+
+
+
+
+
+
+
+
+
+
+
   onmessage = function(m) {
   var ar = m.data;
   console.log('In workerB.js ar is ', ar );

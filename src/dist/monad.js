@@ -985,14 +985,6 @@ function testPrefix (x,y) {
       return ret(ar, 'pushFunc');
   };
 
-  var unshift2 = function unshift2(x, y, z) {
-    window[z] = new MonadEr(x, z, []);
-    return window[z]
-      var ar = x.slice();
-      ar.unshift(y);
-      return ret(ar);
-  };
-
    var clone = function clone(x) {
     var array = x.slice()
     return ret(array, 'cloneFunc')
@@ -1389,8 +1381,8 @@ var eM1 = monadConstructor(0,'eM1') ;
 var eM2 = monadConstructor(0,'eM2');
 var eM3 = monadConstructor(0,'eM3');
 var eM4 = monadConstructor(0,'eM4');
-eM2.on('EC42', x => console.log('Here is a received message:', x));
-eM2.emit('EC42', 256000 - 255997) 
+eM2.on('EC42', (...args) => console.log('Here is a received message:', args.join(', ')));
+eM2.emit('EC42', 'Hello girls', 256000 - 255997, 'you bet.' ) 
 
 eM3.on('3', (x,y,z) => m.ret(z*z*z).bnd((a) => console.log(a,x,y)))
 eM3.emit('3', 23, 44, 3)   // 27, 23, 44
@@ -1448,5 +1440,5 @@ stream$.addListener(listener)
 
 em.emit('cow','Whatever you say, sir.');
 
-
+messageMonad.run([ [], [], [], [] ] );
 

@@ -1,8 +1,8 @@
 "use strict";
-import {run} from '@cycle/most-run'
-import {merge, fromEvent} from 'most';
-import {create} from '@most/create';
-import {h, p, span, h1, h2, h3, pre, br, div, label, input, hr, makeDOMDriver} from '@motorcycle/dom';
+import {run} from '@cycle/xstream-run'
+// import {merge, fromEvent} from 'most';
+// import {create} from '@most/create';
+import {h, p, span, h1, h2, h3, pre, br, div, label, input, hr, makeDOMDriver} from '@cycle/dom';
 import code from './code.js';
 // import {EventEmitter} from 'events'
 
@@ -26,10 +26,46 @@ function createWebSocket(path) {
 var socket = createWebSocket('/');
 console.log('########## socket: ', socket);
 
-const websocketsDriver = function () {
-    return create((add) => socket.onmessage = msg => add(msg))
-}
+function websocketsDriver(/* no sinks */) {
+  return xs.create({
+    start: listener => { socket.onmessage = msg => listener.next(msg)},
+    stop: () => { socket.close() }
+  });
+};
 
+function workerBDriver () {
+  return xs.create({
+    start: listener => { workerB.onmessage = msg => listener.next(msg)}, 
+    stop: () => { workerB.terminate() }
+  });
+};
+
+function workerCDriver () {
+  return xs.create({
+    start: listener => { workerC.onmessage = msg => listener.next(msg)}, 
+    stop: () => { workerC.terminate() }
+  });
+};
+
+function workerDriver () {
+  return xs.create({
+    start: listener => { worker.onmessage = msg => listener.next(msg)}, 
+    stop: () => { worker.terminate() }
+  });
+};
+
+function eM2Driver () {
+  return xs.create({
+    start: listener => { mM2.on = msg => listener.next(msg)}, 
+    stop: () => { worker.terminate() }
+  });
+};
+
+socket.onmessage = function (event) {
+    console.log('Socket message',event);
+};
+  
+/* 
 socket.onmessage = function (event) {
     console.log(event);
 };
@@ -40,8 +76,7 @@ socket.onclose = function (event) {
 
 console.log('socket.onmessage',socket.onmessage);
 
-
-const emDriver = function () {
+const emDriver = function () {@jk
     return em.on = msg => msg.subscribe(msg => console.log('message:', msg))
 }
 
@@ -50,10 +85,6 @@ const workerDriverA = function () {
 }
 
 console.log('worker.onmessage',worker.onmessage);
-
-const workerDriverB = function () {
-    return create((add) => workerB.onmessage = msg => add(msg))
-}
 
 const workerDriverC = function () {
     return create((add) => workerC.onmessage = msg => {
@@ -67,6 +98,7 @@ const eM2Driver = function () {
     add(msg)
   })
 };
+*/
 
 em.emit("em says Hello World");
 em.emit("emDriver says Hello World?");
@@ -94,7 +126,7 @@ function updateTasks (obArray) {
 // window.postMessage("Can you hear me?","http://localhost:3055") 
 
 function main(sources) {
-  console.log('In main. sources.WWB is', sources.WWB);
+  
   var numsDisplay = [4,4,4,4];
   var newTasks = [];
 
@@ -120,7 +152,7 @@ function main(sources) {
     primesMonad.a = m.data[1][3];
   });
 
-  const worker$ = sources.WK.map(v => {
+  const worker$ = sources.WW.map(v => {
     console.log('Message from worker: ', v );
     v.preventDefault();
     mMZ21.bnd(() => {
@@ -146,9 +178,10 @@ function main(sources) {
     next(v.data[0], 'CD#$41', mMZ24)
     next(v.data[0], 'CE#$41', mMZ25)
     });
-   
+
   const messages$ = sources.WS.map( e => {
     mMtem.ret(e.data.split(',')).bnd( v => {
+  console.log('Websockets data.split message v: ', v ),    
   mMZ10.bnd( () => {
     pMnums.ret([v[3], v[4], v[5], v[6]]).bnd(test3,"MpMstyle");
     travMonad.run([ [v[3], v[4], v[5], v[6]], v[7], v[8], [], 0 ]);
@@ -201,7 +234,6 @@ function main(sources) {
       mMlog1.ret('none');
       mMlog2.ret('block');
 
-      /*
       mMcaptionDiv.ret('block')
       mMchatDiv.ret('block')
       mMtodoDiv.ret('block')
@@ -210,7 +242,6 @@ function main(sources) {
       mMcaption.ret('inline');
       mMgame.ret('inline')
       mMtodo.ret('inline')
-      */
       // document.getElementById('group').focus(); 
       newRoll(0,0);
     }
@@ -681,7 +712,7 @@ function main(sources) {
     });
 
 // **********************************************************************END TODO LIST                       
-  /*  var chatClick$ = sources.DOM
+    var chatClick$ = sources.DOM
         .select('#chat2').events('click');
 
     var chatClickAction$ = chatClick$.map(function () {
@@ -716,15 +747,15 @@ function main(sources) {
     var gameClickAction$ = gameClick$.map(function () {
         var el = document.getElementById('gameDiv');
         (el.style.display === 'none') ?
-        updateScoreboard2(namesList);
             el.style.display = 'inline' :
             el.style.display = 'none';
+
+        updateScoreboard2(namesList)
         var el2 = document.getElementById('gameDiv2');
         (el2.style.display === 'none') ?
             el2.style.display = 'inline' :
             el2.style.display = 'none';
     });
-*/
 
     var todoClick$ = sources.DOM
         .select('#todoButton').events('click');
@@ -817,17 +848,19 @@ var elemB$ = sources.DOM.select('input#message2').events('keyup')
   worker.postMessage([mM9.x, e.target.value]);
 });
 
-
+mMrightPanel.ret('none');
 clog.emit("A")
 clog.emit("B")
 clog.emit(5000);
 
-  var calcStream$ = merge( clearprimes$, eM2$, elemA$, elemB$, worker$, workerB$, workerC$, clearAction$, backAction$, forwardAction$, factorsAction$, primeFib$, fibPressAction$, quadAction$, edit1Action$, edit2Action$, testWAction$, testZAction$, testQAction$, colorAction$, deleteAction$, newTaskAction$, chatClickAction$, gameClickAction$, todoClickAction$, captionClickAction$, groupPressAction$, rollClickAction$, messagePressAction$, loginPressAction$, messages$, numClickAction$, opClickAction$);
+  var calcStream$ = xs.merge( clearprimes$, worker$, workerB$, workerC$, clearAction$, backAction$, forwardAction$, factorsAction$, primeFib$, fibPressAction$, quadAction$, edit1Action$, edit2Action$, testWAction$, testZAction$, testQAction$, colorAction$, deleteAction$, newTaskAction$, chatClickAction$, gameClickAction$, todoClickAction$, captionClickAction$, groupPressAction$, rollClickAction$, messagePressAction$, loginPressAction$, messages$, numClickAction$, opClickAction$);
    
   return {
   DOM: calcStream$.map(function () {
   return h('div.content', [
-  h('div#rightPanel', { style: { display: `${mMrightPanel.x}` } }, [
+      h('br'),     
+      h('div#rightPanel', { style: { display: mMrightPanel.x } }, [ 
+    
       h('span#tog', [
           h('button#game', { style: { fontSize: '16px', display: 'inline' } }, 'TOGGLE GAME'),
           h('span.tao', ' '),
@@ -840,16 +873,19 @@ clog.emit(5000);
       h('br'),
       h('br'),
       h('br'),
+      h('br'), 
       h('br'),
       h('br'),
       h('br'),
-      h('br'),
-      h('br'),
-      h('br'),
-      h('br'),
-      h('br'),
-      h('br'),
-      h('br'),
+      h('br'), 
+      h('br'), 
+      h('br'), 
+      h('br'), 
+      h('br'), 
+      h('br'), 
+      h('br'), 
+      h('br'), 
+      h('br'), 
       h('div#gameDiv', { style: { display: `mMgameDiv.x` } }, [
       h('div.game', 'Name: ' + pMname.x ),
       h('div.game', 'Group: ' + pMgroup.x ),
@@ -865,15 +901,16 @@ clog.emit(5000);
       h('span#alert', mMalert.x ),
       h('br'),
       h('span#alert2'),
-      h('br'),
-      h('div#chatDiv',  { style: { display: mMchatDiv.x } }, [
+        
+      h('br'),  
+      h('div#chatDiv', { style: { display: mMchatDiv.x } }, [
         h('div#messages', [
           h('span', 'Message: '),
           h('input.inputMessage'),
-          h('div', messageMonad.s[3] ) ])  ]),
+          h('div', messageMonad.s[3] ),  ])  ]),
       h('br'),
-      h('br'),
-
+      h('br'), 
+      h('br'), 
       h('div', `pMclicked.x: ${pMclicked.x.join(', ')}`    ), 
       h('div', 'pMop.x: ' + pMop.x ), 
       h('div', 'pMindex.x: ' + pMindex.x ), 
@@ -905,16 +942,7 @@ clog.emit(5000);
           h('span.tao1', ' And other demonstrations of the power and convenience of JS-monads in a Motorcycle application.  '),
           h('br'),
       h('br'),
-      h('span.tao', 'This is a '),
-      h('a', { props: { href: "https://github.com/motorcyclejs", target: "_blank" } }, 'Motorcycle.js'),
-      h('span', ' application. Motorcycle.js is '),
-      h('a', { props: { href: "https://github.com/cyclejs/core", target: "_blank" } }, 'Cycle.js'),
-      h('span', ' using '),
-      h('a', { props: { href: "https://github.com/cujojs/most", target: "_blank" } }, 'Most'),
-      h('span', ' , '),
-      h('span', ' and '),
-      h('a', { props: { href: "https://github.com/paldepind/snabbdom", target: "_blank" } }, 'Snabbdom'),
-      h('span', ' instead of RxJS and virtual-dom.  The code for this repository is at '),
+      h('span.tao', 'The code for this repository is at '),
       h('a', { props: { href: "https://github.com/dschalk/JS-monads-stable", target: "_blank" } }, 'JS-monads-stable'),  
       h('div#gameDiv2', { style: { display: mMgameDiv2.x } }, [
           h('br'),
@@ -1021,7 +1049,8 @@ h('p', ' However, imitating definitions and patterns found in category theory, a
     //
    //
   h('h2', ' Asynchronous Processes ' ),
-  h('p', ' The next demonstration involves a computation that can take a while to complete. It memoizes computed prime numbers and does not block the browser engine\'s primary execuation thread. The number you enter below is a cap on the size of the largest number in the Fibonacci sequence which is produced. If you enter 3 and then, one at a time, 0\'s until you reach three billion (3000000000), you should see the display updating quickly until the final 0. That will get you the prime number 2971215073. If you add another 0, you can expect a descernable lag time. Removing the final 0 and then putting it back demonstrates the effectiveness of memoization. I incrementally took the cap up to five billion (5,000,000,000,000). The largest Fibonacci number obtained was 4,052,739,537,881. The largest prime number generated during the computation was 2013163. ' ),
+  h('p', ' The next demonstration involves a computation that can take a while to complete. It memoizes computed prime numbers and does not block the browser engine\'s primary execuation thread. The number you enter below is a cap on the size of the largest number in the Fibonacci sequence which is produced. If you enter 3 and then, one at a time, 0\'s until you reach three billion (3000000000), you should see the display updating quickly until the final 0. That will get you the prime number 2,971,215,073. If you add another 0, you can expect a descernable lag time. Removing the final 0 and then putting it back demonstrates the effectiveness of memoization. ' ),
+h('p', ' I entered 300,000,000,000 (without the commas) and had to wait almost 20 seconds for the result. The computation required 19,423 microsecomds. The largest Fibonacci number displayed was 225,851,433,717; the largest prime number generated during the computation was 2013163, and the largest prime Fibonacci number was still 2,971,215,073. 20365011074. I deleted the final 0 and the displayed Fibonacci numbers promptly reverted to a shorter list, topped by 20,365,011,074. The long list of primes remained unchanged. I re-inserted a final 0 and the list of Fibonacci numbers promptly increased to where it had been, with the largest number again shown as 225,851,433,717. The "computation", which was nothing more than obtaining numbers from a pre-existing list, required only 2 microseconds.  ' ),
 h('br' ),
 h('span', ' According to the '), 
 h('a', { props: { href: "https://oeis.org/A005478", target: "_blank" } }, 'The On-Line Encyclopedia of Integer Sequences '),
@@ -1247,16 +1276,23 @@ code.primesMonad,
   h('p')
     
        ])
-    ])
-  })     
-}}
+     ])
+   }) 
+  } 
+}   
+
+
        
+  
+      
+      
+
 const sources = {
   DOM: makeDOMDriver('#main-container'),
   WS: websocketsDriver,
-  WK: workerDriverA,
-  WWB: workerDriverB,
-  WWC: workerDriverC,
+  WWB: workerBDriver,
+  WWC: workerCDriver,
+  WW: workerDriver,
   EM2: eM2Driver
 }
 
