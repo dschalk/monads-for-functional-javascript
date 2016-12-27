@@ -430,10 +430,7 @@ function main(sources) {
         mMfactors3.ret('This works only if you enter a number. ' + num + ' is not a number');
       }
       else {
-        var ar = primesMonad.s.slice();
-        ar[2] = num;
-        worker.postMessage(['CE#$41', ar])
-        workerC.postMessage(num);
+        workerC.postMessage([num, primesMonad.s]);
       }
     }
   });
@@ -1082,11 +1079,13 @@ h('p', ' Here is the definition of workerB.js. MonadState and fpTransformer are 
 
 
   
-h('p', ' The next demonstration uses two instances of MonadState to find the prime factors of numbers. Each prime factor is listed once.  On my desktop computer, it took several seconds to verify that 514229 is a prime number. After that, due to memoization, numbers below 514229 or not too far above it evaluated rapidly. Here\'s where you can enter a number to see its prime factors: '),
+h('p', ' workerC returns the prime factors of whatever integer it receives. The bottleneck is generating the prime numbers needed for the computation, so primesMonad is used to store computed primes. This overlaps with the memoization in the previous example since there is only one place that prime numbers are stored: in primesMonad. On my desktop computer, it took several seconds to verify that 514229 is a prime number. After that, due to memoization, numbers below 514229 or not too far above it evaluated rapidly. Here\'s where you can enter a number to see its prime factors: '),
 h('input#factors_1'),
 h('br'),
 h('div.tao3', `${mMfactors.x}` ),    
 h('div.tao3', mMfactors3.x ),    
+h('p', ' And here is the definition of workerC.js, which is used to define workerC, along with the definition of fact(). '),
+   code.fact,  
 
   
 // ********************************************************************** Begin MonadState

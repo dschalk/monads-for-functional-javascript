@@ -1369,8 +1369,34 @@ var primes_state = h('pre',  `    function primes_state(x) {
       }
     };    `  )
 
-var p3 = h('pre',  `  
-`  )
+var fact = h('pre',  `    onmessage = function(ar) {
+      console.log('In workerC.js ar.data is ', ar.data );
+      importScripts('script2.js');
+      var num = ar.data[0];
+      var s = ar.data[1];
+      s[2] = num;
+      primesMonad.run(s)
+      .bnd(s2 => fact(s2)  // fact() is shown below.
+      .bnd(factors => postMessage(["The prime factors of " + num + 
+        " are " + factors.join(', '), [s2[0], [], 42, s2[3]]])));   
+  
+    function fact(a) {
+      console.log('Entering fact. a is', a );
+      var v = a.slice();
+      while (v[2] != 1) {
+        for (let p of v[3]) {
+          if (v[2] / p == Math.floor(v[2] / p)) {
+            v[1].push(p);
+            v[2] = v[2]/p;
+          };
+        }
+      }
+      v[1].sort(function(a, b) {
+        return a - b;
+      });
+      console.log('Leaving fact. v is', v );
+      return ret(v[1]);
+    }    `  )
 
 var p4 = h('pre',  `  
 `  )
@@ -1383,7 +1409,7 @@ var p9 = h('pre',  `
 
 
 
-  export default { primes_state, workerPrimeFibsjs, workerPrimeFibs_2, workerFactors_2, workerFactorsjs, worker_js, worker$, errorDemo, monadEr, backAction, monadArchive2, tests, numClick1, numClick2, mMZ10, test3, travMonad, monad, equals, fmap, opM, e1, e2, e2x, e3, e4, e4x, e6, e6x, driver, messages, monadIt, MonadSet, updateCalc, arrayFuncs, nums, cleanup, ret, C42, newTask, process, mM$task, colorClick, edit, testZ, quad, runTest, todoStream, inc, seed,  add, MonadState, primesMonad, fibsMonad, primeFibInterface, tr3, fpTransformer, factorsMonad, factorsInput, playerMonad, promise, promiseSnippet, timeout, timeoutSnippet, examples, examples2, async }
+  export default { fact, primes_state, workerPrimeFibsjs, workerPrimeFibs_2, workerFactors_2, workerFactorsjs, worker_js, worker$, errorDemo, monadEr, backAction, monadArchive2, tests, numClick1, numClick2, mMZ10, test3, travMonad, monad, equals, fmap, opM, e1, e2, e2x, e3, e4, e4x, e6, e6x, driver, messages, monadIt, MonadSet, updateCalc, arrayFuncs, nums, cleanup, ret, C42, newTask, process, mM$task, colorClick, edit, testZ, quad, runTest, todoStream, inc, seed,  add, MonadState, primesMonad, fibsMonad, primeFibInterface, tr3, fpTransformer, factorsMonad, factorsInput, playerMonad, promise, promiseSnippet, timeout, timeoutSnippet, examples, examples2, async }
  
 
 

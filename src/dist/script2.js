@@ -157,30 +157,25 @@ var mMplayer = new Monad([0,0,0,0], 'mMplayer');
   };
   
   function prFactTransformer3(s, n) {
-    return factors_state3([[], [], n, s[3]]);
+    return fact([[], [], n, s[3]]);
   };
   
-  function factors_state3(a) {
-    var b = a.slice();
-    var result;
-    func(b);
-    function func (v) {
+  function fact(a) {
+    console.log('Entering fact. a is', a );
+    var v = a.slice();
+    while (v[2] != 1) {
       for (let p of v[3]) {
         if (v[2] / p == Math.floor(v[2] / p)) {
           v[1].push(p);
           v[2] = v[2]/p;
-          if (v[2] != 1) {
-            func(v);
-          }
         };
-        v[1].sort(function(a, b) {
-          return a - b;
-        });
-        result = v[1];
-      }; 
-      return result;
+      }
     }
-  return ret(result);
+    v[1].sort(function(a, b) {
+      return a - b;
+    });
+    console.log('Leaving fact. v is', v );
+    return ret(v[1]);
   }
   
   function factors (num) {

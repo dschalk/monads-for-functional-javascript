@@ -1,10 +1,29 @@
 
-onmessage = function(m) {
-  
-  console.log('In workerC.js m.data is ', m.data );
-  importScripts('script2.js');
 
-  primesMonad.run([primesMonad.s[0], [], m.data, primesMonad.s[3]])
-  .bnd(s => prFactTransformer3(s, m.data)
-  .bnd(factors => postMessage(["The prime factors of " + m.data + " are " + factors.join(', '), s])));
- } 
+
+
+
+
+
+
+
+
+
+
+
+
+onmessage = function(ar) {
+  
+  console.log('In workerC.js ar.data is ', ar.data );
+  importScripts('script2.js');
+  var num = ar.data[0];
+  var s = ar.data[1];
+  s[2] = num;
+
+  primesMonad.run(s)
+  .bnd(s2 => fact(s2)
+  .bnd(factors => postMessage(["The prime factors of " + num + 
+    " are " + factors.join(', '), [s2[0], [], 42, s2[3]]])));
+ }
+
+
