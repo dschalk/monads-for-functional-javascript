@@ -148,10 +148,8 @@ var mMplayer = new Monad([0,0,0,0], 'mMplayer');
   function pFib(fibs, primes) {
     var ar = [];
     fibs.map(function (f) {
-        if (f < 2)
-            return;
-        if (primes.every(function (p) { return (f % p != 0 || f == p); }))
-            ar.push(f);
+        if (f < 2) return;
+        if (primes.every(function (p) { return (f % p != 0 || f == p); })) ar.push(f);
     });
     return ar;
   };

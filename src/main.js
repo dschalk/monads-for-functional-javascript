@@ -1077,9 +1077,10 @@ h('p', ' The driver is merged into the stream that feeds the virtual DOM, and it
 h('p', ' Here is the definition of workerB.js. MonadState and fpTransformer are discussed in the MonadState and MonadStart Transformers section below.' ),
     code.workerPrimeFibsjs,
 
-
   
-h('p', ' workerC returns the prime factors of whatever integer it receives. The bottleneck is generating the prime numbers needed for the computation, so primesMonad is used to store computed primes. This overlaps with the memoization in the previous example since there is only one place that prime numbers are stored: in primesMonad. On my desktop computer, it took several seconds to verify that 514229 is a prime number. After that, due to memoization, numbers below 514229 or not too far above it evaluated rapidly. Here\'s where you can enter a number to see its prime factors: '),
+h('p', ' workerC returns the prime factors of whatever integer it receives. The bottleneck is generating the prime numbers needed for the computation, so primesMonad is used to store computed primes. This overlaps with the memoization in the previous example since primesMonad is the only one place prime numbers are stored. ' ),
+ h('p', ' I verified that the bottleneck was being mitigated on my desktop computer. It took twenty-five seconds to verify that 514229 is a prime number.  I then entered 514230. The console log showed that only two microseconds were required to update the array of primes, and fourteen microsends to determine that its prime decomposistion is 2, 3, 5, 61, and 281. The lag had become negligible.  Here\'s where you can enter a number to see its prime factors: '),
+
 h('input#factors_1'),
 h('br'),
 h('div.tao3', `${mMfactors.x}` ),    
