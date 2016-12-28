@@ -119,13 +119,6 @@ Research into ways of defining a Haskell category appears to be ongoing. It invo
 
 However, imitating definitions and patterns found in category theory, as Haskell does in defining the functor, monoid, and monad type classes, was a stroke of genius that vastly enriched the Haskell programming language and brought it into the mainstream as a viable alternative to java, c++, etc. This website runs efficiently on a Haskell websockets server. Category theory patterns are less needed, but neverthless useful, in Javascript. Code that adheres to them tends to be robust and predictable.
 
-
-
-
-
-
-
-
 ##Asynchronous Processes
 
 The next demonstration involves a computation that can take a while to complete. It memoizes computed prime numbers and does not block the browser engine's primary execuation thread. The number you enter below is a cap on the size of the largest number in the Fibonacci sequence which is produced. If you enter 3 and then, one at a time, 0's until you reach three billion (3000000000), you should see the display updating quickly until the final 0. That will get you the prime number 2,971,215,073. If you add another 0, you can expect a descernable lag time. Removing the final 0 and then putting it back demonstrates the effectiveness of memoization.
@@ -197,7 +190,7 @@ The driver is merged into the stream that feeds the virtual DOM, and it is also 
 As expected, the addendum doesn't try to run before the computation completes. Here is the definition of workerB.js. MonadState and fpTransformer are discussed in the MonadState and MonadStart Transformers section below.
 
 Here is the definition of workerC.js, which is used to define workerC, along with the definition of fact().
-
+```javascript
     onmessage = function(ar) {
       console.log('In workerC.js ar.data is ', ar.data );
       importScripts('script2.js');
@@ -225,42 +218,7 @@ Here is the definition of workerC.js, which is used to define workerC, along wit
       });
       console.log('Leaving fact. v is', v );
       return ret(v[1]);
-    }    d here is the definition of workerC.js, which is used to define workerC, along with the definition of fact().
-
-    onmessage = function(ar) {
-      console.log('In workerC.js ar.data is ', ar.data );
-      importScripts('script2.js');
-      var num = ar.data[0];
-      var s = ar.data[1];
-      s[2] = num;
-      primesMonad.run(s)
-      .bnd(s2 => fact(s2)  // fact() is shown below.
-      .bnd(factors => postMessage(["The prime factors of " + num + 
-        " are " + factors.join(', '), [s2[0], [], 42, s2[3]]])));   
-  
-    function fact(a) {
-      console.log('Entering fact. a is', a );
-      var v = a.slice();
-      while (v[2] != 1) {
-        for (let p of v[3]) {
-          if (v[2] / p == Math.floor(v[2] / p)) {
-            v[1].push(p);
-            v[2] = v[2]/p;
-          };
-        }
-      }
-      v[1].sort(function(a, b) {
-        return a - b;
-      });
-      console.log('Leaving fact. v is', v );
-      return ret(v[1]);
-    }    
-
-
-
-
-
-
+    }   
 ```js
     onmessage = function(m) {
     var ar = m.data;
@@ -271,13 +229,6 @@ Here is the definition of workerC.js, which is used to define workerC, along wit
     postMessage(result);    
 ```
 Later, we will see how instances of MonadState and MonadTransformer perform the computations in the workerB thread.
-
-
-
-
-
-
-
 
   ## MonadArchive
 
