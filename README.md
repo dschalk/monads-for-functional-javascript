@@ -1,7 +1,9 @@
   <a name="back"></a>
 
-  # JS-monads-stable 
-  Not category theory monads. Monads like Haskell monads, using patterns found in category theory. See [Hask is not a category](http://math.andrej.com/2016/08/06/hask-is-not-a-category/) by Andrej Bauer and the discussion below.
+  #JS-monads-stable 
+ These monads are like the Haskell monads in that they resemble the monads of category theory while not actually being mathematical monads. See [Hask is not a category](http://math.andrej.com/2016/08/06/hask-is-not-a-category/) by Andrej Bauer. Their monadic traits make them robust and reliable for isolating and chaining procedures. 
+ 
+ and the discussion below.
 
   This is the repository for a [Motorcycle.js](https://github.com/motorcyclejs) application running online at [JS-monads-stable](http://schalk.net:3055). Motorcycle.js is essentially [Cycle.js](https://github.com/cyclejs/core) using [Most](https://github.com/cujojs/most) and [Snabbdom](https://github.com/paldepind/snabbdom) instead of RxJS and virtual-dom.
 
@@ -117,15 +119,56 @@ Research into ways of defining a Haskell category appears to be ongoing. It invo
 
 However, imitating definitions and patterns found in category theory, as Haskell does in defining the functor, monoid, and monad type classes, was a stroke of genius that vastly enriched the Haskell programming language and brought it into the mainstream as a viable alternative to java, c++, etc. This website runs efficiently on a Haskell websockets server. Category theory patterns are less needed, but neverthless useful, in Javascript. Code that adheres to them tends to be robust and predictable.
 
-## Asynchronous Processes
-
-An online demonstration involves a computation that can take a while to complete. It memoizes computed prime numbers and does not block the browser engine's primary execuation thread. The number you enter is a cap on the size of the largest number in the Fibonacci sequence which is produced. If you enter 3 and then, one at a time, 0's until you reach three billion (3000000000), you should see the display updating quickly until the final 0. That will get you the prime number 2971215073. If you add another 0, you can expect a descernable lag time. Removing the final 0 and then putting it back demonstrates the effectiveness of memoization.
 
 
-According to the The On-Line Encyclopedia of Integer Sequences these are the first eleven proven prime Fibonacci numbers: 2, 3, 5, 13, 89, 233, 1597, 28657, 514229, 433494437, 2971215073, and 99194853094755497. The eleventh number, 2971215073, is as far as you can go on an ordinary desktop computer. 
 
-The code runs in two threads, a main thread and a web worker thread. Here is a look at what happens in the main thread. A driver, using create and add from the most library, is defined as follows:
 
+
+
+
+##Asynchronous Processes
+
+The next demonstration involves a computation that can take a while to complete. It memoizes computed prime numbers and does not block the browser engine's primary execuation thread. The number you enter below is a cap on the size of the largest number in the Fibonacci sequence which is produced. If you enter 3 and then, one at a time, 0's until you reach three billion (3000000000), you should see the display updating quickly until the final 0. That will get you the prime number 2,971,215,073. If you add another 0, you can expect a descernable lag time. Removing the final 0 and then putting it back demonstrates the effectiveness of memoization.
+
+I entered 300,000,000,000 (without the commas) and had to wait almost 20 seconds for the result. The computation required 19,423 microsecomds. The largest Fibonacci number displayed was 225,851,433,717; the largest prime number generated during the computation was 2013163, and the largest prime Fibonacci number was still 2,971,215,073. 20365011074. I deleted the final 0 and the displayed Fibonacci numbers promptly reverted to a shorter list, topped by 20,365,011,074. The long list of primes remained unchanged. I re-inserted a final 0 and the list of Fibonacci numbers promptly increased to where it had been, with the largest number again shown as 225,851,433,717. The "computation", which was nothing more than obtaining numbers from a pre-existing list, required only 2 microseconds.
+
+According to the The On-Line Encyclopedia of Integer Sequences these are the first eleven proven prime Fibonacci numbers: 2, 3, 5, 13, 89, 233, 1597, 28657, 514229, 433494437, 2971215073, and 99194853094755497. The eleventh number, 2971215073, is as far as you can go on an ordinary desktop computer. Incrementally taking the cap up to five trillion didn't get me close. 
+
+The driver is merged into the stream that feeds the virtual DOM, and it is also an element of the resources object (named WWB) which supports the user interface. I still marvel at the elegance of the cycle provided by the Motorcycle and Cycle libraries. The driver listens for messages from the worker, updating primesMonad and the browser display whenever one come in. Here is the code that runs in the main thread:
+```js
+    const fibKeyPress5$ = sources.DOM
+      .select('input#fib92').events('keyup');
+
+    var primeFib$ = fibKeyPress5$.map(e => {
+      workerB.postMessage(e.target.value)
+    });
+
+    const workerB$ = sources.WWB.map(m => {
+      console.log('In workerB$ stream in the main thread. m is ', m );
+      mMres.ret(m.data)
+      .bnd(v => mM36.ret('Asynchronous addendum. The largest computed ' +
+        'prime Fibonacci number is ' + v[2].split(',')[v[2].split(',').length - 1]), 'MmM36')
+      primesMonad.s = JSON.parse(JSON.stringify(primesMonad.s));
+      primesMonad.a = JSON.parse(JSON.stringify(primesMonad.a));
+      primesMonad.s = m.data[3];
+      primesMonad.a = m.data[3][3];
+    }); 
+```    
+Here is the definition of workerB.js. MonadState and fpTransformer are discussed in the MonadState and MonadStart Transformers section below.
+```js
+    onmessage = function(m) {
+    var ar = m.data;
+    importScripts('script2.js');
+  
+    var result = fibsMonad.run([1, 2 , ar[0], [0,1]])
+    .bnd(fpTransformer, ar[1])
+    postMessage(result);  
+```
+
+
+workerC returns the prime factors of whatever integer it receives. The bottleneck is generating the prime numbers needed for the computation, so primesMonad is used to store computed primes. This overlaps with the memoization in the previous example since primesMonad is the only one place prime numbers are stored.
+
+I verified that the bottleneck was being mitigated on my desktop computer. It took twenty-five seconds to verify that 514229 is a prime number. I then entered 514230. The console log showed that only two microseconds were required to update the array of primes, and fourteen microsends to determine that its prime decomposistion is 2, 3, 5, 61, and 281. The lag had become negligible. 
 ```javascript    
   const workerDriverB = function () {
     return create((add) => workerB.onmessage = msg => add(msg))   
@@ -152,6 +195,72 @@ The driver is merged into the stream that feeds the virtual DOM, and it is also 
   });
 ```
 As expected, the addendum doesn't try to run before the computation completes. Here is the definition of workerB.js. MonadState and fpTransformer are discussed in the MonadState and MonadStart Transformers section below.
+
+Here is the definition of workerC.js, which is used to define workerC, along with the definition of fact().
+
+    onmessage = function(ar) {
+      console.log('In workerC.js ar.data is ', ar.data );
+      importScripts('script2.js');
+      var num = ar.data[0];
+      var s = ar.data[1];
+      s[2] = num;
+      primesMonad.run(s)
+      .bnd(s2 => fact(s2)  // fact() is shown below.
+      .bnd(factors => postMessage(["The prime factors of " + num + 
+        " are " + factors.join(', '), [s2[0], [], 42, s2[3]]])));   
+  
+    function fact(a) {
+      console.log('Entering fact. a is', a );
+      var v = a.slice();
+      while (v[2] != 1) {
+        for (let p of v[3]) {
+          if (v[2] / p == Math.floor(v[2] / p)) {
+            v[1].push(p);
+            v[2] = v[2]/p;
+          };
+        }
+      }
+      v[1].sort(function(a, b) {
+        return a - b;
+      });
+      console.log('Leaving fact. v is', v );
+      return ret(v[1]);
+    }    d here is the definition of workerC.js, which is used to define workerC, along with the definition of fact().
+
+    onmessage = function(ar) {
+      console.log('In workerC.js ar.data is ', ar.data );
+      importScripts('script2.js');
+      var num = ar.data[0];
+      var s = ar.data[1];
+      s[2] = num;
+      primesMonad.run(s)
+      .bnd(s2 => fact(s2)  // fact() is shown below.
+      .bnd(factors => postMessage(["The prime factors of " + num + 
+        " are " + factors.join(', '), [s2[0], [], 42, s2[3]]])));   
+  
+    function fact(a) {
+      console.log('Entering fact. a is', a );
+      var v = a.slice();
+      while (v[2] != 1) {
+        for (let p of v[3]) {
+          if (v[2] / p == Math.floor(v[2] / p)) {
+            v[1].push(p);
+            v[2] = v[2]/p;
+          };
+        }
+      }
+      v[1].sort(function(a, b) {
+        return a - b;
+      });
+      console.log('Leaving fact. v is', v );
+      return ret(v[1]);
+    }    
+
+
+
+
+
+
 ```js
     onmessage = function(m) {
     var ar = m.data;
@@ -162,6 +271,13 @@ As expected, the addendum doesn't try to run before the computation completes. H
     postMessage(result);    
 ```
 Later, we will see how instances of MonadState and MonadTransformer perform the computations in the workerB thread.
+
+
+
+
+
+
+
 
   ## MonadArchive
 

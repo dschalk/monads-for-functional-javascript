@@ -921,12 +921,12 @@ clog.emit(5000);
   h('div#leftPanel', [  
       h('br'),
       h('div#captionDiv', { style: { display: mMcaptionDiv.x } },  [
-          h('h1', 'Motorcycle.js With JS-monads') ]),
-          h('span#italic', ' Not category theory monads. These monads are like the Haskell monads, They use patterns and conform to rules borrowed from category theory. See ' ),
+          h('h1', 'JS-monads running on Cycle.js') ]),
+          h('span#italic', ' These monads are like the Haskell monads in that they resemble the monads of category theory while not actually being mathematical monads.See ' ),
       h('a', { props: { href: "http://math.andrej.com/2016/08/06/hask-is-not-a-category/", target: "_blank" } }, 'Hask is not a category.'),
           h('span', ' by Andrej Bauer and . ' ),
           h('a', { props: { href: '#discussion' } }, 'Discussion'),
-          h('span', ' below. ' ),
+          h('span', ' below. Their monadic traits make them robust an reliable for isolating and chaining procedures.  ' ),
           h('br'),
           h('br'),
           h('br'),
