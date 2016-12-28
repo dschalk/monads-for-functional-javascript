@@ -47,6 +47,13 @@ function workerCDriver () {
   });
 };
 
+function workerDDriver () {
+  return xs.create({
+    start: listener => { workerD.onmessage = msg => listener.next(msg)}, 
+    stop: () => { workerD.terminate() }
+  });
+};
+
 function workerDriver () {
   return xs.create({
     start: listener => { worker.onmessage = msg => listener.next(msg)}, 
@@ -134,20 +141,19 @@ function main(sources) {
    console.log('______** ! **_______eM2$ received message: ', v) 
   mMZ31.bnd(() => mM34.ret(mM31.ret(v[1]).x + mM32.x + mM33.x).bnd(log5));
   mMZ32.bnd(() => mM34.ret(mM31.x + mM32.ret(v[1]).x + mM33.x).bnd(log5));
-  mMZ33.bnd(() => mM34.ret(mM31.x + mM32.x + mM33.ret(v[1]).x).bnd(log5));
-  next(v[0], '1', mMZ31)
-  next(v[0], '2', mMZ32)
-  next(v[0], '3', mMZ33)
   });
 
-  // eM2.on('3', (x,y,z) => m.ret(z*z*z).bnd((a) => console.log(a,x,y))) 
-
-  eM2.emit(['1', 1])
-  eM2.emit(['2', 1])
-  eM2.emit(['3', 1])
-
   const workerC$ = sources.WWC.map(m => {
+    console.log('Back in the main thread. m is', m );
     mMfactors.ret(m.data[0]);
+    primesMonad.s = m.data[1];
+    primesMonad.a = m.data[1][3];
+  });
+
+  const workerD$ = sources.WWD.map(m => {
+    console.log('Back in the main thread. m is', m );
+    mMfactors6.bnd(concat, m.data[0]);
+    mMfactors8.ret(m.data[2]);
     primesMonad.s = m.data[1];
     primesMonad.a = m.data[1][3];
   });
@@ -431,6 +437,24 @@ function main(sources) {
       }
       else {
         workerC.postMessage([num, primesMonad.s]);
+      }
+    }
+  });
+  
+  var factorsP$ = sources.DOM
+      .select('input#factors_5').events('keydown');
+
+  var factA$ = factorsP$.map(function (e) {
+    console.log('In factA$ <><><>>><<>>>');
+    var factors = [];
+    mMfactors4.ret('');
+    if (e.keyCode === 13) {
+      var num = e.target.value
+      if (!num.match(/^[0-9]+$/)) {
+        mMfactors6.ret('This works only if you enter a number. ' + num + ' is not a number');
+      }
+      else {
+        workerD.postMessage([num, primesMonad.s, mMfactors6.x.length]);
       }
     }
   });
@@ -850,7 +874,7 @@ clog.emit("A")
 clog.emit("B")
 clog.emit(5000);
 
-  var calcStream$ = xs.merge( clearprimes$, worker$, workerB$, workerC$, clearAction$, backAction$, forwardAction$, factorsAction$, primeFib$, fibPressAction$, quadAction$, edit1Action$, edit2Action$, testWAction$, testZAction$, testQAction$, colorAction$, deleteAction$, newTaskAction$, chatClickAction$, gameClickAction$, todoClickAction$, captionClickAction$, groupPressAction$, rollClickAction$, messagePressAction$, loginPressAction$, messages$, numClickAction$, opClickAction$);
+  var calcStream$ = xs.merge( factA$, clearprimes$, worker$, workerB$, workerC$, workerD$, clearAction$, backAction$, forwardAction$, factorsAction$, primeFib$, fibPressAction$, quadAction$, edit1Action$, edit2Action$, testWAction$, testZAction$, testQAction$, colorAction$, deleteAction$, newTaskAction$, chatClickAction$, gameClickAction$, todoClickAction$, captionClickAction$, groupPressAction$, rollClickAction$, messagePressAction$, loginPressAction$, messages$, numClickAction$, opClickAction$);
    
   return {
   DOM: calcStream$.map(function () {
@@ -1088,6 +1112,11 @@ h('div.tao3', mMfactors3.x ),
 h('p', ' And here is the definition of workerC.js, which is used to define workerC, along with the definition of fact(). '),
    code.fact,  
 
+
+h('input#factors_5'),
+h('br'),
+h('div.tao3', `${mMfactors7.x}` ),    
+h('div.tao3', `${mMfactors6.x[mMfactors8.x]}` ),    
   
 // ********************************************************************** Begin MonadState
 
@@ -1292,6 +1321,7 @@ const sources = {
   WS: websocketsDriver,
   WWB: workerBDriver,
   WWC: workerCDriver,
+  WWD: workerDDriver,
   WW: workerDriver,
   EM2: eM2Driver
 }

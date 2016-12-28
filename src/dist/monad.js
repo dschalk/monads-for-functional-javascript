@@ -448,6 +448,7 @@ function factors_state3(a) {
 var worker = new Worker("worker.js");
 var workerB = new Worker("workerB.js");
 var workerC = new Worker("workerC.js");
+var workerD = new Worker("workerD.js");
 
 function primes_state(x) {
   console.log('In main thread primes_state. x is ', x );
@@ -719,6 +720,10 @@ function primes(n, ar) {
   var mMquad6 = new Monad('', 'mMquad6');
   var mMfactors3 = new Monad('', 'mMfactors3');
   var mMfactors4 = new Monad('', 'mMfactors4');
+  var mMfactors5 = new Monad('', 'mMfactors5');
+  var mMfactors6 = new Monad([0,1], 'mMfactors6');
+  var mMfactors7 = new Monad('','mMfactors7');
+  var mMfactors8 = new Monad('', 'mMfactors8');
   var mMchange = new Monad(0, 'mMchange')
   var mMchange2 = new Monad(0, 'mMchange2')
   var mMchange3 = new Monad(0, 'mMchange3')
@@ -1007,7 +1012,7 @@ function testPrefix (x,y) {
       return ret(ar);
   };
 
-  var concat = function concat(x, v) {    // Polymorphic. Works with arrays, strings, and numbers.
+  var concat = function concat(x, v) {  
       var ar = x.slice();
       var ar2 = ar.concat(v);
       return ret(ar2);

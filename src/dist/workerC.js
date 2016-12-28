@@ -14,7 +14,6 @@
 
 onmessage = function(ar) {
   
-  console.log('In workerC.js ar.data is ', ar.data );
   importScripts('script2.js');
   var num = ar.data[0];
   var s = ar.data[1];

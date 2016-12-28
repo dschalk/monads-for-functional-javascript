@@ -135,7 +135,7 @@ var mMplayer = new Monad([0,0,0,0], 'mMplayer');
         if ( v[3].every(e =>  (v[0] / e) != Math.floor(v[0] / e)) ) {
             v[3].push(v[0]);
         }
-        if (v[3][v[3].length - 1] > v[2]) {
+        if (v[0] > v[2]) {
            console.log('Leaving primes_state. x is', x );
            return v; 
         };
@@ -163,7 +163,7 @@ var mMplayer = new Monad([0,0,0,0], 'mMplayer');
     var v = a.slice();
     while (v[2] != 1) {
       for (let p of v[3]) {
-        if (v[2] / p == Math.floor(v[2] / p)) {
+        if (v[2] / p === Math.floor(v[2] / p)) {
           v[1].push(p);
           v[2] = v[2]/p;
         };
@@ -172,8 +172,24 @@ var mMplayer = new Monad([0,0,0,0], 'mMplayer');
     v[1].sort(function(a, b) {
       return a - b;
     });
-    console.log('Leaving fact. v is', v );
     return ret(v[1]);
+  }
+  
+  function fact2(a,b) {
+    var ar = [];
+    var n = a;
+    while (n != 1) {
+      for (let p of b) {
+        if (n/p === Math.floor(n/p)) {
+          ar.push(p);
+          n = n/p;
+        };
+      }
+    }
+    ar.sort(function(a, b) {
+      return a - b;
+    });
+    return ar;
   }
   
   function factors (num) {
