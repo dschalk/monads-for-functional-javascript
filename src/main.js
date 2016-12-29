@@ -146,16 +146,14 @@ function main(sources) {
   const workerC$ = sources.WWC.map(m => {
     console.log('Back in the main thread. m is', m );
     mMfactors.ret(m.data[0]);
-    primesMonad.s = m.data[1];
-    primesMonad.a = m.data[1][3];
+    window['primesMonad'] = new MonadState('primesMonad', m.data[1], primes_state);
   });
 
   const workerD$ = sources.WWD.map(m => {
     console.log('Back in the main thread. m is', m );
     mMfactors6.bnd(concat, m.data[0]);
+    window['primesMonad'] = new MonadState('primesMonad', m.data[1], primes_state);
     mMfactors8.ret(m.data[2]);
-    primesMonad.s = m.data[1];
-    primesMonad.a = m.data[1][3];
   });
 
   const worker$ = sources.WW.map(v => {
@@ -174,9 +172,7 @@ function main(sources) {
       mM14.ret(v.data[1])
     }); 
     mMZ25.bnd(() => {
-      primesMonad.s = v.data[1];
-      primesMonad.a = v.data[1][3];
-      console.log('Back in main thread, in worker$. Prime number', primesMonad.a.length,'is', primesMonad.s[0] )
+      window['primesMonad'] = new MonadState('primesMonad', v.data[1], primes_state);
     });
     next(v.data[0], 'CA#$41', mMZ21)
     next(v.data[0], 'CB#$41', mMZ22)
@@ -401,8 +397,7 @@ function main(sources) {
   const workerB$ = sources.WWB.map(m => {
     console.log('In workerB$ stream in the main thread. m is ', m );
     mMres.ret(m.data)
-    .bnd(v => mM36.ret('Asynchronous addendum. The largest computed ' +
-      'prime Fibonacci number is ' + v[2].split(',')[v[2].split(',').length - 1]), 'MmM36')
+    // .bnd(v => mM36.ret('The elapsed time is ' + v[3]) + ' milliseconds.');
     primesMonad.s = JSON.parse(JSON.stringify(primesMonad.s));
     primesMonad.a = JSON.parse(JSON.stringify(primesMonad.a));
     primesMonad.s = m.data[3];
@@ -1070,15 +1065,14 @@ h('p', ' However, imitating definitions and patterns found in category theory, a
     //
    //
   h('h2', ' Asynchronous Processes ' ),
-  h('p', ' The next demonstration involves a computation that can take a while to complete. It memoizes computed prime numbers and does not block the browser engine\'s primary execuation thread. The number you enter below is a cap on the size of the largest number in the Fibonacci sequence which is produced. If you enter 3 and then, one at a time, 0\'s until you reach three billion (3000000000), you should see the display updating quickly until the final 0. That will get you the prime number 2,971,215,073. If you add another 0, you can expect a descernable lag time. Removing the final 0 and then putting it back demonstrates the effectiveness of memoization. ' ),
-h('p', ' I entered 300,000,000,000 (without the commas) and had to wait almost 20 seconds for the result. The computation required 19,423 microsecomds. The largest Fibonacci number displayed was 225,851,433,717; the largest prime number generated during the computation was 2013163, and the largest prime Fibonacci number was still 2,971,215,073. 20365011074. I deleted the final 0 and the displayed Fibonacci numbers promptly reverted to a shorter list, topped by 20,365,011,074. The long list of primes remained unchanged. I re-inserted a final 0 and the list of Fibonacci numbers promptly increased to where it had been, with the largest number again shown as 225,851,433,717. The "computation", which was nothing more than obtaining numbers from a pre-existing list, required only 2 microseconds.  ' ),
+  h('p', ' The next demonstration involves a computation that can take a while to complete. It memoizes computed prime numbers and does not block the browser engine\'s primary execuation thread. The number you enter below is a cap on the size of the largest number in the Fibonacci sequence which is produced. If you enter 3 and then, one at a time, 0\'s until you reach three billion (3000000000), you should see the display updating quickly until the final 0. After a pause of less than one second, the prime Fibonacci number 2,971,215,073. If you add another 0, you can expect a substantial lag time - 19 seconds on my computer. Removing the final 0 and then putting it back demonstrates the effectiveness of memoization. ' ),
 h('br' ),
 h('span', ' According to the '), 
 h('a', { props: { href: "https://oeis.org/A005478", target: "_blank" } }, 'The On-Line Encyclopedia of Integer Sequences '),
 h('span', ' these are the first eleven proven prime Fibonacci numbers:'),
 h('span.purp', ' 2, 3, 5, 13, 89, 233, 1597, 28657, 514229, 433494437, 2971215073, and 99194853094755497. The eleventh number, 2971215073, is as far as you can go on an ordinary desktop computer. Incrementally taking the cap up to five trillion didn\'t get me close. ' ),
 h('br' ),
-h('p.red',  mM36.x),
+h('p.red',  'The elapsed time is ' + mMres.x[4] + ' milliseconds.' ),
 h('input#fib92'),
 h('br'),
 h('span#PF_7.red6', 'Fibonacci Numbers'),
@@ -1107,17 +1101,19 @@ h('p', ' workerC returns the prime factors of whatever integer it receives. The 
 
 h('input#factors_1'),
 h('br'),
+h('br'),
 h('div.tao3', `${mMfactors.x}` ),    
 h('div.tao3', mMfactors3.x ),    
 h('p', ' And here is the definition of workerC.js, which is used to define workerC, along with the definition of fact(). '),
    code.fact,  
-
-
+h('p', ' The following demonstration generates an array of the prime decompensations of numbers. No decomposition is computed more than once, so very little time is needed to obtain numbers smaller than a previously obtained number. Entering a number selects the number on the generated array with that index. So, for example, entering 30 causes 2,3,5 to be displayed. ' ),
 h('input#factors_5'),
+h('br'),
 h('br'),
 h('div.tao3', `${mMfactors7.x}` ),    
 h('div.tao3', `${mMfactors6.x[mMfactors8.x]}` ),    
-  
+h('p', ' Here is the code used to generate the list of prime decompositions: ' ),
+    code.fact2, 
 // ********************************************************************** Begin MonadState
 
 h('p#monadstate'),
