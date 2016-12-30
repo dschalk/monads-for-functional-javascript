@@ -721,8 +721,8 @@ function primes(n, ar) {
   var mMfactors3 = new Monad('', 'mMfactors3');
   var mMfactors4 = new Monad('', 'mMfactors4');
   var mMfactors5 = new Monad('', 'mMfactors5');
-  var mMfactors6 = new Monad([0,1], 'mMfactors6');
-  var mMfactors7 = new Monad('','mMfactors7');
+  var mMfactors6 = new Monad([[0], [1], [2]], 'mMfactors6');
+  var mMfactors7 = new Monad('', 'mMfactors7');
   var mMfactors8 = new Monad('', 'mMfactors8');
   var mMchange = new Monad(0, 'mMchange')
   var mMchange2 = new Monad(0, 'mMchange2')

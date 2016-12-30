@@ -1333,7 +1333,7 @@ var primes_state = h('pre',  `    function primes_state(x) {
       }
     };    `  )
 
-var fact = h('pre',  `    onmessage = function(ar) {
+var fact = h('pre.red0',  `    onmessage = function(ar) {
       importScripts('script2.js');
       var num = ar.data[0];
       var s = ar.data[1];
@@ -1360,29 +1360,25 @@ var fact = h('pre',  `    onmessage = function(ar) {
     }    `  )
 
 var fact2 = h('pre.red0',  `    workerD.postMessage([num, primesMonad.s, mMfactors6.x.length]);
-
+  
     onmessage = function(ar) {
       importScripts('script2.js');
-      var r = [];
-      var n = parseInt(ar.data[0]);
+      var r = [];  
       var k = ar.data[2];
-      var p = ar.data[1];
-      var a;
-      p[2] = n;
-      primesMonad.run(p).bnd(s => {
-        while (k <= n) {
-          a = s[3].filter(v => v <= n)
-          next = fact2(k, a);
-          r.push(next)
-          k+=1;
-        } 
-        postMessage([r,s,n]);
-      })
+      var s = primesMonad.run( [ ar.data[1][0], ar.data[1][1], ar.data[0], ar.data[1][3] ] ).s;
+      console.log('In workerD.js. ****************** s, k, ar.data[0] are', s, k, ar.data[0] );
+       while (k <= ar.data[0]) {
+        next = fact2(k, s[3]);
+        r.push(next);
+        k+=1;
+      } 
+      console.log('Leaving workerD.js. r',r );
+      postMessage([r, s, ar.data[0]]);
     }
 
-    function fact2(a,b) {
+    function fact2(k,b) {
       var ar = [];
-      var n = a;
+      var n = k;
       while (n != 1) {
         for (let p of b) {
           if (n/p === Math.floor(n/p)) {

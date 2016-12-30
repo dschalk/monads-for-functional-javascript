@@ -142,20 +142,6 @@ function main(sources) {
   mMZ31.bnd(() => mM34.ret(mM31.ret(v[1]).x + mM32.x + mM33.x).bnd(log5));
   mMZ32.bnd(() => mM34.ret(mM31.x + mM32.ret(v[1]).x + mM33.x).bnd(log5));
   });
-
-  const workerC$ = sources.WWC.map(m => {
-    console.log('Back in the main thread. m is', m );
-    mMfactors.ret(m.data[0]);
-    window['primesMonad'] = new MonadState('primesMonad', m.data[1], primes_state);
-  });
-
-  const workerD$ = sources.WWD.map(m => {
-    console.log('Back in the main thread. m is', m );
-    mMfactors6.bnd(concat, m.data[0]);
-    window['primesMonad'] = new MonadState('primesMonad', m.data[1], primes_state);
-    mMfactors8.ret(m.data[2]);
-  });
-
   const worker$ = sources.WW.map(v => {
     console.log('Message from worker: ', v );
     v.preventDefault();
@@ -436,24 +422,38 @@ function main(sources) {
     }
   });
   
+  const workerC$ = sources.WWC.map(m => {
+    console.log('Back in the main thread. m is', m );
+    mMfactors.ret(m.data[0]);
+    window['primesMonad'] = new MonadState('primesMonad', m.data[1], primes_state);
+  });
+
   var factorsP$ = sources.DOM
       .select('input#factors_5').events('keydown');
 
   var factA$ = factorsP$.map(function (e) {
-    console.log('In factA$ <><><>>><<>>>');
+    console.log('In factA$ <><><>Jonus of the Etherial Spark<<>>>');
     var factors = [];
     mMfactors4.ret('');
     if (e.keyCode === 13) {
-      var num = e.target.value
+      var num = e.target.value;
       if (!num.match(/^[0-9]+$/)) {
-        mMfactors6.ret('This works only if you enter a number. ' + num + ' is not a number');
+        mMfactors7.ret('This works only if you enter a number. ' + num + ' is not a number');
+        mMfactors8.ret(0);
       }
       else {
         workerD.postMessage([num, primesMonad.s, mMfactors6.x.length]);
       }
     }
   });
-  
+
+  const workerD$ = sources.WWD.map(m => {
+    console.log('Back in the main thread. m is', m );
+    mMfactors6.bnd(concat, m.data[0]);
+    window['primesMonad'] = new MonadState('primesMonad', m.data[1], primes_state);
+    mMfactors8.ret(m.data[2]);
+  });
+
   // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> ENDOM prime factors END
   // ?<>>><>><><><><>>>><><><  traversal  ><><><><><><>>><><><><><><><><><><><>< START traversal  
   document.onload = function (event) {
@@ -1106,7 +1106,7 @@ h('div.tao3', `${mMfactors.x}` ),
 h('div.tao3', mMfactors3.x ),    
 h('p', ' And here is the definition of workerC.js, which is used to define workerC, along with the definition of fact(). '),
    code.fact,  
-h('p', ' The following demonstration generates an array of the prime decompensations of numbers. No decomposition is computed more than once, so very little time is needed to obtain numbers smaller than a previously obtained number. Entering a number selects the number on the generated array with that index. So, for example, entering 30 causes 2,3,5 to be displayed. ' ),
+h('p', ' The following demonstration generates an array of the prime decompensations of numbers. No decomposition is computed more than once, so very little time is needed to obtain numbers smaller than a previously obtained number. Entering a number selects the number on the generated array, which is held in the monad mMfactors6, with that index. So, for example, entering 30 causes mMfactors.x[30] (which is [2,3,5]) to be displayed. ' ),
 h('input#factors_5'),
 h('br'),
 h('br'),

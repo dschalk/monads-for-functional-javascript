@@ -136,7 +136,7 @@ var mMplayer = new Monad([0,0,0,0], 'mMplayer');
             v[3].push(v[0]);
         }
         if (v[0] > v[2]) {
-           console.log('Leaving primes_state. x is', x );
+           console.log('Leaving primes_state. v is', v );
         return v; 
         };
         v[0] += 2;
@@ -175,9 +175,10 @@ var mMplayer = new Monad([0,0,0,0], 'mMplayer');
     return ret(v[1]);
   }
   
-  function fact2(a,b) {
+  function fact2(k,b) {
+    console.log('In fact2. k, b', k, b );
     var ar = [];
-    var n = a;
+    var n = k;
     while (n != 1) {
       for (let p of b) {
         if (n/p === Math.floor(n/p)) {
