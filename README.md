@@ -1,14 +1,17 @@
   <a name="back"></a>
 
-  #JS-monads-stable 
+# JS-monads-stable
+
  These monads are like the Haskell monads in that they resemble the monads of category theory while not actually being mathematical monads. See [Hask is not a category](http://math.andrej.com/2016/08/06/hask-is-not-a-category/) by Andrej Bauer. Adherance to the monad laws (see below) helps make the monads robust, versitile, and reliable tools for isolating and chaining sequences of javascript functions. 
 
  This is the open source repository for the application running online at [JS-monads-stable](http://schalk.net:3055). Aside from being a place to share my ideas and techniques with any developers who might be interested, the online demonstration is a tutorial for people who are interested in functional programming. It presents examples of devising abstractions to organize code into blocks that are easy to reason about and maintaim. 
 
   The server is a modified clone of the Haskell Wai Websockets server. Haskell pattern matching and list comprehension made it easy to configure the server to broadcast selectively to members of groups, who share the dice game, todo list, and chat room. I use Babel and Webpack to prepare the front end and Stack to compile everything into a single executable which I upload to my Digital Ocean "droplet". 
 
-  The code here is not annotated, but detailed examinations of the code behind the multiplayer simulated dice game, persistent todo list, chat feature, and several other demonstrations can be found at [http://schalk.net:3055](http://schalk.net:3055), where the code is running online. 
-  ## Basic Monad    
+  The code here is not annotated, but detailed examinations of the code behind the multiplayer simulated dice game, persistent todo list, chat feature, and several other demonstrations can be found at [http://schalk.net:3055](http://schalk.net:3055), where the code is running online.
+
+## Basic Monad
+
   ```javascript    
     var Monad = function Monad(z = 19, g = 'generic') {
       this.x = z;
@@ -82,10 +85,9 @@
 
   The following example shows lambda expressions sending variables v1 and v2 through a sequence of computations and v3 sending the final result to the string that is logged. It also shows monads a, b, c, d, e, f, and g being updated and preserved in an array that is not affected by further updates. That is because calling the ret() method does not mutate a monad, it creates a fresh instance with the same name. Here is the example, shown in a screen shot of the Chrome console log:.
 
-
   ![Alt text](demo_000.png?raw=true)
 
-  ### The Monad Laws
+### The Monad Laws
 
   In the following discussion, "x === y" signifies that the expression x === y returns true. Let J be the collection of all Javascript values, including functions, instances of Monad, etc, and let F be the collection of all functions mapping values in J to instances of Monad with references (names) matching their ids; that is, with window[id] === m.id for some id which is a valid es2015 variable name. The collection of all such instances of Monad along and all of the functions in F is called "M". For any instances of Monad m, m1, and m2 in M and any functions f and g in F, the following relationships follow easily from the definition of Monad:
 
@@ -106,127 +108,221 @@
       m.ret(0).bnd(v => add(v,3).bnd(cube)).x  Tested amd verified
       Haskell monad law: (m >>= f) >>= g ≡ m >>= ( \x -> (f x >>= g) ) 
 
-  ### Disussion
+### Disussion
   The Haskell statement f ≡ g means that f x === g x for all Haskell values x of the appropriate type. That is the test applied to Javascript expressions in "Monad Laws" section (above). Neither the === nor the === operator would provide useful information about the behavior of instances of Monad, which are objects. Those operators test objects for location in memory. If the left and right sides of predicates create new instances of m, then the left side m and the right side m wind up in different locations in memory. So we expect m.ret(3) === m.ret(3) to return false, and it does. The question we want answered is the question ≡ answers in Haskell: Can the left and right sides be substituted for one another and still yield the same results.
 
 Research into ways of defining a Haskell category appears to be ongoing. It involves tinkering with special constraints, omitted features, and definitions of morphisms that are not Haskell functions. When a definition of the category is established, Haskell monads are then be shown to be, in some contrived context, category-theory monads. Devising such schemes are instructive academic excercises, but I don't think they can provide anything useful to programmers working on applications for industry, commerce, and the Internet.
 
 However, imitating definitions and patterns found in category theory, as Haskell does in defining the functor, monoid, and monad type classes, was a stroke of genius that vastly enriched the Haskell programming language and brought it into the mainstream as a viable alternative to java, c++, etc. This website runs efficiently on a Haskell websockets server. Category theory patterns are less needed, but neverthless useful, in Javascript. Code that adheres to them tends to be robust and predictable.
 
-##Asynchronous Processes
+## Asynchronous Processes
+//******************************************************
 
-The next demonstration involves a computation that can take a while to complete. It memoizes computed prime numbers and does not block the browser engine's primary execuation thread. The number you enter below is a cap on the size of the largest number in the Fibonacci sequence which is produced. If you enter 3 and then, one at a time, 0's until you reach three billion (3000000000), you should see the display updating quickly until the final 0. That will get you the prime number 2,971,215,073. If you add another 0, you can expect a descernable lag time. Removing the final 0 and then putting it back demonstrates the effectiveness of memoization.
+The first asynchronous code demonstration involves a computation that can take a while to complete. It memoizes computed prime numbers and does not block the browser engine's primary execuation thread. The number you enter below is a cap on the size of the largest number in the Fibonacci sequence which is produced. If you enter 3 and then, one at a time, 0's until you reach three billion (3000000000), you should see the display updating quickly until the final 0. After a pause of around ten seconds, the prime Fibonacci number 2,971,215,073 appears on my desktop computer's monitor. If you add another 0, you can expect a substantial lag time. When I entered thirty billion, the wait time was 58,485 milliseconds. I deleted the final 0 and when I put it back, the elapsed time for the calculation was only 68 microseconds, demonstrating the efficacy of memoization.
 
-I entered 300,000,000,000 (without the commas) and had to wait almost 20 seconds for the result. The computation required 19,423 microsecomds. The largest Fibonacci number displayed was 225,851,433,717; the largest prime number generated during the computation was 2013163, and the largest prime Fibonacci number was still 2,971,215,073. 20365011074. I deleted the final 0 and the displayed Fibonacci numbers promptly reverted to a shorter list, topped by 20,365,011,074. The long list of primes remained unchanged. I re-inserted a final 0 and the list of Fibonacci numbers promptly increased to where it had been, with the largest number again shown as 225,851,433,717. The "computation", which was nothing more than obtaining numbers from a pre-existing list, required only 2 microseconds.
 
-According to the The On-Line Encyclopedia of Integer Sequences these are the first eleven proven prime Fibonacci numbers: 2, 3, 5, 13, 89, 233, 1597, 28657, 514229, 433494437, 2971215073, and 99194853094755497. The eleventh number, 2971215073, is as far as you can go on an ordinary desktop computer. Incrementally taking the cap up to five trillion didn't get me close. 
+According to the The On-Line Encyclopedia of Integer Sequences these are the first eleven proven prime Fibonacci numbers: 2, 3, 5, 13, 89, 233, 1597, 28657, 514229, 433494437, 2971215073, and 99194853094755497. The eleventh number, 2971215073, is as far as you can go on an ordinary desktop computer. 
+The elapsed time is undefined milliseconds.
 
-The driver is merged into the stream that feeds the virtual DOM, and it is also an element of the resources object (named WWB) which supports the user interface. I still marvel at the elegance of the cycle provided by the Motorcycle and Cycle libraries. The driver listens for messages from the worker, updating primesMonad and the browser display whenever one come in. Here is the code that runs in the main thread:
+The code runs in two threads, a main thread and a web worker thread. In this and the next two demonstrations, primesMonad plays a central role. primesMonad.run() takes two arguments: a prime numbers state (a four-member array) and the upper bound of the array of prime numbers that will be generated. In the code that follows, these will be designated as primesMonad.run(s,a). s will be the current state, accessible as primesMonad.s, and a will be the upper bound on the array of prime numbers in the new state array that is created by primesMonad.run(). The result becomes the second element in the state array (s[1]).
+
+The list of all prime numbers generated during the browser session is stored in s[3]. If more prime numbers are required, the largest prime number required, designated by "a", and the current value of primesMonad.s, are provided to the primesMonad run method in the statement primesMonad.run(s,a). If, however, the largest prime number required, again deignated by "a", is smaller than the largest number in primesMonad.s[3], primesMonad.run(s,a) will return a fresh primesMonad object in which primesMonad.s[1] is a truncated version of primesMonad.s[3].
+
+primesMonad.s[0] is the next number scheduled to be tested whenever primesMonad.run(s,a) increases the size of s[3]. s[2] is the upper bound on the array in s[1]. Here is the code showing how primesMonad is defined, and how primesMonad.run(s,a) generates a new prime numbers state:
+
+First, the definition of workerB.js:
 ```js
-    const fibKeyPress5$ = sources.DOM
-      .select('input#fib92').events('keyup');
-
-    var primeFib$ = fibKeyPress5$.map(e => {
-      workerB.postMessage(e.target.value)
-    });
-
-    const workerB$ = sources.WWB.map(m => {
-      console.log('In workerB$ stream in the main thread. m is ', m );
-      mMres.ret(m.data)
-      .bnd(v => mM36.ret('Asynchronous addendum. The largest computed ' +
-        'prime Fibonacci number is ' + v[2].split(',')[v[2].split(',').length - 1]), 'MmM36')
-      primesMonad.s = JSON.parse(JSON.stringify(primesMonad.s));
-      primesMonad.a = JSON.parse(JSON.stringify(primesMonad.a));
-      primesMonad.s = m.data[3];
-      primesMonad.a = m.data[3][3];
-    }); 
-```    
-Here is the definition of workerB.js. MonadState and fpTransformer are discussed in the MonadState and MonadStart Transformers section below.
-```js
+    var workerB = new Worker("workerB.js");
+// workerB.js
     onmessage = function(m) {
-    var ar = m.data;
-    importScripts('script2.js');
-  
-    var result = fibsMonad.run([1, 2 , ar[0], [0,1]])
-    .bnd(fpTransformer, ar[1])
-    postMessage(result);  
-```
-
-
-workerC returns the prime factors of whatever integer it receives. The bottleneck is generating the prime numbers needed for the computation, so primesMonad is used to store computed primes. This overlaps with the memoization in the previous example since primesMonad is the only one place prime numbers are stored.
-
-I verified that the bottleneck was being mitigated on my desktop computer. It took twenty-five seconds to verify that 514229 is a prime number. I then entered 514230. The console log showed that only two microseconds were required to update the array of primes, and fourteen microsends to determine that its prime decomposistion is 2, 3, 5, 61, and 281. The lag had become negligible. 
-```javascript    
-  const workerDriverB = function () {
-    return create((add) => workerB.onmessage = msg => add(msg))   
-  }   
-```    
-The driver is merged into the stream that feeds the virtual DOM, and it is also an element of an the resources object (named WWB) which supports the user interface. I still marvel at the sublime elegance of the cycle provided by the Motorcycle and Cycle libraries. Having the driver receive messages from the worker assures timely browser updates. Here is the code that runs in the main thread:
-```js
-  const fibKeyPress5$ = sources.DOM
-    .select('input#fib92').events('keyup');
-
-  var primeFib$ = fibKeyPress5$.map(e => {
-    workerB.postMessage(e.target.value)
-  });
-
-  const workerB$ = sources.WWB.map(m => {
-    console.log('In workerB$ stream in the main thread. m is ', m );
-    mMres.ret(m.data)
-    .bnd(v => mM36.ret('Asynchronous addendum. The largest computed ' +
-      'prime Fibonacci number is ' + v[2].split(',')[v[2].split(',').length - 1]), 'MmM36')
-    primesMonad.s = JSON.parse(JSON.stringify(primesMonad.s));
-    primesMonad.a = JSON.parse(JSON.stringify(primesMonad.a));
-    primesMonad.s = m.data[3];
-    primesMonad.a = m.data[3][3];
-  });
-```
-As expected, the addendum doesn't try to run before the computation completes. Here is the definition of workerB.js. MonadState and fpTransformer are discussed in the MonadState and MonadStart Transformers section below.
-
-Here is the definition of workerC.js, which is used to define workerC, along with the definition of fact().
-```javascript
-    onmessage = function(ar) {
-      console.log('In workerC.js ar.data is ', ar.data );
+      var ar = m.data;
       importScripts('script2.js');
-      var num = ar.data[0];
-      var s = ar.data[1];
-      s[2] = num;
-      primesMonad.run(s)
-      .bnd(s2 => fact(s2)  // fact() is shown below.
-      .bnd(factors => postMessage(["The prime factors of " + num + 
-        " are " + factors.join(', '), [s2[0], [], 42, s2[3]]])));   
+      var x = Date.now();
+    
+      var result = fibsMonad.run([1, 2 , ar[2], [0,1]])
+      .bnd(fpTransformer, ar[1]);     // See below
+      var y = Date.now() - x;
+      result.push(y);  
+      postMessage(result);
+    };    
   
-    function fact(a) {
-      console.log('Entering fact. a is', a );
-      var v = a.slice();
+    var fpTransformer = function fpTransformer(x, s) {
+      var a = Math.ceil(Math.sqrt(x[3].slice(-1)[0]));
+      var m = primesMonad.run([s,a]);
+      var ar = [];
+      x[3].map(function (v) {
+        if (m.s[3].filter(x => x <= v).every(function (p) { return (v % p || v == p); }))
+          ar.push(v);
+      });
+      return [x[3].join(', '), m.s[3].slice(-1).pop(), ar.join(', '), m.s];
+    };   
+```    
+Here is the definition of primesMonad, along with the function from which it is derived, MonadState, and its auxiliary function, primes_state.
+```js
+    function MonadState(g, state, p) {
+      this.id = g;
+      this.s = state;
+      this.process = p;
+      this.a = this.s[2];
+      this.bnd = (func, ...args) => func(this.s, ...args);  
+      this.run = ar => { 
+        var ar2 = this.process(ar);
+        this.s = ar2;
+        this.a = ar2[2];
+        self[this.id] = this;   // self is like window in the main thread.
+        return self[this.id];
+      }
+    };
+
+    var primesMonad = new MonadState('primesMonad', [3, [], 3, [2,3]], primes_state);
+
+    function primes_state(x) {
+      console.log('Entering primes_state. x is', x )
+      var v = x[0];
+      var a = x[1];
+      if (a == v[2]) {
+        return v;
+      }
+    
+      else if (a < v[0]) {
+        v[1] = v[3].filter(v => v <= a);
+        v[2] = a;
+        return v;
+      }
+        
+      else {
+        while (v[0] < a) {
+          if ( v[3].filter(x => x <= v[0]).every(e =>  (v[0] / e) != Math.floor(v[0] / e)) ) {
+            v[3].push(v[0]);
+          };
+          v[0] += 2;
+        }
+        v[2] = a;
+        v[1] = v[3];
+        return v;
+      }
+    };    
+```
+fibsMonad also derives from MonadState. Here is how it is defined:
+```js
+  var primesMonad = new MonadState('primesMonad', [3, '', 3, [2,3]], primes_state);
+
+
+  var fibs_state = function fibs_state(ar) {
+    var a = ar.slice();
+    while (a[3].length < a[2]) {
+      a = [a[1], a[0] + a[1], a[2], a[3].concat(a[0])];
+    }
+    return a
+  }  
+```  
+### Prime Factors
+
+workerC returns the prime factors of whatever integer it receives. The bottleneck is generating the prime numbers needed for the computation, so primesMonad is used to store computed primes. This overlaps with the memoization in the previous example since primesMonad is the only place prime numbers are stored.
+
+I verified that the bottleneck was being mitigated on my desktop computer. It took twenty-five seconds to verify that 514229 is a prime number. I then entered 514230. The console log showed that only two microseconds were required to update the array of primes, and fourteen microsends to determine that its prime decomposistion is 2, 3, 5, 61, and 281. Because the prime numbers needed for the computation were saved in primesMonnad, the lag subsequently became negligible. 
+
+Here are the definitions of workerC.js along with the function that it uses named "fact()".
+```js
+    onmessage = function(ar) {
+      importScripts('script2.js');
+      var num = ar.data[1];
+      var s = ar.data;
+      s[2] = num;
+    
+      primesMonad.run(s)
+      .bnd(s2 => fact(s2)    // fact() is defined below.
+      .bnd(factors => postMessage(["The prime factors of " + num + 
+        " are " + factors.join(', '), s2])));
+    }
+  
+    function fact(v) {
+      var ar = [];
+      console.log('Entering fact. v is', v );
       while (v[2] != 1) {
-        for (let p of v[3]) {
-          if (v[2] / p == Math.floor(v[2] / p)) {
-            v[1].push(p);
+        for (let p of v[1]) {
+          if (v[2] / p === Math.floor(v[2] / p)) {
+            ar.push(p);
             v[2] = v[2]/p;
           };
         }
       }
-      v[1].sort(function(a, b) {
+      ar.sort(function(a, b) {
         return a - b;
       });
-      console.log('Leaving fact. v is', v );
-      return ret(v[1]);
-    }   
-```js
-    onmessage = function(m) {
-    var ar = m.data;
-    importScripts('script2.js');
-  
-    var result = fibsMonad.run([1, 2 , ar[0], [0,1]])
-    .bnd(fpTransformer, ar[1])
-    postMessage(result);    
+      return ret(ar);
+    }    
 ```
-Later, we will see how instances of MonadState and MonadTransformer perform the computations in the workerB thread.
+The third demonstration generates an array of arrays containing the prime decompensations of numbers. No decomposition is computed more than once, so very little time is needed to obtain an array of the prime decompositions of numbers smaller than or slightly greater than a previously obtained prime decomposition. The array of arrays of prime decompositions is stored in the monad mMfactors6. Because the ideces of lists of prime decompositions corresponds to the numbers which are decomposed, mMfactors6.x[i] is the prime decomposition of the integer i for all i in Object.keys(mMfactors.x).map(x => parseInt(x)). The following demonstration identifies the array in mMfactors6.x corresponding to the integer entered in the input box. Four digit numbers return promptly. I entered 55555 in my desktop computer and had to wait 87 seconds for 5, 41, 271 to appear on my monitor. The same result took 11 seconds in the previous example, and only 3 microseconds if a long-enough array of primes had previously been generated.
 
-  ## MonadArchive
+Here is the code used to generate the list of prime decompositions:
+```js
+    onmessage = function(ar) {
+      importScripts('script2.js');
+      var r = [];  
+      var k = ar.data[2];
+      primesMonad.run( [ar.data[0], ar.data[1]] ).bnd(s => {
+         while (k <= ar.data[1]) {
+          next = fact2(k, s[1].filter(v => v <= k));
+          r.push(next);
+          k+=1;
+        } 
+        postMessage([r, s, s[2]]);
+      })
+    }
+    
+    function fact2(k,b) {
+      var ar = [];
+      var n = k;
+      while (n != 1) {
+        for (let p of b) {
+          if (n/p === Math.floor(n/p)) {
+            ar.push(p);
+            n = n/p;
+          };
+        }
+      }
+      ar.sort(function(a, b) {
+        return a - b;
+      });
+      return ar;
+    }    
+```
+### MonadState and MonadState Transformers
 
-  ### Traversal of the dice game history.
+The preceding demonstrations used three instances of MonadState: primesMonad, fibsMonad, and factorsMonad. The chat message demonstration uses another instance of MonadState; namely, messageMonadn. Instance of MonadState holds a current state along with a method for updating state. Here again is the definition of MonadState:
+```js
+    function MonadState(g, state, p) {
+      this.id = g;
+      this.s = state;
+      this.process = p;
+      this.a = s[3];
+      this.bnd = (func, ...args) => func(this.s, ...args);  
+      this.run = ar => { 
+        var ar2 = this.process(ar);
+        this.s = ar2;
+        this.a = ar2[3];
+        window[this.id] = this;
+        return window[this.id];
+      }
+    };  
+```    
+MonadState reproduces some of the functionality found in the Haskell Module "Control.Monad.State.Lazy", inspired by the paper "Functional Programming with Overloading and Higher-der Polymorphism", Mark P Jones (http://web.cecs.pdx.edu/~mpj/) Advanced School of Functional Programming, 1995. Transformers take instances of MonadState and return different instances of MonadState. The method call "fibsMonad.bnd(fpTransformer, primesMonad)" returns primesMonad updated so that the largest prime number in primesMonad.s[1] is the square root of the largest Fibonacci number in fibsMonad.s[3]. Here is the definition of fpTransformer:
+```js
+    var fpTransformer = function fpTransformer(x, s) {
+      var a = Math.ceil(Math.sqrt(x[3].slice(-1)[0]));
+      var m = primesMonad.run([s,a]);
+      var ar = [];
+      x[3].map(function (v) {
+        if (m.s[3].filter(x => x <= v).every(function (p) { return (v % p || v == p); }))
+          ar.push(v);
+      });
+      return [x[3].join(', '), m.s[3].slice(-1).pop(), ar.join(', '), m.s];
+    };   
+```
+## MonadArchive
+
+### Traversal of the dice game history.
 
   The state of the simulated dice game is maintained in travMonad, an instance of MonadArchive. Here are the definitions of MonadArchive, travMonad, and the helper function trav_archive:
   ```javascript
@@ -299,7 +395,7 @@ Later, we will see how instances of MonadState and MonadTransformer perform the 
         } 
       });    
   ```
-  Updating the numbers
+###  Updating the numbers
 
   The following code executes when a player clicks a number:
   ```javascript
@@ -387,7 +483,7 @@ Later, we will see how instances of MonadState and MonadTransformer perform the 
   ```
   updateCalc calls calc on the numbers and operater provided to it by numCalcAction$ or opCalcAction$. The return value is assigned to result. If the value of result is 18 or 20, pMscore.x is augmented by 3 or 1, respectively, and checked to see if another five points should be added. score() is then called with the new score as its argument. score() performs some additional tests and calls for a new roll with the values of score and goals it has determined depending on whether or not there is a score and, if so, a winner.
 
-  ## MonadItter
+## MonadItter
 
   MonadItter instances do not have monadic properties, but they facilitate the work of monads. Here's how they work:
 
@@ -443,7 +539,7 @@ Later, we will see how instances of MonadState and MonadTransformer perform the 
       pMscore.ret(v[7]);
       pMgoals.ret(v[8]) });  
   ```
-  ### Updating the numbers
+### Updating the numbers
 
   The previous discusion was about traversal of the game history. This seems like a good place to look at the algorithm for generating new numbers when players click on the number and operator buttons. Here is the code:
   ```javascript
@@ -530,8 +626,10 @@ Later, we will see how instances of MonadState and MonadTransformer perform the 
 
   ```  
   updateCalc calls calc on the numbers and operater given to it by numCalcAction$ or opCalcAction$, giving the value to a variable named "result". If the value of result is 18 or 20, the resulting score is checked to see if it should be augmented by five and then score(scor) is called, providing the new score to the function score(). score() performs some more tests and calls for a new roll with the values of score and goals it has determined depending on whether or not there is a score and, if so, a winner.
-  ##MonadSet
-  The list of online group members at the bottom of the scoreboard is very responsive to change. When someone joins the group, changes to a different group, or closes a browser session, a message prefixed by NN#$42 goes out from the server providing group members with the updated list of group members. MonadSet acts upon messages prefixed by NN#$42. Here are the definitions of MonadSet and the MonadSet instance sMplayers:
+
+## MonadSet
+
+The list of online group members at the bottom of the scoreboard is very responsive to change. When someone joins the group, changes to a different group, or closes a browser session, a message prefixed by NN#$42 goes out from the server providing group members with the updated list of group members. MonadSet acts upon messages prefixed by NN#$42. Here are the definitions of MonadSet and the MonadSet instance sMplayers:
   ```javascript  
     var MonadSet = function MonadSet(set, str) {
       var ob = {
@@ -707,7 +805,7 @@ Later, we will see how instances of MonadState and MonadTransformer perform the 
 
   The final test in the bnd() method occurs in a try-catch block. If a function and its quoted arguments are not of types undefined or NaN but the system returns an error, the error message gets logged and a browser crash is averted.
 
-  ## Websocket messages
+## Websocket messages
 
   Incoming websockets messages trigger updates to the game display, the chat display, and the todo list display. The members of a group see what other members are doing; and in the case of the todo list, they see the current list when they sign in to the group. When any member of a group adds a task, crosses it out as completed, edits its description, or removes it, the server updates the persistent file and all members of the group immediately see the revised list.
 
@@ -789,7 +887,7 @@ Another MonadState instance used in this demonstration is primesMonad. Here is i
     return v;
   }  
 ```  
-MonadState transformers
+## MonadState transformers
 
 Transformers take instances of MonadState and return different instances of MonadState, possibly in a modified state. The method call "fibsMonad.bnd(fpTransformer, primesMonad)" returns primesMonad. Here is the definition of fpTransformer:
 ```javascrit
@@ -801,7 +899,7 @@ Transformers take instances of MonadState and return different instances of Mona
     return m;
   }  
 ```  
-If the largest number in primesMonad.a is less than the square root of the largest number in fibsMonad.a, primesMonad is updated so that the largest number in primesMonad.a is greater than the square root of the largest number in fibsMonad.a. herwise, primesMonad is returned unchanged.
+If the largest number in primesMonad.a is less than the square root of the largest number in fibsMonad.a, primesMonad is updated so that the largest number in primesMonad.a is greater than the square root of the largest number in fibsMonad.a. Otherwise, primesMonad is returned unchanged.
 
 The final computation in the prime Fibonacci numbers demonstration occurs when "tr3(fibsState[3],primesState[3]" is called. tr3() takes an array of Fibonacci numbers and an array of prime numbers and returns an array containing an array of Fibonacci numbers, an array of prime numbers, and an array of prime Fibonacci numbers. Here is the definition of tr3:
 ```javascript
