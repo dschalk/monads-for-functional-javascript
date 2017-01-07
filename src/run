@@ -1,1 +1,1 @@
-webpack && cd ../ && stack runghc Main -v
+webpack && cd ../ && stack runghc Main 

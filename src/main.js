@@ -142,6 +142,7 @@ function main(sources) {
   mMZ31.bnd(() => mM34.ret(mM31.ret(v[1]).x + mM32.x + mM33.x).bnd(log5));
   mMZ32.bnd(() => mM34.ret(mM31.x + mM32.ret(v[1]).x + mM33.x).bnd(log5));
   });
+
   const worker$ = sources.WW.map(v => {
     console.log('Message from worker: ', v );
     v.preventDefault();
@@ -394,7 +395,7 @@ function main(sources) {
       .select('input#fib92').events('keyup');
 
   var primeFib$ = fibKeyPress5$.map(e => {
-    workerB.postMessage([e.target.value, primesMonad.s]);
+    workerB.postMessage(["CE#$42", primesMonad.s, e.target.value]);
   });
 
   var clearprimes$ = sources.DOM
@@ -417,7 +418,7 @@ function main(sources) {
         mMfactors3.ret('This works only if you enter a number. ' + num + ' is not a number');
       }
       else {
-        workerC.postMessage([num, primesMonad.s]);
+        workerC.postMessage([primesMonad.s, num]);
       }
     }
   });
@@ -442,7 +443,7 @@ function main(sources) {
         mMfactors8.ret(0);
       }
       else {
-        workerD.postMessage([num, primesMonad.s, mMfactors6.x.length]);
+        workerD.postMessage([primesMonad.s, num, mMfactors6.x.length]);
       }
     }
   });
@@ -869,7 +870,16 @@ clog.emit("A")
 clog.emit("B")
 clog.emit(5000);
 
-  var calcStream$ = xs.merge( factA$, clearprimes$, worker$, workerB$, workerC$, workerD$, clearAction$, backAction$, forwardAction$, factorsAction$, primeFib$, fibPressAction$, quadAction$, edit1Action$, edit2Action$, testWAction$, testZAction$, testQAction$, colorAction$, deleteAction$, newTaskAction$, chatClickAction$, gameClickAction$, todoClickAction$, captionClickAction$, groupPressAction$, rollClickAction$, messagePressAction$, loginPressAction$, messages$, numClickAction$, opClickAction$);
+var pr$ = sources.DOM
+    .select('#primeNumbers').events('keypress');
+
+var prAction$ = pr$.map(function (e) {
+    if (e.keyCode === 13) {
+      worker.postMessage(["CE#$42", primesMonad.s, e.target.value]);
+    }
+});
+
+  var calcStream$ = xs.merge( prAction$, factA$, clearprimes$, worker$, workerB$, workerC$, workerD$, clearAction$, backAction$, forwardAction$, factorsAction$, primeFib$, fibPressAction$, quadAction$, edit1Action$, edit2Action$, testWAction$, testZAction$, testQAction$, colorAction$, deleteAction$, newTaskAction$, chatClickAction$, gameClickAction$, todoClickAction$, captionClickAction$, groupPressAction$, rollClickAction$, messagePressAction$, loginPressAction$, messages$, numClickAction$, opClickAction$);
    
   return {
   DOM: calcStream$.map(function () {
@@ -1065,12 +1075,12 @@ h('p', ' However, imitating definitions and patterns found in category theory, a
     //
    //
   h('h2', ' Asynchronous Processes ' ),
-  h('p', ' The next demonstration involves a computation that can take a while to complete. It memoizes computed prime numbers and does not block the browser engine\'s primary execuation thread. The number you enter below is a cap on the size of the largest number in the Fibonacci sequence which is produced. If you enter 3 and then, one at a time, 0\'s until you reach three billion (3000000000), you should see the display updating quickly until the final 0. After a pause of less than one second, the prime Fibonacci number 2,971,215,073. If you add another 0, you can expect a substantial lag time - 19 seconds on my computer. Removing the final 0 and then putting it back demonstrates the effectiveness of memoization. ' ),
+  h('p', ' The next demonstration involves a computation that can take a while to complete. It memoizes computed prime numbers and does not block the browser engine\'s primary execuation thread. The number you enter below is a cap on the size of the largest number in the Fibonacci sequence which is produced. If you enter 3 and then, one at a time, 0\'s until you reach three billion (3000000000), you should see the display updating quickly until the final 0. After a pause of 9,972 milliseconds, the prime Fibonacci number 2,971,215,073 appeared n my desktop computer\'s monitor. If you add another 0, you can expect a substantial lag time. When I entered thirty billion, the wait time was 58,485 milliseconds. I deleted the final 0 and when I put it back, the elapsed time for the calculation was only 68 microseconds, demonstrating the efficacy of memoization.' ),
 h('br' ),
 h('span', ' According to the '), 
 h('a', { props: { href: "https://oeis.org/A005478", target: "_blank" } }, 'The On-Line Encyclopedia of Integer Sequences '),
 h('span', ' these are the first eleven proven prime Fibonacci numbers:'),
-h('span.purp', ' 2, 3, 5, 13, 89, 233, 1597, 28657, 514229, 433494437, 2971215073, and 99194853094755497. The eleventh number, 2971215073, is as far as you can go on an ordinary desktop computer. Incrementally taking the cap up to five trillion didn\'t get me close. ' ),
+h('span.purp', ' 2, 3, 5, 13, 89, 233, 1597, 28657, 514229, 433494437, 2971215073, and 99194853094755497. The eleventh number, 2971215073, is as far as you can go on an ordinary desktop computer. ' ),
 h('br' ),
 h('p.red',  'The elapsed time is ' + mMres.x[4] + ' milliseconds.' ),
 h('input#fib92'),
@@ -1083,20 +1093,20 @@ h('span#PF_8.red6', 'Prime Fibonacci Numbers'),
 h('br'),
 h('span#primeFibs.turk', mMres.x[2]  ),
 h('br'),
-h('span#PF_21.red6', 'Prime Numbers'),
-h('button#clearprimes', 'Clear primes display' ),    
+h('span#PF_21.red6', 'The largest generated prime number.'),
 h('br'),
 h('span#PF_22.turk', mMres.x[1]  ),
 h('br'),
-h('p', ' The code runs in two threads, a main thread and a web worker thread. Here is a look at what happens in the main thread. A function named workerDriverB is an attribute (with key "WWB") of the the object named "source" which, along with main, is ab argynebt of the function "ru". The sources object      cycle object provides a stream of message events from workerB to the virtual DOM, which is listens for messages from workerB., using create and add from the most library, is defined as follows: ' ), 
-    code.workerPrimeFibs_2,
-h('p', ' The driver is merged into the stream that feeds the virtual DOM, and it is also an element of the resources object (named WWB) which supports the user interface. I still marvel at the elegance of the cycle provided by the Motorcycle and Cycle libraries. The driver listens for messages from the worker, updating primesMonad and the browser display whenever one come in. Here is the code that runs in the main thread: ' ), 
-    code.primeFibInterface,
-h('p', ' Here is the definition of workerB.js. MonadState and fpTransformer are discussed in the MonadState and MonadStart Transformers section below.' ),
-    code.workerPrimeFibsjs,
+h('p', ' The code runs in two threads, a main thread and a web worker thread. In this and the next two demonstrations, primesMonad plays a central role. primesMonad.run takes two arguments: a prime numbersstate array and the upper bound on the array of prime numbers that will be generated.  In the code that follows, these will be designated as primesMonad.run(s,a). s will be the current state, accessible by primesMonad.s, and a will be the upper bound on the array of prime numbers requested. The result goes into s[1]. If more prime numbers need to be generated, s[3] will be updated. s[3] never gets smaller. s[0] is the next prime number after the highest number in s[3]. It is important in assuring that s[3] gets augmented appropriately. s[2] is the upper bound on the array in s[1]. Here is the code showing how primesMonad is defined, and how primesMonad.run(s,a) generates a new primes numbers state array: ' ),
+h('p', ' This is how the worker is defined: ' ),
+      code.workerB,
+h('p', ' Here is the definition of primesMonad, along with the function from which it is derived, MonadState, and its auxiliary function, primes_state. ' ),
+      code.primes_state,  
+h('p', ' fibsMonad also derives from MonadState. Here is how it is defined: ' ),
+      code.fibsMonad,
+h('h3', ' Prime Factors ' ),
 
-  
-h('p', ' workerC returns the prime factors of whatever integer it receives. The bottleneck is generating the prime numbers needed for the computation, so primesMonad is used to store computed primes. This overlaps with the memoization in the previous example since primesMonad is the only one place prime numbers are stored. ' ),
+h('p', ' workerC returns the prime factors of whatever integer it receives. The bottleneck is generating the prime numbers needed for the computation, so primesMonad is used to store computed primes. This overlaps with the memoization in the previous example since primesMonad is the only place prime numbers are stored. ' ),
  h('p', ' I verified that the bottleneck was being mitigated on my desktop computer. It took twenty-five seconds to verify that 514229 is a prime number.  I then entered 514230. The console log showed that only two microseconds were required to update the array of primes, and fourteen microsends to determine that its prime decomposistion is 2, 3, 5, 61, and 281. The lag had become negligible.  Here\'s where you can enter a number to see its prime factors: '),
 
 h('input#factors_1'),
@@ -1218,7 +1228,7 @@ h('p', ' The function solve() is recursive. It invokes itself after release() ex
 h('p', ' The final example before moving on to MonadState shows how the web worker file, worker.js, handles messages it recieves. worker$ and the worker driver are shown again for the reader\'s convenience. ' ),
     code.wDriver,
     code.worker$,
-    code.worker_js,
+      code.worker_js,
   
 // ************************************************************************** START MonadState
 
@@ -1291,6 +1301,9 @@ code.primesMonad,
   h('p'),
   h('p', '.'),
   h('p', '.'),
+/*  h('label', ' Upper bound for list of primes: ' ),  
+  h('input#primeNumbers' ),  
+  h('div', primesMonad.s[1].join(', ') ), */
   h('p', '.'),
   h('p', '.'),
   h('p', '.'),

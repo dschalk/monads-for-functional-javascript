@@ -5,27 +5,12 @@ onmessage = function(v) {
   console.log('In worker.js, receiving message text v.data', v.data ), 
   importScripts('script2.js');
 
-  if(Array.isArray(v.data) && v.data.length === 4) {
+  if (v.data[0] == "CE#$42") {
     console.log('In worker.js primesMonad.s = ', primesMonad.s )
-    postMessage(["CE#$41", primesMonad.run(v.data).s])
+    postMessage(["CE#$41", primesMonad.run([v.data[1], v.data[2]]).s])
   }
 
   if (v.data.length === 2 && typeof v.data[0] === 'string' && typeof v.data[1] === 'string') {
-    function lcm (c,d) {
-      console.log('In worker.js c, d ', c, d );
-      var ar= [];
-      var r;
-      d.map(v => {
-        if (c.some(x => x === v)) {
-          ar.push(v)
-          c.splice(c.indexOf(v),1)
-          d.splice(d.indexOf(v),1)}
-          r = ar.concat(d).concat(c).reduce(function (a,b) {return a*b})
-        }
-      )
-      return r
-    }
-  
     var a = v.data[0];
     var b = v.data[1];
     var r = Math.sqrt(a*a + b*b);

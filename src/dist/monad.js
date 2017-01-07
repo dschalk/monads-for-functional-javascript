@@ -209,20 +209,21 @@ function trav_archive (ar) {
   return next;
 }
 
-function MonadState(g, state, p) {
-  this.id = g;
-  this.s = state;
-  this.process = p;
-  this.a = this.s[3];
-  this.bnd = (func, ...args) => func(this.s, ...args);  
-  this.run = ar => { 
-    var ar2 = this.process(ar);
-    this.s = ar2;
-    window[this.id] = this;
-    return window[this.id];
-  }
-};
-
+  function MonadState(g, state, p) {
+    this.id = g;
+    this.s = state;
+    this.process = p;
+    this.a = this.s[2];
+    this.bnd = (func, ...args) => func(this.s, ...args);  
+    this.run = ar => { 
+      var ar2 = this.process(ar);
+      this.s = ar2;
+      this.a = ar2[2];
+      window[this.id] = this;
+      return window[this.id];
+    }
+  };
+  
 // var travMonad = new MonadState("travMonad", [[8,8,8,8], 0, 0, [ [ [], 0, 0 ] ] ], trav_state)
 
 function trav_state (ar) {
@@ -347,7 +348,7 @@ var mMplayer = new Monad([0,0,0,0], 'mMplayer');
 var fpTransformer = function transformer(s, m) {
   var bound = Math.ceil(Math.sqrt(s[3][s[3].length - 1]));
   if (bound > m.a[m.a.length - 1]) {
-      m.run([m.s[0], "from the fibKeyPress5$ handler", bound, primesMonad.a]);
+    m.run(["CE#$42", bound, m.s]);
   }
   return m;
 };

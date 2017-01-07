@@ -1,6 +1,6 @@
 body {
   background-color: #000;
-     color: #c7f7a5;
+  color: #FFE4C4;
   font-size: 16px;
 }
 
@@ -137,17 +137,15 @@ h3 {
 .yellow {
   color: #e8e8ab;
 }
-c7f7a5
 
-f76565
 .green2 {
   color: #c7f7a5;
-  font-size: 16x;
+  font-size: 16px;
 }
 
 .green {
   color: #00ffa5;
-  font-size: 16x;
+  font-size: 16px;
 }
 
 .red0 {
@@ -240,7 +238,7 @@ f76565
 } 
 
 .codeColor {
-  color: '00ffe1';
+  color: #00ffe1;
 }
 
 .caption {
@@ -360,14 +358,14 @@ h1 {
 #add {
   color: #FF0000;
   font-size: 16px;
-  font-style: bold;
+  font-weight: bold;
 }
 
 #addA {
   width: 80px;
   font-size: 16px;
   color: #0000FF;
-  font-style: bold;
+  font-weight: bold;
 }
 
 a {
@@ -378,21 +376,21 @@ a {
   width: 80px;
   font-size: 16px;
   color: #0000FF;
-  font-style: bold;
+  font-weight: bold;
 }
 
 #addC {
   width: 80px;
   font-size: 16px;
   color: #0000FF;
-  font-style: bold;
+  font-weight: bold;
 }
 
 #addD {
   width: 80px;
   font-size: 16px;
   color: #0000FF;
-  font-style: bold;
+  font-weight: bold;
 }
 
 .spacer {
