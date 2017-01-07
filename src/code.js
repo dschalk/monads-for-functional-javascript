@@ -657,13 +657,16 @@ var tr3 = h('pre',  `  var tr3 = function tr (fibsArray, primesArray) {
       primesMonad.a = m.data[3][3];
     });  `  )
 
-  var fpTransformer = h('pre',  `  var fpTransformer = function fpTransformer (s, m) {
-      var bound = Math.ceil(Math.sqrt(s[3][s[3].length - 1]));
-      if (bound > m.a[m.a.length - 1] ) {
-        m.run([m.s[0], "from the fibKeyPress5$ handler", bound, primesMonad.a])
-      }
-      return m;
-    }  `  )
+  var fpTransformer = h('pre',  `    var fpTransformer = function fpTransformer(x, s) {
+      var a = Math.ceil(Math.sqrt(x[3].slice(-1)[0]));
+      var m = primesMonad.run([s,a]);
+      var ar = [];
+      x[3].map(function (v) {
+        if (m.s[3].filter(x => x <= v).every(function (p) { return (v % p || v == p); }))
+          ar.push(v);
+      });
+      return [x[3].join(', '), m.s[3].slice(-1).pop(), ar.join(', '), m.s];
+    };   `  )
 
   var factorsMonad = h('pre',  `  var factorsMonad = new MonadState('factorsMonad', [[], [], 2, []], factor_state);
     
@@ -1002,7 +1005,7 @@ var tr3 = h('pre',  `  var tr3 = function tr (fibsArray, primesArray) {
       if (scor != 25) {
         newRoll(scor, pMgoals.x)
       }
-      else if (pMgoals.x === 2) {
+      else if (pMgoals.x === "2") {
         socket.send(\`CE#$42,${pMgroup.x},${pMname.x}\`);
         newRoll(0,0)
       }
@@ -1315,8 +1318,8 @@ var workerB = h('pre.green2',  `    var workerB = new Worker("workerB.js");
         if (m.s[3].filter(x => x <= v).every(function (p) { return (v % p || v == p); }))
           ar.push(v);
       });
-      return [x[3].join(', '), m.s[0], ar.join(', '), m.s];
-    };    `  )
+      return [x[3].join(', '), m.s[3].slice(-1).pop(), ar.join(', '), m.s];
+    };   `  )
 
 var primes_state = h('pre',  `    function MonadState(g, state, p) {
       this.id = g;
@@ -1380,7 +1383,7 @@ var fact_workerC = h('pre.red0',  `    onmessage = function(ar) {
       s[2] = num;
     
       primesMonad.run(s)
-      .bnd(s2 => fact(s2)
+      .bnd(s2 => fact(s2)    // fact() is defined below.
       .bnd(factors => postMessage(["The prime factors of " + num + 
         " are " + factors.join(', '), s2])));
     }
@@ -1402,9 +1405,7 @@ var fact_workerC = h('pre.red0',  `    onmessage = function(ar) {
       return ret(ar);
     }    `  )
 
-var fact2_workerD = h('pre.red0',  `    
-  
-    onmessage = function(ar) {
+var fact2_workerD = h('pre.red0',  `    onmessage = function(ar) {
       importScripts('script2.js');
       var r = [];  
       var k = ar.data[2];
@@ -1442,7 +1443,28 @@ var workerD$ = h('pre',  `    const workerD$ = sources.WWD.map(m => {
       mMfactors8.ret(m.data[2]);
     });   `  )
 
-var p9 = h('pre',  `  
+var p1 = h('pre',  `  
+`  )
+
+var p2 = h('pre',  `  
+`  )
+
+var p3 = h('pre',  `  
+`  )
+
+var p4 = h('pre',  `  
+`  )
+
+var p5 = h('pre',  `  
+`  )
+
+var p6 = h('pre',  `  
+`  )
+
+var p7 = h('pre',  `  
+`  )
+
+var p8 = h('pre',  `  
 `  )
 
 

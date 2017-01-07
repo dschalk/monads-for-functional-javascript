@@ -129,7 +129,7 @@ var equals = function equals (mon1, mon2) {
 var mMtemp5 = new Monad(0, 'mMtemp5') 
 
   function add (x, b) {
-      return ret(parseInt(x,10) + parseInt(b,10) );
+      return ret(parseInt(x,10) + b);
   };
 
   function add3 (x, str) {

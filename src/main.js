@@ -349,7 +349,7 @@ function main(sources) {
     if (scor != 25) {
       newRoll(scor, pMgoals.x)
     }
-    else if (pMgoals.x === 2) {
+    else if (pMgoals.x === "2") {
       socket.send(`CE#$42,${pMgroup.x},${pMname.x}`);
       newRoll(0,0)
     }
@@ -384,11 +384,7 @@ function main(sources) {
   const workerB$ = sources.WWB.map(m => {
     console.log('In workerB$ stream in the main thread. m is ', m );
     mMres.ret(m.data)
-    // .bnd(v => mM36.ret('The elapsed time is ' + v[3]) + ' milliseconds.');
-    primesMonad.s = JSON.parse(JSON.stringify(primesMonad.s));
-    primesMonad.a = JSON.parse(JSON.stringify(primesMonad.a));
-    primesMonad.s = m.data[3];
-    primesMonad.a = m.data[3][3];
+    window['primesMonad'] = new MonadState('primesMonad', m.data[3], primes_state);
   });
 
   var fibKeyPress5$ = sources.DOM
@@ -1020,7 +1016,7 @@ h('a', { props: { href: '#err' } }, 'MonadEr' ),
 h('span', ' catching NaN and preventing crashes when undefined variables are encountered. ' ),
 h('p', ' Computations are easy to link if each result is returned in an instance of Monad. Here are a few examples of functions that return instances of Monad: '),
 code.e1,
-h('p', ' The "M" prefix provides constrol over the destination of computation results. In the following example, m1, m2, and m3 have already been declared. Here is a comparrison of the results obtained when the "M" prefix is used and when it is omitted: ' ), 
+h('p', ' The "M" prefix provides control over the destination of computation results. In the following example, m1, m2, and m3 have already been declared. Here is a comparrison of the results obtained when the "M" prefix is used and when it is omitted: ' ), 
 
 h('pre.red9', `    m1.ret(7).bnd(m2.ret).bnd(m3.ret)  // All three monads get the value 7.
     m1.ret(0).bnd(add,3,'m2').bnd(cube,'m3')  // \'m1\', \'m2\', and \'m3\' are ignored` ),
@@ -1058,24 +1054,20 @@ h('a', { props: { href: '#top' } }, 'Back To The Top'),
 h('h3', ' Disussion ' ),
 h('span.tao', ' The Haskell statement ' ),    
 h('span.turk6', `f \u2261 g` ),
-h('span', ' means that f x == g x for all Haskell values x of the appropriate type. That is the test applied to Javascript expressions in "Monad Laws" section (above). Neither the === nor the === operator would provide useful information about the behavior of instances of Monad, which are objects. Those operators test objects for location in memory. If the left and right sides of predicates create new instances of m, then the left side m and the right side m wind up in different locations in memory. So we expect m.ret(3) === m.ret(3) to return false, and it does. The question we want answered is the question \u2261 answers in Haskell: Can the left and right sides be substituted for one another and still yield the same results.'),
+h('span', ' means that f x == g x for all Haskell values x of the appropriate type. That is the test applied to Javascript expressions in the "Monad Laws" section (above). Neither the == nor the === operator would provide useful information about the behavior of instances of Monad, which are objects. Those operators test objects for location in memory. If the left and right sides of predicates create new instances of m, then the left side m and the right side m wind up in different locations in memory. So we expect m.ret(3) === m.ret(3) to return false, and it does. The question we want answered is the question \u2261 answers in Haskell: Can the left and right sides be substituted for one another and still yield the same results.'),
 h('br' ),
 h('br' ),
-h('span.tao', ' The Haskell programming language borrowed the term "monad" from the branch of mathematics known as category theory. This was apropriate because Haskell monads, along with the function return and the operator >>=, behave quite a bit like category theory monads, and the inspiration for them came out of category theory. For Haskell monads to be category theory monads, they would need to reside in a category-theory category. They don\'t, although the Haskell mystique tends to give newcommers to the language the impression that they do. See ' ),
+h('span.tao', ' The Haskell programming language borrowed the term "monad" from the branch of mathematics known as category theory. This was apropriate because Haskell monads, along with the function return and the operator >>=, behave quite a bit like category theory monads, and the inspiration for them came out of category theory. For Haskell monads to actually be category theory monads, they would need to reside in a category-theory category. They don\'t, although the Haskell mystique tends to give newcommers to the language the impression that they do. See ' ),
 h('a', { props: { href: "http://math.andrej.com/2016/08/06/hask-is-not-a-category/", target: "_blank" } }, 'Hask is not a category.'),
 h('br' ),
-h('p', ' Research into ways of defining a Haskell category appears to be ongoing. It involves tinkering with special constraints, omitted features, and definitions of morphisms that are not Haskell functions. When a definition of the category is established, Haskell monads are then be shown to be, in some contrived context, category-theory monads. Devising such schemes are instructive academic excercises, but I don\'t think they can provide anything useful to programmers working on applications for industry, commerce, and the Internet. ' ),
-h('p', ' However, imitating definitions and patterns found in category theory, as Haskell does in defining the functor, monoid, and monad type classes, was a stroke of genius that vastly enriched the Haskell programming language and brought it into the mainstream as a viable alternative to java, c++, etc.  This website runs efficiently on a Haskell websockets server. Category theory patterns are less needed, but neverthless useful, in Javascript. Code that adheres to them tends to be robust and predictable. '  ), 
+h('p', ' Research into ways of defining a Haskell category appears to be ongoing. It involves tinkering with special constraints, omitted features, and definitions of morphisms that are not Haskell functions. When a definition of the category is established, Haskell monads are then shown to be, in some contrived context, category-theory monads. Devising such schemes are instructive academic excercises, but I don\'t think they can provide anything useful to programmers working on applications for industry, commerce, and the Internet. ' ),
+h('p', ' However, imitating definitions and patterns found in category theory, as Haskell does in defining the functor, monoid, and monad type classes, was a stroke of genius that vastly enriched the Haskell programming language and brought it into the mainstream as a viable alternative to java, c++, etc.  This website runs efficiently on a Haskell websockets server. The modified Haskell Wai Websockets server has proven to be extraordinarily easy to maintain as new requirements become necessary. For example, modifying the server to send chat messages and shared todo lists only to members of the same group was a trivial task. It required just a tiny amount of pattern-matching code. Category theory patterns make the Haskell front-end interface robust, versitile, and reliable. Those are the qualities that I strive to emulate with JS-monads.'  ), 
     
  // **************************************************************************** END MONAD       START ERROR   
     //
-    //
-    //
-    //
-    //
    //
   h('h2', ' Asynchronous Processes ' ),
-  h('p', ' The next demonstration involves a computation that can take a while to complete. It memoizes computed prime numbers and does not block the browser engine\'s primary execuation thread. The number you enter below is a cap on the size of the largest number in the Fibonacci sequence which is produced. If you enter 3 and then, one at a time, 0\'s until you reach three billion (3000000000), you should see the display updating quickly until the final 0. After a pause of 9,972 milliseconds, the prime Fibonacci number 2,971,215,073 appeared n my desktop computer\'s monitor. If you add another 0, you can expect a substantial lag time. When I entered thirty billion, the wait time was 58,485 milliseconds. I deleted the final 0 and when I put it back, the elapsed time for the calculation was only 68 microseconds, demonstrating the efficacy of memoization.' ),
+  h('p', ' The next demonstration involves a computation that can take a while to complete. It memoizes computed prime numbers and does not block the browser engine\'s primary execuation thread. The number you enter below is a cap on the size of the largest number in the Fibonacci sequence which is produced. If you enter 3 and then, one at a time, 0\'s until you reach three billion (3000000000), you should see the display updating quickly until the final 0. After a pause of around ten seconds, the prime Fibonacci number 2,971,215,073 appears on my desktop computer\'s monitor. If you add another 0, you can expect a substantial lag time. When I entered thirty billion, the wait time was 58,485 milliseconds. I deleted the final 0 and when I put it back, the elapsed time for the calculation was only 68 microseconds, demonstrating the efficacy of memoization.' ),
 h('br' ),
 h('span', ' According to the '), 
 h('a', { props: { href: "https://oeis.org/A005478", target: "_blank" } }, 'The On-Line Encyclopedia of Integer Sequences '),
@@ -1097,8 +1089,10 @@ h('span#PF_21.red6', 'The largest generated prime number.'),
 h('br'),
 h('span#PF_22.turk', mMres.x[1]  ),
 h('br'),
-h('p', ' The code runs in two threads, a main thread and a web worker thread. In this and the next two demonstrations, primesMonad plays a central role. primesMonad.run takes two arguments: a prime numbersstate array and the upper bound on the array of prime numbers that will be generated.  In the code that follows, these will be designated as primesMonad.run(s,a). s will be the current state, accessible by primesMonad.s, and a will be the upper bound on the array of prime numbers requested. The result goes into s[1]. If more prime numbers need to be generated, s[3] will be updated. s[3] never gets smaller. s[0] is the next prime number after the highest number in s[3]. It is important in assuring that s[3] gets augmented appropriately. s[2] is the upper bound on the array in s[1]. Here is the code showing how primesMonad is defined, and how primesMonad.run(s,a) generates a new primes numbers state array: ' ),
-h('p', ' This is how the worker is defined: ' ),
+h('p', ' The code runs in two threads, a main thread and a web worker thread. In this and the next two demonstrations, primesMonad plays a central role. primesMonad.run() takes two arguments: a prime numbers state (a four-member array) and the upper bound of the array of prime numbers that will be generated.  In the code that follows, these will be designated as primesMonad.run(s,a). s will be the current state, accessible as primesMonad.s, and a will be the upper bound on the array of prime numbers in the new state array that is created by primesMonad.run(). The result becomes the second element in the state array (s[1]). ' ),
+h('p', ' The list of all prime numbers generated during the browser session is stored in s[3]. If more prime numbers are required, the largest prime number required, designated by "a", and the current value of primesMonad.s, are provided to the primesMonad run method in the statement primesMonad.run(s,a). If, however, the largest prime number required, again deignated by "a", is smaller than the largest number in primesMonad.s[3], primesMonad.run(s,a) will return a fresh primesMonad object in which primesMonad.s[1] is a truncated version of primesMonad.s[3].return a herwise, it will return s[3] or a truncated version of s[3]. ' ),
+h('p', ' primesMonad.s[0] is the next number scheduled to be tested whenever primesMonad.run(s,a) increases the size of s[3]. s[2] is the upper bound on the array in s[1]. Here is the code showing how primesMonad is defined, and how primesMonad.run(s,a) generates a new prime numbers state: ' ),
+h('p', ' First, the definition of workerB.js: ' ),
       code.workerB,
 h('p', ' Here is the definition of primesMonad, along with the function from which it is derived, MonadState, and its auxiliary function, primes_state. ' ),
       code.primes_state,  
@@ -1107,48 +1101,32 @@ h('p', ' fibsMonad also derives from MonadState. Here is how it is defined: ' ),
 h('h3', ' Prime Factors ' ),
 
 h('p', ' workerC returns the prime factors of whatever integer it receives. The bottleneck is generating the prime numbers needed for the computation, so primesMonad is used to store computed primes. This overlaps with the memoization in the previous example since primesMonad is the only place prime numbers are stored. ' ),
- h('p', ' I verified that the bottleneck was being mitigated on my desktop computer. It took twenty-five seconds to verify that 514229 is a prime number.  I then entered 514230. The console log showed that only two microseconds were required to update the array of primes, and fourteen microsends to determine that its prime decomposistion is 2, 3, 5, 61, and 281. The lag had become negligible.  Here\'s where you can enter a number to see its prime factors: '),
+ h('p', ' I verified that the bottleneck was being mitigated on my desktop computer. It took twenty-five seconds to verify that 514229 is a prime number.  I then entered 514230. The console log showed that only two microseconds were required to update the array of primes, and fourteen microsends to determine that its prime decomposistion is 2, 3, 5, 61, and 281. Because the prime numbers needed for the computation were saved in primesMonnad, the lag subsequently became negligible.  Here\'s where you can enter a number to see its prime factors: '),
 
 h('input#factors_1'),
 h('br'),
 h('br'),
 h('div.tao3', `${mMfactors.x}` ),    
 h('div.tao3', mMfactors3.x ),    
-h('p', ' And here is the definition of workerC.js, which is used to define workerC, along with the definition of fact(). '),
-   code.fact,  
-h('p', ' The following demonstration generates an array of the prime decompensations of numbers. No decomposition is computed more than once, so very little time is needed to obtain numbers smaller than a previously obtained number. Entering a number selects the number on the generated array, which is held in the monad mMfactors6, with that index. So, for example, entering 30 causes mMfactors.x[30] (which is [2,3,5]) to be displayed. ' ),
+h('p', ' And here are the definitions of workerC.js along with the function that it uses named "fact()". '),
+   code.fact_workerC,  
+h('p', ' The following demonstration generates an array of arrays containing the prime decompensations of numbers. No decomposition is computed more than once, so very little time is needed to obtain an array of the prime decompositions of numbers smaller than or slightly greater than a previously obtained prime decomposition. The array of arrays of prime decompositions is stored in the monad mMfactors6. Because the ideces of lists of prime decompositions corresponds to the numbers which are decomposed, mMfactors6.x[i] is the prime decomposition of the integer i for all i in Object.keys(mMfactors.x).map(x => parseInt(x)). The following demonstration identifies the array in mMfactors6.x corresponding to the integer entered in the input box. Four digit numbers return promptly. I entered 55555 in my desktop computer and had to wait 87 seconds for 5, 41, 271 to appear on my monitor. The same result took 11 seconds in the previous example, and only 3 microseconds if a long-enough array of primes had previously been generated. ' ),
 h('input#factors_5'),
 h('br'),
 h('br'),
 h('div.tao3', `${mMfactors7.x}` ),    
 h('div.tao3', `${mMfactors6.x[mMfactors8.x]}` ),    
 h('p', ' Here is the code used to generate the list of prime decompositions: ' ),
-    code.fact2, 
+    code.fact2_workerD, 
 // ********************************************************************** Begin MonadState
 
 h('p#monadstate'),
 h('a#state', { props: { href: '#monad' } }, 'Back to Monad discussion'),
-h('h2', 'MonadState and MonadState Transformers'),
-p(' The preceding demonstrations used three instances of MonadState: primesMonad, fibsMonad, and factorsMonad. The chat message demonstration uses another instance of MonadState; namely, messageMonadn. Here is messageMonad along with some more information about MonadState. '),
-    code.messageMonad,    
-h('p', ' An instance of MonadState holds the current state along with a method for updating state. For any instance of MonadState, say m, these can be accessed through m.a and m.p, respectively.  '),
+h('h3', 'MonadState and MonadState Transformers'),
+p(' The preceding demonstrations used three instances of MonadState: primesMonad, fibsMonad, and factorsMonad. The chat message demonstration uses another instance of MonadState; namely, messageMonadn. Instance of MonadState holds a current state along with a method for updating state. Here again is the definition of MonadState: '),
 code.MonadState,
-h('p', ' MonadState reproduces some of the functionality found in the Haskell Module "Control.Monad.State.Lazy", inspired by the paper "Functional Programming with Overloading and Higher-der Polymorphism", Mark P Jones (http://web.cecs.pdx.edu/~mpj/) Advanced School of Functional Programming, 1995. The following demonstrations use the MonadState instances fibsMonad and primesMonad to create and store arrays of Fibonacci numbers and arrays of prime numbers, respectively. fibsMonad and primesMonad combine, with the help of prFactTransformer3, to produce arrays of prime Fibonacci numbers. Until a browser tab is closed, the largest arrays of prime numbers that have been computed are stored in primesMonad.a and primesMonad.s[3]. When smaller arrays of prime numbers are required, thay are obtained from the large arrays and are not re-computed. '),
-h('p', ' Here is the definition of fibsMonad, along with the definition of the function that becomes fibsMonad.process. '),
-h('p', ' Transformers take instances of MonadState and return different instances of MonadState, possibly in a modified state. The method call "fibsMonad.bnd(fpTransformer, primesMonad)" returns primesMonad. Here is the definition of fpTransformer: '),
+h('p', ' MonadState reproduces some of the functionality found in the Haskell Module "Control.Monad.State.Lazy", inspired by the paper "Functional Programming with Overloading and Higher-der Polymorphism", Mark P Jones (http://web.cecs.pdx.edu/~mpj/) Advanced School of Functional Programming, 1995. Transformers take instances of MonadState and return different instances of MonadState. The method call "fibsMonad.bnd(fpTransformer, primesMonad)" returns primesMonad updated so that the largest prime number in primesMonad.s[1] is the square root of the largest Fibonacci number in fibsMonad.s[3]. Here is the definition of fpTransformer: '),
 code.fpTransformer,
-h('p', ' If the largest number in primesMonad.a is less than the square root of the largest number in fibsMonad.a, primesMonad is updated so that the largest number in primesMonad.a is greater than the square root of the largest number in fibsMonad.a. herwise, primesMonad is returned unchanged.  '),
-h('p', ' The final computation in the prime Fibonacci numbers demonstration occurs when "tr3(fibsState[3],primesState[3]" is called. tr3() takes an array of Fibonacci numbers and an array of prime numbers and returns an array containing an array of Fibonacci numbers, an array of prime numbers, and an array of prime Fibonacci numbers. Here is the definition of tr3: '),
-code.tr3,
-h('p', ' User input is handled by a chain of computations in a web worker named workerB. first to update fibsMonad, second to extract fibsMonad.s, third to run fpTransformer to modify and then return primesMonad, and fourth to extract primesMonad.s and run tr3(fibsState[3],primesState[3]). Monad instance mMres obtains the result. mMres.x[0], mMres.x[1], and mMres.x[2], are permanent features of the virtual DOM.  Here is the code: '),
-code.primeFibInterface,
-h('p', 'Only 48 Fibonacci numbers need to be generated in order to get the eleventh prime Fibonacci number. But 5546 prime numbers need to be generated to test for divisibility into 2971215073. Finding the next Fibonacci number is just a matter of adding the previous two. Getting the next prime number is a more elaborate and time-consuming procedure. In this context, the time needed to compute 48 Fibonacci numbers is insignificant, so I didn\'t bother to save previously computed Fibonacci numbers in the prime Fibonacci demonstration. '),
-h('p', ' Entering 50 in my desktop Ubuntu Chrome and Firefox browsers got the first eleven prime Fibonacci numbers in about one second. I tried gradually incrementing upwards from 50, but when I got to 61 I stopped due to impatience with the lag time. The 61st Fibonacci number was computed to be 1,548,008,755,920. 76,940 prime numbers were needed to check the 60th Fibonacci number. 96,043 prime numbers were needed to check the 61st Fibonacci number.  At Fibonacci number 61, no new prime Fibonacci numbers had appeared.'),
-h('p', ' The demonstration uses primesMonad and factorsMonad. Here are the definitions of factosMonad and factor_state, the function that is factorsMonad.process: '),
-code.factorsMonad,
-h('p#async', ' And this is how user input is handled: '),
-code.factorsInput,
-h('p', ' The expressions get(mMfactors) and get(mMfactors) are permanent fixtures of the virtual DOM. The click handler is a stream which receives input from the virtual DOM and is merged into the stream that feeds data to the virtual DOM. Since changes to mMfactors and mMfactors3 are in the cycle initiated by user input and culminating in a modification of the virtual DOM, there is no need to explicitly create observers. Reactivity stems from being in the cycle. ' ),   
 h('a', { props: { href: '#top' } }, 'Back To The Top'),
 
 // ********************************************************************** End MonadState
@@ -1180,7 +1158,7 @@ h('a', { props: { href: '#top' } }, 'Back To The Top'),
   h('br'),
   h('img.image', {props: {src: "error2.png"}}  ),   
   h('br'),
-  h('p.tao1b', ' The monad laws hold for MonadVEr instances. The following relationships were verified in the Chrome console: ' ),  
+  h('p.tao1b', ' The monad laws hold for MonadEr instances. The following relationships were verified in the Chrome console: ' ),  
   h('pre', `    ret3(0,'t',[])  // t is now an instance of MonadEr with t.x = 0 and t.e = [].
 
     t.ret(3).bnd(cube3).x === cube(3).x  
@@ -1225,7 +1203,7 @@ h('p', 'Here is the code:'),
 code.quad,
 h('p', ' fmap (above) facilitated using qS4 in a monadic sequence. qS4 returns an array, not an instance of Monad, but fmap lifts qS4 into the monadic sequence. '),
 h('p', ' The function solve() is recursive. It invokes itself after release() executes three times. The expression "solve()" resets solve to the top, where mMZ3.p becomes a function containing two nested occurrances of mMZ3.bnd. After mMZ3.release() executes, mMZ3.p becomes the function that is the argument to the next occurrance of mMZ3.bnd. That function contains yet another occurrance of mMZ3.bnd. MonadItter is syntactic sugar for nested callbacks. ' ), 
-h('p', ' The final example before moving on to MonadState shows how the web worker file, worker.js, handles messages it recieves. worker$ and the worker driver are shown again for the reader\'s convenience. ' ),
+h('p', ' The final example before moving on to MonadArchive shows how the web worker file, worker.js, handles messages it recieves. worker$ and the worker driver are shown again for the reader\'s convenience. ' ),
     code.wDriver,
     code.worker$,
       code.worker_js,
@@ -1278,16 +1256,9 @@ h('a', { props: { href: '#top' } }, 'Back To The Top'),
   h('a', { props: { href: '#top' } }, 'Back To The Top'),
 
 
-  h('h2', 'Appendix A - MonadState and Transformers' ),
-  h('h3', 'Prime Numbers and the Fibonacci Series Examples' ),
-code.fibsMonad,
-  h('p', '.'),
-code.primesMonad,
-  h('br'),
-  h('h2', 'Appendix B - MonadEr ' ),
+  h('h2', 'Appendix - MonadEr ' ),
   h('h3', 'The functions that produce the examples' ),  
-    
-
+  
   h('p', ' Here are the definitions of MonadEr, its helper functions, and the function that serve as parameters to the bnd() method in the demonstration. ' ),
     code.monadEr,
   h('p', ' and here is the code that produced the Chrome console log entries: ' ),
