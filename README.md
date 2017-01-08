@@ -292,6 +292,7 @@ Here is the code used to generate the list of prime decompositions:
       return ar;
     }    
 ```
+
 ### MonadState and MonadState Transformers
 
 The preceding demonstrations used three instances of MonadState: primesMonad, fibsMonad, and factorsMonad. The chat message demonstration uses another instance of MonadState; namely, messageMonadn. Instance of MonadState holds a current state along with a method for updating state. Here again is the definition of MonadState:
@@ -501,7 +502,7 @@ MonadState reproduces some of the functionality found in the Haskell Module "Con
   ```
   As shown later in the online demonstration, MonadItter instances control the routing of incoming websockets messages and the flow of action in the simulated dice game. In one of the demonstrations, they behave much like ES2015 iterators. I prefer them over ES2015 iterators. They can also help to provide promises-like functionality without promises.
 
-  ### Traversal of the dice game history.
+### Traversal of the dice game history.
 
   MonadState instance travMonad facilitates traversal of the game history. travMonad.s is a four member array holding the current numbers, current score, current goals, and an array of arrays containing numbers, score, and goals corresponding to past states of the game.. Here is the definition of travMonad and its auxiliary function:
   ```javascript
@@ -651,7 +652,7 @@ The list of online group members at the bottom of the scoreboard is very respons
     
     var sMplayers = MonadSet(s, 'sMplayers'); // holds currently online players 
   ```
-  ## MonadE - An Error-Catching Monad
+## MonadE - An Error-Catching Monad
 
   Instances of MonadE function much the same as instances of Monad, but when an instance of MonadE encounters an error, it ceases to perform any further computations. Instead, it passes through every subsequent stage of a sequence of MonadE expressions, reporting where it is and repeating the error message. It will continue to do this until it is re-instantiated or until its bnd() method runs on the function clean().
 
@@ -845,7 +846,7 @@ The list of online group members at the bottom of the scoreboard is very respons
   MonadState and MonadState Transformers
 
   An instance of MonadState holds the current state and value of a computation. For any instance of MonadState, say m, these can be accessed through m.s and m.a, respectively.
-  ```javascript
+```javascript
     function MonadState(g, state, p) {
       this.id = g;
       this.s = state;
@@ -947,6 +948,7 @@ With Motorcycle.js, the application runs smoothly and is easy to understand and 
 
 ### worker.js
 
+```javascript
 onmessage = function(v) {
 
   function MonadState(g, state, p) {
@@ -1041,7 +1043,7 @@ onmessage = function(v) {
     )
     return r
   }
-
+```
   var a = v.data[0];
   var b = v.data[1];
   var r = Math.sqrt(a*a + b*b);
