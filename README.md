@@ -92,31 +92,35 @@
   In the following discussion, "x === y" signifies that the expression x === y returns true. Let J be the collection of all Javascript values, including functions, instances of Monad, etc, and let F be the collection of all functions mapping values in J to instances of Monad with references (names) matching their ids; that is, with window[id] === m.id for some id which is a valid es2015 variable name. The collection of all such instances of Monad along and all of the functions in F is called "M". For any instances of Monad m, m1, and m2 in M and any functions f and g in F, the following relationships follow easily from the definition of Monad:
 
   Left Identity
+```js
       m.ret(v, ...args).bnd(f, ...args).x === f(v, ...args).x   
       ret(v, ...args).bnd(f, ...args).x === f(v, ...args).x 
       Examples: m.ret(3).bnd(cube).x === cube(3).x  Tested and verified  
       ret(3).bnd(cube).x === cube(3).x     Tested and verified
       Haskell monad law: (return x) >>= f ≡ f x  
+```  
   Right Identity
+```js      
       m.bnd(m.ret) === m      Tested and verified 
       m.bnd(m.ret) === m   Tested and verified
       m.bnd(ret) === m  Tested and verified
       Haskell monad law: m >>= return ≡ m 
+```  
   Commutivity
+```js      
       m.bnd(f1, ...args).bnd(f2, ...args).x === m.bnd(v => f1(v, ...args).bnd(f2, ...args)).x 
       Example: m.ret(0).bnd(add, 3).bnd(cube).x === 
       m.ret(0).bnd(v => add(v,3).bnd(cube)).x  Tested amd verified
       Haskell monad law: (m >>= f) >>= g ≡ m >>= ( \x -> (f x >>= g) ) 
-
+```
 ### Disussion
   The Haskell statement f ≡ g means that f x === g x for all Haskell values x of the appropriate type. That is the test applied to Javascript expressions in "Monad Laws" section (above). Neither the === nor the === operator would provide useful information about the behavior of instances of Monad, which are objects. Those operators test objects for location in memory. If the left and right sides of predicates create new instances of m, then the left side m and the right side m wind up in different locations in memory. So we expect m.ret(3) === m.ret(3) to return false, and it does. The question we want answered is the question ≡ answers in Haskell: Can the left and right sides be substituted for one another and still yield the same results.
 
 Research into ways of defining a Haskell category appears to be ongoing. It involves tinkering with special constraints, omitted features, and definitions of morphisms that are not Haskell functions. When a definition of the category is established, Haskell monads are then be shown to be, in some contrived context, category-theory monads. Devising such schemes are instructive academic excercises, but I don't think they can provide anything useful to programmers working on applications for industry, commerce, and the Internet.
 
-However, imitating definitions and patterns found in category theory, as Haskell does in defining the functor, monoid, and monad type classes, was a stroke of genius that vastly enriched the Haskell programming language and brought it into the mainstream as a viable alternative to java, c++, etc. This website runs efficiently on a Haskell websockets server. Category theory patterns are less needed, but neverthless useful, in Javascript. Code that adheres to them tends to be robust and predictable.
+However, imitating definitions and patterns found in category theory, as Haskell does in defining the functor, monoid, and monad type classes, was a stroke of genius that vastly enriched the Haskell programming language and brought it into the mainstream as a viable alternative to java, c++, etc. This website runs efficiently on a Haskell websockets server. The modified Haskell Wai Websockets server has proven to be extraordinarily easy to maintain as new requirements become necessary. For example, modifying the server to send chat messages and shared todo lists only to members of the same group was a trivial task. It required just a tiny amount of pattern-matching code. Category theory patterns make the Haskell front-end interface robust, versitile, and reliable. Those are the qualities that I strive to emulate with JS-monads.
 
 ## Asynchronous Processes
-//******************************************************
 
 The first asynchronous code demonstration involves a computation that can take a while to complete. It memoizes computed prime numbers and does not block the browser engine's primary execuation thread. The number you enter below is a cap on the size of the largest number in the Fibonacci sequence which is produced. If you enter 3 and then, one at a time, 0's until you reach three billion (3000000000), you should see the display updating quickly until the final 0. After a pause of around ten seconds, the prime Fibonacci number 2,971,215,073 appears on my desktop computer's monitor. If you add another 0, you can expect a substantial lag time. When I entered thirty billion, the wait time was 58,485 milliseconds. I deleted the final 0 and when I put it back, the elapsed time for the calculation was only 68 microseconds, demonstrating the efficacy of memoization.
 
