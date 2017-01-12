@@ -1,9 +1,17 @@
 
 
 
+
+
+
+
+
+
+
+
 onmessage = function(v) {
-  console.log('In worker.js, receiving message text v.data', v.data ), 
   importScripts('script2.js');
+  console.log('In worker.js receiving message text v.data', v.data ); 
 
   if (v.data[0] == "CE#$42") {
     console.log('In worker.js primesMonad.s = ', primesMonad.s )

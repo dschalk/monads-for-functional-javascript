@@ -19,7 +19,7 @@ var Monad = function Monad(z = 19, g = 'generic') {
     var m = func(this.x, ...args)
     var ID;
     if (m instanceof Monad) {
-      ID = testPrefix(args, this.id); 
+      ID = testPrefix(args, _this.id); 
       window[ID] = new Monad(m.x, ID);
       return window[ID];
     }
@@ -35,7 +35,7 @@ function testPrefix (x,y) {
   var s;
   if (Array.isArray(x)) {
     x.some(v => {
-      if (typeof v == 'string' && v.charAt() == 'M') {
+      if (typeof v == 'string' && v.charAt() == '$') {
          t = v.slice(1);
       }
     })
@@ -213,12 +213,11 @@ function trav_archive (ar) {
     this.id = g;
     this.s = state;
     this.process = p;
-    this.a = this.s[2];
+    this.a = this.s[0];
     this.bnd = (func, ...args) => func(this.s, ...args);  
     this.run = ar => { 
       var ar2 = this.process(ar);
       this.s = ar2;
-      this.a = ar2[2];
       window[this.id] = this;
       return window[this.id];
     }
@@ -260,7 +259,7 @@ function testPrefix3 (x,y) {
   else if (eval(x) !== eval(x)) return "code5"
   else return "code6"  
     x.some(v => {
-      if (typeof v == 'string' && v.charAt() == 'M') {
+      if (typeof v == 'string' && v.charAt() == '$') {
          t = v.slice(1);
       }
     })
@@ -495,7 +494,7 @@ var runFib = function runFib(x) {
   return fibsMonad.a;
 };
 
-var primesMonad = new MonadState('primesMonad', [3, [], 3, [2,3]], primes_state);
+var primesMonad = new MonadState('primesMonad', [3, [2,3], 3, [2,3]], primes_state);
 
 function pFib(fibs, primes) {
   var ar = [];
@@ -808,21 +807,26 @@ function factors (num) {
   .bnd(s => prFactTransformer3(s, num))
 }
 
-function lcm (c1,d1) {
+function lcm (c,d) {
   var ar= [];
-  var c = c1.slice()
-  var d = d1.slice()
   var r;
-  d1.map(v => {
-    if (c.some(x => x === v)) {
+  d.map(v => {
+    c.map(x => {
+      if (x === v) {
       ar.push(v)
       c.splice(c.indexOf(v),1)
-      d.splice(d.indexOf(v),1)}
-      r = ar.concat(d).concat(c).reduce(function (a,b) {return a*b})
-    }
-  )
+      d.splice(d.indexOf(v),1)
+      }
+    })
+  })
+  r = ar.concat(d).concat(c).reduce(function (a,b) {return a*b})
   return r
 }
+
+
+function lc (str) {
+  str.split(',').map(x => parseInt(x)).reduce((a,b) => lcm(mMfactors6.x[a], mMfactors6.x[b]))
+};
 
 function stripchars(string, chars) {
   return string.replace(RegExp('['+chars+']','g'), '');
@@ -833,7 +837,7 @@ function testPrefix (x,y) {
   var s;
   if (Array.isArray(x)) {
     x.some(v => {
-      if (typeof v == 'string' && v.charAt() == 'M') {
+      if (typeof v == 'string' && v.charAt() == '$') {
          t = v.slice(1);
       }
     })
@@ -954,7 +958,7 @@ function testPrefix (x,y) {
       }
       else
           mon3.ret('false');
-      return ret(x, 'Mtemp3');
+      return ret(x, '$temp3');
   };
   var pause = function (x, t, mon2) {
       var time = t * 1000;
@@ -1231,7 +1235,7 @@ function MonadEr (val, ID, er = []) {
     }
     
     if (args.length > 0) {
-      arr = args.filter(v => !(typeof v == 'string' && v.charAt() == 'M' && v.slice(0,4) !== 'Math'))
+      arr = args.filter(v => !(typeof v == 'string' && v.charAt() == '$' && v.slice(0,4) !== 'Math'))
         
       arr.map(v => {
         test = testP(v, this.id)
@@ -1278,27 +1282,26 @@ var t = new MonadEr(0,'t', []);
 var t2 = new MonadEr(0,'t2', []);
 var t3 = new MonadEr(0,'t3', []);
 console.log('Values of t, t2, and t3', t.x,t2.x,t3.x)
-console.log("executing t.bnd(\'add3\',3,\'Mt2\').bnd(cube3, \'Mt3\') ");
-t.bnd('add3',3,'Mt2').bnd(cube3, 'Mt3')
+console.log("executing t.bnd(\'add3\',3,\'$t2\').bnd(cube3, \'$t3\') ");
+t.bnd('add3',3,'$t2').bnd(cube3, '$t3')
 console.log('Values of t, t2, and t3', t.x,t2.x,t3.x)
 var t = new MonadEr(0,'t', []);
 var t2 = new MonadEr(0,'t2', []);
 var t3 = new MonadEr(0,'t3', []); 
 console.log('Values of t, t2, and t3', t.x,t2.x,t3.x)
-console.log("executing t.bnd('add3','three', 'Mt2').bnd(cube3, 'Mt3') " );
-t.bnd('add3','three','Mt2').bnd(cube3, 'Mt3')
+console.log("executing t.bnd('add3','three', '$t2').bnd(cube3, '$t3') " );
+t.bnd('add3','three','$t2').bnd(cube3, '$t3')
 console.log('Values of t, t2, and t3', t.x,t2.x,t3.x)
 
 console.log( 't.bnd(clean3)' );
 t.bnd(clean3);
 
-console.log("executing t.bnd('add3', 'Math.sqrt(-1)', 'Mt2').bnd(cube3, 'Mt3') " );
-t.bnd('add3','Math.sqrt(-1)','Mt2').bnd(cube3, 'Mt3')
-console.log('Values of t, t2, and t3', t.x,t2.x,t3.x)
+console.log("executing t.bnd('add3', 'Math.sqrt(-1)', '$t2').bnd(cube3, '$t3') " );
+t.bnd('add3','Math.sqrt(-1)','$t2').bnd(cube3, '$t3'); console.log('Values of t, t2, and t3', t.x,t2.x,t3.x)
 console.log( 't.bnd(clean3)' );
 t.bnd(clean3);
-console.log("executing t.bnd(\'addd3\',3,\'Mt2\').bnd(cube3, \'Mt3\') ");
-t.bnd('addd3',3,'Mt2').bnd(cube3, 'Mt3')
+console.log("executing t.bnd(\'addd3\',3,\'$t2\').bnd(cube3, \'$t3\') ");
+t.bnd('addd3',3,'$t2').bnd(cube3, '$t3')
 console.log('Values of t, t2, and t3', t.x,t2.x,t3.x)
 console.log('.');
 console.log('.');
@@ -1306,12 +1309,12 @@ console.log('.');
 ret(5,'a');ret(5,'b');ret(5,'c');ret(5,'d');ret(5,'e');ret(5,'f');ret(5,'g')
 console.log('Current values of the monads:',a.x,b.x,c.x,d.x,e.x,f.x,g.x);
 console.log('.');
-console.log("ret(0,'a').bnd(add,3,'Mb').bnd(mult,100,'Mc').bnd(v1 => d.ret(v1*v1)");
-console.log(".bnd(add, v1 - d.x + 100,'Me').bnd(v2 => f.ret(v2*v2)");
-console.log(".bnd(add, d.x,'Mg').bnd(sqroot,'Mf')");
+console.log("ret(0,'a').bnd(add,3,'$b').bnd(mult,100,'$c').bnd(v1 => d.ret(v1*v1)");
+console.log(".bnd(add, v1 - d.x + 100,'$e').bnd(v2 => f.ret(v2*v2)");
+console.log(".bnd(add, d.x,'$g').bnd(sqroot,'$f')");
 console.log(".bnd(v3 => console.log('The sum of',v1,'squared and',v2,'squared is',v3) )" );
-ret(0,'a').bnd(add,3,'Mb').bnd(mult,100,'Mc').bnd(v1 => d.ret(v1*v1)
-.bnd(add, v1 - d.x + 100,'Me').bnd(v2 => f.ret(v2*v2).bnd(add, d.x,'Mg').bnd(sqroot,'Mf')
+ret(0,'a').bnd(add,3,'$b').bnd(mult,100,'$c').bnd(v1 => d.ret(v1*v1)
+.bnd(add, v1 - d.x + 100,'$e').bnd(v2 => f.ret(v2*v2).bnd(add, d.x,'$g').bnd(sqroot,'$f')
 .bnd(v3 => console.log('The square root of the sum of',v1,'squared and',v2,'squared is',v3))));
 console.log('.');
 console.log('Current values of the monads:', a.x,b.x,c.x,d.x,e.x,f.x,g.x);
@@ -1447,4 +1450,40 @@ stream$.addListener(listener)
 em.emit('cow','Whatever you say, sir.');
 
 messageMonad.run([ [], [], [], [] ] );
+
+function lcm(x, y) {
+  return (x * y) / gcd(x, y);
+}
+
+function gcd(x, y) {
+  while(y) {
+    var t = y;
+    y = x % y;
+    x = t;
+  }
+  return x;
+}
+
+
+function fact2(a,b) {
+  console.log('In fact2 a an b are', a, b );
+  var ar = [];
+  var n = a;
+  while (n != 1) {
+    b.map(p => {
+      if (n/p === Math.floor(n/p)) {
+        console.log('In fact2. ar and p are', ar, p );
+        ar.push(p);
+        n = n/p;
+      };
+    })
+  }
+  ar.sort(function(a, b) {
+    return a - b;
+  });
+  return ret(ar);
+}
+
+
+
 

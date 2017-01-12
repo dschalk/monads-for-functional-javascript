@@ -616,7 +616,6 @@ var primesMonad = h('pre',  `    var primesMonad = new MonadState('primesMonad',
 
 var fibsMonad = h('pre',  `  var primesMonad = new MonadState('primesMonad', [3, '', 3, [2,3]], primes_state);
 
-
   var fibs_state = function fibs_state(ar) {
     var a = ar.slice();
     while (a[3].length < a[2]) {
@@ -1296,8 +1295,8 @@ var workerB_Driver = h('pre.red0',  `    function workerBDriver () {
       });
     };    `  )
 
-var workerB = h('pre.green2',  `    var workerB = new Worker("workerB.js");
-// workerB.js
+var workerB = h('pre.green2',  `    var workerB = new Worker("workerB.js"); // In the main thread.
+
     onmessage = function(m) {
       var ar = m.data;
       importScripts('script2.js');
@@ -1325,43 +1324,45 @@ var primes_state = h('pre',  `    function MonadState(g, state, p) {
       this.id = g;
       this.s = state;
       this.process = p;
-      this.a = this.s[2];
+      this.a = this.s[0];
       this.bnd = (func, ...args) => func(this.s, ...args);  
       this.run = ar => { 
         var ar2 = this.process(ar);
         this.s = ar2;
-        this.a = ar2[2];
-        self[this.id] = this;   // self is like window in the main thread.
+        self[this.id] = this;   // "self" is the global context in a worker.
         return self[this.id];
       }
     };
 
-    var primesMonad = new MonadState('primesMonad', [3, [], 3, [2,3]], primes_state);
+    var primesMonad = new MonadState('primesMonad', [3, [2,3], 3, [2,3]], primes_state);
 
     function primes_state(x) {
-      console.log('Entering primes_state. x is', x )
-      var v = x[0];
-      var a = x[1];
-      if (a == v[2]) {
-        return v;
+      var state = x[0].slice();
+      var top = state[2];
+      var primes = state[3];
+      var newtop = x[1];
+      if (newtop == state[0] || newtop == top) {
+        return state;
       }
     
-      else if (a < v[0]) {
-        v[1] = v[3].filter(v => v <= a);
-        v[2] = a;
-        return v;
+      else if (newtop < top) {
+        var temp = primes.filter(v => v <= newtop);
+        var q = temp.indexOf(temp[temp.length - 1]);
+        temp.push(primes[q + 1]);
+        return [primes[q+1], temp, top, primes];
       }
         
       else {
-        while (v[0] < a) {
-          if ( v[3].filter(x => x <= v[0]).every(e =>  (v[0] / e) != Math.floor(v[0] / e)) ) {
-            v[3].push(v[0]);
+        while (true) {
+          if (primes.every(e =>  (top / e != Math.floor(top / e))))  {
+            primes.push(top);
+            if (top > newtop) {  // Nesting assures that the new top is prime.
+              return [top, primes, top, primes];
+            }
           };
-          v[0] += 2;
+          top += 2;
+          console.log('In primes_state. top is >>>>> ', top ); 
         }
-        v[2] = a;
-        v[1] = v[3];
-        return v;
       }
     };    `  )
 
@@ -1407,15 +1408,17 @@ var fact_workerC = h('pre.red0',  `    onmessage = function(ar) {
 
 var fact2_workerD = h('pre.red0',  `    onmessage = function(ar) {
       importScripts('script2.js');
-      var r = [];  
-      var k = ar.data[2];
-      primesMonad.run( [ar.data[0], ar.data[1]] ).bnd(s => {
-         while (k <= ar.data[1]) {
-          next = fact2(k, s[1].filter(v => v <= k));
-          r.push(next);
-          k+=1;
-        } 
-        postMessage([r, s, s[2]]);
+      var r = ar.data[2];
+      var n = ar.data[2].length;
+      var k = ar.data[1][0] * ar.data[1][1];
+      primesMonad.run( [ar.data[0], k] ).bnd(s => {
+         while (n <= k) {
+           next = fact2(n, s[1].filter(v => v <= k));
+           r.push(next);
+           n+=1;
+         }
+        var res = lcm(r[ar.data[1][0]], r[ar.data[1][1]]);
+        postMessage([ r, s, [ar.data[1][0], ar.data[1][1], res] ]);
       })
     }
     
@@ -1433,15 +1436,27 @@ var fact2_workerD = h('pre.red0',  `    onmessage = function(ar) {
       ar.sort(function(a, b) {
         return a - b;
       });
+      console.log('At the end of fact2. ar is', ar );
       return ar;
-    }    `  )
+    }
+      
+    function lcm (cx,dx) {
+      var c = cx.slice();
+      var d = dx.slice();
+      var r;
+       c.map(x => {
+        if (d.includes(x)) d.splice(d.indexOf(x),1)
+        });
+      r = d.concat(c).reduce(function (a,b) {return a*b})
+      return r
+    }  `  )
 
 var workerD$ = h('pre',  `    const workerD$ = sources.WWD.map(m => {
       console.log('Back in the main thread. m is', m );
-      mMfactors6.bnd(concat, m.data[0]);
-      window['primesMonad'] = new MonadState('primesMonad', m.data[], primes_state);
+      mMfactors6.ret(m.data[0]);
+      window['primesMonad'] = new MonadState('primesMonad', m.data[1], primes_state);
       mMfactors8.ret(m.data[2]);
-    });   `  )
+    });  `  )
 
 var p1 = h('pre',  `  
 `  )

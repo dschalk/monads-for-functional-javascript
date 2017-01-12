@@ -21,7 +21,7 @@ var Monad = function Monad(z = 19, g = 'generic') {
     var m = func(this.x, ...args)
     var ID;
     if (m instanceof Monad) {
-      ID = testPrefix(args, this.id); 
+      ID = testPrefix(args, _this.id); 
       window[ID] = new Monad(m.x, ID);
       return window[ID];
     }
@@ -58,41 +58,44 @@ function MonadState(g, state, p) {
   this.id = g;
   this.s = state;
   this.process = p;
-  this.a = this.s[2];
+  this.a = this.s[0];
   this.bnd = (func, ...args) => func(this.s, ...args);  
   this.run = ar => { 
     var ar2 = this.process(ar);
     this.s = ar2;
-    this.a = ar2[2];
+    console.log('In MonadState. this.process, ar2 >>> ', this.process, ar2);
     self[this.id] = this;
     return self[this.id];
   }
 };
 
 function primes_state(x) {
-  console.log('Entering primes_state. x is', x );
-  var v = x[0];
-  var a = x[1];
-  if (a == v[2]) {
-    return v;
+  var state = x[0].slice();
+  var top = state[2];
+  var primes = state[3];
+  var newtop = x[1];
+  if (newtop == state[0] || newtop == top) {
+    return state;
   }
 
-  else if (a < v[0]) {
-    v[1] = v[3].filter(v => v <= a);
-    v[2] = a;
-    return v;
+  else if (newtop < top) {
+    var temp = primes.filter(v => v <= newtop);
+    var q = temp.indexOf(temp[temp.length - 1]);
+    temp.push(primes[q + 1]);
+    return [primes[q+1], temp, top, primes];
   }
     
   else {
-    while (v[0] < a) {
-      if ( v[3].filter(x => x <= v[0]).every(e =>  (v[0] / e) != Math.floor(v[0] / e)) ) {
-        v[3].push(v[0]);
+    while (true) {
+      if (primes.every(e =>  (top / e != Math.floor(top / e))))  {
+        primes.push(top);
+        if (top > newtop) {  // Nesting assures that the new top is prime.
+          return [top, primes, top, primes];
+        }
       };
-      v[0] += 2;
+      top += 2;
+      console.log('In primes_state. top is >>>>> ', top ); 
     }
-    v[2] = a;
-    v[1] = v[3];
-    return v;
   }
 };
 
@@ -100,12 +103,12 @@ var primesMonad = new MonadState('primesMonad', [3, [], 3, [2,3]], primes_state)
 
 function fact(v) {
   var ar = [];
-  console.log('Entering fact. v is', v );
-  while (v[2] != 1) {
+  console.log('Entering fact. v2 and v[1] are:', v2, v[1] );
+  while (v2 != 1) {
     for (let p of v[1]) {
-      if (v[2] / p === Math.floor(v[2] / p)) {
+      if (v2 / p === Math.floor(v2 / p)) {
         ar.push(p);
-        v[2] = v[2]/p;
+        v2 = v2/p;
       };
     }
   }
@@ -115,21 +118,23 @@ function fact(v) {
   return ret(ar);
 }
 
-function fact2(k,b) {
+function fact2(a,b) {
+  console.log('In fact2 a an b are', a, b );
   var ar = [];
-  var n = k;
+  var n = b;
   while (n != 1) {
-    for (let p of b) {
+    a.map(p => {
       if (n/p === Math.floor(n/p)) {
+        console.log('In fact2. ar is', ar );
         ar.push(p);
         n = n/p;
       };
-    }
+    })
   }
-  ar.sort(function(a, b) {
-    return a - b;
+  ar.sort(function(x,y) {
+    return (x - y);
   });
-  return ar;
+  return ret(ar);
 }
 
 function factors (num) {
@@ -147,16 +152,21 @@ var fibs_state = function fibs_state(ar) {
 
 var fibsMonad = new MonadState('fibsMonad', [0, 1, 2, [0]], fibs_state);
  
-function lcm (c,d) {
-  console.log('In lcm c, d ', c, d );
+function lcm (cx,dx) {
+  console.log('************In lcm cx, dx ', cx, dx );
   var ar= [];
   var r;
+  var c = cx.slice();
+  var d = dx.slice();
   d.map(v => {
+    console.log('Hello from lcm, most excellent friend of mine.');
     if (c.some(x => x === v)) {
       ar.push(v)
       c.splice(c.indexOf(v),1)
-      d.splice(d.indexOf(v),1)}
+      d.splice(d.indexOf(v),1)
+    }
       r = ar.concat(d).concat(c).reduce(function (a,b) {return a*b})
+      console.log('Bottom of map in lcm ar, d, c, r', ar, d, c, r );
     }
   )
   return r

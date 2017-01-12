@@ -16,7 +16,7 @@ onmessage = function(ar) {
   var sa = ar.data;
 
   primesMonad.run(sa)
-  .bnd(newState => fact(newState)
+  .bnd(newState => fact2(newState[3],num)
   .bnd(factors => postMessage(["The prime factors of " + num + 
     " are " + factors.join(', '), newState])));
  }

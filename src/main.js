@@ -428,7 +428,7 @@ function main(sources) {
   var factorsP$ = sources.DOM
       .select('input#factors_5').events('keydown');
 
-  var factA$ = factorsP$.map(function (e) {
+/*  var factA$ = factorsP$.map(function (e) {
     console.log('In factA$ <><><>Jonus of the Etherial Spark<<>>>');
     var factors = [];
     mMfactors4.ret('');
@@ -442,11 +442,27 @@ function main(sources) {
         workerD.postMessage([primesMonad.s, num, mMfactors6.x.length]);
       }
     }
+  });  */
+
+  var fA$ = factorsP$.map(function (e) {
+    mMfactors7.ret('');
+    var factors = [];
+    if (e.keyCode === 13) {
+      var ar = (e.target.value).split(',').map(v => parseInt(v,10));
+      console.log('In fA$ ar is', ar );
+      if (ar[0] !== ar[0] || ar[1] !== ar[1] || typeof ar[0] !== 'number' || typeof ar[1] !== 'number') {
+        mMfactors7.ret('It works only if you enter two integers separated by a comma.');
+        return;
+      }
+    else {
+        workerD.postMessage([primesMonad.s, ar, mMfactors6.x]);
+      }
+    }
   });
 
   const workerD$ = sources.WWD.map(m => {
     console.log('Back in the main thread. m is', m );
-    mMfactors6.bnd(concat, m.data[0]);
+    mMfactors6.ret(m.data[0]);
     window['primesMonad'] = new MonadState('primesMonad', m.data[1], primes_state);
     mMfactors8.ret(m.data[2]);
   });
@@ -875,7 +891,7 @@ var prAction$ = pr$.map(function (e) {
     }
 });
 
-  var calcStream$ = xs.merge( prAction$, factA$, clearprimes$, worker$, workerB$, workerC$, workerD$, clearAction$, backAction$, forwardAction$, factorsAction$, primeFib$, fibPressAction$, quadAction$, edit1Action$, edit2Action$, testWAction$, testZAction$, testQAction$, colorAction$, deleteAction$, newTaskAction$, chatClickAction$, gameClickAction$, todoClickAction$, captionClickAction$, groupPressAction$, rollClickAction$, messagePressAction$, loginPressAction$, messages$, numClickAction$, opClickAction$);
+  var calcStream$ = xs.merge( prAction$, fA$, clearprimes$, worker$, workerB$, workerC$, workerD$, clearAction$, backAction$, forwardAction$, factorsAction$, primeFib$, fibPressAction$, quadAction$, edit1Action$, edit2Action$, testWAction$, testZAction$, testQAction$, colorAction$, deleteAction$, newTaskAction$, chatClickAction$, gameClickAction$, todoClickAction$, captionClickAction$, groupPressAction$, rollClickAction$, messagePressAction$, loginPressAction$, messages$, numClickAction$, opClickAction$);
    
   return {
   DOM: calcStream$.map(function () {
@@ -1067,7 +1083,8 @@ h('p', ' However, imitating definitions and patterns found in category theory, a
     //
    //
   h('h2', ' Asynchronous Processes ' ),
-  h('p', ' The next demonstration involves a computation that can take a while to complete. It memoizes computed prime numbers and does not block the browser engine\'s primary execuation thread. The number you enter below is a cap on the size of the largest number in the Fibonacci sequence which is produced. If you enter 3 and then, one at a time, 0\'s until you reach three billion (3000000000), you should see the display updating quickly until the final 0. After a pause of around ten seconds, the prime Fibonacci number 2,971,215,073 appears on my desktop computer\'s monitor. If you add another 0, you can expect a substantial lag time. When I entered thirty billion, the wait time was 58,485 milliseconds. I deleted the final 0 and when I put it back, the elapsed time for the calculation was only 68 microseconds, demonstrating the efficacy of memoization.' ),
+
+  h('p', ' The next demonstration involves a computation that can take a while to complete. It memoizes computed prime numbers and does not block the browser engine\'s primary execuation thread. The number you enter below is a cap on the size of the largest number in the Fibonacci sequence which is produced. If you enter 3 and then, one at a time, 0\'s until you reach three billion (3000000000), On my old desktop computer, lag times are negligible until the eighth zero, where there was a 657 microsecond pause. I had to wate 2427 microseconds after entering the ninth zero. A tenth zero, resulting in 30,000,000,000, entailed a lag of a little over seven seconds. The Fibonacci number 20,365,011,074 appeared on my monitor, but the largest prime Fibonacci number displayed was still 2,971,215,073. ' ),
 h('br' ),
 h('span', ' According to the '), 
 h('a', { props: { href: "https://oeis.org/A005478", target: "_blank" } }, 'The On-Line Encyclopedia of Integer Sequences '),
@@ -1089,20 +1106,18 @@ h('span#PF_21.red6', 'The largest generated prime number.'),
 h('br'),
 h('span#PF_22.turk', mMres.x[1]  ),
 h('br'),
-h('p', ' The code runs in two threads, a main thread and a web worker thread. In this and the next two demonstrations, primesMonad plays a central role. primesMonad.run() takes two arguments: a prime numbers state (a four-member array) and the upper bound of the array of prime numbers that will be generated.  In the code that follows, these will be designated as primesMonad.run(s,a). s will be the current state, accessible as primesMonad.s, and a will be the upper bound on the array of prime numbers in the new state array that is created by primesMonad.run(). The result becomes the second element in the state array (s[1]). ' ),
-h('p', ' The list of all prime numbers generated during the browser session is stored in s[3]. If more prime numbers are required, the largest prime number required, designated by "a", and the current value of primesMonad.s, are provided to the primesMonad run method in the statement primesMonad.run(s,a). If, however, the largest prime number required, again deignated by "a", is smaller than the largest number in primesMonad.s[3], primesMonad.run(s,a) will return a fresh primesMonad object in which primesMonad.s[1] is a truncated version of primesMonad.s[3].' ),
-h('p', ' primesMonad.s[0] is the next number scheduled to be tested whenever primesMonad.run(s,a) increases the size of s[3]. s[2] is the upper bound on the array in s[1]. Here is the code showing how primesMonad is defined, and how primesMonad.run(s,a) generates a new prime numbers state: ' ),
-h('p', ' First, the definition of workerB.js: ' ),
-      code.workerB,
-h('p', ' Here is the definition of primesMonad, along with the function from which it is derived, MonadState, and its auxiliary function, primes_state. ' ),
+h('p', ' The code runs in two threads, a main thread and a web worker thread. In this and the next two demonstrations, primesMonad plays a central role. Updating primesMonad is accomplished by calling primeMonad\'s run() method on the current state and a designated upper bound. If the designated upper bound is less than a previously designated upper bound, the old upper bound and array of primes remain in state[2], and state[3], respectively. state[0] and state[1] become the new upper bound and array of prime numbers. Again, the new array might be the same as the freshly generated array, or it might be smaller. That depends on the value of "a" in primesMonad.run(s,a), where s is the current state and a is the designated upper bound. ' ),
+    
+h('p', ' Here is the definition of primesMonad, along with its constructor and auxiliary function. ' ),
       code.primes_state,  
+h('p', ' This are the definitions of workerB, workerB.js, and fpTransformer: ' ),
+      code.workerB,
 h('p', ' fibsMonad also derives from MonadState. Here is how it is defined: ' ),
       code.fibsMonad,
+h('p', ' Other definitions can be found in the Github repository and the Appendix at the bottom of this page. ' ),    
 h('h3', ' Prime Factors ' ),
 
-h('p', ' workerC returns the prime factors of whatever integer it receives. The bottleneck is generating the prime numbers needed for the computation, so primesMonad is used to store computed primes. This overlaps with the memoization in the previous example since primesMonad is the only place prime numbers are stored. ' ),
- h('p', ' I verified that the bottleneck was being mitigated on my desktop computer. It took twenty-five seconds to verify that 514229 is a prime number.  I then entered 514230. The console log showed that only two microseconds were required to update the array of primes, and fourteen microsends to determine that its prime decomposistion is 2, 3, 5, 61, and 281. Because the prime numbers needed for the computation were saved in primesMonnad, the lag subsequently became negligible.  Here\'s where you can enter a number to see its prime factors: '),
-
+h('p', ' workerC returns the prime factors of whatever integer it receives. The bottleneck is generating the prime numbers needed for the computation, so primesMonad is used to store computed primes. This overlaps with the memoization in the previous example since primesMonad in the main thread is the only place prime numbers are stored. ' ),
 h('input#factors_1'),
 h('br'),
 h('br'),
@@ -1110,12 +1125,13 @@ h('div.tao3', `${mMfactors.x}` ),
 h('div.tao3', mMfactors3.x ),    
 h('p', ' And here are the definitions of workerC.js along with the function that it uses named "fact()". '),
    code.fact_workerC,  
-h('p', ' The following demonstration generates an array of arrays containing the prime decompensations of numbers. No decomposition is computed more than once, so very little time is needed to obtain an array of the prime decompositions of numbers smaller than or slightly greater than a previously obtained prime decomposition. The array of arrays of prime decompositions is stored in the monad mMfactors6. Because the ideces of lists of prime decompositions corresponds to the numbers which are decomposed, mMfactors6.x[i] is the prime decomposition of the integer i for all i in Object.keys(mMfactors.x).map(x => parseInt(x)). The following demonstration identifies the array in mMfactors6.x corresponding to the integer entered in the input box. Four digit numbers return promptly. I entered 55555 in my desktop computer and had to wait 87 seconds for 5, 41, 271 to appear on my monitor. The same result took 11 seconds in the previous example, and only 3 microseconds if a long-enough array of primes had previously been generated. ' ),
+h('p', ' The following demonstration generates an array of arrays containing the prime decompensations of numbers. No decomposition is computed more than once, so very little time is needed to obtain an array of the prime decompositions of numbers smaller than or slightly greater than a previously obtained prime decomposition. The array of arrays of prime decompositions is stored in the monad mMfactors6. ' ),
+h('p', ' Because the indeces of lists of prime decompositions corresponds to the numbers which are decomposed, mMfactors6.x[i] is the prime decomposition of the integer i for all integers i whose prime decompositions have been evaluated. For the demonstration, we use prime decompositions to calculate the least common multiple of two comma-separated numbers. Generating a long array of arrays of prime decompositions is obviously not the best way to find the prime decomposition of a number. If you are going to be adding fractions all afternoon, working with an already-generated array of arrays of prime decompositions might be more appealing. Essentially, the algorithm eliminates prime factors common to both numbers from the product of the two numbers under consideration. Then it computes the product of the remaining prime numbers. ' ),
 h('input#factors_5'),
 h('br'),
 h('br'),
 h('div.tao3', `${mMfactors7.x}` ),    
-h('div.tao3', `${mMfactors6.x[mMfactors8.x]}` ),    
+h('div.tao3', `The least common multiple of ${mMfactors8.x[0]} and ${mMfactors8.x[1]} is ${mMfactors8.x[2]}` ),    
 h('p', ' Here is the code used to generate the list of prime decompositions: ' ),
     code.fact2_workerD, 
 // ********************************************************************** Begin MonadState
@@ -1132,21 +1148,6 @@ h('a', { props: { href: '#top' } }, 'Back To The Top'),
 // ********************************************************************** End MonadState
 
   h('br', ),  
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
   h('h2', ' MonadEr - An Error-Catching Monad ' ),
   h('p', ' Instances of MonadEr function much the same as instances of Monad, but when an instance of MonadEr encounters an error, it ceases to perform any further computations. Instead, it passes through every subsequent stage of a sequence of MonadEr expressions, reporting where it is and repeating the error message. It will continue to do this until it is re-instantiated or until its bnd() method runs on the function clean(). ' ),
   h('p', 'Functions used as arguments to the MonadEr bnd() method can be placed in quotation marks to prevent the browser engine from throwing reference errors. Arguments can be protected in the same manner. Using MonadEr can prevent the silent proliferation of NaN results in math computations, and can prevent browser crashes due to attempts to evaluate undefined variables. Sometimes crashes are desired when testing code, but MonadEr provides instant feedback pinpointing the exact location of the error. ' ), 
@@ -1305,5 +1306,4 @@ const sources = {
   WW: workerDriver,
   EM2: eM2Driver
 }
-
 run(main, sources);
