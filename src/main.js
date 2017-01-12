@@ -1084,7 +1084,7 @@ h('p', ' However, imitating definitions and patterns found in category theory, a
    //
   h('h2', ' Asynchronous Processes ' ),
 
-  h('p', ' The next demonstration involves a computation that can take a while to complete. It memoizes computed prime numbers and does not block the browser engine\'s primary execuation thread. The number you enter below is a cap on the size of the largest number in the Fibonacci sequence which is produced. If you enter 3 and then, one at a time, 0\'s until you reach three billion (3000000000), On my old desktop computer, lag times are negligible until the eighth zero, where there was a 657 microsecond pause. I had to wate 2427 microseconds after entering the ninth zero. A tenth zero, resulting in 30,000,000,000, entailed a lag of a little over seven seconds. The Fibonacci number 20,365,011,074 appeared on my monitor, but the largest prime Fibonacci number displayed was still 2,971,215,073. ' ),
+  h('p', ' The next demonstration involves a computation that can take a while to complete. It memoizes computed prime numbers and does not block the browser engine\'s primary execuation thread. The number you enter below is a cap on the size of the largest number in the Fibonacci sequence which is produced. If you enter 3 and then, one at a time, 0\'s until you reach three billion (3000000000), On my old desktop computer, lag times are negligible until the eighth zero, where there was a 657 microsecond pause. I had to wait 2427 microseconds after entering the ninth zero. A tenth zero, resulting in 30,000,000,000, entailed a lag of a little over seven seconds. The Fibonacci number 20,365,011,074 appeared on my monitor, but the largest prime Fibonacci number displayed was still 2,971,215,073. ' ),
 h('br' ),
 h('span', ' According to the '), 
 h('a', { props: { href: "https://oeis.org/A005478", target: "_blank" } }, 'The On-Line Encyclopedia of Integer Sequences '),
@@ -1123,7 +1123,7 @@ h('br'),
 h('br'),
 h('div.tao3', `${mMfactors.x}` ),    
 h('div.tao3', mMfactors3.x ),    
-h('p', ' And here are the definitions of workerC.js along with the function that it uses named "fact()". '),
+h('p', ' And here are the definitions of workerC.js and the function that it uses named "fact()". '),
    code.fact_workerC,  
 h('p', ' The following demonstration generates an array of arrays containing the prime decompensations of numbers. No decomposition is computed more than once, so very little time is needed to obtain an array of the prime decompositions of numbers smaller than or slightly greater than a previously obtained prime decomposition. The array of arrays of prime decompositions is stored in the monad mMfactors6. ' ),
 h('p', ' Because the indeces of lists of prime decompositions corresponds to the numbers which are decomposed, mMfactors6.x[i] is the prime decomposition of the integer i for all integers i whose prime decompositions have been evaluated. For the demonstration, we use prime decompositions to calculate the least common multiple of two comma-separated numbers. Generating a long array of arrays of prime decompositions is obviously not the best way to find the prime decomposition of a number. If you are going to be adding fractions all afternoon, working with an already-generated array of arrays of prime decompositions might be more appealing. Essentially, the algorithm eliminates prime factors common to both numbers from the product of the two numbers under consideration. Then it computes the product of the remaining prime numbers. ' ),

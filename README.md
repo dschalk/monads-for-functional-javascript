@@ -122,22 +122,196 @@ However, imitating definitions and patterns found in category theory, as Haskell
 
 ## Asynchronous Processes
 
-The first asynchronous code demonstration involves a computation that can take a while to complete. It memoizes computed prime numbers and does not block the browser engine's primary execuation thread. The number you enter below is a cap on the size of the largest number in the Fibonacci sequence which is produced. If you enter 3 and then, one at a time, 0's until you reach three billion (3000000000), you should see the display updating quickly until the final 0. After a pause of around ten seconds, the prime Fibonacci number 2,971,215,073 appears on my desktop computer's monitor. If you add another 0, you can expect a substantial lag time. When I entered thirty billion, the wait time was 58,485 milliseconds. I deleted the final 0 and when I put it back, the elapsed time for the calculation was only 68 microseconds, demonstrating the efficacy of memoization.
-
+The prime Fibonacci demonstration involves a computation that can take a while to complete. It memoizes computed prime numbers and does not block the browser engine's primary execuation thread. The number you enter below is a cap on the size of the largest number in the Fibonacci sequence which is produced. If you enter 3 and then, one at a time, 0's until you reach three billion, you will generate the largest prime Fibonacci number that can be produced on an ordinary desktop computer. On my old computer, lag times are negligible until the eighth zero, where there was a 657 microsecond pause. I had to wait 2427 microseconds after entering the ninth zero. A tenth zero, resulting in 30,000,000,000, entailed a lag of a little over seven seconds. The Fibonacci number 20,365,011,074 appeared on my monitor. The largest prime Fibonacci number displayed was still 2,971,215,073.
 
 According to the The On-Line Encyclopedia of Integer Sequences these are the first eleven proven prime Fibonacci numbers: 2, 3, 5, 13, 89, 233, 1597, 28657, 514229, 433494437, 2971215073, and 99194853094755497. The eleventh number, 2971215073, is as far as you can go on an ordinary desktop computer. 
 The elapsed time is undefined milliseconds.
 
-The code runs in two threads, a main thread and a web worker thread. In this and the next two demonstrations, primesMonad plays a central role. primesMonad.run() takes two arguments: a prime numbers state (a four-member array) and the upper bound of the array of prime numbers that will be generated. In the code that follows, these will be designated as primesMonad.run(s,a). s will be the current state, accessible as primesMonad.s, and a will be the upper bound on the array of prime numbers in the new state array that is created by primesMonad.run(). The result becomes the second element in the state array (s[1]).
 
-The list of all prime numbers generated during the browser session is stored in s[3]. If more prime numbers are required, the largest prime number required, designated by "a", and the current value of primesMonad.s, are provided to the primesMonad run method in the statement primesMonad.run(s,a). If, however, the largest prime number required, again deignated by "a", is smaller than the largest number in primesMonad.s[3], primesMonad.run(s,a) will return a fresh primesMonad object in which primesMonad.s[1] is a truncated version of primesMonad.s[3].
 
-primesMonad.s[0] is the next number scheduled to be tested whenever primesMonad.run(s,a) increases the size of s[3]. s[2] is the upper bound on the array in s[1]. Here is the code showing how primesMonad is defined, and how primesMonad.run(s,a) generates a new prime numbers state:
 
-First, the definition of workerB.js:
-```js
-    var workerB = new Worker("workerB.js");
-// workerB.js
+
+JS-monads running on Cycle.js
+
+These monads are like the Haskell monads in that they resemble the monads of category theory while not actually being mathematical monads. See Hask is not a category. by Andrej Bauer and the Discussion below. Adherance to the monad laws (see below) helps make the monads robust, versitile, and reliable tools for isolating and chaining sequences of javascript functions. 
+
+
+The demonstrations include persisternt, shared todo lists; 
+An interactive simulated dice game with a traversable history (all group members see your score decrease or increase as you navegate backwards and forwards); 
+Chat rooms where members can compete in the simulated dice game, chat, and share a project todo list; 
+Other demonstrations of the usefulness of monads in a Cycle application. 
+
+The code for this repository is at JS-monads-stable
+IN ORDER TO SEE THE GAME, TODOLIST, AND CHAT DEMONSTRATIONS, YOU MUST ENTER SOMETHING .
+
+Name: 
+People who are in the same group, other than solo, share the same todo list, messages, and simulated dice game. In order to see any of these, you must establish an identity on the server by loggin g in. The websockets connection terminates if the first message the server receives does not come from the sign in form. You can enter any random numbers or letters you like. The only check is to make sure someone hasn	already signed in with whatever you have selected. If you log in with a name that is already in use, a message will appear and this page will be re-loaded in the browser after a four-second pause.
+
+Data for the traversable game history accumulates until a player scores three goals and wins. The data array is then erased and the application is ready to start accumulating a new history.
+
+The Monads
+
+Monad
+
+    var Monad = function Monad(z = 42, g = 'generic') {
+      this.x = z;
+      this.id = g;
+      this.bnd = function (func, ...args) {
+        var m = func(this.x, ...args)
+        var mon;
+        if (m instanceof Monad) {
+          mon = testPrefix(args,this.id); 
+          return window[mon] = new Monad(m.x, mon);
+        }
+        else return m;
+      };
+      this.ret = function (a) {
+        return window[_this.id] = new Monad(a,_this.id);
+      };
+    };  
+
+    function testPrefix (x,y) {
+      var t = y;
+      var s;
+      if (Array.isArray(x)) {
+        x.some(v => {
+          if (typeof v === 'string' && v.charAt() === 'M') {
+             t = v.slice(1, v.length);
+          }
+        })
+      }
+      return t;
+    }  
+
+Instances of Monad, MonadState, MonadItter, and MonadEr facilitate programming in a functional style. Additional constructors can be invented as special needs arise. In this presentation we see, among other things, Monad instances linking computations and assigning results to Monad instances, MonadState instances memoizing computation results, MonadItter instances organizing nested callbacks into neat, easily maintainable blocks of code, and MonadEr catching NaN and preventing crashes when undefined variables are encountered.
+Computations are easy to link if each result is returned in an instance of Monad. Here are a few examples of functions that return instances of Monad:
+
+  function ret(v, id = 'generic') {
+      window[id] = new Monad(v, id);
+      return window[id];
+    }
+
+    function cube (v, id) {
+      return ret(v * v * v);
+    };
+
+    function add (x, b) {
+      return ret(parseInt(x,10) + parseInt(b,10) );
+    };
+
+    function log(x,y) {
+        console.log(y)
+        return ret(x);
+    };  
+The "M" prefix provides control over the destination of computation results. In the following example, m1, m2, and m3 have already been declared. Here is a comparrison of the results obtained when the "M" prefix is used and when it is omitted:
+
+    m1.ret(7).bnd(m2.ret).bnd(m3.ret)  // All three monads get the value 7.
+    m1.ret(0).bnd(add,3,'m2').bnd(cube,'m3')  // 'm1', 'm2', and 'm3' are ignored
+    Result: m1.x === 27
+            m2.x === 7
+            m3.x === 7  
+    m1.ret(0).bnd(add,3,'Mm2').bnd(cube,'Mm3')   
+    Result: m1.x === 0
+            m2.x === 3
+            m3.x === 27  
+If the prefix "M" is absent, bnd() ignores the string argument. But when the "M" prefix is present, m1 retains its initial value, m2 retains the value it gets from from adding m's value (which is 0) to 3, and m3.x is the result. Both forms could be useful.
+
+The following example shows lambda expressions sending variables v1 and v2 through a sequence of computations and v3 sending the final result to the string that is logged. It also shows monads a, b, c, d, e, f, and g being updated and preserved in an array that is not affected by further updates. That is because calling the ret() method does not mutate a monad; it creates a fresh instance with the same name. Here is the example, shown in a screen shot of the Chrome console log:.
+
+
+
+
+The Monad Laws
+
+In the following discussion, "x === y" signifies that the expression x === y returns true. Let J be the collection of all Javascript values, including functions, instances of Monad, etc, and let F be the collection of all functions mapping values in J to instances of Monad with references (names) matching their ids; that is, with window[id] === m.id for some id which is a valid es2015 variable name. The collection of all such instances of Monad along and all of the functions in F is called "M". For any instances of Monad m, m1, and m2 in M and any functions f and g in F, the following relationships follow easily from the definition of Monad:
+
+Left Identity
+    m.ret(v, ...args).bnd(f, ...args).x === f(v, ...args).x 
+    ret(v, ...args).bnd(f, ...args).x === f(v, ...args).x 
+    Examples: m.ret(3).bnd(cube).x === cube(3).x  Tested and verified  
+    ret(3).bnd(cube).x === cube(3).x     Tested and verified
+    Haskell monad law: (return x) >>= f ≡ f x  
+Right Identity
+    m.bnd(m.ret) === m      Tested and verified 
+    m.bnd(m.ret) === m   Tested and verified
+    m.bnd(ret) === m  Tested and verified
+    Haskell monad law: m >>= return ≡ m 
+Commutivity
+    m.bnd(f1, ...args).bnd(f2, ...args).x === m.bnd(v => f1(v, ...args).bnd(f2, ...args)).x 
+    Example: m.ret(0).bnd(add, 3).bnd(cube).x === 
+    m.ret(0).bnd(v => add(v,3).bnd(cube)).x  Tested amd verified
+    Haskell monad law: (m >>= f) >>= g ≡ m >>= ( \x -> (f x >>= g) ) 
+Back To The Top
+Disussion
+
+The Haskell statement f ≡ g means that f x == g x for all Haskell values x of the appropriate type. That is the test applied to Javascript expressions in the "Monad Laws" section (above). Neither the == nor the === operator would provide useful information about the behavior of instances of Monad, which are objects. Those operators test objects for location in memory. If the left and right sides of predicates create new instances of m, then the left side m and the right side m wind up in different locations in memory. So we expect m.ret(3) === m.ret(3) to return false, and it does. The question we want answered is the question ≡ answers in Haskell: Can the left and right sides be substituted for one another and still yield the same results.
+
+The Haskell programming language borrowed the term "monad" from the branch of mathematics known as category theory. This was apropriate because Haskell monads, along with the function return and the operator >>=, behave quite a bit like category theory monads, and the inspiration for them came out of category theory. For Haskell monads to actually be category theory monads, they would need to reside in a category-theory category. They don't, although the Haskell mystique tends to give newcommers to the language the impression that they do. See Hask is not a category.
+Research into ways of defining a Haskell category appears to be ongoing. It involves tinkering with special constraints, omitted features, and definitions of morphisms that are not Haskell functions. When a definition of the category is established, Haskell monads are then shown to be, in some contrived context, category-theory monads. Devising such schemes are instructive academic excercises, but I don't think they can provide anything useful to programmers working on applications for industry, commerce, and the Internet.
+
+However, imitating definitions and patterns found in category theory, as Haskell does in defining the functor, monoid, and monad type classes, was a stroke of genius that vastly enriched the Haskell programming language and brought it into the mainstream as a viable alternative to java, c++, etc. This website runs efficiently on a Haskell websockets server. The modified Haskell Wai Websockets server has proven to be extraordinarily easy to maintain as new requirements become necessary. For example, modifying the server to send chat messages and shared todo lists only to members of the same group was a trivial task. It required just a tiny amount of pattern-matching code. Category theory patterns make the Haskell front-end interface robust, versitile, and reliable. Those are the qualities that I strive to emulate with JS-monads.
+
+Asynchronous Processes
+
+The next demonstration involves a computation that can take a while to complete. It memoizes computed prime numbers and does not block the browser engine's primary execuation thread. The number you enter below is a cap on the size of the largest number in the Fibonacci sequence which is produced. If you enter 3 and then, one at a time, 0's until you reach three billion (3000000000), On my old desktop computer, lag times are negligible until the eighth zero, where there was a 657 microsecond pause. I had to wate 2427 microseconds after entering the ninth zero. A tenth zero, resulting in 30,000,000,000, entailed a lag of a little over seven seconds. The Fibonacci number 20,365,011,074 appeared on my monitor, but the largest prime Fibonacci number displayed was still 2,971,215,073.
+
+
+According to the The On-Line Encyclopedia of Integer Sequences these are the first eleven proven prime Fibonacci numbers: 2, 3, 5, 13, 89, 233, 1597, 28657, 514229, 433494437, 2971215073, and 99194853094755497. The eleventh number, 2971215073, is as far as you can go on an ordinary desktop computer. 
+
+The code runs in two threads, a main thread and a web worker thread. In this and the next two demonstrations, primesMonad plays a central role. Updating primesMonad is accomplished by calling primeMonad's run() method on the current state and a designated upper bound. If the designated upper bound is less than a previously designated upper bound, the old upper bound and array of primes remain in state[2], and state[3], respectively. state[0] and state[1] become the new upper bound and array of prime numbers. Again, the new array might be the same as the freshly generated array, or it might be smaller. That depends on the value of "a" in primesMonad.run(s,a), where s is the current state and a is the designated upper bound.
+
+Here is the definition of primesMonad, along with its constructor and auxiliary function.
+```javascript
+    function MonadState(g, state, p) {
+      this.id = g;
+      this.s = state;
+      this.process = p;
+      this.a = this.s[0];
+      this.bnd = (func, ...args) => func(this.s, ...args);  
+      this.run = ar => { 
+        var ar2 = this.process(ar);
+        this.s = ar2;
+        self[this.id] = this;   // "self" is the global context in a worker.
+        return self[this.id];
+      }
+    };
+
+    var primesMonad = new MonadState('primesMonad', [3, [2,3], 3, [2,3]], primes_state);
+
+    function primes_state(x) {
+      var state = x[0].slice();
+      var top = state[2];
+      var primes = state[3];
+      var newtop = x[1];
+      if (newtop == state[0] || newtop == top) {
+        return state;
+      }
+    
+      else if (newtop < top) {
+        var temp = primes.filter(v => v <= newtop);
+        var q = temp.indexOf(temp[temp.length - 1]);
+        temp.push(primes[q + 1]);
+        return [primes[q+1], temp, top, primes];
+      }
+        
+      else {
+        while (true) {
+          if (primes.every(e =>  (top / e != Math.floor(top / e))))  {
+            primes.push(top);
+            if (top > newtop) {  // Nesting assures that the new top is prime.
+              return [top, primes, top, primes];
+            }
+          };
+          top += 2;
+          console.log('In primes_state. top is >>>>> ', top ); 
+        }
+      }
+    };    
+```    
+These are the definitions of workerB, workerB.js, and fpTransformer:
+```javascript
+    var workerB = new Worker("workerB.js"); // In the main thread.
+
     onmessage = function(m) {
       var ar = m.data;
       importScripts('script2.js');
@@ -161,56 +335,9 @@ First, the definition of workerB.js:
       return [x[3].join(', '), m.s[3].slice(-1).pop(), ar.join(', '), m.s];
     };   
 ```    
-Here is the definition of primesMonad, along with the function from which it is derived, MonadState, and its auxiliary function, primes_state.
-```js
-    function MonadState(g, state, p) {
-      this.id = g;
-      this.s = state;
-      this.process = p;
-      this.a = this.s[2];
-      this.bnd = (func, ...args) => func(this.s, ...args);  
-      this.run = ar => { 
-        var ar2 = this.process(ar);
-        this.s = ar2;
-        this.a = ar2[2];
-        self[this.id] = this;   // self is like window in the main thread.
-        return self[this.id];
-      }
-    };
-
-    var primesMonad = new MonadState('primesMonad', [3, [], 3, [2,3]], primes_state);
-
-    function primes_state(x) {
-      console.log('Entering primes_state. x is', x )
-      var v = x[0];
-      var a = x[1];
-      if (a == v[2]) {
-        return v;
-      }
-    
-      else if (a < v[0]) {
-        v[1] = v[3].filter(v => v <= a);
-        v[2] = a;
-        return v;
-      }
-        
-      else {
-        while (v[0] < a) {
-          if ( v[3].filter(x => x <= v[0]).every(e =>  (v[0] / e) != Math.floor(v[0] / e)) ) {
-            v[3].push(v[0]);
-          };
-          v[0] += 2;
-        }
-        v[2] = a;
-        v[1] = v[3];
-        return v;
-      }
-    };    
-```
 fibsMonad also derives from MonadState. Here is how it is defined:
-```js
+```
   var primesMonad = new MonadState('primesMonad', [3, '', 3, [2,3]], primes_state);
-
 
   var fibs_state = function fibs_state(ar) {
     var a = ar.slice();
@@ -219,15 +346,43 @@ fibsMonad also derives from MonadState. Here is how it is defined:
     }
     return a
   }  
-```  
+```
 ### Prime Factors
 
-workerC returns the prime factors of whatever integer it receives. The bottleneck is generating the prime numbers needed for the computation, so primesMonad is used to store computed primes. This overlaps with the memoization in the previous example since primesMonad is the only place prime numbers are stored.
+workerC returns the prime factors of whatever integer it receives. The bottleneck is generating the prime numbers needed for the computation, so primesMonad is used to store computed primes. This overlaps with the memoization in the previous example since primesMonad in the main thread is the only place prime numbers are stored.
 
-I verified that the bottleneck was being mitigated on my desktop computer. It took twenty-five seconds to verify that 514229 is a prime number. I then entered 514230. The console log showed that only two microseconds were required to update the array of primes, and fourteen microsends to determine that its prime decomposistion is 2, 3, 5, 61, and 281. Because the prime numbers needed for the computation were saved in primesMonnad, the lag subsequently became negligible. 
-
-Here are the definitions of workerC.js along with the function that it uses named "fact()".
+Here are the definitions of workerC.js and the function that it uses named "fact()".
 ```js
+  onmessage = function(ar) {
+      importScripts('script2.js');
+      var num = ar.data[1];
+      var s = ar.data;
+      s[2] = num;
+    
+      primesMonad.run(s)
+      .bnd(s2 => fact(s2)    // fact() is defined below.
+      .bnd(factors => postMessage(["The prime factors of " + num + 
+        " are " + factors.join(', '), s2])));
+    }
+  
+    function fact(v) {
+      var ar = [];
+      console.log('Entering fact. v is', v );
+      while (v[2] != 1) {
+        for (let p of v[1]) {
+          if (v[2] / p === Math.floor(v[2] / p)) {
+            ar.push(p);
+            v[2] = v[2]/p;
+          };
+        }
+      }
+      ar.sort(function(a, b) {
+        return a - b;
+      });
+      return ret(ar);
+    }    
+
+
     onmessage = function(ar) {
       importScripts('script2.js');
       var num = ar.data[1];
