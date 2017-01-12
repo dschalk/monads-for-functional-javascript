@@ -1366,7 +1366,9 @@ var primes_state = h('pre',  `    function MonadState(g, state, p) {
       }
     };    `  )
 
-var workerC = h('pre',  `    onmessage = function(ar) {
+var workerC = h('pre',  `    
+
+onmessage = function(ar) {
       importScripts('script2.js');
       var num = ar.data[1];
       var s = ar.data;
@@ -1378,25 +1380,25 @@ var workerC = h('pre',  `    onmessage = function(ar) {
     }    `  )
 
 var fact_workerC = h('pre.red0',  `    onmessage = function(ar) {
+      console.log('In workerC.js.  ar is ', ar );  
       importScripts('script2.js');
       var num = ar.data[1];
-      var s = ar.data;
-      s[2] = num;
+      var sa = ar.data;
     
-      primesMonad.run(s)
-      .bnd(s2 => fact(s2)    // fact() is defined below.
+      primesMonad.run(sa)
+      .bnd(newState => fact2(newState[3],num)
       .bnd(factors => postMessage(["The prime factors of " + num + 
-        " are " + factors.join(', '), s2])));
-    }
-  
+        " are " + factors.join(', '), newState])));
+     }
+    
     function fact(v) {
       var ar = [];
-      console.log('Entering fact. v is', v );
-      while (v[2] != 1) {
+      console.log('Entering fact. v2 and v[1] are:', v2, v[1] );
+      while (v2 != 1) {
         for (let p of v[1]) {
-          if (v[2] / p === Math.floor(v[2] / p)) {
+          if (v2 / p === Math.floor(v2 / p)) {
             ar.push(p);
-            v[2] = v[2]/p;
+            v2 = v2/p;
           };
         }
       }
@@ -1408,48 +1410,61 @@ var fact_workerC = h('pre.red0',  `    onmessage = function(ar) {
 
 var fact2_workerD = h('pre.red0',  `    onmessage = function(ar) {
       importScripts('script2.js');
-      var r = ar.data[2];
-      var n = ar.data[2].length;
-      var k = ar.data[1][0] * ar.data[1][1];
-      primesMonad.run( [ar.data[0], k] ).bnd(s => {
-         while (n <= k) {
-           next = fact2(n, s[1].filter(v => v <= k));
-           r.push(next);
-           n+=1;
-         }
-        var res = lcm(r[ar.data[1][0]], r[ar.data[1][1]]);
-        postMessage([ r, s, [ar.data[1][0], ar.data[1][1], res] ]);
+      var state = ar.data[0];
+      var b = ar.data[1].sort();
+      var c = ar.data[2];
+      var n = c.length;
+      var top;
+      primesMonad.run( [state, b[0]] );
+      primesMonad.run( [state, (b[1]+1) ])
+      .bnd(v => {
+        top = v[1][v[1].length - 1]
+        for (let j = n; j <= top; j+=1) {
+          next = fact2(v[1],j)
+          c.push(next.x)
+        }
+        var res = lcm(c[b[0]], c[b[1]]);
+        postMessage([ c, v, [ar.data[1][0], ar.data[1][1], res] ]);
       })
     }
     
-    function fact2(k,b) {
+    function fact2(a,b) {
+      console.log('In fact2 a an b are', a, b );
       var ar = [];
-      var n = k;
+      var n = b;
       while (n != 1) {
-        for (let p of b) {
+        a.map(p => {
           if (n/p === Math.floor(n/p)) {
+            console.log('In fact2. ar is', ar );
             ar.push(p);
             n = n/p;
           };
-        }
+        })
       }
-      ar.sort(function(a, b) {
-        return a - b;
+      ar.sort(function(x,y) {
+        return (x - y);
       });
-      console.log('At the end of fact2. ar is', ar );
-      return ar;
+      return ret(ar);
     }
-      
     function lcm (cx,dx) {
+      console.log('************In lcm cx, dx ', cx, dx );
+      var ar= [];
+      var r;
       var c = cx.slice();
       var d = dx.slice();
-      var r;
-       c.map(x => {
-        if (d.includes(x)) d.splice(d.indexOf(x),1)
-        });
-      r = d.concat(c).reduce(function (a,b) {return a*b})
+      d.map(v => {
+        console.log('Hello from lcm, most excellent friend of mine.');
+        if (c.some(x => x === v)) {
+          ar.push(v)
+          c.splice(c.indexOf(v),1)
+          d.splice(d.indexOf(v),1)
+        }
+          r = ar.concat(d).concat(c).reduce(function (a,b) {return a*b})
+          console.log('Bottom of map in lcm ar, d, c, r', ar, d, c, r );
+        }
+      )
       return r
-    }  `  )
+    }    `  )
 
 var workerD$ = h('pre',  `    const workerD$ = sources.WWD.map(m => {
       console.log('Back in the main thread. m is', m );

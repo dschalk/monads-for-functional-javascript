@@ -353,56 +353,26 @@ workerC returns the prime factors of whatever integer it receives. The bottlenec
 
 Here are the definitions of workerC.js and the function that it uses named "fact()".
 ```js
-  onmessage = function(ar) {
-      importScripts('script2.js');
-      var num = ar.data[1];
-      var s = ar.data;
-      s[2] = num;
-    
-      primesMonad.run(s)
-      .bnd(s2 => fact(s2)    // fact() is defined below.
-      .bnd(factors => postMessage(["The prime factors of " + num + 
-        " are " + factors.join(', '), s2])));
-    }
-  
-    function fact(v) {
-      var ar = [];
-      console.log('Entering fact. v is', v );
-      while (v[2] != 1) {
-        for (let p of v[1]) {
-          if (v[2] / p === Math.floor(v[2] / p)) {
-            ar.push(p);
-            v[2] = v[2]/p;
-          };
-        }
-      }
-      ar.sort(function(a, b) {
-        return a - b;
-      });
-      return ret(ar);
-    }    
-
-
     onmessage = function(ar) {
+      console.log('In workerC.js.  ar is ', ar );  
       importScripts('script2.js');
       var num = ar.data[1];
-      var s = ar.data;
-      s[2] = num;
+      var sa = ar.data;
     
-      primesMonad.run(s)
-      .bnd(s2 => fact(s2)    // fact() is defined below.
+      primesMonad.run(sa)
+      .bnd(newState => fact2(newState[3],num)
       .bnd(factors => postMessage(["The prime factors of " + num + 
-        " are " + factors.join(', '), s2])));
-    }
-  
+        " are " + factors.join(', '), newState])));
+     }
+    
     function fact(v) {
       var ar = [];
-      console.log('Entering fact. v is', v );
-      while (v[2] != 1) {
+      console.log('Entering fact. v2 and v[1] are:', v2, v[1] );
+      while (v2 != 1) {
         for (let p of v[1]) {
-          if (v[2] / p === Math.floor(v[2] / p)) {
+          if (v2 / p === Math.floor(v2 / p)) {
             ar.push(p);
-            v[2] = v[2]/p;
+            v2 = v2/p;
           };
         }
       }
@@ -418,34 +388,42 @@ Here is the code used to generate the list of prime decompositions:
 ```js
     onmessage = function(ar) {
       importScripts('script2.js');
-      var r = [];  
-      var k = ar.data[2];
-      primesMonad.run( [ar.data[0], ar.data[1]] ).bnd(s => {
-         while (k <= ar.data[1]) {
-          next = fact2(k, s[1].filter(v => v <= k));
-          r.push(next);
-          k+=1;
-        } 
-        postMessage([r, s, s[2]]);
+      var state = ar.data[0];
+      var b = ar.data[1].sort();
+      var c = ar.data[2];
+      var n = c.length;
+      var top;
+      primesMonad.run( [state, b[0]] );
+      primesMonad.run( [state, (b[1]+1) ])
+      .bnd(v => {
+        top = v[1][v[1].length - 1]
+        for (let j = n; j <= top; j+=1) {
+          next = fact2(v[1],j)
+          c.push(next.x)
+        }
+        var res = lcm(c[b[0]], c[b[1]]);
+        postMessage([ c, v, [ar.data[1][0], ar.data[1][1], res] ]);
       })
     }
     
-    function fact2(k,b) {
+    function fact2(a,b) {
+      console.log('In fact2 a an b are', a, b );
       var ar = [];
-      var n = k;
+      var n = b;
       while (n != 1) {
-        for (let p of b) {
+        a.map(p => {
           if (n/p === Math.floor(n/p)) {
+            console.log('In fact2. ar is', ar );
             ar.push(p);
             n = n/p;
           };
-        }
+        })
       }
-      ar.sort(function(a, b) {
-        return a - b;
+      ar.sort(function(x,y) {
+        return (x - y);
       });
-      return ar;
-    }    
+      return ret(ar);
+    }
 ```
 
 ### MonadState and MonadState Transformers
