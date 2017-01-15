@@ -45,7 +45,7 @@ var monad = h('pre.turk6',  `    var Monad = function Monad(z = 42, g = 'generic
       var s;
       if (Array.isArray(x)) {
         x.some(v => {
-          if (typeof v === 'string' && v.charAt() === 'M') {
+          if (typeof v === 'string' && v.charAt() === '$') {
              t = v.slice(1, v.length);
           }
         })
@@ -649,7 +649,7 @@ var tr3 = h('pre',  `  var tr3 = function tr (fibsArray, primesArray) {
       console.log('In workerB$ stream in the main thread. m is ', m );
       mMres.ret(m.data)
       .bnd(v => mM36.ret('Asynchronous addendum. The largest computed ' +
-        'prime Fibonacci number is ' + v[2].split(',')[v[2].split(',').length - 1]), 'MmM36')
+        'prime Fibonacci number is ' + v[2].split(',')[v[2].split(',').length - 1]), '$mM36')
       primesMonad.s = JSON.parse(JSON.stringify(primesMonad.s));
       primesMonad.a = JSON.parse(JSON.stringify(primesMonad.a));
       primesMonad.s = m.data[3];
@@ -940,7 +940,7 @@ var tr3 = h('pre',  `  var tr3 = function tr (fibsArray, primesArray) {
       if (pMclicked.x.length === 2) {return};
       pMnums.bnd(spliceM, e.target.id, 1)
       .bnd(v => {
-        test3(v, 'MpMstyle')
+        test3(v, '$pMstyle')
         socket.send(\`CG#$42,\${pMgroup.x},\${pMname.x},\${pMscore.x},\${pMgoals.x}\`);
         pMclicked
         .bnd(push, e.target.innerHTML)
@@ -990,7 +990,7 @@ var tr3 = h('pre',  `  var tr3 = function tr (fibsArray, primesArray) {
         pMnums.bnd(push,result)
         .bnd(v => {
           travMonad.run([v, pMscore.x, pMgoals.x, [], 0])
-          test3(v, 'MpMstyle')
+          test3(v, '$pMstyle')
         }); 
       }
     };  
@@ -1012,13 +1012,13 @@ var tr3 = h('pre',  `  var tr3 = function tr (fibsArray, primesArray) {
     };  `  )
 
   var test10_11 = h('pre.turk5',  `    function test10 () {
-        m.ret(4).bnd(mult,100,'Mm1')
-        .bnd(square,'Mm2')
-        .bnd(add,-m2.x + 3,'Mm3')
-        .bnd(mult,100,'Mm4')
-        .bnd(square,'Mm5')
-        .bnd(add,m2.x,'Mm6') 
-        .bnd(sqroot,'Mm7')
+        m.ret(4).bnd(mult,100,'$m1')
+        .bnd(square,'$m2')
+        .bnd(add,-m2.x + 3,'$m3')
+        .bnd(mult,100,'$m4')
+        .bnd(square,'$m5')
+        .bnd(add,m2.x,'$m6') 
+        .bnd(sqroot,'$m7')
         .bnd(() => { 
           mMar10.ret([m, m1, m2, m3, m4, m5, m6, m7]);
           console.log('The square root of the sum of ', m1.x,
@@ -1027,13 +1027,13 @@ var tr3 = h('pre',  `  var tr3 = function tr (fibsArray, primesArray) {
       }  
       
       function test11 () {
-        m.ret(4).bnd(mult,100,'Mm1')
-        .bnd(square,'Mm2')
-        .bnd(add,-m2.x + 3,'Mm3')
-        .bnd(mult,100,'Mm4')
-        .bnd(square,'Mm5')
-        .bnd(add,m2.x,'Mm6') 
-        .bnd(sqroot,'Mm7').bnd(m.ret)
+        m.ret(4).bnd(mult,100,'$m1')
+        .bnd(square,'$m2')
+        .bnd(add,-m2.x + 3,'$m3')
+        .bnd(mult,100,'$m4')
+        .bnd(square,'$m5')
+        .bnd(add,m2.x,'$m6') 
+        .bnd(sqroot,'$m7').bnd(m.ret)
         .bnd(() => { 
           mMar11.ret([m, m1, m2, m3, m4, m5, m6, m7]);
           console.log('The square root of the sum of ', m1.x,
@@ -1080,7 +1080,7 @@ var tr3 = h('pre',  `  var tr3 = function tr (fibsArray, primesArray) {
           pMop.ret(0);
           var ind = pMindex.x - 1;
           var s = travMonad.s[ind];
-          pMnums.ret(s[0]).bnd(test3, 'MpMstyle');
+          pMnums.ret(s[0]).bnd(test3, '$pMstyle');
           pMscore.ret(s[1]);
           pMgoals.ret(s[2]);
           pMclicked.ret(s[3]);
@@ -1110,7 +1110,7 @@ var tr3 = h('pre',  `  var tr3 = function tr (fibsArray, primesArray) {
           }
           
           if (args.length > 0) {
-            arr = args.filter(v => !(typeof v === 'string' && v.charAt() === 'M' && v.slice(0,4) !== 'Math'))
+            arr = args.filter(v => !(typeof v === 'string' && v.charAt() === '$' && v.slice(0,4) !== 'Math'))
               
             arr.map(v => {
               test = testP(v, this.id)
@@ -1153,7 +1153,7 @@ var tr3 = h('pre',  `  var tr3 = function tr (fibsArray, primesArray) {
       var s;
       if (Array.isArray(x)) {
         x.some(v => {
-          if (typeof v === 'string' && v.charAt() === 'M') {
+          if (typeof v === 'string' && v.charAt() === '$') {
              t = v.slice(1);
           }
         })
@@ -1198,28 +1198,28 @@ var errorDemo = h('pre.turk5',  `    var t = new MonadEr(0,'t', []);
     var t2 = new MonadEr(0,'t2', []);
     var t3 = new MonadEr(0,'t3', []);
     console.log('Values of t, t2, and t3', t.x,t2.x,t3.x)
-    console.log("executing t.bnd(\'add3\',3,\'Mt2\').bnd(cube3, \'Mt3\') ");
-    t.bnd('add3',3,'Mt2').bnd(cube3, 'Mt3')
+    console.log("executing t.bnd(\'add3\',3,\'$t2\').bnd(cube3, \'$t3\') ");
+    t.bnd('add3',3,'$t2').bnd(cube3, '$t3')
     console.log('Values of t, t2, and t3', t.x,t2.x,t3.x)
     var t = new MonadEr(0,'t', []);
     var t2 = new MonadEr(0,'t2', []);
     var t3 = new MonadEr(0,'t3', []); 
     console.log('Values of t, t2, and t3', t.x,t2.x,t3.x)
     
-    console.log("executing t.bnd('add3','three', 'Mt2').bnd(cube3, 'Mt3') " );
-    t.bnd('add3','three','Mt2').bnd(cube3, 'Mt3')
+    console.log("executing t.bnd('add3','three', '$t2').bnd(cube3, '$t3') " );
+    t.bnd('add3','three','$t2').bnd(cube3, '$t3')
     console.log('Values of t, t2, and t3', t.x,t2.x,t3.x)
     
     console.log( 't.bnd(clean3)' );
     t.bnd(clean3);
     
-    console.log("executing t.bnd('add3', 'Math.sqrt(-1)', 'Mt2').bnd(cube3, 'Mt3') " );
-    t.bnd('add3','Math.sqrt(-1)','Mt2').bnd(cube3, 'Mt3')
+    console.log("executing t.bnd('add3', 'Math.sqrt(-1)', '$t2').bnd(cube3, '$t3') " );
+    t.bnd('add3','Math.sqrt(-1)','$t2').bnd(cube3, '$t3')
     console.log('Values of t, t2, and t3', t.x,t2.x,t3.x)
     console.log( 't.bnd(clean3)' );
     t.bnd(clean3);
-    console.log("executing t.bnd(\'addd3\',3,\'Mt2\').bnd(cube3, \'Mt3\') ");
-    t.bnd('addd3',3,'Mt2').bnd(cube3, 'Mt3')
+    console.log("executing t.bnd(\'addd3\',3,\'$t2\').bnd(cube3, \'$t3\') ");
+    t.bnd('addd3',3,'$t2').bnd(cube3, '$t3')
     console.log('Values of t, t2, and t3', t.x,t2.x,t3.x)    `  )
 
 var tests = h('pre',  `    function atest () {
@@ -1264,7 +1264,7 @@ var wDriver = h('pre.green2',  `    var worker = new Worker("worker.js");
 
 
 var worker$ = h('pre.green2',  `    const worker$ = sources.WW.map(v => {
-      console.log('Message from worker: ', v );
+      console.log('$essage from worker: ', v );
       v.preventDefault();
       mMZ21.bnd(() => {
         mM11.ret(v.data[1]);

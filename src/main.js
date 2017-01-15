@@ -159,7 +159,13 @@ function main(sources) {
       mM14.ret(v.data[1])
     }); 
     mMZ25.bnd(() => {
-      window['primesMonad'] = new MonadState('primesMonad', v.data[1], primes_state);
+      if (typeof v.data[1] === 'string') { 
+        console.log('In main thread', v.data[1] )
+      }
+      else {
+        console.log('In main thread. Overriding primesMonad with ', v.data[1]);
+        window['primesMonad'] = new MonadState('primesMonad', v.data[1], primes_state) 
+      }
     });
     next(v.data[0], 'CA#$41', mMZ21)
     next(v.data[0], 'CB#$41', mMZ22)
@@ -292,7 +298,7 @@ function main(sources) {
     if (pMclicked.x.length === 2) {return};
     pMnums.bnd(spliceM, e.target.id, 1)
     .bnd(v => {
-      test3(v, 'MpMstyle')
+      test3(v, '$pMstyle')
       socket.send(`CG#$42,${pMgroup.x},${pMname.x},${pMscore.x},${pMgoals.x}`);
       pMclicked
       .bnd(push, e.target.innerHTML)
@@ -340,7 +346,7 @@ function main(sources) {
       pMnums.bnd(push,result)
       .bnd(v => {
         travMonad.run([v, pMscore.x, pMgoals.x, [], 0])
-        test3(v, 'MpMstyle')
+        test3(v, '$pMstyle')
       }); 
     }
   };  
@@ -409,12 +415,13 @@ function main(sources) {
     var factors = [];
     mMfactors3.ret('');
     if (e.keyCode === 13) {
-      var num = e.target.value
+      var num = e.target.value;
       if (!num.match(/^[0-9]+$/)) {
         mMfactors3.ret('This works only if you enter a number. ' + num + ' is not a number');
       }
       else {
-        workerC.postMessage([primesMonad.s, num]);
+        var n = parseInt(num, 10);
+        workerC.postMessage([primesMonad.s, n]);
       }
     }
   });
@@ -840,7 +847,7 @@ function main(sources) {
         pMop.ret(0);
         var ind = pMindex.x - 1;
         var s = travMonad.s[ind];
-        pMnums.ret(s[0]).bnd(test3, 'MpMstyle');
+        pMnums.ret(s[0]).bnd(test3, '$pMstyle');
         pMscore.ret(s[1]);
         pMgoals.ret(s[2]);
         pMclicked.ret(s[3]);
@@ -855,7 +862,7 @@ function main(sources) {
         pMop.ret(0);
         var ind = pMindex.x + 1;
         var s = travMonad.s[ind];
-        pMnums.ret(s[0]).bnd(test3, 'MpMstyle');
+        pMnums.ret(s[0]).bnd(test3, '$pMstyle');
         pMscore.ret(s[1]);
         pMgoals.ret(s[2]);
         pMclicked.ret(s[3]);
@@ -967,7 +974,7 @@ var prAction$ = pr$.map(function (e) {
       h('a', { props: { href: "http://math.andrej.com/2016/08/06/hask-is-not-a-category/", target: "_blank" } }, 'Hask is not a category.'),
           h('span', ' by Andrej Bauer and the ' ),
           h('a', { props: { href: '#discussion' } }, 'Discussion'),
-          h('span', ' below. Adherance to the monad laws (see below) helps make the monads robust, versitile, and reliable tools for isolating and chaining sequences of javascript functions.  ' ),
+          h('span', ' below. They provide a convenient interface for dealing with uncertainty and side effects in a pure functional manner, assigning new values to identifiers (varaiables) without mutation. Adherance to the monad laws (see below) helps make the monads robust, versitile, and reliable tools for isolating and chaining sequences of javascript functions.' ),
           h('br'),
           h('br'),
           h('br'),
@@ -1032,19 +1039,19 @@ h('a', { props: { href: '#err' } }, 'MonadEr' ),
 h('span', ' catching NaN and preventing crashes when undefined variables are encountered. ' ),
 h('p', ' Computations are easy to link if each result is returned in an instance of Monad. Here are a few examples of functions that return instances of Monad: '),
 code.e1,
-h('p', ' The "M" prefix provides control over the destination of computation results. In the following example, m1, m2, and m3 have already been declared. Here is a comparrison of the results obtained when the "M" prefix is used and when it is omitted: ' ), 
+h('p', ' The "$" prefix provides control over the destination of computation results. In the following example, m1, m2, and m3 have already been declared. Here is a comparrison of the results obtained when the "$" prefix is used and when it is omitted: ' ), 
 
 h('pre.red9', `    m1.ret(7).bnd(m2.ret).bnd(m3.ret)  // All three monads get the value 7.
     m1.ret(0).bnd(add,3,'m2').bnd(cube,'m3')  // \'m1\', \'m2\', and \'m3\' are ignored` ),
 h('pre', `    Result: m1.x === 27
             m2.x === 7
             m3.x === 7  ` ),
-h('pre.red9', `    m1.ret(0).bnd(add,3,'Mm2').bnd(cube,'Mm3')   ` ),
+h('pre.red9', `    m1.ret(0).bnd(add,3,'$m2').bnd(cube,'$m3')   ` ),
 h('pre', `    Result: m1.x === 0
             m2.x === 3
             m3.x === 27  ` ),
-h('p', ' If the prefix "M" is absent, bnd() ignores the string argument. But when the "M" prefix is present, m1 retains its initial value, m2 retains the value it gets from from adding m\'s value (which is 0) to 3, and m3.x is the result. Both forms could be useful. ' ),
-h('p', ' The following example shows lambda expressions sending variables v1 and v2 through a sequence of computations and v3 sending the final result to the string that is logged. It also shows monads a, b, c, d, e, f, and g being updated and preserved in an array that is not affected by further updates. That is because calling the ret() method does not mutate a monad; it creates a fresh instance with the same name. Here is the example, shown in a screen shot of the Chrome console log:. ' ),  
+h('p', ' If the prefix "$" is absent, bnd() ignores the string argument. But when the "$" prefix is present, m1 retains its initial value, m2 retains the value it gets from from adding m\'s value (which is 0) to 3, and m3.x is the result of applying "cube" to m2.x. Both forms could be useful. ' ),
+h('p', ' The following example shows lambda expressions sending variables v1 and v2 through a sequence of computations and v3 sending the final result to the string that is logged. It also shows monads a, b, c, d, e, f, and g being updated and preserved in an array that is not affected by further updates. That is because calling the ret() method does not mutate a monad; it creates a fresh instance with the same name. Here is the example, shown in a screen shot of the Chrome console:. ' ),  
 h('br' ),
 h('br' ),
 h('img.image', {props: {src: "demo_000.png"}}  ),   
@@ -1084,7 +1091,7 @@ h('p', ' However, imitating definitions and patterns found in category theory, a
    //
   h('h2', ' Asynchronous Processes ' ),
 
-  h('p', ' The next demonstration involves a computation that can take a while to complete. It memoizes computed prime numbers and does not block the browser engine\'s primary execuation thread. The number you enter below is a cap on the size of the largest number in the Fibonacci sequence which is produced. If you enter 3 and then, one at a time, 0\'s until you reach three billion (3000000000), On my old desktop computer, lag times are negligible until the eighth zero, where there was a 657 microsecond pause. I had to wait 2427 microseconds after entering the ninth zero. A tenth zero, resulting in 30,000,000,000, entailed a lag of a little over seven seconds. The Fibonacci number 20,365,011,074 appeared on my monitor, but the largest prime Fibonacci number displayed was still 2,971,215,073. ' ),
+  h('p', ' The next demonstration involves a computation that can take a while to complete. It memoizes computed prime numbers and does not block the browser engine\'s primary execuation thread. The number you enter below is a cap on the size of the largest number in the Fibonacci sequence which is produced. I tested performance in Chrome on my freshly booted Ubuntu 16.04 box by entering "3" and then, one at a time, 0\'s. Lag times were negligible until the ninth zero, where there was a 657 microsecond pause before the prime Fibonacci number 2,971,215,073 appeared. I had to wait 2,427 microseconds after entering the tenth zero. The Fibonacci number 20,365,011,074 appeared on my monitor, but the largest prime Fibonacci number displayed was still 2,971,215,073. I added one more 0 (resulting in 300,000,000,000) and after 21,050 microseconds five more Fibonacci numbers were displayed on my monitor, topped by 225,851,433,717.  The array of prime numbers stored in primeMonad.s[3] expanded 39,636 entries, ending with 475,243. Later, the elapsed time between 30,000,000,000 and 300,000,000,000 was around 35 seconds in Chrome and also in Firefox. I gave my hot little processers a break and did not enter any more 0\'s. ' ),
 h('br' ),
 h('span', ' According to the '), 
 h('a', { props: { href: "https://oeis.org/A005478", target: "_blank" } }, 'The On-Line Encyclopedia of Integer Sequences '),
@@ -1143,7 +1150,7 @@ p(' The preceding demonstrations used three instances of MonadState: primesMonad
 code.MonadState,
 h('p', ' MonadState reproduces some of the functionality found in the Haskell Module "Control.Monad.State.Lazy", inspired by the paper "Functional Programming with Overloading and Higher-der Polymorphism", Mark P Jones (http://web.cecs.pdx.edu/~mpj/) Advanced School of Functional Programming, 1995. Transformers take instances of MonadState and return different instances of MonadState. The method call "fibsMonad.bnd(fpTransformer, primesMonad)" returns primesMonad updated so that the largest prime number in primesMonad.s[1] is the square root of the largest Fibonacci number in fibsMonad.s[3]. Here is the definition of fpTransformer: '),
 code.fpTransformer,
-h('a', { props: { href: '#top' } }, 'Back To The Top'),
+h('a#err', { props: { href: '#top' } }, 'Back To The Top'),
 
 // ********************************************************************** End MonadState
 
@@ -1152,10 +1159,10 @@ h('a', { props: { href: '#top' } }, 'Back To The Top'),
   h('p', ' Instances of MonadEr function much the same as instances of Monad, but when an instance of MonadEr encounters an error, it ceases to perform any further computations. Instead, it passes through every subsequent stage of a sequence of MonadEr expressions, reporting where it is and repeating the error message. It will continue to do this until it is re-instantiated or until its bnd() method runs on the function clean(). ' ),
   h('p', 'Functions used as arguments to the MonadEr bnd() method can be placed in quotation marks to prevent the browser engine from throwing reference errors. Arguments can be protected in the same manner. Using MonadEr can prevent the silent proliferation of NaN results in math computations, and can prevent browser crashes due to attempts to evaluate undefined variables. Sometimes crashes are desired when testing code, but MonadEr provides instant feedback pinpointing the exact location of the error. ' ), 
   h('p', ' The following demonstration shows the Chrome console log entries that result from running ' ),
-  h('pre', `    t.bnd('add3", 3, 'Mt2').bnd(cube3, 'Mt3'
-    t.bnd('add3",'three', 'Mt2').bnd(cube3, 'Mt3'    
-    t.bnd('add3",'Math.sqrt(-1)', 'Mt2').bnd(cube3, 'Mt3' 
-    t.bnd('addd3", 3, 'Mt2').bnd(cube3, 'Mt3' ` ),
+  h('pre', `    t.bnd('add3", 3, '$t2').bnd(cube3, '$t3'
+    t.bnd('add3",'three', '$t2').bnd(cube3, '$t3'    
+    t.bnd('add3",'Math.sqrt(-1)', '$t2').bnd(cube3, '$t3' 
+    t.bnd('addd3", 3, '$t2').bnd(cube3, '$t3' ` ),
   h('br'),
   h('img.image', {props: {src: "error2.png"}}  ),   
   h('br'),

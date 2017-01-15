@@ -62,14 +62,22 @@ function MonadState(g, state, p) {
   this.bnd = (func, ...args) => func(this.s, ...args);  
   this.run = ar => { 
     var ar2 = this.process(ar);
+    if (typeof ar === 'string') { console.log('In MonadState ' + ar); return };
     this.s = ar2;
-    console.log('In MonadState. this.process, ar2 >>> ', this.process, ar2);
-    self[this.id] = this;
+    self[this.id] = this;   // "self" is the global context in a worker.
     return self[this.id];
   }
 };
 
 function primes_state(x) {
+  console.log('In primes_state. x is', x );
+  if ( !Array.isArray(x[0]) || typeof x[1] !== 'number' )
+    
+  /*  || typeof x[0][0] !== 'number'  || typeof x[0][3] !== 'number' || !Array.isArray(x[0][1])  || !Array.isArray(x[0][3]) ) */ {
+      console.log('In primes_state.', x, 'is not a well formed state array.' );
+      return 'In primes_state.' + x + ' is not a well formed state array.' ;
+      
+  };  
   var state = x[0].slice();
   var top = state[2];
   var primes = state[3];

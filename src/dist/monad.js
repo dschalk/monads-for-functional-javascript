@@ -450,9 +450,16 @@ var workerB = new Worker("workerB.js");
 var workerC = new Worker("workerC.js");
 var workerD = new Worker("workerD.js");
 
-function primes_state(x) {
-  console.log('In main thread primes_state. x is ', x );
-  worker.postMessage(x)
+function primes_state(v) {
+  if (v[0] == "CE#$42" && Array.isArray(v[1]) && typeof v[2] === 'number' ) {
+    console.log('In main thread primes_state. v is ', v );
+    worker.postMessage(v)
+  }
+  else { 
+    console.log('ERROR', v, 'does not have the form [\"CE#$42\", array, number] in prime_state') 
+    return primesMonad.s;
+  }
+    
 }
 
 /*function primes_state(x) {
