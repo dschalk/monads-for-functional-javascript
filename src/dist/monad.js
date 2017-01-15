@@ -11,7 +11,7 @@ var CHANGE = 'cow';
 
 var xs = xstream.default;
 
-var Monad = function Monad(z = 19, g = 'generic') {
+var Monad = function Monad(z = 42, g = 'generic') {
   var _this = this;
   this.x = z;
   this.id = g;
@@ -462,20 +462,6 @@ function primes_state(v) {
     
 }
 
-/*function primes_state(x) {
-  var v = x.slice();
-  while (2 == 2) {
-      if ( v[3].every(e =>  (v[0] / e) != Math.floor(v[0] / e)) ) {
-          v[3].push(v[0]);
-      }
-      if (v[3][v[3].length - 1] > v[2]) {
-          break;
-      };
-      v[0] += 2;
-  }
-  return v;
-}; */
-
 function message_state(v) {
   var ar = v[0].concat(v[3]);
   return [ v[0], [], [], ar ];
@@ -502,6 +488,38 @@ var runFib = function runFib(x) {
 };
 
 var primesMonad = new MonadState('primesMonad', [3, [2,3], 3, [2,3]], primes_state);
+
+function execP (x) {
+  var state = primesMonad.s.slice();
+  var top = state[2];
+  var primes = state[3];
+  var primes2 = state[3].filter(v => v <= top)
+  if (x == state[0] || x == top) {
+    window['primesMonad'] = new MonadState('primesMonad', state, primes_state);
+    return window['primesMonad'];
+  }
+
+  else if (x < top) {
+    var temp = primes.filter(v => v <= x);
+    var q = temp.indexOf(temp[temp.length - 1]);
+    temp.push(primes[q + 1]);
+    console.log('In primesMonad. temp, q, primes[q+1]', temp, q, primes[q+1] );
+    window['primesMonad'] = new MonadState('primesMonad', [primes[q+1], temp, top, primes], primes_state);
+    return window['primesMonad'];
+  }
+    
+  else {
+    while (primes[primes.length - 1] <=  x ) {
+      if (primes2.every(e =>  (top / e != Math.floor(top / e))))  {
+        primes.push(top);
+      };
+      top += 2;
+      console.log('In primes_state. top is >>>>> ', top ); 
+    }
+    window['primesMonad'] = (new MonadState('primesMonad', [top, primes, top, primes], primes_state));
+    return window['primesMonad'];
+  }
+};
 
 function pFib(fibs, primes) {
   var ar = [];

@@ -22,13 +22,13 @@ var Monad = function Monad(z = 19, g = 'generic') {
     var ID;
     if (m instanceof Monad) {
       ID = testPrefix(args, _this.id); 
-      window[ID] = new Monad(m.x, ID);
-      return window[ID];
+      self[ID] = new Monad(m.x, ID);
+      return self[ID];
     }
     else return m;
   };
   this.ret = function (a) {
-    return window[_this.id] = new Monad(a,_this.id);
+    return self[_this.id] = new Monad(a,_this.id);
   };
 };
 
@@ -108,6 +108,35 @@ function primes_state(x) {
 };
 
 var primesMonad = new MonadState('primesMonad', [3, [], 3, [2,3]], primes_state);
+
+function execP (x) {
+  var state = primesMonad.s.slice();
+  var top = state[2];
+  var top2 = state[2];
+  var primes = state[3];
+  var primes2 = state[3].filter(v => v <= top)
+  if (x == state[0] || x == top) {
+    return (new MonadState('primesMonad', state, primes_state));
+  }
+
+  else if (x < top) {
+    var temp = primes.filter(v => v <= x);
+    var q = temp.indexOf(temp[temp.length - 1]);
+    temp.push(primes[q + 1]);
+    return (new MonadState('primesMonad', [primes[q+1], temp, top, primes], primes_state));
+  }
+    
+  else {
+    while (top2 <=  x ) {
+      if (primes2.every(e =>  (top / e != Math.floor(top / e))))  {
+        primes.push(top);
+        top2 = top;
+      };
+      top += 2;
+    }
+    return (new MonadState('primesMonad', [top, primes, top, primes], primes_state));
+  }
+};
 
 function fact(v) {
   var ar = [];
