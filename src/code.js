@@ -1,12 +1,5 @@
 import {h, pre} from '@cycle/dom'; 
 
-/*
-import {subject} from 'most-subject'
-var sub = subject
-var observer = sub.observer;
-var stream = sub.stream;
-*/
-
 var Monad = function Monad(z = 42, g = 'generic') {
   var _this = this;
   this.x = z;
@@ -1382,89 +1375,73 @@ onmessage = function(ar) {
 var fact_workerC = h('pre.red0',  `    onmessage = function(ar) {
       console.log('In workerC.js.  ar is ', ar );  
       importScripts('script2.js');
-      var num = ar.data[1];
-      var sa = ar.data;
+      execP(ar.data[0], ar.data[1] + 1)
+      .bnd(primeState => pfactors(primeState, ar.data[1])
+      .bnd(factors => postMessage(["The prime factors of " + ar.data[1] + 
+        " are " + factors.join(', '), primeState])));
+    }
     
-      primesMonad.run(sa)
-      .bnd(newState => fact2(newState[3],num)
-      .bnd(factors => postMessage(["The prime factors of " + num + 
-        " are " + factors.join(', '), newState])));
-     }
-    
-    function fact(v) {
-      var ar = [];
-      console.log('Entering fact. v2 and v[1] are:', v2, v[1] );
-      while (v2 != 1) {
-        for (let p of v[1]) {
-          if (v2 / p === Math.floor(v2 / p)) {
-            ar.push(p);
-            v2 = v2/p;
-          };
-        }
+    function execP (state, num) {
+      var top = state[2];
+      var top2 = state[2];
+      var primes = state[3];
+      var primes2 = state[3]
+      var result;
+      if (num == state[0] || num == top) {
+        result = new MonadState('primesMonad', state);
       }
-      ar.sort(function(a, b) {
-        return a - b;
-      });
-      return ret(ar);
-    }    `  )
+    
+      else if (num < top) {
+        var temp = primes.filter(v => v <= num);
+        var q = temp.indexOf(temp[temp.length - 1]);
+        temp.push(primes[q + 1]);
+        result = new MonadState('primesMonad', [primes[q+1], temp, top, primes]);
+      }
+        
+      else {
+        while (top2 <=  num ) {
+          if (primes2.every(e =>  (top / e != Math.floor(top / e))))  {
+            primes.push(top);
+            top2 = top;
+          };
+          top += 2;
+        }
+        result = new MonadState('primesMonad', [top2, primes, top2, primes] );
+      }
+      return result;
+    };
+    
+    function execLCM (a, b, primeState) {
+      pfactors(primeState, a).bnd(x => { 
+        pfactors(primeState, b).bnd(y => { 
+          postMessage([primeState, [a, b, lcm(x,y)]])
+        })
+      })
+    }  `  )
 
 var fact2_workerD = h('pre.red0',  `    onmessage = function(ar) {
+      var n = 0;
       importScripts('script2.js');
-      var state = ar.data[0];
-      var b = ar.data[1].sort();
-      var c = ar.data[2];
-      var n = c.length;
-      var top;
-      primesMonad.run( [state, b[0]] );
-      primesMonad.run( [state, (b[1]+1) ])
-      .bnd(v => {
-        top = v[1][v[1].length - 1]
-        for (let j = n; j <= top; j+=1) {
-          next = fact2(v[1],j)
-          c.push(next.x)
-        }
-        var res = lcm(c[b[0]], c[b[1]]);
-        postMessage([ c, v, [ar.data[1][0], ar.data[1][1], res] ]);
-      })
+      var res;
+      var a = ar.data[1][0];
+      var b = ar.data[1][1];
+      var primeState = ar.data[0];
+      var decompState = ar.data[2];
+      var max = a > b ? a : b
+      var c = ar.data[2][3];
+      var d = c.length;
+      var diff = max - d;
+      execP(ar.data[0], max)
+      .bnd(primeState => execLCM(a, b, primeState)) 
     }
-    
-    function fact2(a,b) {
-      console.log('In fact2 a an b are', a, b );
-      var ar = [];
-      var n = b;
-      while (n != 1) {
-        a.map(p => {
-          if (n/p === Math.floor(n/p)) {
-            console.log('In fact2. ar is', ar );
-            ar.push(p);
-            n = n/p;
-          };
+      
+    function execLCM (a, b, primeState) {
+      pfactors(primeState, a).bnd(x => { 
+        pfactors(primeState, b).bnd(y => { 
+          postMessage([primeState, [a, b, lcm(x,y)]])
         })
-      }
-      ar.sort(function(x,y) {
-        return (x - y);
-      });
-      return ret(ar);
-    }
-    function lcm (cx,dx) {
-      console.log('************In lcm cx, dx ', cx, dx );
-      var ar= [];
-      var r;
-      var c = cx.slice();
-      var d = dx.slice();
-      d.map(v => {
-        console.log('Hello from lcm, most excellent friend of mine.');
-        if (c.some(x => x === v)) {
-          ar.push(v)
-          c.splice(c.indexOf(v),1)
-          d.splice(d.indexOf(v),1)
-        }
-          r = ar.concat(d).concat(c).reduce(function (a,b) {return a*b})
-          console.log('Bottom of map in lcm ar, d, c, r', ar, d, c, r );
-        }
-      )
-      return r
-    }    `  )
+      })
+    }  `  )
 
 var workerD$ = h('pre',  `    const workerD$ = sources.WWD.map(m => {
       console.log('Back in the main thread. m is', m );
@@ -1473,8 +1450,34 @@ var workerD$ = h('pre',  `    const workerD$ = sources.WWD.map(m => {
       mMfactors8.ret(m.data[2]);
     });  `  )
 
-var p1 = h('pre',  `  
-`  )
+var execP = h('pre',  `    function execP (x) {
+      var state = primesMonad.s.slice();
+      var top = state[2];
+      var top2 = state[2];
+      var primes = state[3];
+      var primes2 = state[3].filter(v => v <= top)
+      if (x == state[0] || x == top) {
+        return (new MonadState('primesMonad', state, primes_state));
+      }
+    
+      else if (x < top) {
+        var temp = primes.filter(v => v <= x);
+        var q = temp.indexOf(temp[temp.length - 1]);
+        temp.push(primes[q + 1]);
+        return (new MonadState('primesMonad', [primes[q+1], temp, top, primes], primes_state));
+      }
+        
+      else {
+        while (top2 <=  x ) {
+          if (primes2.every(e =>  (top / e != Math.floor(top / e))))  {
+            primes.push(top);
+            top2 = top;
+          };
+          top += 2;
+        }
+        return (new MonadState('primesMonad', [top, primes, top, primes], primes_state));
+      }
+    };    `  )
 
 var p2 = h('pre',  `  
 `  )
@@ -1499,7 +1502,7 @@ var p8 = h('pre',  `
 
 
 
-  export default { workerD$, fact_workerC, fact2_workerD, primes_state, workerB, workerB_Driver, workerC, worker$, errorDemo, monadEr, backAction, monadArchive2, tests, numClick1, numClick2, mMZ10, test3, travMonad, monad, equals, fmap, opM, e1, e2, e2x, e3, e4, e4x, e6, e6x, driver, messages, monadIt, MonadSet, updateCalc, arrayFuncs, nums, cleanup, ret, C42, newTask, process, mM$task, colorClick, edit, testZ, quad, runTest, todoStream, inc, seed,  add, MonadState, primesMonad, fibsMonad, primeFibInterface, tr3, fpTransformer, factorsMonad, factorsInput, playerMonad, promise, promiseSnippet, timeout, timeoutSnippet, examples, examples2, async }
+  export default { execP, workerD$, fact_workerC, fact2_workerD, primes_state, workerB, workerB_Driver, workerC, worker$, errorDemo, monadEr, backAction, monadArchive2, tests, numClick1, numClick2, mMZ10, test3, travMonad, monad, equals, fmap, opM, e1, e2, e2x, e3, e4, e4x, e6, e6x, driver, messages, monadIt, MonadSet, updateCalc, arrayFuncs, nums, cleanup, ret, C42, newTask, process, mM$task, colorClick, edit, testZ, quad, runTest, todoStream, inc, seed,  add, MonadState, primesMonad, fibsMonad, primeFibInterface, tr3, fpTransformer, factorsMonad, factorsInput, playerMonad, promise, promiseSnippet, timeout, timeoutSnippet, examples, examples2, async }
  
 
 

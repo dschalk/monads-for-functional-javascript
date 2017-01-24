@@ -11,11 +11,11 @@
 
 onmessage = function(v) {
   importScripts('script2.js');
-  console.log('In worker.js receiving message text v.data', v.data ); 
+  console.log('In worker.js *** v is', v );
+  // primesMonad = new MonadState('primesState', v.data[1]);
 
-  if (v.data[0] == "CE#$42") {
-    console.log('In worker.js primesMonad.s = ', primesMonad.s )
-    postMessage(["CE#$41", primesMonad.run([v.data[1], v.data[2]]).s])
+  if (Array.isArray(v.data) && v.data.length === 3 && v.data[0] == "CE#$42") {
+    postMessage( [ "CE#$41", execP(v.data[1], v.data[2]).s ] )
   }
 
   if (v.data.length === 2 && typeof v.data[0] === 'string' && typeof v.data[1] === 'string') {

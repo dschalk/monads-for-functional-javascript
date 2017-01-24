@@ -160,10 +160,10 @@ function main(sources) {
     }); 
     mMZ25.bnd(() => {
       if (typeof v.data[1] === 'string') { 
-        console.log('In main thread', v.data[1] )
+        console.log('Major malfunction in worker.js  Reporting from main thread', v.data[1] )
       }
       else {
-        console.log('In main thread. Overriding primesMonad with ', v.data[1]);
+        console.log('In main thread. Re-instanciating primesMonad with ', v.data[1]);
         window['primesMonad'] = new MonadState('primesMonad', v.data[1], primes_state) 
       }
     });
@@ -389,15 +389,15 @@ function main(sources) {
   
   const workerB$ = sources.WWB.map(m => {
     console.log('In workerB$ stream in the main thread. m is ', m );
-    mMres.ret(m.data)
-    window['primesMonad'] = new MonadState('primesMonad', m.data[3], primes_state);
+    mMres.ret(m.data[0])
+    window['primesMonad'] = new MonadState('primesMonad', m.data[1], primes_state);
   });
 
   var fibKeyPress5$ = sources.DOM
       .select('input#fib92').events('keyup');
 
   var primeFib$ = fibKeyPress5$.map(e => {
-    workerB.postMessage(["CE#$42", primesMonad.s, e.target.value]);
+    workerB.postMessage([primesMonad.s, e.target.value]);
   });
 
   var clearprimes$ = sources.DOM
@@ -429,11 +429,11 @@ function main(sources) {
   const workerC$ = sources.WWC.map(m => {
     console.log('Back in the main thread. m is', m );
     mMfactors.ret(m.data[0]);
-    window['primesMonad'] = new MonadState('primesMonad', m.data[1], primes_state);
+    window['primesMonad'] = new MonadState('primesMonad', m.data[1]);
   });
 
   var factorsP$ = sources.DOM
-      .select('input#factors_5').events('keydown');
+    .select('input#factors_5').events('keyup');
 
 /*  var factA$ = factorsP$.map(function (e) {
     console.log('In factA$ <><><>Jonus of the Etherial Spark<<>>>');
@@ -462,16 +462,17 @@ function main(sources) {
         return;
       }
     else {
-        workerD.postMessage([primesMonad.s, ar, mMfactors6.x]);
+        //workerD.postMessage([primesMonad.s, ar, mMfactors6.x]);
+        workerD.postMessage([primesMonad.s, ar, decompMonad.s, 'Happy, happy']);
       }
     }
   });
 
   const workerD$ = sources.WWD.map(m => {
     console.log('Back in the main thread. m is', m );
-    mMfactors6.ret(m.data[0]);
-    window['primesMonad'] = new MonadState('primesMonad', m.data[1], primes_state);
-    mMfactors8.ret(m.data[2]);
+    mMfactors6.ret(m.data[0][3]);
+    window['primesMonad'] = new MonadState('primesMonad', m.data[0], primes_state);
+    mMfactors8.ret(m.data[1]);
   });
 
   // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> ENDOM prime factors END
@@ -898,7 +899,7 @@ var prAction$ = pr$.map(function (e) {
     }
 });
 
-  var calcStream$ = xs.merge( prAction$, fA$, clearprimes$, worker$, workerB$, workerC$, workerD$, clearAction$, backAction$, forwardAction$, factorsAction$, primeFib$, fibPressAction$, quadAction$, edit1Action$, edit2Action$, testWAction$, testZAction$, testQAction$, colorAction$, deleteAction$, newTaskAction$, chatClickAction$, gameClickAction$, todoClickAction$, captionClickAction$, groupPressAction$, rollClickAction$, messagePressAction$, loginPressAction$, messages$, numClickAction$, opClickAction$);
+  var calcStream$ = xs.merge( prAction$, fA$, factorsP$, clearprimes$, worker$, workerB$, workerC$, workerD$, clearAction$, backAction$, forwardAction$, factorsAction$, primeFib$, fibPressAction$, quadAction$, edit1Action$, edit2Action$, testWAction$, testZAction$, testQAction$, colorAction$, deleteAction$, newTaskAction$, chatClickAction$, gameClickAction$, todoClickAction$, captionClickAction$, groupPressAction$, rollClickAction$, messagePressAction$, loginPressAction$, messages$, numClickAction$, opClickAction$);
    
   return {
   DOM: calcStream$.map(function () {
@@ -970,11 +971,11 @@ var prAction$ = pr$.map(function (e) {
       h('br'),
       h('div#captionDiv', { style: { display: mMcaptionDiv.x } },  [
           h('h1', 'JS-monads running on Cycle.js') ]),
-          h('span#italic', ' These monads are like the Haskell monads in that they resemble the monads of category theory while not actually being mathematical monads. See ' ),
+          h('span#italic', ' These monads are like the Haskell monads in that they resemble the monads of category theory without actually being mathematical monads. See ' ),
       h('a', { props: { href: "http://math.andrej.com/2016/08/06/hask-is-not-a-category/", target: "_blank" } }, 'Hask is not a category.'),
           h('span', ' by Andrej Bauer and the ' ),
           h('a', { props: { href: '#discussion' } }, 'Discussion'),
-          h('span', ' below. They provide a convenient interface for dealing with uncertainty and side effects in a pure functional manner, assigning new values to identifiers (varaiables) without mutation. Adherance to the monad laws (see below) helps make the monads robust, versitile, and reliable tools for isolating and chaining sequences of javascript functions.' ),
+          h('span', ' below. They provide a convenient interface for dealing with uncertainty and side effects in a purely functional manner, assigning new values to identifiers (varaiables) without mutation. Adherance to the monad laws (see below) helps make the monads robust, versitile, and reliable tools for isolating and chaining sequences of javascript functions.' ),
           h('br'),
           h('br'),
           h('br'),
@@ -982,7 +983,7 @@ var prAction$ = pr$.map(function (e) {
           h('br'),
           h('span.tao1', ' An interactive simulated dice game with a traversable history (all group members see your score decrease or increase as you navegate backwards and forwards); '),
           h('br'),
-          h('span.tao1', ' Chat rooms where members can compete in the simulated dice game, chat, and share a project todo list; '),
+          h('span.tao1', ' Chat rooms where members can compete in the simulated dice gameand share a project todo list; '),
           h('br'),
           h('span.tao1', ' Other demonstrations of the usefulness of monads in a Cycle application.  '),
           h('br'),
@@ -1023,14 +1024,14 @@ h('div#log2', { style: { display: mMlog2.x } }, [
     h('span', 'Change group: '),
     h('input#group')]),
 h('p', mMsoloAlert.x ),
-h('p', 'People who are in the same group, other than solo, share the same todo list, messages, and simulated dice game. In order to see any of these, you must establish an identity on the server by loggin g in. The websockets connection terminates if the first message the server receives does not come from the sign in form. You can enter any random numbers or letters you like. The only check is to make sure someone hasn\t already signed in with whatever you have selected. If you log in with a name that is already in use, a message will appear and this page will be re-loaded in the browser after a four-second pause. '),
+h('p', 'People who are in the same group, other than the default group named "solo", share the same todo list, chat messages, and simulated dice game. In order to see any of these, you must establish a unique identity on the server by logging in. The websockets connection terminates if the first message the server receives does not come from the sign in form. You can enter any random numbers, letters, or special characters you like. The server checks only to make sure someone hasn\t already signed in with the sequence you have selected. If you log in with a name that is already in use, a message will appear and this page will be re-loaded in the browser after a four-second pause. '),
 h('p', ' Data for the traversable game history accumulates until a player scores three goals and wins. The data array is then erased and the application is ready to start accumulating a new history. '),
 h('hr'),
 h('h1', 'The Monads'),
 h('h3', ' Monad '),
 code.monad,
 h('br' ),
-h('span.tao#monad', ' Instances of Monad, MonadState, MonadItter, and MonadEr facilitate programming in a functional style. Additional constructors can be invented as special needs arise. In this presentation we see, among other things, Monad instances linking computations and assigning results to Monad instances, ' ),
+h('span.tao#monad', ' Instances of Monad, MonadState, MonadItter, and MonadEr facilitate programming in a functional style. The variety of these constructors suggests how developers might create their own constructors as the need arises. ' ),
 h('a', { props: { href: '#state' } }, 'MonadState'),
 h('span', ' instances memoizing computation results, '),
 h('a', { props: { href: '#itterLink' } }, 'MonadItter'),
@@ -1084,21 +1085,25 @@ h('span.tao', ' The Haskell programming language borrowed the term "monad" from 
 h('a', { props: { href: "http://math.andrej.com/2016/08/06/hask-is-not-a-category/", target: "_blank" } }, 'Hask is not a category.'),
 h('br' ),
 h('p', ' Research into ways of defining a Haskell category appears to be ongoing. It involves tinkering with special constraints, omitted features, and definitions of morphisms that are not Haskell functions. When a definition of the category is established, Haskell monads are then shown to be, in some contrived context, category-theory monads. Devising such schemes are instructive academic excercises, but I don\'t think they can provide anything useful to programmers working on applications for industry, commerce, and the Internet. ' ),
-h('p', ' However, imitating definitions and patterns found in category theory, as Haskell does in defining the functor, monoid, and monad type classes, was a stroke of genius that vastly enriched the Haskell programming language and brought it into the mainstream as a viable alternative to java, c++, etc.  This website runs efficiently on a Haskell websockets server. The modified Haskell Wai Websockets server has proven to be extraordinarily easy to maintain as new requirements become necessary. For example, modifying the server to send chat messages and shared todo lists only to members of the same group was a trivial task. It required just a tiny amount of pattern-matching code. Category theory patterns make the Haskell front-end interface robust, versitile, and reliable. Those are the qualities that I strive to emulate with JS-monads.'  ), 
+h('p', ' However, imitating definitions and patterns found in category theory, as Haskell does in defining the functor, monoid, and monad type classes, was a stroke of genius that vastly enriched the Haskell programming language and brought it into the mainstream as a viable alternative to java, c++, etc.  This website runs efficiently on a Haskell websockets server. The modified Haskell Wai Websockets server has proven to be extraordinarily easy to maintain as new requirements become necessary. For example, modifying the server to send chat messages and shared todo lists only to members of the same group was a trivial task. It required just a tiny amount of pattern-matching code. Category theory patterns make the Haskell interface to the Cycle front end robust, versitile, and reliable. Those are the qualities that I strive to emulate with JS-monads.'  ), 
     
  // **************************************************************************** END MONAD       START ERROR   
     //
    //
   h('h2', ' Asynchronous Processes ' ),
 
-  h('p', ' The next demonstration involves a computation that can take a while to complete. It memoizes computed prime numbers and does not block the browser engine\'s primary execuation thread. The number you enter below is a cap on the size of the largest number in the Fibonacci sequence which is produced. I tested performance in Chrome on my freshly booted Ubuntu 16.04 box by entering "3" and then, one at a time, 0\'s. Lag times were negligible until the ninth zero, where there was a 657 microsecond pause before the prime Fibonacci number 2,971,215,073 appeared. I had to wait 2,427 microseconds after entering the tenth zero. The Fibonacci number 20,365,011,074 appeared on my monitor, but the largest prime Fibonacci number displayed was still 2,971,215,073. I added one more 0 (resulting in 300,000,000,000) and after 21,050 microseconds five more Fibonacci numbers were displayed on my monitor, topped by 225,851,433,717.  The array of prime numbers stored in primeMonad.s[3] expanded 39,636 entries, ending with 475,243. Later, the elapsed time between 30,000,000,000 and 300,000,000,000 was around 35 seconds in Chrome and also in Firefox. I gave my hot little processers a break and did not enter any more 0\'s. ' ),
+  h('p', ' The next three demonstrations involve computations of prime numbers, Fibonacci numbers, prime Fibonacci numbers, and prime factors of numbers. All three share primesMonad, which preserves longest computed list of prime numbers throughout the browser session. No prime number is generated more than once. ' ),
+
+h('p', ' The first demonstrations displays the Fibonacci series up to an upper bound entered in the browser by a user. It also displays a list of the prime Fibonacci numbers in the list of Fibonacci numbers, along with the largest prime number that was generated during a computation.  I tested performance in Firefox on my Ubuntu 16.04 box by entering "3" and then, one at a time, 0\'s. Lag times were not noticeable, even at the ninth zero, where there was a 351 microsecond pause before the prime Fibonacci number 2,971,215,073 appeared. I added another zero (resulting in 30,000,000,000) and after 1,878 microseconds four more Fibonacci numbers appeared on my monitor.  After adding one final zero, there was a delay of 17,550 microseconds before five more Fibonacci numbers appeared, topped by 225,851,433,717.  I deleted a zero and then put it back. This time the delay was only 206 microseconds, showing the effectiveness of using the previously stored list of prime numbers.' ),
+
+h('p', ' The demonstrations do not block the main execution thread. Computations are performed in web workers and the results are stored for further use in the main thread. ' ),    
 h('br' ),
 h('span', ' According to the '), 
 h('a', { props: { href: "https://oeis.org/A005478", target: "_blank" } }, 'The On-Line Encyclopedia of Integer Sequences '),
 h('span', ' these are the first eleven proven prime Fibonacci numbers:'),
 h('span.purp', ' 2, 3, 5, 13, 89, 233, 1597, 28657, 514229, 433494437, 2971215073, and 99194853094755497. The eleventh number, 2971215073, is as far as you can go on an ordinary desktop computer. ' ),
 h('br' ),
-h('p.red',  'The elapsed time is ' + mMres.x[4] + ' milliseconds.' ),
+h('p.red',  'The elapsed time is ' + mMres.x[3] + ' milliseconds.' ),
 h('input#fib92'),
 h('br'),
 h('span#PF_7.red6', 'Fibonacci Numbers'),
@@ -1113,10 +1118,9 @@ h('span#PF_21.red6', 'The largest generated prime number.'),
 h('br'),
 h('span#PF_22.turk', mMres.x[1]  ),
 h('br'),
-h('p', ' The code runs in two threads, a main thread and a web worker thread. In this and the next two demonstrations, primesMonad plays a central role. Updating primesMonad is accomplished by calling primeMonad\'s run() method on the current state and a designated upper bound. If the designated upper bound is less than a previously designated upper bound, the old upper bound and array of primes remain in state[2], and state[3], respectively. state[0] and state[1] become the new upper bound and array of prime numbers. Again, the new array might be the same as the freshly generated array, or it might be smaller. That depends on the value of "a" in primesMonad.run(s,a), where s is the current state and a is the designated upper bound. ' ),
     
-h('p', ' Here is the definition of primesMonad, along with its constructor and auxiliary function. ' ),
-      code.primes_state,  
+h('p', ' Here are the definitions of StateMonad, primesMonad, and execP. ' ),
+      code.execP,  
 h('p', ' This are the definitions of workerB, workerB.js, and fpTransformer: ' ),
       code.workerB,
 h('p', ' fibsMonad also derives from MonadState. Here is how it is defined: ' ),
@@ -1130,16 +1134,17 @@ h('br'),
 h('br'),
 h('div.tao3', `${mMfactors.x}` ),    
 h('div.tao3', mMfactors3.x ),    
-h('p', ' And here are the definitions of workerC.js and the function that it uses named "fact()". '),
+h('p', ' And here are the definitions of workerC.js and the functions it contains named "execP" and "pfactors"). '),
    code.fact_workerC,  
 h('p', ' The following demonstration generates an array of arrays containing the prime decompensations of numbers. No decomposition is computed more than once, so very little time is needed to obtain an array of the prime decompositions of numbers smaller than or slightly greater than a previously obtained prime decomposition. The array of arrays of prime decompositions is stored in the monad mMfactors6. ' ),
-h('p', ' Because the indeces of lists of prime decompositions corresponds to the numbers which are decomposed, mMfactors6.x[i] is the prime decomposition of the integer i for all integers i whose prime decompositions have been evaluated. For the demonstration, we use prime decompositions to calculate the least common multiple of two comma-separated numbers. Generating a long array of arrays of prime decompositions is obviously not the best way to find the prime decomposition of a number. If you are going to be adding fractions all afternoon, working with an already-generated array of arrays of prime decompositions might be more appealing. Essentially, the algorithm eliminates prime factors common to both numbers from the product of the two numbers under consideration. Then it computes the product of the remaining prime numbers. ' ),
+h('p', ' Because the indeces of lists of prime decompositions corresponds to the numbers which are decomposed, mMfactors6.x[i] is the prime decomposition of the integer i for all integers i whose prime decompositions have been evaluated. For the demonstration, we use prime decompositions to calculate the least common multiple of two comma-separated numbers. Generating a long array of arrays of prime decompositions is usually not the best way to find the least common multiple of two numbers, but if you are going to be adding fractions all afternoon, working with already-generated arraya of arrays of prime decompositions might be more appealing. Working with a table of least common multiples would be more efficient, but this is a demonstration of functional programming in Cycle.js using JS-monads. ' ),
+h('p', ' The algorithm first examines the arrays of prime factors of each of the two numbers under consideration, eliminating from one of the arrays all prime factors common to both. Then it concatenates the arrays and reduces the resulting array by obtaining the product of its elements. ' ),
 h('input#factors_5'),
 h('br'),
 h('br'),
 h('div.tao3', `${mMfactors7.x}` ),    
 h('div.tao3', `The least common multiple of ${mMfactors8.x[0]} and ${mMfactors8.x[1]} is ${mMfactors8.x[2]}` ),    
-h('p', ' Here is the code used to generate the list of prime decompositions: ' ),
+h('p', '  The computations are performed in workerD.js using execP (previously defined) and execLCM. Here are the definitions of workerD.js and execLCM: ' ),
     code.fact2_workerD, 
 // ********************************************************************** Begin MonadState
 

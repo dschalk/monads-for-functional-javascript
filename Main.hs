@@ -7,7 +7,7 @@ import Control.Monad (forM_, forever)
 import Control.Concurrent (forkIO)
 import Control.Concurrent.STM
 import Control.Monad.IO.Class (liftIO)
-import Network.WebSockets.Connection (sendClose)
+import Network.WebSockets (sendClose)
 import qualified Data.Text as T
 import qualified Data.Text.IO as T
 import qualified Network.WebSockets as WS

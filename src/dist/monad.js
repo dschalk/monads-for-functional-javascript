@@ -213,7 +213,6 @@ function trav_archive (ar) {
     this.id = g;
     this.s = state;
     this.process = p;
-    this.a = this.s[0];
     this.bnd = (func, ...args) => func(this.s, ...args);  
     this.run = ar => { 
       var ar2 = this.process(ar);
@@ -223,6 +222,8 @@ function trav_archive (ar) {
     }
   };
   
+var primesMonad = new MonadState('primesMonad', [3, [2,3], 3, [2,3]], primes_state);
+
 // var travMonad = new MonadState("travMonad", [[8,8,8,8], 0, 0, [ [ [], 0, 0 ] ] ], trav_state)
 
 function trav_state (ar) {
@@ -452,14 +453,12 @@ var workerD = new Worker("workerD.js");
 
 function primes_state(v) {
   if (v[0] == "CE#$42" && Array.isArray(v[1]) && typeof v[2] === 'number' ) {
-    console.log('In main thread primes_state. v is ', v );
+    console.log('In main thread Daddy-Oh and v is ', v );
     worker.postMessage(v)
   }
   else { 
-    console.log('ERROR', v, 'does not have the form [\"CE#$42\", array, number] in prime_state') 
-    return primesMonad.s;
-  }
-    
+    console.log('ERROR', v, 'does not have the form [\"CE#$42\", array, number] in prime_state'  ) 
+  }   
 }
 
 function message_state(v) {
@@ -485,40 +484,6 @@ var runFib = function runFib(x) {
   }
   fibsMonad.run([fibsMonad.s[0], fibsMonad.s[1], x, fibsMonad.a]);
   return fibsMonad.a;
-};
-
-var primesMonad = new MonadState('primesMonad', [3, [2,3], 3, [2,3]], primes_state);
-
-function execP (x) {
-  var state = primesMonad.s.slice();
-  var top = state[2];
-  var primes = state[3];
-  var primes2 = state[3].filter(v => v <= top)
-  if (x == state[0] || x == top) {
-    window['primesMonad'] = new MonadState('primesMonad', state, primes_state);
-    return window['primesMonad'];
-  }
-
-  else if (x < top) {
-    var temp = primes.filter(v => v <= x);
-    var q = temp.indexOf(temp[temp.length - 1]);
-    temp.push(primes[q + 1]);
-    console.log('In primesMonad. temp, q, primes[q+1]', temp, q, primes[q+1] );
-    window['primesMonad'] = new MonadState('primesMonad', [primes[q+1], temp, top, primes], primes_state);
-    return window['primesMonad'];
-  }
-    
-  else {
-    while (primes[primes.length - 1] <=  x ) {
-      if (primes2.every(e =>  (top / e != Math.floor(top / e))))  {
-        primes.push(top);
-      };
-      top += 2;
-      console.log('In primes_state. top is >>>>> ', top ); 
-    }
-    window['primesMonad'] = (new MonadState('primesMonad', [top, primes, top, primes], primes_state));
-    return window['primesMonad'];
-  }
 };
 
 function pFib(fibs, primes) {
@@ -826,11 +791,6 @@ var mMchat = new Monad('inline','mMchatDiv');
 var mMcaption = new Monad('inline','mMcaptionDiv');
 var mMtodo = new Monad('inline','mMtodoDiv');
 var mMgame = new Monad('none','mMgameDiv');
-
-function factors (num) {
-  return primesMonad.run([primesMonad.s[0], [], num, primesMonad.a])
-  .bnd(s => prFactTransformer3(s, num))
-}
 
 function lcm (c,d) {
   var ar= [];
@@ -1476,32 +1436,90 @@ em.emit('cow','Whatever you say, sir.');
 
 messageMonad.run([ [], [], [], [] ] );
 
-function lcm(x, y) {
-  return (x * y) / gcd(x, y);
-}
+console.log('Almost at the bottom of monad.js primesMonad is', primesMonad );
 
-function gcd(x, y) {
-  while(y) {
-    var t = y;
-    y = x % y;
-    x = t;
+var decompMonad = new MonadState('decompMonad', [3, [[0],[1],[2]], 3, [[0],[1],[2]]]);
+
+function execP (state, num) {
+  var top = state[2];
+  var top2 = state[2];
+  var primes = state[3];
+  var primes2 = state[3]
+  var result;
+  if (num == state[0] || num == top) {
+    result = new MonadState('primesMonad', state);
   }
-  return x;
+
+  else if (num < top) {
+    var temp = primes.filter(v => v <= num);
+    var q = temp.indexOf(temp[temp.length - 1]);
+    temp.push(primes[q + 1]);
+    result = new MonadState('primesMonad', [primes[q+1], temp, top, primes]);
+  }
+    
+  else {
+    while (top2 <=  num ) {
+      if (primes2.every(e =>  (top / e != Math.floor(top / e))))  {
+        primes.push(top);
+        top2 = top;
+      };
+      top += 2;
+    }
+    result = new MonadState('primesMonad', [top2, primes, top2, primes] );
+  }
+  return result;
+};
+
+function execF(n) {
+  var a = [0,1];
+  var b = [];
+  while ((a[0] + a[1]) < n) {
+   a = [a[1], a[0] + a[1]];
+   b.push(a[0]);
+  }
+  b.push(a[1]);
+  return new MonadState('fibsMonad', [a[0], a[1], n, b]);
+};
+
+function execD(listState, primeState, n) {
+  var c = listState[3];
+  var d = listState[2];
+  var g;
+  var ds;
+  
+  if (n == listState[0] || n == d)           {
+    ds = new MonadState('decompMonad', listState);
+  }
+
+  else if (n < d) {
+    var cn = c.slice(n);
+    ds = new MonadState('decompMonad', [n, cn, d, c]);
+  }
+  else {  
+    execP(s, n)
+    .bnd(newState => {
+      while (d <= n) {
+        fact2(newState[3], d)
+        .bnd(factors => c.push(factors))
+        d += 1;
+      }
+      ds = new MonadState('decompMonad', [d, c, d, c]);
+      primesState = newState;
+    })
+  }
+  return [ds, primesState];
 }
 
-
-function fact2(a,b) {
-  console.log('In fact2 a an b are', a, b );
+function fact(v) {
   var ar = [];
-  var n = a;
-  while (n != 1) {
-    b.map(p => {
-      if (n/p === Math.floor(n/p)) {
-        console.log('In fact2. ar and p are', ar, p );
+  console.log('Entering fact. v2 and v[1] are:', v2, v[1] );
+  while (v2 != 1) {
+    for (let p of v[1]) {
+      if (v2 / p === Math.floor(v2 / p)) {
         ar.push(p);
-        n = n/p;
+        v2 = v2/p;
       };
-    })
+    }
   }
   ar.sort(function(a, b) {
     return a - b;
@@ -1509,6 +1527,106 @@ function fact2(a,b) {
   return ret(ar);
 }
 
+function fact2(s, b) {
+  var ar = [];
+  var n = b;
+  while (n != 1) {
+    console.log('In fact2 n is ', n );
+    s.map(p => {
+      if (n/p === Math.floor(n/p)) {
+        console.log('In fact2. ar is', ar );
+        ar.push(p);
+        n = n/p;
+        console.log(n);
+      };
+    })
+  }
+  ar.sort(function(x,y) {
+    return (x - y);
+  });
+  return ret(ar);
+}
 
+var fibs_state = function fibs_state(ar) {
+  var a = ar.slice();
+  while (a[0] < a[2]) {
+      a = [a[1], a[0] + a[1], a[2], a[3].concat(a[0])];
+  }
+  return a;
+};
+
+function lcm (cx,dx) {
+  console.log('************In lcm cx, dx ', cx, dx );
+  var ar= [];
+  var r;
+  var c = cx.slice();
+  var d = dx.slice();
+  d.map(v => {
+    console.log('Hello from lcm, most excellent friend of mine.');
+    if (c.some(x => x === v)) {
+      ar.push(v)
+      c.splice(c.indexOf(v),1)
+      d.splice(d.indexOf(v),1)
+    }
+      r = ar.concat(d).concat(c).reduce(function (a,b) {return a*b})
+      console.log('Bottom of map in lcm ar, d, c, r', ar, d, c, r );
+    }
+  )
+  return r
+}
+
+//*************************************** BEGIN prime Fibonacci numbers
+
+var fpTransformer = function fpTransformer(fibsState, primeState, then) {
+  var ar = [];
+  execP (primeState, Math.ceil(Math.sqrt(fibsState[1]))).bnd(ps => {
+    fibsState[3].map(fs => {
+      if (ps[3].filter(r => r <= fs).every(p => (fs % p || fs == p))) {ar.push(fs)};
+    })
+    var now = Date.now();
+    var elapsed = now - then;
+    postMessage( [ [fibsState[3].join(', '), ps[2], ar.join(', '), elapsed], ps ] )
+  })
+}
+
+
+
+//*************************************** END prime Fibonacci numbers
+
+function fdTransformer (primeState, decompState, n) {
+  var factors = decompState[3].slice();
+  var factors2 = decompState[3].slice();
+  var ar = [];
+  var d = decompState[2];
+  var k;
+  var result = new MonadState('decompMonad', decompState);
+  if (n-1 < d) {
+    console.log('In fdTransformer ### n < d block. n and d are:', n, d )
+    factors2[1].length = n;
+    result = new MonadState('decompMonad', [n+1, factors2[1], factors.length+1, factors]);
+  }
+  if (n-1 > d) {
+    while (d < n) {
+      k = d;
+      while (k != 1) {
+      console.log('In fdTransformer else block. n, d, k', n, d, k )
+        primeState[3].map(p => {
+          if (k/p === Math.floor(k/p)) {
+            ar.push(p);
+            k = k/p;
+          };
+        })
+      }
+      ar.sort(function(x,y) {
+        return (x - y);
+      });
+      factors.push(ar);
+      ar = [];
+      d += 1;
+    }
+    result = new MonadState('decompMonad', [d+1, factors, d+1 , factors]);
+  }
+  return result;
+}
 
 

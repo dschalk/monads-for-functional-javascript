@@ -80,11 +80,6 @@ h3 {
   color: #EFD5AA;
 }
 
-#leftPanel {
-  width: 60%;
-  margin-left: 4$;
-}
-
 #spread1 {
   margin-left: 3%;
   width: 100px;
@@ -104,7 +99,6 @@ h3 {
   color: #f7ec20;
   font-size: 17px;
 }
-
 
 .tao1a {
   margin-left: 3%;

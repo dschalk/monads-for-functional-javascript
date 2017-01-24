@@ -34,18 +34,71 @@ var Monad = function Monad(z = 19, g = 'generic') {
 
 //*************************************** BEGIN prime Fibonacci numbers
 
-var fpTransformer = function fpTransformer(x, s) {
-  var a = Math.ceil(Math.sqrt(x[3].slice(-1)[0]));
-  var m = primesMonad.run([s,a]);
+var fpTransformer = function fpTransformer(fibsState, primeState, then) {
   var ar = [];
-  x[3].map(function (v) {
-    if (m.s[3].filter(x => x <= v).every(function (p) { return (v % p || v == p); }))
-      ar.push(v);
-  });
-  return [x[3].join(', '), m.s[3].slice(-1).pop(), ar.join(', '), m.s];
-};
+  execP (primeState, Math.ceil(Math.sqrt(fibsState[1]))).bnd(ps => {
+    fibsState[3].map(fs => {
+      if (ps[3].filter(r => r <= fs).every(p => (fs % p || fs == p))) {ar.push(fs)};
+    })
+    var now = Date.now();
+    var elapsed = now - then;
+    postMessage( [ [fibsState[3].join(', '), ps[2], ar.join(', '), elapsed], ps ] )
+  })
+}
+
+
 
 //*************************************** END prime Fibonacci numbers
+
+function fdTransformer (primeState, decompState, n) {
+  var factors = decompState[3].slice();
+  var factors2 = decompState[3].slice();
+  var ar = [];
+  var d = decompState[2];
+  var k;
+  var result = new MonadState('decompMonad', decompState);
+  if (n-1 < d) {
+    factors2.length = n;
+    result = new MonadState('decompMonad', [factors2.length, factors2, factors.length, factors]);
+  }
+  if (n-1 > d) {
+    while (d < n) {
+      k = d;
+      while (k != 1) {
+        primeState[3].map(p => {
+          if (k/p === Math.floor(k/p)) {
+            ar.push(p);
+            k = k/p;
+          };
+        })
+      }
+      ar.sort(function(x,y) {
+        return (x - y);
+      });
+      factors.push(ar);
+      ar = [];
+      d += 1;
+    }
+    result = new MonadState('decompMonad', [d, factors, d , factors]);
+  }
+  return result;
+}
+
+function pfactors (primeState, n) {
+  var ar = [];
+  while (n != 1) {
+    primeState[3].map(p => {
+      if (n/p === Math.floor(n/p)) {
+        ar.push(p);
+        n = n/p;
+      };
+    })
+  }
+  ar.sort(function(x,y) {
+    return (x - y);
+  });
+  return ret(ar);
+}
 
 function ret(v, id = 'generic') {
   self[id] = new Monad(v, id);
@@ -54,93 +107,100 @@ function ret(v, id = 'generic') {
 
 var mMfactors = new Monad('', 'mMfactors');
 
-function MonadState(g, state, p) {
+function MonadState(g, state) {
   this.id = g;
   this.s = state;
-  this.process = p;
-  this.a = this.s[0];
   this.bnd = (func, ...args) => func(this.s, ...args);  
-  this.run = ar => { 
-    var ar2 = this.process(ar);
-    if (typeof ar === 'string') { console.log('In MonadState ' + ar); return };
-    this.s = ar2;
-    self[this.id] = this;   // "self" is the global context in a worker.
-    return self[this.id];
-  }
 };
 
-function primes_state(x) {
-  console.log('In primes_state. x is', x );
-  if ( !Array.isArray(x[0]) || typeof x[1] !== 'number' )
-    
-  /*  || typeof x[0][0] !== 'number'  || typeof x[0][3] !== 'number' || !Array.isArray(x[0][1])  || !Array.isArray(x[0][3]) ) */ {
-      console.log('In primes_state.', x, 'is not a well formed state array.' );
-      return 'In primes_state.' + x + ' is not a well formed state array.' ;
-      
-  };  
-  var state = x[0].slice();
-  var top = state[2];
-  var primes = state[3];
-  var newtop = x[1];
-  if (newtop == state[0] || newtop == top) {
-    return state;
-  }
+var primesMonad = new MonadState('primesMonad', [3, [], 3, [2,3]]);
 
-  else if (newtop < top) {
-    var temp = primes.filter(v => v <= newtop);
-    var q = temp.indexOf(temp[temp.length - 1]);
-    temp.push(primes[q + 1]);
-    return [primes[q+1], temp, top, primes];
-  }
-    
-  else {
-    while (true) {
-      if (primes.every(e =>  (top / e != Math.floor(top / e))))  {
-        primes.push(top);
-        if (top > newtop) {  // Nesting assures that the new top is prime.
-          return [top, primes, top, primes];
-        }
-      };
-      top += 2;
-      console.log('In primes_state. top is >>>>> ', top ); 
-    }
-  }
-};
+var fibsMonad = new MonadState('fibsMonad', [0, 1, 2, [0]]);
+ 
+var decompMonad = new MonadState('decompMonad', [3, [[0],[1],[2]], 3, [[0],[1],[2]]]);
 
-var primesMonad = new MonadState('primesMonad', [3, [], 3, [2,3]], primes_state);
-
-function execP (x) {
-  var state = primesMonad.s.slice();
+function execP (state, num) {
   var top = state[2];
   var top2 = state[2];
   var primes = state[3];
-  var primes2 = state[3].filter(v => v <= top)
-  if (x == state[0] || x == top) {
-    return (new MonadState('primesMonad', state, primes_state));
+  var primes2 = state[3]
+  var result;
+  if (num == state[0] || num == top) {
+    result = new MonadState('primesMonad', state);
   }
 
-  else if (x < top) {
-    var temp = primes.filter(v => v <= x);
+  else if (num < top) {
+    var temp = primes.filter(v => v <= num);
     var q = temp.indexOf(temp[temp.length - 1]);
     temp.push(primes[q + 1]);
-    return (new MonadState('primesMonad', [primes[q+1], temp, top, primes], primes_state));
+    result = new MonadState('primesMonad', [primes[q+1], temp, top, primes]);
   }
     
   else {
-    while (top2 <=  x ) {
+    while (top2 <=  num ) {
       if (primes2.every(e =>  (top / e != Math.floor(top / e))))  {
         primes.push(top);
         top2 = top;
       };
       top += 2;
     }
-    return (new MonadState('primesMonad', [top, primes, top, primes], primes_state));
+    result = new MonadState('primesMonad', [top2, primes, top2, primes] );
   }
+  return result;
 };
+
+function execF(n) {
+  var a = [0,1];
+  var b = [];
+  while ((a[0] + a[1]) < n) {
+   a = [a[1], a[0] + a[1]];
+   b.push(a[0]);
+  }
+  b.push(a[1]);
+  return new MonadState('fibsMonad', [a[0], a[1], n, b]);
+};
+
+function execD(listState, primeState, n, a, b) {
+  var c = listState[3];
+  var d = listState[2];
+  var g;
+  var ds;
+  
+  if (n == listState[0] || n == d)           {
+    ds = new MonadState('decompMonad', listState);
+  }
+
+  else if (n < d) {
+    var cn = c.slice();
+    cn.length = n;
+    ds = new MonadState('decompMonad', [n, cn, d, c]);
+  }
+  else {  
+    execP(primeState, n)
+    .bnd(newState => {
+      while (d <= n) {
+        fact2(newState[3], d)
+        .bnd(factors => c.push(factors))
+        d += 1;
+      }
+      ds = new MonadState('decompMonad', [d, c, d, c]);
+      primeState = newState;
+    })
+  }
+    res = lcm(ds.s[3][a], ds.s[3][b]);
+    postMessage([ primeState, [a, b, lcm(a,b)] ])
+}
+
+function execLCM (a, b, primeState) {
+  pfactors(primeState, a).bnd(x => { 
+    pfactors(primeState, b).bnd(y => { 
+      postMessage([primeState, [a, b, lcm(x,y)]])
+    })
+  })
+}
 
 function fact(v) {
   var ar = [];
-  console.log('Entering fact. v2 and v[1] are:', v2, v[1] );
   while (v2 != 1) {
     for (let p of v[1]) {
       if (v2 / p === Math.floor(v2 / p)) {
@@ -155,14 +215,12 @@ function fact(v) {
   return ret(ar);
 }
 
-function fact2(a,b) {
-  console.log('In fact2 a an b are', a, b );
+function fact2(s, b) {
   var ar = [];
   var n = b;
   while (n != 1) {
-    a.map(p => {
+    s.map(p => {
       if (n/p === Math.floor(n/p)) {
-        console.log('In fact2. ar is', ar );
         ar.push(p);
         n = n/p;
       };
@@ -174,11 +232,6 @@ function fact2(a,b) {
   return ret(ar);
 }
 
-function factors (num) {
-  return primesMonad.run([primesMonad.s[0], [], num, primesMonad.a])
-  .bnd(s => prFactTransformer3(s, num))
-}
-
 var fibs_state = function fibs_state(ar) {
   var a = ar.slice();
   while (a[0] < a[2]) {
@@ -187,24 +240,19 @@ var fibs_state = function fibs_state(ar) {
   return a;
 };
 
-var fibsMonad = new MonadState('fibsMonad', [0, 1, 2, [0]], fibs_state);
- 
 function lcm (cx,dx) {
-  console.log('************In lcm cx, dx ', cx, dx );
-  var ar= [];
   var r;
   var c = cx.slice();
   var d = dx.slice();
   d.map(v => {
-    console.log('Hello from lcm, most excellent friend of mine.');
     if (c.some(x => x === v)) {
-      ar.push(v)
       c.splice(c.indexOf(v),1)
-      d.splice(d.indexOf(v),1)
     }
-      r = ar.concat(d).concat(c).reduce(function (a,b) {return a*b})
-      console.log('Bottom of map in lcm ar, d, c, r', ar, d, c, r );
+      r = d.concat(c).reduce(function (a,b) {return a*b})
     }
   )
   return r
 }
+
+
+
