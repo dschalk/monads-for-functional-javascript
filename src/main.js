@@ -1024,11 +1024,11 @@ var prAction$ = pr$.map(function (e) {
       h('a', { props: { href: "http://math.andrej.com/2016/08/06/hask-is-not-a-category/", target: "_blank" } }, 'Hask is not a category.'),
           h('span', ' by Andrej Bauer and the ' ),
           h('a', { props: { href: '#discussion' } }, 'Discussion'),
-          h('span', ' below. They provide a convenient interface for dealing with uncertainty and side effects in a purely functional manner, assigning new values to identifiers (varaiables) without mutation. Adherance to the monad laws (see below) helps make the monads robust, versitile, and reliable tools for isolating and chaining sequences of javascript functions.' ),
+          h('span', ' below. They provide a convenient interface for dealing with uncertainty and side effects in a purely functional manner, assigning new values to identifiers (variables) without mutation. Adherence to the monad laws (see below) helps make the monads robust, versatile, and reliable tools for isolating and chaining sequences of javascript functions.' ),
           h('br'),
           h('br'),
           h('br'),
-          h('span.tao1', ' The demonstrations include persisternt, shared todo lists; '),
+          h('span.tao1', ' The demonstrations include persistent, shared todo lists; '),
           h('br'),
           h('span.tao1', ' An interactive simulated dice game with a traversable history (all group members see your score decrease or increase as you navegate backwards and forwards); '),
           h('br'),
@@ -1076,66 +1076,9 @@ h('p', mMsoloAlert.x ),
 h('p', 'People who are in the same group, other than the default group named "solo", share the same todo list, chat messages, and simulated dice game. In order to see any of these, you must establish a unique identity on the server by logging in. The websockets connection terminates if the first message the server receives does not come from the sign in form. You can enter any random numbers, letters, or special characters you like. The server checks only to make sure someone hasn\t already signed in with the sequence you have selected. If you log in with a name that is already in use, a message will appear and this page will be re-loaded in the browser after a four-second pause. '),
 h('p', ' Data for the traversable game history accumulates until a player scores three goals and wins. The data array is then erased and the application is ready to start accumulating a new history. '),
 h('hr'),
-h('h1', 'The Monads'),
-h('h3', ' Monad '),
-code.monad,
-h('br' ),
-h('span.tao#monad', ' Instances of Monad, MonadState, MonadItter, and MonadEr facilitate programming in a functional style. The variety of these constructors suggests how developers might create their own constructors as the need arises. ' ),
-h('a', { props: { href: '#state' } }, 'MonadState'),
-h('span', ' instances memoizing computation results, '),
-h('a', { props: { href: '#itterLink' } }, 'MonadItter'),
-h('span', ' instances organizing nested callbacks into neat, easily maintainable blocks of code, and '),
-h('a', { props: { href: '#err' } }, 'MonadEr' ),
-h('span', ' catching NaN and preventing crashes when undefined variables are encountered. ' ),
-h('p', ' Computations are easy to link if each result is returned in an instance of Monad. Here are a few examples of functions that return instances of Monad: '),
-code.e1,
-h('p', ' The "$" prefix provides control over the destination of computation results. In the following example, m1, m2, and m3 have already been declared. Here is a comparrison of the results obtained when the "$" prefix is used and when it is omitted: ' ), 
-
-h('pre.red9', `    m1.ret(7).bnd(m2.ret).bnd(m3.ret)  // All three monads get the value 7.
-    m1.ret(0).bnd(add,3,'m2').bnd(cube,'m3')  // \'m1\', \'m2\', and \'m3\' are ignored` ),
-h('pre', `    Result: m1.x === 27
-            m2.x === 7
-            m3.x === 7  ` ),
-h('pre.red9', `    m1.ret(0).bnd(add,3,'$m2').bnd(cube,'$m3')   ` ),
-h('pre', `    Result: m1.x === 0
-            m2.x === 3
-            m3.x === 27  ` ),
-h('p', ' If the prefix "$" is absent, bnd() ignores the string argument. But when the "$" prefix is present, m1 retains its initial value, m2 retains the value it gets from from adding m\'s value (which is 0) to 3, and m3.x is the result of applying "cube" to m2.x. Both forms could be useful. ' ),
-h('p', ' The following example shows lambda expressions sending variables v1 and v2 through a sequence of computations and v3 sending the final result to the string that is logged. It also shows monads a, b, c, d, e, f, and g being updated and preserved in an array that is not affected by further updates. That is because calling the ret() method does not mutate a monad; it creates a fresh instance with the same name. Here is the example, shown in a screen shot of the Chrome console:. ' ),  
-h('br' ),
-h('br' ),
-h('img.image', {props: {src: "demo_000.png"}}  ),   
-h('h3', ' The Monad Laws '), 
-h('p', ' In the following discussion, "x === y" signifies that the expression x === y returns true. Let J be the collection of all Javascript values, including functions, instances of Monad, etc, and let F be the collection of all functions mapping values in J to instances of Monad with references (names) matching their ids; that is, with window[id] === m.id for some id which is a valid es2015 variable name. The collection of all such instances of Monad along and all of the functions in F is called "M". For any instances of Monad m, m1, and m2 in M and any functions f and g in F, the following relationships follow easily from the definition of Monad: '), 
-h('div', 'Left Identity ' ),
-h('pre.turk', `    m.ret(v, ...args).bnd(f, ...args).x === f(v, ...args).x 
-    ret(v, ...args).bnd(f, ...args).x === f(v, ...args).x 
-    Examples: m.ret(3).bnd(cube).x === cube(3).x  Tested and verified  
-    ret(3).bnd(cube).x === cube(3).x     Tested and verified
-    Haskell monad law: (return x) >>= f \u2261 f x  ` ),
-h('div#discussion', ' Right Identity  ' ),  
-h('pre.turk', `    m.bnd(m.ret) === m      Tested and verified 
-    m.bnd(m.ret) === m   Tested and verified
-    m.bnd(ret) === m  Tested and verified
-    Haskell monad law: m >>= return \u2261 m `  ),
-    h('div', ' Commutivity  ' ),  
-    h('pre.turk', `    m.bnd(f1, ...args).bnd(f2, ...args).x === m.bnd(v => f1(v, ...args).bnd(f2, ...args)).x 
-    Example: m.ret(0).bnd(add, 3).bnd(cube).x === 
-    m.ret(0).bnd(v => add(v,3).bnd(cube)).x  Tested amd verified
-    Haskell monad law: (m >>= f) >>= g \u2261 m >>= ( \\x -> (f x >>= g) ) `),
-h('a', { props: { href: '#top' } }, 'Back To The Top'),
-h('h3', ' Disussion ' ),
-h('span.tao', ' The Haskell statement ' ),    
-h('span.turk6', `f \u2261 g` ),
-h('span', ' means that f x == g x for all Haskell values x of the appropriate type. That is the test applied to Javascript expressions in the "Monad Laws" section (above). Neither the == nor the === operator would provide useful information about the behavior of instances of Monad, which are objects. Those operators test objects for location in memory. If the left and right sides of predicates create new instances of m, then the left side m and the right side m wind up in different locations in memory. So we expect m.ret(3) === m.ret(3) to return false, and it does. The question we want answered is the question \u2261 answers in Haskell: Can the left and right sides be substituted for one another and still yield the same results.'),
-h('br' ),
-h('br' ),
-h('span.tao', ' The Haskell programming language borrowed the term "monad" from the branch of mathematics known as category theory. This was apropriate because Haskell monads, along with the function return and the operator >>=, behave quite a bit like category theory monads, and the inspiration for them came out of category theory. For Haskell monads to actually be category theory monads, they would need to reside in a category-theory category. They don\'t, although the Haskell mystique tends to give newcommers to the language the impression that they do. See ' ),
-h('a', { props: { href: "http://math.andrej.com/2016/08/06/hask-is-not-a-category/", target: "_blank" } }, 'Hask is not a category.'),
-h('br' ),
-h('p', ' Research into ways of defining a Haskell category appears to be ongoing. It involves tinkering with special constraints, omitted features, and definitions of morphisms that are not Haskell functions. When a definition of the category is established, Haskell monads are then shown to be, in some contrived context, category-theory monads. Devising such schemes are instructive academic excercises, but I don\'t think they can provide anything useful to programmers working on applications for industry, commerce, and the Internet. ' ),
-h('p', ' However, imitating definitions and patterns found in category theory, as Haskell does in defining the functor, monoid, and monad type classes, was a stroke of genius that vastly enriched the Haskell programming language and brought it into the mainstream as a viable alternative to java, c++, etc.  This website runs efficiently on a Haskell websockets server. The modified Haskell Wai Websockets server has proven to be extraordinarily easy to maintain as new requirements become necessary. For example, modifying the server to send chat messages and shared todo lists only to members of the same group was a trivial task. It required just a tiny amount of pattern-matching code. Category theory patterns make the Haskell interface to the Cycle front end robust, versitile, and reliable. Those are the qualities that I strive to emulate with JS-monads.'  ), 
     
+ // **************************************************************************** START MONAD
+   code.monad,       
  // **************************************************************************** END MONAD       
    code.cycle,
 
@@ -1168,7 +1111,7 @@ h('br'),
 h('span', mMfactors.x ),  
 h('span.tao3', mMfactors23.x ),  
 
-h('p', ' Next, two comma-separated numbers are decomposed into arrays of their prime factorss, and those arrays are used to compute their lowest common multiple (lcm). For example, the lcm of 6 and 9 is 18 because 3*6 and 2*9 are both 18. The lcm of the denominators of two fractions is useful in fraction arithmetic; specifically, addition and subtraction.  CAUTION: On a modern desktop computer, two five-digit numbers yield a result without noticeable lag; two six digit number take a while to finish. ' ),  
+h('p', ' Next, two comma-separated numbers are decomposed into arrays of their prime factors, and those arrays are used to compute their lowest common multiple (lcm). For example, the lcm of 6 and 9 is 18 because 3*6 and 2*9 are both 18. The lcm of the denominators of two fractions is useful in fraction arithmetic; specifically, addition and subtraction.  CAUTION: On a modern desktop computer, two five-digit numbers yield a result without noticeable lag; two six digit number take a while to finish. ' ),  
 
 h('input#factors_5'),
 
@@ -1284,7 +1227,7 @@ h('pre', `    messages$.          Runs when a new dice roll comes in from the we
     nunClickAction$     Updates travMonad when numbers are clicked.
     clearAction$        Clears saved data when the button under the display is clicked.
     updateCalc          A function called by numsClickAction$ and opClickAction during game play.  ` ),
-h('p', ' travMonad keeps a record of the "x" attributes of pMnums (displayed numbers), pMscore, pMgoals, pMclicked (selected numbers), and pMop (the selected operator). Whenever pMnums changes, the expression pMnums.bnd(test3, "MpMstyle") executes, updating pMstyle in order to maintain a well-formated numbers display. In is, therefor, not necessary to keep a record of pMstyle in travMonad. Here is the definition of clear():' ),
+h('p', ' travMonad keeps a record of the "x" attributes of pMnums (displayed numbers), pMscore, pMgoals, pMclicked (selected numbers), and pMop (the selected operator). Whenever pMnums changes, the expression pMnums.bnd(test3, "MpMstyle") nexecutes, updating pMstyle in order to maintain a well-formated numbers display. In is, therefor, not necessary to keep a record of pMstyle in travMonad. Here is the definition of clear():' ),
   code.test3,
 h('p', ' Whenever a new roll is requested from the server, a player\'s score and the number of goals is sent to the server. The server responds by sending all group members two messages; one for updating their numbers display, the other for updating their scoreboards. Messages from browsers to the server requesting updated numbers and scoreboard information are prefixed by CA#$42. This serves the interests of efficiency because mew rolls are automaticlly requested when scores change, and score changes are always associate with requests for new numbers. One point is deducted when a player clickes ROLL. ' ),  
 h('p', ' Scores increase whenever players put together expressions that return 18 or 20. An increase in score is accompanied by a call to newRoll() with two arguments: score and goals. The Haskell server updates its ServerState TMVar and broadcasts the new numbers to all group members with the prefix "CA#$42, along with a message prefixed by NN#$42 containing the updated score and goal information. NN#$42 and CA#$42 messages are parsed and acted upon in the message$ stream, where each player\'s travMonad object is augmented by the addition of a new state information array. travMonad.s is an array of arrays containing the collection of these state arrays. ' ),

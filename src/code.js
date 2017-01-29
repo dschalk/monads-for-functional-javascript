@@ -16,36 +16,6 @@ var Monad = function Monad(z = 42, g = 'generic') {
   };
 };
 
-var monad = h('pre.turk6',  `    var Monad = function Monad(z = 42, g = 'generic') {
-      this.x = z;
-      this.id = g;
-      this.bnd = function (func, ...args) {
-        var m = func(this.x, ...args)
-        var mon;
-        if (m instanceof Monad) {
-          mon = testPrefix(args,this.id); 
-          return window[mon] = new Monad(m.x, mon);
-        }
-        else return m;
-      };
-      this.ret = function (a) {
-        return window[_this.id] = new Monad(a,_this.id);
-      };
-    };  
-
-    function testPrefix (x,y) {
-      var t = y;
-      var s;
-      if (Array.isArray(x)) {
-        x.some(v => {
-          if (typeof v === 'string' && v.charAt() === '$') {
-             t = v.slice(1, v.length);
-          }
-        })
-      }
-      return t;
-    }  `  )
-
 const monadIt = h('pre', {style: {color: '#AFEEEE' }}, `  const MonadItter = () => {
     this.p = function () {};
     this.release = (...args) => this.p(...args);
@@ -794,23 +764,6 @@ var tr3 = h('pre',  `  var tr3 = function tr (fibsArray, primesArray) {
       return ret(x);
     }  `  )
 
-  var e1 = h('pre.turk',  `  function ret(v, id = 'generic') {
-      window[id] = new Monad(v, id);
-      return window[id];
-    }
-
-    function cube (v, id) {
-      return ret(v * v * v);
-    };
-
-    function add (x, b) {
-      return ret(parseInt(x,10) + parseInt(b,10) );
-    };
-
-    function log(x,y) {
-        console.log(y)
-        return ret(x);
-    };  `  )
 
   var e2 = h('pre.turk',  `  var c = m.ret(0).bnd(add,3).bnd(cube).bnd(log, "The values of m\'s and c\'s 
     x attributes are " + m.x + " and " + c.x + " respectively." )   ` )   
@@ -1494,8 +1447,119 @@ h('br'),
 ])
 
 
-var p3 = h('pre',  `  
-`  )
+var monad = h('div',  [  
+h('h1', 'The Monads'),
+h('p', ' The definition of Monad, which is the basic monad constructor, is somewhat obscure. It isn\'t intended as a puzzle, so a little explanation is in order. ' ),
+h('p', ' The term "monad" will mean "instance of Monad". Monad could have been defined as a class, but the current definition suffices. ' ),
+h('p', ' Monads are created by code such as "const m = new Monad("anything", "m")". The arguments will be the values of m.x and m.id. New instances of Monad with the same name, "m", can supersede the previous value of "m" in the global space through the use of the method "ret()". For example, m.ret("something else") changes the value of m.x from "anything" to "something else" in the global space. Previously defined references to m retain their previous values, so if the statement "var b = m" preceded "m.ret("something else"), b.x === "anything" would continue to return true. m can be mutated with a statement such as m.x = "clobbered x", but that is not done anywhere in the demonstrations presented here. ' ),
+h('p', ' The value of m.x in the global space can also be changed through the use of the "bnd()" method. For example, m.ret(3) followed by m.bnd(cube) causes m.x === 27 to be true globally while prior values of m, such as those which are elements of arrays or which have identifiers, remain unchanged. If there was no reference to m, the previous instance becomes subject to removal by the garbage collector. ' ),
+  h('p', ' The bnd() method can leave the calling monad\'s global value unchanged while assigning a value (in the global space) to another previously defined monad or to a freshly created monad. So regardless of whether or not "m2" is defined, m.ret(4) followed by m.bnd(cube,"$m2") causes m.x === 4 and m2.x === 64 to both return true. This is accomplished by checking to see if m.bnd(func, ...args) returns a monad. If it does, the adjunct function "testPrefix" looks for a pattern that matches "$val" in the arguments that were provided to m.bnd(func, ...args). If the pattern is found, the global space acquires a monad named "val" with val.x === func(m.x, ...args). If no monad named "val" previously existed, one is created. Otherwise, val\'s global definition gets superseded. val can be any sequence of characters that constitute a valid javascript identifier. ' ),
+h('p', ' Instances of Monad facilitate changing values without mutation. They also provide a way to chain function calls. For example, m.ret(2).bnd(add, 1).bnd(cube) causes m.x === 27 to return true. This works because ret(), add, and cube all return monads when they are applied to m.x. The definition of add and cube are shown below and can be found in the Github repository. ' ),  
+h('p', ' So, with that out of the way, here are the definitions of Monad and testPrefix: ' ),  
+h('h3', ' Monad '),
+h('pre.turk6',  `    var Monad = function Monad(z = 42, g = 'generic') {
+      this.x = z;
+      this.id = g;
+      this.bnd = function (func, ...args) {
+        var m = func(this.x, ...args)
+        var mon;
+        if (m instanceof Monad) {
+          mon = testPrefix(args,this.id); 
+          return window[mon] = new Monad(m.x, mon);
+        }
+        else return m;
+      };
+      this.ret = function (a) {
+        return window[_this.id] = new Monad(a,_this.id);
+      };
+    };  
+
+    function testPrefix (x,y) {
+      var t = y;
+      var s;
+      if (Array.isArray(x)) {
+        x.some(v => {
+          if (typeof v === 'string' && v.charAt() === '$') {
+             t = v.slice(1, v.length);
+          }
+        })
+      }
+      return t;
+    }  `  ),
+
+h('br' ),
+h('span.tao#monad', ' Instances of Monad, MonadState, MonadItter, and MonadEr facilitate programming in a functional style. The variety of these constructors suggests how developers might create their own constructors as the need arises. ' ),
+h('a', { props: { href: '#state' } }, 'MonadState'),
+h('span', ' instances memoizing computation results, '),
+h('a', { props: { href: '#itterLink' } }, 'MonadItter'),
+h('span', ' instances organizing nested callbacks into neat, easily maintainable blocks of code, and '),
+h('a', { props: { href: '#err' } }, 'MonadEr' ),
+h('span', ' catching NaN and preventing crashes when undefined variables are encountered. ' ),
+h('p', ' Computations are easy to link if each result is returned in an instance of Monad. Here are a few examples of functions that return instances of Monad: '),
+  h('pre.turk',  `  function ret(v, id = 'generic') {
+      window[id] = new Monad(v, id);
+      return window[id];
+    }
+
+    function cube (v, id) {
+      return ret(v * v * v);
+    };
+
+    function add (x, b) {
+      return ret(parseInt(x,10) + parseInt(b,10) );
+    };
+
+    function log(x,y) {
+        console.log(y)
+        return ret(x);
+    };  `  ),
+h('p', ' The "$" prefix provides control over the destination of computation results. In the following example, m1, m2, and m3 have already been declared. Here is a comparison of the results obtained when the "$" prefix is used and when it is omitted: ' ), 
+
+h('pre.red9', `    m1.ret(7).bnd(m2.ret).bnd(m3.ret)  // All three monads get the value 7.
+    m1.ret(0).bnd(add,3,'m2').bnd(cube,'m3')  // \'m1\', \'m2\', and \'m3\' are ignored` ),
+h('pre', `    Result: m1.x === 27
+            m2.x === 7
+            m3.x === 7  ` ),
+h('pre.red9', `    m1.ret(0).bnd(add,3,'$m2').bnd(cube,'$m3')   ` ),
+h('pre', `    Result: m1.x === 0
+            m2.x === 3
+            m3.x === 27  ` ),
+h('p', ' If the prefix "$" is absent, bnd() ignores the string argument. But when the "$" prefix is present, m1 retains its initial value, m2 retains the value it gets from from adding m\'s value (which is 0) to 3, and m3.x is the result of applying "cube" to m2.x. Both forms could be useful. ' ),
+h('p', ' The following example shows lambda expressions sending variables v1 and v2 through a sequence of computations and v3 sending the final result to the string that is logged. It also shows monads a, b, c, d, e, f, and g being updated and preserved in an array that is not affected by further updates. That is because calling the ret() method does not mutate a monad; it creates a fresh instance with the same name. Here is the example, shown in a screen shot of the Chrome console:. ' ),  
+h('br' ),
+h('br' ),
+h('img.image', {props: {src: "demo_000.png"}}  ),   
+h('h3', ' The Monad Laws '), 
+h('p', ' In the following discussion, "x === y" signifies that the expression x === y returns true. Let J be the collection of all Javascript values, including functions, instances of Monad, etc, and let F be the collection of all functions mapping values in J to instances of Monad with references (names) matching their ids; that is, with window[id] === m.id for some id which is a valid es2015 variable name. The collection of all such instances of Monad along and all of the functions in F is called "M". For any instances of Monad m, m1, and m2 in M and any functions f and g in F, the following relationships follow easily from the definition of Monad: '), 
+h('div', 'Left Identity ' ),
+h('pre.turk', `    m.ret(v, ...args).bnd(f, ...args).x === f(v, ...args).x 
+    ret(v, ...args).bnd(f, ...args).x === f(v, ...args).x 
+    Examples: m.ret(3).bnd(cube).x === cube(3).x  Tested and verified  
+    ret(3).bnd(cube).x === cube(3).x     Tested and verified
+    Haskell monad law: (return x) >>= f \u2261 f x  ` ),
+h('div#discussion', ' Right Identity  ' ),  
+h('pre.turk', `    m.bnd(m.ret) === m      Tested and verified 
+    m.bnd(m.ret) === m   Tested and verified
+    m.bnd(ret) === m  Tested and verified
+    Haskell monad law: m >>= return \u2261 m `  ),
+    h('div', ' Commutivity  ' ),  
+    h('pre.turk', `    m.bnd(f1, ...args).bnd(f2, ...args).x === m.bnd(v => f1(v, ...args).bnd(f2, ...args)).x 
+    Example: m.ret(0).bnd(add, 3).bnd(cube).x === 
+    m.ret(0).bnd(v => add(v,3).bnd(cube)).x  Tested amd verified
+    Haskell monad law: (m >>= f) >>= g \u2261 m >>= ( \\x -> (f x >>= g) ) `),
+h('a', { props: { href: '#top' } }, 'Back To The Top'),
+h('h3', ' Disussion ' ),
+h('span.tao', ' The Haskell statement ' ),    
+h('span.turk6', `f \u2261 g` ),
+h('span', ' means that f x == g x for all Haskell values x of the appropriate type. That is the test applied to Javascript expressions in the "Monad Laws" section (above). Neither the == nor the === operator would provide useful information about the behavior of instances of Monad, which are objects. Those operators test objects for location in memory. If the left and right sides of predicates create new instances of m, then the left side m and the right side m wind up in different locations in memory. So we expect m.ret(3) === m.ret(3) to return false, and it does. The question we want answered is the question \u2261 answers in Haskell: Can the left and right sides be substituted for one another and still yield the same results.'),
+h('br' ),
+h('br' ),
+h('span.tao', ' The Haskell programming language borrowed the term "monad" from the branch of mathematics known as category theory. This was apropriate because Haskell monads, along with the function return and the operator >>=, behave quite a bit like category theory monads, and the inspiration for them came out of category theory. For Haskell monads to actually be category theory monads, they would need to reside in a category-theory category. They don\'t, although the Haskell mystique tends to give newcommers to the language the impression that they do. See ' ),
+h('a', { props: { href: "http://math.andrej.com/2016/08/06/hask-is-not-a-category/", target: "_blank" } }, 'Hask is not a category.'),
+h('br' ),
+h('p', ' Research into ways of defining a Haskell category appears to be ongoing. It involves tinkering with special constraints, omitted features, and definitions of morphisms that are not Haskell functions. When a definition of the category is established, Haskell monads are then shown to be, in some contrived context, category-theory monads. Devising such schemes are instructive academic exercises, but I don\'t think they can provide anything useful to programmers working on applications for industry, commerce, and the Internet. ' ),
+h('p', ' However, imitating definitions and patterns found in category theory, as Haskell does in defining the functor, monoid, and monad type classes, was a stroke of genius that vastly enriched the Haskell programming language and brought it into the mainstream as a viable alternative to java, c++, etc.  This website runs efficiently on a Haskell websockets server. The modified Haskell Wai Websockets server has proven to be extraordinarily easy to maintain as new requirements become necessary. For example, modifying the server to send chat messages and shared todo lists only to members of the same group was a trivial task. It required just a tiny amount of pattern-matching code. Category theory patterns make the Haskell interface to the Cycle front end robust, versitile, and reliable. Those are the qualities that I strive to emulate with JS-monads.'  ), 
+])
 
 var p4 = h('pre',  `  
 `  )
@@ -1507,7 +1571,7 @@ var cycle = h('div',  [
 h('h3', ' A Few Words About Cycle.js ' ),
 h('p', ' Opinionated frameworks tend to annoy and frustrate me. Cycle, on the other hand, is easy on my mind. I love it.' ),
 h('p', ' In the early stages of developing this website, I had functions that mutated global variables. Sometimes, I directly mutated values in the DOM with statements like "document.getElementById(\'id\').innerHTML = newValue". Cycle didn\'t object. Over time, mutating variables and manhandling the DOM gave way to gentler techniques that I developed in conjunction with the "proof of concept" features that I was in a hurry to get up and running. ' ),
-h('p', ' Handling events is a breeze. Cycle\'s bult-in DOM driver handles browser events like click and input. Simple application drivers handle asynchronous messages. Here are two examples:' ), 
+h('p', ' Handling events is a breeze. Cycle\'s built-in DOM driver handles browser events like click and input. Simple application drivers handle asynchronous messages. Here are two examples:' ), 
 h('pre.turk', `function workerDriver () {
   return xs.create({
     start: listener => { worker.onmessage = msg => listener.next(msg)}, 
@@ -1520,7 +1584,9 @@ function websocketsDriver() {
     start: listener => { socket.onmessage = msg => listener.next(msg)},
     stop: () => { socket.close() }
   });
-};   `  )  ])
+};   `  )  
+
+])
 
 var async = h('div', [  
 h('p', ' The next five demonstrations involve computations of prime numbers, Fibonacci numbers, prime Fibonacci numbers, and prime factors of numbers. Several instances of a constructor named "MonadState" (simple and not an ES6 class) are utilyzed, three of which maintain and share share an array of prime numbers maintained in the MonadState instance named "primesState". An array of arrays of prime factors of numbers is maintained in MonadState instance "decompMonad", which is shared by the fourth and fifth examples in this series of async examples. Some code snippets and explanations follow the demonstrations. ' ),
@@ -1531,7 +1597,7 @@ h('pre', `
       this.bnd = (func, ...args) => func(this.s, ...args);  
     }    ` ),  
 
-h('p', ' The first demonstrations displays the Fibonacci series up to an upper bound entered in the browser by a user. It also displays a list of the prime Fibonacci numbers in the list of Fibonacci numbers, along with the largest prime number that was generated during a computation.  I tested performance in Firefox on my Ubuntu 16.04 box by entering "3" and then, one at a time, 0\'s. Lag times were not noticeable, even at the ninth zero, where there was a 351 microsecond pause before the prime Fibonacci number 2,971,215,073 appeared. I added another zero (resulting in 30,000,000,000) and after 1,878 microseconds four more Fibonacci numbers appeared on my monitor.  After adding one final zero, there was a delay of 17,550 microseconds before five more Fibonacci numbers appeared, topped by 225,851,433,717.  I deleted a zero and then put it back. This time the delay was only 206 microseconds, showing the effectiveness of using the previously stored list of prime numbers.' ),
+h('p', ' The first demonstration displays the Fibonacci series up to an upper bound entered in the browser by a user. It also displays a list of the prime Fibonacci numbers in the list of Fibonacci numbers, along with the largest prime number that was generated during a computation.  I tested performance in Firefox on my Ubuntu 16.04 box by entering "3" and then, one at a time, 0\'s. Lag times were not noticeable, even at the ninth zero, where there was a 351 microsecond pause before the prime Fibonacci number 2,971,215,073 appeared. I added another zero (resulting in 30,000,000,000) and after 1,878 microseconds four more Fibonacci numbers appeared on my monitor.  After adding one final zero, there was a delay of 17,550 microseconds before five more Fibonacci numbers appeared, topped by 225,851,433,717.  I deleted a zero and then put it back. This time the delay was only 206 microseconds, showing the effectiveness of using the previously stored list of prime numbers.' ),
 
 h('p', ' The demonstrations do not block the main execution thread. Computations are performed in web workers and the results are stored for further use in the main thread. ' ),    
 h('span', ' According to the '),    
@@ -1557,7 +1623,7 @@ h('br' ),
 
 
 
-  export default { cycle, hardWay, hardWay2, async, async2, execP, workerD$, fact_workerC, fact2_workerD, primes_state, workerB, workerB_Driver, workerC, worker$, errorDemo, monadEr, backAction, monadArchive2, tests, numClick1, numClick2, mMZ10, test3, travMonad, monad, equals, fmap, opM, e1, e2, e2x, e3, e4, e4x, e6, e6x, driver, messages, monadIt, MonadSet, updateCalc, arrayFuncs, nums, cleanup, ret, C42, newTask, process, mM$task, colorClick, edit, testZ, quad, runTest, todoStream, inc, seed,  add, MonadState, primesMonad, fibsMonad, primeFibInterface, tr3, fpTransformer, factorsMonad, factorsInput, playerMonad, promise, promiseSnippet, timeout, timeoutSnippet, examples, examples2, async }
+  export default { cycle, monad, hardWay, hardWay2, async, async2, execP, workerD$, fact_workerC, fact2_workerD, primes_state, workerB, workerB_Driver, workerC, worker$, errorDemo, monadEr, backAction, monadArchive2, tests, numClick1, numClick2, mMZ10, test3, travMonad, monad, equals, fmap, opM, e2, e2x, e3, e4, e4x, e6, e6x, driver, messages, monadIt, MonadSet, updateCalc, arrayFuncs, nums, cleanup, ret, C42, newTask, process, mM$task, colorClick, edit, testZ, quad, runTest, todoStream, inc, seed,  add, MonadState, primesMonad, fibsMonad, primeFibInterface, tr3, fpTransformer, factorsMonad, factorsInput, playerMonad, promise, promiseSnippet, timeout, timeoutSnippet, examples, examples2, async }
  
 
 
