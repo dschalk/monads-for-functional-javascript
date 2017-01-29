@@ -50,18 +50,15 @@ var fpTransformer = function fpTransformer(fibsState, primeState, then) {
 
 //*************************************** END prime Fibonacci numbers
 
-function fdTransformer (primeState, decompState, n) {
+function fdTransformer (primeState, n, decompState) {
   var factors = decompState[3].slice();
   var factors2 = decompState[3].slice();
   var ar = [];
   var d = decompState[2];
   var k;
-  var result = new MonadState('decompMonad', decompState);
-  if (n-1 < d) {
-    factors2.length = n;
-    result = new MonadState('decompMonad', [factors2.length, factors2, factors.length, factors]);
-  }
-  if (n-1 > d) {
+  var result;
+  if (n <= d) {result = new MonadState('decompMonad', decompState)};
+  if (n > d) {
     while (d < n) {
       k = d;
       while (k != 1) {
@@ -81,6 +78,8 @@ function fdTransformer (primeState, decompState, n) {
     }
     result = new MonadState('decompMonad', [d, factors, d , factors]);
   }
+  Object.freeze(result);
+  console.log('In fdTransformer  ***  result is', result);
   return result;
 }
 
@@ -114,12 +113,15 @@ function MonadState(g, state) {
 };
 
 var primesMonad = new MonadState('primesMonad', [3, [], 3, [2,3]]);
+Object.freeze(primesMonad);
 
 var fibsMonad = new MonadState('fibsMonad', [0, 1, 2, [0]]);
  
 var decompMonad = new MonadState('decompMonad', [3, [[0],[1],[2]], 3, [[0],[1],[2]]]);
+Object.freeze(decompMonad)
 
 function execP (state, num) {
+  console.log('********** Salutations from execP. state and num are', state, num );
   var top = state[2];
   var top2 = state[2];
   var primes = state[3];
@@ -146,6 +148,7 @@ function execP (state, num) {
     }
     result = new MonadState('primesMonad', [top2, primes, top2, primes] );
   }
+  Object.freeze(result)
   return result;
 };
 
@@ -160,41 +163,32 @@ function execF(n) {
   return new MonadState('fibsMonad', [a[0], a[1], n, b]);
 };
 
-function execD(listState, primeState, n, a, b) {
-  var c = listState[3];
-  var d = listState[2];
-  var g;
-  var ds;
-  
-  if (n == listState[0] || n == d)           {
-    ds = new MonadState('decompMonad', listState);
-  }
-
-  else if (n < d) {
-    var cn = c.slice();
-    cn.length = n;
-    ds = new MonadState('decompMonad', [n, cn, d, c]);
-  }
-  else {  
-    execP(primeState, n)
-    .bnd(newState => {
-      while (d <= n) {
-        fact2(newState[3], d)
-        .bnd(factors => c.push(factors))
-        d += 1;
-      }
-      ds = new MonadState('decompMonad', [d, c, d, c]);
-      primeState = newState;
+function execD(decompState, primeState, n, a, b) {
+  var c = decompState[3].slice();
+  var d = decompState[2];
+  var res;
+  execP(primeState, n)
+  .bnd(newState => {
+    while (d <= n) {
+      fact2(newState[3], d)
+      .bnd(factors => c.push(factors))
+      d += 1;
+    }
+    new MonadState('decompMonad', [d, c, d, c.slice()])
+    .bnd(dsx => {
+      var ds = dsx.slice();
+      res = lcm(ds[3][a], ds[3][b]);
+      gd = gcf(ds[3][a], ds[3][b]);
+      postMessage([ newState, [a, b, res, gd], ds ])
     })
-  }
-    res = lcm(ds.s[3][a], ds.s[3][b]);
-    postMessage([ primeState, [a, b, lcm(a,b)] ])
+  })
 }
 
 function execLCM (a, b, primeState) {
+  console.log('Kind regards from execLCM');
   pfactors(primeState, a).bnd(x => { 
     pfactors(primeState, b).bnd(y => { 
-      postMessage([primeState, [a, b, lcm(x,y)]])
+      postMessage([primeState, [a, b, lcm(x,y), gcf(x,y)]])
     })
   })
 }
@@ -252,6 +246,21 @@ function lcm (cx,dx) {
     }
   )
   return r
+}
+
+function gcf (a, bx) {
+  var b = bx.slice();
+  var ar = [];
+  a.map(x => {
+    if (b.includes(x)) {
+      ar.push(x)
+      b.splice(b.indexOf(x),1)
+    }
+  })
+  if (ar.length > 0) {
+    return ar.reduce((j,k) => j*k)
+  }
+  else return 1;
 }
 
 

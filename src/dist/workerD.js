@@ -16,6 +16,7 @@
 
 
 onmessage = function(ar) {
+  console.log('Cordial greetings from workerD.js --- ar is', ar );
   var n = 0;
   importScripts('script2.js');
   var res;

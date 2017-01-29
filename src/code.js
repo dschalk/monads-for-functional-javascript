@@ -1479,8 +1479,20 @@ var execP = h('pre',  `    function execP (x) {
       }
     };    `  )
 
-var p2 = h('pre',  `  
-`  )
+var hardWay = h('div',  [  
+h('h3', ' Doing Things The Hard Way ' ),
+h('p', ' The next two demonstration generate the same results as the previous two; but in doing so, they also generate and add to a shared and persistent (for the duration of the browser session) array of arrays of prime decompositions of the positive integers. The array is the value of decompMonad.s. It is re-used as the starting point for generating larger arrays, or as a sort of lookup table if a required prime decomposition has already been computed. The index of an array is the number whose decomposition is in the array so, for example, array-of-arrays[12] is [2,2,3]. The actual code will be shown later and is also available at the Github repository. ' ) ])  
+
+var hardWay2 = h('div', [  
+h('p', ' The next demonstration shares the array of arrays of prime decompositions with the previous demonstration. That array is kept in a MonadState instance named "decompMonad". Computing prime decompositions of numbers that end up being ignored is clearly inefficient, so please bear in mind that a demonstration of a JS-monads way to keep mutable state in immutable, composable, globally accessable objects. ' ), 
+h('label', ' Enter two comma-separated integers here: ' ),
+h('input#factors_5b'),
+
+h('br'),
+h('br'),
+
+])
+
 
 var p3 = h('pre',  `  
 `  )
@@ -1491,18 +1503,61 @@ var p4 = h('pre',  `
 var p5 = h('pre',  `  
 `  )
 
-var p6 = h('pre',  `  
-`  )
+var cycle = h('div',  [
+h('h3', ' A Few Words About Cycle.js ' ),
+h('p', ' Opinionated frameworks tend to annoy and frustrate me. Cycle, on the other hand, is easy on my mind. I love it.' ),
+h('p', ' In the early stages of developing this website, I had functions that mutated global variables. Sometimes, I directly mutated values in the DOM with statements like "document.getElementById(\'id\').innerHTML = newValue". Cycle didn\'t object. Over time, mutating variables and manhandling the DOM gave way to gentler techniques that I developed in conjunction with the "proof of concept" features that I was in a hurry to get up and running. ' ),
+h('p', ' Handling events is a breeze. Cycle\'s bult-in DOM driver handles browser events like click and input. Simple application drivers handle asynchronous messages. Here are two examples:' ), 
+h('pre.turk', `function workerDriver () {
+  return xs.create({
+    start: listener => { worker.onmessage = msg => listener.next(msg)}, 
+    stop: () => { worker.terminate() }
+  });
+};
 
-var p7 = h('pre',  `  
-`  )
+function websocketsDriver() {
+  return xs.create({
+    start: listener => { socket.onmessage = msg => listener.next(msg)},
+    stop: () => { socket.close() }
+  });
+};   `  )  ])
 
-var p8 = h('pre',  `  
-`  )
+var async = h('div', [  
+h('p', ' The next five demonstrations involve computations of prime numbers, Fibonacci numbers, prime Fibonacci numbers, and prime factors of numbers. Several instances of a constructor named "MonadState" (simple and not an ES6 class) are utilyzed, three of which maintain and share share an array of prime numbers maintained in the MonadState instance named "primesState". An array of arrays of prime factors of numbers is maintained in MonadState instance "decompMonad", which is shared by the fourth and fifth examples in this series of async examples. Some code snippets and explanations follow the demonstrations. ' ),
+h('pre', `    
+    function MonadState(g, state) {
+      this.id = g;
+      this.s = state;
+      this.bnd = (func, ...args) => func(this.s, ...args);  
+    }    ` ),  
+
+h('p', ' The first demonstrations displays the Fibonacci series up to an upper bound entered in the browser by a user. It also displays a list of the prime Fibonacci numbers in the list of Fibonacci numbers, along with the largest prime number that was generated during a computation.  I tested performance in Firefox on my Ubuntu 16.04 box by entering "3" and then, one at a time, 0\'s. Lag times were not noticeable, even at the ninth zero, where there was a 351 microsecond pause before the prime Fibonacci number 2,971,215,073 appeared. I added another zero (resulting in 30,000,000,000) and after 1,878 microseconds four more Fibonacci numbers appeared on my monitor.  After adding one final zero, there was a delay of 17,550 microseconds before five more Fibonacci numbers appeared, topped by 225,851,433,717.  I deleted a zero and then put it back. This time the delay was only 206 microseconds, showing the effectiveness of using the previously stored list of prime numbers.' ),
+
+h('p', ' The demonstrations do not block the main execution thread. Computations are performed in web workers and the results are stored for further use in the main thread. ' ),    
+h('span', ' According to the '),    
+h('a', { props: { href: "https://oeis.org/A005478", target: "_blank" } }, 'The On-Line Encyclopedia of Integer Sequences '),
+h('span', ' these are the first eleven proven prime Fibonacci numbers:'),
+h('span.purp', ' 2, 3, 5, 13, 89, 233, 1597, 28657, 514229, 433494437, 2971215073, and 99194853094755497. The eleventh number, 2971215073, is as far as you can go on an ordinary desktop computer. ' ),
+h('br' )   ])   
+
+var async2 = h('div', [  
+h('div.tao3', mMfactors3.x ),    
+// ********************************************************************** Begin MonadState
+
+h('p#monadstate'),
+h('a#state', { props: { href: '#monad' } }, 'Back to Monad discussion'),
+h('h3', 'MonadState and MonadState Transformers'),
+p(' The preceding demonstrations used three instances of MonadState: primesMonad, fibsMonad, and factorsMonad. The chat message demonstration uses another instance of MonadState; namely, messageMonadn. Instance of MonadState holds a current state along with a method for updating state. Here again is the definition of MonadState: '),
+     //code.MonadState,
+h('p', ' MonadState reproduces some of the functionality found in the Haskell Module "Control.Monad.State.Lazy", inspired by the paper "Functional Programming with Overloading and Higher-der Polymorphism", Mark P Jones (http://web.cecs.pdx.edu/~mpj/) Advanced School of Functional Programming, 1995. Transformers take instances of MonadState and return different instances of MonadState. In the prime Fibonacci example, the method call "fibsMonad.bnd(fpTransformer, primesMonad)" returns primesMonad updated so that the largest prime number in primesMonad.s[1] is only slightly larger than the square root of the largest Fibonacci number in fibsMonad.s[3]. Here is the definition of fpTransformer: '),
+     //code.fpTransformer,
+h('a#err', { props: { href: '#top' } }, 'Back To The Top'),
+h('br' ),
+])
 
 
 
-  export default { execP, workerD$, fact_workerC, fact2_workerD, primes_state, workerB, workerB_Driver, workerC, worker$, errorDemo, monadEr, backAction, monadArchive2, tests, numClick1, numClick2, mMZ10, test3, travMonad, monad, equals, fmap, opM, e1, e2, e2x, e3, e4, e4x, e6, e6x, driver, messages, monadIt, MonadSet, updateCalc, arrayFuncs, nums, cleanup, ret, C42, newTask, process, mM$task, colorClick, edit, testZ, quad, runTest, todoStream, inc, seed,  add, MonadState, primesMonad, fibsMonad, primeFibInterface, tr3, fpTransformer, factorsMonad, factorsInput, playerMonad, promise, promiseSnippet, timeout, timeoutSnippet, examples, examples2, async }
+  export default { cycle, hardWay, hardWay2, async, async2, execP, workerD$, fact_workerC, fact2_workerD, primes_state, workerB, workerB_Driver, workerC, worker$, errorDemo, monadEr, backAction, monadArchive2, tests, numClick1, numClick2, mMZ10, test3, travMonad, monad, equals, fmap, opM, e1, e2, e2x, e3, e4, e4x, e6, e6x, driver, messages, monadIt, MonadSet, updateCalc, arrayFuncs, nums, cleanup, ret, C42, newTask, process, mM$task, colorClick, edit, testZ, quad, runTest, todoStream, inc, seed,  add, MonadState, primesMonad, fibsMonad, primeFibInterface, tr3, fpTransformer, factorsMonad, factorsInput, playerMonad, promise, promiseSnippet, timeout, timeoutSnippet, examples, examples2, async }
  
 
 

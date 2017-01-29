@@ -44,7 +44,10 @@ function testPrefix (x,y) {
 }
 
 var pMop = new Monad (0, 'pMop');
+
 var mMfactors = new Monad ([], 'mMfactors');
+
+var mMfactors_b = new Monad ([], 'mMfactors_b');
  
 function Monad2 (z, ID = 'default') {
     var x = z;
@@ -450,6 +453,8 @@ var worker = new Worker("worker.js");
 var workerB = new Worker("workerB.js");
 var workerC = new Worker("workerC.js");
 var workerD = new Worker("workerD.js");
+var workerE = new Worker("workerE.js");
+var workerF = new Worker("workerF.js");
 
 function primes_state(v) {
   if (v[0] == "CE#$42" && Array.isArray(v[1]) && typeof v[2] === 'number' ) {
@@ -709,11 +714,16 @@ function primes(n, ar) {
   var mMquad5 = new Monad('', 'mMquad5');
   var mMquad6 = new Monad('', 'mMquad6');
   var mMfactors3 = new Monad('', 'mMfactors3');
+  var mMfactors23 = new Monad('', 'mMfactors23');
+  var mMfactors3_b = new Monad('', 'mMfactors3_b');
   var mMfactors4 = new Monad('', 'mMfactors4');
   var mMfactors5 = new Monad('', 'mMfactors5');
   var mMfactors6 = new Monad([[0], [1], [2]], 'mMfactors6');
   var mMfactors7 = new Monad('', 'mMfactors7');
   var mMfactors8 = new Monad('', 'mMfactors8');
+  var mMfactors6_b = new Monad([[0], [1], [2]], 'mMfactors6_b');
+  var mMfactors7_b = new Monad('', 'mMfactors7_b');
+  var mMfactors8_b = new Monad('', 'mMfactors8_b');
   var mMchange = new Monad(0, 'mMchange')
   var mMchange2 = new Monad(0, 'mMchange2')
   var mMchange3 = new Monad(0, 'mMchange3')
@@ -1628,5 +1638,23 @@ function fdTransformer (primeState, decompState, n) {
   }
   return result;
 }
+
+function lcf (a,b) {
+  var ar = [];
+  a.map(x => {
+    if (b.includes(x)) {
+      ar.push(x)
+      a.splice(a.indexOf(x),1)
+      b.splice(b.indexOf(x),1)
+    }
+  })
+  return ar.reduce((j,k) => j*k)
+}
+
+
+
+
+
+
 
 
