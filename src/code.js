@@ -1584,9 +1584,8 @@ function websocketsDriver() {
     start: listener => { socket.onmessage = msg => listener.next(msg)},
     stop: () => { socket.close() }
   });
-};   `  )  
-
-])
+};   `  ),
+h('p', ' Drivers facilitate the creation of reactive streams coming into main() from the DOM and flowing out of main() into the DOM. main() is called only once, when the application loads, and runs recursively ever after. This is functional reactive programming at its finest ' )])
 
 var async = h('div', [  
 h('p', ' The next five demonstrations involve computations of prime numbers, Fibonacci numbers, prime Fibonacci numbers, and prime factors of numbers. Several instances of a constructor named "MonadState" (simple and not an ES6 class) are utilyzed, three of which maintain and share share an array of prime numbers maintained in the MonadState instance named "primesState". An array of arrays of prime factors of numbers is maintained in MonadState instance "decompMonad", which is shared by the fourth and fifth examples in this series of async examples. Some code snippets and explanations follow the demonstrations. ' ),
