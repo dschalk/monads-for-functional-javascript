@@ -1460,8 +1460,6 @@ var p = m;
 m.ret(100);  
 console.log(m.x, arr[0].x, p.x);  // 100, 5, 5 
 ` ),
-
-
 h('p', ' m.x changed, but b and arr were not affected. The value of m.x in the global space can also be changed through the use of the "bnd()" method. For example, m.ret(3) followed by m.bnd(cube) causes m.x === 27 to be true globally while prior values of m, such as those which are elements of arrays or which have identifiers, remain unchanged. If there was no reference to m, the previous instance becomes subject to removal by the garbage collector. ' ),
 h('p', ' It is possible to mutate monads with code such as m.x = 888. That might be a good thing to do in a function with many recursions, but it seems like a misuse of monads. Monads are never mutated on this website. Object.freeze() is used to prevent mutation in the definition of primesMonad (shown below). '), 
   h('p', ' The bnd() method can leave the calling monad\'s global value unchanged while assigning a value (in the global space) to another previously defined monad, or to a freshly created monad. So regardless of whether or not "m2" is defined, m.ret(4) followed by m.bnd(cube,"$m2") causes m.x === 4 and m2.x === 64 to both return true. The definition of Monad (below) shows how bnd() checks to see if func(m.x, ...args) returns a monad. If it does, "testPrefix" looks for a pattern that matches "$val" in the arguments that were provided to m.bnd(func, ...args). If the pattern is found, the global space acquires a monad named "val" with val.x === func(m.x, ...args). If no monad named "val" previously existed, one is created. Otherwise, val\'s global definition gets superseded. val can be any sequence of characters that constitute a valid javascript identifier. ' ),
@@ -1578,11 +1576,16 @@ var p4 = h('pre',  `
 var p5 = h('pre',  `  
 `  )
 
+
+
+
+
+
 var cycle = h('div',  [
 h('h3', ' A Few Words About Cycle.js ' ),
 h('p', ' Opinionated frameworks tend to annoy and frustrate me. Cycle, on the other hand, is easy on my mind. I love it.' ),
 h('p', ' In the early stages of developing this website, I had functions that mutated global variables. Sometimes, I directly mutated values in the DOM with statements like "document.getElementById(\'id\').innerHTML = newValue". Cycle didn\'t object. Over time, mutating variables and manhandling the DOM gave way to gentler techniques that I developed in conjunction with the "proof of concept" features that I was in a hurry to get up and running. ' ),
-h('p', ' Handling events is a breeze. Cycle\'s built-in DOM driver handles browser events like click and input. Simple application drivers handle asynchronous messages. Here are two examples:' ), 
+h('p', ' Handling events is a breeze. Instead of callbacks or explicit declarations of observers, I use drivers. Cycle\'s built-in DOM driver handles browser events like click and input. Simple application drivers handle asynchronous messages. Here are two examples:' ), 
 h('pre.turk', `function workerDriver () {
   return xs.create({
     start: listener => { worker.onmessage = msg => listener.next(msg)}, 
@@ -1595,8 +1598,10 @@ function websocketsDriver() {
     start: listener => { socket.onmessage = msg => listener.next(msg)},
     stop: () => { socket.close() }
   });
-};   `  ),
-h('p', ' Drivers facilitate the creation of reactive streams coming into main() from the DOM and flowing out of main() into the DOM. main() is called only once, when the application loads, and runs recursively ever after. This is functional reactive programming at its finest ' )])
+};   ` )      ])    
+
+
+
 
 var async = h('div', [  
 h('p', ' The next five demonstrations involve computations of prime numbers, Fibonacci numbers, prime Fibonacci numbers, and prime factors of numbers. Several instances of a constructor named "MonadState" (simple and not an ES6 class) are utilyzed, three of which maintain and share share an array of prime numbers maintained in the MonadState instance named "primesState". An array of arrays of prime factors of numbers is maintained in MonadState instance "decompMonad", which is shared by the fourth and fifth examples in this series of async examples. Some code snippets and explanations follow the demonstrations. ' ),
@@ -1607,7 +1612,8 @@ h('pre', `
       this.bnd = (func, ...args) => func(this.s, ...args);  
     }    ` ),  
 
-h('p', ' The first demonstration displays the Fibonacci series up to an upper bound entered in the browser by a user. It also displays a list of the prime Fibonacci numbers in the list of Fibonacci numbers, along with the largest prime number that was generated during a computation.  I tested performance in Firefox on my Ubuntu 16.04 box by entering "3" and then, one at a time, 0\'s. Lag times were not noticeable, even at the ninth zero, where there was a 351 microsecond pause before the prime Fibonacci number 2,971,215,073 appeared. I added another zero (resulting in 30,000,000,000) and after 1,878 microseconds four more Fibonacci numbers appeared on my monitor.  After adding one final zero, there was a delay of 17,550 microseconds before five more Fibonacci numbers appeared, topped by 225,851,433,717.  I deleted a zero and then put it back. This time the delay was only 206 microseconds, showing the effectiveness of using the previously stored list of prime numbers.' ),
+h('p', ' The first demonstration displays the Fibonacci series up to an upper bound entered in the browser by a user. It also displays a list of the prime Fibonacci numbers in the list of Fibonacci numbers, along with the largest prime number that was generated during a computation.  I tested performance in Chrome and Firefox on my Ubuntu 16.04 box by entering "1" and then, one at a time, 0\'s. Lag times in Chrome and Firefox were almost identical. were not noticeable until I reached 10,000,000,000 where there was a 831 microsecond pause before the prime Fibonacci number 2,971,215,073 appeared. At 100,000,000,000 the lag time in Chrome was 7,230 and at 1,000,000,000,000 it was 65.524 microseconds. At this point, the larges generated prime number was 978,149 and the largest Fibonacci number was  956,722,026,041. ' ),
+h('p', ' The graphical progress display confirmed that it took almost no time to generate the list of Fibonacci numbers or to select the ones that are prime. The bottleneck was computing the primes. To see the effectiveness of saving computed prime numbers, I deleted three zeros and then added them back again. At 100,000,000,000,000 and 1,000,000,000,000,, the lag times were  67 microseconds and 124 microseconds, respectively. The display, in a brief flash, showed that those delays occorred mostly during the selection of prime Fibonacci numbers from the array of Fibonacci numbers. In Firefox, the lags were again almost exactily identical to the ones in Chrome. '  ),   
 
 h('p', ' The demonstrations do not block the main execution thread. Computations are performed in web workers and the results are stored for further use in the main thread. ' ),    
 h('span', ' According to the '),    
@@ -1615,6 +1621,8 @@ h('a', { props: { href: "https://oeis.org/A005478", target: "_blank" } }, 'The O
 h('span', ' these are the first eleven proven prime Fibonacci numbers:'),
 h('span.purp', ' 2, 3, 5, 13, 89, 233, 1597, 28657, 514229, 433494437, 2971215073, and 99194853094755497. The eleventh number, 2971215073, is as far as you can go on an ordinary desktop computer. ' ),
 h('br' )   ])   
+
+
 
 var async2 = h('div', [  
 h('div.tao3', mMfactors3.x ),    
@@ -1631,9 +1639,13 @@ h('a#err', { props: { href: '#top' } }, 'Back To The Top'),
 h('br' ),
 ])
 
+var svgNode_1 = h('div', [
+  h('svg', {attrs: {width: 100, height: 100}}, [
+    h('circle', {attrs: {cx: 50, cy: 50, r: 40, stroke: 'green', 'stroke-width': 4, fill: 'yellow'}})
+  ])
+]);
 
-
-  export default { cycle, monad, hardWay, hardWay2, async, async2, execP, workerD$, fact_workerC, fact2_workerD, primes_state, workerB, workerB_Driver, workerC, worker$, errorDemo, monadEr, backAction, monadArchive2, tests, numClick1, numClick2, mMZ10, test3, travMonad, monad, equals, fmap, opM, e2, e2x, e3, e4, e4x, e6, e6x, driver, messages, monadIt, MonadSet, updateCalc, arrayFuncs, nums, cleanup, ret, C42, newTask, process, mM$task, colorClick, edit, testZ, quad, runTest, todoStream, inc, seed,  add, MonadState, primesMonad, fibsMonad, primeFibInterface, tr3, fpTransformer, factorsMonad, factorsInput, playerMonad, promise, promiseSnippet, timeout, timeoutSnippet, examples, examples2, async }
+  export default { svgNode_1, cycle, monad, hardWay, hardWay2, async, async2, execP, workerD$, fact_workerC, fact2_workerD, primes_state, workerB, workerB_Driver, workerC, worker$, errorDemo, monadEr, backAction, monadArchive2, tests, numClick1, numClick2, mMZ10, test3, travMonad, monad, equals, fmap, opM, e2, e2x, e3, e4, e4x, e6, e6x, driver, messages, monadIt, MonadSet, updateCalc, arrayFuncs, nums, cleanup, ret, C42, newTask, process, mM$task, colorClick, edit, testZ, quad, runTest, todoStream, inc, seed,  add, MonadState, primesMonad, fibsMonad, primeFibInterface, tr3, fpTransformer, factorsMonad, factorsInput, playerMonad, promise, promiseSnippet, timeout, timeoutSnippet, examples, examples2, async }
  
 
 

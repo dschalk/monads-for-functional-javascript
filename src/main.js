@@ -402,9 +402,22 @@ function main(sources) {
   // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> START PRIME FIB  
   
   const workerB$ = sources.WWB.map(m => {
-    console.log('In workerB$ stream in the main thread. m is ', m );
-    mMres.ret(m.data[0])
-    window['primesMonad'] = new MonadState('primesMonad', m.data[1], primes_state);
+    console.log('In workerB$ stream in the main thread. m, m[3] ', m, m.data[3] );
+    if (m.data[3] === 'color') {
+      fill1Monad.ret(m.data[0]);
+      fill2Monad.ret(m.data[1]);
+      fill3Monad.ret(m.data[2]);
+      mMprimeBlurb.ret(m.data[5]);
+      mMfibBlurb.ret(m.data[4]);
+      mMprimeFibBlurb.ret(m.data[6]);  
+    }
+    else {
+      console.log('m.data[3] ********************', m.data[3] );
+      mMelapsed.ret(elapsed(m.data[0][3]))
+      .bnd(v =>  console.log(v));
+      mMres.ret(m.data[0])
+      window['primesMonad'] = new MonadState('primesMonad', m.data[1], primes_state);
+    }
   });
 
   var fibKeyPress5$ = sources.DOM
@@ -418,13 +431,6 @@ function main(sources) {
     .select('#clearprimes').events('click')
     .map(() => mMres.ret([mMres.x[0], '', mMres.x[2], mMres.x[3]])); 
 
-
-
-  // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> ENDOM basic prime END
-  //
-  //
-  //
-  // <>>><>><><><><>>>><><><   prime factors   ><><><><><><>>><<><><><><><><>< START prime factors  
   
 // ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^  Begin Easy
   
@@ -962,6 +968,9 @@ var prAction$ = pr$.map(function (e) {
     }
 });
 
+  var strokeColor_1 = "blue";
+  var fillColor_1 = "orange";
+
   var calcStream$ = xs.merge( prAction$, factorsAction_b$, fA$, factorsP$, fA_b$, factorsP_b$, clearprimes$, worker$, workerB$, workerC$, workerD$, workerE$, workerF$, clearAction$, backAction$, forwardAction$, factorsAction$, primeFib$, fibPressAction$, quadAction$, edit1Action$, edit2Action$, testWAction$, testZAction$, testQAction$, colorAction$, deleteAction$, newTaskAction$, chatClickAction$, gameClickAction$, todoClickAction$, captionClickAction$, groupPressAction$, rollClickAction$, messagePressAction$, loginPressAction$, messages$, numClickAction$, opClickAction$);
    
   return {
@@ -1087,7 +1096,31 @@ h('hr'),
  
   h('h2', ' Asynchronous Processes ' ),
     code.async,
-h('p.red',  'The elapsed time is ' + mMres.x[3] + ' milliseconds.' ),
+
+h('br'),
+h('span', `${mMfibBlurb.x}`  ),    
+h('span', [
+  h('svg', {attrs: {width: 50, height: 50}}, [
+    h('circle', {attrs: {cx: 25, cy: 25, r: 20, stroke: 'purple', 'stroke-width': 4, fill: fill1Monad.x }})
+  ])
+]),
+
+h('span', `${mMprimeBlurb.x}`  ),    
+h('span', [
+  h('svg', {attrs: {width: 50, height: 50}}, [
+    h('circle', {attrs: {cx: 25, cy: 25, r: 20, stroke: 'purple', 'stroke-width': 4, fill: fill2Monad.x }})
+  ])
+]),
+
+h('span', `${mMprimeFibBlurb.x}`  ),    
+h('span', [
+  h('svg', {attrs: {width: 50, height: 50}}, [
+    h('circle', {attrs: {cx: 25, cy: 25, r: 20, stroke: 'purple', 'stroke-width': 4, fill: fill3Monad.x }})
+  ])
+]),
+h('br'),
+
+h('p.red',  'The elapsed time is ' + mMelapsed.x + ' milliseconds.' ),
 h('input#fib92'),
 h('br'),
 h('span#PF_7.red6', 'Fibonacci Numbers'),

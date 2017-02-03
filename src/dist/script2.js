@@ -1,5 +1,4 @@
 
-
 function testPrefix (x,y) {
   var t = y;
   var s;
@@ -13,7 +12,7 @@ function testPrefix (x,y) {
   return t;
 }
 
-var Monad = function Monad(z = 19, g = 'generic') {
+function Monad(z = 19, g = 'generic') {
   var _this = this;
   this.x = z;
   this.id = g;
@@ -36,17 +35,16 @@ var Monad = function Monad(z = 19, g = 'generic') {
 
 var fpTransformer = function fpTransformer(fibsState, primeState, then) {
   var ar = [];
-  execP (primeState, Math.ceil(Math.sqrt(fibsState[1]))).bnd(ps => {
-    fibsState[3].map(fs => {
-      if (ps[3].filter(r => r <= fs).every(p => (fs % p || fs == p))) {ar.push(fs)};
-    })
-    var now = Date.now();
-    var elapsed = now - then;
-    postMessage( [ [fibsState[3].join(', '), ps[2], ar.join(', '), elapsed], ps ] )
+  var k = Math.ceil(Math.sqrt(fibsState[1]));
+  execP(primeState, k).bnd(s => {
+    postMessage(['green', 'green', 'red', 'color', 'done', 'done', 'computing prime fibs'])
+    fibsState[3].map(fib => {
+      if (s[1].every(p => (fib % p || fib == p))) {ar.push(fib)}
+    })  
+    postMessage(['green', 'green', 'green', 'color', 'done', 'done', 'done']);
+    postMessage( [ [fibsState[3].join(', '), s[2], ar.join(', '), then], s ] )
   })
 }
-
-
 
 //*************************************** END prime Fibonacci numbers
 
@@ -160,6 +158,8 @@ function execF(n) {
    b.push(a[0]);
   }
   b.push(a[1]);
+  postMessage(['green', 'red', 'yellow', 'color', 'done', 'computing primes', 'pending'])
+  console.log('Hello again Nurse');
   return new MonadState('fibsMonad', [a[0], a[1], n, b]);
 };
 

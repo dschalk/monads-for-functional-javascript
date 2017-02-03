@@ -11,10 +11,10 @@ var CHANGE = 'cow';
 
 var xs = xstream.default;
 
-var Monad = function Monad(z = 42, g = 'generic') {
+var Monad = function Monad(z = 'default', ID = 'generic') {
   var _this = this;
   this.x = z;
-  this.id = g;
+  this.id = ID;
   this.bnd = function (func, ...args) {
     var m = func(this.x, ...args)
     var ID;
@@ -1651,10 +1651,22 @@ function lcf (a,b) {
   return ar.reduce((j,k) => j*k)
 }
 
+var stroke1Monad = new Monad('green', 'stroke1Monad');
+var fill1Monad = new Monad('blue', 'fill1Monad');
 
+var stroke2Monad = new Monad('green', 'stroke2Monad');
+var fill2Monad = new Monad('blue', 'fill2Monad');
 
+var stroke3Monad = new Monad('green', 'stroke3Monad');
+var fill3Monad = new Monad('blue', 'fill3Monad');
 
+var mMfibBlurb = new Monad('', 'mMfibBlurb');
+var mMprimeBlurb = new Monad('','mMprimeBlurb');
+var mMprimeFibBlurb = new Monad('','mMprimeFibBlurb');
+var mMelapsed = new Monad(0, 'mMelapsed');
 
-
-
+function elapsed (t) {
+  var x = Date.now();
+  return (x - t);
+}
 
