@@ -28,6 +28,7 @@ const m = new Monad (5, 'm');
 var arr = [m]; 
 var p = m;
 m.ret(100);  
+console.log(m.x, arr[0].x, p.x);  // 100, 5, 5 
 ```
 console.log(m.x, arr[0].x, p.x);  // 100, 5, 5 
 In global scope (window in the browser), m.x changed to 100; but p and arr still refer to 5, the previous value of m.x. Similarly, when a monad uses its bnd() method to modify its x attribute, the change is seen globally, but nowhere else. Previous references to the monad remain stable, as this example illustrates:
