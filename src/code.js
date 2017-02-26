@@ -1470,7 +1470,13 @@ console.log(m.x, arr[0].x, p.x);  // 100, 5, 5
 ` ),
 h('p', ' Had there been no reference to m, the previous instance would have been subject to removal by the garbage collector. ' ),
 h('p', ' It is possible to mutate monads with code such as m.x = 888. That might be a good thing to do in a function with many recursions, but it seems like a misuse of monads. Monads are never mutated on this website. Object.freeze() is used to prevent mutation in the definition of primesMonad (shown below). '), 
-  h('p', ' The bnd() method can leave the calling monad\'s global value unchanged while assigning a value (in the global space) to another previously defined monad, or to a freshly created monad. So regardless of whether or not "m2" is defined, m.ret(4) followed by m.bnd(cube,"$m2") causes m.x === 4 and m2.x === 64 to both return true. The definition of Monad (below) shows how bnd() checks to see if func(m.x, ...args) returns a monad. If it does, "testPrefix" looks for a pattern that matches "$val" in the arguments that were provided to m.bnd(func, ...args). If the pattern is found, the global space acquires a monad named "val" with val.x === func(m.x, ...args). If no monad named "val" previously existed, one is created. Otherwise, val\'s global definition gets superseded. val can be any sequence of characters that constitute a valid javascript identifier. ' ),
+  h('p', ' The bnd() method can leave the calling monad\'s global value unchanged while assigning a value (in the global space) to another previously defined monad, or to a freshly created monad. So regardless of whether or not "m2" is defined, m.ret(4) followed by m.bnd(cube,"$m2") causes m.x === 4 and m2.x === 64 to both return true.'),
+h('pre.turk, `
+m.ret(4).bnd(cube,"$m2")
+console.log(m.x, m2.x)   // 4 64
+m.ret(0).bnd(add,3,"$m2").bnd(cube,"$m3")
+console.log(m.x, m2.x, m3.x)  // 0 3 27
+h('p', ' The definition of Monad (below) shows how bnd() checks to see if func(m.x, ...args) returns a monad. If it does, "testPrefix" looks for a pattern that matches "$val" in the arguments that were provided to m.bnd(func, ...args). If the pattern is found, the global space acquires a monad named "val" with val.x === func(m.x, ...args). If no monad named "val" previously existed, one is created. Otherwise, val\'s global definition gets superseded. val can be any sequence of characters that constitute a valid javascript identifier. ' ),
 h('p', ' Instances of Monad facilitate changing values without mutation. They also provide a way to chain function calls. For example, m.ret(2).bnd(add, 1).bnd(cube) causes m.x === 27 to return true. This works because ret(), add, and cube all return monads when they are applied to m.x. The definition of add and cube are shown below and can be found in the Github repository. ' ),  
 h('p', ' So, with that out of the way, here are the definitions of Monad and testPrefix: ' ),  
 h('h3', ' Monad '),
