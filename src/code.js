@@ -1477,9 +1477,9 @@ h('p', ' It is possible to mutate monads with code such as m.x = 888. That might
   h('p', ' The bnd() method can leave the calling monad\'s global value unchanged while assigning a value (in the global space) to another previously defined monad, or to a freshly created monad. So regardless of whether or not "m2" is defined, m.ret(4).bnd(cube,"$m2") causes m.x === 4 and m2.x === 64 to both return true. ' ),
 
 h('pre.turk', 
-`m.ret(4).bnd(cube,"$m2")   
+`m.ret(4).bnd(cube,"$m2") 
 console.log(m.x, m2.x)   // 4 64
-m.ret(0).bnd(add,3,"$m2").bn  )
+m.ret(0).bnd(add,3,"$m2").bnd(cube,"$m3")
 console.log(m.x, m2.x, m3.x)  // 0 3 27
 ` ),
 
