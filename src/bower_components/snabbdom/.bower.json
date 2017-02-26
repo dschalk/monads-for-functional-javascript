@@ -1,0 +1,15 @@
+{
+  "name": "snabbdom",
+  "homepage": "https://github.com/snabbdom/snabbdom",
+  "version": "0.6.4",
+  "_release": "0.6.4",
+  "_resolution": {
+    "type": "version",
+    "tag": "v0.6.4",
+    "commit": "062936dbf1005412ff4c942373019e1c187f1f5a"
+  },
+  "_source": "https://github.com/snabbdom/snabbdom.git",
+  "_target": "^0.6.4",
+  "_originalSource": "snabbdom",
+  "_direct": true
+}

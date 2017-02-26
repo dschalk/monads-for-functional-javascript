@@ -58,16 +58,6 @@
 
 	// import {EventEmitter} from 'events'
 
-	// import {merge, fromEvent} from 'most';
-	// import {create} from '@most/create';
-	var updateMessages = function updateMessages(e) {
-	  var ar = e.split(',');
-	  var sender = ar[2];
-	  ar.splice(0, 3);
-	  var str = ar.join(',');
-	  messageMonad.run([[(0, _dom.h)('br'), sender + ': ' + str], [], [], messageMonad.s[3]]);
-	};
-
 	function createWebSocket(path) {
 	  var host = window.location.hostname;
 	  if (host === '') host = 'localhost';
@@ -196,7 +186,6 @@
 	    console.log('<><><> New message <><><> ', event);
 	};
 
-	console.log('socket.onmessage',socket.onmessage);
 
 	const emDriver = function () {@jk
 	    return em.on = msg => msg.subscribe(msg => console.log('message:', msg))
@@ -254,8 +243,6 @@
 	  }
 	};
 
-	// window.postMessage("Can you hear me?","http://localhost:3055") 
-
 	function main(sources) {
 
 	  var numsDisplay = [4, 4, 4, 4];
@@ -291,7 +278,7 @@
 	        console.log('Major malfunction in worker.js  Reporting from main thread', v.data[1]);
 	      } else {
 	        console.log('In main thread. Re-instanciating primesMonad with ', v.data[1]);
-	        window['primesMonad'] = new MonadState('primesMonad', v.data[1], primes_state);
+	        window['primesMonad'] = new MonadState('primesMonad', v.data[1]);
 	      }
 	    });
 	    next(v.data[0], 'CA#$41', mMZ21);
@@ -304,16 +291,25 @@
 	  var messages$ = sources.WS.map(function (e) {
 	    mMtem.ret(e.data.split(',')).bnd(function (v) {
 	      console.log('Websockets data.split message v: ', v), mMZ10.bnd(function () {
-	        pMnums.ret([v[3], v[4], v[5], v[6]]).bnd(test3, "MpMstyle");
-	        travMonad.run([[v[3], v[4], v[5], v[6]], v[7], v[8], [], 0]);
-	        pMscore.ret(v[7]);
-	        pMgoals.ret(v[8]);
+	        buttonNode = bNode([v[3], v[4], v[5], v[6]]);
+	        var st = gameMonad.s[5][mMindex.x].slice();
+	        st[0] = v[7];
+	        st[1] = v[8];
+	        st[2] = 0;
+	        st[3] = [];
+	        st[4] = [v[3], v[4], v[5], v[6]];
+	        //    var s = st.slice();
+	        //    s[4] = st[4].slice();
+	        gameMonad.run(st);
+	        console.log(buttonNode);
 	      });
 	      mMZ12.bnd(function () {
 	        return mM6.ret(v[2] + ' successfully logged in.');
 	      });
 	      mMZ13.bnd(function () {
-	        return updateMessages(e.data);
+	        var message = v.slice(3, v.length).join(', ');
+	        var str = v[2] + ': ' + message;
+	        messages.unshift((0, _dom.h)('span', str), (0, _dom.h)('br'));
 	      });
 	      mMZ14.bnd(function () {
 	        return mMgoals2.ret('The winner is ' + v[2]);
@@ -348,6 +344,7 @@
 	  var loginPressAction$ = loginPress$.map(function (e) {
 	    var v = e.target.value;
 	    if (e.keyCode === 13) {
+	      var v = "Betty Sue";
 	      pMname.ret(v);
 	      socket.send('CC#$42' + v);
 	      pMclicked.ret([]);
@@ -367,16 +364,15 @@
 	      mMcaption.ret('inline');
 	      mMgame.ret('inline');
 	      mMtodo.ret('inline');
-	      // document.getElementById('group').focus(); 
+	      document.getElementById('group').focus();
 	      newRoll(0, 0);
-	    }
+	    };
 	  });
 
 	  var groupPress$ = sources.DOM.select('input#group').events('keypress');
 
 	  var groupPressAction$ = groupPress$.map(function (e) {
 	    if (e.keyCode === 13) {
-	      travMonad.run([[], 0, 0]);
 	      socket.send('CO#$42,' + pMgroup.x + ',' + pMname.x + ',' + e.target.value);
 	      pMgroup.ret(e.target.value).bnd(function (gr) {
 	        return socket.send('CG#$42,' + pMgroup.x + ',' + pMname.x + ',0,0');
@@ -392,6 +388,16 @@
 	      e.target.value = '';
 	    }
 	  });
+
+	  /*  var updateMessages = function updateMessages(e) {
+	      var ar = e.split(',');
+	      var sender = ar[2];
+	      var message = ar.slice(3,-1);
+	      var start = messageMonad.x.slice();
+	      var str = message.join(',');
+	      
+	      messageMonad.bnd(unshift, [h('br'), sender + ': ' + str], 'messageMonad');
+	    }; */
 
 	  var updatePlayers = function updatePlayers(data) {
 	    sMplayers.s.clear();
@@ -437,74 +443,120 @@
 	  var rollClick$ = sources.DOM.select('.roll').events('click');
 
 	  var rollClickAction$ = rollClick$.map(function () {
-	    var a = pMscore.x - 1;
-	    var b = pMgoals.x;
-	    newRoll(a, b);
+	    newRoll(gameMonad.s[0] - 1, gameMonad.s[1]);
 	  });
+
+	  function bNode(arr) {
+	    var x = styl(arr.length);
+	    var node = (0, _dom.h)('div', [(0, _dom.h)('button#0.num', { style: { display: x[0] } }, arr[0]), (0, _dom.h)('button#1.num', { style: { display: x[1] } }, arr[1]), (0, _dom.h)('button#2.num', { style: { display: x[2] } }, arr[2]), (0, _dom.h)('button#3.num', { style: { display: x[3] } }, arr[3])]);
+	    return node;
+	  }
 
 	  var numClick$ = sources.DOM.select('.num').events('click');
 
+	  function cl8(name, value) {
+	    var a = value.slice();
+	    window[name] = a;
+	    return window[name];
+	  }
+
 	  var numClickAction$ = numClick$.map(function (e) {
-	    if (pMclicked.x.length === 2) {
+	    if (gameMonad.s[3].length > 2) {
+	      console.log('In numClickAction$. gameMonad.s[4] is too big', gameMonad.s[3]);
 	      return;
-	    };
-	    pMnums.bnd(spliceM, e.target.id, 1).bnd(function (v) {
-	      test3(v, '$pMstyle');
-	      socket.send('CG#$42,' + pMgroup.x + ',' + pMname.x + ',' + pMscore.x + ',' + pMgoals.x);
-	      pMclicked.bnd(push, e.target.innerHTML).bnd(pMclicked.ret).bnd(function (w) {
-	        travMonad.run([v, pMscore.x, pMgoals.x, w, pMop.x]);
-	        if (w.length === 2 && pMop.x != 0) {
-	          updateCalc(w, pMop.x);
-	        }
-	      });
-	    });
+	    }
+	    console.log('In numClickAction$ - - - gameMonad.s[3] is', gameMonad.s[3]);
+	    var x = gameMonad.s[5][mMindex.x].slice(0, 5);
+	    x[4] = gameMonad.s[5][mMindex.x][4].slice();
+	    x[3] = gameMonad.s[5][mMindex.x][3].slice();
+	    x[3].push(x[4].splice(e.target.id, 1)[0]); // Push the item spliced from x[4] into x[3].
+	    var s3 = x[3].slice();
+	    buttonNode = bNode(x[4]);
+	    gameMonad.run(x);
+	    if (s3.length === 2 && x[2] != 0) {
+	      updateCalc(x[3], x[2]);
+	    }
 	  }).startWith([0, 0, 0, 0]);
 
 	  var opClick$ = sources.DOM.select('.op').events('click');
 
 	  var opClickAction$ = opClick$.map(function (e) {
-	    pMop.ret(e.target.innerHTML).bnd(function (v) {
-	      var ar = pMclicked.x;
-	      if (ar.length === 2) {
-	        updateCalc(ar, v);
-	      }
-	    });
+	    if (gameMonad.s[3].length === 2) {
+	      var s3 = gameMonad.s[3].slice();
+	      updateCalc(s3, e.target.textContent);
+	    } else {
+	      var state = gameMonad.s.slice();
+	      state[5][mMindex.x][2] = e.target.innerHTML;
+	      gameMonad = new MonadState2('gameMonad', state);
+	    }
 	  });
 
 	  function updateCalc(ar, op) {
-	    mMgoals2.ret('');
-	    var result = calc(ar[0], op, ar[1]);
-
-	    if (result === 20 || result === '20') {
-	      pMscore.bnd(add, 1).bnd(testscore).bnd(pMscore.ret).bnd(function (v) {
-	        return score(v);
-	      });
-	      return;
-	    } else if (result === 18 || result === '18') {
-	      pMscore.bnd(add, 3).bnd(testscore).bnd(pMscore.ret).bnd(function (v) {
-	        return score(v);
-	      });
-	      return;
+	    console.log('Entering updateCalc. ar and op are', ar, op);
+	    var result = parseInt(calc(ar[0], op, ar[1]), 10);
+	    if (result === 18 || result === 20) {
+	      score(result);
 	    } else {
-	      pMnums.bnd(push, result).bnd(function (v) {
-	        travMonad.run([v, pMscore.x, pMgoals.x, [], 0]);
-	        test3(v, '$pMstyle');
-	      });
+	      var state = gameMonad.s[5][mMindex.x].slice();
+	      state[4] = gameMonad.s[5][mMindex.x][4].slice();
+	      state[2] = 0;
+	      state[3] = [];
+	      state[4].push(result);
+	      buttonNode = bNode(state[4]);
+	      console.log('In updateCalc. state is', state);
+	      gameMonad.run(state);
 	    }
 	  };
 
-	  function score(scor) {
-	    if (scor != 25) {
-	      newRoll(scor, pMgoals.x);
-	    } else if (pMgoals.x === "2") {
+	  function score(result) {
+	    var state = gameMonad.s[5][mMindex.x].slice(0, 6);
+	    var old = parseInt(state[0], 10);
+	    var res = result === 18 ? old + 3 : old + 1;
+	    var scor = res % 5 === 0 ? res + 5 : res;
+	    if (scor === 25 && state[2] === "2") {
 	      socket.send('CE#$42,' + pMgroup.x + ',' + pMname.x);
-	      newRoll(0, 0);
-	    } else {
-	      pMgoals.bnd(add, 1).bnd(pMgoals.ret).bnd(function (g) {
-	        return newRoll(0, g);
-	      });
-	    };
+	      state = [0, 0, 0, [], [0, 0, 0, 0], [[0, 0, 0, 0]]];
+	      gameMonad.s = state;
+	      buttonNode = bNode(state[4]);
+	      return;
+	    }
+	    if (scor === 25) {
+	      state[1] = parseInt(state[1], 10) + 1;
+	      scor = 0;
+	    }
+	    state[4].push(scor);
+	    state[2] = 0;
+	    state[3] = [];
+	    buttonNode = bNode(state[4]);
+	    gameMonad.run(state);
+	    newRoll(scor, state[1]);
 	  };
+
+	  var forwardClick$ = sources.DOM.select('#ahead').events('click');
+
+	  var backClick$ = sources.DOM.select('#back').events('click');
+
+	  var backAction$ = backClick$.map(function () {
+	    if (mMindex.x > 0) {
+	      mMindex.ret(mMindex.x - 1);
+	      buttonNode = bNode(fetch(mMindex.x));
+	      sMplayers.s.clear();
+	      var score = gameMonad.s[5][mMindex.x][0];
+	      var goals = gameMonad.s[5][mMindex.x][1];
+	      socket.send('CG#$42,' + pMgroup.x + ',' + pMname.x + ',' + score + ',' + goals);
+	    }
+	  });
+
+	  var forwardAction$ = forwardClick$.map(function () {
+	    console.log('In forwardAction$ _mMindex.x, gameMonad.s[5].length - 1', mMindex.x, gameMonad.s[5].length - 1);
+	    if (mMindex.x < gameMonad.s[5].length - 1) {
+	      mMindex.ret(mMindex.x + 1);
+	      buttonNode = bNode(fetch(mMindex.x));
+	      var score = gameMonad.s[5][mMindex.x][0];
+	      var goals = gameMonad.s[5][mMindex.x][1];
+	      socket.send('CG#$42,' + pMgroup.x + ',' + pMname.x + ',' + score + ',' + goals);
+	    }
+	  });
 
 	  var fib2 = function fib2(v) {
 	    if (v[2] > 1) {
@@ -662,6 +714,26 @@
 	    window['primesMonad'] = new MonadState('primesMonad', m.data[0], primes_state);
 	    window['decompMonad'] = new MonadState('decompMonad', m.data[2], primes_state);
 	    mMfactors8_b.ret(m.data[1]);
+	  });
+
+	  var factorsP_c$ = sources.DOM.select('input#factors_5c').events('keyup');
+
+	  var fA_c$ = factorsP_c$.map(function (e) {
+	    mMfactors8_c.ret('');
+	    var factors = [];
+	    var ar = e.target.value.split(',').map(function (v) {
+	      return parseInt(v, 10);
+	    });
+	    if (e.keyCode === 13) {
+	      console.log('In fA_c$ ar is', ar);
+	      if (ar[0] !== ar[0] || ar[1] !== ar[1] || typeof ar[0] !== 'number' || typeof ar[1] !== 'number') {
+	        mMfactors7.ret('It works only if you enter two integers separated by a comma.');
+	        return;
+	      } else {
+	        console.log('In fA_c$ else block. ar is', ar);
+	        mMfactors8_c.ret(simpleWay(ar[0], ar[1]));
+	      }
+	    }
 	  });
 
 	  // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> ENDOM prime factors END
@@ -991,44 +1063,10 @@
 
 	  var clearPicked$ = sources.DOM.select('#clear').events('click');
 
-	  var clearAction$ = clearPicked$.map(function () {});
-
-	  var forwardClick$ = sources.DOM.select('#forward').events('click');
-
-	  var backClick$ = sources.DOM.select('#back').events('click');
-
-	  var backAction$ = backClick$.map(function () {
-	    if (pMindex.x > 1) {
-	      pMop.ret(0);
-	      var ind = pMindex.x - 1;
-	      var s = travMonad.s[ind];
-	      pMnums.ret(s[0]).bnd(test3, '$pMstyle');
-	      pMscore.ret(s[1]);
-	      pMgoals.ret(s[2]);
-	      pMclicked.ret(s[3]);
-	      pMop.ret(s[4]);
-	      socket.send('CG#$42,' + pMgroup.x + ',' + pMname.x + ',' + pMscore.x + ',' + pMgoals.x);
-	      pMindex.bnd(add, -1);
-	    }
-	  });
-
-	  var forwardAction$ = forwardClick$.map(function () {
-	    if (pMindex.x < travMonad.s.length - 1) {
-	      pMop.ret(0);
-	      var ind = pMindex.x + 1;
-	      var s = travMonad.s[ind];
-	      pMnums.ret(s[0]).bnd(test3, '$pMstyle');
-	      pMscore.ret(s[1]);
-	      pMgoals.ret(s[2]);
-	      pMclicked.ret(s[3]);
-	      pMop.ret(s[4]);
-	      socket.send('CG#$42,' + pMgroup.x + ',' + pMname.x + ',' + pMscore.x + ',' + pMgoals.x);
-	      pMindex.bnd(add, +1);
-	    }
-	  });
-
-	  var elemA$ = sources.DOM.select('input#message1').events('keyup').map(function (e) {
-	    mM9.ret(e.target.value);
+	  var clearAction$ = clearPicked$.map(function () {
+	    var elemA$ = sources.DOM.select('input#message1').events('keyup').map(function (e) {
+	      mM9.ret(e.target.value);
+	    });
 	    worker.postMessage([e.target.value, mM10.x]);
 	  });
 
@@ -1050,14 +1088,22 @@
 	    }
 	  });
 
-	  var strokeColor_1 = "blue";
-	  var fillColor_1 = "orange";
+	  var updateMessages = function updateMessages(t) {
+	    /*  var ar = e.split(',');
+	     var sender = ar[2];
+	      ar.splice(0,3);
+	     var str = ar.join(',');
+	     var base = messageMonad.s.slice();
+	      execMessage( h('br'), sender + ': ' + str, base );  */
+	  };
 
-	  var calcStream$ = xs.merge(prAction$, factorsAction_b$, fA$, factorsP$, fA_b$, factorsP_b$, clearprimes$, worker$, workerB$, workerC$, workerD$, workerE$, workerF$, clearAction$, backAction$, forwardAction$, factorsAction$, primeFib$, fibPressAction$, quadAction$, edit1Action$, edit2Action$, testWAction$, testZAction$, testQAction$, colorAction$, deleteAction$, newTaskAction$, chatClickAction$, gameClickAction$, todoClickAction$, captionClickAction$, groupPressAction$, rollClickAction$, messagePressAction$, loginPressAction$, messages$, numClickAction$, opClickAction$);
+	  var calcStream$ = xs.merge(forwardAction$, backAction$, prAction$, factorsAction_b$, fA$, factorsP$, fA_b$, factorsP_b$, clearprimes$, worker$, workerB$, workerC$, workerD$, workerE$, workerF$, clearAction$, factorsAction$, primeFib$, fibPressAction$, quadAction$, edit1Action$, edit2Action$, testWAction$, testZAction$, testQAction$, colorAction$, deleteAction$, newTaskAction$, chatClickAction$, gameClickAction$, todoClickAction$, captionClickAction$, groupPressAction$, rollClickAction$, messagePressAction$, loginPressAction$, messages$, numClickAction$, opClickAction$);
 
 	  return {
 	    DOM: calcStream$.map(function () {
-	      return (0, _dom.h)('div.content', [(0, _dom.h)('br'), (0, _dom.h)('div#rightPanel', { style: { display: mMrightPanel.x } }, [(0, _dom.h)('span#tog', [(0, _dom.h)('button#game', { style: { fontSize: '16px', display: 'inline' } }, 'TOGGLE GAME'), (0, _dom.h)('span.tao', ' '), (0, _dom.h)('button#todoButton', { style: { fontSize: '16px', display: 'inline' } }, 'TOGGLE TODO_LIST'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('button#chat2', { style: { fontSize: '16px', display: 'inline' } }, 'TOGGLE CHAT'), (0, _dom.h)('span.tao', ' '), (0, _dom.h)('button#caption', { style: { fontSize: '16px', display: 'inline' } }, 'TOGGLE CAPTION')]), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('div#gameDiv', { style: { display: 'mMgameDiv.x' } }, [(0, _dom.h)('div.game', 'Name: ' + pMname.x), (0, _dom.h)('div.game', 'Group: ' + pMgroup.x), (0, _dom.h)('div.game', 'Currently online: Name score | goals'), (0, _dom.h)('div.game', '' + pMdata.x)]), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('div#todoDiv', { style: { display: mMtodoDiv.x } }, [(0, _dom.h)('div#taskList', taskL), (0, _dom.h)('span', 'Author, Responsible Person, Task: '), (0, _dom.h)('input.newTask')]), (0, _dom.h)('br'), (0, _dom.h)('span#alert', mMalert.x), (0, _dom.h)('br'), (0, _dom.h)('span#alert2'), (0, _dom.h)('br'), (0, _dom.h)('div#chatDiv', { style: { display: mMchatDiv.x } }, [(0, _dom.h)('div#messages', [(0, _dom.h)('span', 'Message: '), (0, _dom.h)('input.inputMessage'), (0, _dom.h)('div', messageMonad.s[3])])]), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('div', 'pMclicked.x: ' + pMclicked.x.join(', ')), (0, _dom.h)('div', 'pMop.x: ' + pMop.x), (0, _dom.h)('div', 'pMindex.x: ' + pMindex.x), (0, _dom.h)('div', 'travMonad.s.length: ' + travMonad.s.length), (0, _dom.h)('div', 'travMonad.s[pMindex.x][0]: ' + travMonad.s[pMindex.x][0]), (0, _dom.h)('div', 'travMonad.s[pMindex.x][1]: ' + travMonad.s[pMindex.x][1]), (0, _dom.h)('div', 'travMonad.s[pMindex.x][2]: ' + travMonad.s[pMindex.x][2]), (0, _dom.h)('div', 'travMonad.s[pMindex.x][3]: ' + travMonad.s[pMindex.x][3]), (0, _dom.h)('div', 'travMonad.s[pMindex.x][4]: ' + travMonad.s[pMindex.x][4])]), (0, _dom.h)('div#leftPanel', [(0, _dom.h)('br'), (0, _dom.h)('div#captionDiv', { style: { display: mMcaptionDiv.x } }, [(0, _dom.h)('h1', 'JS-monads running on Cycle.js')]), (0, _dom.h)('span#italic', ' These monads are like the Haskell monads in that they resemble the monads of category theory without actually being mathematical monads. See '), (0, _dom.h)('a', { props: { href: "http://math.andrej.com/2016/08/06/hask-is-not-a-category/", target: "_blank" } }, 'Hask is not a category.'), (0, _dom.h)('span', ' by Andrej Bauer and the '), (0, _dom.h)('a', { props: { href: '#discussion' } }, 'Discussion'), (0, _dom.h)('span', ' below. They provide a convenient interface for dealing with uncertainty and side effects in a purely functional manner, assigning new values to identifiers (variables) without mutation. Adherence to the monad laws (see below) helps make the monads robust, versatile, and reliable tools for isolating and chaining sequences of javascript functions.'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('span.tao1', ' The demonstrations include persistent, shared todo lists; '), (0, _dom.h)('br'), (0, _dom.h)('span.tao1', ' An interactive simulated dice game with a traversable history (all group members see your score decrease or increase as you navegate backwards and forwards); '), (0, _dom.h)('br'), (0, _dom.h)('span.tao1', ' Chat rooms where members can compete in the simulated dice gameand share a project todo list; '), (0, _dom.h)('br'), (0, _dom.h)('span.tao1', ' Other demonstrations of the usefulness of monads in a Cycle application.  '), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('span.tao', 'The code for this repository is at '), (0, _dom.h)('a', { props: { href: "https://github.com/dschalk/JS-monads-stable", target: "_blank" } }, 'JS-monads-stable'), (0, _dom.h)('div#gameDiv2', { style: { display: mMgameDiv2.x } }, [(0, _dom.h)('br'), (0, _dom.h)('span', ' Here are the basic rules:'), (0, _dom.h)('p', 'RULES: If clicking two numbers and an operator (in any order) results in 20 or 18, the score increases by 1 or 3, respectively. If the score becomes 0 or is evenly divisible by 5, 5 points are added. A score of 25 results in one goal. That can only be achieved by arriving at a score of 20, which jumps the score to 25. Directly computing 25 results in a score of 30, and no goal. Each time RL is clicked, one point is deducted. Three goals wins the game. '), (0, _dom.h)('p.red4', mMgoals2.x), (0, _dom.h)('button#0.num', { style: { display: pMstyle.x[0] } }, pMnums.x[0]), (0, _dom.h)('button#1.num', { style: { display: pMstyle.x[1] } }, pMnums.x[1]), (0, _dom.h)('button#2.num', { style: { display: pMstyle.x[2] } }, pMnums.x[2]), (0, _dom.h)('button#3.num', { style: { display: pMstyle.x[3] } }, pMnums.x[3]), (0, _dom.h)('br'), (0, _dom.h)('button#4.op', 'add'), (0, _dom.h)('button#5.op', 'subtract'), (0, _dom.h)('button#5.op', 'mult'), (0, _dom.h)('button#5.op', 'div'), (0, _dom.h)('button#5.op', 'concat'), (0, _dom.h)('br'), (0, _dom.h)('div#dice', { style: { display: mMdice.x } }, [(0, _dom.h)('button.roll', 'ROLL'), (0, _dom.h)('br'), (0, _dom.h)('button#back', 'BACK'), (0, _dom.h)('button#forward', 'FORWARD'), (0, _dom.h)('div.tao', 'Selected numbers: ' + pMclicked.x.join(', ') + ' '), (0, _dom.h)('div.tao', 'Operator: ' + pMop.x + ' '), (0, _dom.h)('button#clear', 'Clear selected numbers (Possibly useful after clicking the BACK button) ')])]), (0, _dom.h)('div#log1', { style: { display: mMlog1.x } }, [(0, _dom.h)('p', 'IN ORDER TO SEE THE GAME, TODOLIST, AND CHAT DEMONSTRATIONS, YOU MUST ENTER SOMETHING .'), (0, _dom.h)('span', 'Name: '), (0, _dom.h)('input#login')]), (0, _dom.h)('p', mM6.x), (0, _dom.h)('div#log2', { style: { display: mMlog2.x } }, [(0, _dom.h)('span', 'Change group: '), (0, _dom.h)('input#group')]), (0, _dom.h)('p', mMsoloAlert.x), (0, _dom.h)('p', 'People who are in the same group, other than the default group named "solo", share the same todo list, chat messages, and simulated dice game. In order to see any of these, you must establish a unique identity on the server by logging in. The websockets connection terminates if the first message the server receives does not come from the sign in form. You can enter any random numbers, letters, or special characters you like. The server checks only to make sure someone hasn\t already signed in with the sequence you have selected. If you log in with a name that is already in use, a message will appear and this page will be re-loaded in the browser after a four-second pause. '), (0, _dom.h)('p', ' Data for the traversable game history accumulates until a player scores three goals and wins. The data array is then erased and the application is ready to start accumulating a new history. '), (0, _dom.h)('hr'),
+	      return (0, _dom.h)('div.content', [(0, _dom.h)('br'), (0, _dom.h)('div#rightPanel', { style: { display: mMrightPanel.x } }, [(0, _dom.h)('span#tog', [(0, _dom.h)('button#game', { style: { fontSize: '16px', display: 'inline' } }, 'TOGGLE GAME'), (0, _dom.h)('span.tao', ' '), (0, _dom.h)('button#todoButton', { style: { fontSize: '16px', display: 'inline' } }, 'TOGGLE TODO_LIST'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('button#chat2', { style: { fontSize: '16px', display: 'inline' } }, 'TOGGLE CHAT'), (0, _dom.h)('span.tao', ' '), (0, _dom.h)('button#caption', { style: { fontSize: '16px', display: 'inline' } }, 'TOGGLE CAPTION')]), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('div#gameDiv', { style: { display: 'mMgameDiv.x' } }, [(0, _dom.h)('div.game', 'Name: ' + pMname.x), (0, _dom.h)('div.game', 'Group: ' + pMgroup.x), (0, _dom.h)('div.game', 'Currently online: Name score | goals'), (0, _dom.h)('div.game', '' + pMdata.x)]), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('div#todoDiv', { style: { display: mMtodoDiv.x } }, [(0, _dom.h)('div#taskList', taskL), (0, _dom.h)('span', 'Author, Responsible Person, Task: '), (0, _dom.h)('input.newTask')]), (0, _dom.h)('br'), (0, _dom.h)('span#alert', mMalert.x), (0, _dom.h)('br'), (0, _dom.h)('span#alert2'), (0, _dom.h)('br'), (0, _dom.h)('div#chatDiv', { style: { display: mMchatDiv.x } }, [(0, _dom.h)('div#messages', [(0, _dom.h)('span', 'Message: '), (0, _dom.h)('input.inputMessage'), (0, _dom.h)('div', messages)])]), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'),
+	      // `Selected: ${gameMonad.s[3].join(', ')}`,
+	      (0, _dom.h)('br'), "mMindex.x: " + mMindex.x, (0, _dom.h)('br'), (0, _dom.h)('br')]), (0, _dom.h)('div#leftPanel', [(0, _dom.h)('br'), (0, _dom.h)('div#captionDiv', { style: { display: mMcaptionDiv.x } }, [(0, _dom.h)('h1', 'JS-monads running on Cycle.js')]), (0, _dom.h)('span#italic', ' These monads are like the Haskell monads in that they resemble the monads of category theory without actually being mathematical monads. See '), (0, _dom.h)('a', { props: { href: "http://math.andrej.com/2016/08/06/hask-is-not-a-category/", target: "_blank" } }, 'Hask is not a category.'), (0, _dom.h)('span', ' by Andrej Bauer and the '), (0, _dom.h)('a', { props: { href: '#discussion' } }, 'Discussion'), (0, _dom.h)('span', ' below. They provide a convenient interface for dealing with uncertainty and side effects in a purely functional manner, assigning new values to identifiers (variables) without mutation. Adherence to the monad laws (see below) helps make the monads robust, versatile, and reliable tools for isolating and chaining sequences of javascript functions.'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('span.tao1', ' The demonstrations include persistent, shared todo lists; '), (0, _dom.h)('br'), (0, _dom.h)('span.tao1', ' An interactive simulated dice game with a traversable history (all group members see your score decrease or increase as you navegate backwards and forwards); '), (0, _dom.h)('br'), (0, _dom.h)('span.tao1', ' Chat rooms where members can compete in the simulated dice gameand share a project todo list; '), (0, _dom.h)('br'), (0, _dom.h)('span.tao1', ' Other demonstrations of the usefulness of monads in a Cycle application.  '), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('span.tao', 'The code for this repository is at '), (0, _dom.h)('a', { props: { href: "https://github.com/dschalk/JS-monads-stable", target: "_blank" } }, 'JS-monads-stable'), (0, _dom.h)('div#gameDiv2', { style: { display: mMgameDiv2.x } }, [(0, _dom.h)('br'), (0, _dom.h)('span', ' Here are the basic rules:'), (0, _dom.h)('p', 'RULES: If clicking two numbers and an operator (in any order) results in 20 or 18, the score increases by 1 or 3, respectively. If the score becomes 0 or is evenly divisible by 5, 5 points are added. A score of 25 results in one goal. That can only be achieved by arriving at a score of 20, which jumps the score to 25. Directly computing 25 results in a score of 30, and no goal. Each time RL is clicked, one point is deducted. Three goals wins the game. '), (0, _dom.h)('p.red4', mMgoals2.x), buttonNode, (0, _dom.h)('br'), (0, _dom.h)('button#4.op', 'add'), (0, _dom.h)('button#5.op', 'subtract'), (0, _dom.h)('button#6.op', 'mult'), (0, _dom.h)('button#7.op', 'div'), (0, _dom.h)('button#8.op', 'concat'), (0, _dom.h)('br'), (0, _dom.h)('div#dice', { style: { display: mMdice.x } }, [(0, _dom.h)('button.roll', 'ROLL'), (0, _dom.h)('br'), (0, _dom.h)('button#back', 'BACK'), (0, _dom.h)('button#ahead', 'FORWARD'), (0, _dom.h)('div.tao', 'Selected numbers: ' + pMclicked.x.join(', ') + ' '), (0, _dom.h)('div.tao', 'Operator: ' + pMop.x + ' '), (0, _dom.h)('button#clear', 'Clear selected numbers (Possibly useful after clicking the BACK button) ')])]), (0, _dom.h)('div#log1', { style: { display: mMlog1.x } }, [(0, _dom.h)('p', 'IN ORDER TO SEE THE GAME, TODOLIST, AND CHAT DEMONSTRATIONS, YOU MUST ENTER SOMETHING .'), (0, _dom.h)('span', 'Name: '), (0, _dom.h)('input#login')]), (0, _dom.h)('p', mM6.x), (0, _dom.h)('div#log2', { style: { display: mMlog2.x } }, [(0, _dom.h)('span', 'Change group: '), (0, _dom.h)('input#group')]), (0, _dom.h)('p', mMsoloAlert.x), (0, _dom.h)('p', 'People who are in the same group, other than the default group named "solo", share the same todo list, chat messages, and simulated dice game. In order to see any of these, you must establish a unique identity on the server by logging in. The websockets connection terminates if the first message the server receives does not come from the sign in form. You can enter any random numbers, letters, or special characters you like. The server checks only to make sure someone hasn\t already signed in with the sequence you have selected. If you log in with a name that is already in use, a message will appear and this page will be re-loaded in the browser after a four-second pause. '), (0, _dom.h)('p', ' Data for the traversable game history accumulates until a player scores three goals and wins. The data array is then erased and the application is ready to start accumulating a new history. '), (0, _dom.h)('hr'),
 
 	      // **************************************************************************** START MONAD
 	      _code2.default.monad,
@@ -1067,11 +1113,10 @@
 	      // ************************************************** OOOOOOOOOOOOOO ********    BEGIN ASYNC 
 
 
-	      (0, _dom.h)('h2', ' Asynchronous Processes '), _code2.default.async, (0, _dom.h)('br'), (0, _dom.h)('span', '' + mMfibBlurb.x), (0, _dom.h)('span', [(0, _dom.h)('svg', { attrs: { width: 50, height: 50 } }, [(0, _dom.h)('circle', { attrs: { cx: 25, cy: 25, r: 20, stroke: 'purple', 'stroke-width': 4, fill: fill1Monad.x } })])]), (0, _dom.h)('span', '' + mMprimeBlurb.x), (0, _dom.h)('span', [(0, _dom.h)('svg', { attrs: { width: 50, height: 50 } }, [(0, _dom.h)('circle', { attrs: { cx: 25, cy: 25, r: 20, stroke: 'purple', 'stroke-width': 4, fill: fill2Monad.x } })])]), (0, _dom.h)('span', '' + mMprimeFibBlurb.x), (0, _dom.h)('span', [(0, _dom.h)('svg', { attrs: { width: 50, height: 50 } }, [(0, _dom.h)('circle', { attrs: { cx: 25, cy: 25, r: 20, stroke: 'purple', 'stroke-width': 4, fill: fill3Monad.x } })])]), (0, _dom.h)('br'), (0, _dom.h)('p.red', 'The elapsed time is ' + mMelapsed.x + ' milliseconds.'), (0, _dom.h)('input#fib92'), (0, _dom.h)('br'), (0, _dom.h)('span#PF_7.red6', 'Fibonacci Numbers'), (0, _dom.h)('br'), (0, _dom.h)('span#PF_9.turk', mMres.x[0]), (0, _dom.h)('br'), (0, _dom.h)('span#PF_8.red6', 'Prime Fibonacci Numbers'), (0, _dom.h)('br'), (0, _dom.h)('span#primeFibs.turk', mMres.x[2]), (0, _dom.h)('br'), (0, _dom.h)('span#PF_21.red6', 'The largest generated prime number.'), (0, _dom.h)('br'), (0, _dom.h)('span#PF_22.turk', mMres.x[1]), (0, _dom.h)('bpr'), (0, _dom.h)('p', ' The second demonstration in this series decomposes numbers into its their prime factors. Unless a large array of prime numbers has already been generated, five digits is the limit for a quick response. After running 300,000,000,000 in the first demonstration, 444,444 was decomposed in a little over 100 microseconds.  To see it in action, enter a number below. '), (0, _dom.h)('input#factors_1'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('span', mMfactors.x), (0, _dom.h)('span.tao3', mMfactors23.x), (0, _dom.h)('p', ' Next, two comma-separated numbers are decomposed into arrays of their prime factors, and those arrays are used to compute their lowest common multiple (lcm). For example, the lcm of 6 and 9 is 18 because 3*6 and 2*9 are both 18. The lcm of the denominators of two fractions is useful in fraction arithmetic; specifically, addition and subtraction.  CAUTION: On a modern desktop computer, two five-digit numbers yield a result without noticeable lag; two six digit number take a while to finish. '), (0, _dom.h)('input#factors_5'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('div.tao3', mMfactors7.x), (0, _dom.h)('span', 'The least common multiple of  ' + mMfactors8.x[0] + ' and ' + mMfactors8.x[1] + ' is '), (0, _dom.h)('span.tao3', '' + mMfactors8.x[2]), (0, _dom.h)('br'), (0, _dom.h)('span', 'The largest common factor of ' + mMfactors8.x[0] + ' and ' + mMfactors8.x[1] + ' is '), (0, _dom.h)('span.tao3', '' + mMfactors8.x[3]), (0, _dom.h)('br'), (0, _dom.h)('div', 'TEST: ' + mMfactors8.x[0] + ' * ' + mMfactors8.x[1] + ' === ' + mMfactors8.x[2] + ' * ' + mMfactors8.x[3] + ' '), (0, _dom.h)('span', 'RESULT: '), (0, _dom.h)('span.tao3', '' + (mMfactors8.x[0] * mMfactors8.x[1] === mMfactors8.x[2] * mMfactors8.x[3])), _code2.default.hardWay, (0, _dom.h)('label', ' Enter a number here: '), (0, _dom.h)('input#factors_1b'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('div.tao3', mMfactors_b.x), _code2.default.hardWay2, (0, _dom.h)('div.tao3', mMfactors7_b.x), (0, _dom.h)('span', 'The least common multiple of  ' + mMfactors8_b.x[0] + ' and ' + mMfactors8_b.x[1] + ' is '), (0, _dom.h)('span.tao3', '' + mMfactors8_b.x[2]), (0, _dom.h)('br'), (0, _dom.h)('span', 'The largest common factor of ' + mMfactors8_b.x[0] + ' and ' + mMfactors8_b.x[1] + ' is '), (0, _dom.h)('span.tao3', '' + mMfactors8_b.x[3]), (0, _dom.h)('br'), (0, _dom.h)('div', 'TEST: ' + mMfactors8_b.x[0] + ' * ' + mMfactors8_b.x[1] + ' === ' + mMfactors8_b.x[2] + ' * ' + mMfactors8_b.x[3] + ' '), (0, _dom.h)('span', 'RESULT: '), (0, _dom.h)('span.tao3', '' + (mMfactors8_b.x[0] * mMfactors8_b.x[1] === mMfactors8_b.x[2] * mMfactors8_b.x[3])),
-	      // ************************************************** OOOOOOOOOOOOOO ********    END ASYNC 
+	      (0, _dom.h)('h2', ' Asynchronous Processes '), _code2.default.async, (0, _dom.h)('br'), (0, _dom.h)('span', '' + mMfibBlurb.x), (0, _dom.h)('span', [(0, _dom.h)('svg', { attrs: { width: 50, height: 50 } }, [(0, _dom.h)('circle', { attrs: { cx: 25, cy: 25, r: 20, stroke: 'purple', 'stroke-width': 4, fill: fill1Monad.x } })])]), (0, _dom.h)('span', '' + mMprimeBlurb.x), (0, _dom.h)('span', [(0, _dom.h)('svg', { attrs: { width: 50, height: 50 } }, [(0, _dom.h)('circle', { attrs: { cx: 25, cy: 25, r: 20, stroke: 'purple', 'stroke-width': 4, fill: fill2Monad.x } })])]), (0, _dom.h)('span', '' + mMprimeFibBlurb.x), (0, _dom.h)('span', [(0, _dom.h)('svg', { attrs: { width: 50, height: 50 } }, [(0, _dom.h)('circle', { attrs: { cx: 25, cy: 25, r: 20, stroke: 'purple', 'stroke-width': 4, fill: fill3Monad.x } })])]), (0, _dom.h)('br'), (0, _dom.h)('p.red', 'The elapsed time is ' + mMelapsed.x + ' milliseconds.'), (0, _dom.h)('input#fib92'), (0, _dom.h)('br'), (0, _dom.h)('span#PF_7.red6', 'Fibonacci Numbers'), (0, _dom.h)('br'), (0, _dom.h)('span#PF_9.turk', mMres.x[0]), (0, _dom.h)('br'), (0, _dom.h)('span#PF_8.red6', 'Prime Fibonacci Numbers'), (0, _dom.h)('br'), (0, _dom.h)('span#primeFibs.turk', mMres.x[2]), (0, _dom.h)('br'), (0, _dom.h)('span#PF_21.red6', 'The largest generated prime number.'), (0, _dom.h)('br'), (0, _dom.h)('span#PF_22.turk', mMres.x[1]), (0, _dom.h)('bpr'), (0, _dom.h)('p', ' The second demonstration in this series decomposes numbers into its their prime factors. Unless a large array of prime numbers has already been generated, five digits is the limit for a quick response. After running 300,000,000,000 in the first demonstration, 444,444 was decomposed in a little over 100 microseconds.  To see it in action, enter a number below. '), (0, _dom.h)('input#factors_1'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('span', mMfactors.x), (0, _dom.h)('span.tao3', mMfactors23.x), (0, _dom.h)('p', ' Next, two comma-separated numbers are decomposed into arrays of their prime factors, and those arrays are used to compute their lowest common multiple (lcm). For example, the lcm of 6 and 9 is 18 because 3*6 and 2*9 are both 18. The lcm of the denominators of two fractions is useful in fraction arithmetic; specifically, addition and subtraction.  CAUTION: On a modern desktop computer, two five-digit numbers yield a result without noticeable lag; two six digit number take a while to finish. '), (0, _dom.h)('input#factors_5'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('div.tao3', mMfactors7.x), (0, _dom.h)('span', 'The least common multiple of  ' + mMfactors8.x[0] + ' and ' + mMfactors8.x[1] + ' is '), (0, _dom.h)('span.tao3', '' + mMfactors8.x[2]), (0, _dom.h)('br'), (0, _dom.h)('span', 'The largest common factor of ' + mMfactors8.x[0] + ' and ' + mMfactors8.x[1] + ' is '), (0, _dom.h)('span.tao3', '' + mMfactors8.x[3]), (0, _dom.h)('br'), (0, _dom.h)('div', 'TEST: ' + mMfactors8.x[0] + ' * ' + mMfactors8.x[1] + ' === ' + mMfactors8.x[2] + ' * ' + mMfactors8.x[3] + ' '), (0, _dom.h)('span', 'RESULT: '), (0, _dom.h)('span.tao3', '' + (mMfactors8.x[0] * mMfactors8.x[1] === mMfactors8.x[2] * mMfactors8.x[3])), _code2.default.hardWay, (0, _dom.h)('label', ' Enter a number here: '), (0, _dom.h)('input#factors_1b'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('div.tao3', mMfactors_b.x), _code2.default.hardWay2, (0, _dom.h)('div.tao3', mMfactors7_b.x), (0, _dom.h)('span', 'The least common multiple of  ' + mMfactors8_b.x[0] + ' and ' + mMfactors8_b.x[1] + ' is '), (0, _dom.h)('span.tao3', '' + mMfactors8_b.x[2]), (0, _dom.h)('br'), (0, _dom.h)('span', 'The largest common factor of ' + mMfactors8_b.x[0] + ' and ' + mMfactors8_b.x[1] + ' is '), (0, _dom.h)('span.tao3', '' + mMfactors8_b.x[3]), (0, _dom.h)('br'), (0, _dom.h)('div', 'TEST: ' + mMfactors8_b.x[0] + ' * ' + mMfactors8_b.x[1] + ' === ' + mMfactors8_b.x[2] + ' * ' + mMfactors8_b.x[3] + ' '), (0, _dom.h)('span', 'RESULT: '), (0, _dom.h)('span.tao3', '' + (mMfactors8_b.x[0] * mMfactors8_b.x[1] === mMfactors8_b.x[2] * mMfactors8_b.x[3])), _code2.default.simple,
 
-
-	      (0, _dom.h)('h2', ' MonadEr - An Error-Catching Monad '), (0, _dom.h)('p', ' Instances of MonadEr function much the same as instances of Monad, but when an instance of MonadEr encounters an error, it ceases to perform any further computations. Instead, it passes through every subsequent stage of a sequence of MonadEr expressions, reporting where it is and repeating the error message. It will continue to do this until it is re-instantiated or until its bnd() method runs on the function clean(). '), (0, _dom.h)('p', 'Functions used as arguments to the MonadEr bnd() method can be placed in quotation marks to prevent the browser engine from throwing reference errors. Arguments can be protected in the same manner. Using MonadEr can prevent the silent proliferation of NaN results in math computations, and can prevent browser crashes due to attempts to evaluate undefined variables. Sometimes crashes are desired when testing code, but MonadEr provides instant feedback pinpointing the exact location of the error. '), (0, _dom.h)('p', ' The following demonstration shows the Chrome console log entries that result from running '), (0, _dom.h)('pre', '    t.bnd(\'add3", 3, \'$t2\').bnd(cube3, \'$t3\'\n    t.bnd(\'add3",\'three\', \'$t2\').bnd(cube3, \'$t3\'    \n    t.bnd(\'add3",\'Math.sqrt(-1)\', \'$t2\').bnd(cube3, \'$t3\' \n    t.bnd(\'addd3", 3, \'$t2\').bnd(cube3, \'$t3\' '), (0, _dom.h)('br'), (0, _dom.h)('img.image', { props: { src: "error2.png" } }), (0, _dom.h)('br'), (0, _dom.h)('p.tao1b', ' The monad laws hold for MonadEr instances. The following relationships were verified in the Chrome console: '), (0, _dom.h)('pre', '    ret3(0,\'t\',[])  // t is now an instance of MonadEr with t.x = 0 and t.e = [].\n\n    t.ret(3).bnd(cube3).x === cube(3).x  \n    ret3(3).bnd(cube3).x === cube3(3).x    \n\n    t.bnd(t.ret) === t   \n    t.bnd(ret) === t  \n   \n    t.ret(0).bnd(add3, 3).bnd(cube3).x === \n    t.ret(0).bnd(v => add3(v,3).bnd(cube3)).x  '), (0, _dom.h)('br'), (0, _dom.h)('a#itterLink', { props: { href: '#monad' } }, 'Back to Monad discussion'), (0, _dom.h)('br'), (0, _dom.h)('a', { props: { href: '#top' } }, 'Back To The Top'), (0, _dom.h)('h2', 'MonadItter'), _code2.default.monadIt, (0, _dom.h)('p', ' MonadItter instances don\'t link to one another. They exist to facilitate the work of instances of Monad, MonadState, etc. Here\'s how they work: '), (0, _dom.h)('p', 'For any instance of MonadItter, say "it", "it.bnd(func)" causes it.p === func. Calling the method "it.release(...args)" causes p(...args) to run, possibly with arguments supplied by the caller. '), (0, _dom.h)('p', ' As shown later on this page, MonadItter instances control the routing of incoming websockets messages. In one of the demonstrations below, they behave much like ES2015 iterators. I prefer them over ES2015 iterators, at least for what I am demonstrating.'), (0, _dom.h)('h3', ' A Basic Itterator '), (0, _dom.h)('p', 'The following example illustrates the use of release() with an argument. It also shows a lambda expressions being provided as an argument for the method mMZ1.bnd() (thereby becoming the value of mMZ1.p), and then mMZ1.release providing an arguments for the function mMZ1.p. The code is shown beneith the following two buttons. '), (0, _dom.h)('button#testZ', 'mMZ1.release(1)'), (0, _dom.h)('p.code2', mMt3.x), (0, _dom.h)('span', 'Refresh button: '), (0, _dom.h)('button#testQ', 'mMt1.ret(0).bnd(v => mMZ2.release(v)) '), (0, _dom.h)('br'), _code2.default.testZ, (0, _dom.h)('span.tao', ' The expression mMt3.x sits permanently in the Motorcycle virtual DOM description. You can call '), (0, _dom.h)('span.green', 'mMZ2.release(v)'), (0, _dom.h)('span', ' by entering a value for v below: '), (0, _dom.h)('br'), (0, _dom.h)('span', 'Please enter an integer here: '), (0, _dom.h)('input#testW'), (0, _dom.h)('p', ' cube() is defined in the Monad section (above). If you click "mMZ1.release(1)" several times, the code (above) will run several times, each time with v === 1. The result, mMt3.x, is shown below the button. mMZ1.p (bnd()\'s argument) remains constant while mMZ1.release(1) is repeatedly called, incrementing the number being cubed each time. '), (0, _dom.h)('p', ' Here is another example. It demonstrates lambda expressions passing values to a remote location for use in a computation. If you enter three numbers consecutively below, call them a, b, and c, then the quadratic equation will be used to find solutions for a*x**2 + b*x + c = 0. The a, b, and c you select might not have a solution. If a and b are positive numbers, you are likely to see solutions if c is a negative number. For example, 12, 12, and -24 yields the solutions 1 and -2. '), (0, _dom.h)('p#quad4.red2', mMquad4.x), (0, _dom.h)('p#quad5.red2', mMquad5.x), (0, _dom.h)('p#quad6.red2', mMquad6.x), (0, _dom.h)('p', 'Run mMZ3.release(v) three times for three numbers. The numbers are a, b, and c in ax*x + b*x + c = 0: '), (0, _dom.h)('input#quad'), (0, _dom.h)('p', 'Here is the code:'), _code2.default.quad, (0, _dom.h)('p', ' fmap (above) facilitated using qS4 in a monadic sequence. qS4 returns an array, not an instance of Monad, but fmap lifts qS4 into the monadic sequence. '), (0, _dom.h)('p', ' The function solve() is recursive. It invokes itself after release() executes three times. The expression "solve()" resets solve to the top, where mMZ3.p becomes a function containing two nested occurrances of mMZ3.bnd. After mMZ3.release() executes, mMZ3.p becomes the function that is the argument to the next occurrance of mMZ3.bnd. That function contains yet another occurrance of mMZ3.bnd. MonadItter is syntactic sugar for nested callbacks. '), (0, _dom.h)('p', ' The final example before moving on to MonadArchive shows how the web worker file, worker.js, handles messages it recieves. worker$ and the worker driver are shown again for the reader\'s convenience. '), _code2.default.wDriver, _code2.default.worker$, _code2.default.worker_js,
+	      //  code.simple2,
+	      (0, _dom.h)('p', ' This has been a demonstration of MonadState and MonadState transformers. If you really want the least common multiple or the largest common factor of two positive integers, there is no need to generate prime numbers. The next and final demonstration in this section does not use a web worker. The computations block the main thread for only a few microseconds. '), (0, _dom.h)('input#factors_5c'), (0, _dom.h)('div.tao3', mMfactors8_c.x), (0, _dom.h)('span', 'The least common multiple of  ' + mMfactors8_c.x[0] + ' and ' + mMfactors8_c.x[1] + ' is '), (0, _dom.h)('span.tao3', '' + mMfactors8_c.x[2]), (0, _dom.h)('br'), (0, _dom.h)('span', 'The largest common factor of ' + mMfactors8_c.x[0] + ' and ' + mMfactors8_c.x[1] + ' is '), (0, _dom.h)('span.tao3', '' + mMfactors8_c.x[3]), (0, _dom.h)('br'), (0, _dom.h)('div', 'TEST: ' + mMfactors8_c.x[0] + ' * ' + mMfactors8_c.x[1] + ' === ' + mMfactors8_c.x[2] + ' * ' + mMfactors8_c.x[3] + ' '), (0, _dom.h)('span', 'RESULT: '), (0, _dom.h)('span.tao3', '' + (mMfactors8_c.x[0] * mMfactors8_c.x[1] === mMfactors8_c.x[2] * mMfactors8_c.x[3])), (0, _dom.h)('h2', ' MonadEr - An Error-Catching Monad '), (0, _dom.h)('p', ' Instances of MonadEr function much the same as instances of Monad, but when an instance of MonadEr encounters an error, it ceases to perform any further computations. Instead, it passes through every subsequent stage of a sequence of MonadEr expressions, reporting where it is and repeating the error message. It will continue to do this until it is re-instantiated or until its bnd() method runs on the function clean(). '), (0, _dom.h)('p', 'Functions used as arguments to the MonadEr bnd() method can be placed in quotation marks to prevent the browser engine from throwing reference errors. Arguments can be protected in the same manner. Using MonadEr can prevent the silent proliferation of NaN results in math computations, and can prevent browser crashes due to attempts to evaluate undefined variables. Sometimes crashes are desired when testing code, but MonadEr provides instant feedback pinpointing the exact location of the error. '), (0, _dom.h)('p', ' The following demonstration shows the Chrome console log entries that result from running '), (0, _dom.h)('pre', '    t.bnd(\'add3", 3, \'$t2\').bnd(cube3, \'$t3\'\n    t.bnd(\'add3",\'three\', \'$t2\').bnd(cube3, \'$t3\'    \n    t.bnd(\'add3",\'Math.sqrt(-1)\', \'$t2\').bnd(cube3, \'$t3\' \n    t.bnd(\'addd3", 3, \'$t2\').bnd(cube3, \'$t3\' '), (0, _dom.h)('br'), (0, _dom.h)('img.image', { props: { src: "error2.png" } }), (0, _dom.h)('br'), (0, _dom.h)('p.tao1b', ' The monad laws hold for MonadEr instances. The following relationships were verified in the Chrome console: '), (0, _dom.h)('pre', '    ret3(0,\'t\',[])  // t is now an instance of MonadEr with t.x = 0 and t.e = [].\n\n    t.ret(3).bnd(cube3).x === cube(3).x  \n    ret3(3).bnd(cube3).x === cube3(3).x    \n\n    t.bnd(t.ret) === t   \n    t.bnd(ret) === t  \n   \n    t.ret(0).bnd(add3, 3).bnd(cube3).x === \n    t.ret(0).bnd(v => add3(v,3).bnd(cube3)).x  '), (0, _dom.h)('br'), (0, _dom.h)('a#itterLink', { props: { href: '#monad' } }, 'Back to Monad discussion'), (0, _dom.h)('br'), (0, _dom.h)('a', { props: { href: '#top' } }, 'Back To The Top'), (0, _dom.h)('h2', 'MonadItter'), _code2.default.monadIt, (0, _dom.h)('p', ' MonadItter instances don\'t link to one another. They exist to facilitate the work of instances of Monad, MonadState, etc. Here\'s how they work: '), (0, _dom.h)('p', 'For any instance of MonadItter, say "it", "it.bnd(func)" causes it.p === func. Calling the method "it.release(...args)" causes p(...args) to run, possibly with arguments supplied by the caller. '), (0, _dom.h)('p', ' As shown later on this page, MonadItter instances control the routing of incoming websockets messages. In one of the demonstrations below, they behave much like ES2015 iterators. I prefer them over ES2015 iterators, at least for what I am demonstrating.'), (0, _dom.h)('h3', ' A Basic Itterator '), (0, _dom.h)('p', 'The following example illustrates the use of release() with an argument. It also shows a lambda expressions being provided as an argument for the method mMZ1.bnd() (thereby becoming the value of mMZ1.p), and then mMZ1.release providing an arguments for the function mMZ1.p. The code is shown beneith the following two buttons. '), (0, _dom.h)('button#testZ', 'mMZ1.release(1)'), (0, _dom.h)('p.code2', mMt3.x), (0, _dom.h)('span', 'Refresh button: '), (0, _dom.h)('button#testQ', 'mMt1.ret(0).bnd(v => mMZ2.release(v)) '), (0, _dom.h)('br'), _code2.default.testZ, (0, _dom.h)('span.tao', ' The expression mMt3.x sits permanently in the Motorcycle virtual DOM description. You can call '), (0, _dom.h)('span.green', 'mMZ2.release(v)'), (0, _dom.h)('span', ' by entering a value for v below: '), (0, _dom.h)('br'), (0, _dom.h)('span', 'Please enter an integer here: '), (0, _dom.h)('input#testW'), (0, _dom.h)('p', ' cube() is defined in the Monad section (above). If you click "mMZ1.release(1)" several times, the code (above) will run several times, each time with v === 1. The result, mMt3.x, is shown below the button. mMZ1.p (bnd()\'s argument) remains constant while mMZ1.release(1) is repeatedly called, incrementing the number being cubed each time. '), (0, _dom.h)('p', ' Here is another example. It demonstrates lambda expressions passing values to a remote location for use in a computation. If you enter three numbers consecutively below, call them a, b, and c, then the quadratic equation will be used to find solutions for a*x**2 + b*x + c = 0. The a, b, and c you select might not have a solution. If a and b are positive numbers, you are likely to see solutions if c is a negative number. For example, 12, 12, and -24 yields the solutions 1 and -2. '), (0, _dom.h)('p#quad4.red2', mMquad4.x), (0, _dom.h)('p#quad5.red2', mMquad5.x), (0, _dom.h)('p#quad6.red2', mMquad6.x), (0, _dom.h)('p', 'Run mMZ3.release(v) three times for three numbers. The numbers are a, b, and c in ax*x + b*x + c = 0: '), (0, _dom.h)('input#quad'), (0, _dom.h)('p', 'Here is the code:'), _code2.default.quad, (0, _dom.h)('p', ' fmap (above) facilitated using qS4 in a monadic sequence. qS4 returns an array, not an instance of Monad, but fmap lifts qS4 into the monadic sequence. '), (0, _dom.h)('p', ' The function solve() is recursive. It invokes itself after release() executes three times. The expression "solve()" resets solve to the top, where mMZ3.p becomes a function containing two nested occurrances of mMZ3.bnd. After mMZ3.release() executes, mMZ3.p becomes the function that is the argument to the next occurrance of mMZ3.bnd. That function contains yet another occurrance of mMZ3.bnd. MonadItter is syntactic sugar for nested callbacks. '), (0, _dom.h)('p', ' The final example before moving on to MonadArchive shows how the web worker file, worker.js, handles messages it recieves. worker$ and the worker driver are shown again for the reader\'s convenience. '), _code2.default.wDriver, _code2.default.worker$, _code2.default.worker_js,
 
 	      // ************************************************************************** START MonadState
 

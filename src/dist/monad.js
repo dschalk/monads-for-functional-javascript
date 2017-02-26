@@ -8,10 +8,13 @@ var gameDiv = 'none';
 var chatDiv = 'none';
 var captionDiv = 'none';
 var CHANGE = 'cow';
-
+var chatNode;
 var xs = xstream.default;
+const messages = [];
+var crapTunnel = [];
+var buttonNode;
 
-var Monad = function Monad(z = 'default', ID = 'generic') {
+function Monad(z = 'default', ID = 'generic') {
   var _this = this;
   this.x = z;
   this.id = ID;
@@ -98,15 +101,6 @@ function setStyle (ar) {
   return ret(style);
 };
  
-function test2 (ar1, ar2) {
-  var a = ar1.slice();
-  var b = ar2.slice();
-  for (let i of [0,1,2,3]) {
-    a[i] = (b[i] == undefined) ? 'none' : 'inline'
-  }
-  return a;;
-}
-
 function test3 (a) {
   var b = [];
   for (let i of [0,1,2,3]) {
@@ -161,22 +155,13 @@ function fmap(x, g, id) {
 
 var isFunc = function isFunc (x) { return eval("typeof(" + x + ") == 'function'")};
 
- function newR (ar) {
-    mMnums.ret(ar[0]);
-    pMclicked.ret([]);
-    pMop.ret(0);   
-    rollMonad.run(ar[0],ar[1],ar[2]);
-    return ret(ar);
-  };
-
-var s = new Set();
-
-  var MonadSet = function MonadSet(set, str) {
+var MonadSet = function MonadSet(set, str) {
   this.id = str;
   this.s = new Set();  
 };
 
-var sMplayers = new MonadSet(s, 'sMplayers'); // holds currently online players
+var qrs = new Set();
+var sMplayers = new MonadSet(qrs, 'sMplayers'); // holds currently online players
 
 var pMclicked = new Monad ([], 'pMclicked');
 
@@ -195,54 +180,39 @@ function MonadArchive(g, state, p) {
   }
 };
 
-var travMonad = new MonadArchive("travMonad", [ [ [ 0,0,0,0 ], 0, 0, [], 0 ] ] , trav_archive)
+var primesMonad = new MonadState('primesMonad', [3, [2,3], 3, [2,3]]);
 
-function trav_archive (ar) {
-  var ind = pMindex.x + 1;
-  pMindex.ret(ind);
-  pMnums.ret(ar[0]);
-  pMscore.ret(ar[1]);
-  pMgoals.ret(ar[2]);
-  ar[3] = (typeof ar[3] == "undefined") ? pMclicked.x : ar[3]
-  ar[4] = (typeof ar[4] == "undefined") ? pMop.x : ar[4]
-  pMclicked.ret(ar[3]);
-  pMop.ret(ar[4]); 
-  var next = travMonad.s.slice();
-  next.splice( ind, 0, ar );
-  return next;
-}
-
-  function MonadState(g, state, p) {
-    this.id = g;
-    this.s = state;
-    this.process = p;
-    this.bnd = (func, ...args) => func(this.s, ...args);  
-    this.run = ar => { 
-      var ar2 = this.process(ar);
-      this.s = ar2;
-      window[this.id] = this;
-      return window[this.id];
-    }
+function MonadState(g, state) {
+  this.id = g;
+  this.s = state;
+  this.bnd = (func, ...args) => func(this.s, ...args);  
+  this.ret = function (a) {
+    return window[this.id] = new MonadState(this.id, a);
   };
-  
-var primesMonad = new MonadState('primesMonad', [3, [2,3], 3, [2,3]], primes_state);
+};
 
-// var travMonad = new MonadState("travMonad", [[8,8,8,8], 0, 0, [ [ [], 0, 0 ] ] ], trav_state)
+function MonadState2(g, state) {
+  this.id = g;
+  this.s = state;
+  this.bnd = (func, ...args) => func(this.s, ...args);  
+  this.ret = function (a) {
+    return window[this.id] = new MonadState(this.id, a);
+  };
+  this.run = function (st) {
+    mMindex.bnd(add,1);
+    st[5] = this.s[5].slice();
+    st[5].splice(mMindex.x, 0, [st[0], st[1], st[2], st[3], st[4]]);
+    return window[this.id] = new MonadState2(this.id, st);
+  }
+};
 
-function trav_state (ar) {
-  pMindex.bnd(add,1).bnd(pMindex.ret);
-  pMnums.ret(ar[0]);
-  pMscore.ret(ar[1]);
-  pMgoals.ret(ar[2]);
-  var next = travMonad.s.slice();
-  var ar = [ ar[0], ar[1], ar[2] ];
-  next[0] = ar[0];
-  next[1] = ar[1];
-  next[2] = ar[2];
-  next[3].splice( pMindex.x, 0, ar );
-  return next;
+function fetch (n) {
+    return gameMonad.s[5][n][4];
 }
 
+var mMg = new Monad([], 'mMg');
+
+var gameMonad = new MonadState2('gameMonad', [ 0,0,0,[],[0,0,0,0],[[0,0,0,[],[0,0,0,0]]]]);
 
 function tP (x) {
   if (eval('typeof ' + x) === 'undefined') return "code4"
@@ -328,8 +298,8 @@ function push2(x, v, id) {
 function unshift(x, y, id) {
   var ar = x.slice();
   ar.unshift(y);  
-    window[id] = new MonadEr(ar, id, []);
-    return window[id];
+  window[id] = new Monad(ar, id);
+  return window[id];
 }  
   
 function splice2(x, start, how_many, id) {
@@ -381,8 +351,6 @@ var fibs_state = function fibs_state(ar) {
 
 var fibsMonad = new MonadState('fibsMonad', [0, 1, 2, [0]], fibs_state);
  
-fibsMonad.run([1, 2 ,7, [0,1]]);
-
 factor_state([[], [], 24, [2, 3, 5]]);
 
 factor_state2([[], [], 24, [2, 3, 5]]);
@@ -413,19 +381,6 @@ function factor_state2(a) {
   }
   return result;
 }
-
-
-var prFactTransformer = function prFactTransformer(s, n) {
-  return factorsMonad.run([[], [], n, s[3]]);
-};
-
-var prFactTransformer2 = function prFactTransformer2(s, n) {
-  return factorsMonad.run([[], [], n, s[3]]);
-};
-
-function prFactTransformer3(s, n) {
-  return factors_state3([[], [], n, s[3]]);
-};
 
 function factors_state3(a) {
   var b = a.slice();
@@ -471,6 +426,16 @@ function message_state(v) {
   return [ v[0], [], [], ar ];
 };
 
+function execMessage(el, state) {
+  var ar = el.concat(state);
+  messageMonad = new MonadState('messageMonad', ar);
+};
+
+function message_state(v) {
+  var ar = v[0].concat(v);
+  return [ ar];
+};
+
 var messageMonad = new MonadState('messageMonad', [], message_state); 
 
 var mMsetArchive = new Monad([], 'mMsetArchive');
@@ -479,16 +444,6 @@ mMsetArchive.ret([]);
 function clean(x, mon) {
   if (mon === void 0) { mon = mMtemp; }
   mon.ret([]);
-};
-
-var runFib = function runFib(x) {
-  if (fibsMonad.a.length >= x) {
-      var ar = fibsMonad.a.slice();
-      ar.length = x;
-      return ar;
-  }
-  fibsMonad.run([fibsMonad.s[0], fibsMonad.s[1], x, fibsMonad.a]);
-  return fibsMonad.a;
 };
 
 function pFib(fibs, primes) {
@@ -724,6 +679,7 @@ function primes(n, ar) {
   var mMfactors6_b = new Monad([[0], [1], [2]], 'mMfactors6_b');
   var mMfactors7_b = new Monad('', 'mMfactors7_b');
   var mMfactors8_b = new Monad('', 'mMfactors8_b');
+  var mMfactors8_c = new Monad('', 'mMfactors8_c');
   var mMchange = new Monad(0, 'mMchange')
   var mMchange2 = new Monad(0, 'mMchange2')
   var mMchange3 = new Monad(0, 'mMchange3')
@@ -1165,12 +1121,6 @@ console.log('.');
 console.log('.');
 console.log('.');
 console.log('.');
-travMonad.run([[0,0,0,0],0,0])
-console.log(travMonad.s)
-travMonad.run([[7,7,7,7],0,0])
-console.log(travMonad.s)
-travMonad.run([[0,0,0,0],0,0])
-console.log(travMonad.s)
 console.log('.');
 
 function ret3(v, id = 'generic') {
@@ -1444,8 +1394,6 @@ stream$.addListener(listener)
 
 em.emit('cow','Whatever you say, sir.');
 
-messageMonad.run([ [], [], [], [] ] );
-
 console.log('Almost at the bottom of monad.js primesMonad is', primesMonad );
 
 var decompMonad = new MonadState('decompMonad', [3, [[0],[1],[2]], 3, [[0],[1],[2]]]);
@@ -1669,4 +1617,40 @@ function elapsed (t) {
   var x = Date.now();
   return (x - t);
 }
+
+function simpleWay (a,b) {
+  console.log('In simpleWay a, b', a, b );
+  var r = a*b;
+  var a2 = a;
+  var b2 = b;
+  while (b % a !== 0) {
+    console.log('In the simpleWay while block. a, b', a, b );
+    let z = a;
+    a = b % a;
+    b = z;
+  }  
+  console.log(a2, b2, a, a2*b2/a);
+  return [a2, b2, a2*b2/a, a];
+}
+
+function styl (s) {
+  switch(s) {
+    case (0): return ['none', 'none', 'none', 'none'];
+    break;
+    case (1): return ['inline', 'none', 'none', 'none'];
+    break;
+    case (2): return ['inline', 'inline', 'none', 'none'];
+    break;
+    case (3): return ['inline', 'inline', 'inline', 'none'];
+    break;
+    case (4): return ['inline', 'inline', 'inline', 'inline'];
+    break;
+    default: return;  //console.log('Bad argument in styl. s is', s );
+  }
+}
+
+
+
+
+
 

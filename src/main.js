@@ -1,18 +1,8 @@
 "use strict";
 import {run} from '@cycle/xstream-run'
-// import {merge, fromEvent} from 'most';
-// import {create} from '@most/create';
 import {h, p, span, h1, h2, h3, pre, br, div, label, input, hr, makeDOMDriver} from '@cycle/dom';
 import code from './code.js';
 // import {EventEmitter} from 'events'
-
-var updateMessages = function updateMessages(e) {
-  var ar = e.split(',');
-  var sender = ar[2];
-  ar.splice(0,3);
-  var str = ar.join(',');
-  messageMonad.run([ [h('br'), sender + ': ' + str], [], [], messageMonad.s[3] ]);
-};
 
 function createWebSocket(path) {
     var host = window.location.hostname;
@@ -95,7 +85,6 @@ socket.onclose = function (event) {
     console.log('<><><> New message <><><> ', event);
 };
 
-console.log('socket.onmessage',socket.onmessage);
 
 const emDriver = function () {@jk
     return em.on = msg => msg.subscribe(msg => console.log('message:', msg))
@@ -144,7 +133,6 @@ function updateTasks (obArray) {
     }
 }; 
 
-// window.postMessage("Can you hear me?","http://localhost:3055") 
 
 function main(sources) {
   
@@ -178,7 +166,7 @@ function main(sources) {
       }
       else {
         console.log('In main thread. Re-instanciating primesMonad with ', v.data[1]);
-        window['primesMonad'] = new MonadState('primesMonad', v.data[1], primes_state) 
+        window['primesMonad'] = new MonadState('primesMonad', v.data[1]) 
       }
     });
     next(v.data[0], 'CA#$41', mMZ21)
@@ -192,12 +180,24 @@ function main(sources) {
     mMtem.ret(e.data.split(',')).bnd( v => {
   console.log('Websockets data.split message v: ', v ),    
   mMZ10.bnd( () => {
-    pMnums.ret([v[3], v[4], v[5], v[6]]).bnd(test3,"MpMstyle");
-    travMonad.run([ [v[3], v[4], v[5], v[6]], v[7], v[8], [], 0 ]);
-    pMscore.ret(v[7]);
-    pMgoals.ret(v[8]) }); 
-  mMZ12.bnd( () => mM6.ret(v[2] + ' successfully logged in.'));
-  mMZ13.bnd( () => updateMessages(e.data));
+    buttonNode = bNode([v[3],v[4],v[5],v[6]]);
+    var st = gameMonad.s[5][mMindex.x].slice();
+    st[0] = v[7];
+    st[1] = v[8];
+    st[2] = 0;
+    st[3] =[];
+    st[4] = [v[3],v[4],v[5],v[6]];
+//    var s = st.slice();
+//    s[4] = st[4].slice();
+    gameMonad.run(st);
+    console.log(buttonNode);
+  }); 
+    mMZ12.bnd( () => mM6.ret(v[2] + ' successfully logged in.'));
+    mMZ13.bnd( () => {
+      var message = v.slice(3,v.length).join(', ');
+      var str = v[2] + ': ' + message;
+      messages.unshift(h('span', str ),h('br'));  
+   });
   mMZ14.bnd( () => mMgoals2.ret('The winner is ' + v[2]));
   mMZ15.bnd( () => {
     mMgoals2.ret('A player named ' + v[2] + ' is currently logged in. Page will refresh in 4 seconds.')
@@ -232,6 +232,7 @@ function main(sources) {
   var loginPressAction$ = loginPress$.map(e => {
     var v = e.target.value;
     if (e.keyCode === 13) {
+      var v = "Betty Sue"
       pMname.ret(v);
       socket.send('CC#$42' + v );
       pMclicked.ret([]);
@@ -251,9 +252,9 @@ function main(sources) {
       mMcaption.ret('inline');
       mMgame.ret('inline')
       mMtodo.ret('inline')
-      // document.getElementById('group').focus(); 
+      document.getElementById('group').focus(); 
       newRoll(0,0);
-    }
+    };
   });
 
   var groupPress$ = sources.DOM
@@ -261,7 +262,6 @@ function main(sources) {
 
   var groupPressAction$ = groupPress$.map(e => {
       if (e.keyCode === 13) {
-        travMonad.run([ [], 0, 0 ]);
         socket.send(`CO#$42,${pMgroup.x},${pMname.x},${e.target.value}`);
         pMgroup.ret(e.target.value)
         .bnd(gr =>
@@ -278,6 +278,16 @@ function main(sources) {
           e.target.value = '';
       }
   });
+
+/*  var updateMessages = function updateMessages(e) {
+    var ar = e.split(',');
+    var sender = ar[2];
+    var message = ar.slice(3,-1);
+    var start = messageMonad.x.slice();
+    var str = message.join(',');
+    
+    messageMonad.bnd(unshift, [h('br'), sender + ': ' + str], 'messageMonad');
+  }; */
 
   var updatePlayers = function updatePlayers (data) { 
         sMplayers.s.clear();
@@ -299,82 +309,132 @@ function main(sources) {
     .select('.roll').events('click');
 
   var rollClickAction$ = rollClick$.map(() => {
-    var a = pMscore.x - 1;
-    var b = pMgoals.x;
-    newRoll(a,b);
+    newRoll(gameMonad.s[0]-1, gameMonad.s[1]);
   }); 
+
+  function bNode (arr) {
+    var x = styl(arr.length);
+    var node = h('div', [
+      h('button#0.num', { style: { display: x[0] }}, arr[0] ),
+      h('button#1.num', { style: { display: x[1] }}, arr[1] ),
+      h('button#2.num', { style: { display: x[2] }}, arr[2] ),
+      h('button#3.num', { style: { display: x[3] }}, arr[3] )
+    ]);
+    return node;
+  }
 
   var numClick$ = sources.DOM
       .select('.num').events('click'); 
 
+  function cl8(name, value) {
+    var a = value.slice();
+    window[name] = a;
+    return window[name];
+  }
 
-  var numClickAction$ = numClick$.map(e => {
-    if (pMclicked.x.length === 2) {return};
-    pMnums.bnd(spliceM, e.target.id, 1)
-    .bnd(v => {
-      test3(v, '$pMstyle')
-      socket.send(`CG#$42,${pMgroup.x},${pMname.x},${pMscore.x},${pMgoals.x}`);
-      pMclicked
-      .bnd(push, e.target.innerHTML)
-      .bnd(pMclicked.ret)
-      .bnd(w => {
-        travMonad.run([v, pMscore.x, pMgoals.x, w, pMop.x])
-        if (w.length === 2 && pMop.x != 0) {
-          updateCalc(w, pMop.x) 
-        }
-      })
-    })
+  var numClickAction$ = numClick$.map(e => {                                  
+    if (gameMonad.s[3].length > 2) {
+      console.log( 'In numClickAction$. gameMonad.s[4] is too big', gameMonad.s[3]);
+      return;
+    }
+    console.log('In numClickAction$ - - - gameMonad.s[3] is', gameMonad.s[3]);
+    var x = gameMonad.s[5][mMindex.x].slice(0,5);
+    x[4] = gameMonad.s[5][mMindex.x][4].slice();
+    x[3] = gameMonad.s[5][mMindex.x][3].slice();
+    x[3].push(x[4].splice(e.target.id,1)[0]); // Push the item spliced from x[4] into x[3].
+    var s3 = x[3].slice();
+    buttonNode = bNode(x[4]);
+    gameMonad.run(x);
+    if (s3.length === 2 && x[2] != 0) {
+      updateCalc(x[3], x[2]) 
+    }
   }).startWith([0, 0, 0, 0]);
 
   var opClick$ = sources.DOM
       .select('.op').events('click');
 
   var opClickAction$ = opClick$.map(e => {
-    pMop.ret(e.target.innerHTML).bnd(v => { 
-      var ar = pMclicked.x
-      if (ar.length === 2) {
-        updateCalc(ar, v)
-      }
-    }) 
+    if (gameMonad.s[3].length === 2) {
+      var s3 = gameMonad.s[3].slice();
+      updateCalc(s3, e.target.textContent); 
+    }
+    else {
+      var state = gameMonad.s.slice();
+      state[5][mMindex.x][2] = e.target.innerHTML;
+      gameMonad = new MonadState2('gameMonad', state);
+    }
   });
 
   function updateCalc(ar, op) {
-    mMgoals2.ret('');
-    var result = calc(ar[0], op, ar[1]);
-
-    if (result === 20 || result === '20') { 
-      pMscore.bnd(add,1)
-      .bnd(testscore)
-      .bnd(pMscore.ret)
-      .bnd(v => score(v));
-      return; 
-    } 
-    else if (result === 18 || result === '18') { 
-      pMscore.bnd(add,3)
-      .bnd(testscore)
-      .bnd(pMscore.ret)
-      .bnd(v => score(v));
-      return; 
+    console.log('Entering updateCalc. ar and op are', ar, op);
+    var result = parseInt(calc(ar[0], op, ar[1]), 10);
+    if (result === 18 || result === 20) { 
+      score(result);
     }
     else {
-      pMnums.bnd(push,result)
-      .bnd(v => {
-        travMonad.run([v, pMscore.x, pMgoals.x, [], 0])
-        test3(v, '$pMstyle')
-      }); 
+      var state = gameMonad.s[5][mMindex.x].slice();
+      state[4] = gameMonad.s[5][mMindex.x][4].slice();
+      state[2] = 0;
+      state[3] = [];
+      state[4].push(result);
+      buttonNode = bNode(state[4]);
+      console.log('In updateCalc. state is', state );
+      gameMonad.run(state);
     }
-  };  
+  };   
 
-  function score(scor) {
-    if (scor != 25) {
-      newRoll(scor, pMgoals.x)
-    }
-    else if (pMgoals.x === "2") {
+  function score(result) {
+    var state = gameMonad.s[5][mMindex.x].slice(0,6);
+    var old = parseInt(state[0], 10);
+    var res = result === 18 ? old + 3 : old + 1;
+    var scor = res % 5 === 0 ? res + 5 : res;
+    if (scor === 25 && state[2] === "2") {
       socket.send(`CE#$42,${pMgroup.x},${pMname.x}`);
-      newRoll(0,0)
+      state = [ 0,0,0,[],[0,0,0,0],[[0,0,0,0]] ];
+      gameMonad.s = state;
+      buttonNode = bNode(state[4]);
+      return;
     }
-    else {pMgoals.bnd(add, 1).bnd(pMgoals.ret).bnd(g => newRoll(0, g))};
+    if (scor === 25) {
+      state[1] = parseInt(state[1], 10) + 1;
+      scor = 0;
+    }
+    state[4].push(scor);
+    state[2] = 0;
+    state[3] = [];
+    buttonNode = bNode(state[4]);
+    gameMonad.run(state);
+    newRoll(scor, state[1]);
   };
+
+  var forwardClick$ = sources.DOM
+      .select('#ahead').events('click')
+  
+  var backClick$ = sources.DOM
+      .select('#back').events('click');
+
+var backAction$ = backClick$.map(() => {
+  if (mMindex.x > 0) {  
+    mMindex.ret(mMindex.x - 1)
+    buttonNode = bNode(fetch(mMindex.x));
+    sMplayers.s.clear();
+    var score = gameMonad.s[5][mMindex.x][0]
+    var goals = gameMonad.s[5][mMindex.x][1];
+    socket.send(`CG#$42,${pMgroup.x},${pMname.x},${score},${goals}`)
+  } 
+});
+
+var forwardAction$ = forwardClick$.map(() => {
+    console.log('In forwardAction$ _mMindex.x, gameMonad.s[5].length - 1', 
+      mMindex.x, gameMonad.s[5].length - 1); 
+  if (mMindex.x < gameMonad.s[5].length - 1) {
+    mMindex.ret(mMindex.x + 1);
+    buttonNode = bNode(fetch(mMindex.x));
+    var score = gameMonad.s[5][mMindex.x][0]
+    var goals = gameMonad.s[5][mMindex.x][1];
+    socket.send(`CG#$42,${pMgroup.x},${pMname.x},${score},${goals}`)
+  }
+});  
 
   var fib2 = function fib2(v) {
       if (v[2] > 1) {
@@ -544,6 +604,26 @@ function main(sources) {
     mMfactors8_b.ret(m.data[1]);
   });
   
+    var factorsP_c$ = sources.DOM
+      .select('input#factors_5c').events('keyup');
+
+    var fA_c$ = factorsP_c$.map(function (e) {
+      mMfactors8_c.ret('');
+      var factors = [];
+      var ar = (e.target.value).split(',').map(v => parseInt(v,10));
+      if (e.keyCode === 13) {
+        console.log('In fA_c$ ar is', ar );
+        if (ar[0] !== ar[0] || ar[1] !== ar[1] || typeof ar[0] !== 'number' || typeof ar[1] !== 'number') {
+          mMfactors7.ret('It works only if you enter two integers separated by a comma.');
+          return;
+        }
+      else {
+        console.log('In fA_c$ else block. ar is', ar );
+        mMfactors8_c.ret(simpleWay(ar[0], ar[1]));
+        }
+      }
+    });
+
   // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> ENDOM prime factors END
   // ?<>>><>><><><><>>>><><><  traversal  ><><><><><><>>><><><><><><><><><><><>< START traversal  
   document.onload = function (event) {
@@ -903,48 +983,10 @@ function main(sources) {
         .select('#clear').events('click');
 
     var clearAction$ = clearPicked$.map( () => {
-    });
-
-    var forwardClick$ = sources.DOM
-        .select('#forward').events('click');
-
-    var backClick$ = sources.DOM
-        .select('#back').events('click');
-
-  
-    var backAction$ = backClick$.map(() => {
-      if (pMindex.x > 1) {   
-        pMop.ret(0);
-        var ind = pMindex.x - 1;
-        var s = travMonad.s[ind];
-        pMnums.ret(s[0]).bnd(test3, '$pMstyle');
-        pMscore.ret(s[1]);
-        pMgoals.ret(s[2]);
-        pMclicked.ret(s[3]);
-        pMop.ret(s[4]);
-        socket.send(`CG#$42,${pMgroup.x},${pMname.x},${pMscore.x},${pMgoals.x}`);
-      pMindex.bnd(add,-1);
-      } 
-    });
-
-    var forwardAction$ = forwardClick$.map(() => {
-      if (pMindex.x < travMonad.s.length - 1) {   
-        pMop.ret(0);
-        var ind = pMindex.x + 1;
-        var s = travMonad.s[ind];
-        pMnums.ret(s[0]).bnd(test3, '$pMstyle');
-        pMscore.ret(s[1]);
-        pMgoals.ret(s[2]);
-        pMclicked.ret(s[3]);
-        pMop.ret(s[4]);
-        socket.send(`CG#$42,${pMgroup.x},${pMname.x},${pMscore.x},${pMgoals.x}`);
-      pMindex.bnd(add, +1);
-      } 
-    });
-
 var elemA$ = sources.DOM.select('input#message1').events('keyup')
   .map(e => {
   mM9.ret(e.target.value);  
+    });
   worker.postMessage([e.target.value, mM10.x]);
 });
 
@@ -968,10 +1010,16 @@ var prAction$ = pr$.map(function (e) {
     }
 });
 
-  var strokeColor_1 = "blue";
-  var fillColor_1 = "orange";
+var updateMessages = function updateMessages(t) {
+/*  var ar = e.split(',');
+ var sender = ar[2];
+  ar.splice(0,3);
+ var str = ar.join(',');
+ var base = messageMonad.s.slice();
+  execMessage( h('br'), sender + ': ' + str, base );  */
+};
 
-  var calcStream$ = xs.merge( prAction$, factorsAction_b$, fA$, factorsP$, fA_b$, factorsP_b$, clearprimes$, worker$, workerB$, workerC$, workerD$, workerE$, workerF$, clearAction$, backAction$, forwardAction$, factorsAction$, primeFib$, fibPressAction$, quadAction$, edit1Action$, edit2Action$, testWAction$, testZAction$, testQAction$, colorAction$, deleteAction$, newTaskAction$, chatClickAction$, gameClickAction$, todoClickAction$, captionClickAction$, groupPressAction$, rollClickAction$, messagePressAction$, loginPressAction$, messages$, numClickAction$, opClickAction$);
+  var calcStream$ = xs.merge( forwardAction$, backAction$, prAction$, factorsAction_b$, fA$, factorsP$, fA_b$, factorsP_b$, clearprimes$, worker$, workerB$, workerC$, workerD$, workerE$, workerF$, clearAction$, factorsAction$, primeFib$, fibPressAction$, quadAction$, edit1Action$, edit2Action$, testWAction$, testZAction$, testQAction$, colorAction$, deleteAction$, newTaskAction$, chatClickAction$, gameClickAction$, todoClickAction$, captionClickAction$, groupPressAction$, rollClickAction$, messagePressAction$, loginPressAction$, messages$, numClickAction$, opClickAction$);
    
   return {
   DOM: calcStream$.map(function () {
@@ -989,6 +1037,24 @@ var prAction$ = pr$.map(function (e) {
           h('span.tao', ' '),
           h('button#caption', { style: { fontSize: '16px', display: 'inline' } }, 'TOGGLE CAPTION')]),
       h('br'),
+      h('br'),
+      h('br'),
+      h('br'),
+      h('br'),
+      h('br'),
+      h('br'),
+      h('br'),
+      h('br'),
+      h('br'),
+      h('br'), 
+      h('br'), 
+      h('br'), 
+      h('br'), 
+      h('br'), 
+      h('br'), 
+      h('br'), 
+      h('br'), 
+      h('br'), 
       h('br'), 
       h('div#gameDiv', { style: { display: `mMgameDiv.x` } }, [
       h('div.game', 'Name: ' + pMname.x ),
@@ -1011,25 +1077,23 @@ var prAction$ = pr$.map(function (e) {
         h('div#messages', [
           h('span', 'Message: '),
           h('input.inputMessage'),
-          h('div', messageMonad.s[3] ),  ])  ]),
-      h('br'),
+          h('div', messages  ),
+          ])  ]), 
+          h('br'),
       h('br'), 
-      h('br'), 
-      h('div', `pMclicked.x: ${pMclicked.x.join(', ')}`    ), 
-      h('div', 'pMop.x: ' + pMop.x ), 
-      h('div', 'pMindex.x: ' + pMindex.x ), 
-      h('div', 'travMonad.s.length: ' + travMonad.s.length  ),
-      h('div', 'travMonad.s[pMindex.x][0]: ' + travMonad.s[pMindex.x][0] ),
-      h('div', 'travMonad.s[pMindex.x][1]: ' + travMonad.s[pMindex.x][1] ),
-      h('div', 'travMonad.s[pMindex.x][2]: ' + travMonad.s[pMindex.x][2] ),
-      h('div', 'travMonad.s[pMindex.x][3]: ' + travMonad.s[pMindex.x][3] ),
-      h('div', 'travMonad.s[pMindex.x][4]: ' + travMonad.s[pMindex.x][4] ),
+    h('br'),
+    // `Selected: ${gameMonad.s[3].join(', ')}`,
+    h('br'),
+    "mMindex.x: " + mMindex.x,
+    h('br'),
+    h('br'),
   ]),
   h('div#leftPanel', [  
+    
       h('br'),
       h('div#captionDiv', { style: { display: mMcaptionDiv.x } },  [
           h('h1', 'JS-monads running on Cycle.js') ]),
-          h('span#italic', ' These monads are like the Haskell monads in that they resemble the monads of category theory without actually being mathematical monads. See ' ),
+      h('span#italic', ' These monads are like the Haskell monads in that they resemble the monads of category theory without actually being mathematical monads. See ' ),
       h('a', { props: { href: "http://math.andrej.com/2016/08/06/hask-is-not-a-category/", target: "_blank" } }, 'Hask is not a category.'),
           h('span', ' by Andrej Bauer and the ' ),
           h('a', { props: { href: '#discussion' } }, 'Discussion'),
@@ -1053,22 +1117,19 @@ var prAction$ = pr$.map(function (e) {
           h('span', ' Here are the basic rules:'),
           h('p', 'RULES: If clicking two numbers and an operator (in any order) results in 20 or 18, the score increases by 1 or 3, respectively. If the score becomes 0 or is evenly divisible by 5, 5 points are added. A score of 25 results in one goal. That can only be achieved by arriving at a score of 20, which jumps the score to 25. Directly computing 25 results in a score of 30, and no goal. Each time RL is clicked, one point is deducted. Three goals wins the game. '),
           h('p.red4', mMgoals2.x ),
-          h('button#0.num',  { style: { display: pMstyle.x[0] }}, pMnums.x[0] ),
-          h('button#1.num',  { style: { display: pMstyle.x[1] }}, pMnums.x[1] ),
-          h('button#2.num',  { style: { display: pMstyle.x[2] }}, pMnums.x[2] ),
-          h('button#3.num',  { style: { display: pMstyle.x[3] }}, pMnums.x[3] ),
+          buttonNode,
           h('br'),
           h('button#4.op', 'add'),
           h('button#5.op', 'subtract'),
-          h('button#5.op', 'mult'),
-          h('button#5.op', 'div'),
-          h('button#5.op', 'concat'),
+          h('button#6.op', 'mult'),
+          h('button#7.op', 'div'),
+          h('button#8.op', 'concat'),
           h('br'),
           h('div#dice', { style: { display: mMdice.x } }, [
             h('button.roll', 'ROLL'),
             h('br'),
             h('button#back', 'BACK'),
-            h('button#forward', 'FORWARD'),
+            h('button#ahead', 'FORWARD'),
             h('div.tao', `Selected numbers: ${pMclicked.x.join(', ')} ` ),  
             h('div.tao', `Operator: ${pMop.x} ` ),  
             h('button#clear', 'Clear selected numbers (Possibly useful after clicking the BACK button) ' ),
@@ -1180,7 +1241,23 @@ h('br'),
 h('div', `TEST: ${mMfactors8_b.x[0]} * ${mMfactors8_b.x[1]} === ${mMfactors8_b.x[2]} * ${mMfactors8_b.x[3]} `  ),
 h('span', 'RESULT: ' ),
 h('span.tao3', `${ (mMfactors8_b.x[0]  *  mMfactors8_b.x[1])  ===  (mMfactors8_b.x[2]  *  mMfactors8_b.x[3]) }` ),  
- // ************************************************** OOOOOOOOOOOOOO ********    END ASYNC 
+  code.simple,
+
+    //  code.simple2,
+  h('p', ' This has been a demonstration of MonadState and MonadState transformers. If you really want the least common multiple or the largest common factor of two positive integers, there is no need to generate prime numbers. The next and final demonstration in this section does not use a web worker. The computations block the main thread for only a few microseconds. ' ),  
+  h('input#factors_5c'),
+  h('div.tao3', mMfactors8_c.x ),    
+  h('span', `The least common multiple of  ${mMfactors8_c.x[0]} and ${mMfactors8_c.x[1]} is ` ),
+  h('span.tao3', `${mMfactors8_c.x[2]}` ),    
+  h('br'),    
+  h('span', `The largest common factor of ${mMfactors8_c.x[0]} and ${mMfactors8_c.x[1]} is ` ),
+  h('span.tao3', `${mMfactors8_c.x[3]}` ),
+  h('br'),    
+  h('div', `TEST: ${mMfactors8_c.x[0]} * ${mMfactors8_c.x[1]} === ${mMfactors8_c.x[2]} * ${mMfactors8_c.x[3]} `  ),
+  h('span', 'RESULT: ' ),
+  h('span.tao3', `${ (mMfactors8_c.x[0]  *  mMfactors8_c.x[1])  ===  (mMfactors8_c.x[2]  *  mMfactors8_c.x[3]) }` ),
+
+
 
 
   h('h2', ' MonadEr - An Error-Catching Monad ' ),
