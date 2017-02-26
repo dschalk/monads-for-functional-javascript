@@ -232,18 +232,15 @@ function main(sources) {
   var loginPressAction$ = loginPress$.map(e => {
     var v = e.target.value;
     if (e.keyCode === 13) {
-      var v = "Betty Sue"
       pMname.ret(v);
       socket.send('CC#$42' + v );
       pMclicked.ret([]);
-
       mMdice.ret('block');
       mMrightPanel.ret('block');
       mMgameDiv2.ret('block')
       mMlogin.ret('none');
       mMlog1.ret('none');
       mMlog2.ret('block');
-
       mMcaptionDiv.ret('block')
       mMchatDiv.ret('block')
       mMtodoDiv.ret('block')
@@ -253,7 +250,6 @@ function main(sources) {
       mMgame.ret('inline')
       mMtodo.ret('inline')
       document.getElementById('group').focus(); 
-      newRoll(0,0);
     };
   });
 
@@ -388,11 +384,13 @@ function main(sources) {
     var old = parseInt(state[0], 10);
     var res = result === 18 ? old + 3 : old + 1;
     var scor = res % 5 === 0 ? res + 5 : res;
-    if (scor === 25 && state[2] === "2") {
+    
+    if (scor === 25 && state[1] === "2") {
       socket.send(`CE#$42,${pMgroup.x},${pMname.x}`);
       state = [ 0,0,0,[],[0,0,0,0],[[0,0,0,0]] ];
       gameMonad.s = state;
       buttonNode = bNode(state[4]);
+      socket.send(`CG#$42,${pMgroup.x},${pMname.x},0,0`)
       return;
     }
     if (scor === 25) {
