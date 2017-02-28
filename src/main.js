@@ -328,21 +328,23 @@ function main(sources) {
     return window[name];
   }
 
-  var numClickAction$ = numClick$.map(e => {                                  
-    if (gameMonad.s[3].length > 2) {
-      console.log( 'In numClickAction$. gameMonad.s[4] is too big', gameMonad.s[3]);
-      return;
+  var numClickAction$ = numClick$.map(e => {
+    console.log('In numClickAction$ - - - <><><><><><><><><><><> gameMonad.s[5][mMindex.x][3]',gameMonad.s[5][mMindex.x][3]);
+    if (gameMonad.s[5][mMindex.x][3].length > 1) {
+      console.log( 'In numClickAction$. gameMonad.s[5][mMindex.x][3] is full.', gameMonad.s[5][mMindex.x][3]);
     }
-    console.log('In numClickAction$ - - - gameMonad.s[3] is', gameMonad.s[3]);
-    var x = gameMonad.s[5][mMindex.x].slice(0,5);
-    x[4] = gameMonad.s[5][mMindex.x][4].slice();
-    x[3] = gameMonad.s[5][mMindex.x][3].slice();
-    x[3].push(x[4].splice(e.target.id,1)[0]); // Push the item spliced from x[4] into x[3].
-    var s3 = x[3].slice();
-    buttonNode = bNode(x[4]);
-    gameMonad.run(x);
-    if (s3.length === 2 && x[2] != 0) {
-      updateCalc(x[3], x[2]) 
+    else {
+      var x = gameMonad.s[5][mMindex.x].slice(0,5);
+      x[4] = gameMonad.s[5][mMindex.x][4].slice();
+      x[3] = gameMonad.s[5][mMindex.x][3].slice();
+      x[3].push(x[4].splice(e.target.id,1)[0]); // Push the item spliced from x[4] into x[3].
+      var s3 = x[3].slice();
+      buttonNode = bNode(x[4]);
+      console.log('In numClickAction$ ???????? s3 is', s3 );
+      gameMonad.run(x);
+      if (s3.length === 2 && x[2] != 0) {
+        updateCalc(x[3], x[2]) 
+      }
     }
   }).startWith([0, 0, 0, 0]);
 
@@ -981,12 +983,10 @@ var forwardAction$ = forwardClick$.map(() => {
         .select('#clear').events('click');
 
     var clearAction$ = clearPicked$.map( () => {
-var elemA$ = sources.DOM.select('input#message1').events('keyup')
-  .map(e => {
-  mM9.ret(e.target.value);  
+      var s = gameMonad.s.slice();
+      s[5][mMindex.x][3] = [];
+      gameMonad = new MonadState2('gameMonad', s);
     });
-  worker.postMessage([e.target.value, mM10.x]);
-});
 
 var elemB$ = sources.DOM.select('input#message2').events('keyup')
   .map(e => {
@@ -995,9 +995,6 @@ var elemB$ = sources.DOM.select('input#message2').events('keyup')
 });
 
 mMrightPanel.ret('none');
-clog.emit("A")
-clog.emit("B")
-clog.emit(5000);
 
 var pr$ = sources.DOM
     .select('#primeNumbers').events('keypress');
@@ -1114,7 +1111,6 @@ var updateMessages = function updateMessages(t) {
           h('br'),
           h('span', ' Here are the basic rules:'),
           h('p', 'RULES: If clicking two numbers and an operator (in any order) results in 20 or 18, the score increases by 1 or 3, respectively. If the score becomes 0 or is evenly divisible by 5, 5 points are added. A score of 25 results in one goal. That can only be achieved by arriving at a score of 20, which jumps the score to 25. Directly computing 25 results in a score of 30, and no goal. Each time RL is clicked, one point is deducted. Three goals wins the game. '),
-          h('p.red4', mMgoals2.x ),
           buttonNode,
           h('br'),
           h('button#4.op', 'add'),
@@ -1126,10 +1122,10 @@ var updateMessages = function updateMessages(t) {
           h('div#dice', { style: { display: mMdice.x } }, [
             h('button.roll', 'ROLL'),
             h('br'),
-            h('button#back', 'BACK'),
-            h('button#ahead', 'FORWARD'),
-            h('div.tao', `Selected numbers: ${pMclicked.x.join(', ')} ` ),  
-            h('div.tao', `Operator: ${pMop.x} ` ),  
+            h('button#back.tao100', 'BACK'),
+            h('button#ahead.tao1', 'FORWARD'),
+            h('div.tao', `Selected numbers: ${gameMonad.s[5][mMindex.x][3].join(', ')} ` ),  
+            h('div.tao', `Operator: ${gameMonad.s[5][mMindex.x][2]} ` ),  
             h('button#clear', 'Clear selected numbers (Possibly useful after clicking the BACK button) ' ),
           ])]),
 h('div#log1',  { style: { display: mMlog1.x } }, [

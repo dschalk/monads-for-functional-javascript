@@ -1454,7 +1454,7 @@ h('p', ' The term "monad" will mean "instance of Monad". Monad could have been d
 h('p', ' Monads are created by code such as "const m = new Monad("anything", "m")". The arguments will be the values of m.x and m.id. The first argument can be any Javascript value, such as string, array, or monad. The second argument should be the name of the monad. ' ),
 h('p', ' A monad, say "m", can be replaced by another monad named "m" in the global space through the use of the method "ret()". It looks like m.x gets mutated, but that isn\'t what happens. Previously defined references to m retain their values, as demonstrated below: '),
 
-h('pre.turk', 
+h('pre.red9', 
 `const m = new Monad (5, 'm');
 var arr = [m]; 
 var p = m;
@@ -1464,7 +1464,7 @@ console.log(m.x, arr[0].x, p.x);  // 100, 5, 5
 
 h('p', ' In global scope (window in the browser), m.x changed to 100; but p and arr still refer to 5, the previous value of m.x. Similarly, when a monad uses its bnd() method to modify its x attribute, the change is seen globally, but nowhere else. Previous references to the monad remain stable, as this example illustrates: ' ),
 
-h('pre.turk', 
+h('pre.red9', 
 `const m = new Monad (5, 'm');
 var arr = [m]; 
 var p = m;
@@ -1476,8 +1476,8 @@ h('p', ' Had there been no reference to m, the previous instance would have been
 h('p', ' It is possible to mutate monads with code such as m.x = 888. That might be a good thing to do in a function with many recursions, but it seems like a misuse of monads. Monads are never mutated on this website. Object.freeze() is used to prevent mutation in the definition of primesMonad (shown below). '), 
   h('p', ' The bnd() method can leave the calling monad\'s global value unchanged while assigning a value (in the global space) to another previously defined monad, or to a freshly created monad. So regardless of whether or not "m2" is defined, m.ret(4).bnd(cube,"$m2") causes m.x === 4 and m2.x === 64 to both return true. ' ),
 
-h('pre.turk', 
-`m.ret(4).bnd(cube,"$m2") 
+h('pre.red9', 
+`m.ret(4).bnd(cube,"$m2")   
 console.log(m.x, m2.x)   // 4 64
 m.ret(0).bnd(add,3,"$m2").bnd(cube,"$m3")
 console.log(m.x, m2.x, m3.x)  // 0 3 27
@@ -1516,15 +1516,13 @@ h('pre.turk6',  `    var Monad = function Monad(z = 42, g = 'generic') {
       }
       return t;
     }  `  ),
+('br' ),
+h('h3', 'Variations on the Theme' ),  
+h('p', ' Variations on the Monad theme serve diverse purposes. Instances of MonadState preserve computations so they won\'t have to be performed again. An instance of MonadState2 keeps a record of game play allowing players to back up and resume play from a previous display of numbers. It also keeps the current game parameters - score, goals, operator, selected numbers, and remaining numbers - in a single array which is stored in the archive whenever a new state is created. MonadItter instances are used to parse websockets messages and organize the callbacks neatly. MonadEr catches NaN and prefents crashes when undefined variables are encountered. I defined a message emitting monad but it seemed useless in this Cycle application where reactivity is pervasive. When you want to emit and listen for messages, it is better to build a driver and merge its stream of messages into the application cycle. '), 
 
-h('br' ),
-h('span.tao#monad', ' Instances of Monad, MonadState, MonadItter, and MonadEr facilitate programming in a functional style. The variety of these constructors suggests how developers might create their own constructors as the need arises. ' ),
-h('a', { props: { href: '#state' } }, 'MonadState'),
-h('span', ' instances memoizing computation results, '),
-h('a', { props: { href: '#itterLink' } }, 'MonadItter'),
-h('span', ' instances organizing nested callbacks into neat, easily maintainable blocks of code, and '),
-h('a', { props: { href: '#err' } }, 'MonadEr' ),
-h('span', ' catching NaN and preventing crashes when undefined variables are encountered. ' ),
+h('p', ' The various monad constructors demonstrate a coding style and philosophy, and are not intended to serve as a static library. You might find Monad useful as it is, and of course you are welcome to use it, but you might also take the general idea and eliminate some features and add others to suits your needs. Or you might prefer an entirely different way of organizing your code. You can incorporate your own monad constructors into any framework, just I have make mine part of this Cycle application.  ' ),
+
+h('h3', 'Computations' ),
 h('p', ' Computations are easy to link if each result is returned in an instance of Monad. Here are a few examples of functions that return instances of Monad: '),
   h('pre.turk',  `  function ret(v, id = 'generic') {
       window[id] = new Monad(v, id);

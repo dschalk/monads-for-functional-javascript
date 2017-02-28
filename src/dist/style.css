@@ -18,11 +18,9 @@ input {
   margin-left: 3%;
 }
 
-.tao1 {
-  margin-left: 1.7%;
+.tao15 {
+  margin-left: 11%;
 }
-
-.lb {color: lightblue;}
 
 #clear {
   font-size: 14px;
@@ -100,6 +98,13 @@ h3 {
   font-size: 17px;
 }
 
+.tao1:hover {
+  margin-left: 3%;
+  color: #ff0000;
+  font-size: 17px;
+  border-color: yellow;
+}
+
 .tao1a {
   margin-left: 3%;
   color: #a5f7a5;
@@ -110,6 +115,19 @@ h3 {
   color: #a5f7a5;
   font-size: 17px;
   text-indent: 3%;
+}
+
+.tao100 {
+  margin-left: 11%;
+  color: #f7ec20;
+  font-size: 17px;
+}
+
+.tao100:hover {
+  margin-left: 11%;
+  color: #ff0000;
+  font-size: 16px;
+  border-color: yellow;
 }
 
 
@@ -195,6 +213,7 @@ h3 {
 }
 
 .red9 {
+  margin: 3%;
   color:#db8e8e;
 }
 
