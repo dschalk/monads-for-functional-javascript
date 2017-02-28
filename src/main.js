@@ -605,10 +605,11 @@ var forwardAction$ = forwardClick$.map(() => {
   });
   
     var factorsP_c$ = sources.DOM
-      .select('input#factors_5c').events('keyup');
+      .select('input#factors800').events('keyup');
 
     var fA_c$ = factorsP_c$.map(function (e) {
-      mMfactors8_c.ret('');
+      console.log('In fa_c$ *************************************************************'),
+      mMfactors800.ret('');
       var factors = [];
       var ar = (e.target.value).split(',').map(v => parseInt(v,10));
       if (e.keyCode === 13) {
@@ -619,7 +620,7 @@ var forwardAction$ = forwardClick$.map(() => {
         }
       else {
         console.log('In fA_c$ else block. ar is', ar );
-        mMfactors8_c.ret(simpleWay(ar[0], ar[1]));
+        mMfactors800.ret(simpleWay(ar[0], ar[1]));
         }
       }
     });
@@ -1014,7 +1015,7 @@ var updateMessages = function updateMessages(t) {
   execMessage( h('br'), sender + ': ' + str, base );  */
 };
 
-  var calcStream$ = xs.merge( forwardAction$, backAction$, prAction$, factorsAction_b$, fA$, factorsP$, fA_b$, factorsP_b$, clearprimes$, worker$, workerB$, workerC$, workerD$, workerE$, workerF$, clearAction$, factorsAction$, primeFib$, fibPressAction$, quadAction$, edit1Action$, edit2Action$, testWAction$, testZAction$, testQAction$, colorAction$, deleteAction$, newTaskAction$, chatClickAction$, gameClickAction$, todoClickAction$, captionClickAction$, groupPressAction$, rollClickAction$, messagePressAction$, loginPressAction$, messages$, numClickAction$, opClickAction$);
+  var calcStream$ = xs.merge( fA_c$, forwardAction$, backAction$, prAction$, factorsAction_b$, fA$, factorsP$, fA_b$, factorsP_b$, clearprimes$, worker$, workerB$, workerC$, workerD$, workerE$, workerF$, clearAction$, factorsAction$, primeFib$, fibPressAction$, quadAction$, edit1Action$, edit2Action$, testWAction$, testZAction$, testQAction$, colorAction$, deleteAction$, newTaskAction$, chatClickAction$, gameClickAction$, todoClickAction$, captionClickAction$, groupPressAction$, rollClickAction$, messagePressAction$, loginPressAction$, messages$, numClickAction$, opClickAction$);
    
   return {
   DOM: calcStream$.map(function () {
@@ -1238,18 +1239,19 @@ h('span.tao3', `${ (mMfactors8_b.x[0]  *  mMfactors8_b.x[1])  ===  (mMfactors8_b
   code.simple,
 
     //  code.simple2,
-  h('p', ' This has been a demonstration of MonadState and MonadState transformers. If you really want the least common multiple or the largest common factor of two positive integers, there is no need to generate prime numbers. The next and final demonstration in this section does not use a web worker. The computations block the main thread for only a few microseconds. ' ),  
-  h('input#factors_5c'),
-  h('div.tao3', mMfactors8_c.x ),    
-  h('span', `The least common multiple of  ${mMfactors8_c.x[0]} and ${mMfactors8_c.x[1]} is ` ),
-  h('span.tao3', `${mMfactors8_c.x[2]}` ),    
+  h('p', ' This has been a demonstration of MonadState and MonadState transformers. If you really want the least common multiple or the largest common factor of two positive integers, there is no need to generate prime numbers. The next and final demonstration in this section does not use a web worker. The computations block the main thread, but only for a few microseconds.' ),
+  h('br' ),  
+  h('input#factors800'),
+  h('br' ),    
+  h('span', `The least common multiple of  ${mMfactors800.x[0]} and ${mMfactors800.x[1]} is ` ),
+  h('span.tao3', `${mMfactors800.x[2]}` ),    
   h('br'),    
-  h('span', `The largest common factor of ${mMfactors8_c.x[0]} and ${mMfactors8_c.x[1]} is ` ),
-  h('span.tao3', `${mMfactors8_c.x[3]}` ),
+  h('span', `The largest common factor of ${mMfactors800.x[0]} and ${mMfactors800.x[1]} is ` ),
+  h('span.tao3', `${mMfactors800.x[3]}` ),
   h('br'),    
-  h('div', `TEST: ${mMfactors8_c.x[0]} * ${mMfactors8_c.x[1]} === ${mMfactors8_c.x[2]} * ${mMfactors8_c.x[3]} `  ),
+  h('div', `TEST: ${mMfactors800.x[0]} * ${mMfactors800.x[1]} === ${mMfactors800.x[2]} * ${mMfactors800.x[3]} `  ),
   h('span', 'RESULT: ' ),
-  h('span.tao3', `${ (mMfactors8_c.x[0]  *  mMfactors8_c.x[1])  ===  (mMfactors8_c.x[2]  *  mMfactors8_c.x[3]) }` ),
+  h('span.tao3', `${ (mMfactors800.x[0]  *  mMfactors800.x[1])  ===  (mMfactors800.x[2]  *  mMfactors800.x[3]) }` ),
 
 
 
