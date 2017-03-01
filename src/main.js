@@ -382,7 +382,8 @@ function main(sources) {
   };   
 
   function score(result) {
-    var state = gameMonad.s[5][mMindex.x].slice(0,6);
+    var state = gameMonad.s[5][mMindex.x].slice(0,5);
+    state[4] = gameMonad.s[5][mMindex.x][4].slice();
     var old = parseInt(state[0], 10);
     var res = result === 18 ? old + 3 : old + 1;
     var scor = res % 5 === 0 ? res + 5 : res;
@@ -399,11 +400,10 @@ function main(sources) {
       state[1] = parseInt(state[1], 10) + 1;
       scor = 0;
     }
-    state[4].push(scor);
     state[2] = 0;
     state[3] = [];
     buttonNode = bNode(state[4]);
-    gameMonad.run(state);
+   // gameMonad.run(state);
     newRoll(scor, state[1]);
   };
 
@@ -1088,7 +1088,8 @@ var updateMessages = function updateMessages(t) {
     
       h('br'),
       h('div#captionDiv', { style: { display: mMcaptionDiv.x } },  [
-          h('h1', 'JS-monads running on Cycle.js') ]),
+      h('h1', 'JS-monads running on Cycle.js') ]),
+      h('p.fred', 'PLEAE NOTE: This site is constantly evolving. The commentary sometimes lags behind innovations. I know this site is a little rough around the edges. I present it hoping that you will provide suggestions, corrections, and comments. -- David Schalk  ' ), 
       h('span#italic', ' These monads are like the Haskell monads in that they resemble the monads of category theory without actually being mathematical monads. See ' ),
       h('a', { props: { href: "http://math.andrej.com/2016/08/06/hask-is-not-a-category/", target: "_blank" } }, 'Hask is not a category.'),
           h('span', ' by Andrej Bauer and the ' ),

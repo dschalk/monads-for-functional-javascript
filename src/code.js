@@ -1604,7 +1604,9 @@ var cycle = h('div',  [
 h('h3', ' A Few Words About Cycle.js ' ),
 h('p', ' Opinionated frameworks tend to annoy and frustrate me. Cycle, on the other hand, is easy on my mind. I love it.' ),
 h('p', ' In the early stages of developing this website, I had functions that mutated global variables. Sometimes, I directly mutated values in the DOM with statements like "document.getElementById(\'id\').innerHTML = newValue". Cycle didn\'t object. Over time, mutating variables and manhandling the DOM gave way to gentler techniques that I developed in conjunction with the "proof of concept" features that I was in a hurry to get up and running. ' ),
-h('p', ' Handling events is a breeze. Instead of callbacks or explicit declarations of observers, I use drivers. Cycle\'s built-in DOM driver handles browser events like click and input. Simple application drivers handle asynchronous messages. Here are two examples:' ), 
+h('p', ' Handling events is a breeze. Drivers eliminate the need to name event emitters or observers. Driver output in main() is available to any function or block of code that is interested. The result of any callback is in an event in a stream of events that automatically merge with the other streams that define main\'s return value, a blueprint for the updated user interface. This is breathtakingly elegant. main() is called only once, when the application loads. After that, the application hums like an enchanted perpetual motion machine. ' ), 
+
+  
 h('pre.turk', `function workerDriver () {
   return xs.create({
     start: listener => { worker.onmessage = msg => listener.next(msg)}, 
