@@ -14,6 +14,17 @@ const messages = [];
 var crapTunnel = [];
 var buttonNode;
 
+function testPrefix (x,y) {
+   var t = y;
+   if (Array.isArray(x)) {
+    x.map(v => {
+      if (typeof v == 'string' && v.charAt() == '$') {
+         t = v.slice(1);
+      }
+    })
+  }
+  return t;
+}
 function Monad(z = 'default', ID = 'generic') {
   var _this = this;
   this.x = z;
@@ -33,6 +44,7 @@ function Monad(z = 'default', ID = 'generic') {
   };
 };
 
+/*
 function testPrefix (x,y) {
   var t = y;
   var s;
@@ -45,6 +57,7 @@ function testPrefix (x,y) {
   }
   return t;
 }
+*/
 
 var pMop = new Monad (0, 'pMop');
 
@@ -113,7 +126,7 @@ var a = 3;
 var b = 4;
 var c = a + b;
 
-function ret(v, id = 'generic') {
+function ret(v, id = 'temp') {
   window[id] = new Monad(v, id);
   return window[id];
 }
@@ -155,9 +168,28 @@ function fmap(x, g, id) {
 
 var isFunc = function isFunc (x) { return eval("typeof(" + x + ") == 'function'")};
 
-var MonadSet = function MonadSet(set, str) {
-  this.id = str;
-  this.s = new Set();  
+function MonadSet(z, ID) {
+  var _this = this;
+  this.s = z;
+  this.id = ID;
+  this.bnd = function (func, ...args) {
+    var m = func(this.s, ...args)
+    var ID;
+    if (m instanceof Monad) {
+      ID = testPrefix(args, _this.id); 
+      window[ID] = new Monad(m.x, ID);
+      return window[ID];
+    }
+    if (m instanceof MonadSet) {
+      ID = testPrefix(args, _this.id); 
+      window[ID] = new Monad(m.s, ID);
+      return window[ID];
+    }
+    else return m;
+  };
+  this.ret = function (a) {
+    return window[_this.id] = new MonadSet(a,_this.id);
+  };
 };
 
 var qrs = new Set();
@@ -781,19 +813,6 @@ function lc (str) {
 
 function stripchars(string, chars) {
   return string.replace(RegExp('['+chars+']','g'), '');
-}
-
-function testPrefix (x,y) {
-  var t = y;
-  var s;
-  if (Array.isArray(x)) {
-    x.some(v => {
-      if (typeof v == 'string' && v.charAt() == '$') {
-         t = v.slice(1);
-      }
-    })
-  }
-  return t;
 }
 
   function id (x) {return ret(x)};
@@ -1648,9 +1667,6 @@ function styl (s) {
     default: return;  //console.log('Bad argument in styl. s is', s );
   }
 }
-
-
-
 
 
 

@@ -3,7 +3,7 @@ import {run} from '@cycle/xstream-run'
 import {h, p, span, h1, h2, h3, pre, br, div, label, input, hr, makeDOMDriver} from '@cycle/dom';
 import code from './code.js';
 // import {EventEmitter} from 'events'
-
+console.log('If you can read this you are in main.js <@><@><@><@><@><@><@><@>');
 function createWebSocket(path) {
     var host = window.location.hostname;
     if (host === '')
@@ -185,10 +185,8 @@ function main(sources) {
     st[0] = v[7];
     st[1] = v[8];
     st[2] = 0;
-    st[3] =[];
+    st[3] = [];
     st[4] = [v[3],v[4],v[5],v[6]];
-//    var s = st.slice();
-//    s[4] = st[4].slice();
     gameMonad.run(st);
     console.log(buttonNode);
   }); 
@@ -198,7 +196,10 @@ function main(sources) {
       var str = v[2] + ': ' + message;
       messages.unshift(h('span', str ),h('br'));  
    });
-  mMZ14.bnd( () => mMgoals2.ret('The winner is ' + v[2]));
+  mMZ14.bnd( () => {
+    mMgoals2.ret('The winner is ' + v[2]);
+    setTimeout(() => mMgoals2.ret(''), 5000 );
+  });
   mMZ15.bnd( () => {
     mMgoals2.ret('A player named ' + v[2] + ' is currently logged in. Page will refresh in 4 seconds.')
     refresh() });
@@ -275,22 +276,12 @@ function main(sources) {
       }
   });
 
-/*  var updateMessages = function updateMessages(e) {
-    var ar = e.split(',');
-    var sender = ar[2];
-    var message = ar.slice(3,-1);
-    var start = messageMonad.x.slice();
-    var str = message.join(',');
-    
-    messageMonad.bnd(unshift, [h('br'), sender + ': ' + str], 'messageMonad');
-  }; */
-
   var updatePlayers = function updatePlayers (data) { 
         sMplayers.s.clear();
         var namesL = data.split("<br>");
         var namesList = namesL.slice(1);
         updateScoreboard2(namesList);
-        namesList.forEach(player => sMplayers.s.add(player.trim()));
+    namesList.forEach(player => sMplayers.s.add(player.trim()));
   }
 
   var updateScoreboard2 = function updateScoreboard2(v) {
@@ -334,9 +325,9 @@ function main(sources) {
       console.log( 'In numClickAction$. gameMonad.s[5][mMindex.x][3] is full.', gameMonad.s[5][mMindex.x][3]);
     }
     else {
-      var x = gameMonad.s[5][mMindex.x].slice(0,5);
-      x[4] = gameMonad.s[5][mMindex.x][4].slice();
+      var x = gameMonad.s[5][mMindex.x].slice();
       x[3] = gameMonad.s[5][mMindex.x][3].slice();
+      x[4] = gameMonad.s[5][mMindex.x][4].slice();
       x[3].push(x[4].splice(e.target.id,1)[0]); // Push the item spliced from x[4] into x[3].
       var s3 = x[3].slice();
       buttonNode = bNode(x[4]);
@@ -371,9 +362,9 @@ function main(sources) {
     }
     else {
       var state = gameMonad.s[5][mMindex.x].slice();
-      state[4] = gameMonad.s[5][mMindex.x][4].slice();
       state[2] = 0;
       state[3] = [];
+      state[4] = gameMonad.s[5][mMindex.x][4].slice();
       state[4].push(result);
       buttonNode = bNode(state[4]);
       console.log('In updateCalc. state is', state );
@@ -382,28 +373,22 @@ function main(sources) {
   };   
 
   function score(result) {
-    var state = gameMonad.s[5][mMindex.x].slice(0,5);
-    state[4] = gameMonad.s[5][mMindex.x][4].slice();
+    var state = gameMonad.s[5][mMindex.x].slice();
     var old = parseInt(state[0], 10);
     var res = result === 18 ? old + 3 : old + 1;
     var scor = res % 5 === 0 ? res + 5 : res;
     
     if (scor === 25 && state[1] === "2") {
+      mMindex.ret(0);
+      gameMonad = new MonadState2('gameMonad', [ 0,0,0,[],[0,0,0,0],[[0,0,0,[],[0,0,0,0]]]]);
       socket.send(`CE#$42,${pMgroup.x},${pMname.x}`);
-      state = [ 0,0,0,[],[0,0,0,0],[[0,0,0,0]] ];
-      gameMonad.s = state;
-      buttonNode = bNode(state[4]);
-      socket.send(`CG#$42,${pMgroup.x},${pMname.x},0,0`)
-      return;
+      scor = 0;
+      state[1] = 0;
     }
     if (scor === 25) {
       state[1] = parseInt(state[1], 10) + 1;
       scor = 0;
     }
-    state[2] = 0;
-    state[3] = [];
-    buttonNode = bNode(state[4]);
-   // gameMonad.run(state);
     newRoll(scor, state[1]);
   };
 
@@ -425,8 +410,6 @@ var backAction$ = backClick$.map(() => {
 });
 
 var forwardAction$ = forwardClick$.map(() => {
-    console.log('In forwardAction$ _mMindex.x, gameMonad.s[5].length - 1', 
-      mMindex.x, gameMonad.s[5].length - 1); 
   if (mMindex.x < gameMonad.s[5].length - 1) {
     mMindex.ret(mMindex.x + 1);
     buttonNode = bNode(fetch(mMindex.x));
@@ -1006,17 +989,7 @@ var prAction$ = pr$.map(function (e) {
     }
 });
 
-var updateMessages = function updateMessages(t) {
-/*  var ar = e.split(',');
- var sender = ar[2];
-  ar.splice(0,3);
- var str = ar.join(',');
- var base = messageMonad.s.slice();
-  execMessage( h('br'), sender + ': ' + str, base );  */
-};
-
-  var calcStream$ = xs.merge( fA_c$, forwardAction$, backAction$, prAction$, factorsAction_b$, fA$, factorsP$, fA_b$, factorsP_b$, clearprimes$, worker$, workerB$, workerC$, workerD$, workerE$, workerF$, clearAction$, factorsAction$, primeFib$, fibPressAction$, quadAction$, edit1Action$, edit2Action$, testWAction$, testZAction$, testQAction$, colorAction$, deleteAction$, newTaskAction$, chatClickAction$, gameClickAction$, todoClickAction$, captionClickAction$, groupPressAction$, rollClickAction$, messagePressAction$, loginPressAction$, messages$, numClickAction$, opClickAction$);
-   
+  var calcStream$ = xs.merge( fA_c$, forwardAction$, backAction$, prAction$, factorsAction_b$, fA$, factorsP$, fA_b$, factorsP_b$, clearprimes$, worker$, workerB$, workerC$, workerD$, workerE$, workerF$, clearAction$, factorsAction$, primeFib$, fibPressAction$, quadAction$, edit1Action$, edit2Action$, testWAction$, testZAction$, testQAction$, colorAction$, deleteAction$, newTaskAction$, chatClickAction$, gameClickAction$, todoClickAction$, captionClickAction$, groupPressAction$, rollClickAction$, messagePressAction$, loginPressAction$, messages$, numClickAction$, opClickAction$); 
   return {
   DOM: calcStream$.map(function () {
   return h('div.content', [
@@ -1078,7 +1051,6 @@ var updateMessages = function updateMessages(t) {
           h('br'),
       h('br'), 
     h('br'),
-    // `Selected: ${gameMonad.s[3].join(', ')}`,
     h('br'),
     "mMindex.x: " + mMindex.x,
     h('br'),
@@ -1104,11 +1076,13 @@ var updateMessages = function updateMessages(t) {
           h('br'),
           h('span.tao1', ' Chat rooms where members can compete in the simulated dice gameand share a project todo list; '),
           h('br'),
+
           h('span.tao1', ' Other demonstrations of the usefulness of monads in a Cycle application.  '),
           h('br'),
       h('br'),
       h('span.tao', 'The code for this repository is at '),
       h('a', { props: { href: "https://github.com/dschalk/JS-monads-stable", target: "_blank" } }, 'JS-monads-stable'),  
+      h('h2.red', mMgoals2.x ),
       h('div#gameDiv2', { style: { display: mMgameDiv2.x } }, [
           h('br'),
           h('span', ' Here are the basic rules:'),
@@ -1313,7 +1287,7 @@ h('p', 'Here is the code:'),
 code.quad,
 h('p', ' fmap (above) facilitated using qS4 in a monadic sequence. qS4 returns an array, not an instance of Monad, but fmap lifts qS4 into the monadic sequence. '),
 h('p', ' The function solve() is recursive. It invokes itself after release() executes three times. The expression "solve()" resets solve to the top, where mMZ3.p becomes a function containing two nested occurrances of mMZ3.bnd. After mMZ3.release() executes, mMZ3.p becomes the function that is the argument to the next occurrance of mMZ3.bnd. That function contains yet another occurrance of mMZ3.bnd. MonadItter is syntactic sugar for nested callbacks. ' ), 
-h('p', ' The final example before moving on to MonadArchive shows how the web worker file, worker.js, handles messages it recieves. worker$ and the worker driver are shown again for the reader\'s convenience. ' ),
+h('p', ' The final example before moving on to the simulated dice game shows how the web worker file, worker.js, handles messages it recieves. worker$ and the worker driver are shown again for the reader\'s convenience. ' ),
     code.wDriver,
     code.worker$,
       code.worker_js,
@@ -1321,34 +1295,29 @@ h('p', ' The final example before moving on to MonadArchive shows how the web wo
 // ************************************************************************** START MonadState
 
 
-// ***********************************************************************************************  MonadArchive
-
-
-h('h2', ' MonadArchive ' ),
-h('h3', ' Traversal of the dice game history. ' ),
-h('p', ' The state of the simulated dice game is maintained in travMonad, an instance of MonadArchive. Here are the definitions of MonadArchive, travMonad, and the helper function trav_archive: '),
-    code.monadArchive2,  
-h('p', ' The method travMonad.run() executes in: ' ),
-h('pre', `    messages$.          Runs when a new dice roll comes in from the websockets server.
-    groupPressAction$.  Clears game data when a new group is jointed.
-    nunClickAction$     Updates travMonad when numbers are clicked.
-    clearAction$        Clears saved data when the button under the display is clicked.
-    updateCalc          A function called by numsClickAction$ and opClickAction during game play.  ` ),
-h('p', ' travMonad keeps a record of the "x" attributes of pMnums (displayed numbers), pMscore, pMgoals, pMclicked (selected numbers), and pMop (the selected operator). Whenever pMnums changes, the expression pMnums.bnd(test3, "MpMstyle") nexecutes, updating pMstyle in order to maintain a well-formated numbers display. In is, therefor, not necessary to keep a record of pMstyle in travMonad. Here is the definition of clear():' ),
-  code.test3,
-h('p', ' Whenever a new roll is requested from the server, a player\'s score and the number of goals is sent to the server. The server responds by sending all group members two messages; one for updating their numbers display, the other for updating their scoreboards. Messages from browsers to the server requesting updated numbers and scoreboard information are prefixed by CA#$42. This serves the interests of efficiency because mew rolls are automaticlly requested when scores change, and score changes are always associate with requests for new numbers. One point is deducted when a player clickes ROLL. ' ),  
-h('p', ' Scores increase whenever players put together expressions that return 18 or 20. An increase in score is accompanied by a call to newRoll() with two arguments: score and goals. The Haskell server updates its ServerState TMVar and broadcasts the new numbers to all group members with the prefix "CA#$42, along with a message prefixed by NN#$42 containing the updated score and goal information. NN#$42 and CA#$42 messages are parsed and acted upon in the message$ stream, where each player\'s travMonad object is augmented by the addition of a new state information array. travMonad.s is an array of arrays containing the collection of these state arrays. ' ),
-h('p', ' Here is the code that runs when the back button is clicked: ' ),
+//************************************************************************** END GameTraversal 
+h('h2', 'The Simulated Dice Game' ),
+h('p', ' playerMonad saves the state of the game whenever the number display changes. It works in conjunction with mMindex, gameMonad, and bNode() to maintain the game interface, with or without traversal of past states.  ' ),
+h('p', ' gameMonad is an instance of MonadState2. gameMonad.s is a six item array holding score, goals, selected operator, selected numbers, display numbers, and an array of arrays of past scores, goals, selected numbers. and display numbers. gameMonad.s[5][2] is a place holder for selected operater. It is always set to 0 in gameMonad.s[5]. gameMonad.run() increments mMindex.x and inserts its argument in gameMonad.s[5]. gameMonad.s[5] is an array of past states of the game. Here is the definitions of MonadState2 ' ),
+    code.MonadState2,
+h('p', ' And here is the definition of gameMonad: ' ),
+    code.gameMonad,
+h('p', ' When one of the operator buttons is clicked, gameMonad.s[5][mMindex.x][2] changes from 0 to either "add", "subtract", "multiply", "divide", or "concat". When a number is clicked, it moves from gameMonad.s[5][mMindex.x][4] to gameMonad.s[5][mMindex.x][3]. If gameMonad.s[5][mMindex.x][3] contains two numbers and gameMonad.s[5][mMindex.x][2] is not zero (meaning an operator has been selected), updateCalc() is called. Similarly, if an operator is clicked after two numbers have been put in gameMonad.s[5][mMindex.x][3], updateCalc() is called. updateCalc()\'s arguments are an array containing the two selected numbers and a string designating the operator. ' ),
+h('p', ' If the calculated number in updateCalc() is 18 or 20, score() is called. Otherwise, the update is performed in updateCalc. Here are the definitions of updateCalc() and score(): ' ),
+    code.clicks,
+h('p', ' gameMonad.s[5][mMindex.x][3] is the array of numbers which are displayed in the browser. Changes take place inside of a Snabbdom vNode named "buttonNode". buttonNode is the value returned by the function bNode() whose only argument is the array of numbers to be displayed. Here is the definitions of bNode:' ),
+    code.bNode,
+h('p', ' The interface is kept clean by means of the function styl(), which determines whether the display is "inline" or "none", depending on the length of the array of numbers displayed. Here is the definition of styl(): ' ),
+    code.styl,
+h('h3', 'Traversing the Game\'s History' ),    
+h('p', ' As you might expect, game traversal is controlled by changes in the value of mMindex.x. Here is how it is done: ' ),
     code.backAction,
-h('h3', ' Updating the numbers ' ),
-h('p', ' The following code shows what happens when a player clicks a number: ' ),  
-    code.numClick1,
-h('p', ' The clicked number is removed from pMnums and added to pMclicked in the numClickAction$ stream. If two numbers and an operator have been selected, numClickAction$ or opClickAction$ (depending on whether the most recent click was on a number or an operator) calls updateCalc with two arguments, the pMclicked.x array of selected numbers and the chosen operator. After each roll, pMop.x is updated to 0. pMop.x != 0 indicates that an operator has been selected. ' ),
-  code.numClick2,
-h('p', ' updateCalc calls calc on the numbers and operater provided to it by numCalcAction$ or opCalcAction$.  The return value is assigned to the variable result. If the value of result is 18 or 20, pMscore.x is augmented by 3 or 1, respectively, and checked to see if another five points should be added. score() is then called with the new value of pMscore.x as its argument. score() performs some additional tests to determine whether or not pMgoals.x should be augmented or, if the result is 3, set back to 0 to begin another game. newRoll is called in score() with the (possible newly calculated) values of pMscore.x and pMgoals.x. ' ),
+h('p', ' The socket message prompts the server to notify all group members of changes in the player\'s score and goals. The numbers that are generated remain private. ' ),
+
+  
 
 
-//************************************************************************** END MonadArchive 
+//************************************************************************** END GameTraversal 
     
 
 h('h2', ' MonadSet '),
@@ -1382,9 +1351,6 @@ h('a', { props: { href: '#top' } }, 'Back To The Top'),
   h('p'),
   h('p', '.'),
   h('p', '.'),
-/*  h('label', ' Upper bound for list of primes: ' ),  
-  h('input#primeNumbers' ),  
-  h('div', primesMonad.s[1].join(', ') ), */
   h('p', '.'),
   h('p', '.'),
   h('p', '.'),
