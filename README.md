@@ -86,16 +86,6 @@ So, with that out of the way, here are the definitions of Monad and testPrefix:
     }
 
   ```
-
-
-
-
-
-
-
-
-
-
 Variations on the Theme
 
 Variations on the Monad theme serve diverse purposes. Instances of MonadState preserve computations so they won't have to be performed again. An instance of MonadState2 keeps a record of game play allowing players to back up and resume play from a previous display of numbers. It also keeps the current game parameters - score, goals, operator, selected numbers, and remaining numbers - in a single array which is stored in the archive whenever a new state is created. MonadItter instances are used to parse websockets messages and organize the callbacks neatly. MonadEr catches NaN and prefents crashes when undefined variables are encountered. I defined a message emitting monad but it seemed useless in this Cycle application where reactivity is pervasive. When you want to emit and listen for messages, it is better to build a driver and merge its stream of messages into the application cycle.
@@ -105,7 +95,7 @@ The various monad constructors demonstrate a coding style and philosophy, and ar
 Computations
 
 Computations are easy to link if each result is returned in an instance of Monad. Here are a few examples of functions that return instances of Monad:
-
+```javascript
   function ret(v, id = 'temp') {
       window[id] = new Monad(v, id);
       return window[id];
@@ -123,8 +113,9 @@ Computations are easy to link if each result is returned in an instance of Monad
         console.log(y)
         return ret(x);
     };  
+```    
 The "$" prefix provides control over the destination of computation results. In the following example, m1, m2, and m3 have already been declared. Here is a comparison of the results obtained when the "$" prefix is used and when it is omitted:
-
+```javascript
     m1.ret(7).bnd(m2.ret).bnd(m3.ret)  // All three monads get the value 7.
     m1.ret(0).bnd(add,3,'m2').bnd(cube,'m3')  // 'm1', 'm2', and 'm3' are ignored
     Result: m1.x === 27
@@ -134,6 +125,7 @@ The "$" prefix provides control over the destination of computation results. In 
     Result: m1.x === 0
             m2.x === 3
             m3.x === 27  
+```            
 If the prefix "$" is absent, bnd() ignores the string argument. But when the "$" prefix is present, m1 retains its initial value, m2 retains the value it gets from from adding m's value (which is 0) to 3, and m3.x is the result of applying "cube" to m2.x. Both forms could be useful.
 
 The following example shows lambda expressions sending variables v1 and v2 through a sequence of computations and v3 sending the final result to the string that is logged. It also shows monads a, b, c, d, e, f, and g being updated and preserved in an array that is not affected by further updates. That is because calling the ret() method does not mutate a monad; it creates a fresh instance with the same name. Here is the example, shown in a screen shot of the Chrome console:.
@@ -147,7 +139,7 @@ Opinionated frameworks tend to annoy and frustrate me. Cycle, on the other hand,
 In the early stages of developing this website, I had functions that mutated global variables. Sometimes, I directly mutated values in the DOM with statements like "document.getElementById('id').innerHTML = newValue". Cycle didn't object. Over time, mutating variables and manhandling the DOM gave way to gentler techniques that I developed in conjunction with the "proof of concept" features that I was in a hurry to get up and running.
 
 Handling events is a breeze. Cycle's bult-in DOM driver handles browser events like click and input. Simple application drivers handle asynchronous messages. Here are two examples:
-
+```javascript
 function workerDriver () {
   return xs.create({
     start: listener => { worker.onmessage = msg => listener.next(msg)}, 
@@ -161,7 +153,7 @@ function websocketsDriver() {
     stop: () => { socket.close() }
   });
 };   
-
+```
 ##Asynchronous Processes
 
 Five demonstrations involving instances of MonadState are presented at [Demonstration](http://schalk.net:3055). They involve computations of prime numbers, Fibonacci numbers, prime Fibonacci numbers, and prime factors of numbers. Several instances of a constructor named "MonadState" (simple and not an ES6 class) are utilyzed, three of which maintain and share share an array of prime numbers maintained in the MonadState instance named "primesState". An array of arrays of prime factors of numbers is maintained in MonadState instance "decompMonad", which is shared by the fourth and fifth examples in this series of async examples. Some code snippets and explanations follow the demonstrations.
