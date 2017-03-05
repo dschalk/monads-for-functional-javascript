@@ -390,10 +390,8 @@ The list of online group members at the bottom of the scoreboard is very respons
       t.bnd('add3",'Math.sqrt(-1)', 'Mt2').bnd(cube3, 'Mt3' 
       t.bnd('addd3", 3, 'Mt2').bnd(cube3, 'Mt3' 
   ```    
-  ```javascript
+  ![Alt text](error2.png?raw=true)
 
-  ```
-    ![Alt text](error2.png?raw=true)
   Here are the definitions of MonadE and the functions used in the demonstration:
   ```Javascript
     function MonadEr (val, ID, er = []) {
