@@ -86,45 +86,57 @@ So, with that out of the way, here are the definitions of Monad and testPrefix:
     }
 
   ```
-  In most chains of computations, the arguments provided to each link's bnd() method are functions that return instances of Monad. The stand-alone ret() function does only one thing; it creates new Monad instances. Here are some examples of functions that return instances of Monad:
-  ```javascript
-      function ret(v, id = 'generic') {
-        return new Monad(v, id);
-      } 
 
-      var add = function add (x, b) {
-          return ret(parseInt(x,10) + parseInt(b,10) );
-      };
-      
-      var cube = function cube (v, id = 'default') {
-          return ret(v * v * v, id);
-      };
-    
-      function log(x,y) {
-          console.log(y)
-          return ret(x);
-      };
-  ```
-  These functions can be used with instances of Monad in many ways, for example:
-  ```javascript
-    ret(3,'cow').bnd(x => log(x,['Received the value ' + x])
-    .bnd(cube).bnd(y => log(y, [x + ' cubed is ' + y])
-    .bnd(log,['The monad cow holds the value ' + cow.x])))  
 
-     Output:
-     Received the value 3
-     3 cubed is 27  
-     The monad cow holds the value 3  
-  ```
-  I experimented with several definitions of Monad during the course of this project. The reader is encouraged to experiment with variations on the theme. If you come up with something that is useful to you, please let me know. The current version is the most useful for me. Its bnd() method can assign the return value of bnd()'s argument to any valid Javascript variable name. For example,
-  ```javascript
-      ret(3, 'm1').bnd(cube, 'Mm2')
-      Result: m1.x === 3
-              m2.x === 27  
-  ```        
-  If the prefix "M" is absent, bnd() ignores the string argument. But when the "M" prefix is present, m1 retains its initial value, m2 retains the value it gets from from adding m's value (which is 0) to 3, and m3.x is the result. Both forms could be useful.
 
-  The following example shows lambda expressions sending variables v1 and v2 through a sequence of computations and v3 sending the final result to the string that is logged. It also shows monads a, b, c, d, e, f, and g being updated and preserved in an array that is not affected by further updates. That is because calling the ret() method does not mutate a monad, it creates a fresh instance with the same name. Here is the example, shown in a screen shot of the Chrome console log:.
+
+
+
+
+
+
+
+Variations on the Theme
+
+Variations on the Monad theme serve diverse purposes. Instances of MonadState preserve computations so they won't have to be performed again. An instance of MonadState2 keeps a record of game play allowing players to back up and resume play from a previous display of numbers. It also keeps the current game parameters - score, goals, operator, selected numbers, and remaining numbers - in a single array which is stored in the archive whenever a new state is created. MonadItter instances are used to parse websockets messages and organize the callbacks neatly. MonadEr catches NaN and prefents crashes when undefined variables are encountered. I defined a message emitting monad but it seemed useless in this Cycle application where reactivity is pervasive. When you want to emit and listen for messages, it is better to build a driver and merge its stream of messages into the application cycle.
+
+The various monad constructors demonstrate a coding style and philosophy, and are not intended to serve as a static library. You might find Monad useful as it is, and of course you are welcome to use it, but you might also take the general idea and eliminate some features and add others to suits your needs. Or you might prefer an entirely different way of organizing your code. You can incorporate your own monad constructors into any framework, just I have make mine part of this Cycle application.
+
+Computations
+
+Computations are easy to link if each result is returned in an instance of Monad. Here are a few examples of functions that return instances of Monad:
+
+  function ret(v, id = 'temp') {
+      window[id] = new Monad(v, id);
+      return window[id];
+    }
+
+    function cube (v, id) {
+      return ret(v * v * v);
+    };
+
+    function add (x, b) {
+      return ret(parseInt(x,10) + parseInt(b,10) );
+    };
+
+    function log(x,y) {
+        console.log(y)
+        return ret(x);
+    };  
+The "$" prefix provides control over the destination of computation results. In the following example, m1, m2, and m3 have already been declared. Here is a comparison of the results obtained when the "$" prefix is used and when it is omitted:
+
+    m1.ret(7).bnd(m2.ret).bnd(m3.ret)  // All three monads get the value 7.
+    m1.ret(0).bnd(add,3,'m2').bnd(cube,'m3')  // 'm1', 'm2', and 'm3' are ignored
+    Result: m1.x === 27
+            m2.x === 7
+            m3.x === 7  
+    m1.ret(0).bnd(add,3,'$m2').bnd(cube,'$m3')   
+    Result: m1.x === 0
+            m2.x === 3
+            m3.x === 27  
+If the prefix "$" is absent, bnd() ignores the string argument. But when the "$" prefix is present, m1 retains its initial value, m2 retains the value it gets from from adding m's value (which is 0) to 3, and m3.x is the result of applying "cube" to m2.x. Both forms could be useful.
+
+The following example shows lambda expressions sending variables v1 and v2 through a sequence of computations and v3 sending the final result to the string that is logged. It also shows monads a, b, c, d, e, f, and g being updated and preserved in an array that is not affected by further updates. That is because calling the ret() method does not mutate a monad; it creates a fresh instance with the same name. Here is the example, shown in a screen shot of the Chrome console:.
 
   ![Alt text](demo_000.png?raw=true)
 
