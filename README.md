@@ -169,13 +169,7 @@ The first demonstration displays the Fibonacci series up to an upper bound enter
 The demonstrations do not block the main execution thread. Computations are performed in web workers and the results are stored for further use in the main thread.
 
 According to the The On-Line Encyclopedia of Integer Sequences these are the first eleven proven prime Fibonacci numbers: 2, 3, 5, 13, 89, 233, 1597, 28657, 514229, 433494437, 2971215073, and 99194853094755497. The eleventh number, 2971215073, is as far as you can go on an ordinary desktop computer. 
-The elapsed time is undefined milliseconds.
 
-Fibonacci Numbers
-
-Prime Fibonacci Numbers
-
-The largest generated prime number.
 The second demonstration in this series decomposes numbers into its their prime factors. Unless a large array of prime numbers has already been generated, five digits is the limit for a quick response. After running 300,000,000,000 in the first demonstration, 444,444 was decomposed in a little over 100 microseconds. To see it in action, enter a number below.
 
 Next, two comma-separated numbers are decomposed into arrays of their prime factorss, and those arrays are used to compute their lowest common multiple (lcm). For example, the lcm of 6 and 9 is 18 because 3*6 and 2*9 are both 18. The lcm of the denominators of two fractions is useful in fraction arithmetic; specifically, addition and subtraction. 
