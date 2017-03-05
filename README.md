@@ -199,8 +199,6 @@ The preceding demonstrations used three instances of MonadState: primesMonad, fi
 ```    
 MonadState reproduces some of the functionality found in the Haskell Module "Control.Monad.State.Lazy", inspired by the paper "Functional Programming with Overloading and Higher-der Polymorphism", Mark P Jones (http://web.cecs.pdx.edu/~mpj/) Advanced School of Functional Programming, 1995. Transformers take instances of MonadState and return different instances of MonadState. The method call "fibsMonad.bnd(fpTransformer, primesMonad)" returns primesMonad updated so that the largest prime number in primesMonad.s[1] is the square root of the largest Fibonacci number in fibsMonad.s[3]. Here is the definition of fpTransformer:
 
-hl
-
 ```js
     var fpTransformer = function fpTransformer(x, s) {
       var a = Math.ceil(Math.sqrt(x[3].slice(-1)[0]));
@@ -248,9 +246,10 @@ gameMonad is an instance of MonadState2. gameMonad.s is a six item array holding
     }; 
 ```    
 And here is the definition of gameMonad:
-
+```javascript
     var gameMonad = new MonadState2('gameMonad',
       [ 0,0,0,[],[0,0,0,0],[[0,0,0,[],[0,0,0,0]]]]);
+```
 When one of the operator buttons is clicked, gameMonad.s[5][mMindex.x][2] changes from 0 to either "add", "subtract", "multiply", "divide", or "concat". When a number is clicked, it moves from gameMonad.s[5][mMindex.x][4] to gameMonad.s[5][mMindex.x][3]. If gameMonad.s[5][mMindex.x][3] contains two numbers and gameMonad.s[5][mMindex.x][2] is not zero (meaning an operator has been selected), updateCalc() is called. Similarly, if an operator is clicked after two numbers have been put in gameMonad.s[5][mMindex.x][3], updateCalc() is called. updateCalc()'s arguments are an array containing the two selected numbers and a string designating the operator.
 
 If the calculated number in updateCalc() is 18 or 20, score() is called. Otherwise, the update is performed in updateCalc. Here are the definitions of updateCalc() and score():
@@ -259,9 +258,7 @@ If the calculated number in updateCalc() is 18 or 20, score() is called. Otherwi
       .select('.num').events('click');
 
     var numClickAction$ = numClick$.map(e => {
-      console.log('In numClickAction$ - - - <><><><><><><><><><><> gameMonad.s[5][mMindex.x][3]',gameMonad.s[5][mMindex.x][3]);
       if (gameMonad.s[5][mMindex.x][3].length > 1) {
-        console.log( 'In numClickAction$. gameMonad.s[5][mMindex.x][3] is full.', gameMonad.s[5][mMindex.x][3]);
       }
       else {
         var x = gameMonad.s[5][mMindex.x].slice();
