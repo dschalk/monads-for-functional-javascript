@@ -384,11 +384,10 @@ The list of online group members at the bottom of the scoreboard is very respons
   Functions used as arguments to the MonadE bnd() method can be placed in quotation marks to prevent the browser engine from throwing reference errors. Arguments can be protected in the same manner.
 
   The following demonstration shows the Chrome console log entries that result from running
-  ```javascript
-      t.bnd('add3", 3, 'Mt2').bnd(cube3, 'Mt3'
-      t.bnd('add3",'three', 'Mt2').bnd(cube3, 'Mt3'    
-      t.bnd('add3",'Math.sqrt(-1)', 'Mt2').bnd(cube3, 'Mt3' 
-      t.bnd('addd3", 3, 'Mt2').bnd(cube3, 'Mt3' 
+  ```javascriptt.bnd('add3', 3, '$t2').bnd(cube3, '$t3')
+    t.bnd('add3','three', '$t2').bnd(cube3, '$t3')    
+    t.bnd('add3','Math.sqrt(-1)', '$t2').bnd(cube3, '$t3') 
+    t.bnd('addd3', 3, '$t2').bnd(cube3, '$t3' 
   ```    
   ![Alt text](error2.png?raw=true)
 

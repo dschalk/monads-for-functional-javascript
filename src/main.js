@@ -1235,10 +1235,10 @@ h('span.tao3', `${ (mMfactors8_b.x[0]  *  mMfactors8_b.x[1])  ===  (mMfactors8_b
   h('p', ' Instances of MonadEr function much the same as instances of Monad, but when an instance of MonadEr encounters an error, it ceases to perform any further computations. Instead, it passes through every subsequent stage of a sequence of MonadEr expressions, reporting where it is and repeating the error message. It will continue to do this until it is re-instantiated or until its bnd() method runs on the function clean(). ' ),
   h('p', 'Functions used as arguments to the MonadEr bnd() method can be placed in quotation marks to prevent the browser engine from throwing reference errors. Arguments can be protected in the same manner. Using MonadEr can prevent the silent proliferation of NaN results in math computations, and can prevent browser crashes due to attempts to evaluate undefined variables. Sometimes crashes are desired when testing code, but MonadEr provides instant feedback pinpointing the exact location of the error. ' ), 
   h('p', ' The following demonstration shows the Chrome console log entries that result from running ' ),
-  h('pre', `    t.bnd('add3", 3, '$t2').bnd(cube3, '$t3'
-    t.bnd('add3",'three', '$t2').bnd(cube3, '$t3'    
-    t.bnd('add3",'Math.sqrt(-1)', '$t2').bnd(cube3, '$t3' 
-    t.bnd('addd3", 3, '$t2').bnd(cube3, '$t3' ` ),
+  h('pre', `    t.bnd('add3', 3, '$t2').bnd(cube3, '$t3')
+    t.bnd('add3','three', '$t2').bnd(cube3, '$t3')    
+    t.bnd('add3','Math.sqrt(-1)', '$t2').bnd(cube3, '$t3') 
+    t.bnd('addd3', 3, '$t2').bnd(cube3, '$t3' ` ),
   h('br'),
   h('img.image', {props: {src: "error2.png"}}  ),   
   h('br'),
