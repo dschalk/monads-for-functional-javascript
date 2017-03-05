@@ -14,10 +14,6 @@ PLEAE NOTE: This site is constantly evolving. The commentary sometimes lags behi
 
 ## Basic Monad
 
-
-
-
-
 The definition of Monad, which is the basic monad constructor, is somewhat obscure. It isn't intended as a puzzle, so a little explanation is in order.
 
 The term "monad" will mean "instance of Monad". Monad could have been defined as a class, but the current definition suffices.
@@ -45,9 +41,6 @@ Had there been no reference to m, the previous instance would have been subject 
 
 It is possible to mutate monads with code such as m.x = 888. That might be a good thing to do in a function with many recursions, but it seems like a misuse of monads. Monads are never mutated on this website. Object.freeze() is used to prevent mutation in the definition of primesMonad (shown below).
 
-
-
-
 The bnd() method can leave the calling monad's global value unchanged while assigning a value (in the global space) to another previously defined monad, or to a freshly created monad. So regardless of whether or not "m2" is defined, m.ret(4).bnd(cube,"$m2") causes m.x === 4 and m2.x === 64 to both return true.
 ```javascript
 m.ret(4).bnd(cube,"$m2") 
@@ -60,13 +53,6 @@ The definition of Monad (below) shows how bnd() checks to see if func(m.x, ...ar
 Instances of Monad facilitate changing values without mutation. They also provide a way to chain function calls. For example, m.ret(2).bnd(add, 1).bnd(cube) causes m.x === 27 to return true. This works because ret(), add, and cube all return monads when they are applied to m.x. The definition of add and cube are shown below and can be found in the Github repository.
 
 So, with that out of the way, here are the definitions of Monad and testPrefix:
-
-
-
-
-
-
-
   ```javascript    
     var Monad = function Monad(z = 19, g = 'generic') {
       this.x = z;
@@ -142,170 +128,6 @@ So, with that out of the way, here are the definitions of Monad and testPrefix:
 
   ![Alt text](demo_000.png?raw=true)
 
-### The Monad Laws
-
-  In the following discussion, "x === y" signifies that the expression x === y returns true. Let J be the collection of all Javascript values, including functions, instances of Monad, etc, and let F be the collection of all functions mapping values in J to instances of Monad with references (names) matching their ids; that is, with window[id] === m.id for some id which is a valid es2015 variable name. The collection of all such instances of Monad along and all of the functions in F is called "M". For any instances of Monad m, m1, and m2 in M and any functions f and g in F, the following relationships follow easily from the definition of Monad:
-
-  Left Identity
-```js
-      m.ret(v, ...args).bnd(f, ...args).x === f(v, ...args).x   
-      ret(v, ...args).bnd(f, ...args).x === f(v, ...args).x 
-      Examples: m.ret(3).bnd(cube).x === cube(3).x  Tested and verified  
-      ret(3).bnd(cube).x === cube(3).x     Tested and verified
-      Haskell monad law: (return x) >>= f ≡ f x  
-```  
-  Right Identity
-```js      
-      m.bnd(m.ret) === m      Tested and verified 
-      m.bnd(m.ret) === m   Tested and verified
-      m.bnd(ret) === m  Tested and verified
-      Haskell monad law: m >>= return ≡ m 
-```  
-  Commutivity
-```js      
-      m.bnd(f1, ...args).bnd(f2, ...args).x === m.bnd(v => f1(v, ...args).bnd(f2, ...args)).x 
-      Example: m.ret(0).bnd(add, 3).bnd(cube).x === 
-      m.ret(0).bnd(v => add(v,3).bnd(cube)).x  Tested amd verified
-      Haskell monad law: (m >>= f) >>= g ≡ m >>= ( \x -> (f x >>= g) ) 
-```
-### Disussion
-  The Haskell statement f ≡ g means that f x === g x for all Haskell values x of the appropriate type. That is the test applied to Javascript expressions in "Monad Laws" section (above). Neither the === nor the === operator would provide useful information about the behavior of instances of Monad, which are objects. Those operators test objects for location in memory. If the left and right sides of predicates create new instances of m, then the left side m and the right side m wind up in different locations in memory. So we expect m.ret(3) === m.ret(3) to return false, and it does. The question we want answered is the question ≡ answers in Haskell: Can the left and right sides be substituted for one another and still yield the same results.
-
-Research into ways of defining a Haskell category appears to be ongoing. It involves tinkering with special constraints, omitted features, and definitions of morphisms that are not Haskell functions. When a definition of the category is established, Haskell monads are then be shown to be, in some contrived context, category-theory monads. Devising such schemes are instructive academic exercises, but I don't think they can provide anything useful to programmers working on applications for industry, commerce, and the Internet.
-
-However, imitating definitions and patterns found in category theory, as Haskell does in defining the functor, monoid, and monad type classes, was a stroke of genius that vastly enriched the Haskell programming language and brought it into the mainstream as a viable alternative to java, c++, etc. This website runs efficiently on a Haskell websockets server. The modified Haskell Wai Websockets server has proven to be extraordinarily easy to maintain as new requirements become necessary. For example, modifying the server to send chat messages and shared todo lists only to members of the same group was a trivial task. It required just a tiny amount of pattern-matching code. Category theory patterns make the Haskell server's front-end interface robust, versetile, and reliable. Those are the qualities that I strive to emulate with JS-monads.
-
-## Asynchronous Processes
-
-The prime Fibonacci demonstration involves a computation that can take a while to complete. It memoizes computed prime numbers and does not block the browser engine's primary execuation thread. The number you enter below is a cap on the size of the largest number in the Fibonacci sequence which is produced. If you enter 3 and then, one at a time, 0's until you reach three billion, you will generate the largest prime Fibonacci number that can be produced on an ordinary desktop computer. On my old computer, lag times are negligible until the eighth zero, where there was a 657 microsecond pause. I had to wait 2427 microseconds after entering the ninth zero. A tenth zero, resulting in 30,000,000,000, entailed a lag of a little over seven seconds. The Fibonacci number 20,365,011,074 appeared on my monitor. The largest prime Fibonacci number displayed was still 2,971,215,073.
-
-According to the The On-Line Encyclopedia of Integer Sequences these are the first eleven proven prime Fibonacci numbers: 2, 3, 5, 13, 89, 233, 1597, 28657, 514229, 433494437, 2971215073, and 99194853094755497. The eleventh number, 2971215073, is as far as you can go on an ordinary desktop computer. 
-The elapsed time is undefined milliseconds.
-
-
-
-
-
-JS-monads running on Cycle.js
-
-These monads are like the Haskell monads in that they resemble the monads of category theory while not actually being mathematical monads. See Hask is not a category. by Andrej Bauer and the Discussion below. Adherance to the monad laws (see below) helps make the monads robust, versitile, and reliable tools for isolating and chaining sequences of javascript functions. 
-
-
-The demonstrations include persisternt, shared todo lists; 
-An interactive simulated dice game with a traversable history (all group members see your score decrease or increase as you navegate backwards and forwards); 
-Chat rooms where members can compete in the simulated dice game, chat, and share a project todo list; 
-Other demonstrations of the usefulness of monads in a Cycle application. 
-
-The code for this repository is at JS-monads-stable
-IN ORDER TO SEE THE GAME, TODOLIST, AND CHAT DEMONSTRATIONS, YOU MUST ENTER SOMETHING .
-
-Name: 
-People who are in the same group, other than solo, share the same todo list, messages, and simulated dice game. In order to see any of these, you must establish an identity on the server by loggin g in. The websockets connection terminates if the first message the server receives does not come from the sign in form. You can enter any random numbers or letters you like. The only check is to make sure someone hasn	already signed in with whatever you have selected. If you log in with a name that is already in use, a message will appear and this page will be re-loaded in the browser after a four-second pause.
-
-Data for the traversable game history accumulates until a player scores three goals and wins. The data array is then erased and the application is ready to start accumulating a new history.
-
-The Monads
-
-Monad
-
-    var Monad = function Monad(z = 42, g = 'generic') {
-      this.x = z;
-      this.id = g;
-      this.bnd = function (func, ...args) {
-        var m = func(this.x, ...args)
-        var mon;
-        if (m instanceof Monad) {
-          mon = testPrefix(args,this.id); 
-          return window[mon] = new Monad(m.x, mon);
-        }
-        else return m;
-      };
-      this.ret = function (a) {
-        return window[_this.id] = new Monad(a,_this.id);
-      };
-    };  
-
-    function testPrefix (x,y) {
-      var t = y;
-      var s;
-      if (Array.isArray(x)) {
-        x.some(v => {
-          if (typeof v === 'string' && v.charAt() === 'M') {
-             t = v.slice(1, v.length);
-          }
-        })
-      }
-      return t;
-    }  
-
-Instances of Monad, MonadState, MonadItter, and MonadEr facilitate programming in a functional style. Additional constructors can be invented as special needs arise. In this presentation we see, among other things, Monad instances linking computations and assigning results to Monad instances, MonadState instances memoizing computation results, MonadItter instances organizing nested callbacks into neat, easily maintainable blocks of code, and MonadEr catching NaN and preventing crashes when undefined variables are encountered.
-Computations are easy to link if each result is returned in an instance of Monad. Here are a few examples of functions that return instances of Monad:
-
-  function ret(v, id = 'generic') {
-      window[id] = new Monad(v, id);
-      return window[id];
-    }
-
-    function cube (v, id) {
-      return ret(v * v * v);
-    };
-
-    function add (x, b) {
-      return ret(parseInt(x,10) + parseInt(b,10) );
-    };
-
-    function log(x,y) {
-        console.log(y)
-        return ret(x);
-    };  
-The "M" prefix provides control over the destination of computation results. In the following example, m1, m2, and m3 have already been declared. Here is a comparison of the results obtained when the "M" prefix is used and when it is omitted:
-
-    m1.ret(7).bnd(m2.ret).bnd(m3.ret)  // All three monads get the value 7.
-    m1.ret(0).bnd(add,3,'m2').bnd(cube,'m3')  // 'm1', 'm2', and 'm3' are ignored
-    Result: m1.x === 27
-            m2.x === 7
-            m3.x === 7  
-    m1.ret(0).bnd(add,3,'Mm2').bnd(cube,'Mm3')   
-    Result: m1.x === 0
-            m2.x === 3
-            m3.x === 27  
-If the prefix "M" is absent, bnd() ignores the string argument. But when the "M" prefix is present, m1 retains its initial value, m2 retains the value it gets from from adding m's value (which is 0) to 3, and m3.x is the result. Both forms could be useful.
-
-The following example shows lambda expressions sending variables v1 and v2 through a sequence of computations and v3 sending the final result to the string that is logged. It also shows monads a, b, c, d, e, f, and g being updated and preserved in an array that is not affected by further updates. That is because calling the ret() method does not mutate a monad; it creates a fresh instance with the same name. Here is the example, shown in a screen shot of the Chrome console log:.
-
-
-
-
-The Monad Laws
-
-In the following discussion, "x === y" signifies that the expression x === y returns true. Let J be the collection of all Javascript values, including functions, instances of Monad, etc, and let F be the collection of all functions mapping values in J to instances of Monad with references (names) matching their ids; that is, with window[id] === m.id for some id which is a valid es2015 variable name. The collection of all such instances of Monad along and all of the functions in F is called "M". For any instances of Monad m, m1, and m2 in M and any functions f and g in F, the following relationships follow easily from the definition of Monad:
-
-Left Identity
-    m.ret(v, ...args).bnd(f, ...args).x === f(v, ...args).x 
-    ret(v, ...args).bnd(f, ...args).x === f(v, ...args).x 
-    Examples: m.ret(3).bnd(cube).x === cube(3).x  Tested and verified  
-    ret(3).bnd(cube).x === cube(3).x     Tested and verified
-    Haskell monad law: (return x) >>= f ≡ f x  
-Right Identity
-    m.bnd(m.ret) === m      Tested and verified 
-    m.bnd(m.ret) === m   Tested and verified
-    m.bnd(ret) === m  Tested and verified
-    Haskell monad law: m >>= return ≡ m 
-Commutivity
-    m.bnd(f1, ...args).bnd(f2, ...args).x === m.bnd(v => f1(v, ...args).bnd(f2, ...args)).x 
-    Example: m.ret(0).bnd(add, 3).bnd(cube).x === 
-    m.ret(0).bnd(v => add(v,3).bnd(cube)).x  Tested amd verified
-    Haskell monad law: (m >>= f) >>= g ≡ m >>= ( \x -> (f x >>= g) ) 
-Back To The Top
-Disussion
-
-The Haskell statement f ≡ g means that f x == g x for all Haskell values x of the appropriate type. That is the test applied to Javascript expressions in the "Monad Laws" section (above). Neither the == nor the === operator would provide useful information about the behavior of instances of Monad, which are objects. Those operators test objects for location in memory. If the left and right sides of predicates create new instances of m, then the left side m and the right side m wind up in different locations in memory. So we expect m.ret(3) === m.ret(3) to return false, and it does. The question we want answered is the question ≡ answers in Haskell: Can the left and right sides be substituted for one another and still yield the same results.
-
-The Haskell programming language borrowed the term "monad" from the branch of mathematics known as category theory. This was apropriate because Haskell monads, along with the function return and the operator >>=, behave quite a bit like category theory monads, and the inspiration for them came out of category theory. For Haskell monads to actually be category theory monads, they would need to reside in a category-theory category. They don't, although the Haskell mystique tends to give newcommers to the language the impression that they do. See Hask is not a category.
-Research into ways of defining a Haskell category appears to be ongoing. It involves tinkering with special constraints, omitted features, and definitions of morphisms that are not Haskell functions. When a definition of the category is established, Haskell monads are then shown to be, in some contrived context, category-theory monads. Devising such schemes are instructive academic exercises, but I don't think they can provide anything useful to programmers working on applications for industry, commerce, and the Internet.
-
-However, imitating definitions and patterns found in category theory, as Haskell does in defining the functor, monoid, and monad type classes, was a stroke of genius that vastly enriched the Haskell programming language and brought it into the mainstream as a viable alternative to java, c++, etc. This website runs efficiently on a Haskell websockets server. The modified Haskell Wai Websockets server has proven to be extraordinarily easy to maintain as new requirements become necessary. For example, modifying the server to send chat messages and shared todo lists only to members of the same group was a trivial task. It required just a tiny amount of pattern-matching code. Category theory patterns make the Haskell front-end interface robust, versetile, and reliable. Those are the qualities that I strive to emulate with JS-monads.
-
 ##A Few Words About Cycle.js
 
 Opinionated frameworks tend to annoy and frustrate me. Cycle, on the other hand, is easy on my mind. I love it.
@@ -368,22 +190,19 @@ Code for the demonstrations is presented and discussed in the online presentatio
 
 The preceding demonstrations used three instances of MonadState: primesMonad, fibsMonad, and factorsMonad. The chat message demonstration uses another instance of MonadState; namely, messageMonadn. Instance of MonadState holds a current state along with a method for updating state. Here again is the definition of MonadState:
 ```js
-    function MonadState(g, state, p) {
+    function MonadState(g, state) {
       this.id = g;
       this.s = state;
-      this.process = p;
-      this.a = s[3];
       this.bnd = (func, ...args) => func(this.s, ...args);  
-      this.run = ar => { 
-        var ar2 = this.process(ar);
-        this.s = ar2;
-        this.a = ar2[3];
-        window[this.id] = this;
-        return window[this.id];
-      }
-    };  
+      this.ret = function (a) {
+        return window[this.id] = new MonadState(this.id, a);
+      };
+    };
 ```    
 MonadState reproduces some of the functionality found in the Haskell Module "Control.Monad.State.Lazy", inspired by the paper "Functional Programming with Overloading and Higher-der Polymorphism", Mark P Jones (http://web.cecs.pdx.edu/~mpj/) Advanced School of Functional Programming, 1995. Transformers take instances of MonadState and return different instances of MonadState. The method call "fibsMonad.bnd(fpTransformer, primesMonad)" returns primesMonad updated so that the largest prime number in primesMonad.s[1] is the square root of the largest Fibonacci number in fibsMonad.s[3]. Here is the definition of fpTransformer:
+
+hl
+
 ```js
     var fpTransformer = function fpTransformer(x, s) {
       var a = Math.ceil(Math.sqrt(x[3].slice(-1)[0]));
@@ -396,169 +215,6 @@ MonadState reproduces some of the functionality found in the Haskell Module "Con
       return [x[3].join(', '), m.s[3].slice(-1).pop(), ar.join(', '), m.s];
     };   
 ```
-## MonadArchive
-
-### Traversal of the dice game history.
-
-  The state of the simulated dice game is maintained in travMonad, an instance of MonadArchive. Here are the definitions of MonadArchive, travMonad, and the helper function trav_archive:
-  ```javascript
-    function MonadArchive(g, state, p) {
-      this.id = g;
-      this.s = state;
-      this.process = p;
-      this.a = s[0];
-      this.bnd = (func, ...args) => func(this.s, ...args);  
-      this.run = ar => { 
-        var ar2 = this.process(ar);
-        this.a = ar2[pMindex.x];
-        this.s = ar2;
-        window[this.id] = this;
-        return window[this.id];
-      }
-    };
-    
-    function trav_archive (ar) {
-      var ind = pMindex.x + 1;
-      pMindex.ret(ind);
-      pMnums.ret(ar[0]);
-      pMscore.ret(ar[1]);
-      pMgoals.ret(ar[2]);
-      ar[3] = (typeof ar[3] === "undefined") ? pMclicked.x : ar[3]
-      ar[4] = (typeof ar[4] === "undefined") ? pMop.x : ar[4]
-      pMclicked.ret(ar[3]);
-      pMop.ret(ar[4]); 
-      var next = travMonad.s.slice();
-      next.splice( ind, 0, ar );
-      return next;
-    }
-    ```
-  The method travMonad.run() executes in:
-  ```js
-      messages$.          Runs when a new dice roll comes in from the websockets server.
-      groupPressAction$.  Clears game data when a new group is jointed.
-      nunClickAction$     Updates travMonad when numbers are clicked.
-      clearAction$        Clears saved data when the button under the display is clicked.
-      updateCalc          A function called by numsClickAction$ and opClickAction during game play.  
-  ```
-  travMonad keeps a record of the "x" attributes of pMnums (displayed numbers), pMscore, pMgoals, pMclicked (selected numbers), and pMop (the selected operator). Whenever pMnums changes, the expression pMnums.bnd(test3, "MpMstyle") executes, updating pMstyle in order to maintain a well-formated numbers display. In is, therefor, not necessary to keep a record of pMstyle in travMonad. Here is the definition of clear():
-  ```js`
-    function test3 (a) {
-      var b = [];
-      for (let i of [0,1,2,3]) {
-        b[i] = (a[i] === undefined) ? 'none' : 'inline'
-      }
-      return ret(b);
-    }  
-  ```
-  Whenever a new roll is requested from the server, a player's score and the number of goals is sent to the server. The server responds by sending all group members two messages; one for updating their numbers display, the other for updating their scoreboards. Messages from browsers to the server requesting updated numbers and scoreboard information are prefixed by CA#$42. This serves the interests of efficiency because mew rolls are automaticlly requested when scores change, and score changes are always associate with requests for new numbers. One point is deducted when a player clickes ROLL.
-
-  Scores increase whenever players put together expressions that return 18 or 20. An increase in score is accompanied by a call to newRoll() with two arguments: score and goals. The Haskell server updates its ServerState TMVar and broadcasts the new numbers to all group members with the prefix "CA#$42, along with a message prefixed by NN#$42 containing the updated score and goal information. NN#$42 and CA#$42 messages are parsed and acted upon in the message$ stream, where each player's travMonad object is augmented by the addition of a new state information array. travMonad.s is an array of arrays containing the collection of these state arrays.
-
-  Here is the code that runs when the back button is clicked:
-  ```javascript
-      var backAction$ = backClick$.map(() => {
-        if (pMindex.x > 1) {   
-          pMop.ret(0);
-          var ind = pMindex.x - 1;
-          var s = travMonad.s[ind];
-          pMnums.ret(s[0]).bnd(test3, 'MpMstyle');
-          pMscore.ret(s[1]);
-          pMgoals.ret(s[2]);
-          pMclicked.ret(s[3]);
-          pMop.ret(s[4]);
-          socket.send(`CG#$42,solo,1v65n$%pqw3*@#9,0,0`);
-        pMindex.bnd(add,-1);
-        } 
-      });    
-  ```
-###  Updating the numbers
-
-  The following code executes when a player clicks a number:
-  ```javascript
-    var numClick$ = sources.DOM
-        .select('.num').events('click'); 
-
-    var numClickAction$ = numClick$.map(e => {
-      if (mM3.x.length === 2) {return};
-      pMnums    
-      .bnd(spliceM, e.target.id, 1)
-      .bnd(pMnums.ret)
-      .bnd(test3)
-      .bnd(pMstyle.ret)
-      mM3
-      .bnd(push, e.target.innerHTML)
-      .bnd(mM3.ret)
-      .bnd(v => {
-        if (v.length === 2 && mM8.x != 0) {
-          updateCalc(v, mM8.x) 
-        }
-      })
-      }).startWith([0, 0, 0, 0]);
-
-    var opClick$ = sources.DOM
-        .select('.op').events('click');
-
-    var opClickAction$ = opClick$.map(e => {
-      mM8.ret(e.target.innerHTML).bnd(v => { 
-        var ar = mM3.x
-        if (ar.length === 2) {
-          updateCalc(ar, v)
-        }
-      }) 
-    });  
-  ```
-  The clicked number is removed from pMnums and added to pMclicked in the numClickAction$ stream. If two numbers and an operator have been selected, numClickAction$ or opClickAction$ (depending on whether the most recent click was on a number or an operator) calls updateCalc with two arguments, the pMclicked.x array of selected numbers and the chosen operator. After each roll, pMop.x is updated to 0. pMop.x != 0 indicates that an operator has been selected.
-  ```js
-    function updateCalc(ar, op) {
-      var result = calc(ar[0], op, ar[1]);
-      mM3.ret([]);
-      mM8.ret(0)
-      if (result === 20) { 
-        pMscore.bnd(add,1)
-        .bnd(testscore)
-   ?     .bnd(pMscore.ret)
-        .bnd(v => score(v));
-        return; 
-      } 
-      else if (result === 18) { 
-        pMscore.bnd(add,3)
-        .bnd(testscore)
-        .bnd(pMscore.ret)
-        .bnd(v => score(v));
-        return; 
-      }
-
-      else {
-        pMnums.bnd(push,result)
-        .bnd(pMnums.ret)
-        .bnd(v => {
-          travMonad.run([v, pMscore.x, pMgoals.x])
-          test3(v)
-          .bnd(pMstyle.ret)
-        }); 
-        mM8.ret(0);
-        mM3.ret([]);
-      }
-    };  
-
-    var testscore = function testscore(v) {
-      if ((v % 5) === 0) return ret(v+5)
-      else return ret(v);
-    };
-
-    function score(scor) {
-      if (scor != 25) {
-        newRoll(scor, pMgoals.x)
-      }
-      else if (pMgoals.x === 2) {
-        socket.send(`CE#$42,solo,1v65n$%pqw3*@#9`);
-        newRoll(0,0)
-      }
-      else {pMgoals.bnd(add, 1).bnd(pMgoals.ret).bnd(g => newRoll(0, g))};
-    };
-  ```
-  updateCalc calls calc on the numbers and operater provided to it by numCalcAction$ or opCalcAction$. The return value is assigned to result. If the value of result is 18 or 20, pMscore.x is augmented by 3 or 1, respectively, and checked to see if another five points should be added. score() is then called with the new score as its argument. score() performs some additional tests and calls for a new roll with the values of score and goals it has determined depending on whether or not there is a score and, if so, a winner.
-
 ## MonadItter
 
   MonadItter instances do not have monadic properties, but they facilitate the work of monads. Here's how they work:
@@ -573,135 +229,138 @@ MonadState reproduces some of the functionality found in the Haskell Module "Con
   ```
   As shown later in the online demonstration, MonadItter instances control the routing of incoming websockets messages and the flow of action in the simulated dice game. In one of the demonstrations, they behave much like ES2015 iterators. I prefer them over ES2015 iterators. They can also help to provide promises-like functionality without promises.
 
-### Traversal of the dice game history.
+##The Simulated Dice Game
+playerMonad saves the state of the game whenever the number display changes. It works in conjunction with mMindex, gameMonad, and bNode() to maintain the game interface, with or without traversal of past states.
 
-  MonadState instance travMonad facilitates traversal of the game history. travMonad.s is a four member array holding the current numbers, current score, current goals, and an array of arrays containing numbers, score, and goals corresponding to past states of the game.. Here is the definition of travMonad and its auxiliary function:
-  ```javascript
-  MonadState("travMonad", [[8,8,8,8], 0, 0, [ [ [], 0, 0 ] ] ], trav_state)
-    
-    function trav_state (ar) {
-      pMindex.bnd(add,1).bnd(pMindex.ret);
-      var nums = ar[0];
-      var score = ar[1];
-      var goals = ar[2];
-      var next = travMonad.s.slice();
-      var ar = [nums, score, goals];
-      next[0] = nums;
-      next[1] = score;
-      next[2] = goals;
-      next[3].splice( pMindex.x, 0, ar );
-      return next;         // This results in travMonad.s === next.
-    }
-  ```  
-  The number display is generated by four virtual button nodes with id = i, st yle: {display: pMstyle.x[i]} and text pMnums.x[i] for i = 0, 1, 2, and 3. The virtual button nodes rest permanently in the virtual DOM. pMnums and pMstyle are updated in the messages$ stream whenever a new dice roll is received from the server. pMnums and pMstyle are also re-set when a user clicks a number, causing it to disappear from the display and when when a user clicks a number or an operator button prompting a call to updateCalc, which either causes a new roll or a computed number to be added to the display. numClickAction$ and opClickAction$ are merged into the stream that feeds the virtual DOM, so updates are seen almost instantaneously.
-
-  Whenever pMnums changes, the expression pMnums.bnd(test3).bnd(pMstyle.ret) updates pMstyle so as to hide undefined values of pMnumes.x[i] for i = 0, 1, 2, and 3.
-  ```javascript
-    function test3 (a) {
-      var b = [];
-      for (let i of [0,1,2,3]) {
-        b[i] = (a[i] === undefined) ? 'none' : 'inline'
+gameMonad is an instance of MonadState2. gameMonad.s is a six item array holding score, goals, selected operator, selected numbers, display numbers, and an array of arrays of past scores, goals, selected numbers. and display numbers. gameMonad.s[5][2] is a place holder for selected operater. It is always set to 0 in gameMonad.s[5]. gameMonad.run() increments mMindex.x and inserts its argument in gameMonad.s[5]. gameMonad.s[5] is an array of past states of the game. Here is the definitions of MonadState2
+```javascript
+    function MonadState2(g, state) {
+      this.id = g;
+      this.s = state;
+      this.bnd = (func, ...args) => func(this.s, ...args);  
+      this.ret = function (a) {
+        return window[this.id] = new MonadState(this.id, a);
+      };
+      this.run = function (st) {
+        mMindex.bnd(add,1);
+        st[5] = this.s[5].slice();
+        st[5].splice(mMindex.x, 0, [st[0], st[1], st[2], st[3], st[4]]);
+        return window[this.id] = new MonadState2(this.id, st);
       }
-      return ret(b);
-    }  
+    }; 
+```    
+And here is the definition of gameMonad:
 
-    pMnums.bnd(test3).bnd(pMstyle.ret);  
-  ```  
-  New dice rolls always correspond to score changes. One point is lost each time a player clicke ROLL. Scores increase whenever players put together expressions that return 18 or 20. An increase in score is always accompanied by a call to newRoll() with two arguments: score and goals. The server updates its ServerState TMVar and broadcasts the new roll to all group members with the prefix "CA#$42. The server also broadcasts the updated score and goal information, with the prefix NN#$42. These messages are caught, parsed, and acted upon in the message$ stream in the Motorcycle front end. pMnums, pMstyle, and travMonad get updated during the course of this process.
-  ```javascript
-    mMZ10.bnd( () => {
-      pMnums.ret([v[3], v[4], v[5], v[6]]).bnd(test3).bnd(pMstyle.ret)
-      travMonad.run([ [v[3], v[4], v[5], v[6]], v[7], v[8] ]);
-      pMscore.ret(v[7]);
-      pMgoals.ret(v[8]) });  
-  ```
-### Updating the numbers
+    var gameMonad = new MonadState2('gameMonad',
+      [ 0,0,0,[],[0,0,0,0],[[0,0,0,[],[0,0,0,0]]]]);
+When one of the operator buttons is clicked, gameMonad.s[5][mMindex.x][2] changes from 0 to either "add", "subtract", "multiply", "divide", or "concat". When a number is clicked, it moves from gameMonad.s[5][mMindex.x][4] to gameMonad.s[5][mMindex.x][3]. If gameMonad.s[5][mMindex.x][3] contains two numbers and gameMonad.s[5][mMindex.x][2] is not zero (meaning an operator has been selected), updateCalc() is called. Similarly, if an operator is clicked after two numbers have been put in gameMonad.s[5][mMindex.x][3], updateCalc() is called. updateCalc()'s arguments are an array containing the two selected numbers and a string designating the operator.
 
-  The previous discusion was about traversal of the game history. This seems like a good place to look at the algorithm for generating new numbers when players click on the number and operator buttons. Here is the code:
-  ```javascript
+If the calculated number in updateCalc() is 18 or 20, score() is called. Otherwise, the update is performed in updateCalc. Here are the definitions of updateCalc() and score():
+```javascript
     var numClick$ = sources.DOM
-        .select('.num').events('click'); 
+      .select('.num').events('click');
 
     var numClickAction$ = numClick$.map(e => {
-      if (mM3.x.length === 2) {return};
-      pMnums    
-      .bnd(spliceM, e.target.id, 1)
-      .bnd(pMnums.ret)
-      .bnd(test3)
-      .bnd(pMstyle.ret)
-      mM3
-      .bnd(push, e.target.innerHTML)
-      .bnd(mM3.ret)
-      .bnd(v => {
-        if (v.length === 2 && mM8.x != 0) {
-          updateCalc(v, mM8.x) 
+      console.log('In numClickAction$ - - - <><><><><><><><><><><> gameMonad.s[5][mMindex.x][3]',gameMonad.s[5][mMindex.x][3]);
+      if (gameMonad.s[5][mMindex.x][3].length > 1) {
+        console.log( 'In numClickAction$. gameMonad.s[5][mMindex.x][3] is full.', gameMonad.s[5][mMindex.x][3]);
+      }
+      else {
+        var x = gameMonad.s[5][mMindex.x].slice();
+        x[3] = gameMonad.s[5][mMindex.x][3].slice();
+        x[4] = gameMonad.s[5][mMindex.x][4].slice();
+        x[3].push(x[4].splice(e.target.id,1)[0]); // Push the item spliced from x[4] into x[3].
+        var s3 = x[3].slice();
+        buttonNode = bNode(x[4]);
+        console.log('In numClickAction$ ???????? s3 is', s3 );
+        gameMonad.run(x);
+        if (s3.length === 2 && x[2] != 0) {
+          updateCalc(x[3], x[2]) 
         }
-      })
-      }).startWith([0, 0, 0, 0]);
+      }
+    }).startWith([0, 0, 0, 0]);
 
     var opClick$ = sources.DOM
         .select('.op').events('click');
 
     var opClickAction$ = opClick$.map(e => {
-      mM8.ret(e.target.innerHTML).bnd(v => { 
-        var ar = mM3.x
-        if (ar.length === 2) {
-          updateCalc(ar, v)
-        }
-      }) 
-    });
-  ```
-  The clicked number is removed from pMnums and added to mM3 in the numClickAction$ stream. If two numbers and an operator have been selected, numClickAction$ and opClickAction$ call updateCalc, giving it the two member array (which is held in mM3) of selected numbers and the selected operator. After each roll, mM8 is given the value 0 so mM8.x != 0 means an operator has been selected. 
-  ```javascript
-    function updateCalc(ar, op) {
-      var result = calc(ar[0], op, ar[1]);
-      mM3.ret([]);
-      mM8.ret(0)
-      if (result === 20) { 
-        pMscore.bnd(add,1)
-        .bnd(testscore)
-        .bnd(pMscore.ret)Next, I tried to define test2 in the Chrome developer scratch pad, which runs in the Chrome developer tools. Like the console, it is accessable by pressing F12 while in the running application in Chrome. Firefox provides similar tools. The attempt to define test2 resulted in the sequence of reports shown in the screenshot below. I defined test2 in monad.js, which loads as a script in the index.html file. The application loaded successfully, and when I looked in the console, I saw the same series of reports (screenshot below). When I entered test2 in the console, 0 was displayed. That was the value of the MonadE instance "a" when the error occurred. Here is test2 and the screenshot:
-
-        .bnd(v => score(v));
-        return; 
-      } 
-      else if (result === 18) { 
-        pMscore.bnd(add,3)
-        .bnd(testscore)
-        .bnd(pMscore.ret)
-        .bnd(v => score(v));
-        return; 
+      if (gameMonad.s[3].length === 2) {
+        var s3 = gameMonad.s[3].slice();
+        updateCalc(s3, e.target.textContent); 
       }
       else {
-        pMnums.bnd(push,result)
-        .bnd(pMnums.ret)
-        .bnd(v => {
-          travMonad.run([v, pMscore.x, pMgoals.x])
-          test3(v)
-          .bnd(pMstyle.ret)
-        }); 
-        mM8.ret(0);
-        mM3.ret([]);
+        var state = gameMonad.s.slice();
+        state[5][mMindex.x][2] = e.target.innerHTML;
+        gameMonad = new MonadState2('gameMonad', state);
+      }  
+```      
+gameMonad.s[5][mMindex.x][3] is the array of numbers which are displayed in the browser. Changes take place inside of a Snabbdom vNode named "buttonNode". buttonNode is the value returned by the function bNode() whose only argument is the array of numbers to be displayed. Here is the definitions of bNode:
+```javascript
+    function bNode (arr) {
+      var x = styl(arr.length);
+      var node = h('div', [
+        h('button#0.num', { style: { display: x[0] }}, arr[0] ),
+        h('button#1.num', { style: { display: x[1] }}, arr[1] ),
+        h('button#2.num', { style: { display: x[2] }}, arr[2] ),
+        h('button#3.num', { style: { display: x[3] }}, arr[3] )
+      ]);
+      return node;
+    }  
+```    
+The interface is kept clean by means of the function styl(), which determines whether the display is "inline" or "none", depending on the length of the array of numbers displayed. Here is the definition of styl():
+```javascript
+    function styl (s) {
+      switch(s) {
+        case (0): return ['none', 'none', 'none', 'none'];
+        break;
+        case (1): return ['inline', 'none', 'none', 'none'];
+        break;
+        case (2): return ['inline', 'inline', 'none', 'none'];
+        break;
+        case (3): return ['inline', 'inline', 'inline', 'none'];
+        break;
+        case (4): return ['inline', 'inline', 'inline', 'inline'];
+        break;
+        default: return;  //console.log('Bad argument in styl. s is', s );
       }
-    };  
+  }; 
+```  
+###Traversing the Game's History
 
-    var testscore = function testscore(v) {
-      if ((v % 5) === 0) return ret(v+5)
-      else return ret(v);
-    };
+As you might expect, game traversal is controlled by changes in the value of mMindex.x. Here is how it is done:
+```javascript
+    var forwardClick$ = sources.DOM
+      .select('#ahead').events('click')
+  
+    var backClick$ = sources.DOM
+      .select('#back').events('click');
 
-    function score(scor) {
-      if (scor != 25) {
-        newRoll(scor, pMgoals.x)
+    var backAction$ = backClick$.map(() => {
+      if (mMindex.x > 0) {  
+        mMindex.ret(mMindex.x - 1)
+        buttonNode = bNode(fetch(mMindex.x));
+        sMplayers.s.clear();
+        var score = gameMonad.s[5][mMindex.x][0]
+        var goals = gameMonad.s[5][mMindex.x][1];
+        socket.send("CG#$42," + pMgroup.x + "," + pMname.x + "," + score + "," + goals)
+      } 
+    }) 
+
+    var forwardAction$ = forwardClick$.map(() => {
+      if (mMindex.x < gameMonad.s[5].length - 1) {
+        mMindex.ret(mMindex.x + 1);
+        buttonNode = bNode(fetch(mMindex.x));
+        var score = gameMonad.s[5][mMindex.x][0]
+        var goals = gameMonad.s[5][mMindex.x][1];
+        socket.send("CG#$42," + pMgroup.x + "," + pMname.x + "," + score + "," + goals)
       }
-      else if (pMgoals.x === 2) {
-        newRoll(0,0)
-      }
-      else {pMgoals.bnd(add, 1).bnd(pMgoals.ret).bnd(g => newRoll(0, g))};
-    };  
+    }); 
 
-  ```  
-  updateCalc calls calc on the numbers and operater given to it by numCalcAction$ or opCalcAction$, giving the value to a variable named "result". If the value of result is 18 or 20, the resulting score is checked to see if it should be augmented by five and then score(scor) is called, providing the new score to the function score(). score() performs some more tests and calls for a new roll with the values of score and goals it has determined depending on whether or not there is a score and, if so, a winner.
+    function fetch (n) {
+        return gameMonad.s[5][n][4];
+    }  
+```    
+The socket message prompts the server to notify all group members of changes in the player's score and goals. The numbers that are generated remain private.
 
 ## MonadSet
 
@@ -887,50 +546,59 @@ The list of online group members at the bottom of the scoreboard is very respons
 
   The code below shows how incoming websockets messages are routed. For example, mMZ10.release() is called when a new dice roll (prefixed by CA#$42) comes in.
   ```javascript
-    const messages$ = (sources.WS).map( e => {
+  const messages$ = sources.WS.map( e => {
     mMtem.ret(e.data.split(',')).bnd( v => {
-    console.log('<><><><><><><><><><><><><><><><>  INCOMING  <><><><><><><> >>> In messages. e amd v are ', e, v);
-    mMZ10.bnd( () => {
-      pMnums.ret([v[3], v[4], v[5], v[6]]).bnd(test3).bnd(pMstyle.ret)
-      travMonad.run([ [v[3], v[4], v[5], v[6]], v[7], v[8] ]);
-      pMscore.ret(v[7]);
-      pMgoals.ret(v[8]) }); 
+  console.log('Websockets data.split message v: ', v ),    
+  mMZ10.bnd( () => {
+    buttonNode = bNode([v[3],v[4],v[5],v[6]]);
+    var st = gameMonad.s[5][mMindex.x].slice();
+    st[0] = v[7];
+    st[1] = v[8];
+    st[2] = 0;
+    st[3] = [];
+    st[4] = [v[3],v[4],v[5],v[6]];
+    gameMonad.run(st);
+    console.log(buttonNode);
+  }); 
     mMZ12.bnd( () => mM6.ret(v[2] + ' successfully logged in.'));
-    mMZ13.bnd( () => updateMessages(e.data));
-    mMZ14.bnd( () => mMgoals2.ret('The winner is ' + v[2]));
-    mMZ15.bnd( () => {
-      mMgoals2.ret('A player named ' + v[2] + ' is currently logged in. Page will refresh in 4 seconds.')
-      refresh() });
-    mMZ17.bnd( () => testTask(v[2], v[3], e.data) ); 
-    mMZ18.bnd( () => {if (pMgroup.x != 'solo' || pMname.x === v[2]) {updatePlayers(e.data) } });
-    })       
-    mMtemp.ret(e.data.split(',')[0])
-    .bnd(next, 'CA#$42', mMZ10)
-    .bnd(next, 'CD#$42', mMZ13)
-    .bnd(next, 'CE#$42', mMZ14)
-    .bnd(next, 'EE#$42', mMZ15)
-    .bnd(next, 'DD#$42', mMZ17)
-    .bnd(next, 'NN#$42', mMZ18)
-    });
+    mMZ13.bnd( () => {
+      var message = v.slice(3,v.length).join(', ');
+      var str = v[2] + ': ' + message;
+      messages.unshift(h('span', str ),h('br'));  
+   });
+  mMZ14.bnd( () => {
+    mMgoals2.ret('The winner is ' + v[2]);
+    setTimeout(() => mMgoals2.ret(''), 5000 );
+  });
+  mMZ15.bnd( () => {
+    mMgoals2.ret('A player named ' + v[2] + ' is currently logged in. Page will refresh in 4 seconds.')
+    refresh() });
+  mMZ17.bnd( () => testTask(v[2], v[3], e.data) ); 
+  mMZ18.bnd( () => {
+    if (pMgroup.x != 'solo' || pMname.x === v[2] ) updatePlayers(e.data)  });
+  })       
+  mMtemp.ret(e.data.split(',')[0])
+  .bnd(next, 'CA#$42', mMZ10)
+  .bnd(next, 'CD#$42', mMZ13)
+  .bnd(next, 'CE#$42', mMZ14)
+  .bnd(next, 'EE#$42', mMZ15)
+  .bnd(next, 'DD#$42', mMZ17)
+  .bnd(next, 'NN#$42', mMZ18)
+  });
+
   ```  
   The "mMZ" prefix designates instances of MonadItter. An instance's bnd() method assigns its argument to its "p" attribute. "p" runs if and when its release() method is called. The next() function releases a specified MonadItter instance when the calling monad's value matches the specified value in the expression. In the messages$ stream, the MonadItter instance's bnd methods do not take argumants, but next is capable of sending arguments when bnd() is called on functions requiring them. Here is an example:
   MonadState and MonadState Transformers
 
   An instance of MonadState holds the current state and value of a computation. For any instance of MonadState, say m, these can be accessed through m.s and m.a, respectively.
 ```javascript
-    function MonadState(g, state, p) {
+    function MonadState(g, state) {
       this.id = g;
       this.s = state;
-      this.process = p;
-      this.a = s[3];
       this.bnd = (func, ...args) => func(this.s, ...args);  
-      this.run = ar => { 
-        var ar2 = this.process(ar);
-        this.s = ar2;
-        this.a = ar2[3];
-        window[this.id] = this;
-        return window[this.id];
-      }
+      this.ret = function (a) {
+        return window[this.id] = new MonadState(this.id, a);
+      };
     };
 ``` 
 MonadState reproduces some of the functionality found in the Haskell Module "Control.Monad.State.Lazy", inspired by the paper "Functional Programming with Overloading and Higher-der Polymorphism", Mark P Jones (http://web.cecs.pdx.edu/~mpj/) Advanced School of Functional Programming, 1995. The following demonstrations use the MonadState instances fibsMonad and primesMonad to create and store arrays of Fibonacci numbers and arrays of prime numbers, respectively. fibsMonad and primesMonad provide a simple way to compute lists of prime Fibonacci numbers. Because the results of computations are stored in the a and s attributes of MonadState instances, it was easy to make sure that no prime number had to be computed more than once in the prime Fibonacci demonstration.
