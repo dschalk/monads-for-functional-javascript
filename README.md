@@ -163,7 +163,7 @@ function MonadState(g, state) {
   this.s = state;
   this.bnd = (func, ...args) => func(this.s, ...args);  
 }    
-```javascript
+```
 The first demonstration displays the Fibonacci series up to an upper bound entered in the browser by a user. It also displays a list of the prime Fibonacci numbers in the list of Fibonacci numbers, along with the largest prime number that was generated during a computation. I tested performance in Firefox on my Ubuntu 16.04 box by entering "3" and then, one at a time, 0's. Lag times were not noticeable, even at the ninth zero, where there was a 351 microsecond pause before the prime Fibonacci number 2,971,215,073 appeared. I added another zero (resulting in 30,000,000,000) and after 1,878 microseconds four more Fibonacci numbers appeared on my monitor. After adding one final zero, there was a delay of 17,550 microseconds before five more Fibonacci numbers appeared, topped by 225,851,433,717. I deleted a zero and then put it back. This time the delay was only 206 microseconds, showing the effectiveness of using the previously stored list of prime numbers.
 
 The demonstrations do not block the main execution thread. Computations are performed in web workers and the results are stored for further use in the main thread.
