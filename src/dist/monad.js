@@ -775,6 +775,7 @@ function primes(n, ar) {
   var nums = [0,0,0,0];  
 var mMdice = new Monad('none','mMdice');
 var mMrightPanel = new Monad('none','mMrightPanel');
+var mMrightPanel2 = new Monad('inline','mMrightPanel2');
 var mMgameDiv2 = new Monad('none','mMgameDiv2');
 var mMgameDiv = new Monad('block','mMgameDiv');
 var mMlogin = new Monad('inline','mMlogin');

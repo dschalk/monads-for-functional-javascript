@@ -10,6 +10,7 @@ function createWebSocket(path) {
         host = 'localhost';
     var uri = 'ws://' + host + ':3055' + path;
     var Socket = "MozWebSocket" in window ? MozWebSocket : WebSocket;
+
     return new Socket(uri);
 }
 
@@ -238,6 +239,7 @@ function main(sources) {
       pMclicked.ret([]);
       mMdice.ret('block');
       mMrightPanel.ret('block');
+      mMrightPanel2.ret('none');
       mMgameDiv2.ret('block')
       mMlogin.ret('none');
       mMlog1.ret('none');
@@ -993,27 +995,42 @@ var prAction$ = pr$.map(function (e) {
   return {
   DOM: calcStream$.map(function () {
   return h('div.content', [
-      h('br'),     
-      h('div#rightPanel', { style: { display: mMrightPanel.x } }, [ 
-    
+    h('br'),     
+    h('div#rightPanel2', { style: { display: mMrightPanel2.x } }, [ 
+      h('br'),
+      h('br'),
+      h('img.image_2', {props: {src: "logo.svg" }}  ),   
+      h('a', { props: { href: "https://cycle.js.org/", target: "_blank" } }, 'A cyclejs application'),  
+      h('p', ' After you log in, this column will show the scoreboard, a todo list, and text messages that can be shared among group members, or used privately. You might find the game to be a refreshing solitairre diversion. ' ) ]),
+    h('br'),  
+    h('div#rightPanel', { style: { display: mMrightPanel.x } }, [ 
       h('span#tog', [
-          h('button#game', { style: { fontSize: '16px', display: 'inline' } }, 'TOGGLE GAME'),
-          h('span.tao', ' '),
-          h('button#todoButton', { style: { fontSize: '16px', display: 'inline' } }, 'TOGGLE TODO_LIST'),
-          h('br'),
-          h('br'),
-          h('button#chat2', { style: { fontSize: '16px', display: 'inline' } }, 'TOGGLE CHAT'),
-          h('span.tao', ' '),
-          h('button#caption', { style: { fontSize: '16px', display: 'inline' } }, 'TOGGLE CAPTION')]),
+      h('br'),
+      h('br'), 
+      h('br'), 
+      h('br'), 
+      h('br'),
+      h('br'), 
+      h('br'), 
+      h('br'), 
+      h('br'), 
+      h('br'), 
+      h('br'), 
+      h('br'), 
+      h('br'), 
+      h('button#game', { style: { fontSize: '16px', display: 'inline' } }, 'TOGGLE GAME'),
+      h('span.tao', ' '),
+      h('button#todoButton', { style: { fontSize: '16px', display: 'inline' } }, 'TOGGLE TODO_LIST'),
       h('br'),
       h('br'),
+      h('button#chat2', { style: { fontSize: '16px', display: 'inline' } }, 'TOGGLE CHAT'),
+      h('span.tao', ' '),
+      h('button#caption', { style: { fontSize: '16px', display: 'inline' } }, 'TOGGLE CAPTION')]),
       h('br'),
       h('br'),
-      h('br'),
-      h('br'),
-      h('br'),
-      h('br'),
-      h('br'),
+      h('br'), 
+      h('br'), 
+      h('br'), 
       h('br'),
       h('br'), 
       h('br'), 
@@ -1024,6 +1041,9 @@ var prAction$ = pr$.map(function (e) {
       h('br'), 
       h('br'), 
       h('br'), 
+      h('img.image_2', {props: {src: "logo.svg" }}  ),   
+      h('a', { props: { href: "https://cycle.js.org/", target: "_blank" } }, 'A cyclejs application'),  
+      h('br'),
       h('br'), 
       h('div#gameDiv', { style: { display: `mMgameDiv.x` } }, [
       h('div.game', 'Name: ' + pMname.x ),
@@ -1067,24 +1087,13 @@ var prAction$ = pr$.map(function (e) {
           h('span', ' by Andrej Bauer and the ' ),
           h('a', { props: { href: '#discussion' } }, 'Discussion'),
           h('span', ' below. They provide a convenient interface for dealing with uncertainty and side effects in a purely functional manner, assigning new values to identifiers (variables) without mutation. Adherence to the monad laws (see below) helps make the monads robust, versatile, and reliable tools for isolating and chaining sequences of javascript functions.' ),
-          h('br'),
-          h('br'),
-          h('br'),
-          h('span.tao1', ' The demonstrations include persistent, shared todo lists; '),
-          h('br'),
-          h('span.tao1', ' An interactive simulated dice game with a traversable history (all group members see your score decrease or increase as you navegate backwards and forwards); '),
-          h('br'),
-          h('span.tao1', ' Chat rooms where members can compete in the simulated dice gameand share a project todo list; '),
-          h('br'),
 
-          h('span.tao1', ' Other demonstrations of the usefulness of monads in a Cycle application.  '),
-          h('br'),
-      h('br'),
+          h('p', ' The demonstrations include persistent, shared todo lists, an interactive simulated dice game with a traversable history (all group members see your score decrease or increase as you navegate backwards and forwards), chat rooms where members can compete in the simulated dice gameand share a project todo list, and demonstrations of the persistent state, asynchronous usefulness of monads in a Cycle application.  '),
+
       h('span.tao', 'The code for this repository is at '),
       h('a', { props: { href: "https://github.com/dschalk/JS-monads-stable", target: "_blank" } }, 'JS-monads-stable'),  
       h('h2.red', mMgoals2.x ),
       h('div#gameDiv2', { style: { display: mMgameDiv2.x } }, [
-          h('br'),
           h('span', ' Here are the basic rules:'),
           h('p', 'RULES: If clicking two numbers and an operator (in any order) results in 20 or 18, the score increases by 1 or 3, respectively. If the score becomes 0 or is evenly divisible by 5, 5 points are added. A score of 25 results in one goal. That can only be achieved by arriving at a score of 20, which jumps the score to 25. Directly computing 25 results in a score of 30, and no goal. Each time RL is clicked, one point is deducted. Three goals wins the game. '),
           buttonNode,
@@ -1102,10 +1111,11 @@ var prAction$ = pr$.map(function (e) {
             h('button#ahead.tao1', 'FORWARD'),
             h('div.tao', `Selected numbers: ${gameMonad.s[5][mMindex.x][3].join(', ')} ` ),  
             h('div.tao', `Operator: ${gameMonad.s[5][mMindex.x][2]} ` ),  
+            h('div.tao', `Index: ${mMindex.x} ` ),  
             h('button#clear', 'Clear selected numbers (Possibly useful after clicking the BACK button) ' ),
           ])]),
 h('div#log1',  { style: { display: mMlog1.x } }, [
-h('p', 'IN ORDER TO SEE THE GAME, TODOLIST, AND CHAT DEMONSTRATIONS, YOU MUST ENTER SOMETHING .'),
+h('p', 'IN ORDER TO SEE THE GAME, TODOLIST, AND CHAT DEMONSTRATIONS, YOU MUST ENTER SOMETHING TO ESTABLISH A WEBSOCKET CONNECTION.'),
 h('span', 'Name: '),
 h('input#login', )]),
 h('p', mM6.x ),

@@ -701,19 +701,19 @@ var tr3 = h('pre',  `  var tr3 = function tr (fibsArray, primesArray) {
     }  `  )
 
 
-  var e2 = h('pre.turk',  `  var c = m.ret(0).bnd(add,3).bnd(cube).bnd(log, "The values of m\'s and c\'s
+  var e2 = h('pre',  `  var c = m.ret(0).bnd(add,3).bnd(cube).bnd(log, "The values of m\'s and c\'s
     x attributes are " + m.x + " and " + c.x + " respectively." )   ` )
 
   var e2x = h('pre', `   Output: The values of m\'s and c\'s x attributes are 0 and 27 respectively.  ` )
 
      var e3 = h('p',  ' Note: m\'s x attribute keeps its initial value of 0 because each computation creates a fresh instance of Monad with id === "default". In the next example, m\'s x attribute becomes the computation result due to the addition of ".bnd(m.ret)". '  )
 
-   var e4 = h('pre.turk',  `  var c = m.ret(0).bnd(add,3).bnd(cube).bnd(m.ret).bnd(log,
+   var e4 = h('pre',  `  var c = m.ret(0).bnd(add,3).bnd(cube).bnd(m.ret).bnd(log,
      "The values m\'s and c\'s x attributes are " + m.x + " and " + c.x + " respectively.") ` )
 
    var e4x = h('pre', `   Output: The values of m\'s and c\'s x attributes are 27 and 27 respectively.  ` )
 
-   var e6 = h('pre.turk',  `  m.ret(0).bnd(add,3).bnd(m2.ret).bnd(cube,m3).bnd(m3.ret)
+   var e6 = h('pre',  `  m.ret(0).bnd(add,3).bnd(m2.ret).bnd(cube,m3).bnd(m3.ret)
     .bnd(log,"m), m2.x, and m3.x are  " + m.x + ", " + m2.x + " and " +
     m3.x + " respectively. "); ` )
   var e6x = h('pre', `   Output: m.x and m2.x and m3) are  0, 3 and 27 respectively.  ` )
@@ -1185,7 +1185,7 @@ var fact_workerC = h('pre.red0',  `    onmessage = function(ar) {
       })
     }  `  )
 
-var fact2_workerD = h('pre.red0',  `    onmessage = function(ar) {
+var fact2_workerD = h('pre',  `    onmessage = function(ar) {
       var n = 0;
       importScripts('script2.js');
       var res;
@@ -1267,7 +1267,7 @@ h('p', ' The term "monad" will mean "instance of Monad". Monad could have been d
 h('p', ' Monads are created by code such as "const m = new Monad("anything", "m")". The arguments will be the values of m.x and m.id. The first argument can be any Javascript value, such as string, array, or monad. The second argument should be the name of the monad. ' ),
 h('p', ' A monad, say "m", can be replaced by another monad named "m" in the global space through the use of the method "ret()". It looks like m.x gets mutated, but that isn\'t what happens. Previously defined references to m retain their values, as demonstrated below: '),
 
-h('pre.red9',
+h('pre',
 `const m = new Monad (5, 'm');
 var arr = [m];
 var p = m;
@@ -1277,7 +1277,7 @@ console.log(m.x, arr[0].x, p.x);  // 100, 5, 5
 
 h('p', ' In global scope (window in the browser), m.x changed to 100; but p and arr still refer to 5, the previous value of m.x. Similarly, when a monad uses its bnd() method to modify its x attribute, the change is seen globally, but nowhere else. Previous references to the monad remain stable, as this example illustrates: ' ),
 
-h('pre.red9',
+h('pre',
 `const m = new Monad (5, 'm');
 var arr = [m];
 var p = m;
@@ -1289,7 +1289,7 @@ h('p', ' Had there been no reference to m, the previous instance would have been
 h('p', ' It is possible to mutate monads with code such as m.x = 888. That might be a good thing to do in a function with many recursions, but it seems like a misuse of monads. Monads are never mutated on this website. Object.freeze() is used to prevent mutation in the definition of primesMonad (shown below). '),
   h('p', ' The bnd() method can leave the calling monad\'s global value unchanged while assigning a value (in the global space) to another previously defined monad, or to a freshly created monad. So regardless of whether or not "m2" is defined, m.ret(4).bnd(cube,"$m2") causes m.x === 4 and m2.x === 64 to both return true. ' ),
 
-h('pre.red9',
+h('pre',
 `m.ret(4).bnd(cube,"$m2")
 console.log(m.x, m2.x)   // 4 64
 m.ret(0).bnd(add,3,"$m2").bnd(cube,"$m3")
@@ -1299,14 +1299,14 @@ console.log(m.x, m2.x, m3.x)  // 0 3 27
 h('p', ' The definition of Monad (below) shows how bnd() checks to see if func(m.x, ...args) returns a monad. If it does, "testPrefix" looks for a pattern that matches "$val" in the arguments that were provided to m.bnd(func, ...args). If the pattern is found, the global space acquires a monad named "val" with val.x === func(m.x, ...args). If no monad named "val" previously existed, one is created. Otherwise, val\'s global definition gets superseded. val can be any sequence of characters that constitute a valid javascript identifier. ' ),
 h('p', ' Instances of Monad facilitate changing values without mutation. They also provide a way to chain function calls. For example, m.ret(2).bnd(add, 1).bnd(cube) causes m.x === 27 to return true. This works because ret(), add, and cube all return monads when they are applied to m.x. The definition of add and cube are shown below and can be found in the Github repository. ' ),
 h('p', ' If the three numbers from the previous sequence were all that we required, we could obtain them more efficiently by running: ' ),
-h('pre.red9',
+h('pre',
 `var demoResult = ret(0).bnd(x => add(x, 3).bnd(y => cube(y).bnd(z => [x,y,z])));
 console.log('We started with', demoResult[0], 'and got', demoResult[1], 'and', demoResult[2]);
 The console displays "We started with 0 and got 3 and 27"
 ` ),
 h('p', ' Doing it that was leaves only one monad - the one named "temp" - for the garbage collector. It also eliminates concern about name collisions among the monads. There is little danger that a monad named "temp" is being used to store a value somewhere else in the application code. The temp monad is obviously not a monad for preserving values. The result could have been logged to the console or used in further computations without creating a reference to it.' ),
-h('pre.red9',
-`var demoResult = ret(0).bnd(x => add(x, 3).bnd(y => cube(y).bnd(z =>
+h('pre',
+`ret(0).bnd(x => add(x, 3).bnd(y => cube(y).bnd(z =>
 console.log('We started with', x, 'and got', y, 'and', z))));
 The console displays "We started with 0 and got 3 and 27"
 ` ),
@@ -1314,7 +1314,7 @@ h('p', ' More complex, multi-stage computations in sequenced monads are demonstr
 h('p', ' So, with that out of the way, here are the definitions of Monad and testPrefix: ' ),
 
 h('h3', ' Monad '),
-h('pre.turk6',  `    var Monad = function Monad(z = 42, g = 'generic') {
+h('pre',  `    var Monad = function Monad(z = 42, g = 'generic') {
       this.x = z;
       this.id = g;
       this.bnd = function (func, ...args) {
@@ -1351,7 +1351,7 @@ h('p', ' The various monad constructors demonstrate a coding style and philosoph
 
 h('h3', 'Computations' ),
 h('p', ' Computations are easy to link if each result is returned in an instance of Monad. Here are a few examples of functions that return instances of Monad: '),
-  h('pre.turk',  `  function ret(v, id = 'temp') {
+  h('pre',  `  function ret(v, id = 'temp') {
       window[id] = new Monad(v, id);
       return window[id];
     }
@@ -1370,12 +1370,12 @@ h('p', ' Computations are easy to link if each result is returned in an instance
     };  `  ),
 h('p', ' The "$" prefix provides control over the destination of computation results. In the following example, m1, m2, and m3 have already been declared. Here is a comparison of the results obtained when the "$" prefix is used and when it is omitted: ' ),
 
-h('pre.red9', `    m1.ret(7).bnd(m2.ret).bnd(m3.ret)  // All three monads get the value 7.
+h('pre', `    m1.ret(7).bnd(m2.ret).bnd(m3.ret)  // All three monads get the value 7.
     m1.ret(0).bnd(add,3,'m2').bnd(cube,'m3')  // \'m1\', \'m2\', and \'m3\' are ignored` ),
 h('pre', `    Result: m1.x === 27
             m2.x === 7
             m3.x === 7  ` ),
-h('pre.red9', `    m1.ret(0).bnd(add,3,'$m2').bnd(cube,'$m3')   ` ),
+h('pre', `    m1.ret(0).bnd(add,3,'$m2').bnd(cube,'$m3')   ` ),
 h('pre', `    Result: m1.x === 0
             m2.x === 3
             m3.x === 27  ` ),
@@ -1387,18 +1387,18 @@ h('img.image', {props: {src: "demo_000.png"}}  ),
 h('h3', ' The Monad Laws '),
 h('p', ' In the following discussion, "x === y" signifies that the expression x === y returns true. Let J be the collection of all Javascript values, including functions, instances of Monad, etc, and let F be the collection of all functions mapping values in J to instances of Monad with references (names) matching their ids; that is, with window[id] === m.id for some id which is a valid es2015 variable name. The collection of all such instances of Monad along and all of the functions in F is called "M". For any instances of Monad m, m1, and m2 in M and any functions f and g in F, the following relationships follow easily from the definition of Monad: '),
 h('div', 'Left Identity ' ),
-h('pre.turk', `    m.ret(v, ...args).bnd(f, ...args).x === f(v, ...args).x
+h('pre', `    m.ret(v, ...args).bnd(f, ...args).x === f(v, ...args).x
     ret(v, ...args).bnd(f, ...args).x === f(v, ...args).x
     Examples: m.ret(3).bnd(cube).x === cube(3).x  Tested and verified
     ret(3).bnd(cube).x === cube(3).x     Tested and verified
     Haskell monad law: (return x) >>= f \u2261 f x  ` ),
 h('div#discussion', ' Right Identity  ' ),
-h('pre.turk', `    m.bnd(m.ret) === m      Tested and verified
+h('pre', `    m.bnd(m.ret) === m      Tested and verified
     m.bnd(m.ret) === m   Tested and verified
     m.bnd(ret) === m  Tested and verified
     Haskell monad law: m >>= return \u2261 m `  ),
     h('div', ' Commutivity  ' ),
-    h('pre.turk', `    m.bnd(f1, ...args).bnd(f2, ...args).x === m.bnd(v => f1(v, ...args).bnd(f2, ...args)).x
+    h('pre', `    m.bnd(f1, ...args).bnd(f2, ...args).x === m.bnd(v => f1(v, ...args).bnd(f2, ...args)).x
     Example: m.ret(0).bnd(add, 3).bnd(cube).x ===
     m.ret(0).bnd(v => add(v,3).bnd(cube)).x  Tested amd verified
     Haskell monad law: (m >>= f) >>= g \u2261 m >>= ( \\x -> (f x >>= g) ) `),
@@ -1426,7 +1426,7 @@ h('p', ' In the early stages of developing this website, I had functions that mu
 h('p', ' Handling events is a breeze. Drivers eliminate the need to name event emitters or observers. Driver output in main() is available to any function or block of code that is interested. The result of any callback is in an event in a stream of events that automatically merge with the other streams that define main\'s return value, a blueprint for the updated user interface. This is breathtakingly elegant. main() is called only once, when the application loads. After that, the application hums like an enchanted perpetual motion machine. ' ),
 
 
-h('pre.turk', `function workerDriver () {
+h('pre', `function workerDriver () {
   return xs.create({
     start: listener => { worker.onmessage = msg => listener.next(msg)},
     stop: () => { worker.terminate() }
@@ -1528,7 +1528,7 @@ var gameMonad = h('pre',  `    var gameMonad = new MonadState2('gameMonad',
       [ 0,0,0,[],[0,0,0,0],[[0,0,0,[],[0,0,0,0]]]]);
 `  )
 
-var clicks = h('pre.blue',  `    var numClick$ = sources.DOM
+var clicks = h('pre',  `    var numClick$ = sources.DOM
       .select('.num').events('click');
 
     var numClickAction$ = numClick$.map(e => {
