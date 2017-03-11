@@ -1672,3 +1672,14 @@ function styl (s) {
   }
 }
 
+  function bNode (arr) {
+    var x = styl(arr.length);
+    var node = h('div', [
+      h('button#0.num', { style: { display: x[0] }}, arr[0] ),
+      h('button#1.num', { style: { display: x[1] }}, arr[1] ),
+      h('button#2.num', { style: { display: x[2] }}, arr[2] ),
+      h('button#3.num', { style: { display: x[3] }}, arr[3] )
+    ]);
+    return node;
+  }
+
