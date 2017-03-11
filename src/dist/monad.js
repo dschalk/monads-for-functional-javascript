@@ -1,6 +1,7 @@
 'use strict';
 var todoData, mMt3VAL; 
 var taskL = [];
+var namesList;
 var MESSAGES = [];
 var res = [];
 var todoDiv = 'none';
@@ -10,6 +11,7 @@ var captionDiv = 'none';
 var CHANGE = 'cow';
 var chatNode;
 var xs = xstream.default;
+var h = h.default;
 const messages = [];
 var crapTunnel = [];
 var buttonNode;
@@ -223,28 +225,8 @@ function MonadState(g, state) {
   };
 };
 
-function MonadState2(g, state) {
-  this.id = g;
-  this.s = state;
-  this.bnd = (func, ...args) => func(this.s, ...args);  
-  this.ret = function (a) {
-    return window[this.id] = new MonadState(this.id, a);
-  };
-  this.run = function (st) {
-    mMindex.bnd(add,1);
-    st[5] = this.s[5].slice();
-    st[5].splice(mMindex.x, 0, [st[0], st[1], st[2], st[3], st[4]]);
-    return window[this.id] = new MonadState2(this.id, st);
-  }
-};
-
-function fetch (n) {
-    return gameMonad.s[5][n][4];
-}
-
 var mMg = new Monad([], 'mMg');
 
-var gameMonad = new MonadState2('gameMonad', [ 0,0,0,[],[0,0,0,0],[[0,0,0,[],[0,0,0,0]]]]);
 
 function tP (x) {
   if (eval('typeof ' + x) === 'undefined') return "code4"
@@ -1346,6 +1328,27 @@ function monadConstructor (v,b) {
   return c;
 };
 
+function MonadState2(g, state) {
+  this.id = g;
+  this.s = state;
+  this.c = new MonadEmitter();
+  this.bnd = (func, ...args) => func(this.s, ...args);  
+  this.ret = function (a) {
+    return window[this.id] = new MonadState(this.id, a);
+  };
+  this.c.on(a, st => {
+    mMindex.ret(mMindex.x + 1);
+    st[5] = this.s[5].slice();
+    st[5].splice(mMindex.x, 0, [st[0], st[1], st[2], st[3], st[4]]);
+    window[this.id] = new MonadState2(this.id, st);
+  })
+};
+
+function fetch (n) {
+    return gameMonad.s[5][n][4];
+}
+ 
+var gameMonad = new MonadState2('gameMonad', [ 0,0,0,[],[2,2,2,2],[[0,0,0,[],[3,3,3,3]]]]);
 
 var ops = ['+','-','*','/', 'concat'];
 var nums = [3,4,5,6];
@@ -1668,6 +1671,4 @@ function styl (s) {
     default: return;  //console.log('Bad argument in styl. s is', s );
   }
 }
-
-
 

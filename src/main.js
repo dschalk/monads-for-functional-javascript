@@ -4,6 +4,7 @@ import {h, p, span, h1, h2, h3, pre, br, div, label, input, hr, makeDOMDriver} f
 import code from './code.js';
 // import {EventEmitter} from 'events'
 console.log('If you can read this you are in main.js <@><@><@><@><@><@><@><@>');
+console.log('h(\'div\')', h('div'));
 function createWebSocket(path) {
     var host = window.location.hostname;
     if (host === '')
@@ -69,7 +70,7 @@ function workerDriver () {
 function eM2Driver () {
   return xs.create({
     start: listener => { mM2.on = msg => listener.next(msg)}, 
-    stop: () => { worker.terminate() }
+    stop: () => { mM2.removeAllListeners() }
   });
 };
 
@@ -136,15 +137,9 @@ function updateTasks (obArray) {
 
 
 function main(sources) {
-  
-  var numsDisplay = [4,4,4,4];
+  gameMonad = new MonadState2('gameMonad', [ 0,0,0,[],[2,2,2,2],[[0,0,0,[],[5,5,5,5]]]]);
+  console.log(gameMonad.s[5], mMindex.x, '*********<><><><><>**********');
   var newTasks = [];
-
-  const eM2$ = sources.EM2.map(v => {
-   console.log('______** ! **_______eM2$ received message: ', v) 
-  mMZ31.bnd(() => mM34.ret(mM31.ret(v[1]).x + mM32.x + mM33.x).bnd(log5));
-  mMZ32.bnd(() => mM34.ret(mM31.x + mM32.ret(v[1]).x + mM33.x).bnd(log5));
-  });
 
   const worker$ = sources.WW.map(v => {
     console.log('Message from worker: ', v );
@@ -176,10 +171,10 @@ function main(sources) {
     next(v.data[0], 'CD#$41', mMZ24)
     next(v.data[0], 'CE#$41', mMZ25)
     });
-
   const messages$ = sources.WS.map( e => {
+    console.log(e);
     mMtem.ret(e.data.split(',')).bnd( v => {
-  console.log('Websockets data.split message v: ', v ),    
+  console.log('Websockets data.split message v: ', v );    
   mMZ10.bnd( () => {
     buttonNode = bNode([v[3],v[4],v[5],v[6]]);
     var st = gameMonad.s[5][mMindex.x].slice();
@@ -188,8 +183,8 @@ function main(sources) {
     st[2] = 0;
     st[3] = [];
     st[4] = [v[3],v[4],v[5],v[6]];
-    gameMonad.run(st);
-    console.log(buttonNode);
+    gameMonad.c.emit(a,st);
+    // console.log(buttonNode);
   }); 
     mMZ12.bnd( () => mM6.ret(v[2] + ' successfully logged in.'));
     mMZ13.bnd( () => {
@@ -252,7 +247,7 @@ function main(sources) {
       mMcaption.ret('inline');
       mMgame.ret('inline')
       mMtodo.ret('inline')
-      document.getElementById('group').focus(); 
+      // document.getElementById('cow').focus(); 
     };
   });
 
@@ -281,7 +276,7 @@ function main(sources) {
   var updatePlayers = function updatePlayers (data) { 
         sMplayers.s.clear();
         var namesL = data.split("<br>");
-        var namesList = namesL.slice(1);
+        namesList = namesL.slice(1);
         updateScoreboard2(namesList);
     namesList.forEach(player => sMplayers.s.add(player.trim()));
   }
@@ -295,46 +290,34 @@ function main(sources) {
   };
 
   var rollClick$ = sources.DOM
-    .select('.roll').events('click');
+    .select('#roll').events('click');
 
   var rollClickAction$ = rollClick$.map(() => {
-    newRoll(gameMonad.s[0]-1, gameMonad.s[1]);
+    var a = gameMonad.s[5][mMindex.x][0].valueOf() - 1;
+    var b = gameMonad.s[5][mMindex.x][1].valueOf();
+    socket.send(`CA#$42,${pMgroup.x},${pMname.x},6,6,12,20` + ',' + a + ',' + b);
   }); 
 
-  function bNode (arr) {
-    var x = styl(arr.length);
-    var node = h('div', [
-      h('button#0.num', { style: { display: x[0] }}, arr[0] ),
-      h('button#1.num', { style: { display: x[1] }}, arr[1] ),
-      h('button#2.num', { style: { display: x[2] }}, arr[2] ),
-      h('button#3.num', { style: { display: x[3] }}, arr[3] )
-    ]);
-    return node;
-  }
 
   var numClick$ = sources.DOM
       .select('.num').events('click'); 
 
-  function cl8(name, value) {
-    var a = value.slice();
-    window[name] = a;
-    return window[name];
-  }
-
   var numClickAction$ = numClick$.map(e => {
-    console.log('In numClickAction$ - - - <><><><><><><><><><><> gameMonad.s[5][mMindex.x][3]',gameMonad.s[5][mMindex.x][3]);
+    console.log('In numClickAction$', e);
+    console.log('In numClickAction$ - - - <><><><><><><><><><><> gameMonad.s[5][mMindex.x]',gameMonad.s[5][mMindex.x]);
     if (gameMonad.s[5][mMindex.x][3].length > 1) {
-      console.log( 'In numClickAction$. gameMonad.s[5][mMindex.x][3] is full.', gameMonad.s[5][mMindex.x][3]);
+      console.log( 'In numClickAction$. gameMonad.s[5][mMindex.x][3] is full.', gameMonad.s[5]);
     }
     else {
       var x = gameMonad.s[5][mMindex.x].slice();
       x[3] = gameMonad.s[5][mMindex.x][3].slice();
       x[4] = gameMonad.s[5][mMindex.x][4].slice();
-      x[3].push(x[4].splice(e.target.id,1)[0]); // Push the item spliced from x[4] into x[3].
+      x[4].splice(e.target.id,1)[0]; // Push the item spliced from x[4] into x[3].
+      x[3].push(e.target.textContent);
       var s3 = x[3].slice();
       buttonNode = bNode(x[4]);
       console.log('In numClickAction$ ???????? s3 is', s3 );
-      gameMonad.run(x);
+      gameMonad.c.emit(a,x);
       if (s3.length === 2 && x[2] != 0) {
         updateCalc(x[3], x[2]) 
       }
@@ -370,7 +353,7 @@ function main(sources) {
       state[4].push(result);
       buttonNode = bNode(state[4]);
       console.log('In updateCalc. state is', state );
-      gameMonad.run(state);
+      gameMonad.c.emit(a,state);
     }
   };   
 
@@ -481,7 +464,6 @@ var forwardAction$ = forwardClick$.map(() => {
   
   var factorsPress$ = sources.DOM
       .select('input#factors_1').events('keydown');
-
   var factorsAction$ = factorsPress$.map(function (e) {
   console.log('&&&&&>>> ^ ^ ^   * * *   >>Cordial greetings from factorsAction$. e is', e );
     var factors = [];
@@ -705,6 +687,7 @@ var forwardAction$ = forwardClick$.map(() => {
       }
   });
 
+
 // *******************************************************************BEGIN TODO LIST           
             
     var task2 = function task2(str) {
@@ -922,7 +905,7 @@ var forwardAction$ = forwardClick$.map(() => {
             el.style.display = 'inline' :
             el.style.display = 'none';
 
-        updateScoreboard2(namesList)
+       // updateScoreboard2(namesList)
         var el2 = document.getElementById('gameDiv2');
         (el2.style.display === 'none') ?
             el2.style.display = 'inline' :
@@ -990,6 +973,40 @@ var prAction$ = pr$.map(function (e) {
       worker.postMessage(["CE#$42", primesMonad.s, e.target.value]);
     }
 });
+
+function tNode (author, responsible, task, ch, dec, col) { 
+  var todo = h('div', [
+    h('div',  { style: { color: col, textDecoration: dec, checked: ch } }, task), 
+    h('p', 'Author: ' + author + ', Responsible Person: ' + responsible ),        
+  ]); 
+  return todo;
+};
+
+function MonadState3(g, state) {
+  this.id = g;
+  this.s = state;
+  this.c = new MonadEmitter();
+  this.d = "task";
+  this.bnd = (func, ...args) => func(this.s, ...args);  
+  this.ret = function (a) {
+    return window[this.id] = new MonadState(this.id, a);
+  };
+  this.c.on(a, (b)  => {
+    this.s.push(b);  
+    todoNode = this.s.map(v => tNode(v));
+    console.log('In MonadState3 - - - this.s and todoNode are', this.s, todoNode);
+    // window[this.id] = new MonadState3(this.id, list)  
+    }
+  ) 
+};
+
+function fetch3 (n) {
+    return gameMonad.s[5][n][4];
+}
+
+var todoMonad = new MonadState3('todoMonad', 
+  [[ 'dummy task', 'yellow', 'none', false, 'default author', 'default responsible' ]]
+);
 
   var calcStream$ = xs.merge( fA_c$, forwardAction$, backAction$, prAction$, factorsAction_b$, fA$, factorsP$, fA_b$, factorsP_b$, clearprimes$, worker$, workerB$, workerC$, workerD$, workerE$, workerF$, clearAction$, factorsAction$, primeFib$, fibPressAction$, quadAction$, edit1Action$, edit2Action$, testWAction$, testZAction$, testQAction$, colorAction$, deleteAction$, newTaskAction$, chatClickAction$, gameClickAction$, todoClickAction$, captionClickAction$, groupPressAction$, rollClickAction$, messagePressAction$, loginPressAction$, messages$, numClickAction$, opClickAction$); 
   return {
@@ -1105,7 +1122,7 @@ var prAction$ = pr$.map(function (e) {
           h('button#8.op', 'concat'),
           h('br'),
           h('div#dice', { style: { display: mMdice.x } }, [
-            h('button.roll', 'ROLL'),
+            h('button#roll', 'ROLL'),
             h('br'),
             h('button#back.tao100', 'BACK'),
             h('button#ahead.tao1', 'FORWARD'),

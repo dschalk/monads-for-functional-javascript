@@ -1477,13 +1477,10 @@ h('a#err', { props: { href: '#top' } }, 'Back To The Top'),
 h('br' ),
 ])
 
-
-
-
 var bNode = h('pre',  `    function bNode (arr) {
       var x = styl(arr.length);
       var node = h('div', [
-        h('button#0.num', { style: { display: x[0] }}, arr[0] ),
+         h('button#0.num', { style: { display: x[0] }}, arr[0] ),
         h('button#1.num', { style: { display: x[1] }}, arr[1] ),
         h('button#2.num', { style: { display: x[2] }}, arr[2] ),
         h('button#3.num', { style: { display: x[3] }}, arr[3] )
@@ -1508,20 +1505,22 @@ var styl = h('pre', `    function styl (s) {
       }
   }; ` )
 
+var MonadState2 = h('pre',  `    class MonadEmitter extends EventEmitter {}; 
 
-var MonadState2 = h('pre',  `    function MonadState2(g, state) {
+    function MonadState2(g, state) {
       this.id = g;
       this.s = state;
+      this.c = new MonadEmitter();
       this.bnd = (func, ...args) => func(this.s, ...args);  
       this.ret = function (a) {
         return window[this.id] = new MonadState(this.id, a);
       };
-      this.run = function (st) {
-        mMindex.bnd(add,1);
+      this.c.on(a, st => {
+        mMindex.ret(mMindex.x + 1);
         st[5] = this.s[5].slice();
         st[5].splice(mMindex.x, 0, [st[0], st[1], st[2], st[3], st[4]]);
-        return window[this.id] = new MonadState2(this.id, st);
-      }
+        window[this.id] = new MonadState2(this.id, st);
+      })
     }; `)
 
 var gameMonad = h('pre',  `    var gameMonad = new MonadState2('gameMonad',
@@ -1529,22 +1528,23 @@ var gameMonad = h('pre',  `    var gameMonad = new MonadState2('gameMonad',
 `  )
 
 var clicks = h('pre',  `    var numClick$ = sources.DOM
-      .select('.num').events('click');
+        .select('.num').events('click'); 
 
     var numClickAction$ = numClick$.map(e => {
-      console.log('In numClickAction$ - - - <><><><><><><><><><><> gameMonad.s[5][mMindex.x][3]',gameMonad.s[5][mMindex.x][3]);
+      console.log('In numClickAction$', e);
       if (gameMonad.s[5][mMindex.x][3].length > 1) {
-        console.log( 'In numClickAction$. gameMonad.s[5][mMindex.x][3] is full.', gameMonad.s[5][mMindex.x][3]);
+        return;
       }
       else {
         var x = gameMonad.s[5][mMindex.x].slice();
         x[3] = gameMonad.s[5][mMindex.x][3].slice();
         x[4] = gameMonad.s[5][mMindex.x][4].slice();
-        x[3].push(x[4].splice(e.target.id,1)[0]); // Push the item spliced from x[4] into x[3].
+        x[4].splice(e.target.id,1)[0]; // Push the item spliced from x[4] into x[3].
+        x[3].push(e.target.textContent);
         var s3 = x[3].slice();
         buttonNode = bNode(x[4]);
         console.log('In numClickAction$ ???????? s3 is', s3 );
-        gameMonad.run(x);
+        gameMonad.c.emit(a,x);
         if (s3.length === 2 && x[2] != 0) {
           updateCalc(x[3], x[2]) 
         }
@@ -1563,9 +1563,10 @@ var clicks = h('pre',  `    var numClick$ = sources.DOM
         var state = gameMonad.s.slice();
         state[5][mMindex.x][2] = e.target.innerHTML;
         gameMonad = new MonadState2('gameMonad', state);
-      }  `  )
+      }
+    });  `  )
 
-var p5b = h('pre',  `
+var MonadEmitter = h('pre',  `
 `  )
 
 var p5c = h('pre',  `
@@ -1598,4 +1599,4 @@ var p5f = h('pre',  `
 `  )
 
 
-  export default { clicks, bNode, styl, MonadState2, gameMonad, cycle, monad, hardWay, hardWay2, async, async2, execP, workerD$, fact_workerC, fact2_workerD, primes_state, workerB, workerB_Driver, workerC, worker$, errorDemo, monadEr, backAction, tests, mMZ10, test3, monad, equals, fmap, opM, e2, e2x, e3, e4, e4x, e6, e6x, driver, messages, monadIt, MonadSet, updateCalc, arrayFuncs, nums, cleanup, ret, C42, newTask, process, mM$task, colorClick, edit, testZ, quad, runTest, todoStream, inc, seed,  add, MonadState, primesMonad, fibsMonad, primeFibInterface, tr3, fpTransformer, factorsMonad, factorsInput, promise, promiseSnippet, timeout, timeoutSnippet, examples, examples2 }
+  export default { MonadEmitter, clicks, bNode, styl, MonadState2, gameMonad, cycle, monad, hardWay, hardWay2, async, async2, execP, workerD$, fact_workerC, fact2_workerD, primes_state, workerB, workerB_Driver, workerC, worker$, errorDemo, monadEr, backAction, tests, mMZ10, test3, monad, equals, fmap, opM, e2, e2x, e3, e4, e4x, e6, e6x, driver, messages, monadIt, MonadSet, updateCalc, arrayFuncs, nums, cleanup, ret, C42, newTask, process, mM$task, colorClick, edit, testZ, quad, runTest, todoStream, inc, seed,  add, MonadState, primesMonad, fibsMonad, primeFibInterface, tr3, fpTransformer, factorsMonad, factorsInput, promise, promiseSnippet, timeout, timeoutSnippet, examples, examples2 }
