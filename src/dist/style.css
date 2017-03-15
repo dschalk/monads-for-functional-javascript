@@ -1,6 +1,6 @@
 html, body {
-  background-color: #6d5000;
-  color: #edd79c;
+  background-color: #1a65ef;
+  color: #bfd1f2;
   font-size: 20px;
   font-family: "Times New Roman";
   margin: 0 auto;
@@ -32,6 +32,10 @@ h1 {
 .content {
   font-size:20px;
 } 
+
+a {
+  color: #efb8c9;
+}
 
 #eighty {
   width: 80%;
@@ -75,6 +79,10 @@ h1 {
 }
 
 .fred {
+  color: #f4e0b5;
+}
+    
+.fred2 {
   color: #abfcfb;
 }
     
@@ -118,7 +126,7 @@ h1 {
 .image_2 {
   height: 5%;
   width: 5%;
-  background-color: #6d5000;
+  background-color: #1a65ef;
 }
 
 
@@ -428,10 +436,6 @@ p {
   font-size:20px;
   color: #0000FF;
   font-weight: bold;
-}
-
-a {
-  color: lightblue;
 }
 
 #addB {

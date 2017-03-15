@@ -1559,11 +1559,31 @@ var primes= h('pre',  `    function MonadState(g, state) {
       }
     }  `  )
 
-var p5d = h('pre',  `
-`  )
+var primes2 = h('pre',  `    const workerB$ = sources.WWB.map(m => {
+      console.log('In workerB$ stream in the main thread. m, m[3] ', m, m.data[3] );
+      if (m.data[3] === 'color') {  // Updates the color display.
+        fill1Monad.ret(m.data[0]);
+        fill2Monad.ret(m.data[1]);
+        fill3Monad.ret(m.data[2]);
+        mMprimeBlurb.ret(m.data[5]);
+        mMfibBlurb.ret(m.data[4]);
+        mMprimeFibBlurb.ret(m.data[6]);  
+      }
+      else {
+        console.log('m.data[3] ********************', m.data[3] );
+        mMelapsed.ret(elapsed(m.data[0][3]))
+        .bnd(v =>  console.log(v));
+        mMres.ret(m.data[0])
+        window['primesMonad'] = new MonadState('primesMonad', m.data[1], primes_state);
+      }
+    }); `  )
 
-var p5e = h('pre',  `
-`  )
+var primes3 = h('pre',  `    var fibKeyPress5$ = sources.DOM
+        .select('input#fib92').events('keyup');
+
+    var primeFib$ = fibKeyPress5$.map(e => {
+      workerB.postMessage([primesMonad.s, e.target.value]);
+    });   `  )
 
 var p5f = h('pre',  `
 `  )
@@ -1586,4 +1606,4 @@ var p5f = h('pre',  `
 `  )
 
 
-  export default { primes, variations, MonadEmitter, clicks, bNode, styl, MonadState2, gameMonad, cycle, monad, hardWay, hardWay2, async1, async2, execP, workerD$, fact_workerC, fact2_workerD, primes_state, workerB_Driver, workerC, worker$, errorDemo, monadEr, backAction, tests, mMZ10, test3, monad, equals, fmap, opM, e2, e2x, e3, e4, e4x, e6, e6x, driver, messages, monadIt, MonadSet, updateCalc, arrayFuncs, nums, cleanup, ret, C42, newTask, process, mM$task, colorClick, edit, testZ, quad, runTest, todoStream, inc, seed,  add, MonadState, primesMonad, fibsMonad, primeFibInterface, tr3, fpTransformer, factorsMonad, factorsInput, promise, promiseSnippet, timeout, timeoutSnippet, examples, examples2 }
+  export default { primes3, primes2, primes, variations, MonadEmitter, clicks, bNode, styl, MonadState2, gameMonad, cycle, monad, hardWay, hardWay2, async1, async2, execP, workerD$, fact_workerC, fact2_workerD, primes_state, workerB_Driver, workerC, worker$, errorDemo, monadEr, backAction, tests, mMZ10, test3, monad, equals, fmap, opM, e2, e2x, e3, e4, e4x, e6, e6x, driver, messages, monadIt, MonadSet, updateCalc, arrayFuncs, nums, cleanup, ret, C42, newTask, process, mM$task, colorClick, edit, testZ, quad, runTest, todoStream, inc, seed,  add, MonadState, primesMonad, fibsMonad, primeFibInterface, tr3, fpTransformer, factorsMonad, factorsInput, promise, promiseSnippet, timeout, timeoutSnippet, examples, examples2 }

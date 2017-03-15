@@ -39,13 +39,14 @@ Object.freeze(primesMonad);
 var fpTransformer = function fpTransformer(fibsState, primesState, then) {
   var ar = [];
   var top = Math.ceil(Math.sqrt(fibsState[1]));
-  postMessage(['green', 'green', 'red', 'color', 'done', 'done', 'computing prime fibs'])
   var state = execP(primesState, top);
+  var top2 = state[2];
+  postMessage(['green', 'green', 'red', 'color', 'done', 'done', 'computing prime fibs'])
   fibsState[3].map(fib => {
     if (state[1].every(p => (fib % p || fib == p))) {ar.push(fib)}
   })  
   postMessage(['green', 'green', 'green', 'color', 'done', 'done', 'done']);
-  postMessage( [ [fibsState[3].join(', '), primesState[2], ar.join(', '), then], state ] )
+  postMessage( [ [fibsState[3].join(', '), top2, ar.join(', '), then], state ] )
 }
 
 //*************************************** END prime Fibonacci numbers
@@ -131,10 +132,11 @@ function* gen(x) {
    var count = x;
    while(true) {
      if(isPrime(count)) yield count;
-     count++;
+     count+=1;
    }
 }
 var primesIt = gen(primesMonad.s[2]+1);
+
 
 function execP (state, num) {
   var x = state[2];
@@ -152,46 +154,26 @@ function execP (state, num) {
     newP.push(primes[newP.length]);
     return [newP[newP.length - 1], newP, x, primes];
   }
-}
-
-
-
-
+};
 
 /*
 function execP (state, num) {
-  console.log('********** Salutations from execP. state and num are', state, num );
-  var top = state[2];
-  var top2 = state[2];
-  var primes = state[3];
-  var primes2 = state[3]
-  var result;
-  if (num == state[0] || num == top) {
-    result = new MonadState('primesMonad', state);
-  }
-
-  else if (num < top) {
-    var temp = primes.filter(v => v <= num);
-    var q = temp.indexOf(temp[temp.length - 1]);
-    temp.push(primes[q + 1]);
-    result = new MonadState('primesMonad', [primes[q+1], temp, top, primes]);
-  }
-    
-  else {
-    while (top2 <=  num ) {
-      if (primes2.every(e =>  (top / e != Math.floor(top / e))))  {
-        primes.push(top);
-        top2 = top;
-      };
-      top += 2;
+  var x = state[2];
+  var primes = state[3].slice();
+  if (x < num) {
+    var end = 0;
+    while (true) {
+      if (isPrime(end)) primes.push(end);
+      if (end > num) return [end, primes, end, primes]
+      else end += 1;
     }
-    result = new MonadState('primesMonad', [top2, primes, top2, primes] );
   }
-  Object.freeze(result)
-  return result;
-};
-*/
-
+  else {
+    var newP = primes.filter(v => (v <= num));
+    newP.push(primes[newP.length]);
+    return [newP[newP.length - 1], newP, x, primes];
+  }
+}  */
 
 function execF(n) {
   var a = [0,1];
