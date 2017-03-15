@@ -1585,8 +1585,8 @@ var primes3 = h('pre',  `    var fibKeyPress5$ = sources.DOM
       workerB.postMessage([primesMonad.s, e.target.value]);
     });   `  )
 
-var p5f = h('pre',  `
-`  )
+var primes4 = h('pre',  `    execF(ar[1]).bnd(fpTransformer, ar[0], x)  `  )
+
 var p5a = h('pre',  `
 `  )
 
