@@ -28,8 +28,8 @@ onmessage = function(ar) {
   var c = ar.data[2][3];
   var d = c.length;
   var diff = max - d;
-  execP(ar.data[0], max)
-  .bnd(primeState => execLCM(a, b, primeState)) 
+  var primes = execP(ar.data[0], max)
+  execLCM(a, b, primes) 
 }
 
 

@@ -672,35 +672,6 @@ var tr3 = h('pre',  `  var tr3 = function tr (fibsArray, primesArray) {
     ret(v, "m");
                `  )
 
-    var async = h('pre',  `  const LOCKED = ret(true, 'LOCKED');
-    LOCKED.ret(true);   // Creates LOCKED
-
-    const messages2$ = (sources.WS).map(e => {
-      if (!LOCKED.x) {
-        var v2 = e.data.split(',');
-        ret(v2.slice(3))
-        .bnd(v => mMtemp.bnd(display,'request2', 'The current online members of ' + pMgroup.x + ' are:')
-        .bnd(() => mMtemp.bnd(display,'request3', v)
-        .bnd(() => mMtemp.bnd(log, "The members are " + v )
-        .bnd(() => LOCKED.ret(true)))))
-      }
-    });
-
-    const requestClicks$ = sources.DOM.select('#request').events('click');
-
-    const requestAction$ = requestClicks$.map(() => {
-      if (pMgroup.x != 'solo') {         // The default non-group
-        LOCKED.ret(false);
-        socket.send('NN#$42,' + pMgroup.x  + ',' + pMname.x + ',' + pMgroup );
-      }
-    });
-
-    var display = function display (x, id, string) {
-      document.getElementById(id).innerHTML = string;
-      return ret(x);
-    }  `  )
-
-
   var e2 = h('pre',  `  var c = m.ret(0).bnd(add,3).bnd(cube).bnd(log, "The values of m\'s and c\'s
     x attributes are " + m.x + " and " + c.x + " respectively." )   ` )
 
@@ -1054,31 +1025,6 @@ var workerB_Driver = h('pre.red0',  `    function workerBDriver () {
       });
     };    `  )
 
-var workerB = h('pre.green2',  `    var workerB = new Worker("workerB.js"); // In the main thread.
-
-    onmessage = function(m) {
-      var ar = m.data;
-      importScripts('script2.js');
-      var x = Date.now();
-
-      var result = fibsMonad.run([1, 2 , ar[2], [0,1]])
-      .bnd(fpTransformer, ar[1]);     // See below
-      var y = Date.now() - x;
-      result.push(y);
-      postMessage(result);
-    };
-
-    var fpTransformer = function fpTransformer(x, s) {
-      var a = Math.ceil(Math.sqrt(x[3].slice(-1)[0]));
-      var m = primesMonad.run([s,a]);
-      var ar = [];
-      x[3].map(function (v) {
-        if (m.s[3].filter(x => x <= v).every(function (p) { return (v % p || v == p); }))
-          ar.push(v);
-      });
-      return [x[3].join(', '), m.s[3].slice(-1).pop(), ar.join(', '), m.s];
-    };   `  )
-
 var primes_state = h('pre',  `    function MonadState(g, state, p) {
       this.id = g;
       this.s = state;
@@ -1314,36 +1260,37 @@ h('p', ' More complex, multi-stage computations in sequenced monads are demonstr
 h('p', ' So, with that out of the way, here are the definitions of Monad and testPrefix: ' ),
 
 h('h3', ' Monad '),
-h('pre',  `    var Monad = function Monad(z = 42, g = 'generic') {
-      this.x = z;
-      this.id = g;
-      this.bnd = function (func, ...args) {
-        var m = func(this.x, ...args)
-        var mon;
-        if (m instanceof Monad) {
-          mon = testPrefix(args,this.id);
-          return window[mon] = new Monad(m.x, mon);
-        }
-        else return m;
-      };
-      this.ret = function (a) {
-        return window[_this.id] = new Monad(a,_this.id);
-      };
-    };
-
-    function testPrefix (x,y) {
-      var t = y;
-      var s;
-      if (Array.isArray(x)) {
-        x.some(v => {
-          if (typeof v === 'string' && v.charAt() === '$') {
-             t = v.slice(1, v.length);
-          }
-        })
+h('pre',  `  var Monad = function Monad(z = 42, g = 'generic') {
+    this.x = z;
+    this.id = g;
+    this.bnd = function (func, ...args) {
+      var m = func(this.x, ...args)
+      var mon;
+      if (m instanceof Monad) {
+        mon = testPrefix(args,this.id);
+        return window[mon] = new Monad(m.x, mon);
       }
-      return t;
-    }  `  ),
-('br' ),
+      else return m;
+    };
+    this.ret = function (a) {
+      return window[_this.id] = new Monad(a,_this.id);
+    };
+  };
+
+  function testPrefix (x,y) {
+    var t = y;
+    var s;
+    if (Array.isArray(x)) {
+      x.some(v => {
+        if (typeof v === 'string' && v.charAt() === '$') {
+           t = v.slice(1, v.length);
+        }
+      })
+    }
+    return t;
+  }  `  ) ])
+
+var variations = h('div',  [
 h('h3', 'Variations on the Theme' ),
 h('p', ' Variations on the Monad theme serve diverse purposes. Instances of MonadState preserve computations so they won\'t have to be performed again. An instance of MonadState2 keeps a record of game play allowing players to back up and resume play from a previous display of numbers. It also keeps the current game parameters - score, goals, operator, selected numbers, and remaining numbers - in a single array which is stored in the archive whenever a new state is created. MonadItter instances are used to parse websockets messages and organize the callbacks neatly. MonadEr catches NaN and prefents crashes when undefined variables are encountered. I defined a message emitting monad but it seemed useless in this Cycle application where reactivity is pervasive. When you want to emit and listen for messages, it is better to build a driver and merge its stream of messages into the application cycle. '),
 
@@ -1413,8 +1360,7 @@ h('span.tao', ' The Haskell programming language borrowed the term "monad" from 
 h('a', { props: { href: "http://math.andrej.com/2016/08/06/hask-is-not-a-category/", target: "_blank" } }, 'Hask is not a category.'),
 h('br' ),
 h('p', ' Research into ways of defining a Haskell category appears to be ongoing. It involves tinkering with special constraints, omitted features, and definitions of morphisms that are not Haskell functions. When a definition of the category is established, Haskell monads are then shown to be, in some contrived context, category-theory monads. Devising such schemes are instructive academic exercises, but I don\'t think they can provide anything useful to programmers working on applications for industry, commerce, and the Internet. ' ),
-h('p', ' However, imitating definitions and patterns found in category theory, as Haskell does in defining the functor, monoid, and monad type classes, was a stroke of genius that vastly enriched the Haskell programming language and brought it into the mainstream as a viable alternative to java, c++, etc.  This website runs efficiently on a Haskell websockets server. The modified Haskell Wai Websockets server has proven to be extraordinarily easy to maintain as new requirements become necessary. For example, modifying the server to send chat messages and shared todo lists only to members of the same group was a trivial task. It required just a tiny amount of pattern-matching code. Category theory patterns make the Haskell interface to the Cycle front end robust, versitile, and reliable. Those are the qualities that I strive to emulate with JS-monads.'  ),
-])
+h('p', ' However, imitating definitions and patterns found in category theory, as Haskell does in defining the functor, monoid, and monad type classes, was a stroke of genius that vastly enriched the Haskell programming language and brought it into the mainstream as a viable alternative to java, c++, etc.  This website runs efficiently on a Haskell websockets server. The modified Haskell Wai Websockets server has proven to be extraordinarily easy to maintain as new requirements become necessary. For example, modifying the server to send chat messages and shared todo lists only to members of the same group was a trivial task. It required just a tiny amount of pattern-matching code. Category theory patterns make the Haskell interface to the Cycle front end robust, versitile, and reliable. Those are the qualities that I strive to emulate with JS-monads.'  ) ])
 
 var p503j = h('pre',  `
 `  )
@@ -1443,8 +1389,8 @@ function websocketsDriver() {
 
 
 
-var async = h('div', [
-h('p', ' The next five demonstrations involve computations of prime numbers, Fibonacci numbers, prime Fibonacci numbers, and prime factors of numbers. Several instances of a constructor named "MonadState" (simple and not an ES6 class) are utilyzed, three of which maintain and share share an array of prime numbers maintained in the MonadState instance named "primesState". An array of arrays of prime factors of numbers is maintained in MonadState instance "decompMonad", which is shared by the fourth and fifth examples in this series of async examples. Some code snippets and explanations follow the demonstrations. ' ),
+var async1 = h('div', [
+h('p', ' The next five demonstrations involve computations of prime numbers, Fibonacci numbers, prime Fibonacci numbers, and prime factors of numbers. Several instances of a constructor named "MonadState" (simple and not an ES6 class) are utilyzed, three of which maintain and share share an array of prime numbers maintained in the MonadState instance named "primesState". An array of arrays of prime factors of numbers is maintained in MonadState instance "decompMonad", which is shared by the fourth and fifth examples in this series of async examples. Here is the definition of MonadState: ' ),
 h('pre', `
     function MonadState(g, state) {
       this.id = g;
@@ -1452,15 +1398,16 @@ h('pre', `
       this.bnd = (func, ...args) => func(this.s, ...args);
     }    ` ),
 
-h('p', ' The first demonstration displays the Fibonacci series up to an upper bound entered in the browser by a user. It also displays a list of the prime Fibonacci numbers in the list of Fibonacci numbers, along with the largest prime number that was generated during a computation.  I tested performance in Chrome and Firefox on my Ubuntu 16.04 box by entering "1" and then, one at a time, 0\'s. Lag times in Chrome and Firefox were almost identical. were not noticeable until I reached 10,000,000,000 where there was a 831 microsecond pause before the prime Fibonacci number 2,971,215,073 appeared. At 100,000,000,000 the lag time in Chrome was 7,230 and at 1,000,000,000,000 it was 65.524 microseconds. At this point, the larges generated prime number was 978,149 and the largest Fibonacci number was  956,722,026,041. ' ),
-h('p', ' The graphical progress display confirmed that it took almost no time to generate the list of Fibonacci numbers or to select the ones that are prime. The bottleneck was computing the primes. To see the effectiveness of saving computed prime numbers, I deleted three zeros and then added them back again. At 100,000,000,000,000 and 1,000,000,000,000,, the lag times were  67 microseconds and 124 microseconds, respectively. The display, in a brief flash, showed that those delays occorred mostly during the selection of prime Fibonacci numbers from the array of Fibonacci numbers. In Firefox, the lags were again almost exactily identical to the ones in Chrome. '  ),
-
+h('p', ' The first demonstration displays the Fibonacci series up to an upper bound entered in the browser by a user. It also displays a list of the prime Fibonacci numbers in the list of Fibonacci numbers, along with the largest prime number that was generated during a computation. ' ),
+h('p', ' The progress display confirmed that it took almost no time to generate the list of Fibonacci numbers or to select the ones that are prime. The bottleneck was computing the primes. To see the effectiveness of saving computed prime numbers, I deleted three zeros and then added them back again. At 100,000,000,000,000 and 1,000,000,000,000, the lag times were  67 microseconds and 124 microseconds, respectively. The display, in a brief flash, showed that those delays occorred mostly during the selection of prime Fibonacci numbers from the array of Fibonacci numbers. Firefox\'s performance was comparable to Chrome\'s. I entered 1,000,000.000,000,000 in the Firefox browser, and after approximately 35 seconds five additional Fibonacci numbers appeared, topped by 806,515,533,049,393. The largest prime number that had to generated to achieve that result was 28,399,249. A total of 2,640,405 prime numbers were generated. ' ),
 h('p', ' The demonstrations do not block the main execution thread. Computations are performed in web workers and the results are stored for further use in the main thread. ' ),
 h('span', ' According to the '),
 h('a', { props: { href: "https://oeis.org/A005478", target: "_blank" } }, 'The On-Line Encyclopedia of Integer Sequences '),
 h('span', ' these are the first eleven proven prime Fibonacci numbers:'),
-h('span.purp', ' 2, 3, 5, 13, 89, 233, 1597, 28657, 514229, 433494437, 2971215073, and 99194853094755497. The eleventh number, 2971215073, is as far as you can go on an ordinary desktop computer. ' ),
-h('br' )   ])
+h('span.red', ' 2, 3, 5, 13, 89, 233, 1597, 28657, 514229, 433494437, 2971215073, and 99194853094755497. '),
+h('span', ' The eleventh number, 2971215073, is as far as you can go on an ordinary desktop computer. ' ),
+h('br' ),
+h('p', ' The circles below are red during the computation of A. Fibonacci numbers, B. Prime numbers, and C. prime fibonacci numbers. A, B, and C are shown from left to right. On my desktop computer, the middle circle in the red state starts bcoming briefly discernable a 10,000,000, which is where the largest attainable prime Fibonacci number (2971215073), first appears. The lag time in the Chrome browser at 1,000,000,000,000,000 was a little over thirty-five seconds. After deleting and then replacing the last 0, the delay under six seconds, demonstrating a significant benefit from retrieving previously generated prime numbers instead of computing them again. This time, the only circle that turned red was the right one, which corresponds to picking out the prime Fibonacci numbers. ')  ])
 
 
 
@@ -1473,11 +1420,10 @@ p(' The preceding demonstrations used three instances of MonadState: primesMonad
      //code.MonadState,
 h('p', ' MonadState reproduces some of the functionality found in the Haskell Module "Control.Monad.State.Lazy", inspired by the paper "Functional Programming with Overloading and Higher-der Polymorphism", Mark P Jones (http://web.cecs.pdx.edu/~mpj/) Advanced School of Functional Programming, 1995. Transformers take instances of MonadState and return different instances of MonadState. In the prime Fibonacci example, the method call "fibsMonad.bnd(fpTransformer, primesMonad)" returns primesMonad updated so that the largest prime number in primesMonad.s[1] is only slightly larger than the square root of the largest Fibonacci number in fibsMonad.s[3]. Here is the definition of fpTransformer: '),
      //code.fpTransformer,
-h('a#err', { props: { href: '#top' } }, 'Back To The Top'),
-h('br' ),
-])
+h('a#err', { props: { href: '#top' } }, 'Back To The Top') ])
 
-var bNode = h('pre',  `    function bNode (arr) {
+
+var bNode = h('pre',  ` function bNode (arr) {
       var x = styl(arr.length);
       var node = h('div', [
          h('button#0.num', { style: { display: x[0] }}, arr[0] ),
@@ -1569,8 +1515,49 @@ var clicks = h('pre',  `    var numClick$ = sources.DOM
 var MonadEmitter = h('pre',  `
 `  )
 
-var p5c = h('pre',  `
-`  )
+var primes= h('pre',  `    function MonadState(g, state) {
+      this.id = g;
+      this.s = state;
+      this.bnd = (func, ...args) => func(this.s, ...args);  
+    };
+
+    var primesMonad = new MonadState('primesMonad', [3, [], 3, [2,3]]);
+    Object.freeze(primesMonad);
+
+    function isPrime(n) {
+       if (isNaN(n) || !isFinite(n) || n%1 || n<2) return false;
+       var m = Math.sqrt(n);
+       for (var i=2;i<=m;i++) if (n%i==0) return false;
+       return true;
+    }
+
+    function* gen(x) {
+       var count = x;
+       while(true) {
+         if(isPrime(count)) yield count;
+         count++;
+       }
+    }
+
+    var primesIt = gen(primesMonad.s[2]+1);
+
+    function execP (state, num) {   // This function is used to update primesMonad.
+      var x = state[2];
+      var primes = state[3].slice();
+      if (x < num) {
+        var end = 0;
+        while (end < num) {
+          primes.push(primesIt.next().value);
+          end = primes[primes.length - 1];
+        }
+        return [end, primes, end, primes]
+      }
+      else {
+        var newP = primes.filter(v => (v <= num)); 
+        newP.push(primes[newP.length]);
+        return [newP[newP.length - 1], newP, x, primes];
+      }
+    }  `  )
 
 var p5d = h('pre',  `
 `  )
@@ -1599,4 +1586,4 @@ var p5f = h('pre',  `
 `  )
 
 
-  export default { MonadEmitter, clicks, bNode, styl, MonadState2, gameMonad, cycle, monad, hardWay, hardWay2, async, async2, execP, workerD$, fact_workerC, fact2_workerD, primes_state, workerB, workerB_Driver, workerC, worker$, errorDemo, monadEr, backAction, tests, mMZ10, test3, monad, equals, fmap, opM, e2, e2x, e3, e4, e4x, e6, e6x, driver, messages, monadIt, MonadSet, updateCalc, arrayFuncs, nums, cleanup, ret, C42, newTask, process, mM$task, colorClick, edit, testZ, quad, runTest, todoStream, inc, seed,  add, MonadState, primesMonad, fibsMonad, primeFibInterface, tr3, fpTransformer, factorsMonad, factorsInput, promise, promiseSnippet, timeout, timeoutSnippet, examples, examples2 }
+  export default { primes, variations, MonadEmitter, clicks, bNode, styl, MonadState2, gameMonad, cycle, monad, hardWay, hardWay2, async1, async2, execP, workerD$, fact_workerC, fact2_workerD, primes_state, workerB_Driver, workerC, worker$, errorDemo, monadEr, backAction, tests, mMZ10, test3, monad, equals, fmap, opM, e2, e2x, e3, e4, e4x, e6, e6x, driver, messages, monadIt, MonadSet, updateCalc, arrayFuncs, nums, cleanup, ret, C42, newTask, process, mM$task, colorClick, edit, testZ, quad, runTest, todoStream, inc, seed,  add, MonadState, primesMonad, fibsMonad, primeFibInterface, tr3, fpTransformer, factorsMonad, factorsInput, promise, promiseSnippet, timeout, timeoutSnippet, examples, examples2 }

@@ -1,10 +1,10 @@
-body {
+html, body {
   background-color: #6d5000;
   color: #edd79c;
   font-size: 20px;
   font-family: "Times New Roman";
-  margin-left: 3%;
-  margin-left: 3%;
+  margin: 0 auto;
+  width: 96%;  
 }
 
 input {
@@ -16,7 +16,7 @@ input {
 pre {
   font-size:15px;
   color: #efe302;
-  margin-left: 5%;
+  margin-left: 3%;
 }
 
 h2 {
@@ -28,6 +28,41 @@ h1 {
   color: #efe302;
   text-align: center;
   }
+
+.content {
+  font-size:20px;
+} 
+
+#eighty {
+  width: 80%;
+  display: inline-block;
+  margin-left: 10%;
+  margin-right: 10%;
+  text-indent 0%;
+}
+
+#rightPanel {
+ width: 30%;
+ height: 100%;
+ float: right; 
+ margin-right: 15px;
+ margin-left: 50px;
+}
+
+#rightPanel2 {
+ width: 20%;
+ height: 100%;
+ float: right; 
+ margin-right: 15px;
+ margin-left: 50px;
+}
+
+#leftPanel {
+ width: 60%;
+ height: 100%;
+ float: left; 
+ margin-left: 2%;
+}
 
 .hh1 {
   color: #efe302;
@@ -81,8 +116,8 @@ h1 {
 }
 
 .image_2 {
-  height: 3%;
-  width: 3%;
+  height: 5%;
+  width: 5%;
   background-color: #6d5000;
 }
 
@@ -293,10 +328,6 @@ h3 {
 }
 
 
-.content {
-  font-size:20px;
-} 
-
 .codeColor {
   color: #00ffe1;
 }
@@ -369,29 +400,6 @@ p {
 }
 
 #group2 {
-}
-
-#rightPanel {
- width: 30%;
- height: 100%;
- float: right; 
- margin-right: 15px;
- margin-left: 50px;
-}
-
-#rightPanel2 {
- width: 30%;
- height: 100%;
- float: right; 
- margin-right: 15px;
- margin-left: 50px;
-}
-
-#leftPanel {
- width: 60%;
- height: 100%;
- float: left; 
- margin-left: 15px;
 }
 
 .hidden {

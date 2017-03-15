@@ -157,12 +157,14 @@ function main(sources) {
       mM14.ret(v.data[1])
     }); 
     mMZ25.bnd(() => {
+      console.log('??????????????????????????????????????????? mMZ25.bnd - - - v', v );
       if (typeof v.data[1] === 'string') { 
         console.log('Major malfunction in worker.js  Reporting from main thread', v.data[1] )
       }
       else {
+        mMres.ret(v.data[0]);
         console.log('In main thread. Re-instanciating primesMonad with ', v.data[1]);
-        window['primesMonad'] = new MonadState('primesMonad', v.data[1]) 
+        primesMonad = new MonadState('primesMonad', v.data[1]) 
       }
     });
     next(v.data[0], 'CA#$41', mMZ21)
@@ -1015,11 +1017,37 @@ var todoMonad = new MonadState3('todoMonad',
     h('br'),     
     h('div#rightPanel2', { style: { display: mMrightPanel2.x } }, [ 
       h('br'),
+      h('br'), 
+      h('br'), 
+      h('br'), 
       h('br'),
-      h('img.image_2', {props: {src: "logo.svg" }}  ),   
-      h('a', { props: { href: "https://cycle.js.org/", target: "_blank" } }, 'A cyclejs application'),  
-      h('p', ' After you log in, this column will show the scoreboard, a todo list, and text messages that can be shared among group members, or used privately. You might find the game to be a refreshing solitairre diversion. ' ) ]),
-    h('br'),  
+      h('br'),
+      h('p', ' After you log in, this column will show the scoreboard, a todo list, and text messages that can be shared among group members, or used privately. You might find the game to be a refreshing solitairre diversion. ' ),
+      h('br'),
+      h('br'),
+      h('br'),
+      h('br'),
+      h('br'), 
+      h('br'), 
+      h('br'), 
+      h('br'),
+      h('br'),
+      h('br'), 
+      h('br'), 
+      h('br'), 
+      h('br'),
+      h('br'),
+      h('br'), 
+      h('br'), 
+      h('br'), 
+      h('br'),
+      h('br'),
+      h('br'), 
+      h('br'), 
+      h('p', 'This space is reserved for the game scoreboard, todo list, and chat messages. These appear after login. ' ), 
+      h('br'),
+      h('br'),
+      h('br') ]),  
     h('div#rightPanel', { style: { display: mMrightPanel.x } }, [ 
       h('span#tog', [
       h('br'),
@@ -1035,19 +1063,17 @@ var todoMonad = new MonadState3('todoMonad',
       h('br'), 
       h('br'), 
       h('br'), 
-      h('button#game', { style: { fontSize: '16px', display: 'inline' } }, 'TOGGLE GAME'),
-      h('span.tao', ' '),
       h('button#todoButton', { style: { fontSize: '16px', display: 'inline' } }, 'TOGGLE TODO_LIST'),
       h('br'),
       h('br'),
       h('button#chat2', { style: { fontSize: '16px', display: 'inline' } }, 'TOGGLE CHAT'),
-      h('span.tao', ' '),
-      h('button#caption', { style: { fontSize: '16px', display: 'inline' } }, 'TOGGLE CAPTION')]),
+      ]),
       h('br'),
       h('br'),
       h('br'), 
       h('br'), 
       h('br'), 
+      h('br'), 
       h('br'),
       h('br'), 
       h('br'), 
@@ -1057,9 +1083,8 @@ var todoMonad = new MonadState3('todoMonad',
       h('br'), 
       h('br'), 
       h('br'), 
+      h('br'),
       h('br'), 
-      h('img.image_2', {props: {src: "logo.svg" }}  ),   
-      h('a', { props: { href: "https://cycle.js.org/", target: "_blank" } }, 'A cyclejs application'),  
       h('br'),
       h('br'), 
       h('div#gameDiv', { style: { display: `mMgameDiv.x` } }, [
@@ -1089,14 +1114,13 @@ var todoMonad = new MonadState3('todoMonad',
       h('br'), 
     h('br'),
     h('br'),
-    "mMindex.x: " + mMindex.x,
     h('br'),
-    h('br'),
-  ]),
-  h('div#leftPanel', [  
-    
+    h('br'),  ]),
+  h('div#leftPanel', [
       h('br'),
-      h('div#captionDiv', { style: { display: mMcaptionDiv.x } },  [
+      h('img.image_2', {props: {src: "logo.svg" }}  ),   
+      h('a', { props: { href: "https://cycle.js.org/", target: "_blank" } }, 'A cyclejs application'),  
+      h('span#captionDiv', { style: { display: mMcaptionDiv.x } },  [
       h('h1', 'JS-monads running on Cycle.js') ]),
       h('p.fred', 'PLEAE NOTE: This site is constantly evolving. The commentary sometimes lags behind innovations. I know this site is a little rough around the edges. I present it hoping that you will provide suggestions, corrections, and comments. -- David Schalk  ' ), 
       h('span#italic', ' These monads are like the Haskell monads in that they resemble the monads of category theory without actually being mathematical monads. See ' ),
@@ -1109,10 +1133,10 @@ var todoMonad = new MonadState3('todoMonad',
 
       h('span.tao', 'The code for this repository is at '),
       h('a', { props: { href: "https://github.com/dschalk/JS-monads-stable", target: "_blank" } }, 'JS-monads-stable'),  
-      h('h2.red', mMgoals2.x ),
       h('div#gameDiv2', { style: { display: mMgameDiv2.x } }, [
           h('span', ' Here are the basic rules:'),
           h('p', 'RULES: If clicking two numbers and an operator (in any order) results in 20 or 18, the score increases by 1 or 3, respectively. If the score becomes 0 or is evenly divisible by 5, 5 points are added. A score of 25 results in one goal. That can only be achieved by arriving at a score of 20, which jumps the score to 25. Directly computing 25 results in a score of 30, and no goal. Each time RL is clicked, one point is deducted. Three goals wins the game. '),
+h('h1.red', mMgoals2.x ),
           buttonNode,
           h('br'),
           h('button#4.op', 'add'),
@@ -1142,10 +1166,13 @@ h('div#log2', { style: { display: mMlog2.x } }, [
 h('p', mMsoloAlert.x ),
 h('p', 'People who are in the same group, other than the default group named "solo", share the same todo list, chat messages, and simulated dice game. In order to see any of these, you must establish a unique identity on the server by logging in. The websockets connection terminates if the first message the server receives does not come from the sign in form. You can enter any random numbers, letters, or special characters you like. The server checks only to make sure someone hasn\t already signed in with the sequence you have selected. If you log in with a name that is already in use, a message will appear and this page will be re-loaded in the browser after a four-second pause. '),
 h('p', ' Data for the traversable game history accumulates until a player scores three goals and wins. The data array is then erased and the application is ready to start accumulating a new history. '),
-h('hr'),
-    
+h('input#primeNumbers', ),
+h('div', mM18.x ),  
  // **************************************************************************** START MONAD
+  ]),
+h('div#eighty', [    
    code.monad,       
+    code.variations,
  // **************************************************************************** END MONAD       
    code.cycle,
 
@@ -1153,7 +1180,7 @@ h('hr'),
  
  
   h('h2', ' Asynchronous Processes ' ),
-    code.async,
+    code.async1,
 
 h('br'),
 h('span', `${mMfibBlurb.x}`  ),    
@@ -1195,14 +1222,14 @@ h('span#PF_22.turk', mMres.x[1]  ),
 h('bpr'),
 
 
-h('p', ' The second demonstration in this series decomposes numbers into its their prime factors. Unless a large array of prime numbers has already been generated, five digits is the limit for a quick response. After running 300,000,000,000 in the first demonstration, 444,444 was decomposed in a little over 100 microseconds.  To see it in action, enter a number below. ' ),
+h('p', ' The second demonstration in this series decomposes numbers into its their prime factors. Testing with sequences of 9\'s, the first substantial lag occurs at 9,999,999 - unless a large array of prime numbers has already been generated in the previous demonstration or elsewhere. Here it is:' ),
 h('input#factors_1'),
 h('br'),
 h('br'),
 h('span', mMfactors.x ),  
 h('span.tao3', mMfactors23.x ),  
 
-h('p', ' Next, two comma-separated numbers are decomposed into arrays of their prime factors, and those arrays are used to compute their lowest common multiple (lcm). For example, the lcm of 6 and 9 is 18 because 3*6 and 2*9 are both 18. The lcm of the denominators of two fractions is useful in fraction arithmetic; specifically, addition and subtraction.  CAUTION: On a modern desktop computer, two five-digit numbers yield a result without noticeable lag; two six digit number take a while to finish. ' ),  
+h('p', ' Next, two comma-separated numbers are decomposed into arrays of their prime factors, and those arrays are used to compute their lowest common multiple (lcm). For example, the lcm of 6 and 9 is 18 because 3*6 and 2*9 are both 18. The lcm of the denominators of two fractions is useful in fraction arithmetic; specifically, addition and subtraction. On my desktop computer, two seven digit numbers resulted in a lag of a few seconds when prime numbers had not been previously generated. ' ),  
 
 h('input#factors_5'),
 
@@ -1238,9 +1265,7 @@ h('br'),
 h('div', `TEST: ${mMfactors8_b.x[0]} * ${mMfactors8_b.x[1]} === ${mMfactors8_b.x[2]} * ${mMfactors8_b.x[3]} `  ),
 h('span', 'RESULT: ' ),
 h('span.tao3', `${ (mMfactors8_b.x[0]  *  mMfactors8_b.x[1])  ===  (mMfactors8_b.x[2]  *  mMfactors8_b.x[3]) }` ),  
-  code.simple,
-
-    //  code.simple2,
+  h('h3', ' The Easy Way ' ),
   h('p', ' This has been a demonstration of MonadState and MonadState transformers. If you really want the least common multiple or the largest common factor of two positive integers, there is no need to generate prime numbers. The next and final demonstration in this section does not use a web worker. The computations block the main thread, but only for a few microseconds.' ),
   h('br' ),  
   h('input#factors800'),
@@ -1254,7 +1279,8 @@ h('span.tao3', `${ (mMfactors8_b.x[0]  *  mMfactors8_b.x[1])  ===  (mMfactors8_b
   h('div', `TEST: ${mMfactors800.x[0]} * ${mMfactors800.x[1]} === ${mMfactors800.x[2]} * ${mMfactors800.x[3]} `  ),
   h('span', 'RESULT: ' ),
   h('span.tao3', `${ (mMfactors800.x[0]  *  mMfactors800.x[1])  ===  (mMfactors800.x[2]  *  mMfactors800.x[3]) }` ),
-
+h('p', ' The code for the previous demonstrations is available at the Github repository, and will soon be available here in an appendex. primesMonad and the functions primarily involved in its transformation are shown below: ' ),
+  code.primes,
 
 
 
@@ -1314,10 +1340,6 @@ h('p', 'Here is the code:'),
 code.quad,
 h('p', ' fmap (above) facilitated using qS4 in a monadic sequence. qS4 returns an array, not an instance of Monad, but fmap lifts qS4 into the monadic sequence. '),
 h('p', ' The function solve() is recursive. It invokes itself after release() executes three times. The expression "solve()" resets solve to the top, where mMZ3.p becomes a function containing two nested occurrances of mMZ3.bnd. After mMZ3.release() executes, mMZ3.p becomes the function that is the argument to the next occurrance of mMZ3.bnd. That function contains yet another occurrance of mMZ3.bnd. MonadItter is syntactic sugar for nested callbacks. ' ), 
-h('p', ' The final example before moving on to the simulated dice game shows how the web worker file, worker.js, handles messages it recieves. worker$ and the worker driver are shown again for the reader\'s convenience. ' ),
-    code.wDriver,
-    code.worker$,
-      code.worker_js,
   
 // ************************************************************************** START MonadState
 
@@ -1386,7 +1408,7 @@ h('a', { props: { href: '#top' } }, 'Back To The Top'),
   h('p'),
   h('p'),
   h('p')
-       ]) 
+       ])
      ])
    }) 
   } 

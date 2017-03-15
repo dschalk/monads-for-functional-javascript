@@ -1683,3 +1683,125 @@ function styl (s) {
     return node;
   }
 
+
+
+
+
+
+
+function isPrime(n) {
+   if (isNaN(n) || !isFinite(n) || n%1 || n<2) return false;
+   var m = Math.sqrt(n);
+   for (var i=2;i<=m;i++) if (n%i==0) return false;
+   return true;
+}
+
+function *genPrimes(x) {
+   var count = x;
+   while(1) {
+     if(isPrime(count)) yield count;
+     count++;
+   }
+}
+var primesIt = genPrimes(primesMonad.s[2]+1);
+
+function getP (state, num) {
+  var x = state[2];
+  var primes = state[3].slice();
+  if (x < num) {
+    console.log('(Z)(Z)(Z)(Z)(Z)(Z)(Z)(Z)(Z)(Z)(Z)(Z)(Z)(Z)(Z)(Z)(Z)(Z)(Z)(Z)(Z)(Z)');
+    var end = 0;
+    while (end < num) {
+      primes.push(primesIt.next().value);
+      end = primes[primes.length - 1];
+      console.log(primes);
+    }
+    return [end, primes, end, primes]
+  }
+  else {
+    var newP = primes.filter(v => (v <= num));
+    newP.push(primes[newP.length]);
+    console.log('newP is <><><><><><><>', newP );
+    console.log('OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO');
+    return [newP[newP.length - 1], newP, x, primes]
+  }
+}
+primesMonad = new MonadState2('primesMonad',  getP(primesMonad.s, 100));
+
+primesMonad = new MonadState2('primesMonad', getP(primesMonad.s, 50));
+
+primesMonad = new MonadState2('primesMonad', getP(primesMonad.s, 150));
+
+primesMonad = new MonadState2('primesMonad',  getP(primesMonad.s, 75));
+
+
+/*
+function execP (state, num) {
+  console.log('********** Salutations from execP. state and num are', state, num );
+  var top = state[2];
+  var top2 = state[2];
+  var primes = state[3];
+  var primes2 = state[3]
+  var result;
+  if (num == state[0] || num == top) {
+    result = new MonadState('primesMonad', state);
+  }
+
+  else if (num < top) {
+    var temp = primes.filter(v => v <= num);
+    var q = temp.indexOf(temp[temp.length - 1]);
+    temp.push(primes[q + 1]);
+    result = new MonadState('primesMonad', [primes[q+1], temp, top, primes]);
+  }
+    
+  else {
+    while (top2 <=  num ) {
+      if (primes2.every(e =>  (top / e != Math.floor(top / e))))  {
+        primes.push(top);
+        top2 = top;
+      };
+      top += 2;
+    }
+    result = new MonadState('primesMonad', [top2, primes, top2, primes] );
+  }
+  Object.freeze(result)
+  return result;
+};
+
+function execP (state, num) {
+  console.log('********** Salutations from execP. state and num are', state, num );
+  var top = state[2];
+  var primes = state[3].slice();
+  var result;
+  if (num == state[0] || num == top) {
+    console.log('In execP TEST # 1');
+    result = [top,primes.top,primes]
+  //  result = new MonadState('primesMonad', state);
+  }
+
+  else if (num < top) {
+    console.log('In execP TEST # 2');
+    var temp = primes.slice(0, num);
+    var q = temp.indexOf(temp[temp.length - 1 ]);
+    temp.push(primes[q + 1]);
+    rewult = [primes[q+1], temp, top, primes]
+//    result = new MonadState('primesMonad', [primes[q+1], temp, top, primes]);
+  }
+
+  else {
+    console.log('In execP TEST # 3');
+    var gen = genPrimes(num);
+    var z = gen.next().value;
+    while (z <= num) {
+      console.log('z in execP', z);
+      primes.push(z);
+      z = gen.next().value;
+    }
+    top = primes[primes.length - 1];
+    result = [top,primes.top,primes]
+//    result = new MonadState('primesMonad', [top, primes, top, primes] );
+  }
+  console.log('********** Hello again from execP. primes and top are', primes, top );
+  return result;
+};
+*/

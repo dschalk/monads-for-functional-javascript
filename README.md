@@ -4,11 +4,11 @@
 
 PLEAE NOTE: This site is constantly evolving. The commentary sometimes lags behind innovations. I know this site is a little rough around the edges. I present it hoping that you will provide suggestions, corrections, and comments. -- David Schalk
 
- These monads are like the Haskell monads in that they resemble the monads of category theory while not actually being mathematical monads. See [Hask is not a category](http://math.andrej.com/2016/08/06/hask-is-not-a-category/) by Andrej Bauer. They provide a convenient interface for dealing with uncertainty and side effects in a pure functional manner, assigning new values to identifiers (variables) without mutation. Adherence to the monad laws (see below) helps make the monads robust, versetile, and reliable tools for isolating and chaining sequences of Javascript functions. 
+ These monads are like the Haskell monads in that they resemble the monads of category theory while not actually being mathematical monads. See [Hask is not a category](http://math.andrej.com/2016/08/06/hask-is-not-a-category/) by Andrej Bauer. They provide a convenient interface for dealing with uncertainty and side effects in a pure functional manner, assigning new values to identifiers (variables) without mutation. Adherence to the monad laws (see below) helps make the monads robust, versetile, and reliable tools for isolating and chaining sequences of Javascript functions.
 
- This is the open source repository for the application running online at [JS-monads-stable](http://schalk.net:3055). Aside from being a place to share my ideas and techniques with any developers who might be interested, this repository and the online demonstration can serve as a learning tools for people who are getting familiar with the usefulness of functions that take functions as arguments. 
- 
-  The server is a modified clone of the Haskell Wai Websockets server. Haskell pattern matching and list comprehension made it easy to configure the server to broadcast selectively to members of groups, who share the dice game, todo list, and chat room. I use Babel and Webpack to prepare the front end and Stack to compile everything into a single executable which I upload to my Digital Ocean "droplet". 
+ This is the open source repository for the application running online at [JS-monads-stable](http://schalk.net:3055). Aside from being a place to share my ideas and techniques with any developers who might be interested, this repository and the online demonstration can serve as a learning tools for people who are getting familiar with the usefulness of functions that take functions as arguments.
+
+  The server is a modified clone of the Haskell Wai Websockets server. Haskell pattern matching and list comprehension made it easy to configure the server to broadcast selectively to members of groups, who share the dice game, todo list, and chat room. I use Babel and Webpack to prepare the front end and Stack to compile everything into a single executable which I upload to my Digital Ocean "droplet".
 
   The code here is not annotated, but detailed examinations of the code behind the multiplayer simulated dice game, persistent todo list, chat feature, and several other demonstrations can be found at [http://schalk.net:3055](http://schalk.net:3055), where the code is running online.
 
@@ -23,19 +23,19 @@ Monads are created by code such as "const m = new Monad("anything", "m")". The a
 A monad, say "m", can be replaced by another monad named "m" in the global space through the use of the method "ret()". It looks like m.x gets mutated, but that isn't what happens. Previously defined references to m retain their values, as demonstrated below:
 ```javascript
 const m = new Monad (5, 'm');
-var arr = [m]; 
+var arr = [m];
 var p = m;
 m.ret(100);  
-console.log(m.x, arr[0].x, p.x);  // 100, 5, 5 
+console.log(m.x, arr[0].x, p.x);  // 100, 5, 5
 ```
-console.log(m.x, arr[0].x, p.x);  // 100, 5, 5 
+console.log(m.x, arr[0].x, p.x);  // 100, 5, 5
 In global scope (window in the browser), m.x changed to 100; but p and arr still refer to 5, the previous value of m.x. Similarly, when a monad uses its bnd() method to modify its x attribute, the change is seen globally, but nowhere else. Previous references to the monad remain stable, as this example illustrates:
 ```javascript
 const m = new Monad (5, 'm');
-var arr = [m]; 
+var arr = [m];
 var p = m;
 m.bnd(add,95);  
-console.log(m.x, arr[0].x, p.x);  // 100, 5, 5 
+console.log(m.x, arr[0].x, p.x);  // 100, 5, 5
 ```
 Had there been no reference to m, the previous instance would have been subject to removal by the garbage collector.
 
@@ -43,7 +43,7 @@ It is possible to mutate monads with code such as m.x = 888. That might be a goo
 
 The bnd() method can leave the calling monad's global value unchanged while assigning a value (in the global space) to another previously defined monad, or to a freshly created monad. So regardless of whether or not "m2" is defined, m.ret(4).bnd(cube,"$m2") causes m.x === 4 and m2.x === 64 to both return true.
 ```javascript
-m.ret(4).bnd(cube,"$m2") 
+m.ret(4).bnd(cube,"$m2")
 console.log(m.x, m2.x)   // 4 64
 m.ret(0).bnd(add,3,"$m2").bnd(cube,"$m3")
 console.log(m.x, m2.x, m3.x)  // 0 3 27
@@ -61,7 +61,7 @@ So, with that out of the way, here are the definitions of Monad and testPrefix:
         var m = func(this.x, ...args)
         var ID;
         if (m instanceof Monad) {
-          ID = testPrefix(args, this.id); 
+          ID = testPrefix(args, this.id);
           window[ID] = new Monad(m.x, ID);
           return window[ID];
         }
@@ -88,7 +88,7 @@ So, with that out of the way, here are the definitions of Monad and testPrefix:
   ```
 Variations on the Theme
 
-Variations on the Monad theme serve diverse purposes. Instances of MonadState preserve computations so they won't have to be performed again. An instance of MonadState2 keeps a record of game play allowing players to back up and resume play from a previous display of numbers. It also keeps the current game parameters - score, goals, operator, selected numbers, and remaining numbers - in a single array which is stored in the archive whenever a new state is created. MonadItter instances are used to parse websockets messages and organize the callbacks neatly. MonadEr catches NaN and prefents crashes when undefined variables are encountered. I defined a message emitting monad but it seemed useless in this Cycle application where reactivity is pervasive. When you want to emit and listen for messages, it is better to build a driver and merge its stream of messages into the application cycle.
+Variations on the Monad theme serve diverse purposes. Instances of MonadState preserve computations so they won't have to be performed again. An instance of MonadState2 keeps a record of game play allowing players to back up and resume play from a previous display of numbers. It also keeps the current game parameters - score, goals, operator, selected numbers, and remaining numbers - in a single array which is stored in the archive whenever a new state is created. MonadItter instances are used to parse websockets messages and organize the callbacks neatly. MonadEr catches NaN and prevents crashes when undefined variables are encountered. I defined a message emitting monad but it seemed useless in this Cycle application where reactivity is pervasive. When you want to emit and listen for messages, it is better to build a driver and merge its stream of messages into the application cycle.
 
 The various monad constructors demonstrate a coding style and philosophy, and are not intended to serve as a static library. You might find Monad useful as it is, and of course you are welcome to use it, but you might also take the general idea and eliminate some features and add others to suits your needs. Or you might prefer an entirely different way of organizing your code. You can incorporate your own monad constructors into any framework, just I have make mine part of this Cycle application.
 
@@ -142,7 +142,7 @@ Handling events is a breeze. Cycle's bult-in DOM driver handles browser events l
 ```javascript
 function workerDriver () {
   return xs.create({
-    start: listener => { worker.onmessage = msg => listener.next(msg)}, 
+    start: listener => { worker.onmessage = msg => listener.next(msg)},
     stop: () => { worker.terminate() }
   });
 };
@@ -168,19 +168,19 @@ The first demonstration displays the Fibonacci series up to an upper bound enter
 
 The demonstrations do not block the main execution thread. Computations are performed in web workers and the results are stored for further use in the main thread.
 
-According to the The On-Line Encyclopedia of Integer Sequences these are the first eleven proven prime Fibonacci numbers: 2, 3, 5, 13, 89, 233, 1597, 28657, 514229, 433494437, 2971215073, and 99194853094755497. The eleventh number, 2971215073, is as far as you can go on an ordinary desktop computer. 
+According to the The On-Line Encyclopedia of Integer Sequences these are the first eleven proven prime Fibonacci numbers: 2, 3, 5, 13, 89, 233, 1597, 28657, 514229, 433494437, 2971215073, and 99194853094755497. The eleventh number, 2971215073, is as far as you can go on an ordinary desktop computer.
 
 The second demonstration in this series decomposes numbers into its their prime factors. Unless a large array of prime numbers has already been generated, five digits is the limit for a quick response. After running 300,000,000,000 in the first demonstration, 444,444 was decomposed in a little over 100 microseconds. To see it in action, enter a number below.
 
-Next, two comma-separated numbers are decomposed into arrays of their prime factorss, and those arrays are used to compute their lowest common multiple (lcm). For example, the lcm of 6 and 9 is 18 because 3*6 and 2*9 are both 18. The lcm of the denominators of two fractions is useful in fraction arithmetic; specifically, addition and subtraction. 
+Next, two comma-separated numbers are decomposed into arrays of their prime factors, and those arrays are used to compute their lowest common multiple (lcm). For example, the lcm of 6 and 9 is 18 because 3*6 and 2*9 are both 18. The lcm of the denominators of two fractions is useful in fraction arithmetic; specifically, addition and subtraction.
 
 ###Doing Things The Hard Way
 
-The next two demonstration generate the same results as the previous two; but in doing so, they also generate and add to a shared and persistent (for the duration of the browser session) array of arrays of prime decompositions of the positive integers. The array is the value of decompMonad.s. It is re-used as the starting point for generating larger arrays, or as a sort of lookup table if a required prime decomposition has already been computed. The index of an array is the number whose decomposition is in the array so, for example, array-of-arrays[12] is [2,2,3]. 
+The next two demonstration generate the same results as the previous two; but in doing so, they also generate and add to a shared and persistent (for the duration of the browser session) array of arrays of prime decompositions of the positive integers. The array is the value of decompMonad.s. It is re-used as the starting point for generating larger arrays, or as a sort of lookup table if a required prime decomposition has already been computed. The index of an array is the number whose decomposition is in the array so, for example, array-of-arrays[12] is [2,2,3].
 
-The fifth demonstration shares the array of arrays of prime decompositions with the previous demonstration. That array is kept in a MonadState instance named "decompMonad". Computing prime decompositions of numbers that end up being ignored is clearly inefficient, so please bear in mind that a demonstration of a JS-monads way to keep mutable state in immutable, composable, globally accessable objects.
+The fifth demonstration shares the array of arrays of prime decompositions with the previous demonstration. That array is kept in a MonadState instance named "decompMonad". Computing prime decompositions of numbers that end up being ignored is clearly inefficient, so please bear in mind that a demonstration of a JS-monads way to keep mutable state in immutable, composable, globally accessible objects.
 
-According to the The On-Line Encyclopedia of Integer Sequences these are the first eleven proven prime Fibonacci numbers: 2, 3, 5, 13, 89, 233, 1597, 28657, 514229, 433494437, 2971215073, and 99194853094755497. The eleventh number, 2971215073, is as far as you can go on an ordinary desktop computer. 
+According to the The On-Line Encyclopedia of Integer Sequences these are the first eleven proven prime Fibonacci numbers: 2, 3, 5, 13, 89, 233, 1597, 28657, 514229, 433494437, 2971215073, and 99194853094755497. The eleventh number, 2971215073, is as far as you can go on an ordinary desktop computer.
 
 Code for the demonstrations is presented and discussed in the online presentation.
 
@@ -243,7 +243,7 @@ gameMonad is an instance of MonadState2. gameMonad.s is a six item array holding
         st[5].splice(mMindex.x, 0, [st[0], st[1], st[2], st[3], st[4]]);
         return window[this.id] = new MonadState2(this.id, st);
       }
-    }; 
+    };
 ```    
 And here is the definition of gameMonad:
 ```javascript
@@ -270,7 +270,7 @@ If the calculated number in updateCalc() is 18 or 20, score() is called. Otherwi
         console.log('In numClickAction$ ???????? s3 is', s3 );
         gameMonad.run(x);
         if (s3.length === 2 && x[2] != 0) {
-          updateCalc(x[3], x[2]) 
+          updateCalc(x[3], x[2])
         }
       }
     }).startWith([0, 0, 0, 0]);
@@ -281,7 +281,7 @@ If the calculated number in updateCalc() is 18 or 20, score() is called. Otherwi
     var opClickAction$ = opClick$.map(e => {
       if (gameMonad.s[3].length === 2) {
         var s3 = gameMonad.s[3].slice();
-        updateCalc(s3, e.target.textContent); 
+        updateCalc(s3, e.target.textContent);
       }
       else {
         var state = gameMonad.s.slice();
@@ -318,7 +318,7 @@ The interface is kept clean by means of the function styl(), which determines wh
         break;
         default: return;  //console.log('Bad argument in styl. s is', s );
       }
-  }; 
+  };
 ```  
 ###Traversing the Game's History
 
@@ -326,7 +326,7 @@ As you might expect, game traversal is controlled by changes in the value of mMi
 ```javascript
     var forwardClick$ = sources.DOM
       .select('#ahead').events('click')
-  
+
     var backClick$ = sources.DOM
       .select('#back').events('click');
 
@@ -338,8 +338,8 @@ As you might expect, game traversal is controlled by changes in the value of mMi
         var score = gameMonad.s[5][mMindex.x][0]
         var goals = gameMonad.s[5][mMindex.x][1];
         socket.send("CG#$42," + pMgroup.x + "," + pMname.x + "," + score + "," + goals)
-      } 
-    }) 
+      }
+    })
 
     var forwardAction$ = forwardClick$.map(() => {
       if (mMindex.x < gameMonad.s[5].length - 1) {
@@ -349,7 +349,7 @@ As you might expect, game traversal is controlled by changes in the value of mMi
         var goals = gameMonad.s[5][mMindex.x][1];
         socket.send("CG#$42," + pMgroup.x + "," + pMname.x + "," + score + "," + goals)
       }
-    }); 
+    });
 
     function fetch (n) {
         return gameMonad.s[5][n][4];
@@ -374,8 +374,8 @@ The list of online group members at the bottom of the scoreboard is very respons
     };
 
      var s = new Set();
-    
-    var sMplayers = MonadSet(s, 'sMplayers'); // holds currently online players 
+
+    var sMplayers = MonadSet(s, 'sMplayers'); // holds currently online players
   ```
 ## MonadE - An Error-Catching Monad
 
@@ -386,8 +386,8 @@ The list of online group members at the bottom of the scoreboard is very respons
   The following demonstration shows the Chrome console log entries that result from running
   ```javascriptt.bnd('add3', 3, '$t2').bnd(cube3, '$t3')
     t.bnd('add3','three', '$t2').bnd(cube3, '$t3')    
-    t.bnd('add3','Math.sqrt(-1)', '$t2').bnd(cube3, '$t3') 
-    t.bnd('addd3', 3, '$t2').bnd(cube3, '$t3' 
+    t.bnd('add3','Math.sqrt(-1)', '$t2').bnd(cube3, '$t3')
+    t.bnd('addd3', 3, '$t2').bnd(cube3, '$t3'
   ```    
   ![Alt text](error2.png?raw=true)
 
@@ -408,21 +408,21 @@ The list of online group members at the bottom of the scoreboard is very respons
           return window[this.id];
         }
         if (this.e.length > 0) {
-          console.log('BYPASSING COMPUTATION in MonadE instance', this.id, f, '.  PROPAGATING ERROR:',  this.e[0]); 
+          console.log('BYPASSING COMPUTATION in MonadE instance', this.id, f, '.  PROPAGATING ERROR:',  this.e[0]);
           return this;  
         }
-        
+
         if (args.length > 0) {
           arr = args.filter(v => !(typeof v === 'string' && v.charAt() === 'M' && v.slice(0,4) !== 'Math'))
-            
+
           arr.map(v => {
             test = testP(v, this.id)
             if (test === 'STOP') {
-              console.log('\"STOP\" returned from testP. Ending code execution in ',this.id, '.' ) 
+              console.log('\"STOP\" returned from testP. Ending code execution in ',this.id, '.' )
               this.e.push('STOP');
               return this;
-            } 
-          }); 
+            }
+          });
         }
         if (test !== "STOP") {
         try {
@@ -437,7 +437,7 @@ The list of online group members at the bottom of the scoreboard is very respons
             this.e.push('STOP -- Execution Aborted. ');
             console.log(f, 'ERROR in ',id,error,' No further computations will be attempted');
             return this;
-          } 
+          }
         }
         else {
           this.e.push('STOP -- Execution Aborted. ');
@@ -450,8 +450,8 @@ The list of online group members at the bottom of the scoreboard is very respons
         return window[this.id];
       }  
     };
- 
-      
+
+
     function testPrefix (x,y) {
       var t = y;
       var s;
@@ -464,7 +464,7 @@ The list of online group members at the bottom of the scoreboard is very respons
       }
       return t;
     }
-    
+
     function testP (x,id) {
         if ( eval('typeof ' + x) === 'undefined') {
           console.log(`............... ERROR parameter ${x} is not defined`);
@@ -473,26 +473,26 @@ The list of online group members at the bottom of the scoreboard is very respons
         }
         if (eval(x) !== eval(x)) {
           console.log(`............... ERROR parameter ${x} is not a number`);
-          window[id].e = [`${x} is not a number`]; 
+          window[id].e = [`${x} is not a number`];
           return 'STOP';
-        } 
+        }
         mMZ12.release([]);
         return []  
     }
-    
+
     function ret3(v, id = 'generic') {
         window[id] = new MonadEr(v, id, []);
         return window[id];
       }
-    
+
     function add3(x, y) {
         return ret3(x*1 + y*1);
       }
-    
+
     function cube3(x) {
         return ret3(x*x*x);
     }
-    
+
     function clean3 (x, id) {
       window[id] = new MonadEr(x, id, []);
       return window[id];
@@ -509,16 +509,16 @@ The list of online group members at the bottom of the scoreboard is very respons
       console.log('Values of t, t2, and t3', t.x,t2.x,t3.x)
       var t = new MonadEr(0,'t', []);
       var t2 = new MonadEr(0,'t2', []);
-      var t3 = new MonadEr(0,'t3', []); 
+      var t3 = new MonadEr(0,'t3', []);
       console.log('Values of t, t2, and t3', t.x,t2.x,t3.x)
-      
+
       console.log("executing t.bnd('add3','three', 'Mt2').bnd(cube3, 'Mt3') " );
       t.bnd('add3','three','Mt2').bnd(cube3, 'Mt3')
       console.log('Values of t, t2, and t3', t.x,t2.x,t3.x)
-      
+
       console.log( 't.bnd(clean3)' );
       t.bnd(clean3);
-      
+
       console.log("executing t.bnd('add3', 'Math.sqrt(-1)', 'Mt2').bnd(cube3, 'Mt3') " );
       t.bnd('add3','Math.sqrt(-1)','Mt2').bnd(cube3, 'Mt3')
       console.log('Values of t, t2, and t3', t.x,t2.x,t3.x)
@@ -528,7 +528,7 @@ The list of online group members at the bottom of the scoreboard is very respons
       t.bnd('addd3',3,'Mt2').bnd(cube3, 'Mt3')
       console.log('Values of t, t2, and t3', t.x,t2.x,t3.x)
   ```
-  When a MonadE instance encounters a function or an argument in quotation marks of types undefined or NaN, a message string gets pushed into its e attribue. After that, the bnd() method will not process any function other than clean() and log2(). It will stop at theif (e.length > 0)block. clean() resets an instance to normal functioning mode by setting its e attribute back to []. MonadE instances are created on the flyin the error-free version. In the version with an error, these MonadE instances have already been created and ret2, by creating fresh instances, effectively re-sets their values to 0. 
+  When a MonadE instance encounters a function or an argument in quotation marks of types undefined or NaN, a message string gets pushed into its e attribue. After that, the bnd() method will not process any function other than clean() and log2(). It will stop at theif (e.length > 0)block. clean() resets an instance to normal functioning mode by setting its e attribute back to []. MonadE instances are created on the flyin the error-free version. In the version with an error, these MonadE instances have already been created and ret2, by creating fresh instances, effectively re-sets their values to 0.
 
   The final test in the bnd() method occurs in a try-catch block. If a function and its quoted arguments are not of types undefined or NaN but the system returns an error, the error message gets logged and a browser crash is averted.
 
@@ -551,7 +551,7 @@ The list of online group members at the bottom of the scoreboard is very respons
     st[4] = [v[3],v[4],v[5],v[6]];
     gameMonad.run(st);
     console.log(buttonNode);
-  }); 
+  });
     mMZ12.bnd( () => mM6.ret(v[2] + ' successfully logged in.'));
     mMZ13.bnd( () => {
       var message = v.slice(3,v.length).join(', ');
@@ -565,7 +565,7 @@ The list of online group members at the bottom of the scoreboard is very respons
   mMZ15.bnd( () => {
     mMgoals2.ret('A player named ' + v[2] + ' is currently logged in. Page will refresh in 4 seconds.')
     refresh() });
-  mMZ17.bnd( () => testTask(v[2], v[3], e.data) ); 
+  mMZ17.bnd( () => testTask(v[2], v[3], e.data) );
   mMZ18.bnd( () => {
     if (pMgroup.x != 'solo' || pMname.x === v[2] ) updatePlayers(e.data)  });
   })       
@@ -592,7 +592,7 @@ The list of online group members at the bottom of the scoreboard is very respons
         return window[this.id] = new MonadState(this.id, a);
       };
     };
-``` 
+```
 MonadState reproduces some of the functionality found in the Haskell Module "Control.Monad.State.Lazy", inspired by the paper "Functional Programming with Overloading and Higher-der Polymorphism", Mark P Jones (http://web.cecs.pdx.edu/~mpj/) Advanced School of Functional Programming, 1995. The following demonstrations use the MonadState instances fibsMonad and primesMonad to create and store arrays of Fibonacci numbers and arrays of prime numbers, respectively. fibsMonad and primesMonad provide a simple way to compute lists of prime Fibonacci numbers. Because the results of computations are stored in the a and s attributes of MonadState instances, it was easy to make sure that no prime number had to be computed more than once in the prime Fibonacci demonstration.
 
 Here is the definition of fibsMonad, along with the definition of the function that becomes fibsMonad.process.
@@ -609,7 +609,7 @@ Here is the definition of fibsMonad, along with the definition of the function t
 ```  
 Another MonadState instance used in this demonstration is primesMonad. Here is its definition along with the function that becomes primesMonad.process:
 ```javascript
-  var primesMonad = new MonadState('primesMonad', [2, '', 3, [2]], [2],  primes_state) 
+  var primesMonad = new MonadState('primesMonad', [2, '', 3, [2]], [2],  primes_state)
 
   var primes_state = function primes_state(x) {
     var v = x.slice();
@@ -644,7 +644,7 @@ The final computation in the prime Fibonacci numbers demonstration occurs when "
     var primes = primesArray.slice();
     if (primesArray.slice(-1)[0] >= bound) {
       primes = primesArray.filter(v => v <= bound);
-    } 
+    }
     var ar = [];
     var fibs = fibsArray.slice(3);
     fibs.map (v => {
@@ -668,11 +668,11 @@ User input is handled by a chain of computations. first to update fibsMonad, sec
     }
   });  
 ```  
-Only 48 Fibonacci numbers need to be generated in order to get the eleventh prime Fibonacci number. But 5546 prime numbers need to be generated to test for divisibility into 2971215073. Finding the next Fibonacci number is just a matter of adding the previous two. Getting the next prime number is a more elaborate and time-consuming procedure. In this context, the time needed to compute 48 Fibonacci numbers is insignificant, so I didn't bother to save previously computed Fibonacci numbers in the prime Fibonacci demonstration. When a user enters a number smaller than the current length of fibsMonad.a, fibsMonad is modified such that its length becomes exactly what the user entered. It takes a couple of seconds to test 50 Fibonacci numbers in the online demo on my desktop computer. Beyond that, lag times start getting pretty long. 
+Only 48 Fibonacci numbers need to be generated in order to get the eleventh prime Fibonacci number. But 5546 prime numbers need to be generated to test for divisibility into 2971215073. Finding the next Fibonacci number is just a matter of adding the previous two. Getting the next prime number is a more elaborate and time-consuming procedure. In this context, the time needed to compute 48 Fibonacci numbers is insignificant, so I didn't bother to save previously computed Fibonacci numbers in the prime Fibonacci demonstration. When a user enters a number smaller than the current length of fibsMonad.a, fibsMonad is modified such that its length becomes exactly what the user entered. It takes a couple of seconds to test 50 Fibonacci numbers in the online demo on my desktop computer. Beyond that, lag times start getting pretty long.
 
-The online demonstration features a game with a traversible dice-roll history; group chat rooms; and a persistent, multi-user todo list. People in the same group share the game, chat messages, and whatever todo list they might have. Updating, adding, removing, or checking "Complete" by any member causes every member 's todo list to update. The Haskell websockets server preserves a unique text file for each group's todo list. Restarting the server does not affect the lists. Restarting or refreshing the browser window causes the list display to disappear, but signing in and re-joining the old group brings it back. If the final task is removed, the server deletes the group's todo text file. 
+The online demonstration features a game with a traversable dice-roll history; group chat rooms; and a persistent, multi-user todo list. People in the same group share the game, chat messages, and whatever todo list they might have. Updating, adding, removing, or checking "Complete" by any member causes every member 's todo list to update. The Haskell websockets server preserves a unique text file for each group's todo list. Restarting the server does not affect the lists. Restarting or refreshing the browser window causes the list display to disappear, but signing in and re-joining the old group brings it back. If the final task is removed, the server deletes the group's todo text file.
 
-With Motorcycle.js, the application runs smoothly and is easy to understand and maintain. I say "easy to understand", but for people coming from an imperitive programming background, some effort must first be invested into getting used to functions that take functions as arguments, which are at the heart of Motorcycle and JS-monads-stable. After that, seeing how the monads work is a matter of contemplating their definitions and experimenting a little. Most of the monads and the functions they use in this demonstration are readily available in the browser console. If you have the right dev tools in Chrome or Firefox, just load [http://schalk.net:3055](http://schalk.net:3055) and press F12. You might need to enter Ctrl-R to re-load with access to the monad.js script. I do this to troubleshoot and experiment. 
+With Motorcycle.js, the application runs smoothly and is easy to understand and maintain. I say "easy to understand", but for people coming from an imperative programming background, some effort must first be invested into getting used to functions that take functions as arguments, which are at the heart of Motorcycle and JS-monads-stable. After that, seeing how the monads work is a matter of contemplating their definitions and experimenting a little. Most of the monads and the functions they use in this demonstration are readily available in the browser console. If you have the right dev tools in Chrome or Firefox, just load [http://schalk.net:3055](http://schalk.net:3055) and press F12. You might need to enter Ctrl-R to re-load with access to the monad.js script. I do this to troubleshoot and experiment. 
 
 
 ## APPENDIX
@@ -688,7 +688,7 @@ onmessage = function(v) {
     this.process = p;
     this.a = this.s[3];
     this.bnd = (func, ...args) => func(this.s, ...args);  
-    this.run = ar => { 
+    this.run = ar => {
       var ar2 = this.process(ar);
       this.s = ar2;
       this.a = ar2[3];
@@ -696,7 +696,7 @@ onmessage = function(v) {
       return self[this.id];
     }
   };
-  
+
   function primes_state(x) {
     var v = x.slice();
     while (2 == 2) {
@@ -710,7 +710,7 @@ onmessage = function(v) {
     }
     return v;
   };
-  
+
   var primesMonad = new MonadState('primesMonad', [3, '', 3, [2,3]], primes_state);
   primesMonad.run([3, '', 12, [2, 3]]);
   function pFib(fibs, primes) {
@@ -723,11 +723,11 @@ onmessage = function(v) {
     });
     return ar;
   };
-  
+
   function prFactTransformer3(s, n) {
     return factors_state3([[], [], n, s[3]]);
   };
-  
+
   function factors_state3(a) {
     var b = a.slice();
     var result;
@@ -745,20 +745,20 @@ onmessage = function(v) {
           return a - b;
         });
         result = v[1];
-      }; 
+      };
     }
     return result;
   }
-  
+
   function checkpM () {
-  
+
   };
-  
+
   function factors (num) {
     return primesMonad.run([primesMonad.s[0], [], num, primesMonad.a])
     .bnd(s => prFactTransformer3(s, num))
   }
-  
+
   function lcm (c1,d1) {
     var ar= [];
     var c = c1.slice()
@@ -779,14 +779,9 @@ onmessage = function(v) {
   var b = v.data[1];
   var r = Math.sqrt(a*a + b*b);
   console.log('In worker.js a,b',a,b )
-  postMessage(["CA#$41", r]); 
-  postMessage(["CB#$41", parseInt(a,10) + parseInt(b,10)]); 
-  postMessage(["CC#$41", a * b]); 
+  postMessage(["CA#$41", r]);
+  postMessage(["CB#$41", parseInt(a,10) + parseInt(b,10)]);
+  postMessage(["CC#$41", a * b]);
   postMessage(["CD#$41", lcm(factors(a),factors(b))]);
 };
 // EOF
-
-
-
-
-

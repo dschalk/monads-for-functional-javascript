@@ -31,19 +31,21 @@ function Monad(z = 19, g = 'generic') {
   };
 };
 
+var primesMonad = new MonadState('primesMonad', [3, [], 3, [2,3]]);
+Object.freeze(primesMonad);
+
 //*************************************** BEGIN prime Fibonacci numbers
 
-var fpTransformer = function fpTransformer(fibsState, primeState, then) {
+var fpTransformer = function fpTransformer(fibsState, primesState, then) {
   var ar = [];
-  var k = Math.ceil(Math.sqrt(fibsState[1]));
-  execP(primeState, k).bnd(s => {
-    postMessage(['green', 'green', 'red', 'color', 'done', 'done', 'computing prime fibs'])
-    fibsState[3].map(fib => {
-      if (s[1].every(p => (fib % p || fib == p))) {ar.push(fib)}
-    })  
-    postMessage(['green', 'green', 'green', 'color', 'done', 'done', 'done']);
-    postMessage( [ [fibsState[3].join(', '), s[2], ar.join(', '), then], s ] )
-  })
+  var top = Math.ceil(Math.sqrt(fibsState[1]));
+  postMessage(['green', 'green', 'red', 'color', 'done', 'done', 'computing prime fibs'])
+  var state = execP(primesState, top);
+  fibsState[3].map(fib => {
+    if (state[1].every(p => (fib % p || fib == p))) {ar.push(fib)}
+  })  
+  postMessage(['green', 'green', 'green', 'color', 'done', 'done', 'done']);
+  postMessage( [ [fibsState[3].join(', '), primesState[2], ar.join(', '), then], state ] )
 }
 
 //*************************************** END prime Fibonacci numbers
@@ -110,14 +112,53 @@ function MonadState(g, state) {
   this.bnd = (func, ...args) => func(this.s, ...args);  
 };
 
-var primesMonad = new MonadState('primesMonad', [3, [], 3, [2,3]]);
-Object.freeze(primesMonad);
-
 var fibsMonad = new MonadState('fibsMonad', [0, 1, 2, [0]]);
  
 var decompMonad = new MonadState('decompMonad', [3, [[0],[1],[2]], 3, [[0],[1],[2]]]);
 Object.freeze(decompMonad)
 
+
+var count = 1;
+
+function isPrime(n) {
+   if (isNaN(n) || !isFinite(n) || n%1 || n<2) return false;
+   var m = Math.sqrt(n);
+   for (var i=2;i<=m;i++) if (n%i==0) return false;
+   return true;
+}
+
+function* gen(x) {
+   var count = x;
+   while(true) {
+     if(isPrime(count)) yield count;
+     count++;
+   }
+}
+var primesIt = gen(primesMonad.s[2]+1);
+
+function execP (state, num) {
+  var x = state[2];
+  var primes = state[3].slice();
+  if (x < num) {
+    var end = 0;
+    while (end < num) {
+      primes.push(primesIt.next().value);
+      end = primes[primes.length - 1];
+    }
+    return [end, primes, end, primes]
+  }
+  else {
+    var newP = primes.filter(v => (v <= num));
+    newP.push(primes[newP.length]);
+    return [newP[newP.length - 1], newP, x, primes];
+  }
+}
+
+
+
+
+
+/*
 function execP (state, num) {
   console.log('********** Salutations from execP. state and num are', state, num );
   var top = state[2];
@@ -149,6 +190,8 @@ function execP (state, num) {
   Object.freeze(result)
   return result;
 };
+*/
+
 
 function execF(n) {
   var a = [0,1];
@@ -167,20 +210,17 @@ function execD(decompState, primeState, n, a, b) {
   var c = decompState[3].slice();
   var d = decompState[2];
   var res;
-  execP(primeState, n)
-  .bnd(newState => {
+  primesMonad = new MonadState('primesMonad', execP(primeState, n));
+  primesMonad.bnd(newState => {
     while (d <= n) {
       fact2(newState[3], d)
       .bnd(factors => c.push(factors))
       d += 1;
     }
-    new MonadState('decompMonad', [d, c, d, c.slice()])
-    .bnd(dsx => {
-      var ds = dsx.slice();
-      res = lcm(ds[3][a], ds[3][b]);
-      gd = gcf(ds[3][a], ds[3][b]);
-      postMessage([ newState, [a, b, res, gd], ds ])
-    })
+    var ds = [d, c, d, c]
+    res = lcm(ds[3][a], ds[3][b]);
+    gd = gcf(ds[3][a], ds[3][b]);
+    postMessage([ newState, [a, b, res, gd], ds ])
   })
 }
 
