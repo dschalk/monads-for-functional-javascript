@@ -141,10 +141,13 @@ var equals = function equals (mon1, mon2) {
 var mMtemp5 = new Monad(0, 'mMtemp5') 
 
   function add (x, b) {
-      return ret(parseInt(x,10) + b);
+    if (isNaN(x) || isNaN(b)) {
+      console.log('add has an argument that is not a number', x, b);
+    }  
+    return ret(parseInt(x,10) + parseInt(b,10));
   };
 
-  function add3 (x, str) {
+  function addStr (x, str) {
       return ret(x + str);
   };
 
@@ -301,6 +304,12 @@ function evalF(x) {
 function cube2 (x,id) {
     return ret2(x*x*x);
 };
+
+function push(x, v) {
+  var ar = x.slice();
+  ar.push(v);
+  return ret(ar);
+  };
 
 function push2(x, v, id) {
     var ar = x.slice();
@@ -633,6 +642,7 @@ function primes(n, ar) {
   var mMallRolls = new Monad([[0, 0, 0, 0]], 'mMallRolls');
   var mMcurrentList = new Monad([], 'mMcurrentList');
   var mMtaskList = new Monad([], 'mMtaskList');
+  var mMcommentsList = new Monad(['Comments'], 'mMtaskList');
   var mMtaskL = new Monad([], 'mMtaskL');
   var mMsenderList = new Monad([], 'mMsenderList');
   var mMsoloAlert = new Monad('', 'mMsoloAlert');
@@ -942,12 +952,6 @@ function stripchars(string, chars) {
     return ret(Math.sqrt(x));
   }
 
-  var push = function push(x, v) {
-      var ar = x.slice();
-      ar.push(v);
-      return ret(ar, 'pushFunc');
-  };
-
    var clone = function clone(x) {
     var array = x.slice()
     return ret(array, 'cloneFunc')
@@ -1128,10 +1132,6 @@ console.log('.');
 function ret3(v, id = 'generic') {
     window[id] = new MonadEr(v, id, []);
     return window[id];
-  }
-
-function add3(x, y) {
-    return ret3(x*1 + y*1);
   }
 
 function cube3(x) {
@@ -1635,6 +1635,8 @@ var mMfibBlurb = new Monad('', 'mMfibBlurb');
 var mMprimeBlurb = new Monad('','mMprimeBlurb');
 var mMprimeFibBlurb = new Monad('','mMprimeFibBlurb');
 var mMelapsed = new Monad(0, 'mMelapsed');
+var mMcom2 = new Monad('block', 'mMcom2');
+var mMcom3 = new Monad('none', 'mMcom3');
 
 function elapsed (t) {
   var x = Date.now();
@@ -1696,14 +1698,14 @@ function isPrime(n) {
    return true;
 }
 
-function *genPrimes(x) {
-   var count = x;
-   while(1) {
-     if(isPrime(count)) yield count;
-     count++;
+function *gen(x) {
+   var x = x
+   while(true) {
+     if(isPrime(x)) yield x;
+     x++;
    }
 }
-var primesIt = genPrimes(primesMonad.s[2]+1);
+var primesIt = gen(primesMonad.s[2]+1);
 
 function getP (state, num) {
   var x = state[2];
@@ -1805,3 +1807,8 @@ function execP (state, num) {
   return result;
 };
 */
+
+
+
+
+

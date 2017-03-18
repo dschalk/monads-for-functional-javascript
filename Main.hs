@@ -315,6 +315,26 @@ talk conn state (_, _, _, _, _) = forever $ do
                 broadcast ("DD#$42," `mappend` group `mappend` "," 
                     `mappend` sender `mappend` "," `mappend` tasks) subSt
 
+    else if "TG#$42" `T.isPrefixOf` msg
+        then
+            do
+                let comment = (T.splitOn "@" msg) !! 1
+                print comment
+                old <- T.readFile "COMMENTS.txt"
+                let allComments = old `mappend` "\n" `mappend` sender `mappend ` " commented: " `mappend` comment
+                T.writeFile "COMMENTS.txt" allComments
+                st <- atomically $ readTMVar state
+                broadcast ("GG#$42," `mappend` group `mappend` "," 
+                    `mappend` sender `mappend` ",@" `mappend` allComments) st
+
+    else if "TG#$41" `T.isPrefixOf` msg
+        then
+            do
+                old <- T.readFile "COMMENTS.txt"
+                st <- atomically $ readTMVar state
+                broadcast ("TG#$41," `mappend` group `mappend` "," 
+                    `mappend` sender `mappend` ",@" `mappend` old) st
+
     else if "TX#$42" `T.isPrefixOf` msg
         then
             do

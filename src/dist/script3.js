@@ -128,15 +128,15 @@ function isPrime(n) {
    return true;
 }
 
-function* gen(x) {
-   var count = x;
-   while(true) {
-     if(isPrime(count)) yield count;
-     count+=1;
-   }
+function *gen(x) {
+  var x = x
+  while(true) {
+    if(isPrime(x)) yield x;
+    x++;
+  }
 }
-var primesIt = gen(primesMonad.s[2]+1);
 
+var primesIt = gen(primesMonad.s[2]+1);
 
 function execP (state, num) {
   var x = state[2];
@@ -150,34 +150,12 @@ function execP (state, num) {
     return [end, primes, end, primes]
   }
   else {
-    var number = primes.indexOf(num) + 1;
-//    var newP = primes.filter(v => (v <= num));
-//    newP.push(primes[newP.length]);
-    var newP = primes.slice(number);
+    var newP = primes.filter(v => (v <= num));
     return [newP[newP.length - 1], newP, x, primes];
   }
 };
 
-/*
-function execP (state, num) {
-  var x = state[2];
-  var primes = state[3].slice();
-  if (x < num) {
-    var end = 0;
-    while (true) {
-      if (isPrime(end)) primes.push(end);
-      if (end > num) return [end, primes, end, primes]
-      else end += 1;
-    }
-  }
-  else {
-    var newP = primes.filter(v => (v <= num));
-    newP.push(primes[newP.length]);
-    return [newP[newP.length - 1], newP, x, primes];
-  }
-}  */
-
-function execF(n) {
+/function execF(n) {
   var a = [0,1];
   var b = [];
   while ((a[0] + a[1]) < n) {

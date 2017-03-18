@@ -1,11 +1,22 @@
-html, body {
+html {
   background-color: #1a65ef;
-  color: #bfd1f2;
+  color: #4aeef7;
   font-size: 20px;
-  font-family: "Times New Roman";
+  font-family: "Arial, Helvetica, sans-serif";
   margin: 0 auto;
-  width: 96%;  
+  width: 100%;  
 }
+
+body {
+  background-color: #0348b7;
+  color: #4aeef7;
+  font-size: 20px;
+  font-family: "Arial, Helvetica, sans-serif";
+  margin-left: 10%;
+  margin-right: 8%;
+  width: 80%;  
+}
+
 
 input {
   background-color: #EFECB1;
@@ -38,11 +49,11 @@ a {
 }
 
 #eighty {
-  width: 80%;
+  width: 92%;
   display: inline-block;
-  margin-left: 10%;
-  margin-right: 10%;
-  text-indent 0%;
+  margin-left: 4%;
+  margin-right: 4%;
+  text-indent 3%;
 }
 
 #rightPanel {
@@ -76,6 +87,11 @@ a {
 
 .zen_a {
   font-size: 22;
+}
+
+#comment {
+  width: 70%;
+  height: 100px;
 }
 
 .fred {
@@ -372,6 +388,21 @@ button:hover {
 }
 
 button {
+  background-color: #6d5000;
+  text-align: left;
+  border-color: darkred;
+  outline: 0px;
+  color: #CCFDCB;
+  border-radius: 10px;
+  padding-top: 1.1px;
+  padding-bottom: 2px;
+  margin-right: 3px;
+  margin-left: 12px;
+  font-size: 24px;
+  display: inline;
+}
+
+label {
   background-color: #6d5000;
   text-align: left;
   border-color: darkred;

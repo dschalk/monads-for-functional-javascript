@@ -35,47 +35,61 @@ var driver = h('pre', `  var websocketsDriver = function () {
   };
 ` )
 
-var messages = h('pre', `    const messages$ = sources.WS.map( e => {
-      const messages$ = sources.WS.map( e => {
-        mMtem.ret(e.data.split(',')).bnd( v => {
-      console.log('Websockets data.split message v: ', v ),    
-      mMZ10.bnd( () => {
-        buttonNode = bNode([v[3],v[4],v[5],v[6]]);
-        var st = gameMonad.s[5][mMindex.x].slice();
-        st[0] = v[7];
-        st[1] = v[8];
-        st[2] = 0;
-        st[3] = [];
-        st[4] = [v[3],v[4],v[5],v[6]];
-        gameMonad.run(st);
-        console.log(buttonNode);
-      }); 
-        mMZ12.bnd( () => mM6.ret(v[2] + ' successfully logged in.'));
-        mMZ13.bnd( () => {
-          var message = v.slice(3,v.length).join(', ');
-          var str = v[2] + ': ' + message;
-          messages.unshift(h('span', str ),h('br'));  
-       });
-      mMZ14.bnd( () => {
-        mMgoals2.ret('The winner is ' + v[2]);
-        setTimeout(() => mMgoals2.ret(''), 5000 );
-      });
-      mMZ15.bnd( () => {
-        mMgoals2.ret('A player named ' + v[2] + ' is currently logged in. Page will refresh in 4 seconds.')
-        refresh() });
-      mMZ17.bnd( () => testTask(v[2], v[3], e.data) ); 
-      mMZ18.bnd( () => {
-        if (pMgroup.x != 'solo' || pMname.x === v[2] ) updatePlayers(e.data)  });
-      })       
-      mMtemp.ret(e.data.split(',')[0])
-      .bnd(next, 'CA#$42', mMZ10)
-      .bnd(next, 'CD#$42', mMZ13)
-      .bnd(next, 'CE#$42', mMZ14)
-      .bnd(next, 'EE#$42', mMZ15)
-      .bnd(next, 'DD#$42', mMZ17)
-      .bnd(next, 'NN#$42', mMZ18)
-      });
-    });  `  )
+var messages = h('pre', `
+  const messages$ = sources.WS.map( e => {
+    console.log(e);
+    mMtem.ret(e.data.split(',')).bnd( v => {
+  console.log('Websockets data.split message v: ', v );    
+  mMZ10.bnd( () => {
+    buttonNode = bNode([v[3],v[4],v[5],v[6]]);
+    var st = gameMonad.s[5][mMindex.x].slice();
+    st[0] = v[7];
+    st[1] = v[8];
+    st[2] = 0;
+    st[3] = [];
+    st[4] = [v[3],v[4],v[5],v[6]];
+    gameMonad.c.emit(a,st);
+    // console.log(buttonNode);
+  }); 
+    mMZ12.bnd( () => mM6.ret(v[2] + ' successfully logged in.'));
+    mMZ13.bnd( () => {
+      var message = v.slice(3,v.length).join(', ');
+      var str = v[2] + ': ' + message;
+      messages.unshift(h('span', str ),h('br'));  
+   });
+  mMZ14.bnd( () => {
+    mMgoals2.ret('The winner is ' + v[2]);
+    setTimeout(() => mMgoals2.ret(''), 5000 );
+  });
+  mMZ15.bnd( () => {
+    mMgoals2.ret('A player named ' + v[2] + 
+      ' is currently logged in. Page will refresh in 4 seconds.')
+    refresh() });
+  mMZ16.bnd( () => testComments(e.data));
+  mMZ17.bnd( () => testTask(v[2], v[3], e.data) ); 
+  mMZ18.bnd( () => {
+    if (pMgroup.x != 'solo' || pMname.x === v[2] ) updatePlayers(e.data)  });
+  mMZ19.bnd( () => testComments(e.data)); 
+  })       
+  mMtemp.ret(e.data.split(',')[0])
+  .bnd(next, 'CA#$42', mMZ10)
+  .bnd(next, 'CD#$42', mMZ13)
+  .bnd(next, 'CE#$42', mMZ14)
+  .bnd(next, 'EE#$42', mMZ15)
+  .bnd(next, 'TG#$41', mMZ16)
+  .bnd(next, 'DD#$42', mMZ17)
+  .bnd(next, 'NN#$42', mMZ18)
+  .bnd(next, 'GG#$42', mMZ19)
+  });
+        
+function next(x, y, instance, z) {
+  if (x == y) {
+      instance.release(z);
+  }
+  return ret(x);
+};
+
+`  )
 
 var MonadSet = h('pre',  `  var MonadSet = function MonadSet(set, ID) {
     this.s = set;
@@ -1407,7 +1421,7 @@ h('span', ' these are the first eleven proven prime Fibonacci numbers:'),
 h('span.red', ' 2, 3, 5, 13, 89, 233, 1597, 28657, 514229, 433494437, 2971215073, and 99194853094755497. '),
 h('span', ' The eleventh number, 2971215073, is as far as you can go on an ordinary desktop computer. ' ),
 h('br' ),
-h('p', ' The circles below are red during the computation of A. Fibonacci numbers, B. Prime numbers, and C. prime fibonacci numbers. A, B, and C are shown from left to right. On my desktop computer, the middle circle in the red state starts bcoming briefly discernable a 10,000,000, which is where the largest attainable prime Fibonacci number (2971215073), first appears. The lag time in the Chrome browser at 1,000,000,000,000,000 was a little over thirty-five seconds. After deleting and then replacing the last 0, the delay under six seconds, demonstrating a significant benefit from retrieving previously generated prime numbers instead of computing them again. This time, the only circle that turned red was the right one, which corresponds to picking out the prime Fibonacci numbers. ')  ])
+h('p', ' The circles below are red during the computation of A. Fibonacci numbers, B. Prime numbers, and C. prime fibonacci numbers. A, B, and C are shown from left to right. On my desktop computer, the middle circle in the red state starts bcoming briefly discernable a 10,000,000, which is where the largest attainable prime Fibonacci number (2971215073), first appears. The lag time in the Chrome browser at 1,000,000,000,000,000 was a little over thirty-five seconds. After deleting and then replacing the last 0, the delay was under five seconds, demonstrating a significant benefit derived from retrieving previously generated prime numbers instead of computing them again. But once a large array of primes has been generated, lookup times for small number exceeds the time it would take to generate a fresh array of primes. When the square root of the number in the box is less than the largest prime number in primesMonad.s[3], the only circle that turns red is the right one, corresponding to picking out the prime Fibonacci numbers. ')  ])
 
 
 
@@ -1531,12 +1545,12 @@ var primes= h('pre',  `    function MonadState(g, state) {
        return true;
     }
 
-    function* gen(x) {
-       var count = x;
-       while(true) {
-         if(isPrime(count)) yield count;
-         count++;
-       }
+    function *gen(x) {
+      var x = x
+      while(true) {
+        if(isPrime(x)) yield x;
+        x++;
+      }
     }
 
     var primesIt = gen(primesMonad.s[2]+1);
@@ -1553,11 +1567,11 @@ var primes= h('pre',  `    function MonadState(g, state) {
         return [end, primes, end, primes]
       }
       else {
-        var newP = primes.filter(v => (v <= num)); 
-        newP.push(primes[newP.length]);
+        var number = primes.indexOf(num) + 1;
+        var newP = primes.slice(number);
         return [newP[newP.length - 1], newP, x, primes];
       }
-    }  `  )
+}  `  )
 
 var primes2 = h('pre',  `    const workerB$ = sources.WWB.map(m => {
       console.log('In workerB$ stream in the main thread. m, m[3] ', m, m.data[3] );
