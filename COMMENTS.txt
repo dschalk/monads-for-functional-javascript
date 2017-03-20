@@ -2,3 +2,7 @@
 e commented: Hello World!
 ain't this exciting?
 *****************************
+Jack commented: You bet!
+*****************************
+sd commented: Greetings from Firefox.
+*****************************

@@ -834,7 +834,7 @@ var tr3 = h('pre',  `  var tr3 = function tr (fibsArray, primesArray) {
         return gameMonad.s[5][n][4];
     }  `  )
 
-  var monadEr = h('pre.red9',  `    function MonadEr (val, ID, er = []) {
+  var monadEr = h('pre',  `    function MonadEr (val, ID, er = []) {
           var test;
           var arr = arr = [];
           this.x = val;
@@ -849,17 +849,20 @@ var tr3 = h('pre',  `  var tr3 = function tr (fibsArray, primesArray) {
               return window[this.id];
             }
           if (this.e.length > 0) {
-            console.log('BYPASSING COMPUTATION in MonadEr instance', this.id, f, '.  PROPAGATING ERROR:',  this.e[0]);
+            console.log('BYPASSING COMPUTATION in MonadEr instance', this.id, f,
+                '.  PROPAGATING ERROR:',  this.e[0]);
             return this;
           }
 
           if (args.length > 0) {
-            arr = args.filter(v => !(typeof v === 'string' && v.charAt() === '$' && v.slice(0,4) !== 'Math'))
+            arr = args.filter(v => !(typeof v === 'string' && v.charAt() === '$' && 
+                v.slice(0,4) !== 'Math'))
 
             arr.map(v => {
               test = testP(v, this.id)
               if (test === 'STOP') {
-                console.log('\"STOP\" returned from testP. Ending code execution in ',this.id, '.' )
+                console.log('\"STOP\" returned from testP. Ending code execution in ',
+                    this.id, '.' )
                 this.e.push('STOP');
                 return this;
               }
@@ -882,7 +885,8 @@ var tr3 = h('pre',  `  var tr3 = function tr (fibsArray, primesArray) {
           }
           else {
             this.e.push('STOP -- Execution Aborted. ');
-            console.log(f, 'ERROR "STOP" returned from testP. No further computations will be attempted');
+            console.log(f, 'ERROR "STOP" returned from testP. No further ' +
+                'computations will be attempted');
             return this;
           }
         }
@@ -938,7 +942,7 @@ var tr3 = h('pre',  `  var tr3 = function tr (fibsArray, primesArray) {
       return window[id];
     }    `  )
 
-var errorDemo = h('pre.turk5',  `    var t = new MonadEr(0,'t', []);
+var errorDemo = h('pre',  `    var t = new MonadEr(0,'t', []);
     var t2 = new MonadEr(0,'t2', []);
     var t3 = new MonadEr(0,'t3', []);
     console.log('Values of t, t2, and t3', t.x,t2.x,t3.x)
@@ -979,7 +983,8 @@ var tests = h('pre',  `    function atest () {
       return [a,b,c,d,e,f]
     }
 
-    console.log('// Now setting a, b, c, d, e and f to 7 and logging a.x, b.x, c.x, d.x, e.x, and f.x.)');
+    console.log('// Now setting a, b, c, d, e and f to 7 and ' +
+        'logging a.x, b.x, c.x, d.x, e.x, and f.x.)');
     ret(7,'a');ret(7,'b');ret(7,'c');ret(7,'d');ret(7,'e');ret(7,'f');
     console.log(a.x, b.x, c.x, d.x, e.x,f.x)
     console.log('// Now running atest and making demoAr a reference to its return value. ');
@@ -988,13 +993,16 @@ var tests = h('pre',  `    function atest () {
     console.log(a.x, b.x, c.x, d.x, e.x,f.x)
     console.log('// Now logging demoAr.map(v => v.x).join(", ").');
     console.log(demoAr.map(v => v.x).join(', '));
-    console.log('// Now setting a, b, c, d, e and f to 6 and logging a.x, b.x, c.x, d.x, e.x, and f.x.)');
+    console.log('// Now setting a, b, c, d, e and f to 6 and ' +
+        'logging a.x, b.x, c.x, d.x, e.x, and f.x.)');
     ret(6,'a');ret(6,'b');ret(6,'c');ret(6,'d');ret(6,'e');ret(6,'f');
     console.log(a.x, b.x, c.x, d.x, e.x,f.x)
     console.log('// Now logging demoAr.map(v => v.x).join(", ").');
     console.log(demoAr.map(v => v.x).join(', '));
-    console.log('// The monads in DemoAr were not mutated or replaced when monads with the same ' );
-    console.log('// names (a, b, c, d, and e) updated to 6, 6, 6, 6, 6, 6 by using their bnd() methods. ');
+    console.log('// The monads in DemoAr were not mutated or replaced ' +
+        'when monads with the same ' );
+    console.log('// names (a, b, c, d, and e) updated to 6, 6, 6, 6, 6, 6 by  ' +
+        'using their bnd() methods. ');
     }  `  )
 
 var wDriver = h('pre.green2',  `    var worker = new Worker("worker.js");
@@ -1428,7 +1436,6 @@ h('p', ' The circles below are red during the computation of A. Fibonacci number
 var async2 = h('div', [
 h('div.tao3', mMfactors3.x ),
 h('p#monadstate'),
-h('a#state', { props: { href: '#monad' } }, 'Back to Monad discussion'),
 h('h3', 'MonadState and MonadState Transformers'),
 p(' The preceding demonstrations used three instances of MonadState: primesMonad, fibsMonad, and factorsMonad. The chat message demonstration uses another instance of MonadState; namely, messageMonadn. Instance of MonadState holds a current state along with a method for updating state. Here again is the definition of MonadState: '),
      //code.MonadState,

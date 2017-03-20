@@ -266,7 +266,7 @@ var comClickAction$ = comClick$.map( e => {
       pMgroup.ret('solo');
       socket.send('CC#$42' + v );
       pMclicked.ret([]);
-      socket.send(`TG#$41,${get(pMgroup)},${get(pMname)}`);
+      socket.send('TG#$41,solo,' + v);
       mMdice.ret('block');
       mMrightPanel.ret('block');
       mMrightPanel2.ret('none');
@@ -285,8 +285,6 @@ var comClickAction$ = comClick$.map( e => {
       mMcom2.ret('none')
       mMcom3.ret('block')
       socket.send(`CG#$42,${pMgroup.x},${pMname.x},0,0`);
-
-      // document.getElementById('cow').focus(); 
     };
   });
 
@@ -700,16 +698,15 @@ var forwardAction$ = forwardClick$.map(() => {
         solve(); 
         return;
       };
-      mMquad4.ret("Results: " + x + " and  " + y)  
+      mMquad4.ret("Solutiions for " + a + ", " + b + " and " + c + " are " + x + " and  " + y)  
       mMquad5.ret(p(a).text + " * " + x + " * " + x + " + " + p(b).text + 
               " * " + x + " " + p(c).text + " = 0")
       mMquad6.ret(p(a).text + " * " + y + " * " + y + " + " + p(b).text + 
               " * " + y + " " + p(c).text + " = 0")   
-      solve();  
+      solve();   // Continuing the endless loop. 
       }) }) }) }) 
   };
-  
-    solve();
+  solve();
 
   var quad$ = sources.DOM
       .select('#quad').events('keypress');
@@ -1058,7 +1055,7 @@ var todoMonad = new MonadState3('todoMonad',
       h('br'), 
       h('br'),
       h('br'),
-      h('p', ' After you log in, this column will show the scoreboard, a todo list, and text messages that can be shared among group members, or used privately. You might find the game to be a refreshing solitairre diversion. ' ),
+      h('div', ' After you log in, this column will show the scoreboard, a todo list, and text messages that can be shared among group members, or used privately. You might find the game to be a refreshing solitairre diversion. ' ),
       h('br'),
       h('br'),
       h('br'),
@@ -1080,7 +1077,7 @@ var todoMonad = new MonadState3('todoMonad',
       h('br'),
       h('br'), 
       h('br'), 
-      h('p', 'This space is reserved for the game scoreboard, todo list, and chat messages. These appear after login. ' ), 
+      h('div', 'This space is reserved for the game scoreboard, todo list, and chat messages. These appear after login. ' ), 
       h('br'),
       h('br'),
       h('br') ]),  
@@ -1174,12 +1171,14 @@ var todoMonad = new MonadState3('todoMonad',
       h('a', { props: { href: "https://cycle.js.org/", target: "_blank" } }, 'A cyclejs application'),  
       h('span#captionDiv', { style: { display: mMcaptionDiv.x } },  [
       h('h1', 'JS-monads in Cyclejs') ]),
-      h('p', 'PLEAE NOTE: This site is constantly evolving. The commentary sometimes lags behind innovations. I know this site is a little rough around the edges, but the demonstrations are fully functional and the commentary is constantly improving. I present this site to developers because I think it might stimulate thought about the usefulness of encapsulating procedures in objects whose methods obey a JavaScript version of the Haskell monad laws. I present this site as a tutorial to people who can benefit by studying code written in a functional and reactive style. Helpful suggestions, corrections, or comments will be much appreciated. '),
-      h('span', 'You can comment at ' ),
-      h('a', { props: { href: 'https://www.reddit.com/r/javascript/comments/5xq55a/roll_your_own_monads_for_flexible_web_design/' }}, 'Reddit'),
-      h('span', ' or in the ' ),
+      h('p.tao1b', 'PLEAE NOTE: This site is constantly evolving. The commentary sometimes lags behind innovations. I know this site is a little rough around the edges, but the demonstrations are fully functional and the commentary is constantly expanding.'), 
+h('p.tao1b', ' I present this site to developers because I think it can stimulate thought about encapsulating procedures and dynamic state in objects whose methods conform to a JavaScript version of the Haskell monad laws. I present this site as a tutorial to people who can benefit by understandng another way to write functional, reactive code. Helpful suggestions, corrections, or comments will be much appreciated. '),
+      h('span.tao1b', 'You can comment at ' ),
+      h('a', { props: { href: 'https://redd.it/60c2xx' }}, 'Reddit' ),
+      h('span.tao1b', ' or in the ' ),
       h('a', {props: { href: '#comment' }}, 'comments' ),
-      h('span', ' section below. -- David Schalk  - March 17, 2017  ' ), 
+      h('span.tao1b', ' section below. -- David Schalk  - March 17, 2017  ' ), 
+      h('br'),
       h('br'),
       h('span#italic', ' These monads are like the Haskell monads in that they resemble the monads of category theory without actually being mathematical monads. See ' ),
       h('a', { props: { href: "http://math.andrej.com/2016/08/06/hask-is-not-a-category/", target: "_blank" } }, 'Hask is not a category.'),
@@ -1367,7 +1366,6 @@ h('p', ' execF prepares the Fibonacci series and sends its state, along with the
     t.ret(0).bnd(add3, 3).bnd(cube3).x === 
     t.ret(0).bnd(v => add3(v,3).bnd(cube3)).x  ` ),
   h('br'),
-  h('a#itterLink', { props: { href: '#monad' } }, 'Back to Monad discussion'), 
   h('br'),  
   h('a', { props: { href: '#top' } }, 'Back To The Top'),
 h('h2', 'MonadItter'),
@@ -1432,7 +1430,6 @@ h('p', ' The socket message prompts the server to notify all group members of ch
 h('h2', ' MonadSet '),
 h('p', ' The list of online group members at the bottom of the scoreboard is very responsive to change. When someone joins the group, changes to a different group, or closes a browser session, a message prefixed by NN#$42 goes out from the server providing group members with the updated list of group members. MonadSet acts upon messages prefixed by NN#$42. Here are the definitions of MonadSet and the MonadSet instance sMplayers '),
 code.MonadSet,
-h('a', { props: { href: '#top' } }, 'Back To The Top'),
   h('h3', ' Websocket messages'  ),  
   h('p#demo', ' Incoming websockets messages trigger updates to the game display, the chat display, and the todo list display. The members of a group see what other members are doing; and in the case of the todo list, they see the current list when they sign in to the group. When any member of a group adds a task, crosses it out as completed, edits its description, or removes it, the server updates the persistent file and all members of the group immediately see the revised list.  '),
   h('p', 'The code below shows how incoming websockets messages are routed. For example, mMZ10.release() is called when a new dice roll (prefixed by CA#$42) comes in.   '),
@@ -1502,3 +1499,7 @@ const sources = {
   EM2: eM2Driver
 }
 run(main, sources);
+
+
+
+

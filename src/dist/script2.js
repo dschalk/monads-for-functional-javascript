@@ -118,7 +118,6 @@ var fibsMonad = new MonadState('fibsMonad', [0, 1, 2, [0]]);
 var decompMonad = new MonadState('decompMonad', [3, [[0],[1],[2]], 3, [[0],[1],[2]]]);
 Object.freeze(decompMonad)
 
-
 var count = 1;
 
 function isPrime(n) {
@@ -128,15 +127,15 @@ function isPrime(n) {
    return true;
 }
 
-function* gen(x) {
-   var count = x;
-   while(true) {
-     if(isPrime(count)) yield count;
-     count+=1;
-   }
+function *gen(x) {
+  var x = x
+  while(true) {
+    if(isPrime(x)) yield x;
+    x++;
+  }
 }
-var primesIt = gen(primesMonad.s[2]+1);
 
+var primesIt = gen(primesMonad.s[2]+1);
 
 function execP (state, num) {
   var x = state[2];
@@ -151,8 +150,6 @@ function execP (state, num) {
   }
   else {
     var number = primes.indexOf(num) + 1;
-//    var newP = primes.filter(v => (v <= num));
-//    newP.push(primes[newP.length]);
     var newP = primes.slice(number);
     return [newP[newP.length - 1], newP, x, primes];
   }

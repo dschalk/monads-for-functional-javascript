@@ -6,35 +6,18 @@ html {
 body {
   background-color: #331903;
   color: #d3ead5;
-  margin-top: 20px;
-  font-size: 12px;
+  font-size: 14px;
   font-family: "Times, serif";
   margin-left: 10%;
   margin-right: 8%;
   width: 80%;  
-  border-radius: 35px;
-  -webkit-box-shadow: 0px 0px 20px 0px rgb(215, 215, 0), inset 0px 0px 20px 0px rgb(0,0,0);
-  -moz-box-shadow:    0px 0px 20px 0px rgb(215, 215, 0), inset 0px 0px 20px 0px rgb(0,0,0);
-  box-shadow:         0px 0px 20px 0px rgb(215, 215, 0), inset 0px 0px 20px 0px rgb(0,0,0);
-  padding: 3px 0px 3px 3px;
 }
 
-input, textarea {
-  -webkit-transition: all 0.30s ease-in-out;
-  -moz-transition: all 0.30s ease-in-out;
-  -ms-transition: all 0.30s ease-in-out;
-  -o-transition: all 0.30s ease-in-out;
-  outline: none;
-  padding: 3px 0px 3px 3px;
-  margin: 5px 1px 3px 0px;
-  border: 3px solid #DDDDDD;
-}
- 
-input:focus, textarea:focus {
-  -webkit-box-shadow: 0px 0px 40px 0px rgb(229, 255, 0);
-  -moz-box-shadow:    0px 0px 40px 0px rgb(229, 255, 0);
-  box-shadow:         0px 0px 40px 0px rgb(229, 255, 0);
-  padding: 3px 0px 3px 3px;
+
+input {
+  background-color: #EFECB1;
+  color: #0000FF;
+  font-size: 18px;
 }
 
 pre {
@@ -98,17 +81,6 @@ a {
   font-size:45px;
   }
 
-.image {
-  height: 94%;
-  width: 94%;
-}
-
-.image_2 {
-  height: 5%;
-  width: 5%;
-  background-color: #331903;
-}
-
 .zen_a {
   font-size: 22;
 }
@@ -156,7 +128,17 @@ a {
 #italic {
   font-style: italic;
   font-size: 18px;
-  color: #d9b3ef;
+}
+
+.image {
+  height: 94%;
+  width: 94%;
+}
+
+.image_2 {
+  height: 5%;
+  width: 5%;
+  background-color: #1a65ef;
 }
 
 
