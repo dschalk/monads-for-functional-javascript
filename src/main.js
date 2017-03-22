@@ -116,9 +116,9 @@ const eM2Driver = function () {
 };
 */
 
-em.emit("em says Hello World");
-em.emit("emDriver says Hello World? ....woooo da!");
-em.emit("emDriver says Hello World");
+em.emit('cow',"em says Hello World");
+em.emit('cow',"emDriver says Hello World? ....woooo da!");
+em2.emit('42', 'This is a message from em2');
 
 function updateTasks (obArray) {
   var todoData = [];
@@ -1089,11 +1089,6 @@ var todoMonad = new MonadState3('todoMonad',
       h('br'), 
       h('br'),
       h('br'), 
-      h('br'), 
-      h('br'), 
-      h('br'), 
-      h('br'), 
-      h('br'), 
       h('br'),
       h('br'), 
       h('br'), 
@@ -1171,7 +1166,7 @@ var todoMonad = new MonadState3('todoMonad',
       h('a', { props: { href: "https://cycle.js.org/", target: "_blank" } }, 'A cyclejs application'),  
       h('span#captionDiv', { style: { display: mMcaptionDiv.x } },  [
       h('h1', 'JS-monads in Cyclejs') ]),
-      h('p.tao1b', 'PLEAE NOTE: This site is constantly evolving. The commentary sometimes lags behind innovations. I know this site is a little rough around the edges, but the demonstrations are fully functional and the commentary is constantly expanding.'), 
+      h('p.tao1b', 'PLEASE NOTE: This site is constantly evolving. The commentary sometimes lags behind innovations. I know this site is a little rough around the edges, but the demonstrations are fully functional and the commentary is constantly expanding.'), 
 h('p.tao1b', ' I present this site to developers because I think it can stimulate thought about encapsulating procedures and dynamic state in objects whose methods conform to a JavaScript version of the Haskell monad laws. I present this site as a tutorial to people who can benefit by understandng another way to write functional, reactive code. Helpful suggestions, corrections, or comments will be much appreciated. '),
       h('span.tao1b', 'You can comment at ' ),
       h('a', { props: { href: 'https://redd.it/60c2xx' }}, 'Reddit' ),
@@ -1187,7 +1182,6 @@ h('p.tao1b', ' I present this site to developers because I think it can stimulat
           h('span', ' below. They provide a convenient interface for dealing with uncertainty and side effects in a purely functional manner, assigning new values to identifiers (variables) without mutation. Adherence to the monad laws (see below) helps make the monads robust, versatile, and reliable tools for isolating and chaining sequences of javascript functions.' ),
 
           h('p', ' The demonstrations include persistent, shared todo lists, an interactive simulated dice game with a traversable history (all group members see your score decrease or increase as you navegate backwards and forwards), chat rooms where members can compete in the simulated dice gameand share a project todo list, and demonstrations of the persistent state, asynchronous usefulness of monads in a Cycle application.  '),
-
       h('span.tao', 'The code for this repository is at '),
       h('a', { props: { href: "https://github.com/dschalk/JS-monads-stable", target: "_blank" } }, 'JS-monads-stable'),  
       h('div#gameDiv2', { style: { display: mMgameDiv2.x } }, [
@@ -1221,7 +1215,7 @@ h('div#log2', { style: { display: mMlog2.x } }, [
     h('span', 'Change group: '),
     h('input#group')]),
 h('p', mMsoloAlert.x ),
-h('p', 'People who are in the same group, other than the default group named "solo", share the same todo list, chat messages, and simulated dice game. In order to see any of these, you must establish a unique identity on the server by logging in. The websockets connection terminates if the first message the server receives does not come from the sign in form. You can enter any random numbers, letters, or special characters you like. The server checks only to make sure someone hasn\t already signed in with the sequence you have selected. If you log in with a name that is already in use, a message will appear and this page will be re-loaded in the browser after a four-second pause. '),
+h('p', 'People who are in the same group, other than the default group named "solo", share the same todo list, chat messages, and simulated dice game. In order to see any of these, you must establish a unique identity on the server by logging in. The websockets connection terminates if the first message the server receives does not come from the sign in form. You can enter any random numbers, letters, or special characters you like. The server checks only to make sure someone hasn\'t already signed in with the sequence you have selected. If you log in with a name that is already in use, a message will appear and this page will be re-loaded in the browser after a four-second pause. '),
 h('p', ' Data for the traversable game history accumulates until a player scores three goals and wins. The data array is then erased and the application is ready to start accumulating a new history. '),
 
  // **************************************************************************** START MONAD
@@ -1500,6 +1494,6 @@ const sources = {
 }
 run(main, sources);
 
-
+console.log(sources.DOM);
 
 

@@ -1305,25 +1305,27 @@ class MonadEmitter extends EventEmitter {};
 
 function monadConstructor (v,b) {
   var c = new MonadEmitter();
-  var e = 'e';
-  c.on(e, x => console.log(x));
   c.x = v;
   c.id = b;
-  c.nums = [];
   c.bnd = (func, ...args) => {
     var m = func(c.x, ...args)
     var ID;
     if (m instanceof Monad) {
       ID = testPrefix(args, c.id); 
-      window[ID] = monadConstructor(m.x, ID);
-      return window[ID];
+      return c.emit(1,[m.x, ID])
     }
-    else return m;
-  };
+    else return c.emit(0, m);
+  }
+  c.on(0, v => {
+    console.log(v)
+    return v
+  });
+  c.on(1, v => {
+      window[v[1]] = monadConstructor(v[0], v[1]);
+      return window[v[1]];
+  })
   c.ret = a => {
-    c._events.e(a);
-    window[b] = monadConstructor(a, b);
-    return window[b];
+    c.emit(1, [a,b]);
   };
   return c;
 };
@@ -1353,20 +1355,20 @@ var gameMonad = new MonadState2('gameMonad', [ 0,0,0,[],[2,2,2,2],[[0,0,0,[],[3,
 var ops = ['+','-','*','/', 'concat'];
 var nums = [3,4,5,6];
 
-
 var eM1 = monadConstructor(0,'eM1') ;
 var eM2 = monadConstructor(0,'eM2');
 var eM3 = monadConstructor(0,'eM3');
 var eM4 = monadConstructor(0,'eM4');
-eM2.on('EC42', (...args) => console.log('Here is a received message:', args.join(', ')));
-eM2.emit('EC42', 'Hello girls', 256000 - 255997, 'you bet.' ) 
-
-eM3.on('3', (x,y,z) => m.ret(z*z*z).bnd((a) => console.log(a,x,y)))
-eM3.emit('3', 23, 44, 3)   // 27, 23, 44
+// eM2.on('EC42', (...args) => console.log('Here is a received message:', args.join(', ')));
+eM2.bnd(v => ['Hello girls', 'Here is the value of eM2', v, 256000 - 245997, 'you bet.']) 
+eM2.ret(888);
+console.log('2()()()()()()() Here is eM2.x:', eM2.x);
+// eM3.on('3', (x,y,z) => m.ret(z*z*z).bnd((a) => console.log(a,x,y)))
+eM3.bnd(v => ret(['em3.x squared is', v*v, 'Here are more numbers:', 23, 44, 3]));  
 var a = 'a';
-var clog = new monadConstructor(0,'clog');
+var clog = monadConstructor(0,'clog');
 clog.ret('How about that? I have all the functionality of Monad and I can emit events.');
-
+console.log('3()()()()()()() Here is eM2.x:', eM2.x);
 
 var f7 = function f7 () {
 var ar = [];
@@ -1386,7 +1388,8 @@ console.log(x)
 
 
 var em = new EventEmitter;
-
+var em2 = new EventEmitter;
+em2.on('42',x => console.log(x));
 
 var producer = {
   start: function (listener) {
@@ -1415,7 +1418,7 @@ var stream$ = xs.of(producer)
 
 stream$.addListener(listener)
 
-em.emit('cow','Whatever you say, sir.');
+em.emit(0,'Whatever you say, sir.');
 
 console.log('Almost at the bottom of monad.js primesMonad is', primesMonad );
 

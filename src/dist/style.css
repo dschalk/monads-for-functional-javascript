@@ -4,6 +4,7 @@ html {
 }
 
 body {
+  border-radius: 35px;
   background-color: #331903;
   color: #d3ead5;
   margin-top: 20px;
@@ -12,18 +13,19 @@ body {
   margin-left: 10%;
   margin-right: 8%;
   width: 80%;  
-  border-radius: 35px;
-  -webkit-box-shadow: 0px 0px 20px 0px rgb(215, 215, 0), inset 0px 0px 20px 0px rgb(0,0,0);
-  -moz-box-shadow:    0px 0px 20px 0px rgb(215, 215, 0), inset 0px 0px 20px 0px rgb(0,0,0);
-  box-shadow:         0px 0px 20px 0px rgb(215, 215, 0), inset 0px 0px 20px 0px rgb(0,0,0);
+  -webkit-box-shadow: 0px 0px 40px 0px rgb(255, 215, 0), inset 0px 0px 20px 0px rgb(0,0,0);
+  -moz-box-shadow:    0px 0px 40px 0px rgb(255, 215, 0), inset 0px 0px 20px 0px rgb(0,0,0);
+  box-shadow:         0px 0px 40px 0px rgb(255, 215, 0), inset 0px 0px 20px 0px rgb(0,0,0);
   padding: 3px 0px 3px 3px;
 }
 
 input, textarea {
-  -webkit-transition: all 0.30s ease-in-out;
-  -moz-transition: all 0.30s ease-in-out;
-  -ms-transition: all 0.30s ease-in-out;
-  -o-transition: all 0.30s ease-in-out;
+  background-color: #efe1a7;
+  border-radius: 5px;
+  -webkit-transition: all 0.60s ease-in-out;
+  -moz-transition: all 0.60s ease-in-out;
+  -ms-transition: all 0.60s ease-in-out;
+  -o-transition: all 0.60s ease-in-out;
   outline: none;
   padding: 3px 0px 3px 3px;
   margin: 5px 1px 3px 0px;
@@ -31,9 +33,9 @@ input, textarea {
 }
  
 input:focus, textarea:focus {
-  -webkit-box-shadow: 0px 0px 40px 0px rgb(229, 255, 0);
-  -moz-box-shadow:    0px 0px 40px 0px rgb(229, 255, 0);
-  box-shadow:         0px 0px 40px 0px rgb(229, 255, 0);
+  -webkit-box-shadow: 0px 0px 20px 0px rgb(255, 215, 0);
+  -moz-box-shadow:    0px 0px 20px 0px rgb(255, 215, 0);
+  box-shadow:         0px 0px 20px 0px rgb(255, 215, 0);
   padding: 3px 0px 3px 3px;
 }
 

@@ -1,1 +1,3 @@
-webpack && cd ../ && stack runghc Main 
+#!/bin/bash
+
+kill -9 `pidof ghc` && webpack && cd ../ && stack runghc Main & 
