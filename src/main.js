@@ -228,6 +228,7 @@ function main(sources) {
   .bnd(next, 'DD#$42', mMZ17)
   .bnd(next, 'NN#$42', mMZ18)
   .bnd(next, 'GG#$42', mMZ19)
+  .bnd(next, 'TG#$40', mMZ20)
   });
         
 function next(x, y, instance, z) {
@@ -290,6 +291,7 @@ var comClickAction$ = comClick$.map( e => {
       mMcom2.ret('none')
       mMcom3.ret('block')
       socket.send(`CG#$42,${pMgroup.x},${pMname.x},0,0`);
+      socket.send(`TG#$40,${pMgroup.x},${pMname.x}`);
     };
   });
 
@@ -1392,17 +1394,19 @@ h('p', ' updateNums() is the only function that directly affects gameMonad. It d
 h('p', ' The five function prefixed by "fetch" save coding time and space, and help prevent careless errors. They are defined as follows: ' ),
     code.fetch,  
 h('p', ' One goal is awarded each time a player lands on the number 25. The limit for the number of score changes in one turn is two. If the number of increases were not limited, landing on 5 would launch you into an series of increases through all the multiples of five terminating with a stack overflow error message. As a consequence of this rule, only one five-point jump is allowed per turn. '),
-h('p', ' Another way to increase a score, other than computing an number which equals 0 modulo 5 is to compute the number 20 for one additional point, or the number 18 for three additional points. A quick way to arrive at 20 is to start at -1, compute 18 twice, which takes you from -1 to 2 to 5 and jumps you to 10. Then click roll, which sets you back to 9, and compute 18 twice. That takes you from 9 to 12, to fifteen, jumping you to 20. You don\'t get another jump, so click ROLL and compute 20, taking your score from 19 to 20 to 25 and back to 0, with an increase of one goal. If it is your third goal, you win the game. ' ),
+h('p', ' Another way to increase a score, other than computing an number which equals 0 modulo 5 is to compute the number 20 for one additional point, or the number 18 for three additional points. A quick way to arrive at 20 is to start at -1, compute 18 twice, which takes you from -1 to 2 to 5 and jumps you to 10. Then click roll, which sets you back to 9, and compute 18 twice. That takes you from 9 to 12, to 15, jumping you to 20. You don\'t get another jump, so click ROLL and compute 20, taking your score from 19 to 20 to 25 and back to 0, with an increase of one goal. If it is your third goal, you win the game. ' ),
 h('p', ' Here is the code that handles roll, number and operator clicks: ' ),
     code.num_op,  
-  
-  
-  
-  
-h('p', ' Game traversal is controlled by changing the value of mMindex.x. ' ),
-
+h('p', ' A new state is added to gameMonad.s when a new roll arrives from the server. Here is how the message from the server is handled: ' ),
+    code.newRoll,
+h('p', ' Game traversal is controlled by changing the value of mMindex.x. Here is the code that is called when the BACK button is clicked: ' ),
     code.backAction,
-h('p', ' The socket message prompts the server to notify all group members of changes in the player\'s score and goals. The numbers that are generated remain private. ' ),
+
+
+
+
+
+
 
   
 

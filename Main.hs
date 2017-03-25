@@ -335,6 +335,20 @@ talk conn state (_, _, _, _, _) = forever $ do
                 broadcast ("TG#$41," `mappend` group `mappend` "," 
                     `mappend` sender `mappend` ",@" `mappend` old) st
 
+    else if "TG#$40" `T.isPrefixOf` msg
+        then
+            do
+                old <- T.readFile "_count"
+                let new = (read (T.unpack old) :: Integer) + 1 
+                let new2 = T.pack(show new)
+                T.writeFile "_count" new2
+                print new
+                st <- atomically $ readTMVar state
+                let subSt = subState sender group st
+                broadcast ("TG#$40," `mappend` group `mappend` "," 
+                    `mappend` sender `mappend` ","  `mappend` old) subSt
+
+
     else if "TX#$42" `T.isPrefixOf` msg
         then
             do

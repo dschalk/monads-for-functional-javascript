@@ -35,21 +35,12 @@ var driver = h('pre', `  var websocketsDriver = function () {
   };
 ` )
 
-var messages = h('pre', `
-  const messages$ = sources.WS.map( e => {
+var messages = h('pre', `  const messages$ = sources.WS.map( e => {
     console.log(e);
     mMtem.ret(e.data.split(',')).bnd( v => {
-  console.log('Websockets data.split message v: ', v );    
+  console.log('Websockets e.data.split message v: ', v );    
   mMZ10.bnd( () => {
-    buttonNode = bNode([v[3],v[4],v[5],v[6]]);
-    var st = gameMonad.s[5][mMindex.x].slice();
-    st[0] = v[7];
-    st[1] = v[8];
-    st[2] = 0;
-    st[3] = [];
-    st[4] = [v[3],v[4],v[5],v[6]];
-    gameMonad.c.emit(a,st);
-    // console.log(buttonNode);
+    updateNums([v[7], v[8], 0, [], [v[3], v[4], v[5], v[6]]]);
   }); 
     mMZ12.bnd( () => mM6.ret(v[2] + ' successfully logged in.'));
     mMZ13.bnd( () => {
@@ -80,6 +71,7 @@ var messages = h('pre', `
   .bnd(next, 'DD#$42', mMZ17)
   .bnd(next, 'NN#$42', mMZ18)
   .bnd(next, 'GG#$42', mMZ19)
+  .bnd(next, 'TG#$40', mMZ20)
   });
         
 function next(x, y, instance, z) {
@@ -87,9 +79,7 @@ function next(x, y, instance, z) {
       instance.release(z);
   }
   return ret(x);
-};
-
-`  )
+};  `  )
 
 var MonadSet = h('pre',  `  var MonadSet = function MonadSet(set, ID) {
     this.s = set;
@@ -809,11 +799,7 @@ var tr3 = h('pre',  `  var tr3 = function tr (fibsArray, primesArray) {
       var goals = fetch1(mMindex.x);
       socket.send(\`CG#$42,${pMgroup.x},${pMname.x},${score},${goals}\`)
     } 
-});
-
-  function fetch(n) {
-    return gameMonad.s[n][4];
-  }  `  )
+});  `  )
 
   var monadEr = h('pre',  `    function MonadEr (val, ID, er = []) {
           var test;
@@ -1642,7 +1628,6 @@ var monCon = h('pre',  `
 `  )
 
 var newRoll = h('pre',  `  const messages$ = sources.WS.map( e => {
-  const messages$ = sources.WS.map( e => {
     console.log(e);
     mMtem.ret(e.data.split(',')).bnd( v => {
   console.log('Websockets e.data.split message v: ', v );    
@@ -1678,7 +1663,6 @@ var num_op = h('pre',  `  var rollClick$ = sources.DOM
     var b = fetch1(mMindex.x).valueOf();
     socket.send(\`CA#$42,${pMgroup.x},${pMname.x},6,6,12,20,${a},${b}\`);
   }); 
-
   
   var numClick$ = sources.DOM
       .select('.num').events('click'); 

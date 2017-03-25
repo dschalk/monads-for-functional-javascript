@@ -15,6 +15,7 @@ var h = h.h;
 const messages = [];
 var crapTunnel = [];
 var buttonNode;
+var stat;
 
 function testPrefix (x,y) {
    var t = y;
