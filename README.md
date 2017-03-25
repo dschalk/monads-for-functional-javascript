@@ -2,7 +2,7 @@
 
 # JS-monads-stable
 
-PLEAE NOTE: This site is constantly evolving. The commentary sometimes lags behind innovations. I know this site is a little rough around the edges. I present it hoping that you will provide suggestions, corrections, and comments. -- David Schalk
+PLEAE NOTE: This project is constantly evolving and this README.md file is now out of date. To see what this is all about, go to [http://schalk.net:3055](http://schalk.net:3055)  -- David Schalk
 
  These monads are like the Haskell monads in that they resemble the monads of category theory while not actually being mathematical monads. See [Hask is not a category](http://math.andrej.com/2016/08/06/hask-is-not-a-category/) by Andrej Bauer. They provide a convenient interface for dealing with uncertainty and side effects in a pure functional manner, assigning new values to identifiers (variables) without mutation. Adherence to the monad laws (see below) helps make the monads robust, versetile, and reliable tools for isolating and chaining sequences of Javascript functions.
 
