@@ -508,20 +508,14 @@ var add = h('pre',  `  var add = function(x,b,mon) {
 
 var seed = h('pre',  `  mM$prime.ret([[2],3])  `  )
 
-var MonadState = h('pre',  `    function MonadState(g, state, p) {
-      this.id = g;
-      this.s = state;
-      this.process = p;
-      this.a = s[3];
-      this.bnd = (func, ...args) => func(this.s, ...args);
-      this.run = ar => {
-        var ar2 = this.process(ar);
-        this.s = ar2;
-        this.a = ar2[3];
-        window[this.id] = this;
-        return window[this.id];
-      }
-    };  `  )
+var MonadState = h('pre',  `  function MonadState(g, state) {
+    this.id = g;
+    this.s = state;
+    this.bnd = (func, ...args) => func(this.s, ...args);  
+    this.ret = function (a) {
+      return window[this.id] = new MonadState(this.id, a);
+    };
+  };  `  )
 
 var primesMonad = h('pre',  `    var primesMonad = new MonadState('primesMonad', [2, '', 3, [2]], [2],  primes_state)
 
@@ -803,36 +797,23 @@ var tr3 = h('pre',  `  var tr3 = function tr (fibsArray, primesArray) {
         return mMar11;
       }  `  )
 
-  var backAction = h('pre',  `    var forwardClick$ = sources.DOM
-      .select('#ahead').events('click')
-  
-    var backClick$ = sources.DOM
-      .select('#back').events('click');
+  var backAction = h('pre',  `  var backClick$ = sources.DOM
+    .select('#back').events('click');
 
-    var backAction$ = backClick$.map(() => {
-      if (mMindex.x > 0) {  
-        mMindex.ret(mMindex.x - 1)
-        buttonNode = bNode(fetch(mMindex.x));
-        sMplayers.s.clear();
-        var score = gameMonad.s[5][mMindex.x][0]
-        var goals = gameMonad.s[5][mMindex.x][1];
-        socket.send("CG#$42," + pMgroup.x + "," + pMname.x + "," + score + "," + goals)
-      } 
-    }) 
+  var backAction$ = backClick$.map(() => {
+    if (mMindex.x > 0) {  
+      mMindex.ret(mMindex.x - 1)
+      buttonNode = bNode(fetch4(mMindex.x));
+      sMplayers.s.clear();
+      var score = fetch0(mMindex.x)
+      var goals = fetch1(mMindex.x);
+      socket.send(\`CG#$42,${pMgroup.x},${pMname.x},${score},${goals}\`)
+    } 
+});
 
-    var forwardAction$ = forwardClick$.map(() => {
-      if (mMindex.x < gameMonad.s[5].length - 1) {
-        mMindex.ret(mMindex.x + 1);
-        buttonNode = bNode(fetch(mMindex.x));
-        var score = gameMonad.s[5][mMindex.x][0]
-        var goals = gameMonad.s[5][mMindex.x][1];
-        socket.send("CG#$42," + pMgroup.x + "," + pMname.x + "," + score + "," + goals)
-      }
-    }); 
-
-    function fetch (n) {
-        return gameMonad.s[5][n][4];
-    }  `  )
+  function fetch(n) {
+    return gameMonad.s[n][4];
+  }  `  )
 
   var monadEr = h('pre',  `    function MonadEr (val, ID, er = []) {
           var test;
@@ -1316,7 +1297,7 @@ var variations = h('div',  [
 h('h3', 'Variations on the Theme' ),
 h('p', ' Variations on the Monad theme serve diverse purposes. Instances of MonadState preserve computations so they won\'t have to be performed again. An instance of MonadState2 keeps a record of game play allowing players to back up and resume play from a previous display of numbers. It also keeps the current game parameters - score, goals, operator, selected numbers, and remaining numbers - in a single array which is stored in the archive whenever a new state is created. MonadItter instances are used to parse websockets messages and organize the callbacks neatly. MonadEr catches NaN and prefents crashes when undefined variables are encountered. I defined a message emitting monad but it seemed useless in this Cycle application where reactivity is pervasive. When you want to emit and listen for messages, it is better to build a driver and merge its stream of messages into the application cycle. '),
 
-h('p', ' The various monad constructors demonstrate a coding style and philosophy, and are not intended to serve as a static library. You might find Monad useful as it is, and of course you are welcome to use it, but you might also take the general idea and eliminate some features and add others to suits your needs. Or you might prefer an entirely different way of organizing your code. You can incorporate your own monad constructors into any framework, just I have make mine part of this Cycle application.  ' ),
+h('p', ' The various monad constructors demonstrate a way of encapsulating procedures and state in chainable objects. You might incorporate Monad or one of the other constructors presented here in your application, but I think the thing that is most valuable is the general concept. I prefer Cycle.js, but I think the monads might make Node, React and some of the other frameworks more manageable. ' ),
 
 h('h3', 'Computations' ),
 h('p', ' Computations are easy to link if each result is returned in an instance of Monad. Here are a few examples of functions that return instances of Monad: '),
@@ -1477,7 +1458,7 @@ var MonadState2 = h('pre',  `    class MonadEmitter extends EventEmitter {};
     function MonadState2(g, state) {
       this.id = g;
       this.s = state;
-      this.c = new MonadEmitter();
+      this.c = new EventEmitter();
       this.bnd = (func, ...args) => func(this.s, ...args);  
       this.ret = function (a) {
         return window[this.id] = new MonadState(this.id, a);
@@ -1608,23 +1589,130 @@ var primes3 = h('pre',  `    var fibKeyPress5$ = sources.DOM
 
 var primes4 = h('pre',  `    execF(ar[1]).bnd(fpTransformer, ar[0], x)  `  )
 
-var p5a = h('pre',  `
+var gameMonad_2 = h('pre',  `  function MonadState(g, state) {
+    this.id = g;
+    this.s = state;
+    this.bnd = (func, ...args) => func(this.s, ...args);  
+    this.ret = function (a) {
+      return window[this.id] = new MonadState(this.id, a);
+    };
+  };
+
+  gameMonad = new MonadState('gameMonad', [ [0,0,0,[],[0,0,0,0] ]]);
+
+  function updateNums ([score = fetch0(mMindex.x), goals = fetch1(mMindex.x), 
+      operator = fetch2(mMindex.x), a3 = fetch3(mMindex.x), 
+          display = fetch4(mMindex.x) ]) {
+    var s = gameMonad.s.slice();
+    s.push([score, goals, operator, a3, display]);
+    buttonNode = bNode(display);
+    mMindex.bnd(add,1);
+    gameMonad = new MonadState('gameMonad', s);
+  }
+
+  function styl (s) {
+    switch(s) {
+      case (0): return ['none', 'none', 'none', 'none'];
+      break;
+      case (1): return ['inline', 'none', 'none', 'none'];
+      break;
+      case (2): return ['inline', 'inline', 'none', 'none'];
+      break;
+      case (3): return ['inline', 'inline', 'inline', 'none'];
+      break;
+      case (4): return ['inline', 'inline', 'inline', 'inline'];
+      break;
+      default: return;  //console.log('Bad argument in styl. s is', s );
+    }
+  }
+
+  function bNode (arr) {
+    console.log('In bNode - - - arr is', arr);
+    var x = styl(arr.length);
+    var node = h('div', [
+      h('button#0.num', { style: { display: x[0] }}, arr[0] ),
+      h('button#1.num', { style: { display: x[1] }}, arr[1] ),
+      h('button#2.num', { style: { display: x[2] }}, arr[2] ),
+      h('button#3.num', { style: { display: x[3] }}, arr[3] )
+    ]);
+    return node;
+  }  `  )
+
+var monCon = h('pre',  `
 `  )
 
-var p5b = h('pre',  `
-`  )
+var newRoll = h('pre',  `  const messages$ = sources.WS.map( e => {
+  const messages$ = sources.WS.map( e => {
+    console.log(e);
+    mMtem.ret(e.data.split(',')).bnd( v => {
+  console.log('Websockets e.data.split message v: ', v );    
+  mMZ10.bnd( () => {
+    updateNums([v[7], v[8], 0, [], [v[3], v[4], v[5], v[6]]]);
+  });   `  )
 
-var p5c = h('pre',  `
-`  )
+var fetch = h('pre',  `  function fetch4 (n) {
+      return gameMonad.s[n][4];
+  }
+   
+  function fetch3 (n) {
+      return gameMonad.s[n][3];
+  }
+   
+  function fetch2 (n) {
+      return gameMonad.s[n][2];
+  }
+   
+  function fetch1 (n) {
+      return gameMonad.s[n][1];
+  }
+   
+  function fetch0 (n) {
+      return gameMonad.s[n][0];
+  }  `  )
 
-var p5d = h('pre',  `
-`  )
+var num_op = h('pre',  `  var rollClick$ = sources.DOM
+    .select('#roll').events('click');
 
-var p5e = h('pre',  `
-`  )
+  var rollClickAction$ = rollClick$.map(() => {
+    var a = fetch0(mMindex.x).valueOf() - 1;
+    var b = fetch1(mMindex.x).valueOf();
+    socket.send(\`CA#$42,${pMgroup.x},${pMname.x},6,6,12,20,${a},${b}\`);
+  }); 
+
+  
+  var numClick$ = sources.DOM
+      .select('.num').events('click'); 
+
+  var numClickAction$ = numClick$.map(e => {
+    var state = gameMonad.s[mMindex.x].slice();
+    if (fetch3(mMindex.x).length < 2)  {
+      var a = state[3].slice();
+      var b = state[4].slice();
+      var c = b.splice(e.target.id,1);
+      a.push(c[0]);
+      updateNums([,,,a,b]) 
+      if (a.length === 2 && state[2] != 0) {
+        updateCalc(a, state[2]) 
+      }
+    }
+  }).startWith([0, 0, 0, 0]);
+
+  var opClick$ = sources.DOM
+      .select('.op').events('click');
+
+  var opClickAction$ = opClick$.map(e => {
+    var s3 = fetch3(mMindex.x).slice();
+    if (s3.length === 2) {
+      updateCalc(s3, e.target.innerHTML); 
+    }
+    else {
+      var state = gameMonad.s;
+      state[mMindex.x][2] = e.target.innerHTML;
+    }
+  });  `  )
 
 var p5f = h('pre',  `
 `  )
 
 
-  export default { primes3, primes2, primes, variations, MonadEmitter, clicks, bNode, styl, MonadState2, gameMonad, cycle, monad, hardWay, hardWay2, async1, async2, execP, workerD$, fact_workerC, fact2_workerD, primes_state, workerB_Driver, workerC, worker$, errorDemo, monadEr, backAction, tests, mMZ10, test3, monad, equals, fmap, opM, e2, e2x, e3, e4, e4x, e6, e6x, driver, messages, monadIt, MonadSet, updateCalc, arrayFuncs, nums, cleanup, ret, C42, newTask, process, mM$task, colorClick, edit, testZ, quad, runTest, todoStream, inc, seed,  add, MonadState, primesMonad, fibsMonad, primeFibInterface, tr3, fpTransformer, factorsMonad, factorsInput, promise, promiseSnippet, timeout, timeoutSnippet, examples, examples2 }
+  export default { num_op, fetch, gameMonad_2, newRoll, primes3, primes2, primes, variations, MonadEmitter, clicks, bNode, styl, MonadState2, gameMonad, cycle, monad, hardWay, hardWay2, async1, async2, execP, workerD$, fact_workerC, fact2_workerD, primes_state, workerB_Driver, workerC, worker$, errorDemo, monadEr, backAction, tests, mMZ10, test3, monad, equals, fmap, opM, e2, e2x, e3, e4, e4x, e6, e6x, driver, messages, monadIt, MonadSet, updateCalc, arrayFuncs, nums, cleanup, ret, C42, newTask, process, mM$task, colorClick, edit, testZ, quad, runTest, todoStream, inc, seed,  add, MonadState, primesMonad, fibsMonad, primeFibInterface, tr3, fpTransformer, factorsMonad, factorsInput, promise, promiseSnippet, timeout, timeoutSnippet, examples, examples2 }

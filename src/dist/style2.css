@@ -8,7 +8,7 @@ body {
   color: #d3ead5;
   font-size: 14px;
   font-family: "Times, serif";
-  margin-left: 10%;
+  margin-left: 8%;
   margin-right: 8%;
   width: 80%;  
 }
@@ -136,8 +136,8 @@ a {
 }
 
 .image_2 {
-  height: 5%;
-  width: 5%;
+  height: 7%;
+  width: 7%;
   background-color: #1a65ef;
 }
 

@@ -78,6 +78,13 @@ function eM2Driver () {
   });
 };
 
+function mMstreamDriver () {
+  return xs.create({
+    start: listener => { mMstream.x.on = msg => listener.next(msg)}, 
+    stop: () => { mMstream.removeAllListeners() }
+  });
+};
+
 socket.onmessage = function (event) {
     console.log('Socket message',event);
 };
@@ -116,10 +123,6 @@ const eM2Driver = function () {
 };
 */
 
-em.emit('cow',"em says Hello World");
-em.emit('cow',"emDriver says Hello World? ....woooo da!");
-em2.emit('42', 'This is a message from em2');
-
 function updateTasks (obArray) {
   var todoData = [];
   for (let ob of obArray) { 
@@ -141,10 +144,10 @@ function updateTasks (obArray) {
 
 
 function main(sources) {
-  gameMonad = new MonadState2('gameMonad', [ 0,0,0,[],[2,2,2,2],[[0,0,0,[],[5,5,5,5]]]]);
-  console.log(gameMonad.s[5], mMindex.x, '*********<><><><><>**********');
-  var newTasks = [];
 
+  const event$ = sources.mMstr.map(v => console.log('Message from mMstream driver', v));
+  
+  
   const worker$ = sources.WW.map(v => {
     console.log('Message from worker: ', v );
     v.preventDefault();
@@ -178,21 +181,23 @@ function main(sources) {
     next(v.data[0], 'CE#$41', mMZ25)
     });
 
+  function updateNums ([score = fetch0(mMindex.x), goals = fetch1(mMindex.x), 
+      operator = fetch2(mMindex.x), a3 = fetch3(mMindex.x), 
+          display = fetch4(mMindex.x) ]) {
+    var s = gameMonad.s.slice();
+    s.push([score, goals, operator, a3, display]);
+    buttonNode = bNode(display);
+    mMindex.bnd(add,1);
+    gameMonad = new MonadState('gameMonad', s);
+  }
+
 
   const messages$ = sources.WS.map( e => {
     console.log(e);
     mMtem.ret(e.data.split(',')).bnd( v => {
-  console.log('Websockets data.split message v: ', v );    
+  console.log('Websockets e.data.split message v: ', v );    
   mMZ10.bnd( () => {
-    buttonNode = bNode([v[3],v[4],v[5],v[6]]);
-    var st = gameMonad.s[5][mMindex.x].slice();
-    st[0] = v[7];
-    st[1] = v[8];
-    st[2] = 0;
-    st[3] = [];
-    st[4] = [v[3],v[4],v[5],v[6]];
-    gameMonad.c.emit(a,st);
-    // console.log(buttonNode);
+    updateNums([v[7], v[8], 0, [], [v[3], v[4], v[5], v[6]]]);
   }); 
     mMZ12.bnd( () => mM6.ret(v[2] + ' successfully logged in.'));
     mMZ13.bnd( () => {
@@ -330,33 +335,25 @@ var comClickAction$ = comClick$.map( e => {
     .select('#roll').events('click');
 
   var rollClickAction$ = rollClick$.map(() => {
-    var a = gameMonad.s[5][mMindex.x][0].valueOf() - 1;
-    var b = gameMonad.s[5][mMindex.x][1].valueOf();
-    socket.send(`CA#$42,${pMgroup.x},${pMname.x},6,6,12,20` + ',' + a + ',' + b);
+    var a = fetch0(mMindex.x).valueOf() - 1;
+    var b = fetch1(mMindex.x).valueOf();
+    socket.send(`CA#$42,${pMgroup.x},${pMname.x},6,6,12,20,${a},${b}`);
   }); 
 
-
+  
   var numClick$ = sources.DOM
       .select('.num').events('click'); 
 
   var numClickAction$ = numClick$.map(e => {
-    console.log('In numClickAction$', e);
-    console.log('In numClickAction$ - - - <><><><><><><><><><><> gameMonad.s[5][mMindex.x]',gameMonad.s[5][mMindex.x]);
-    if (gameMonad.s[5][mMindex.x][3].length > 1) {
-      console.log( 'In numClickAction$. gameMonad.s[5][mMindex.x][3] is full.', gameMonad.s[5]);
-    }
-    else {
-      var x = gameMonad.s[5][mMindex.x].slice();
-      x[3] = gameMonad.s[5][mMindex.x][3].slice();
-      x[4] = gameMonad.s[5][mMindex.x][4].slice();
-      x[4].splice(e.target.id,1)[0]; // Push the item spliced from x[4] into x[3].
-      x[3].push(e.target.textContent);
-      var s3 = x[3].slice();
-      buttonNode = bNode(x[4]);
-      console.log('In numClickAction$ ???????? s3 is', s3 );
-      gameMonad.c.emit(a,x);
-      if (s3.length === 2 && x[2] != 0) {
-        updateCalc(x[3], x[2]) 
+    var state = gameMonad.s[mMindex.x].slice();
+    if (fetch3(mMindex.x).length < 2)  {
+      var a = state[3].slice();
+      var b = state[4].slice();
+      var c = b.splice(e.target.id,1);
+      a.push(c[0]);
+      updateNums([,,,a,b]) 
+      if (a.length === 2 && state[2] != 0) {
+        updateCalc(a, state[2]) 
       }
     }
   }).startWith([0, 0, 0, 0]);
@@ -365,14 +362,13 @@ var comClickAction$ = comClick$.map( e => {
       .select('.op').events('click');
 
   var opClickAction$ = opClick$.map(e => {
-    if (gameMonad.s[3].length === 2) {
-      var s3 = gameMonad.s[3].slice();
-      updateCalc(s3, e.target.textContent); 
+    var s3 = fetch3(mMindex.x).slice();
+    if (s3.length === 2) {
+      updateCalc(s3, e.target.innerHTML); 
     }
     else {
-      var state = gameMonad.s.slice();
-      state[5][mMindex.x][2] = e.target.innerHTML;
-      gameMonad = new MonadState2('gameMonad', state);
+      var state = gameMonad.s;
+      state[mMindex.x][2] = e.target.innerHTML;
     }
   });
 
@@ -383,26 +379,21 @@ var comClickAction$ = comClick$.map( e => {
       score(result);
     }
     else {
-      var state = gameMonad.s[5][mMindex.x].slice();
-      state[2] = 0;
-      state[3] = [];
-      state[4] = gameMonad.s[5][mMindex.x][4].slice();
-      state[4].push(result);
-      buttonNode = bNode(state[4]);
-      console.log('In updateCalc. state is', state );
-      gameMonad.c.emit(a,state);
+      var a = fetch4(mMindex.x).slice();
+      a.push(result);
+      updateNums([,,,[],a]);
     }
   };   
 
   function score(result) {
-    var state = gameMonad.s[5][mMindex.x].slice();
+    var state = gameMonad.s[mMindex.x].slice();
     var old = parseInt(state[0], 10);
     var res = result === 18 ? old + 3 : old + 1;
     var scor = res % 5 === 0 ? res + 5 : res;
     
     if (scor === 25 && state[1] === "2") {
       mMindex.ret(0);
-      gameMonad = new MonadState2('gameMonad', [ 0,0,0,[],[0,0,0,0],[[0,0,0,[],[0,0,0,0]]]]);
+      gameMonad = new MonadState('gameMonad', [[0,0,0,[],[0,0,0,0]]]);
       socket.send(`CE#$42,${pMgroup.x},${pMname.x}`);
       scor = 0;
       state[1] = 0;
@@ -423,20 +414,20 @@ var comClickAction$ = comClick$.map( e => {
 var backAction$ = backClick$.map(() => {
   if (mMindex.x > 0) {  
     mMindex.ret(mMindex.x - 1)
-    buttonNode = bNode(fetch(mMindex.x));
+    buttonNode = bNode(fetch4(mMindex.x));
     sMplayers.s.clear();
-    var score = gameMonad.s[5][mMindex.x][0]
-    var goals = gameMonad.s[5][mMindex.x][1];
+    var score = fetch0(mMindex.x)
+    var goals = fetch1(mMindex.x);
     socket.send(`CG#$42,${pMgroup.x},${pMname.x},${score},${goals}`)
   } 
 });
 
 var forwardAction$ = forwardClick$.map(() => {
-  if (mMindex.x < gameMonad.s[5].length - 1) {
+  if (mMindex.x < gameMonad.s.length - 1) {
     mMindex.ret(mMindex.x + 1);
-    buttonNode = bNode(fetch(mMindex.x));
-    var score = gameMonad.s[5][mMindex.x][0]
-    var goals = gameMonad.s[5][mMindex.x][1];
+    buttonNode = bNode(fetch4(mMindex.x));
+    var score = fetch0(mMindex.x)
+    var goals = fetch1(mMindex.x);
     socket.send(`CG#$42,${pMgroup.x},${pMname.x},${score},${goals}`)
   }
 });  
@@ -988,8 +979,8 @@ var forwardAction$ = forwardClick$.map(() => {
 
     var clearAction$ = clearPicked$.map( () => {
       var s = gameMonad.s.slice();
-      s[5][mMindex.x][3] = [];
-      gameMonad = new MonadState2('gameMonad', s);
+      s[mMindex.x][3] = [];
+      gameMonad = new MonadState('gameMonad', s);
     });
 
 var elemB$ = sources.DOM.select('input#message2').events('keyup')
@@ -1034,10 +1025,6 @@ function MonadState3(g, state) {
     }
   ) 
 };
-
-function fetch3 (n) {
-    return gameMonad.s[5][n][4];
-}
 
 var todoMonad = new MonadState3('todoMonad', 
   [[ 'dummy task', 'yellow', 'none', false, 'default author', 'default responsible' ]]
@@ -1163,6 +1150,7 @@ var todoMonad = new MonadState3('todoMonad',
   h('div#leftPanel', [
       h('br'),
       h('img.image_2', {props: {src: "logo.svg" }}  ),   
+      h('span', ' ' ),
       h('a', { props: { href: "https://cycle.js.org/", target: "_blank" } }, 'A cyclejs application'),  
       h('span#captionDiv', { style: { display: mMcaptionDiv.x } },  [
       h('h1', 'JS-monads in Cyclejs') ]),
@@ -1201,8 +1189,8 @@ h('h1.red', mMgoals2.x ),
             h('br'),
             h('button#back.tao100', 'BACK'),
             h('button#ahead.tao1', 'FORWARD'),
-            h('div.tao', `Selected numbers: ${gameMonad.s[5][mMindex.x][3].join(', ')} ` ),  
-            h('div.tao', `Operator: ${gameMonad.s[5][mMindex.x][2]} ` ),  
+            h('div.tao', `Selected numbers: ${fetch3(mMindex.x).join(', ')} ` ),  
+            h('div.tao', `Operator: ${fetch2(mMindex.x)} ` ),  
             h('div.tao', `Index: ${mMindex.x} ` ),  
             h('button#clear', 'Clear selected numbers (Possibly useful after clicking the BACK button) ' ),
           ])]),
@@ -1398,20 +1386,21 @@ h('p', ' The function solve() is recursive. It invokes itself after release() ex
 
 //************************************************************************** END GameTraversal 
 h('h2', 'The Simulated Dice Game' ),
-h('p', ' playerMonad saves the state of the game whenever the number display changes. It works in conjunction with mMindex, gameMonad, and bNode() to maintain the game interface, with or without traversal of past states.  ' ),
-h('p', ' gameMonad is an instance of MonadState2. gameMonad.s is a six item array holding score, goals, selected operator, selected numbers, display numbers, and an array of arrays of past scores, goals, selected numbers. and display numbers. gameMonad.s[5] is an array of arrays of past values of gameMonad[0], gameMonad[1], gameMonad[2], gameMonad[3], and gameMonad[4] except with one exception. The value of operator (gameMonad.s[5][index][2] is always re-set to zero when game state is saved in gameMonad[5]. A player traversing the game history can re-set gameMonad.s[5][index][3] to [] om order to make room for new number selections. Here is the definitions of MonadState2 ' ),
-    code.MonadState2,
-h('p', ' And here is the definition of gameMonad: ' ),
-    code.gameMonad,
-h('p', ' When one of the operator buttons is clicked, gameMonad.s[5][mMindex.x][2] changes from 0 to either "add", "subtract", "multiply", "divide", or "concat". When a number is clicked, it moves from gameMonad.s[5][mMindex.x][4] to gameMonad.s[5][mMindex.x][3]. If gameMonad.s[5][mMindex.x][3] contains two numbers and gameMonad.s[5][mMindex.x][2] is not zero (meaning an operator has been selected), updateCalc() is called. Similarly, if an operator is clicked after two numbers have been put in gameMonad.s[5][mMindex.x][3], updateCalc() is called. updateCalc()\'s arguments are an array containing the two selected numbers and a string designating the operator. ' ),
-h('p', ' If the calculated number in updateCalc() is 18 or 20, score() is called. Otherwise, the update is performed in updateCalc. Here are the definitions of updateCalc() and score(): ' ),
-    code.clicks,
-h('p', ' gameMonad.s[5][mMindex.x][3] is the array of numbers which are displayed in the browser. Changes take place inside of a Snabbdom vNode named "buttonNode". buttonNode is the value returned by the function bNode() whose only argument is the array of numbers to be displayed. Here is the definitions of bNode:' ),
-    code.bNode,
-h('p', ' The interface is kept clean by means of the function styl(), which determines whether the display is "inline" or "none", depending on the length of the array of numbers displayed. Here is the definition of styl(): ' ),
-    code.styl,
-h('h3', 'Traversing the Game\'s History' ),    
-h('p', ' As you might expect, game traversal is controlled by changes in the value of mMindex.x. Here is how it is done: ' ),
+h('p', ' gameMonad is an instance of MonadState. The State of the game is saved in gameMonad.s, which is an array of five element arrays consisting of score, goals, operator, selected numbers, and displayed numbers. When a player earns three goals, gameMonad.s gets reset to [] and the player is declared to be the winner. ' ),
+h('p', ' updateNums() is the only function that directly affects gameMonad. It doesn\'t change the current globally available gameMonad; rather, it creates a new, augmented instance of gameMonad accessible in the global space. In other words, window["gameMonad"] gets re-directed to the newly created instance of MonadState with id of "gameMonad". updateNums() also updates the virtual DOM by calling bNode(). Here again is the definition of MonadState, along with the definitions of playerMonad, updateNums(), styl(), and bNum(): ' ),
+    code.gameMonad_2,
+h('p', ' The five function prefixed by "fetch" save coding time and space, and help prevent careless errors. They are defined as follows: ' ),
+    code.fetch,  
+h('p', ' One goal is awarded each time a player lands on the number 25. The limit for the number of score changes in one turn is two. If the number of increases were not limited, landing on 5 would launch you into an series of increases through all the multiples of five terminating with a stack overflow error message. As a consequence of this rule, only one five-point jump is allowed per turn. '),
+h('p', ' Another way to increase a score, other than computing an number which equals 0 modulo 5 is to compute the number 20 for one additional point, or the number 18 for three additional points. A quick way to arrive at 20 is to start at -1, compute 18 twice, which takes you from -1 to 2 to 5 and jumps you to 10. Then click roll, which sets you back to 9, and compute 18 twice. That takes you from 9 to 12, to fifteen, jumping you to 20. You don\'t get another jump, so click ROLL and compute 20, taking your score from 19 to 20 to 25 and back to 0, with an increase of one goal. If it is your third goal, you win the game. ' ),
+h('p', ' Here is the code that handles roll, number and operator clicks: ' ),
+    code.num_op,  
+  
+  
+  
+  
+h('p', ' Game traversal is controlled by changing the value of mMindex.x. ' ),
+
     code.backAction,
 h('p', ' The socket message prompts the server to notify all group members of changes in the player\'s score and goals. The numbers that are generated remain private. ' ),
 
@@ -1490,7 +1479,8 @@ const sources = {
   WWE: workerEDriver,
   WWF: workerFDriver,
   WW: workerDriver,
-  EM2: eM2Driver
+  EM2: eM2Driver,
+  mMstr: mMstreamDriver
 }
 run(main, sources);
 

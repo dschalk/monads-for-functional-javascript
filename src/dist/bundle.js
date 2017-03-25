@@ -46,6 +46,8 @@
 
 	/* WEBPACK VAR INJECTION */(function(process) {"use strict";
 
+	var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }();
+
 	var _xstreamRun = __webpack_require__(2);
 
 	var _dom = __webpack_require__(10);
@@ -179,6 +181,19 @@
 	  });
 	};
 
+	function mMstreamDriver() {
+	  return xs.create({
+	    start: function start(listener) {
+	      mMstream.x.on = function (msg) {
+	        return listener.next(msg);
+	      };
+	    },
+	    stop: function stop() {
+	      mMstream.removeAllListeners();
+	    }
+	  });
+	};
+
 	socket.onmessage = function (event) {
 	  console.log('Socket message', event);
 	};
@@ -217,10 +232,6 @@
 	};
 	*/
 
-	em.emit('cow', "em says Hello World");
-	em.emit('cow', "emDriver says Hello World? ....woooo da!");
-	em2.emit('42', 'This is a message from em2');
-
 	function updateTasks(obArray) {
 	  var todoData = [];
 	  var _iteratorNormalCompletion = true;
@@ -250,9 +261,10 @@
 	};
 
 	function main(sources) {
-	  gameMonad = new MonadState2('gameMonad', [0, 0, 0, [], [2, 2, 2, 2], [[0, 0, 0, [], [5, 5, 5, 5]]]]);
-	  console.log(gameMonad.s[5], mMindex.x, '*********<><><><><>**********');
-	  var newTasks = [];
+
+	  var event$ = sources.mMstr.map(function (v) {
+	    return console.log('Message from mMstream driver', v);
+	  });
 
 	  var worker$ = sources.WW.map(function (v) {
 	    console.log('Message from worker: ', v);
@@ -286,20 +298,32 @@
 	    next(v.data[0], 'CE#$41', mMZ25);
 	  });
 
+	  function updateNums(_ref) {
+	    var _ref2 = _slicedToArray(_ref, 5),
+	        _ref2$ = _ref2[0],
+	        score = _ref2$ === undefined ? fetch0(mMindex.x) : _ref2$,
+	        _ref2$2 = _ref2[1],
+	        goals = _ref2$2 === undefined ? fetch1(mMindex.x) : _ref2$2,
+	        _ref2$3 = _ref2[2],
+	        operator = _ref2$3 === undefined ? fetch2(mMindex.x) : _ref2$3,
+	        _ref2$4 = _ref2[3],
+	        a3 = _ref2$4 === undefined ? fetch3(mMindex.x) : _ref2$4,
+	        _ref2$5 = _ref2[4],
+	        display = _ref2$5 === undefined ? fetch4(mMindex.x) : _ref2$5;
+
+	    var s = gameMonad.s.slice();
+	    s.push([score, goals, operator, a3, display]);
+	    buttonNode = bNode(display);
+	    mMindex.bnd(add, 1);
+	    gameMonad = new MonadState('gameMonad', s);
+	  }
+
 	  var messages$ = sources.WS.map(function (e) {
 	    console.log(e);
 	    mMtem.ret(e.data.split(',')).bnd(function (v) {
-	      console.log('Websockets data.split message v: ', v);
+	      console.log('Websockets e.data.split message v: ', v);
 	      mMZ10.bnd(function () {
-	        buttonNode = bNode([v[3], v[4], v[5], v[6]]);
-	        var st = gameMonad.s[5][mMindex.x].slice();
-	        st[0] = v[7];
-	        st[1] = v[8];
-	        st[2] = 0;
-	        st[3] = [];
-	        st[4] = [v[3], v[4], v[5], v[6]];
-	        gameMonad.c.emit(a, st);
-	        // console.log(buttonNode);
+	        updateNums([v[7], v[8], 0, [], [v[3], v[4], v[5], v[6]]]);
 	      });
 	      mMZ12.bnd(function () {
 	        return mM6.ret(v[2] + ' successfully logged in.');
@@ -483,30 +507,23 @@
 	  var rollClick$ = sources.DOM.select('#roll').events('click');
 
 	  var rollClickAction$ = rollClick$.map(function () {
-	    var a = gameMonad.s[5][mMindex.x][0].valueOf() - 1;
-	    var b = gameMonad.s[5][mMindex.x][1].valueOf();
-	    socket.send('CA#$42,' + pMgroup.x + ',' + pMname.x + ',6,6,12,20' + ',' + a + ',' + b);
+	    var a = fetch0(mMindex.x).valueOf() - 1;
+	    var b = fetch1(mMindex.x).valueOf();
+	    socket.send('CA#$42,' + pMgroup.x + ',' + pMname.x + ',6,6,12,20,' + a + ',' + b);
 	  });
 
 	  var numClick$ = sources.DOM.select('.num').events('click');
 
 	  var numClickAction$ = numClick$.map(function (e) {
-	    console.log('In numClickAction$', e);
-	    console.log('In numClickAction$ - - - <><><><><><><><><><><> gameMonad.s[5][mMindex.x]', gameMonad.s[5][mMindex.x]);
-	    if (gameMonad.s[5][mMindex.x][3].length > 1) {
-	      console.log('In numClickAction$. gameMonad.s[5][mMindex.x][3] is full.', gameMonad.s[5]);
-	    } else {
-	      var x = gameMonad.s[5][mMindex.x].slice();
-	      x[3] = gameMonad.s[5][mMindex.x][3].slice();
-	      x[4] = gameMonad.s[5][mMindex.x][4].slice();
-	      x[4].splice(e.target.id, 1)[0]; // Push the item spliced from x[4] into x[3].
-	      x[3].push(e.target.textContent);
-	      var s3 = x[3].slice();
-	      buttonNode = bNode(x[4]);
-	      console.log('In numClickAction$ ???????? s3 is', s3);
-	      gameMonad.c.emit(a, x);
-	      if (s3.length === 2 && x[2] != 0) {
-	        updateCalc(x[3], x[2]);
+	    var state = gameMonad.s[mMindex.x].slice();
+	    if (fetch3(mMindex.x).length < 2) {
+	      var a = state[3].slice();
+	      var b = state[4].slice();
+	      var c = b.splice(e.target.id, 1);
+	      a.push(c[0]);
+	      updateNums([,,, a, b]);
+	      if (a.length === 2 && state[2] != 0) {
+	        updateCalc(a, state[2]);
 	      }
 	    }
 	  }).startWith([0, 0, 0, 0]);
@@ -514,13 +531,12 @@
 	  var opClick$ = sources.DOM.select('.op').events('click');
 
 	  var opClickAction$ = opClick$.map(function (e) {
-	    if (gameMonad.s[3].length === 2) {
-	      var s3 = gameMonad.s[3].slice();
-	      updateCalc(s3, e.target.textContent);
+	    var s3 = fetch3(mMindex.x).slice();
+	    if (s3.length === 2) {
+	      updateCalc(s3, e.target.innerHTML);
 	    } else {
-	      var state = gameMonad.s.slice();
-	      state[5][mMindex.x][2] = e.target.innerHTML;
-	      gameMonad = new MonadState2('gameMonad', state);
+	      var state = gameMonad.s;
+	      state[mMindex.x][2] = e.target.innerHTML;
 	    }
 	  });
 
@@ -530,26 +546,21 @@
 	    if (result === 18 || result === 20) {
 	      score(result);
 	    } else {
-	      var state = gameMonad.s[5][mMindex.x].slice();
-	      state[2] = 0;
-	      state[3] = [];
-	      state[4] = gameMonad.s[5][mMindex.x][4].slice();
-	      state[4].push(result);
-	      buttonNode = bNode(state[4]);
-	      console.log('In updateCalc. state is', state);
-	      gameMonad.c.emit(a, state);
+	      var a = fetch4(mMindex.x).slice();
+	      a.push(result);
+	      updateNums([,,, [], a]);
 	    }
 	  };
 
 	  function score(result) {
-	    var state = gameMonad.s[5][mMindex.x].slice();
+	    var state = gameMonad.s[mMindex.x].slice();
 	    var old = parseInt(state[0], 10);
 	    var res = result === 18 ? old + 3 : old + 1;
 	    var scor = res % 5 === 0 ? res + 5 : res;
 
 	    if (scor === 25 && state[1] === "2") {
 	      mMindex.ret(0);
-	      gameMonad = new MonadState2('gameMonad', [0, 0, 0, [], [0, 0, 0, 0], [[0, 0, 0, [], [0, 0, 0, 0]]]]);
+	      gameMonad = new MonadState('gameMonad', [[0, 0, 0, [], [0, 0, 0, 0]]]);
 	      socket.send('CE#$42,' + pMgroup.x + ',' + pMname.x);
 	      scor = 0;
 	      state[1] = 0;
@@ -568,20 +579,20 @@
 	  var backAction$ = backClick$.map(function () {
 	    if (mMindex.x > 0) {
 	      mMindex.ret(mMindex.x - 1);
-	      buttonNode = bNode(fetch(mMindex.x));
+	      buttonNode = bNode(fetch4(mMindex.x));
 	      sMplayers.s.clear();
-	      var score = gameMonad.s[5][mMindex.x][0];
-	      var goals = gameMonad.s[5][mMindex.x][1];
+	      var score = fetch0(mMindex.x);
+	      var goals = fetch1(mMindex.x);
 	      socket.send('CG#$42,' + pMgroup.x + ',' + pMname.x + ',' + score + ',' + goals);
 	    }
 	  });
 
 	  var forwardAction$ = forwardClick$.map(function () {
-	    if (mMindex.x < gameMonad.s[5].length - 1) {
+	    if (mMindex.x < gameMonad.s.length - 1) {
 	      mMindex.ret(mMindex.x + 1);
-	      buttonNode = bNode(fetch(mMindex.x));
-	      var score = gameMonad.s[5][mMindex.x][0];
-	      var goals = gameMonad.s[5][mMindex.x][1];
+	      buttonNode = bNode(fetch4(mMindex.x));
+	      var score = fetch0(mMindex.x);
+	      var goals = fetch1(mMindex.x);
 	      socket.send('CG#$42,' + pMgroup.x + ',' + pMname.x + ',' + score + ',' + goals);
 	    }
 	  });
@@ -1090,8 +1101,8 @@
 
 	  var clearAction$ = clearPicked$.map(function () {
 	    var s = gameMonad.s.slice();
-	    s[5][mMindex.x][3] = [];
-	    gameMonad = new MonadState2('gameMonad', s);
+	    s[mMindex.x][3] = [];
+	    gameMonad = new MonadState('gameMonad', s);
 	  });
 
 	  var elemB$ = sources.DOM.select('input#message2').events('keyup').map(function (e) {
@@ -1141,16 +1152,12 @@
 	    });
 	  };
 
-	  function fetch3(n) {
-	    return gameMonad.s[5][n][4];
-	  }
-
 	  var todoMonad = new MonadState3('todoMonad', [['dummy task', 'yellow', 'none', false, 'default author', 'default responsible']]);
 
 	  var calcStream$ = xs.merge(comClickAction$, messagePressAction$, fA_c$, forwardAction$, backAction$, prAction$, factorsAction_b$, fA$, factorsP$, fA_b$, factorsP_b$, clearprimes$, worker$, workerB$, workerC$, workerD$, workerE$, workerF$, clearAction$, factorsAction$, primeFib$, fibPressAction$, quadAction$, edit1Action$, edit2Action$, testWAction$, testZAction$, testQAction$, colorAction$, deleteAction$, newTaskAction$, chatClickAction$, gameClickAction$, todoClickAction$, captionClickAction$, groupPressAction$, rollClickAction$, loginPressAction$, messages$, numClickAction$, opClickAction$);
 	  return {
 	    DOM: calcStream$.map(function () {
-	      return (0, _dom.h)('div.content', [(0, _dom.h)('br'), (0, _dom.h)('div#rightPanel2', { style: { display: mMrightPanel2.x } }, [(0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('div', ' After you log in, this column will show the scoreboard, a todo list, and text messages that can be shared among group members, or used privately. You might find the game to be a refreshing solitairre diversion. '), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('div', 'This space is reserved for the game scoreboard, todo list, and chat messages. These appear after login. '), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br')]), (0, _dom.h)('div#rightPanel', { style: { display: mMrightPanel.x } }, [(0, _dom.h)('span#tog', [(0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('button#todoButton', { style: { fontSize: '16px', display: 'inline' } }, 'TOGGLE TODO_LIST'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('button#chat2', { style: { fontSize: '16px', display: 'inline' } }, 'TOGGLE CHAT')]), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('div#gameDiv', { style: { display: 'mMgameDiv.x' } }, [(0, _dom.h)('div.game', 'Name: ' + pMname.x), (0, _dom.h)('div.game', 'Group: ' + pMgroup.x), (0, _dom.h)('div.game', 'Currently online: Name score | goals'), (0, _dom.h)('div.game', '' + pMdata.x)]), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('div#todoDiv', { style: { display: mMtodoDiv.x } }, [(0, _dom.h)('div#taskList', taskL), (0, _dom.h)('span', 'Author, Responsible Person, Task: '), (0, _dom.h)('input.newTask')]), (0, _dom.h)('br'), (0, _dom.h)('span#alert', mMalert.x), (0, _dom.h)('br'), (0, _dom.h)('span#alert2'), (0, _dom.h)('br'), (0, _dom.h)('div#chatDiv', { style: { display: mMchatDiv.x } }, [(0, _dom.h)('div#messages', [(0, _dom.h)('span', 'Message: '), (0, _dom.h)('input.inputMessage'), (0, _dom.h)('div', messages)])]), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br')]), (0, _dom.h)('div#leftPanel', [(0, _dom.h)('br'), (0, _dom.h)('img.image_2', { props: { src: "logo.svg" } }), (0, _dom.h)('a', { props: { href: "https://cycle.js.org/", target: "_blank" } }, 'A cyclejs application'), (0, _dom.h)('span#captionDiv', { style: { display: mMcaptionDiv.x } }, [(0, _dom.h)('h1', 'JS-monads in Cyclejs')]), (0, _dom.h)('p.tao1b', 'PLEASE NOTE: This site is constantly evolving. The commentary sometimes lags behind innovations. I know this site is a little rough around the edges, but the demonstrations are fully functional and the commentary is constantly expanding.'), (0, _dom.h)('p.tao1b', ' I present this site to developers because I think it can stimulate thought about encapsulating procedures and dynamic state in objects whose methods conform to a JavaScript version of the Haskell monad laws. I present this site as a tutorial to people who can benefit by understandng another way to write functional, reactive code. Helpful suggestions, corrections, or comments will be much appreciated. '), (0, _dom.h)('span.tao1b', 'You can comment at '), (0, _dom.h)('a', { props: { href: 'https://redd.it/60c2xx' } }, 'Reddit'), (0, _dom.h)('span.tao1b', ' or in the '), (0, _dom.h)('a', { props: { href: '#comment' } }, 'comments'), (0, _dom.h)('span.tao1b', ' section below. -- David Schalk  - March 17, 2017  '), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('span#italic', ' These monads are like the Haskell monads in that they resemble the monads of category theory without actually being mathematical monads. See '), (0, _dom.h)('a', { props: { href: "http://math.andrej.com/2016/08/06/hask-is-not-a-category/", target: "_blank" } }, 'Hask is not a category.'), (0, _dom.h)('span', ' by Andrej Bauer and the '), (0, _dom.h)('a', { props: { href: '#discussion' } }, 'Discussion'), (0, _dom.h)('span', ' below. They provide a convenient interface for dealing with uncertainty and side effects in a purely functional manner, assigning new values to identifiers (variables) without mutation. Adherence to the monad laws (see below) helps make the monads robust, versatile, and reliable tools for isolating and chaining sequences of javascript functions.'), (0, _dom.h)('p', ' The demonstrations include persistent, shared todo lists, an interactive simulated dice game with a traversable history (all group members see your score decrease or increase as you navegate backwards and forwards), chat rooms where members can compete in the simulated dice gameand share a project todo list, and demonstrations of the persistent state, asynchronous usefulness of monads in a Cycle application.  '), (0, _dom.h)('span.tao', 'The code for this repository is at '), (0, _dom.h)('a', { props: { href: "https://github.com/dschalk/JS-monads-stable", target: "_blank" } }, 'JS-monads-stable'), (0, _dom.h)('div#gameDiv2', { style: { display: mMgameDiv2.x } }, [(0, _dom.h)('span', ' Here are the basic rules:'), (0, _dom.h)('p', 'RULES: If clicking two numbers and an operator (in any order) results in 20 or 18, the score increases by 1 or 3, respectively. If the score becomes 0 or is evenly divisible by 5, 5 points are added. A score of 25 results in one goal. That can only be achieved by arriving at a score of 20, which jumps the score to 25. Directly computing 25 results in a score of 30, and no goal. Each time RL is clicked, one point is deducted. Three goals wins the game. '), (0, _dom.h)('h1.red', mMgoals2.x), buttonNode, (0, _dom.h)('br'), (0, _dom.h)('button#4.op', 'add'), (0, _dom.h)('button#5.op', 'subtract'), (0, _dom.h)('button#6.op', 'mult'), (0, _dom.h)('button#7.op', 'div'), (0, _dom.h)('button#8.op', 'concat'), (0, _dom.h)('br'), (0, _dom.h)('div#dice', { style: { display: mMdice.x } }, [(0, _dom.h)('button#roll', 'ROLL'), (0, _dom.h)('br'), (0, _dom.h)('button#back.tao100', 'BACK'), (0, _dom.h)('button#ahead.tao1', 'FORWARD'), (0, _dom.h)('div.tao', 'Selected numbers: ' + gameMonad.s[5][mMindex.x][3].join(', ') + ' '), (0, _dom.h)('div.tao', 'Operator: ' + gameMonad.s[5][mMindex.x][2] + ' '), (0, _dom.h)('div.tao', 'Index: ' + mMindex.x + ' '), (0, _dom.h)('button#clear', 'Clear selected numbers (Possibly useful after clicking the BACK button) ')])]), (0, _dom.h)('div#log1', { style: { display: mMlog1.x } }, [(0, _dom.h)('p', 'IN ORDER TO SEE THE GAME, TODOLIST, AND CHAT DEMONSTRATIONS, YOU MUST ENTER SOMETHING TO ESTABLISH A WEBSOCKET CONNECTION.'), (0, _dom.h)('span', 'Name: '), (0, _dom.h)('input.login')]), (0, _dom.h)('p', mM6.x), (0, _dom.h)('div#log2', { style: { display: mMlog2.x } }, [(0, _dom.h)('span', 'Change group: '), (0, _dom.h)('input#group')]), (0, _dom.h)('p', mMsoloAlert.x), (0, _dom.h)('p', 'People who are in the same group, other than the default group named "solo", share the same todo list, chat messages, and simulated dice game. In order to see any of these, you must establish a unique identity on the server by logging in. The websockets connection terminates if the first message the server receives does not come from the sign in form. You can enter any random numbers, letters, or special characters you like. The server checks only to make sure someone hasn\'t already signed in with the sequence you have selected. If you log in with a name that is already in use, a message will appear and this page will be re-loaded in the browser after a four-second pause. '), (0, _dom.h)('p', ' Data for the traversable game history accumulates until a player scores three goals and wins. The data array is then erased and the application is ready to start accumulating a new history. ')]), (0, _dom.h)('div#eighty', [_code2.default.monad, _code2.default.variations,
+	      return (0, _dom.h)('div.content', [(0, _dom.h)('br'), (0, _dom.h)('div#rightPanel2', { style: { display: mMrightPanel2.x } }, [(0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('div', ' After you log in, this column will show the scoreboard, a todo list, and text messages that can be shared among group members, or used privately. You might find the game to be a refreshing solitairre diversion. '), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('div', 'This space is reserved for the game scoreboard, todo list, and chat messages. These appear after login. '), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br')]), (0, _dom.h)('div#rightPanel', { style: { display: mMrightPanel.x } }, [(0, _dom.h)('span#tog', [(0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('button#todoButton', { style: { fontSize: '16px', display: 'inline' } }, 'TOGGLE TODO_LIST'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('button#chat2', { style: { fontSize: '16px', display: 'inline' } }, 'TOGGLE CHAT')]), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('div#gameDiv', { style: { display: 'mMgameDiv.x' } }, [(0, _dom.h)('div.game', 'Name: ' + pMname.x), (0, _dom.h)('div.game', 'Group: ' + pMgroup.x), (0, _dom.h)('div.game', 'Currently online: Name score | goals'), (0, _dom.h)('div.game', '' + pMdata.x)]), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('div#todoDiv', { style: { display: mMtodoDiv.x } }, [(0, _dom.h)('div#taskList', taskL), (0, _dom.h)('span', 'Author, Responsible Person, Task: '), (0, _dom.h)('input.newTask')]), (0, _dom.h)('br'), (0, _dom.h)('span#alert', mMalert.x), (0, _dom.h)('br'), (0, _dom.h)('span#alert2'), (0, _dom.h)('br'), (0, _dom.h)('div#chatDiv', { style: { display: mMchatDiv.x } }, [(0, _dom.h)('div#messages', [(0, _dom.h)('span', 'Message: '), (0, _dom.h)('input.inputMessage'), (0, _dom.h)('div', messages)])]), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br')]), (0, _dom.h)('div#leftPanel', [(0, _dom.h)('br'), (0, _dom.h)('img.image_2', { props: { src: "logo.svg" } }), (0, _dom.h)('span', ' '), (0, _dom.h)('a', { props: { href: "https://cycle.js.org/", target: "_blank" } }, 'A cyclejs application'), (0, _dom.h)('span#captionDiv', { style: { display: mMcaptionDiv.x } }, [(0, _dom.h)('h1', 'JS-monads in Cyclejs')]), (0, _dom.h)('p.tao1b', 'PLEASE NOTE: This site is constantly evolving. The commentary sometimes lags behind innovations. I know this site is a little rough around the edges, but the demonstrations are fully functional and the commentary is constantly expanding.'), (0, _dom.h)('p.tao1b', ' I present this site to developers because I think it can stimulate thought about encapsulating procedures and dynamic state in objects whose methods conform to a JavaScript version of the Haskell monad laws. I present this site as a tutorial to people who can benefit by understandng another way to write functional, reactive code. Helpful suggestions, corrections, or comments will be much appreciated. '), (0, _dom.h)('span.tao1b', 'You can comment at '), (0, _dom.h)('a', { props: { href: 'https://redd.it/60c2xx' } }, 'Reddit'), (0, _dom.h)('span.tao1b', ' or in the '), (0, _dom.h)('a', { props: { href: '#comment' } }, 'comments'), (0, _dom.h)('span.tao1b', ' section below. -- David Schalk  - March 17, 2017  '), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('span#italic', ' These monads are like the Haskell monads in that they resemble the monads of category theory without actually being mathematical monads. See '), (0, _dom.h)('a', { props: { href: "http://math.andrej.com/2016/08/06/hask-is-not-a-category/", target: "_blank" } }, 'Hask is not a category.'), (0, _dom.h)('span', ' by Andrej Bauer and the '), (0, _dom.h)('a', { props: { href: '#discussion' } }, 'Discussion'), (0, _dom.h)('span', ' below. They provide a convenient interface for dealing with uncertainty and side effects in a purely functional manner, assigning new values to identifiers (variables) without mutation. Adherence to the monad laws (see below) helps make the monads robust, versatile, and reliable tools for isolating and chaining sequences of javascript functions.'), (0, _dom.h)('p', ' The demonstrations include persistent, shared todo lists, an interactive simulated dice game with a traversable history (all group members see your score decrease or increase as you navegate backwards and forwards), chat rooms where members can compete in the simulated dice gameand share a project todo list, and demonstrations of the persistent state, asynchronous usefulness of monads in a Cycle application.  '), (0, _dom.h)('span.tao', 'The code for this repository is at '), (0, _dom.h)('a', { props: { href: "https://github.com/dschalk/JS-monads-stable", target: "_blank" } }, 'JS-monads-stable'), (0, _dom.h)('div#gameDiv2', { style: { display: mMgameDiv2.x } }, [(0, _dom.h)('span', ' Here are the basic rules:'), (0, _dom.h)('p', 'RULES: If clicking two numbers and an operator (in any order) results in 20 or 18, the score increases by 1 or 3, respectively. If the score becomes 0 or is evenly divisible by 5, 5 points are added. A score of 25 results in one goal. That can only be achieved by arriving at a score of 20, which jumps the score to 25. Directly computing 25 results in a score of 30, and no goal. Each time RL is clicked, one point is deducted. Three goals wins the game. '), (0, _dom.h)('h1.red', mMgoals2.x), buttonNode, (0, _dom.h)('br'), (0, _dom.h)('button#4.op', 'add'), (0, _dom.h)('button#5.op', 'subtract'), (0, _dom.h)('button#6.op', 'mult'), (0, _dom.h)('button#7.op', 'div'), (0, _dom.h)('button#8.op', 'concat'), (0, _dom.h)('br'), (0, _dom.h)('div#dice', { style: { display: mMdice.x } }, [(0, _dom.h)('button#roll', 'ROLL'), (0, _dom.h)('br'), (0, _dom.h)('button#back.tao100', 'BACK'), (0, _dom.h)('button#ahead.tao1', 'FORWARD'), (0, _dom.h)('div.tao', 'Selected numbers: ' + fetch3(mMindex.x).join(', ') + ' '), (0, _dom.h)('div.tao', 'Operator: ' + fetch2(mMindex.x) + ' '), (0, _dom.h)('div.tao', 'Index: ' + mMindex.x + ' '), (0, _dom.h)('button#clear', 'Clear selected numbers (Possibly useful after clicking the BACK button) ')])]), (0, _dom.h)('div#log1', { style: { display: mMlog1.x } }, [(0, _dom.h)('p', 'IN ORDER TO SEE THE GAME, TODOLIST, AND CHAT DEMONSTRATIONS, YOU MUST ENTER SOMETHING TO ESTABLISH A WEBSOCKET CONNECTION.'), (0, _dom.h)('span', 'Name: '), (0, _dom.h)('input.login')]), (0, _dom.h)('p', mM6.x), (0, _dom.h)('div#log2', { style: { display: mMlog2.x } }, [(0, _dom.h)('span', 'Change group: '), (0, _dom.h)('input#group')]), (0, _dom.h)('p', mMsoloAlert.x), (0, _dom.h)('p', 'People who are in the same group, other than the default group named "solo", share the same todo list, chat messages, and simulated dice game. In order to see any of these, you must establish a unique identity on the server by logging in. The websockets connection terminates if the first message the server receives does not come from the sign in form. You can enter any random numbers, letters, or special characters you like. The server checks only to make sure someone hasn\'t already signed in with the sequence you have selected. If you log in with a name that is already in use, a message will appear and this page will be re-loaded in the browser after a four-second pause. '), (0, _dom.h)('p', ' Data for the traversable game history accumulates until a player scores three goals and wins. The data array is then erased and the application is ready to start accumulating a new history. ')]), (0, _dom.h)('div#eighty', [_code2.default.monad, _code2.default.variations,
 	      // **************************************************************************** END MONAD       
 	      _code2.default.cycle,
 
@@ -1163,7 +1170,7 @@
 
 
 	      //************************************************************************** END GameTraversal 
-	      (0, _dom.h)('h2', 'The Simulated Dice Game'), (0, _dom.h)('p', ' playerMonad saves the state of the game whenever the number display changes. It works in conjunction with mMindex, gameMonad, and bNode() to maintain the game interface, with or without traversal of past states.  '), (0, _dom.h)('p', ' gameMonad is an instance of MonadState2. gameMonad.s is a six item array holding score, goals, selected operator, selected numbers, display numbers, and an array of arrays of past scores, goals, selected numbers. and display numbers. gameMonad.s[5] is an array of arrays of past values of gameMonad[0], gameMonad[1], gameMonad[2], gameMonad[3], and gameMonad[4] except with one exception. The value of operator (gameMonad.s[5][index][2] is always re-set to zero when game state is saved in gameMonad[5]. A player traversing the game history can re-set gameMonad.s[5][index][3] to [] om order to make room for new number selections. Here is the definitions of MonadState2 '), _code2.default.MonadState2, (0, _dom.h)('p', ' And here is the definition of gameMonad: '), _code2.default.gameMonad, (0, _dom.h)('p', ' When one of the operator buttons is clicked, gameMonad.s[5][mMindex.x][2] changes from 0 to either "add", "subtract", "multiply", "divide", or "concat". When a number is clicked, it moves from gameMonad.s[5][mMindex.x][4] to gameMonad.s[5][mMindex.x][3]. If gameMonad.s[5][mMindex.x][3] contains two numbers and gameMonad.s[5][mMindex.x][2] is not zero (meaning an operator has been selected), updateCalc() is called. Similarly, if an operator is clicked after two numbers have been put in gameMonad.s[5][mMindex.x][3], updateCalc() is called. updateCalc()\'s arguments are an array containing the two selected numbers and a string designating the operator. '), (0, _dom.h)('p', ' If the calculated number in updateCalc() is 18 or 20, score() is called. Otherwise, the update is performed in updateCalc. Here are the definitions of updateCalc() and score(): '), _code2.default.clicks, (0, _dom.h)('p', ' gameMonad.s[5][mMindex.x][3] is the array of numbers which are displayed in the browser. Changes take place inside of a Snabbdom vNode named "buttonNode". buttonNode is the value returned by the function bNode() whose only argument is the array of numbers to be displayed. Here is the definitions of bNode:'), _code2.default.bNode, (0, _dom.h)('p', ' The interface is kept clean by means of the function styl(), which determines whether the display is "inline" or "none", depending on the length of the array of numbers displayed. Here is the definition of styl(): '), _code2.default.styl, (0, _dom.h)('h3', 'Traversing the Game\'s History'), (0, _dom.h)('p', ' As you might expect, game traversal is controlled by changes in the value of mMindex.x. Here is how it is done: '), _code2.default.backAction, (0, _dom.h)('p', ' The socket message prompts the server to notify all group members of changes in the player\'s score and goals. The numbers that are generated remain private. '),
+	      (0, _dom.h)('h2', 'The Simulated Dice Game'), (0, _dom.h)('p', ' gameMonad is an instance of MonadState. The State of the game is saved in gameMonad.s, which is an array of five element arrays consisting of score, goals, operator, selected numbers, and displayed numbers. When a player earns three goals, gameMonad.s gets reset to [] and the player is declared to be the winner. '), (0, _dom.h)('p', ' updateNums() is the only function that directly affects gameMonad. It doesn\'t change the current globally available gameMonad; rather, it creates a new, augmented instance of gameMonad accessible in the global space. In other words, window["gameMonad"] gets re-directed to the newly created instance of MonadState with id of "gameMonad". updateNums() also updates the virtual DOM by calling bNode(). Here again is the definition of MonadState, along with the definitions of playerMonad, updateNums(), styl(), and bNum(): '), _code2.default.gameMonad_2, (0, _dom.h)('p', ' The five function prefixed by "fetch" save coding time and space, and help prevent careless errors. They are defined as follows: '), _code2.default.fetch, (0, _dom.h)('p', ' One goal is awarded each time a player lands on the number 25. The limit for the number of score changes in one turn is two. If the number of increases were not limited, landing on 5 would launch you into an series of increases through all the multiples of five terminating with a stack overflow error message. As a consequence of this rule, only one five-point jump is allowed per turn. '), (0, _dom.h)('p', ' Another way to increase a score, other than computing an number which equals 0 modulo 5 is to compute the number 20 for one additional point, or the number 18 for three additional points. A quick way to arrive at 20 is to start at -1, compute 18 twice, which takes you from -1 to 2 to 5 and jumps you to 10. Then click roll, which sets you back to 9, and compute 18 twice. That takes you from 9 to 12, to fifteen, jumping you to 20. You don\'t get another jump, so click ROLL and compute 20, taking your score from 19 to 20 to 25 and back to 0, with an increase of one goal. If it is your third goal, you win the game. '), (0, _dom.h)('p', ' Here is the code that handles roll, number and operator clicks: '), _code2.default.num_op, (0, _dom.h)('p', ' Game traversal is controlled by changing the value of mMindex.x. '), _code2.default.backAction, (0, _dom.h)('p', ' The socket message prompts the server to notify all group members of changes in the player\'s score and goals. The numbers that are generated remain private. '),
 
 	      //************************************************************************** END GameTraversal 
 
@@ -1182,7 +1189,8 @@
 	  WWE: workerEDriver,
 	  WWF: workerFDriver,
 	  WW: workerDriver,
-	  EM2: eM2Driver
+	  EM2: eM2Driver,
+	  mMstr: mMstreamDriver
 	};
 	(0, _xstreamRun.run)(main, sources);
 
@@ -1194,6 +1202,7 @@
 /***/ function(module, exports) {
 
 	// shim for using process in browser
+
 	var process = module.exports = {};
 
 	// cached from whatever global is present so that test runners that stub it
@@ -1204,84 +1213,22 @@
 	var cachedSetTimeout;
 	var cachedClearTimeout;
 
-	function defaultSetTimout() {
-	    throw new Error('setTimeout has not been defined');
-	}
-	function defaultClearTimeout () {
-	    throw new Error('clearTimeout has not been defined');
-	}
 	(function () {
-	    try {
-	        if (typeof setTimeout === 'function') {
-	            cachedSetTimeout = setTimeout;
-	        } else {
-	            cachedSetTimeout = defaultSetTimout;
-	        }
-	    } catch (e) {
-	        cachedSetTimeout = defaultSetTimout;
+	  try {
+	    cachedSetTimeout = setTimeout;
+	  } catch (e) {
+	    cachedSetTimeout = function () {
+	      throw new Error('setTimeout is not defined');
 	    }
-	    try {
-	        if (typeof clearTimeout === 'function') {
-	            cachedClearTimeout = clearTimeout;
-	        } else {
-	            cachedClearTimeout = defaultClearTimeout;
-	        }
-	    } catch (e) {
-	        cachedClearTimeout = defaultClearTimeout;
+	  }
+	  try {
+	    cachedClearTimeout = clearTimeout;
+	  } catch (e) {
+	    cachedClearTimeout = function () {
+	      throw new Error('clearTimeout is not defined');
 	    }
+	  }
 	} ())
-	function runTimeout(fun) {
-	    if (cachedSetTimeout === setTimeout) {
-	        //normal enviroments in sane situations
-	        return setTimeout(fun, 0);
-	    }
-	    // if setTimeout wasn't available but was latter defined
-	    if ((cachedSetTimeout === defaultSetTimout || !cachedSetTimeout) && setTimeout) {
-	        cachedSetTimeout = setTimeout;
-	        return setTimeout(fun, 0);
-	    }
-	    try {
-	        // when when somebody has screwed with setTimeout but no I.E. maddness
-	        return cachedSetTimeout(fun, 0);
-	    } catch(e){
-	        try {
-	            // When we are in I.E. but the script has been evaled so I.E. doesn't trust the global object when called normally
-	            return cachedSetTimeout.call(null, fun, 0);
-	        } catch(e){
-	            // same as above but when it's a version of I.E. that must have the global object for 'this', hopfully our context correct otherwise it will throw a global error
-	            return cachedSetTimeout.call(this, fun, 0);
-	        }
-	    }
-
-
-	}
-	function runClearTimeout(marker) {
-	    if (cachedClearTimeout === clearTimeout) {
-	        //normal enviroments in sane situations
-	        return clearTimeout(marker);
-	    }
-	    // if clearTimeout wasn't available but was latter defined
-	    if ((cachedClearTimeout === defaultClearTimeout || !cachedClearTimeout) && clearTimeout) {
-	        cachedClearTimeout = clearTimeout;
-	        return clearTimeout(marker);
-	    }
-	    try {
-	        // when when somebody has screwed with setTimeout but no I.E. maddness
-	        return cachedClearTimeout(marker);
-	    } catch (e){
-	        try {
-	            // When we are in I.E. but the script has been evaled so I.E. doesn't  trust the global object when called normally
-	            return cachedClearTimeout.call(null, marker);
-	        } catch (e){
-	            // same as above but when it's a version of I.E. that must have the global object for 'this', hopfully our context correct otherwise it will throw a global error.
-	            // Some versions of I.E. have different rules for clearTimeout vs setTimeout
-	            return cachedClearTimeout.call(this, marker);
-	        }
-	    }
-
-
-
-	}
 	var queue = [];
 	var draining = false;
 	var currentQueue;
@@ -1306,7 +1253,7 @@
 	    if (draining) {
 	        return;
 	    }
-	    var timeout = runTimeout(cleanUpNextTick);
+	    var timeout = cachedSetTimeout(cleanUpNextTick);
 	    draining = true;
 
 	    var len = queue.length;
@@ -1323,7 +1270,7 @@
 	    }
 	    currentQueue = null;
 	    draining = false;
-	    runClearTimeout(timeout);
+	    cachedClearTimeout(timeout);
 	}
 
 	process.nextTick = function (fun) {
@@ -1335,7 +1282,7 @@
 	    }
 	    queue.push(new Item(fun, args));
 	    if (queue.length === 1 && !draining) {
-	        runTimeout(drainQueue);
+	        cachedSetTimeout(drainQueue, 0);
 	    }
 	};
 
@@ -10228,7 +10175,7 @@
 	  value: true
 	});
 
-	var _primes3$primes2$prim;
+	var _num_op$fetch$gameMon;
 
 	var _dom = __webpack_require__(10);
 
@@ -10307,7 +10254,7 @@
 
 	var seed = (0, _dom.h)('pre', '  mM$prime.ret([[2],3])  ');
 
-	var MonadState = (0, _dom.h)('pre', '    function MonadState(g, state, p) {\n      this.id = g;\n      this.s = state;\n      this.process = p;\n      this.a = s[3];\n      this.bnd = (func, ...args) => func(this.s, ...args);\n      this.run = ar => {\n        var ar2 = this.process(ar);\n        this.s = ar2;\n        this.a = ar2[3];\n        window[this.id] = this;\n        return window[this.id];\n      }\n    };  ');
+	var MonadState = (0, _dom.h)('pre', '  function MonadState(g, state) {\n    this.id = g;\n    this.s = state;\n    this.bnd = (func, ...args) => func(this.s, ...args);  \n    this.ret = function (a) {\n      return window[this.id] = new MonadState(this.id, a);\n    };\n  };  ');
 
 	var primesMonad = (0, _dom.h)('pre', '    var primesMonad = new MonadState(\'primesMonad\', [2, \'\', 3, [2]], [2],  primes_state)\n\n    var primes_state = function primes_state(x) {\n      var v = x.slice();\n      console.log(\'In script2.js >>> primes_state v is \', v );\n      while (2 == 2) {\n          if ( v[3].every(e =>  (v[0] / e) != Math.floor(v[0] / e)) ) {\n              v[3].push(v[0]);\n          }\n          if (v[3][v[3].length - 1] > v[2]) {\n             return v;\n          };\n          v[0] += 2;\n      }\n    }  ');
 
@@ -10366,7 +10313,7 @@
 
 	var test10_11 = (0, _dom.h)('pre.turk5', '    function test10 () {\n        m.ret(4).bnd(mult,100,\'$m1\')\n        .bnd(square,\'$m2\')\n        .bnd(add,-m2.x + 3,\'$m3\')\n        .bnd(mult,100,\'$m4\')\n        .bnd(square,\'$m5\')\n        .bnd(add,m2.x,\'$m6\')\n        .bnd(sqroot,\'$m7\')\n        .bnd(() => {\n          mMar10.ret([m, m1, m2, m3, m4, m5, m6, m7]);\n          console.log(\'The square root of the sum of \', m1.x,\n            \' squared and \', m4.x, \' squared is \', m7.x); });\n        return mMar10;\n      }\n\n      function test11 () {\n        m.ret(4).bnd(mult,100,\'$m1\')\n        .bnd(square,\'$m2\')\n        .bnd(add,-m2.x + 3,\'$m3\')\n        .bnd(mult,100,\'$m4\')\n        .bnd(square,\'$m5\')\n        .bnd(add,m2.x,\'$m6\')\n        .bnd(sqroot,\'$m7\').bnd(m.ret)\n        .bnd(() => {\n          mMar11.ret([m, m1, m2, m3, m4, m5, m6, m7]);\n          console.log(\'The square root of the sum of \', m1.x,\n            \' squared and \', m4.x, \' squared is \', m7.x); });\n        return mMar11;\n      }  ');
 
-	var backAction = (0, _dom.h)('pre', '    var forwardClick$ = sources.DOM\n      .select(\'#ahead\').events(\'click\')\n  \n    var backClick$ = sources.DOM\n      .select(\'#back\').events(\'click\');\n\n    var backAction$ = backClick$.map(() => {\n      if (mMindex.x > 0) {  \n        mMindex.ret(mMindex.x - 1)\n        buttonNode = bNode(fetch(mMindex.x));\n        sMplayers.s.clear();\n        var score = gameMonad.s[5][mMindex.x][0]\n        var goals = gameMonad.s[5][mMindex.x][1];\n        socket.send("CG#$42," + pMgroup.x + "," + pMname.x + "," + score + "," + goals)\n      } \n    }) \n\n    var forwardAction$ = forwardClick$.map(() => {\n      if (mMindex.x < gameMonad.s[5].length - 1) {\n        mMindex.ret(mMindex.x + 1);\n        buttonNode = bNode(fetch(mMindex.x));\n        var score = gameMonad.s[5][mMindex.x][0]\n        var goals = gameMonad.s[5][mMindex.x][1];\n        socket.send("CG#$42," + pMgroup.x + "," + pMname.x + "," + score + "," + goals)\n      }\n    }); \n\n    function fetch (n) {\n        return gameMonad.s[5][n][4];\n    }  ');
+	var backAction = (0, _dom.h)('pre', '  var backClick$ = sources.DOM\n    .select(\'#back\').events(\'click\');\n\n  var backAction$ = backClick$.map(() => {\n    if (mMindex.x > 0) {  \n      mMindex.ret(mMindex.x - 1)\n      buttonNode = bNode(fetch4(mMindex.x));\n      sMplayers.s.clear();\n      var score = fetch0(mMindex.x)\n      var goals = fetch1(mMindex.x);\n      socket.send(`CG#$42,' + pMgroup.x + ',' + pMname.x + ',' + score + ',' + goals + '`)\n    } \n});\n\n  function fetch(n) {\n    return gameMonad.s[n][4];\n  }  ');
 
 	var monadEr = (0, _dom.h)('pre', '    function MonadEr (val, ID, er = []) {\n          var test;\n          var arr = arr = [];\n          this.x = val;\n          this.e = er;\n          this.id = ID;\n          this.getx = function getx (x) {return this.x};\n          this.bnd = function (f, ...args) {\n            var args = args;\n            if (f === \'clean3\' || f === clean3) {\n              this.e = [];\n              window[this.id] = new MonadEr(this.x, this.id, []);\n              return window[this.id];\n            }\n          if (this.e.length > 0) {\n            console.log(\'BYPASSING COMPUTATION in MonadEr instance\', this.id, f,\n                \'.  PROPAGATING ERROR:\',  this.e[0]);\n            return this;\n          }\n\n          if (args.length > 0) {\n            arr = args.filter(v => !(typeof v === \'string\' && v.charAt() === \'$\' && \n                v.slice(0,4) !== \'Math\'))\n\n            arr.map(v => {\n              test = testP(v, this.id)\n              if (test === \'STOP\') {\n                console.log(\'"STOP" returned from testP. Ending code execution in \',\n                    this.id, \'.\' )\n                this.e.push(\'STOP\');\n                return this;\n              }\n            });\n          }\n          if (test !== "STOP") {\n          try {\n            var testId = testPrefix(args, this.id);\n            var ar = arr.map(v => eval(v))\n            var m = eval(f)(this.x, ...ar)\n            var id = testPrefix(ar, this.id);\n            window[testId] = new MonadEr(m.x, testId, []);\n            return window[testId];\n            }\n            catch(error) {\n              this.e.push(\'STOP -- Execution Aborted. \');\n              console.log(f, \'ERROR in \',id,error,\' No further computations will be attempted\');\n              return this;\n            }\n          }\n          else {\n            this.e.push(\'STOP -- Execution Aborted. \');\n            console.log(f, \'ERROR "STOP" returned from testP. No further \' +\n                \'computations will be attempted\');\n            return this;\n          }\n        }\n        this.ret = function (a) {\n          window[this.id] = new MonadEr(a, this.id, []);\n          return window[this.id];\n        }\n      };\n\n    function testPrefix (x,y) {\n      var t = y;\n      var s;\n      if (Array.isArray(x)) {\n        x.some(v => {\n          if (typeof v === \'string\' && v.charAt() === \'$\') {\n             t = v.slice(1);\n          }\n        })\n      }\n      return t;\n    }\n\n    function testP (x,id) {\n        if ( eval(\'typeof \' + x) === \'undefined\') {\n          console.log(`............... ERROR parameter ${x} is not defined`);\n          window[id].e = [`${x} is not defined`]\n          return \'STOP\';\n        }\n        if (eval(x) !== eval(x)) {\n          console.log(`............... ERROR parameter ${x} is not a number`);\n          window[id].e = [`${x} is not a number`];\n          return \'STOP\';\n        }\n        mMZ12.release([]);\n        return []\n    }\n\n    function ret3(v, id = \'generic\') {\n        window[id] = new MonadEr(v, id, []);\n        return window[id];\n      }\n\n    function add3(x, y) {\n        return ret3(x*1 + y*1);\n      }\n\n    function cube3(x) {\n        return ret3(x*x*x);\n    }\n\n    function clean3 (x, id) {\n      window[id] = new MonadEr(x, id, []);\n      return window[id];\n    }    ');
 
@@ -10416,7 +10363,7 @@
 
 	var styl = (0, _dom.h)('pre', '    function styl (s) {\n      switch(s) {\n        case (0): return [\'none\', \'none\', \'none\', \'none\'];\n        break;\n        case (1): return [\'inline\', \'none\', \'none\', \'none\'];\n        break;\n        case (2): return [\'inline\', \'inline\', \'none\', \'none\'];\n        break;\n        case (3): return [\'inline\', \'inline\', \'inline\', \'none\'];\n        break;\n        case (4): return [\'inline\', \'inline\', \'inline\', \'inline\'];\n        break;\n        default: return;  //console.log(\'Bad argument in styl. s is\', s );\n      }\n  }; ');
 
-	var MonadState2 = (0, _dom.h)('pre', '    class MonadEmitter extends EventEmitter {}; \n\n    function MonadState2(g, state) {\n      this.id = g;\n      this.s = state;\n      this.c = new MonadEmitter();\n      this.bnd = (func, ...args) => func(this.s, ...args);  \n      this.ret = function (a) {\n        return window[this.id] = new MonadState(this.id, a);\n      };\n      this.c.on(a, st => {\n        mMindex.ret(mMindex.x + 1);\n        st[5] = this.s[5].slice();\n        st[5].splice(mMindex.x, 0, [st[0], st[1], st[2], st[3], st[4]]);\n        window[this.id] = new MonadState2(this.id, st);\n      })\n    }; ');
+	var MonadState2 = (0, _dom.h)('pre', '    class MonadEmitter extends EventEmitter {}; \n\n    function MonadState2(g, state) {\n      this.id = g;\n      this.s = state;\n      this.c = new EventEmitter();\n      this.bnd = (func, ...args) => func(this.s, ...args);  \n      this.ret = function (a) {\n        return window[this.id] = new MonadState(this.id, a);\n      };\n      this.c.on(a, st => {\n        mMindex.ret(mMindex.x + 1);\n        st[5] = this.s[5].slice();\n        st[5].splice(mMindex.x, 0, [st[0], st[1], st[2], st[3], st[4]]);\n        window[this.id] = new MonadState2(this.id, st);\n      })\n    }; ');
 
 	var gameMonad = (0, _dom.h)('pre', '    var gameMonad = new MonadState2(\'gameMonad\',\n      [ 0,0,0,[],[0,0,0,0],[[0,0,0,[],[0,0,0,0]]]]);\n');
 
@@ -10432,19 +10379,19 @@
 
 	var primes4 = (0, _dom.h)('pre', '    execF(ar[1]).bnd(fpTransformer, ar[0], x)  ');
 
-	var p5a = (0, _dom.h)('pre', '\n');
+	var gameMonad_2 = (0, _dom.h)('pre', '  function MonadState(g, state) {\n    this.id = g;\n    this.s = state;\n    this.bnd = (func, ...args) => func(this.s, ...args);  \n    this.ret = function (a) {\n      return window[this.id] = new MonadState(this.id, a);\n    };\n  };\n\n  gameMonad = new MonadState(\'gameMonad\', [ [0,0,0,[],[0,0,0,0] ]]);\n\n  function updateNums ([score = fetch0(mMindex.x), goals = fetch1(mMindex.x), \n      operator = fetch2(mMindex.x), a3 = fetch3(mMindex.x), \n          display = fetch4(mMindex.x) ]) {\n    var s = gameMonad.s.slice();\n    s.push([score, goals, operator, a3, display]);\n    buttonNode = bNode(display);\n    mMindex.bnd(add,1);\n    gameMonad = new MonadState(\'gameMonad\', s);\n  }\n\n  function styl (s) {\n    switch(s) {\n      case (0): return [\'none\', \'none\', \'none\', \'none\'];\n      break;\n      case (1): return [\'inline\', \'none\', \'none\', \'none\'];\n      break;\n      case (2): return [\'inline\', \'inline\', \'none\', \'none\'];\n      break;\n      case (3): return [\'inline\', \'inline\', \'inline\', \'none\'];\n      break;\n      case (4): return [\'inline\', \'inline\', \'inline\', \'inline\'];\n      break;\n      default: return;  //console.log(\'Bad argument in styl. s is\', s );\n    }\n  }\n\n  function bNode (arr) {\n    console.log(\'In bNode - - - arr is\', arr);\n    var x = styl(arr.length);\n    var node = h(\'div\', [\n      h(\'button#0.num\', { style: { display: x[0] }}, arr[0] ),\n      h(\'button#1.num\', { style: { display: x[1] }}, arr[1] ),\n      h(\'button#2.num\', { style: { display: x[2] }}, arr[2] ),\n      h(\'button#3.num\', { style: { display: x[3] }}, arr[3] )\n    ]);\n    return node;\n  }  ');
 
-	var p5b = (0, _dom.h)('pre', '\n');
+	var monCon = (0, _dom.h)('pre', '\n');
 
-	var p5c = (0, _dom.h)('pre', '\n');
+	var newRoll = (0, _dom.h)('pre', '  const messages$ = sources.WS.map( e => {\n    console.log(e);\n    mMtem.ret(e.data.split(\',\')).bnd( v => {\n  console.log(\'Websockets data.split message v: \', v );    \n  mMZ10.bnd( () => {\n    buttonNode = bNode([v[3],v[4],v[5],v[6]]);\n    var st = gameMonad.s[5][mMindex.x].slice();\n    st[0] = v[7];\n    st[1] = v[8];\n    st[2] = 0;\n    st[3] = [];\n    st[4] = [v[3],v[4],v[5],v[6]];\n    gameMonad.c.emit(a,st);\n  });   ');
 
-	var p5d = (0, _dom.h)('pre', '\n');
+	var fetch = (0, _dom.h)('pre', '  function fetch4 (n) {\n      return gameMonad.s[n][4];\n  }\n   \n  function fetch3 (n) {\n      return gameMonad.s[n][3];\n  }\n   \n  function fetch2 (n) {\n      return gameMonad.s[n][2];\n  }\n   \n  function fetch1 (n) {\n      return gameMonad.s[n][1];\n  }\n   \n  function fetch0 (n) {\n      return gameMonad.s[n][0];\n  }  ');
 
-	var p5e = (0, _dom.h)('pre', '\n');
+	var num_op = (0, _dom.h)('pre', '  var rollClick$ = sources.DOM\n    .select(\'#roll\').events(\'click\');\n\n  var rollClickAction$ = rollClick$.map(() => {\n    var a = fetch0(mMindex.x).valueOf() - 1;\n    var b = fetch1(mMindex.x).valueOf();\n    socket.send(`CA#$42,' + pMgroup.x + ',' + pMname.x + ',6,6,12,20,' + a + ',' + b + '`);\n  }); \n\n  \n  var numClick$ = sources.DOM\n      .select(\'.num\').events(\'click\'); \n\n  var numClickAction$ = numClick$.map(e => {\n    var state = gameMonad.s[mMindex.x].slice();\n    if (fetch3(mMindex.x).length < 2)  {\n      var a = state[3].slice();\n      var b = state[4].slice();\n      var c = b.splice(e.target.id,1);\n      a.push(c[0]);\n      updateNums([,,,a,b]) \n      if (a.length === 2 && state[2] != 0) {\n        updateCalc(a, state[2]) \n      }\n    }\n  }).startWith([0, 0, 0, 0]);\n\n  var opClick$ = sources.DOM\n      .select(\'.op\').events(\'click\');\n\n  var opClickAction$ = opClick$.map(e => {\n    var s3 = fetch3(mMindex.x).slice();\n    if (s3.length === 2) {\n      updateCalc(s3, e.target.innerHTML); \n    }\n    else {\n      var state = gameMonad.s;\n      state[mMindex.x][2] = e.target.innerHTML;\n    }\n  });  ');
 
 	var p5f = (0, _dom.h)('pre', '\n');
 
-	exports.default = (_primes3$primes2$prim = { primes3: primes3, primes2: primes2, primes: primes, variations: variations, MonadEmitter: MonadEmitter, clicks: clicks, bNode: bNode, styl: styl, MonadState2: MonadState2, gameMonad: gameMonad, cycle: cycle, monad: monad, hardWay: hardWay, hardWay2: hardWay2, async1: async1, async2: async2, execP: execP, workerD$: workerD$, fact_workerC: fact_workerC, fact2_workerD: fact2_workerD, primes_state: primes_state, workerB_Driver: workerB_Driver, workerC: workerC, worker$: worker$, errorDemo: errorDemo, monadEr: monadEr, backAction: backAction, tests: tests, mMZ10: mMZ10, test3: test3 }, _defineProperty(_primes3$primes2$prim, 'monad', monad), _defineProperty(_primes3$primes2$prim, 'equals', equals), _defineProperty(_primes3$primes2$prim, 'fmap', fmap), _defineProperty(_primes3$primes2$prim, 'opM', opM), _defineProperty(_primes3$primes2$prim, 'e2', e2), _defineProperty(_primes3$primes2$prim, 'e2x', e2x), _defineProperty(_primes3$primes2$prim, 'e3', e3), _defineProperty(_primes3$primes2$prim, 'e4', e4), _defineProperty(_primes3$primes2$prim, 'e4x', e4x), _defineProperty(_primes3$primes2$prim, 'e6', e6), _defineProperty(_primes3$primes2$prim, 'e6x', e6x), _defineProperty(_primes3$primes2$prim, 'driver', driver), _defineProperty(_primes3$primes2$prim, 'messages', messages), _defineProperty(_primes3$primes2$prim, 'monadIt', monadIt), _defineProperty(_primes3$primes2$prim, 'MonadSet', MonadSet), _defineProperty(_primes3$primes2$prim, 'updateCalc', updateCalc), _defineProperty(_primes3$primes2$prim, 'arrayFuncs', arrayFuncs), _defineProperty(_primes3$primes2$prim, 'nums', nums), _defineProperty(_primes3$primes2$prim, 'cleanup', cleanup), _defineProperty(_primes3$primes2$prim, 'ret', ret), _defineProperty(_primes3$primes2$prim, 'C42', C42), _defineProperty(_primes3$primes2$prim, 'newTask', newTask), _defineProperty(_primes3$primes2$prim, 'process', process), _defineProperty(_primes3$primes2$prim, 'mM$task', mM$task), _defineProperty(_primes3$primes2$prim, 'colorClick', colorClick), _defineProperty(_primes3$primes2$prim, 'edit', edit), _defineProperty(_primes3$primes2$prim, 'testZ', testZ), _defineProperty(_primes3$primes2$prim, 'quad', quad), _defineProperty(_primes3$primes2$prim, 'runTest', runTest), _defineProperty(_primes3$primes2$prim, 'todoStream', todoStream), _defineProperty(_primes3$primes2$prim, 'inc', inc), _defineProperty(_primes3$primes2$prim, 'seed', seed), _defineProperty(_primes3$primes2$prim, 'add', add), _defineProperty(_primes3$primes2$prim, 'MonadState', MonadState), _defineProperty(_primes3$primes2$prim, 'primesMonad', primesMonad), _defineProperty(_primes3$primes2$prim, 'fibsMonad', fibsMonad), _defineProperty(_primes3$primes2$prim, 'primeFibInterface', primeFibInterface), _defineProperty(_primes3$primes2$prim, 'tr3', tr3), _defineProperty(_primes3$primes2$prim, 'fpTransformer', fpTransformer), _defineProperty(_primes3$primes2$prim, 'factorsMonad', factorsMonad), _defineProperty(_primes3$primes2$prim, 'factorsInput', factorsInput), _defineProperty(_primes3$primes2$prim, 'promise', promise), _defineProperty(_primes3$primes2$prim, 'promiseSnippet', promiseSnippet), _defineProperty(_primes3$primes2$prim, 'timeout', timeout), _defineProperty(_primes3$primes2$prim, 'timeoutSnippet', timeoutSnippet), _defineProperty(_primes3$primes2$prim, 'examples', examples), _defineProperty(_primes3$primes2$prim, 'examples2', examples2), _primes3$primes2$prim);
+	exports.default = (_num_op$fetch$gameMon = { num_op: num_op, fetch: fetch, gameMonad_2: gameMonad_2, newRoll: newRoll, primes3: primes3, primes2: primes2, primes: primes, variations: variations, MonadEmitter: MonadEmitter, clicks: clicks, bNode: bNode, styl: styl, MonadState2: MonadState2, gameMonad: gameMonad, cycle: cycle, monad: monad, hardWay: hardWay, hardWay2: hardWay2, async1: async1, async2: async2, execP: execP, workerD$: workerD$, fact_workerC: fact_workerC, fact2_workerD: fact2_workerD, primes_state: primes_state, workerB_Driver: workerB_Driver, workerC: workerC, worker$: worker$, errorDemo: errorDemo, monadEr: monadEr, backAction: backAction, tests: tests, mMZ10: mMZ10, test3: test3 }, _defineProperty(_num_op$fetch$gameMon, 'monad', monad), _defineProperty(_num_op$fetch$gameMon, 'equals', equals), _defineProperty(_num_op$fetch$gameMon, 'fmap', fmap), _defineProperty(_num_op$fetch$gameMon, 'opM', opM), _defineProperty(_num_op$fetch$gameMon, 'e2', e2), _defineProperty(_num_op$fetch$gameMon, 'e2x', e2x), _defineProperty(_num_op$fetch$gameMon, 'e3', e3), _defineProperty(_num_op$fetch$gameMon, 'e4', e4), _defineProperty(_num_op$fetch$gameMon, 'e4x', e4x), _defineProperty(_num_op$fetch$gameMon, 'e6', e6), _defineProperty(_num_op$fetch$gameMon, 'e6x', e6x), _defineProperty(_num_op$fetch$gameMon, 'driver', driver), _defineProperty(_num_op$fetch$gameMon, 'messages', messages), _defineProperty(_num_op$fetch$gameMon, 'monadIt', monadIt), _defineProperty(_num_op$fetch$gameMon, 'MonadSet', MonadSet), _defineProperty(_num_op$fetch$gameMon, 'updateCalc', updateCalc), _defineProperty(_num_op$fetch$gameMon, 'arrayFuncs', arrayFuncs), _defineProperty(_num_op$fetch$gameMon, 'nums', nums), _defineProperty(_num_op$fetch$gameMon, 'cleanup', cleanup), _defineProperty(_num_op$fetch$gameMon, 'ret', ret), _defineProperty(_num_op$fetch$gameMon, 'C42', C42), _defineProperty(_num_op$fetch$gameMon, 'newTask', newTask), _defineProperty(_num_op$fetch$gameMon, 'process', process), _defineProperty(_num_op$fetch$gameMon, 'mM$task', mM$task), _defineProperty(_num_op$fetch$gameMon, 'colorClick', colorClick), _defineProperty(_num_op$fetch$gameMon, 'edit', edit), _defineProperty(_num_op$fetch$gameMon, 'testZ', testZ), _defineProperty(_num_op$fetch$gameMon, 'quad', quad), _defineProperty(_num_op$fetch$gameMon, 'runTest', runTest), _defineProperty(_num_op$fetch$gameMon, 'todoStream', todoStream), _defineProperty(_num_op$fetch$gameMon, 'inc', inc), _defineProperty(_num_op$fetch$gameMon, 'seed', seed), _defineProperty(_num_op$fetch$gameMon, 'add', add), _defineProperty(_num_op$fetch$gameMon, 'MonadState', MonadState), _defineProperty(_num_op$fetch$gameMon, 'primesMonad', primesMonad), _defineProperty(_num_op$fetch$gameMon, 'fibsMonad', fibsMonad), _defineProperty(_num_op$fetch$gameMon, 'primeFibInterface', primeFibInterface), _defineProperty(_num_op$fetch$gameMon, 'tr3', tr3), _defineProperty(_num_op$fetch$gameMon, 'fpTransformer', fpTransformer), _defineProperty(_num_op$fetch$gameMon, 'factorsMonad', factorsMonad), _defineProperty(_num_op$fetch$gameMon, 'factorsInput', factorsInput), _defineProperty(_num_op$fetch$gameMon, 'promise', promise), _defineProperty(_num_op$fetch$gameMon, 'promiseSnippet', promiseSnippet), _defineProperty(_num_op$fetch$gameMon, 'timeout', timeout), _defineProperty(_num_op$fetch$gameMon, 'timeoutSnippet', timeoutSnippet), _defineProperty(_num_op$fetch$gameMon, 'examples', examples), _defineProperty(_num_op$fetch$gameMon, 'examples2', examples2), _num_op$fetch$gameMon);
 
 /***/ }
 /******/ ]);

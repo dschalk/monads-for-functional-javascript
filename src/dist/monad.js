@@ -11,7 +11,7 @@ var captionDiv = 'none';
 var CHANGE = 'cow';
 var chatNode;
 var xs = xstream.default;
-var h = h.default;
+var h = h.h;
 const messages = [];
 var crapTunnel = [];
 var buttonNode;
@@ -45,6 +45,31 @@ function Monad(z = 'default', ID = 'generic') {
     return window[_this.id] = new Monad(a,_this.id);
   };
 };
+
+function MonadEvents(z = 'default', ID = 'generic') {
+  var _this = this;
+  this.x = z;
+  this.id = ID;
+  this.bnd = function (func, ...args) {
+    var m = func(this.x, ...args)
+    var ID;
+    if (m instanceof MonadEvents) {
+      ID = testPrefix(args, _this.id); 
+      window[ID] = new MonadEvents(m.x, ID);
+      return window[ID];
+    }
+    else return m;
+  };
+  this.ret = function (a) {
+    return window[_this.id] = new MonadEvent(a,_this.id);
+  };
+  this.stream = new EventEmitter();
+  this.stream.on(1, v => _this.bnd(v[0], ...[1]));
+  this.stream.on(2, v => _this.ret(v));
+};
+
+
+
 
 /*
 function testPrefix (x,y) {
@@ -1307,33 +1332,35 @@ function monadConstructor (v,b) {
   var c = new MonadEmitter();
   c.x = v;
   c.id = b;
-  c.bnd = (func, ...args) => {
+  c.bnd = function (func, ...args) {
+    console.log(func);
     var m = func(c.x, ...args)
+    console.log(m);
     var ID;
-    if (m instanceof Monad) {
+    if (m instanceof MonadEmitter) {
       ID = testPrefix(args, c.id); 
-      return c.emit(1,[m.x, ID])
+      window[ID] = monadConstructor(m.x, ID);
+      return window[ID];
     }
-    else return c.emit(0, m);
+    else return m;
   }
   c.on(0, v => {
     console.log(v)
     return v
   });
   c.on(1, v => {
-      window[v[1]] = monadConstructor(v[0], v[1]);
-      return window[v[1]];
+      var mon = monadConstructor(v, c.id);
+      return window[c.id] = mon;
   })
-  c.ret = a => {
-    c.emit(1, [a,b]);
-  };
+  console.log(v);
+  c.on(2, v => c.bnd(v))
   return c;
 };
 
 function MonadState2(g, state) {
   this.id = g;
   this.s = state;
-  this.c = new MonadEmitter();
+  this.c = new EventEmitter();
   this.bnd = (func, ...args) => func(this.s, ...args);  
   this.ret = function (a) {
     return window[this.id] = new MonadState(this.id, a);
@@ -1341,16 +1368,32 @@ function MonadState2(g, state) {
   this.c.on(a, st => {
     mMindex.ret(mMindex.x + 1);
     st[5] = this.s[5].slice();
-    st[5].splice(mMindex.x, 0, [st[0], st[1], st[2], st[3], st[4]]);
+    st[5].splice(mMindex.x, 0, [st[0], st[1], st[2], [], st[4]]);
     window[this.id] = new MonadState2(this.id, st);
   })
 };
 
-function fetch (n) {
-    return gameMonad.s[5][n][4];
+function fetch4 (n) {
+    return gameMonad.s[n][4];
 }
  
-var gameMonad = new MonadState2('gameMonad', [ 0,0,0,[],[2,2,2,2],[[0,0,0,[],[3,3,3,3]]]]);
+function fetch3 (n) {
+    return gameMonad.s[n][3];
+}
+ 
+function fetch2 (n) {
+    return gameMonad.s[n][2];
+}
+ 
+function fetch1 (n) {
+    return gameMonad.s[n][1];
+}
+ 
+function fetch0 (n) {
+    return gameMonad.s[n][0];
+}
+ 
+var gameMonad = new MonadState('gameMonad', [ [0,0,0,[],[0,0,0,0] ]]);
 
 var ops = ['+','-','*','/', 'concat'];
 var nums = [3,4,5,6];
@@ -1361,14 +1404,29 @@ var eM3 = monadConstructor(0,'eM3');
 var eM4 = monadConstructor(0,'eM4');
 // eM2.on('EC42', (...args) => console.log('Here is a received message:', args.join(', ')));
 eM2.bnd(v => ['Hello girls', 'Here is the value of eM2', v, 256000 - 245997, 'you bet.']) 
-eM2.ret(888);
+eM2.emitEvent(1,[888]);
+console.log(eM2.emitEvent(1,[444]));
 console.log('2()()()()()()() Here is eM2.x:', eM2.x);
 // eM3.on('3', (x,y,z) => m.ret(z*z*z).bnd((a) => console.log(a,x,y)))
 eM3.bnd(v => ret(['em3.x squared is', v*v, 'Here are more numbers:', 23, 44, 3]));  
 var a = 'a';
-var clog = monadConstructor(0,'clog');
-clog.ret('How about that? I have all the functionality of Monad and I can emit events.');
 console.log('3()()()()()()() Here is eM2.x:', eM2.x);
+
+
+// ***************************************************************************
+
+
+var mMstream = monadConstructor(0, 'mMstream')
+
+mMstream.emitEvent(1, ["Hello world. What a beautiful life. Joy and deep satisfaction. Yes",'$mM33'])
+console.log('************************ Here is mMstream.x', mMstream.x)
+
+
+// ***************************************************************************
+
+
+
+
 
 var f7 = function f7 () {
 var ar = [];
@@ -1388,6 +1446,7 @@ console.log(x)
 
 
 var em = new EventEmitter;
+var eventEmitter = new EventEmitter;
 var em2 = new EventEmitter;
 em2.on('42',x => console.log(x));
 
@@ -1404,7 +1463,7 @@ var producer = {
 
 var listener = {
   next: (x) => {
-    em.on('cow',x => console.log('Yes sir.',x))
+    em.on(1, x => console.log('Yes sir.',x))
   },
   error: (err) => {
     console.error('The Stream gave me an error: ', err);
@@ -1418,7 +1477,7 @@ var stream$ = xs.of(producer)
 
 stream$.addListener(listener)
 
-em.emit(0,'Whatever you say, sir.');
+em.emit(1,'Whatever you say, sir.');
 
 console.log('Almost at the bottom of monad.js primesMonad is', primesMonad );
 
@@ -1678,6 +1737,7 @@ function styl (s) {
 }
 
   function bNode (arr) {
+    console.log('In bNode - - - arr is', arr);
     var x = styl(arr.length);
     var node = h('div', [
       h('button#0.num', { style: { display: x[0] }}, arr[0] ),
@@ -1710,6 +1770,8 @@ function *gen(x) {
 }
 var primesIt = gen(primesMonad.s[2]+1);
 
+
+/*
 function getP (state, num) {
   var x = state[2];
   var primes = state[3].slice();
@@ -1731,6 +1793,7 @@ function getP (state, num) {
     return [newP[newP.length - 1], newP, x, primes]
   }
 }
+
 primesMonad = new MonadState2('primesMonad',  getP(primesMonad.s, 100));
 
 primesMonad = new MonadState2('primesMonad', getP(primesMonad.s, 50));
@@ -1740,7 +1803,7 @@ primesMonad = new MonadState2('primesMonad', getP(primesMonad.s, 150));
 primesMonad = new MonadState2('primesMonad',  getP(primesMonad.s, 75));
 
 
-/*
+
 function execP (state, num) {
   console.log('********** Salutations from execP. state and num are', state, num );
   var top = state[2];
