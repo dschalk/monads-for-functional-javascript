@@ -340,43 +340,37 @@ var cleanup = h('pre',  `  function cleanup (x) {
         ',' + mMname.x.trim() + ',' + '@' + str);
   });  `  )
 
-  var updateCalc = h('pre',  `    function updateCalc(ar, op) {
-      console.log('Entering updateCalc. ar and op are', ar, op);
-      var result = parseInt(calc(ar[0], op, ar[1]), 10);
-      if (result === 18 || result === 20) { 
-        score(result);
-      }
-      else {
-        var state = gameMonad.s[5][mMindex.x].slice();
-        state[2] = 0;
-        state[3] = [];
-        state[4] = gameMonad.s[5][mMindex.x][4].slice();
-        state[4].push(result);
-        buttonNode = bNode(state[4]);
-        console.log('In updateCalc. state is', state );
-        gameMonad.run(state);
-      }
-    };  `) 
+  var updateCalc = h('pre',  `  function updateCalc(ar, op) {
+    var result = calc(ar[0], op, ar[1]);
+    if (result === 18 || result === 20) { 
+      score(result);
+    }
+    else {
+      var a = fetch4(mMindex.x).slice();
+      a.push(result);
+      updateNums([,,0,[],a]);
+    }
+  };  `) 
 
-  var score = h('pre', `    function score(result) {
-      var state = gameMonad.s[5][mMindex.x].slice();
-      var old = parseInt(state[0], 10);
-      var res = result === 18 ? old + 3 : old + 1;
-      var scor = res % 5 === 0 ? res + 5 : res;
-      
-      if (scor === 25 && state[1] === "2") {
-        mMindex.ret(0);
-        gameMonad = new MonadState2('gameMonad', [ 0,0,0,[],[0,0,0,0],[[0,0,0,[],[0,0,0,0]]]]);
-        socket.send("CE#$42," + pMgroup.x} + "," + pMname.x );
-        scor = 0;
-        state[1] = 0;
-      }
-      if (scor === 25) {
-        state[1] = parseInt(state[1], 10) + 1;
-        scor = 0;
-      }
-      newRoll(scor, state[1]);
-    }; ` )
+  var score = h('pre', `  function score(result) {
+    var state = gameMonad.s[mMindex.x].slice();
+    var old = parseInt(state[0], 10);
+    var res = result === 18 ? old + 3 : old + 1;
+    var scor = res % 5 === 0 ? res + 5 : res;
+    
+    if (scor === 25 && state[1] === "2") {
+      mMindex.ret(0);
+      gameMonad = new MonadState('gameMonad', [[0,0,0,[],[0,0,0,0]]]);
+      socket.send(\`CE#$42,${pMgroup.x},${pMname.x}\`);
+      scor = 0;
+      state[1] = 0;
+    }
+    if (scor === 25) {
+      state[1] = parseInt(state[1], 10) + 1;
+      scor = 0;
+    }
+    newRoll(scor, state[1]);
+  }; `)
 
   var testZ = h('pre',  `  mMZ1.bnd(v => mMt1
   .bnd(add,v).bnd(w => {
@@ -1627,13 +1621,24 @@ var gameMonad_2 = h('pre',  `  function MonadState(g, state) {
 var monCon = h('pre',  `
 `  )
 
-var newRoll = h('pre',  `  const messages$ = sources.WS.map( e => {
+var newRoll = h('pre',  `  function updateNums ([score = fetch0(mMindex.x), goals = fetch1(mMindex.x), 
+    operator = fetch2(mMindex.x), a3 = fetch3(mMindex.x), 
+      display = fetch4(mMindex.x) ]) {
+    var s = gameMonad.s.slice();
+    s.push([score, goals, operator, a3, display]);
+    buttonNode = bNode(display);
+    mMindex.bnd(add,1);
+    gameMonad = new MonadState('gameMonad', s);
+  }
+
+const messages$ = sources.WS.map( e => {
     console.log(e);
     mMtem.ret(e.data.split(',')).bnd( v => {
   console.log('Websockets e.data.split message v: ', v );    
   mMZ10.bnd( () => {
     updateNums([v[7], v[8], 0, [], [v[3], v[4], v[5], v[6]]]);
-  });   `  )
+  });   
+`  )
 
 var fetch = h('pre',  `  function fetch4 (n) {
       return gameMonad.s[n][4];

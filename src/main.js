@@ -71,7 +71,7 @@ function workerDriver () {
   });
 };
 
-function eM2Driver () {
+/*function eM2Driver () {
   return xs.create({
     start: listener => { mM2.on = msg => listener.next(msg)}, 
     stop: () => { mM2.removeAllListeners() }
@@ -83,13 +83,12 @@ function mMstreamDriver () {
     start: listener => { mMstream.x.on = msg => listener.next(msg)}, 
     stop: () => { mMstream.removeAllListeners() }
   });
-};
+};*/
 
 socket.onmessage = function (event) {
     console.log('Socket message',event);
 };
-  
-/* 
+ 
 socket.onmessage = function (event) {
     console.log(event);
 };
@@ -97,31 +96,6 @@ socket.onmessage = function (event) {
 socket.onclose = function (event) {
     console.log('<><><> New message <><><> ', event);
 };
-
-
-const emDriver = function () {@jk
-    return em.on = msg => msg.subscribe(msg => console.log('message:', msg))
-}
-
-const workerDriverA = function () {
-    return create((add) => worker.onmessage = msg => add(msg))
-}
-
-console.log('worker.onmessage',worker.onmessage);
-
-const workerDriverC = function () {
-    return create((add) => workerC.onmessage = msg => {
-      add(msg)
-    })
-}
-
-const eM2Driver = function () {
-  return create((add) => eM2.emit = msg => {
-    console.log('In eM2Driver');
-    add(msg)
-  })
-};
-*/
 
 function updateTasks (obArray) {
   var todoData = [];
@@ -145,9 +119,6 @@ function updateTasks (obArray) {
 
 function main(sources) {
 
-  const event$ = sources.mMstr.map(v => console.log('Message from mMstream driver', v));
-  
-  
   const worker$ = sources.WW.map(v => {
     console.log('Message from worker: ', v );
     v.preventDefault();
@@ -190,7 +161,6 @@ function main(sources) {
     mMindex.bnd(add,1);
     gameMonad = new MonadState('gameMonad', s);
   }
-
 
   const messages$ = sources.WS.map( e => {
     console.log(e);
@@ -376,14 +346,14 @@ var comClickAction$ = comClick$.map( e => {
 
   function updateCalc(ar, op) {
     console.log('Entering updateCalc. ar and op are', ar, op);
-    var result = parseInt(calc(ar[0], op, ar[1]), 10);
+    var result = calc(ar[0], op, ar[1]);
     if (result === 18 || result === 20) { 
       score(result);
     }
     else {
       var a = fetch4(mMindex.x).slice();
       a.push(result);
-      updateNums([,,,[],a]);
+      updateNums([,,0,[],a]);
     }
   };   
 
@@ -1079,6 +1049,29 @@ var todoMonad = new MonadState3('todoMonad',
       h('br'),
       h('br'), 
       h('br'),
+      h('br'),
+      h('br'), 
+      h('br'), 
+      h('br'), 
+      h('br'), 
+      h('br'), 
+      h('br'), 
+      h('br'), 
+      h('br'), 
+      h('br'),
+      h('br'),
+      h('br'), 
+      h('br'), 
+      h('br'), 
+      h('br'), 
+      h('br'),
+      h('br'), 
+      h('br'), 
+      h('br'), 
+      h('br'), 
+      h('br'), 
+      h('br'), 
+      h('br'), 
       h('br'), 
       h('br'), 
       h('br'), 
@@ -1155,7 +1148,7 @@ var todoMonad = new MonadState3('todoMonad',
       h('span', ' ' ),
       h('a', { props: { href: "https://cycle.js.org/", target: "_blank" } }, 'A cyclejs application'),  
       h('span#captionDiv', { style: { display: mMcaptionDiv.x } },  [
-      h('h1', 'JS-monads in Cyclejs') ]),
+      h('h1', 'JS-monads running in Cycle.js') ]),
       h('p.tao1b', 'PLEASE NOTE: This site is constantly evolving. The commentary sometimes lags behind innovations. I know this site is a little rough around the edges, but the demonstrations are fully functional and the commentary is constantly expanding.'), 
 h('p.tao1b', ' I present this site to developers because I think it can stimulate thought about encapsulating procedures and dynamic state in objects whose methods conform to a JavaScript version of the Haskell monad laws. I present this site as a tutorial to people who can benefit by understandng another way to write functional, reactive code. Helpful suggestions, corrections, or comments will be much appreciated. '),
       h('span.tao1b', 'You can comment at ' ),
@@ -1171,9 +1164,17 @@ h('p.tao1b', ' I present this site to developers because I think it can stimulat
           h('a', { props: { href: '#discussion' } }, 'Discussion'),
           h('span', ' below. They provide a convenient interface for dealing with uncertainty and side effects in a purely functional manner, assigning new values to identifiers (variables) without mutation. Adherence to the monad laws (see below) helps make the monads robust, versatile, and reliable tools for isolating and chaining sequences of javascript functions.' ),
 
-          h('p', ' The demonstrations include persistent, shared todo lists, an interactive simulated dice game with a traversable history (all group members see your score decrease or increase as you navegate backwards and forwards), chat rooms where members can compete in the simulated dice gameand share a project todo list, and demonstrations of the persistent state, asynchronous usefulness of monads in a Cycle application.  '),
+          h('p', ' The demonstrations include persistent, shared todo lists, an interactive simulated dice game with a traversable history (all group members see your score decrease or increase as you navegate backwards and forwards), chat rooms where members can compete in the simulated dice gameand share a project todo list, and demonstrations of the persistent state, asynchronous usefulness of monads in a Cycle.js application.  '),
       h('span.tao', 'The code for this repository is at '),
-      h('a', { props: { href: "https://github.com/dschalk/JS-monads-stable", target: "_blank" } }, 'JS-monads-stable'),  
+      h('a', { props: { href: "https://github.com/dschalk/JS-monads-stable", target: "_blank" } }, 'JS-monads-stable'), 
+      h('br'),
+      h('br'),
+      h('span.tao', ' The game code is surprisingly concise and intuitive; well, at least when compared to previous versions. A quick walk-through is presented ' ),  
+      h('a', { props: { href: '#gameExplanation' } }, 'here'),
+      h('span', '. To see monadic functionality at work, take a look at the section captioned ' ), 
+      h('a', { props: { href: '#asyncExplanation' } }, 'Asynchronous Processes'),
+      h('br'),
+      h('p', ' But it might be best to first proceed down the page and see the examples of Monad instances manipulating data. If you are trying to wrap you head around the concept of pure, chainable functions, such as the functions in the Underscore and Jquery libraries, understanding Monad instances might finally put you in the comfort zone you seek. ' ),
       h('div#gameDiv2', { style: { display: mMgameDiv2.x } }, [
           h('span', ' Here are the basic rules:'),
           h('p', 'RULES: If clicking two numbers and an operator (in any order) results in 20 or 18, the score increases by 1 or 3, respectively. If the score becomes 0 or is evenly divisible by 5, 5 points are added. A score of 25 results in one goal. That can only be achieved by arriving at a score of 20, which jumps the score to 25. Directly computing 25 results in a score of 30, and no goal. Each time RL is clicked, one point is deducted. Three goals wins the game. '),
@@ -1215,9 +1216,20 @@ h('div#eighty', [
     code.variations,
  // **************************************************************************** END MONAD       
    code.cycle,
-
+h('p#asyncExplanation', ' ' ),
+h('p', ' ' ),
+h('p', ' ' ),
+h('p', ' ' ),
+h('p', ' ' ),
+h('p', ' ' ),
+h('p', ' ' ),
+h('p', ' ' ),
+h('p', ' ' ),
+h('p', ' ' ),
+h('p', ' ' ),
  // ************************************************** OOOOOOOOOOOOOO ********    BEGIN ASYNC 
  
+  h('a', { props: { href: '#top' } }, 'Back To The Top'),
  
   h('h2', ' Asynchronous Processes ' ),
     code.async1,
@@ -1383,30 +1395,41 @@ code.quad,
 h('p', ' fmap (above) facilitated using qS4 in a monadic sequence. qS4 returns an array, not an instance of Monad, but fmap lifts qS4 into the monadic sequence. '),
 h('p', ' The function solve() is recursive. It invokes itself after release() executes three times. The expression "solve()" resets solve to the top, where mMZ3.p becomes a function containing two nested occurrances of mMZ3.bnd. After mMZ3.release() executes, mMZ3.p becomes the function that is the argument to the next occurrance of mMZ3.bnd. That function contains yet another occurrance of mMZ3.bnd. MonadItter is syntactic sugar for nested callbacks. ' ), 
   
-// ************************************************************************** START MonadState
+// ************************************************************************** 
+h('p#gameExplanation', ' ' ), 
+h('p', ' ' ), 
+h('p', ' ' ), 
+h('p', ' ' ), 
+h('p', ' ' ), 
 
+h('a', { props: { href: '#top' } }, 'Back To The Top'),
 
-//************************************************************************** END GameTraversal 
+//************************************************************************** START GAME
+
 h('h2', 'The Simulated Dice Game' ),
-h('p', ' gameMonad is an instance of MonadState. The State of the game is saved in gameMonad.s, which is an array of five element arrays consisting of score, goals, operator, selected numbers, and displayed numbers. When a player earns three goals, gameMonad.s gets reset to [] and the player is declared to be the winner. ' ),
+h('p', ' gameMonad is an instance of MonadState. The State of the game is saved in gameMonad.s, which is an array of five element arrays consisting of score, goals, operator, selected numbers, and displayed numbers. When a player earns three goals, gameMonad.s gets reset to [[0,0,0,[],[0,0,0,0]]] and the player is declared to be the winner. ' ),
 h('p', ' updateNums() is the only function that directly affects gameMonad. It doesn\'t change the current globally available gameMonad; rather, it creates a new, augmented instance of gameMonad accessible in the global space. In other words, window["gameMonad"] gets re-directed to the newly created instance of MonadState with id of "gameMonad". updateNums() also updates the virtual DOM by calling bNode(). Here again is the definition of MonadState, along with the definitions of playerMonad, updateNums(), styl(), and bNum(): ' ),
     code.gameMonad_2,
-h('p', ' The five function prefixed by "fetch" save coding time and space, and help prevent careless errors. They are defined as follows: ' ),
+h('p', ' The five functions prefixed by "fetch" save coding time and space, and help prevent careless errors. They are defined as follows: ' ),
     code.fetch,  
 h('p', ' One goal is awarded each time a player lands on the number 25. The limit for the number of score changes in one turn is two. If the number of increases were not limited, landing on 5 would launch you into an series of increases through all the multiples of five terminating with a stack overflow error message. As a consequence of this rule, only one five-point jump is allowed per turn. '),
 h('p', ' Another way to increase a score, other than computing an number which equals 0 modulo 5 is to compute the number 20 for one additional point, or the number 18 for three additional points. A quick way to arrive at 20 is to start at -1, compute 18 twice, which takes you from -1 to 2 to 5 and jumps you to 10. Then click roll, which sets you back to 9, and compute 18 twice. That takes you from 9 to 12, to 15, jumping you to 20. You don\'t get another jump, so click ROLL and compute 20, taking your score from 19 to 20 to 25 and back to 0, with an increase of one goal. If it is your third goal, you win the game. ' ),
 h('p', ' Here is the code that handles roll, number and operator clicks: ' ),
     code.num_op,  
-h('p', ' A new state is added to gameMonad.s when a new roll arrives from the server. Here is how the message from the server is handled: ' ),
+h('p', ' A new state is added to gameMonad.s when a new roll arrives from the server. This is the code that handles the message when it arrives: ' ),
     code.newRoll,
+h('p', ' Requests for new rolls inclue the name and group of the player making the request. That information is used by the server to deduct one point and to limit broadcast of the new roll to only members of the requesting player\'s group. The request also incudes the requesting player\'s score and goals. These are returned by the server (with one point deducted) and are v[7] and v[8] in the messages$ stream. ' ),  
 h('p', ' Game traversal is controlled by changing the value of mMindex.x. Here is the code that is called when the BACK button is clicked: ' ),
     code.backAction,
+h('p', ' numClickAction$ and opClickAction$ call updateCalc() when gameMonad.s[mMindex.x][3] contains two numbers and gameMonad.s[mMindex.x][2] is no longer 0 (implying that an operator has been selected). updateCalc takes two arguments, the selected numbers and the selected operator. This is what happens when updateCalc receives that information: ' ),
+    code.updateCalc,
+h('p', '  parseInt(calc(ar[0], op, ar[1]), 10) is not 18 or 20, updateCalc sets the operator back to - and empties the picked numbers array. I also pushes the result of the calculation into the display array. updateNums does the rest. ' ),
+h('p', ' If the calculation yields 18 or 20, score(result) is called. Here is the definition of score() ' ),
+    code.score,
+h('p', ' If the score is computed to be 25, the result of increasing goals by 1 determines how state is modified. If the result is not 3, goals is incremented and newRoll() is called with arguments score and goals. If the result is 3, a winner is declared and gameMonad.s reverts to [[0,0,0,[],[0,0,0,0]]]). ' ),
+h('p', ' Multiple revision resulted in the concise, intuitive game algorithm presented here. It turned out that gameMonad\'s monadic functionality was not needed. The next revision could replace gameMonad with a simpler object; but no significant overhead is involved in sticking with the practice of always preserving state in an instance of MonadState. So for the sake of consistency, game state will remain in gameMonad. ' ), 
 
-
-
-
-
-
+//************************************************************************** END GAME
 
   
 
@@ -1482,9 +1505,7 @@ const sources = {
   WWD: workerDDriver,
   WWE: workerEDriver,
   WWF: workerFDriver,
-  WW: workerDriver,
-  EM2: eM2Driver,
-  mMstr: mMstreamDriver
+  WW: workerDriver
 }
 run(main, sources);
 

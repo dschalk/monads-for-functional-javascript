@@ -925,7 +925,7 @@ function stripchars(string, chars) {
               result = parseInt(a, 10) / parseInt(b, 10);
               break;
           case "concat":
-              result = (a + b);
+              result = parseInt(a + b, 10);
               break;
           default: 'major malfunction in calc.';
       }
@@ -1307,25 +1307,12 @@ console.log('When monads call their ret() methods, new instances of Monad are cr
 console.log('.');
 console.log('.');
 
-function oF (func, mon) {
-  return mon.bnd(func);
-};
 
-oF ( cube, mM25 );
-console.log('oF ( cube, mM25 ) ... mM25.x is', mM25.x );
+// ***************************************************************************
 
-class Polygon {
-  constructor(height, width) {
-    this.height = height;
-    this.width = width;
-  }
-}
- 
-class G extends Polygon {
-  constructor (na) {
-    this.name = na;
-  }
-};
+// I can find no use for monad emitters and listeners in the Cycle.js application.
+
+var mMindex2 = new Monad(0,'mMindex2');
 
 class MonadEmitter extends EventEmitter {};
 
@@ -1366,12 +1353,61 @@ function MonadState2(g, state) {
   this.ret = function (a) {
     return window[this.id] = new MonadState(this.id, a);
   };
-  this.c.on(a, st => {
-    mMindex.ret(mMindex.x + 1);
-    st[5] = this.s[5].slice();
-    st[5].splice(mMindex.x, 0, [st[0], st[1], st[2], [], st[4]]);
-    window[this.id] = new MonadState2(this.id, st);
+  this.c.on(1, st => {
+    mMindex2.ret(mMindex2.x + 1);
+    var a = this.s.slice();
+    a.splice(mMindex2.x, 0, st);
+    window[this.id] = new MonadState2(this.id, a);
   })
+};
+
+var mMstream = monadConstructor(0, 'mMstream')
+
+var mMstream2 = new MonadState2('mMstream2', [ [ 0, 0, 0, [], [] ] ] );
+
+
+
+// mMstream.emitEvent(1, ["Hello world. What a beautiful life. Joy and deep satisfaction. Yes",'$mM33'])
+
+setTimeout( function () {
+console.log('************************ Here is mMstream.x', mMstream.x)
+},500 );
+
+function mMstreamDriver () {
+  return xs.create({
+    start: listener => { mMstream.x.on(1,msg) = msg => listener.next(msg)}, 
+    stop: () => { mMstream.removeAllListeners() }
+  });
+};
+
+function mMstream2Driver () {
+  return xs.create({
+    start: listener => { mMstream2.x.on(1,msg) = msg => listener.next(msg)}, 
+    stop: () => { mMstream.removeAllListeners() }
+  });
+};
+
+
+// ***************************************************************************
+
+function oF (func, mon) {
+  return mon.bnd(func);
+};
+
+oF ( cube, mM25 );
+console.log('oF ( cube, mM25 ) ... mM25.x is', mM25.x );
+
+class Polygon {
+  constructor(height, width) {
+    this.height = height;
+    this.width = width;
+  }
+}
+ 
+class G extends Polygon {
+  constructor (na) {
+    this.name = na;
+  }
 };
 
 function fetch4 (n) {
@@ -1405,29 +1441,13 @@ var eM3 = monadConstructor(0,'eM3');
 var eM4 = monadConstructor(0,'eM4');
 // eM2.on('EC42', (...args) => console.log('Here is a received message:', args.join(', ')));
 eM2.bnd(v => ['Hello girls', 'Here is the value of eM2', v, 256000 - 245997, 'you bet.']) 
-eM2.emitEvent(1,[888]);
-console.log(eM2.emitEvent(1,[444]));
-console.log('2()()()()()()() Here is eM2.x:', eM2.x);
+//eM2.emitEvent(1,[888]);
+//console.log(eM2.emitEvent(1,[444]));
+//console.log('2()()()()()()() Here is eM2.x:', eM2.x);
 // eM3.on('3', (x,y,z) => m.ret(z*z*z).bnd((a) => console.log(a,x,y)))
 eM3.bnd(v => ret(['em3.x squared is', v*v, 'Here are more numbers:', 23, 44, 3]));  
 var a = 'a';
 console.log('3()()()()()()() Here is eM2.x:', eM2.x);
-
-
-// ***************************************************************************
-
-
-var mMstream = monadConstructor(0, 'mMstream')
-
-mMstream.emitEvent(1, ["Hello world. What a beautiful life. Joy and deep satisfaction. Yes",'$mM33'])
-console.log('************************ Here is mMstream.x', mMstream.x)
-
-
-// ***************************************************************************
-
-
-
-
 
 var f7 = function f7 () {
 var ar = [];
@@ -1444,7 +1464,6 @@ return ar
  
 var x = f7();
 console.log(x)
-
 
 var em = new EventEmitter;
 var eventEmitter = new EventEmitter;
@@ -1478,7 +1497,7 @@ var stream$ = xs.of(producer)
 
 stream$.addListener(listener)
 
-em.emit(1,'Whatever you say, sir.');
+// em.emit(1,'Whatever you say, sir.');
 
 console.log('Almost at the bottom of monad.js primesMonad is', primesMonad );
 
@@ -1748,12 +1767,6 @@ function styl (s) {
     ]);
     return node;
   }
-
-
-
-
-
-
 
 function isPrime(n) {
    if (isNaN(n) || !isFinite(n) || n%1 || n<2) return false;
