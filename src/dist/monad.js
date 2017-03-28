@@ -69,24 +69,6 @@ function MonadEvents(z = 'default', ID = 'generic') {
   this.stream.on(2, v => _this.ret(v));
 };
 
-
-
-
-/*
-function testPrefix (x,y) {
-  var t = y;
-  var s;
-  if (Array.isArray(x)) {
-    x.some(v => {
-      if (typeof v == 'string' && v.charAt() == '$') {
-         t = v.slice(1);
-      }
-    })
-  }
-  return t;
-}
-*/
-
 var pMop = new Monad (0, 'pMop');
 
 var mMfactors = new Monad ([], 'mMfactors');
@@ -131,25 +113,7 @@ var pMdisplay = new Monad([], 'pMdisplay');
 var mMnums = new Monad([0,0,0,0], 'mMnums');
 var mMnumEls = new Monad([], 'mMnumEls');
 var mMstyle = new Monad(['inline', 'inline', 'inline', 'inline'], 'mMstyle')
-
-function setStyle (ar) {
-  var style = [];
-  for(let i of [1,2,3,4]) {
-    Array.isArray(ar[i]) 
-      style[i] = 'inline' 
-      style[i] = 'none';
-  }; 
-  return ret(style);
-};
  
-function test3 (a) {
-  var b = [];
-  for (let i of [0,1,2,3]) {
-    b[i] = (a[i] == undefined) ? 'none' : 'inline'
-  }
-  return ret(b);
-}
-
 var a = 3;
 var b = 4;
 var c = a + b;
@@ -511,14 +475,15 @@ var emit;
 var data$;
 
 var MonadItter = function MonadItter() {
-this.p = function () {};
-this.release = function () {
-  return this.p.apply(this, arguments);
+  this.p = function () {};
+  this.release = function () {
+    return this.p.apply(this, arguments);
+  };
+  this.bnd = function (func) {
+    return this.p = func;
+  };
 };
-this.bnd = function (func) {
-  return this.p = func;
-};
-};
+
 function rang(n, m) {
   return Array.from(new Array(m - n), function (x, i) { return i + n; });
 }
@@ -1345,7 +1310,7 @@ function monadConstructor (v,b) {
   return c;
 };
 
-function MonadState2(g, state) {
+/* function MonadState2(g, state) {
   this.id = g;
   this.s = state;
   this.c = new EventEmitter();
@@ -1386,7 +1351,7 @@ function mMstream2Driver () {
     stop: () => { mMstream.removeAllListeners() }
   });
 };
-
+*/
 
 // ***************************************************************************
 

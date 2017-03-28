@@ -1,18 +1,18 @@
 html {
   background-color: black;
-  width: 100%;  
+  width: 100%;
 }
 
 body {
+  width: 84%;
+  margin-left: auto;
+  margin-right: auto;
   border-radius: 35px;
   background-color: #331903;
   color: #d3ead5;
   margin-top: 20px;
-  font-size: 12px;
-  font-family: "Times, serif";
-  margin-left: 10%;
-  margin-right: 8%;
-  width: 80%;  
+  font-size: 15px;
+  font-family: "Proxima Nova Regular,Segoe UI,Roboto,Droid Sans,Helvetica Neue,Arial,sans-serif;";
   -webkit-box-shadow: 0px 0px 40px 0px rgb(255, 215, 0), inset 0px 0px 20px 0px rgb(0,0,0);
   -moz-box-shadow:    0px 0px 40px 0px rgb(255, 215, 0), inset 0px 0px 20px 0px rgb(0,0,0);
   box-shadow:         0px 0px 40px 0px rgb(255, 215, 0), inset 0px 0px 20px 0px rgb(0,0,0);
@@ -31,7 +31,7 @@ input, textarea {
   margin: 5px 1px 3px 0px;
   border: 3px solid #DDDDDD;
 }
- 
+
 input:focus, textarea:focus {
   -webkit-box-shadow: 0px 0px 20px 0px rgb(255, 215, 0);
   -moz-box-shadow:    0px 0px 20px 0px rgb(255, 215, 0);
@@ -42,8 +42,11 @@ input:focus, textarea:focus {
 pre {
   font-size:15px;
   color: #efe302;
-  margin-left: 3%;
 }
+
+p {
+  text-indent: 2.2%;
+  }
 
 h2 {
   color: #efe302;
@@ -56,42 +59,82 @@ h1 {
   }
 
 .content {
-  font-size:20px;
-} 
+  width: 50%;
+  font-family: "Proxima Nova Regular,Segoe UI,Roboto,Droid Sans,Helvetica Neue,Arial,sans-serif;";
+  font-size: 15px;
+  margin-left: auto;
+  margin-right: auto;
+  display: block;
+  text-indent 1.6%;
+}
+
+.preContent {
+  width: 90%;
+  font-family: "Proxima Nova Regular,Segoe UI,Roboto,Droid Sans,Helvetica Neue,Arial,sans-serif;";
+  font-size: 15px;
+  margin-left: auto;
+  margin-right: auto;
+  display: block;
+  text-indent 1.6%;
+}
+
+.content2{
+  width: 90%;
+  font-family: "Proxima Nova Regular,Segoe UI,Roboto,Droid Sans,Helvetica Neue,Arial,sans-serif;";
+  font-size: 15px;
+  margin-left: auto;
+  margin-right: auto;
+  display: block;
+  text-indent 1.6%;
+}
+.ortho {
+  font-style: italic;
+  font-color: #FCD8C0;
+}
+
+#gameD {
+  width: 90%;
+  font-family: "Proxima Nova Regular,Segoe UI,Roboto,Droid Sans,Helvetica Neue,Arial,sans-serif;";
+  font-size: 15px;
+  margin-left: auto;
+  margin-right: auto;
+  display: block;
+  text-indent 1.6%;
+}
+
+#todoDiv {
+  width:100%;
+}
 
 a {
   color: #efb8c9;
-}
+}u
 
 #eighty {
   width: 92%;
   display: inline-block;
   margin-left: 4%;
   margin-right: 4%;
-  text-indent 3%;
+  text-indent 1.6%;
+}
+
+.a100 {
+  width: 100%;
+  text-align: center;
 }
 
 #rightPanel {
- width: 30%;
- height: 100%;
- float: right; 
- margin-right: 15px;
- margin-left: 50px;
-}
-
-#rightPanel2 {
- width: 20%;
- height: 100%;
- float: right; 
+ width: 35%;
+ float: right;
  margin-right: 15px;
  margin-left: 50px;
 }
 
 #leftPanel {
- width: 60%;
- height: 100%;
- float: left; 
+ width: 50%;
+ float: left;
  margin-left: 2%;
+ margin-right: 5%;
 }
 
 .hh1 {
@@ -101,8 +144,8 @@ a {
   }
 
 .image {
-  height: 94%;
-  width: 94%;
+  height: 145%;
+  width: 145%;
 }
 
 .image_2 {
@@ -123,11 +166,11 @@ a {
 .fred {
   color: #f4e0b5;
 }
-    
+
 .fred2 {
   color: #abfcfb;
 }
-    
+
 .large {
   font-size: 62;
   color: #e6d0f2;
@@ -136,7 +179,7 @@ a {
 .blue {
   color: #c9f2c6;
 }
-  
+
 .tao {
   margin-left: 3%;
 }
@@ -161,6 +204,13 @@ a {
   color: #d9b3ef;
 }
 
+#taskList {
+  width: 95%;
+}
+
+.break {
+  display: table;
+}
 
 .game {
   color: #00ffdd;
@@ -223,6 +273,7 @@ h3 {
   background-color: #97befc;
   font-size: 17px;
   border-color: yellow;
+  border-radius: 10px;
 }
 
 .tao1a {
@@ -234,7 +285,7 @@ h3 {
 .tao1b {
   color: #a5f7a5;
   font-size: 17px;
-  text-indent: 3%;
+  text-indent: 1.6%;
 }
 
 .tao100 {
@@ -387,41 +438,47 @@ h3 {
   font-size: 22px;
 }
 
-button:hover {
-  background-color: blue;
-  color: #0149bc;
-  background-color: #97befc;
-  text-align: left;
-  border-color: lightblue;
-  outline: 0px;
-  border-radius: 10px;
-  padding-top: 1.1px;
-  padding-bottom: 2px;
-  margin-right: 3px;
-  margin-left: 12px;
+button {
+  margin-left: 2%;
+  background-color: #331903;
+  border-width: 0;
+  border-color: #331903;
+  color: #F78BE3;
   font-size: 24px;
-  display: inline;
+  text-align: left;
 }
 
-button {
-  background-color: #6d5000;
-  text-align: left;
-  border-color: darkred;
-  outline: 0px;
-  color: #CCFDCB;
+button:hover {
+  margin-left: 2%;
+  color: #000000;
+  background-color: lightblue;
+  font-size: 22px;
+  border-width: 2px;
+  border-color: yellow;
   border-radius: 10px;
-  padding-top: 1.1px;
-  padding-bottom: 2px;
-  margin-right: 3px;
-  margin-left: 12px;
+  text-align: left;
+}
+
+#roll {
+  margin-left: 2%;
+  color: #f7ec20;
+  font-size: 17px;
+  border-radius: 10px;
+}
+ 
+#roll:hover: {
+  margin-left: 2%;
+  color: #0149bc;
+  background-color: black;
   font-size: 24px;
-  display: inline;
+  border-color: black;
+  border-radius: 10px;
 }
 
 label {
-  background-color: #6d5000;
+  background-color: #331903;
   text-align: left;
-  border-color: darkred;
+  border-color: 331903;
   outline: 0px;
   color: #CCFDCB;
   border-radius: 10px;
@@ -442,10 +499,6 @@ label {
   color: #FF0000;
   font-size:20px;
 }
-
-p {
-  text-indent: 3%;
-  }
 
 .indent {
   text-indent: 20px;
@@ -521,6 +574,3 @@ p {
 #delete {
   font-size:20px;
 }
-
-
-

@@ -18,10 +18,14 @@ var Monad = function Monad(z = 42, g = 'generic') {
   };
 };
 
-const monadIt = h('pre', {style: {color: '#AFEEEE' }}, `  const MonadItter = () => {
+const monadIt = h('pre', {style: {color: '#AFEEEE' }}, `  var MonadItter = function MonadItter() {
     this.p = function () {};
-    this.release = (...args) => this.p(...args);
-    this.bnd = func => this.p = func;
+    this.release = function () {
+      return this.p.apply(this, arguments);
+    };
+    this.bnd = function (func) {
+      return this.p = func;
+    };
   }; ` )
 
 const ret = h('pre', {style: {color: '#AFEEEE' }}, `    function ret(v, id = 'temp') {
@@ -1230,7 +1234,8 @@ h('p', ' Instances of Monad facilitate changing values without mutation. They al
 h('p', ' If the three numbers from the previous sequence were all that we required, we could obtain them more efficiently by running: ' ),
 h('pre',
 `var demoResult = ret(0).bnd(x => add(x, 3).bnd(y => cube(y).bnd(z => [x,y,z])));
-console.log('We started with', demoResult[0], 'and got', demoResult[1], 'and', demoResult[2]);
+console.log('We started with', demoResult[0], 
+    'and got', demoResult[1], 'and', demoResult[2]);
 The console displays "We started with 0 and got 3 and 27"
 ` ),
 h('p', ' Doing it that was leaves only one monad - the one named "temp" - for the garbage collector. It also eliminates concern about name collisions among the monads. There is little danger that a monad named "temp" is being used to store a value somewhere else in the application code. The temp monad is obviously not a monad for preserving values. The result could have been logged to the console or used in further computations without creating a reference to it.' ),
@@ -1311,8 +1316,6 @@ h('pre', `    Result: m1.x === 0
             m3.x === 27  ` ),
 h('p', ' If the prefix "$" is absent, bnd() ignores the string argument. But when the "$" prefix is present, m1 retains its initial value, m2 retains the value it gets from from adding m\'s value (which is 0) to 3, and m3.x is the result of applying "cube" to m2.x. Both forms could be useful. ' ),
 h('p', ' The following example shows lambda expressions sending variables v1 and v2 through a sequence of computations and v3 sending the final result to the string that is logged. It also shows monads a, b, c, d, e, f, and g being updated and preserved in an array that is not affected by further updates. That is because calling the ret() method does not mutate a monad; it creates a fresh instance with the same name. Here is the example, shown in a screen shot of the Chrome console:. ' ),
-h('br' ),
-h('br' ),
 h('img.image', {props: {src: "demo_000.png"}}  ),
 h('h3', ' The Monad Laws '),
 h('p', ' In the following discussion, "x === y" signifies that the expression x === y returns true. Let J be the collection of all Javascript values, including functions, instances of Monad, etc, and let F be the collection of all functions mapping values in J to instances of Monad with references (names) matching their ids; that is, with window[id] === m.id for some id which is a valid es2015 variable name. The collection of all such instances of Monad along and all of the functions in F is called "M". For any instances of Monad m, m1, and m2 in M and any functions f and g in F, the following relationships follow easily from the definition of Monad: '),
@@ -1539,7 +1542,7 @@ var primes= h('pre',  `    function MonadState(g, state) {
         var newP = primes.slice(number);
         return [newP[newP.length - 1], newP, x, primes];
       }
-}  `  )
+    }  `  )
 
 var primes2 = h('pre',  `    const workerB$ = sources.WWB.map(m => {
       console.log('In workerB$ stream in the main thread. m, m[3] ', m, m.data[3] );
