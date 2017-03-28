@@ -167,7 +167,9 @@ function main(sources) {
     mMtem.ret(e.data.split(',')).bnd( v => {
   console.log('Websockets e.data.split message v: ', v );
   mMZ10.bnd( () => {
-    updateNums([v[7], v[8], 0, [], [v[3], v[4], v[5], v[6]]]);
+    var v7 = parseInt(v[7], 10);
+    v7 = (v7 % 5) === 0 ? v7 + 5 : v7;
+    updateNums([v7, v[8], 0, [], [v[3], v[4], v[5], v[6]]]);
   });
     mMZ12.bnd( () => mM6.ret(v[2] + ' successfully logged in.'));
     mMZ13.bnd( () => {
@@ -1012,23 +1014,22 @@ var todoMonad = new MonadState3('todoMonad',
       h('img.image_2', {props: {src: "logo.svg" }}  ),
       h('span', ' ' ),
       h('a', { props: { href: "https://cycle.js.org/", target: "_blank" } }, 'A cyclejs application'),
-      h('h1', 'JS-monads running in Cycle.js') ]),
+      h('h1', 'Functional Reactive Programming With Monads') ]),
   h('div.content', [
-      h('p.ortho', ' Front-end web developers might be interested in seeing how I encapsule procedures and state in objects whose methods conform to a JavaScript version of the Haskell monad laws. Developing a feel for function reactive programming takes a little getting used to, and the examples and explanations on this page could help. ' ),
-      h('p.ortho', ' This site is intended as a recipe for constructing monads. I hope I have made it easier for you to make some of your own.  -- David Schalk'),
+      h('p', ' Front-end web developers might be interested in seeing how I encapsule procedures and state in objects whose methods conform to a JavaScript version of the Haskell monad laws. It is fascinating to see how reactivity is achieved in Cycle.js. The Haskell server might also be of interest. '),
+h('p', 'People who are developing a feel for function reactive programming can cut through to its essence by seeing it implemented in various contexts. The combination of Lodash, Immutable.js, and RxJS running in Node.js is one possibility. Here we demonstrate how a front-end developer can create monads to suit their purposes; and obtain amazing reactivity by implementing them in a Cycle.js framework. ' ),
 
   h('span.tao1b', 'You can comment at ' ),
       h('a', { props: { href: 'https://redd.it/60c2xx' }}, 'Reddit' ),
       h('span.tao1b', ' or in the ' ),
       h('a', {props: { href: '#comment' }}, 'comments' ),
       h('br'),
-      h('br'),
-      h('p', ' Snabbdom, Xstream, EventEmitter, and most of the monads and functions presented here are available in browser developer tools consoles and scratch pads. A commercial site would load these as modules in production, but this site is for experimention and fun. ' ),
+      h('p', ' Snabbdom, Xstream, EventEmitter, and most of the monads and functions presented here are available in browser developer tools consoles and scratch pads. A production site would load these as modules, but this site is for experimention and learning. ' ),
       h('span#italic', ' These monads are like the Haskell monads in that they resemble the monads of category theory without actually being mathematical monads. See ' ),
       h('a', { props: { href: "http://math.andrej.com/2016/08/06/hask-is-not-a-category/", target: "_blank" } }, 'Hask is not a category.'),
           h('span', ' by Andrej Bauer and the ' ),
           h('a', { props: { href: '#discussion' } }, 'Discussion'),
-          h('span', ' below. They provide a convenient interface for dealing with uncertainty and side effects in a purely functional manner, assigning new values to variables without mutation. Adherence to the monad laws (see below) helps make the monads robust, versatile, and reliable tools for isolating and chaining sequences of javascript functions.' ),
+          h('span', ' below. They provide a convenient interface for dealing with uncertainty and side effects in a purely functional manner. Adherence to the monad laws (see below) helps make the monads robust, versatile, and reliable tools for isolating and chaining sequences of javascript functions. State is modified in monads without mutating anything outside of them.' ),
 
           h('p', ' The demonstrations include persistent, shared todo lists, text messaging, and a simulated dice game with a traversable history (all group members see your score decrease or increase as you navegate backwards and forwards). Monads are shown performing lengthy mathematical computations asycronously in web workers. Monads encapsulate state. The error checking monad carries occurances of NaN and runtime errors through sequences of computations much like the Haskell Maybe monad. ' ),
       h('span.tao', 'The code for this repository is at '),
@@ -1051,6 +1052,10 @@ h('span', 'Name: '),
 h('input.login', )]),
 h('p', mM6.x ),
 ]),
+h('hr.len90'),
+h('br'),
+h('div.heading',  { style: { display: mMgameDiv2.x } }, 'Game, Todo List, Text Messages' ), 
+h('br'),
 
 h('div#gameDiv2', { style: { display: mMgameDiv2.x } }, [
   h('div#leftPanel', { style: { display: mMgameDiv2.x } }, [
@@ -1064,6 +1069,7 @@ h('div#gameDiv2', { style: { display: mMgameDiv2.x } }, [
     h('button#6.op', 'mult'),
     h('button#7.op', 'div'),
     h('button#8.op', 'concat'),
+    h('br'),
     h('br'),
     h('div#dice', { style: { display: mMdice.x } }, [
       h('button#roll', 'ROLL'),
@@ -1100,7 +1106,7 @@ h('div#gameDiv2', { style: { display: mMgameDiv2.x } }, [
 //    h('div.game', 'Group: ' + pMgroup.x ),
     h('pre.game', `Currently online:
 (Name score | goals) `  ),
-    h('div.game', '' + pMdata.x  ),
+    h('div.game', {props: {color: "gold"}}, '' + pMdata.x  ),
     h('br'),
     h('br'),
     h('div#a100', ' _________________________________________________ ' ),

@@ -8,14 +8,14 @@ body {
   margin-left: auto;
   margin-right: auto;
   border-radius: 35px;
-  background-color: #331903;
+  background-color: #361B01;
   color: #d3ead5;
   margin-top: 20px;
   font-size: 15px;
   font-family: "Proxima Nova Regular,Segoe UI,Roboto,Droid Sans,Helvetica Neue,Arial,sans-serif;";
-  -webkit-box-shadow: 0px 0px 40px 0px rgb(255, 215, 0), inset 0px 0px 20px 0px rgb(0,0,0);
-  -moz-box-shadow:    0px 0px 40px 0px rgb(255, 215, 0), inset 0px 0px 20px 0px rgb(0,0,0);
-  box-shadow:         0px 0px 40px 0px rgb(255, 215, 0), inset 0px 0px 20px 0px rgb(0,0,0);
+  -webkit-box-shadow: inset 0px 0px 20px 0px rgb(0,0,0);
+  -moz-box-shadow:    inset 0px 0px 20px 0px rgb(0,0,0);
+  box-shadow:         inset 0px 0px 20px 0px rgb(0,0,0);
   padding: 3px 0px 3px 3px;
 }
 
@@ -48,13 +48,56 @@ p {
   text-indent: 2.2%;
   }
 
+button {
+  margin-left: 5%;
+  background-color: #331903;
+  border-width: 0;
+  border-color: #E8F7C1;
+  border-radius: 10px;
+  color: #00ffdd;
+  font-size: 24px;
+  padding-left: 3px;
+  padding-right: 3px;
+  -webkit-box-shadow: 0px 0px 15px 0px rgb(255, 215, 0);
+  -moz-box-shadow:    0px 0px 15px 0px rgb(255, 215, 0);
+  box-shadow:         0px 0px 15px 0px rgb(255, 215, 0);
+  padding: 3px 0px 3px 3px;
+}
+
+button:hover {
+  color: blue;
+  background-color: lightblue;
+  border-width: 4px;
+  border-color: #F7EDC1;
+  border-radius: 10px;
+}
+
+#roll {
+  font-size: 17px;
+}
+
+label {
+  background-color: #331903;
+  text-align: left;
+  border-color: 331903;
+  outline: 0px;
+  color: #CCFDCB;
+  border-radius: 10px;
+  padding-top: 1.1px;
+  padding-bottom: 2px;
+  margin-right: 3px;
+  margin-left: 12px;
+  font-size: 24px;
+  display: inline;
+}
+
 h2 {
   color: #efe302;
   text-align: center;
   }
 
 h1 {
-  color: #efe302;
+  color: #EAFCCC;
   text-align: center;
   }
 
@@ -100,6 +143,17 @@ h1 {
   margin-right: auto;
   display: block;
   text-indent 1.6%;
+}
+
+.len90 {
+  width: 90%;
+  text-align: center;
+}
+
+.heading {
+  font-size: 30px;
+  text-align: center;
+  color: #FC761C;
 }
 
 #todoDiv {
@@ -213,7 +267,7 @@ a {
 }
 
 .game {
-  color: #00ffdd;
+  color: #255,215,0;
   font-size: 20px;
 }
 
@@ -436,58 +490,6 @@ h3 {
 #alert {
   color: #FF0000;
   font-size: 22px;
-}
-
-button {
-  margin-left: 2%;
-  background-color: #331903;
-  border-width: 0;
-  border-color: #331903;
-  color: #F78BE3;
-  font-size: 24px;
-  text-align: left;
-}
-
-button:hover {
-  margin-left: 2%;
-  color: #000000;
-  background-color: lightblue;
-  font-size: 22px;
-  border-width: 2px;
-  border-color: yellow;
-  border-radius: 10px;
-  text-align: left;
-}
-
-#roll {
-  margin-left: 2%;
-  color: #f7ec20;
-  font-size: 17px;
-  border-radius: 10px;
-}
- 
-#roll:hover: {
-  margin-left: 2%;
-  color: #0149bc;
-  background-color: black;
-  font-size: 24px;
-  border-color: black;
-  border-radius: 10px;
-}
-
-label {
-  background-color: #331903;
-  text-align: left;
-  border-color: 331903;
-  outline: 0px;
-  color: #CCFDCB;
-  border-radius: 10px;
-  padding-top: 1.1px;
-  padding-bottom: 2px;
-  margin-right: 3px;
-  margin-left: 12px;
-  font-size: 24px;
-  display: inline;
 }
 
 .scoreDisplay {
