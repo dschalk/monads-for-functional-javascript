@@ -1195,7 +1195,7 @@ h('br'),
 
 var monad = h('div',  [
 h('h1', 'The Monads'),
-h('p', ' The definition of Monad, which is the basic monad constructor, is somewhat obscure. It isn\'t intended as a puzzle, so a little explanation is in order. ' ),
+h('p', ' The definition of Monad, which is the basic monad constructor, is a little complicated. It isn\'t intended as a puzzle, so a little explanation is in order. ' ),
 h('p', ' The term "monad" will mean "instance of Monad". Monad could have been defined as a class, but the current definition suffices. ' ),
 h('p', ' Monads are created by code such as "const m = new Monad("anything", "m")". The arguments will be the values of m.x and m.id. The first argument can be any Javascript value, such as string, array, or monad. The second argument should be the name of the monad. ' ),
 h('p', ' A monad, say "m", can be replaced by another monad named "m" in the global space through the use of the method "ret()". It looks like m.x gets mutated, but that isn\'t what happens. Previously defined references to m retain their values, as demonstrated below: '),
