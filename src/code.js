@@ -789,15 +789,16 @@ var tr3 = h('pre',  `  var tr3 = function tr (fibsArray, primesArray) {
     .select('#back').events('click');
 
   var backAction$ = backClick$.map(() => {
-    if (mMindex.x > 0) {  
-      mMindex.ret(mMindex.x - 1)
-      buttonNode = bNode(fetch4(mMindex.x));
-      sMplayers.s.clear();
-      var score = fetch0(mMindex.x)
-      var goals = fetch1(mMindex.x);
-      socket.send(\`CG#$42,${pMgroup.x},${pMname.x},${score},${goals}\`)
-    } 
-});  `  )
+    if (mMindex.x > 0) {
+      mMindex.ret(mMindex.x - 1).bnd(i => {
+        gameMonad.s[i][2] = 0,
+        gameMonad.s[i][3] = [],
+        buttonNode = bNode(fetch4(i)),
+        sMplayers.s.clear(),
+        socket.send(\`CG#$42,\${pMgroup.x},\${pMname.x},\${fetch0(i)},\${fetch1(i)}\`)
+      });
+    };
+  });  `  )
 
   var monadEr = h('pre',  `    function MonadEr (val, ID, er = []) {
           var test;
@@ -1624,13 +1625,13 @@ var gameMonad_2 = h('pre',  `  function MonadState(g, state) {
 var monCon = h('pre',  `
 `  )
 
-var newRoll = h('pre',  `  function updateNums ([score = fetch0(mMindex.x), goals = fetch1(mMindex.x), 
-    operator = fetch2(mMindex.x), a3 = fetch3(mMindex.x), 
-      display = fetch4(mMindex.x) ]) {
-    var s = gameMonad.s.slice();
-    s.push([score, goals, operator, a3, display]);
-    buttonNode = bNode(display);
+var newRoll = h('pre',  `  function updateNums ([score = fetch0(mMindex.x), goals = fetch1(mMindex.x),
+      operator = fetch2(mMindex.x), a3 = fetch3(mMindex.x),
+          display = fetch4(mMindex.x) ]) {
     mMindex.bnd(add,1);
+    var s = gameMonad.s.slice();
+    s.splice(mMindex.x, 0, [score, goals, operator, a3, display]);
+    buttonNode = bNode(display);
     gameMonad = new MonadState('gameMonad', s);
   }
 
@@ -1640,8 +1641,7 @@ const messages$ = sources.WS.map( e => {
   console.log('Websockets e.data.split message v: ', v );    
   mMZ10.bnd( () => {
     updateNums([v[7], v[8], 0, [], [v[3], v[4], v[5], v[6]]]);
-  });   
-`  )
+  });   `  );
 
 var fetch = h('pre',  `  function fetch4 (n) {
       return gameMonad.s[n][4];
@@ -1677,14 +1677,14 @@ var num_op = h('pre',  `  var rollClick$ = sources.DOM
 
   var numClickAction$ = numClick$.map(e => {
     var state = gameMonad.s[mMindex.x].slice();
+    console.log('state and mMindex.x', state, mMindex.x);
     if (fetch3(mMindex.x).length < 2)  {
       var a = state[3].slice();
       var b = state[4].slice();
-      var c = b.splice(e.target.id,1);
-      a.push(c[0]);
-      updateNums([,,,a,b]) 
+      a.push(b.splice(e.target.id, 1)[0]);
+      updateNums([,,,a,b])
       if (a.length === 2 && state[2] != 0) {
-        updateCalc(a, state[2]) 
+        updateCalc(a, state[2])
       }
     }
   }).startWith([0, 0, 0, 0]);
