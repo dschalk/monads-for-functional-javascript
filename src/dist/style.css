@@ -45,13 +45,13 @@ pre {
 }
 
 p {
-  text-indent: 7px;
+  text-indent: 3%;
 }
 
 button {
   margin-left: 5%;
   background-color: #331903;
-  border-width: 0;
+  border-width: 2px;
   border-color: #E8F7C1;
   border-radius: 10px;
   color: #00ffdd;
@@ -65,7 +65,6 @@ button {
 button:hover {
   color: blue;
   background-color: lightblue;
-  border-width: 4px;
   border-color: #F7EDC1;
   border-radius: 10px;
 }

@@ -155,10 +155,10 @@ function main(sources) {
   function updateNums ([score = fetch0(mMindex.x), goals = fetch1(mMindex.x),
       operator = fetch2(mMindex.x), a3 = fetch3(mMindex.x),
           display = fetch4(mMindex.x) ]) {
-    var s = gameMonad.s.slice();
-    s.push([score, goals, operator, a3, display]);
-    buttonNode = bNode(display);
     mMindex.bnd(add,1);
+    var s = gameMonad.s.slice();
+    s.splice(mMindex.x, 0, [score, goals, operator, a3, display]);
+    buttonNode = bNode(display);
     gameMonad = new MonadState('gameMonad', s);
   }
 
@@ -175,7 +175,7 @@ function main(sources) {
     mMZ13.bnd( () => {
       var message = v.slice(3,v.length).join(', ');
       var str = v[2] + ': ' + message;
-      messages.unshift(h('span', str ),h('br'));
+      messages.unshift(h('span', str ), h('br'));
    });
   mMZ14.bnd( () => {
     mMgoals2.ret('The winner is ' + v[2]);
@@ -320,11 +320,11 @@ var comClickAction$ = comClick$.map( e => {
 
   var numClickAction$ = numClick$.map(e => {
     var state = gameMonad.s[mMindex.x].slice();
+    console.log('state and mMindex.x', state, mMindex.x);
     if (fetch3(mMindex.x).length < 2)  {
       var a = state[3].slice();
       var b = state[4].slice();
-      var c = b.splice(e.target.id,1);
-      a.push(c[0]);
+      a.push(b.splice(e.target.id, 1)[0]);
       updateNums([,,,a,b])
       if (a.length === 2 && state[2] != 0) {
         updateCalc(a, state[2])
@@ -387,13 +387,14 @@ var comClickAction$ = comClick$.map( e => {
 
 var backAction$ = backClick$.map(() => {
   if (mMindex.x > 0) {
-    mMindex.ret(mMindex.x - 1)
-    buttonNode = bNode(fetch4(mMindex.x));
-    sMplayers.s.clear();
-    var score = fetch0(mMindex.x)
-    var goals = fetch1(mMindex.x);
-    socket.send(`CG#$42,${pMgroup.x},${pMname.x},${score},${goals}`)
-  }
+    mMindex.ret(mMindex.x - 1).bnd(i => {
+      gameMonad.s[i][2] = 0,
+      gameMonad.s[i][3] = [],
+      buttonNode = bNode(fetch4(i)),
+      sMplayers.s.clear(),
+      socket.send(`CG#$42,${pMgroup.x},${pMname.x},${fetch0(i)},${fetch1(i)}`)
+    });
+  };
 });
 
 var forwardAction$ = forwardClick$.map(() => {
@@ -1051,22 +1052,21 @@ h('h3', 'The Game'),
 h('p', 'People who are in the same group, other than the default group named "solo", share the same todo list, chat messages, and simulated dice game. In order to see any of these, you must establish a unique identity on the server by logging in. The websockets connection terminates if the first message the server receives does not come from the sign in form. You can enter any random numbers, letters, or special characters you like. The server checks only to make sure someone hasn\'t already signed in with the sequence you have selected. If you log in with a name that is already in use, a message will appear and this page will be re-loaded in the browser after a four-second pause. '),
 h('p', ' Data for the traversable game history accumulates until a player scores three goals and wins. The data array is then erased and the application is ready to start accumulating a new history. '),
 
-h('div#log1',  { style: { display: mMlog1.x } }, [
+h('div#log1',  {style: { display: mMlog1.x }}, [
 h('p', 'IN ORDER TO SEE THE GAME, TODOLIST, AND CHAT DEMONSTRATIONS, YOU MUST ENTER SOMETHING TO ESTABLISH A WEBSOCKET CONNECTION.'),
 h('span', 'Name: '),
 h('input.login', )]),
 h('p', mM6.x ),
 ]),
-h('hr.len90'),
-h('br'),
-h('div.heading',  { style: { display: mMgameDiv2.x } }, 'Game, Todo List, Text Messages' ), 
-h('br'),
+h('hr.len90', {style: { display: mMgameDiv2.x }}, ),
+h('br.len90', {style: { display: mMgameDiv2.x }}, ),
+h('div.heading',  {style: { display: mMgameDiv2.x }}, 'Game, Todo List, Text Messages' ), 
 
-h('div#gameDiv2', { style: { display: mMgameDiv2.x } }, [
-  h('div#leftPanel', { style: { display: mMgameDiv2.x } }, [
-    h('span', ' Here are the basic rules:'),
+h('div#gameDiv2', {style: { display: mMgameDiv2.x }}, [
+  h('br'),
+  h('div#leftPanel', {style: { display: mMgameDiv2.x }}, [
     h('p', 'RULES: If clicking two numbers and an operator (in any order) results in 20 or 18, the score increases by 1 or 3, respectively. If the score becomes 0 or is evenly divisible by 5, 5 points are added. A score of 25 results in one goal. That can only be achieved by arriving at a score of 20, which jumps the score to 25. Directly computing 25 results in a score of 30, and no goal. Each time RL is clicked, one point is deducted. Three goals wins the game. '),
-    h('h1.red', mMgoals2.x ),
+    h('br'),
     buttonNode,
     h('br'),
     h('button#4.op', 'add'),
