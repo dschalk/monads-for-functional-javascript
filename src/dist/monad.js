@@ -131,9 +131,6 @@ var equals = function equals (mon1, mon2) {
 var mMtemp5 = new Monad(0, 'mMtemp5') 
 
   function add (x, b) {
-    if (isNaN(x) || isNaN(b)) {
-      console.log('add has an argument that is not a number', x, b);
-    }  
     return ret(parseInt(x,10) + parseInt(b,10));
   };
 
@@ -210,6 +207,7 @@ function MonadArchive(g, state, p) {
 var primesMonad = new MonadState('primesMonad', [3, [2,3], 3, [2,3]]);
 
 function MonadState(g, state) {
+  console.log('someone called with g and state', g, state);
   this.id = g;
   this.s = state;
   this.bnd = (func, ...args) => func(this.s, ...args);  
@@ -873,24 +871,24 @@ function stripchars(string, chars) {
       return mon.ret(ar3);
   };
 
-  var calc = function calc(a, op, b) {
+
+function calc (a, op, b) {
       var result;
       switch (op) {
+          case "concat":
+              result = parseInt(a.toString().concat(b.toString()), 10)
+              break;         
           case "add":
               result = parseInt(a, 10) + parseInt(b, 10);
               break;
           case "subtract":
               result = parseInt(a, 10) - parseInt(b, 10);
-              break;
-          
+              break;       
           case "mult":
               result = parseInt(a, 10) * parseInt(b, 10);
               break;
           case "div":
               result = parseInt(a, 10) / parseInt(b, 10);
-              break;
-          case "concat":
-              result = parseInt(a + b, 10);
               break;
           default: 'major malfunction in calc.';
       }
@@ -1375,28 +1373,6 @@ class G extends Polygon {
   }
 };
 
-function fetch4 (n) {
-    return gameMonad.s[n][4];
-}
- 
-function fetch3 (n) {
-    return gameMonad.s[n][3];
-}
- 
-function fetch2 (n) {
-    return gameMonad.s[n][2];
-}
- 
-function fetch1 (n) {
-    return gameMonad.s[n][1];
-}
- 
-function fetch0 (n) {
-    return gameMonad.s[n][0];
-}
- 
-var gameMonad = new MonadState('gameMonad', [ [0,0,0,[],[0,0,0,0] ]]);
-
 var ops = ['+','-','*','/', 'concat'];
 var nums = [3,4,5,6];
 
@@ -1854,6 +1830,131 @@ function execP (state, num) {
 */
 
 
+function createWebSocket(path) {
+    var host = window.location.hostname;
+    if (host === '')
+        host = 'localhost';
+    var uri = 'ws://' + host + ':3055' + path;
+    var Socket = "MozWebSocket" in window ? MozWebSocket : WebSocket;
+
+    return new Socket(uri);
+}
+
+var socket = createWebSocket('/');
+console.log('########## socket: ', socket);
+
+function websocketsDriver() {
+  return xs.create({
+    start: listener => { socket.onmessage = msg => listener.next(msg)},
+    stop: () => { socket.close() }
+  });
+};
+
+var gameMonad = new MonadState('gameMonad', [[[0,0,0,[],[1,2,3,4]], [0,0,0,[],[0,0,0,0]]],1 ]);
+
+MonadState.prototype.setIndex = function(n = this.s[1]) { this.s[1] = n; return n };
+
+MonadState.prototype.dec = function () {
+  this.s[1] -= 1;
+  buttonNode = bNode(this.s[0][this.s[1]][4]);
+  socket.send(`CG#$42,${pMgroup.x},${pMname.x},${this.s[0][this.s[1]][0]},${this.s[0][this.s[1]][1]}`)
+  window[this.id] = this;
+  return this;
+};
+
+MonadState.prototype.inc = function () {
+  this.s[1] += 1
+  buttonNode = bNode(this.s[0][this.s[1]][4]);
+  socket.send(`CG#$42,${pMgroup.x},${pMname.x},${this.s[0][this.s[1]][0]},${this.s[0][this.s[1]][1]}`)
+  window[this.id] = this;
+  return this;
+};
+
+MonadState.prototype.fetch0 = function () {
+    return this.s[0][this.s[1]][0];
+}
+ 
+MonadState.prototype.fetch1 = function () {
+    return this.s[0][this.s[1]][1];
+}
+ 
+MonadState.prototype.fetch2 = function () {
+    return this.s[0][this.s[1]][2];
+}
+ 
+MonadState.prototype.fetch3 = function () {
+    return this.s[0][this.s[1]][3].slice();
+}
+ 
+MonadState.prototype.fetch4 = function () {
+    return this.s[0][this.s[1]][4].slice();
+}
+ 
+MonadState.prototype.clearPicked = function () {
+  var st = this.s.slice();
+  st[0][st[1]][3] = [];
+  st[1] += 1;
+  st.splice(this.s[1]+1, 0, st[0]); 
+  return window['gameMonad'] = new MonadState('gameMonad', st);
+}
+
+MonadState.prototype.run = function ([
+  score = this.s[0][this.s[1]][0], 
+  goals = this.s[0][this.s[1]][1],
+  operator = this.s[0][this.s[1]][2],
+  picked = this.s[0][this.s[1]][3].slice(),
+  display = this.s[0][this.s[1]][4].slice()
+]) {
+  this.s[1] += 1;
+  var newState = this.s.slice();
+  newState[0].splice(this.s[1], 0, [score, goals, operator, picked, display])  
+   console.log('[score, goals, operator, picked, display]', 
+    [score, goals, operator, picked, display]);  
+  this.s = newState;
+  buttonNode = bNode(display);
+  return window['gameMonad'] = new MonadState('gameMonad', newState);
+}
+
+  function newRoll (a,b) {
+    socket.send(`CA#$42,${pMgroup.x},${pMname.x},6,6,12,20,${a},${b}`);
+  }
+
+  function score(result) {
+    var sc = parseInt(gameMonad.fetch0());
+    var sco = result === 18 ? sc + 3 : sc + 1;
+    var scor = sco % 5 === 0 ? sco + 5 : sco;
+    var goals = gameMonad.fetch1();
+
+    if (scor === 25 && gameMonad.fetch1() === "1") {
+      mMindex.ret(0);
+      gameMonad = new MonadState('gameMonad', [[0,0,0,[],[0,0,0,0]]]);
+      socket.send(`CE#$42,${pMgroup.x},${pMname.x}`);
+      scor = 0;
+      goals = 0;
+    }
+    if (scor === 25 && gameMonad.fetch1() === "0") {
+      scor = 0;
+      goals = 1;
+    }
+    newRoll(scor, goals);
+  };
+
+  function updateCalc(ar, op) {
+    console.log('In updateCalc. ar and op are', ar, op);
+    var result = calc(ar[0], op, ar[1]);
+    console.log('In updateCalc. result is', result);
+    console.log('In updateCalc. score is', score);
+    if (result === 18 || result === 20) {
+      score(result);
+    }
+    else {
+      var sco = gameMonad.fetch0();
+      var goals = gameMonad.fetch1();
+      var a = gameMonad.fetch4().slice();
+      a.push(result);
+      gameMonad.run([sco,goals,0,[],a]);
+    }
+  };
 
 
 

@@ -46,8 +46,6 @@
 
 	/* WEBPACK VAR INJECTION */(function(process) {"use strict";
 
-	var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }();
-
 	var _xstreamRun = __webpack_require__(2);
 
 	var _dom = __webpack_require__(10);
@@ -64,31 +62,6 @@
 	var formA = (0, _dom.h)('form#horses', 'You bet!');
 	console.log('textA is: ', textA);
 	console.log('formA is: ', formA);
-
-	function createWebSocket(path) {
-	  var host = window.location.hostname;
-	  if (host === '') host = 'localhost';
-	  var uri = 'ws://' + host + ':3055' + path;
-	  var Socket = "MozWebSocket" in window ? MozWebSocket : WebSocket;
-
-	  return new Socket(uri);
-	}
-
-	var socket = createWebSocket('/');
-	console.log('########## socket: ', socket);
-
-	function websocketsDriver() {
-	  return xs.create({
-	    start: function start(listener) {
-	      socket.onmessage = function (msg) {
-	        return listener.next(msg);
-	      };
-	    },
-	    stop: function stop() {
-	      socket.close();
-	    }
-	  });
-	};
 
 	function workerBDriver() {
 	  return xs.create({
@@ -256,34 +229,12 @@
 	    next(v.data[0], 'CE#$41', mMZ25);
 	  });
 
-	  function updateNums(_ref) {
-	    var _ref2 = _slicedToArray(_ref, 5),
-	        _ref2$ = _ref2[0],
-	        score = _ref2$ === undefined ? fetch0(mMindex.x) : _ref2$,
-	        _ref2$2 = _ref2[1],
-	        goals = _ref2$2 === undefined ? fetch1(mMindex.x) : _ref2$2,
-	        _ref2$3 = _ref2[2],
-	        operator = _ref2$3 === undefined ? fetch2(mMindex.x) : _ref2$3,
-	        _ref2$4 = _ref2[3],
-	        a3 = _ref2$4 === undefined ? fetch3(mMindex.x) : _ref2$4,
-	        _ref2$5 = _ref2[4],
-	        display = _ref2$5 === undefined ? fetch4(mMindex.x) : _ref2$5;
-
-	    mMindex.bnd(add, 1);
-	    var s = gameMonad.s.slice();
-	    s.splice(mMindex.x, 0, [score, goals, operator, a3, display]);
-	    buttonNode = bNode(display);
-	    gameMonad = new MonadState('gameMonad', s);
-	  }
-
 	  var messages$ = sources.WS.map(function (e) {
 	    console.log(e);
 	    mMtem.ret(e.data.split(',')).bnd(function (v) {
 	      console.log('Websockets e.data.split message v: ', v);
 	      mMZ10.bnd(function () {
-	        var v7 = parseInt(v[7], 10);
-	        v7 = v7 % 5 === 0 ? v7 + 5 : v7;
-	        updateNums([v7, v[8], 0, [], [v[3], v[4], v[5], v[6]]]);
+	        gameMonad.run([v[7], v[8], 0, [], [v[3], v[4], v[5], v[6]]]);
 	      });
 	      mMZ12.bnd(function () {
 	        return mM6.ret(v[2] + ' successfully logged in.');
@@ -367,10 +318,6 @@
 	  var comClickAction$ = comClick$.map(function (e) {
 	    if (e.target.value !== '') socket.send('TG#$42,' + get(pMgroup) + ',' + get(pMname) + ',@' + e.target.value + '\n*****************************');
 	  });
-
-	  function newRoll(a, b) {
-	    socket.send('CA#$42,' + pMgroup.x + ',' + pMname.x + ',6,6,12,20,' + a + ',' + b);
-	  }
 
 	  var loginPress$ = sources.DOM.select('input.login').events('keypress');
 
@@ -468,23 +415,25 @@
 	  var rollClick$ = sources.DOM.select('#roll').events('click');
 
 	  var rollClickAction$ = rollClick$.map(function () {
-	    var a = fetch0(mMindex.x).valueOf() - 1;
-	    var b = fetch1(mMindex.x).valueOf();
+	    var a = gameMonad.fetch0().valueOf() - 1;
+	    var b = gameMonad.fetch1().valueOf();
 	    socket.send('CA#$42,' + pMgroup.x + ',' + pMname.x + ',6,6,12,20,' + a + ',' + b);
 	  });
 
 	  var numClick$ = sources.DOM.select('.num').events('click');
 
 	  var numClickAction$ = numClick$.map(function (e) {
-	    var state = gameMonad.s[mMindex.x].slice();
-	    console.log('state and mMindex.x', state, mMindex.x);
-	    if (fetch3(mMindex.x).length < 2) {
-	      var a = state[3].slice();
-	      var b = state[4].slice();
+	    if (gameMonad.fetch3().length < 2) {
+	      var score = gameMonad.fetch0();
+	      var goals = gameMonad.fetch1();
+	      var op = gameMonad.fetch2();
+	      var a = gameMonad.fetch3();
+	      var b = gameMonad.fetch4();
 	      a.push(b.splice(e.target.id, 1)[0]);
-	      updateNums([,,, a, b]);
-	      if (a.length === 2 && state[2] != 0) {
-	        updateCalc(a, state[2]);
+	      console.log('In numClickAction$ - - - gameMonad.index and gameMonad.s ', gameMonad.index, gameMonad.s);
+	      gameMonad.run([score, goals, op, a, b]);
+	      if (a.length === 2 && gameMonad.fetch2() != 0) {
+	        updateCalc(a, gameMonad.fetch2());
 	      }
 	    }
 	  }).startWith([0, 0, 0, 0]);
@@ -492,66 +441,31 @@
 	  var opClick$ = sources.DOM.select('.op').events('click');
 
 	  var opClickAction$ = opClick$.map(function (e) {
-	    var s3 = fetch3(mMindex.x).slice();
+	    var s3 = gameMonad.fetch3();
+	    var score = gameMonad.fetch0();
+	    var goals = gameMonad.fetch1();
+	    var a = gameMonad.fetch3().slice();
+	    var b = gameMonad.fetch4().slice();
 	    if (s3.length === 2) {
 	      updateCalc(s3, e.target.innerHTML);
 	    } else {
-	      var state = gameMonad.s;
-	      state[mMindex.x][2] = e.target.innerHTML;
+	      gameMonad.run([score, goals, e.target.innerHTML, a, b]);
 	    }
 	  });
 
-	  function updateCalc(ar, op) {
-	    console.log('Entering updateCalc. ar and op are', ar, op);
-	    var result = calc(ar[0], op, ar[1]);
-	    if (result === 18 || result === 20) {
-	      score(result);
-	    } else {
-	      var a = fetch4(mMindex.x).slice();
-	      a.push(result);
-	      updateNums([,, 0, [], a]);
-	    }
-	  };
+	  var forwardClick$ = sources.DOM.select('#ahead.tao1').events('click');
 
-	  function score(result) {
-	    var state = gameMonad.s[mMindex.x].slice();
-	    var old = parseInt(state[0], 10);
-	    var res = result === 18 ? old + 3 : old + 1;
-	    var scor = res % 5 === 0 ? res + 5 : res;
-
-	    if (scor === 25 && state[1] === "2") {
-	      mMindex.ret(0);
-	      gameMonad = new MonadState('gameMonad', [[0, 0, 0, [], [0, 0, 0, 0]]]);
-	      socket.send('CE#$42,' + pMgroup.x + ',' + pMname.x);
-	      scor = 0;
-	      state[1] = 0;
-	    }
-	    if (scor === 25) {
-	      state[1] = parseInt(state[1], 10) + 1;
-	      scor = 0;
-	    }
-	    newRoll(scor, state[1]);
-	  };
-
-	  var forwardClick$ = sources.DOM.select('#ahead').events('click');
-
-	  var backClick$ = sources.DOM.select('#back').events('click');
+	  var backClick$ = sources.DOM.select('#back.tao100').events('click');
 
 	  var backAction$ = backClick$.map(function () {
-	    if (mMindex.x > 0) {
-	      mMindex.ret(mMindex.x - 1).bnd(function (i) {
-	        gameMonad.s[i][2] = 0, gameMonad.s[i][3] = [], buttonNode = bNode(fetch4(i)), sMplayers.s.clear(), socket.send('CG#$42,' + pMgroup.x + ',' + pMname.x + ',' + fetch0(i) + ',' + fetch1(i));
-	      });
-	    };
+	    if (gameMonad.s[1] > 0) {
+	      gameMonad.dec();
+	    }
 	  });
 
 	  var forwardAction$ = forwardClick$.map(function () {
-	    if (mMindex.x < gameMonad.s.length - 1) {
-	      mMindex.ret(mMindex.x + 1);
-	      buttonNode = bNode(fetch4(mMindex.x));
-	      var score = fetch0(mMindex.x);
-	      var goals = fetch1(mMindex.x);
-	      socket.send('CG#$42,' + pMgroup.x + ',' + pMname.x + ',' + score + ',' + goals);
+	    if (gameMonad.s[1] < gameMonad.s[0].length - 1) {
+	      gameMonad.inc();
 	    }
 	  });
 
@@ -1058,9 +972,7 @@
 	  var clearPicked$ = sources.DOM.select('#clear').events('click');
 
 	  var clearAction$ = clearPicked$.map(function () {
-	    var s = gameMonad.s.slice();
-	    s[mMindex.x][3] = [];
-	    gameMonad = new MonadState('gameMonad', s);
+	    gameMonad.clearPicked();
 	  });
 
 	  var elemB$ = sources.DOM.select('input#message2').events('keyup').map(function (e) {
@@ -1115,7 +1027,7 @@
 	  var calcStream$ = xs.merge(comClickAction$, messagePressAction$, fA_c$, forwardAction$, backAction$, prAction$, factorsAction_b$, fA$, factorsP$, fA_b$, factorsP_b$, clearprimes$, worker$, workerB$, workerC$, workerD$, workerE$, workerF$, clearAction$, factorsAction$, primeFib$, fibPressAction$, quadAction$, edit1Action$, edit2Action$, testWAction$, testZAction$, testQAction$, colorAction$, deleteAction$, newTaskAction$, chatClickAction$, gameClickAction$, todoClickAction$, captionClickAction$, groupPressAction$, rollClickAction$, loginPressAction$, messages$, numClickAction$, opClickAction$);
 	  return {
 	    DOM: calcStream$.map(function () {
-	      return (0, _dom.h)('div.main', [(0, _dom.h)('div.preContent', [(0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('div', 'FUNCTIONAL REACTIVE PROGRAMMING'), (0, _dom.h)('div', 'WITH CUSTOM MONADS AND CYCLE.JS')]), (0, _dom.h)('br'), (0, _dom.h)('div.image_3', [(0, _dom.h)('img.image_2', { props: { src: "logo.svg" } }), (0, _dom.h)('span', ' '), (0, _dom.h)('a', { props: { href: "https://cycle.js.org/", target: "_blank" } }, 'A Cycle.js application')]), (0, _dom.h)('div.content', [(0, _dom.h)('p', ' Front-end web developers might be interested in seeing how I encapsule procedures and state in objects whose methods conform to a JavaScript version of the Haskell monad laws. It is fascinating to see how reactivity is achieved in Cycle.js. The Haskell server might also be of interest. '), (0, _dom.h)('p', 'People who are developing a feel for function reactive programming can cut through to its essence by seeing it implemented in various contexts. The combination of Lodash, Immutable.js, and RxJS running in Node.js is one possibility. Here we demonstrate how a front-end developer can create monads to suit their purposes, and obtain amazing reactivity by implementing them in a Cycle.js framework. '), (0, _dom.h)('span.tao1b', 'You can comment at '), (0, _dom.h)('a', { props: { href: 'https://redd.it/60c2xx' } }, 'Reddit'), (0, _dom.h)('span.tao1b', ' or in the '), (0, _dom.h)('a', { props: { href: '#comment' } }, 'comments'), (0, _dom.h)('br'), (0, _dom.h)('p', ' Snabbdom, Xstream, EventEmitter, and most of the monads and functions presented here are available in browser developer tools consoles and scratch pads. A production site would load these as modules, but this site is for experimention and learning. '), (0, _dom.h)('span#italic', ' These monads are like the Haskell monads in that they resemble the monads of category theory without actually being mathematical monads. See '), (0, _dom.h)('a', { props: { href: "http://math.andrej.com/2016/08/06/hask-is-not-a-category/", target: "_blank" } }, 'Hask is not a category.'), (0, _dom.h)('span', ' by Andrej Bauer and the '), (0, _dom.h)('a', { props: { href: '#discussion' } }, 'Discussion'), (0, _dom.h)('span', ' below. They provide a convenient interface for dealing with uncertainty and side effects in a purely functional manner. Adherence to the monad laws (see below) helps make the monads robust, versatile, and reliable tools for isolating and chaining sequences of javascript functions. State is modified in monads without mutating anything outside of them.'), (0, _dom.h)('p', ' The demonstrations include persistent, shared todo lists, text messaging, and a simulated dice game with a traversable history (all group members see your score decrease or increase as you navegate backwards and forwards). Monads are shown performing lengthy mathematical computations asycronously in web workers. Monads encapsulate state. The error checking monad carries occurances of NaN and runtime errors through sequences of computations much like the Haskell Maybe monad. '), (0, _dom.h)('span.tao', 'This project was created by, and is actively maintained by David Schalk. The code repository is at '), (0, _dom.h)('a', { props: { href: "https://github.com/dschalk/JS-monads-stable", target: "_blank" } }, 'https://github.com/dschalk/JS-monads-stable. '), (0, _dom.h)('span', 'The master branch is a Motorcycle.js application using the Most.js library. That branch has been abandoned. This is a Cycle.js application using Xstream instead of Most. The primary branch is named "xstream". '), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('span.tao', ' The game code is fairly concise and intuitive. A quick walk-through is presented '), (0, _dom.h)('a', { props: { href: '#gameExplanation' } }, 'here'), (0, _dom.h)('span', '. To see monadic functionality at work, I suggest that you take a look at the section captioned '), (0, _dom.h)('a', { props: { href: '#asyncExplanation' } }, 'Asynchronous Processes'), (0, _dom.h)('br'), (0, _dom.h)('p', ' But it might be best to first proceed down the page and see the examples of Monad instances manipulating data. If you are trying to wrap you head around the concept of pure, chainable functions, such as the functions in the Underscore and Jquery libraries, understanding Monad instances might finally put you in the comfort zone you seek. '), (0, _dom.h)('br'), (0, _dom.h)('h3', 'The Game'), (0, _dom.h)('p', 'People who are in the same group, other than the default group named "solo", share the same todo list, chat messages, and simulated dice game. In order to see any of these, you must establish a unique identity on the server by logging in. The websockets connection terminates if the first message the server receives does not come from the sign in form. You can enter any random numbers, letters, or special characters you like. The server checks only to make sure someone hasn\'t already signed in with the sequence you have selected. If you log in with a name that is already in use, a message will appear and this page will be re-loaded in the browser after a four-second pause. '), (0, _dom.h)('p', ' Data for the traversable game history accumulates until a player scores three goals and wins. The data array is then erased and the application is ready to start accumulating a new history. '), (0, _dom.h)('div#log1', { style: { display: mMlog1.x } }, [(0, _dom.h)('p', 'IN ORDER TO SEE THE GAME, TODOLIST, AND CHAT DEMONSTRATIONS, YOU MUST ENTER SOMETHING TO ESTABLISH A WEBSOCKET CONNECTION.'), (0, _dom.h)('span', 'Name: '), (0, _dom.h)('input.login')]), (0, _dom.h)('p', mM6.x)]), (0, _dom.h)('hr.len90', { style: { display: mMgameDiv2.x } }), (0, _dom.h)('br.len90', { style: { display: mMgameDiv2.x } }), (0, _dom.h)('div.heading', { style: { display: mMgameDiv2.x } }, 'Game, Todo List, Text Messages'), (0, _dom.h)('div#gameDiv2', { style: { display: mMgameDiv2.x } }, [(0, _dom.h)('br'), (0, _dom.h)('div#leftPanel', { style: { display: mMgameDiv2.x } }, [(0, _dom.h)('p', 'RULES: If clicking two numbers and an operator (in any order) results in 20 or 18, the score increases by 1 or 3, respectively. If the score becomes 0 or is evenly divisible by 5, 5 points are added. A score of 25 results in one goal. That can only be achieved by arriving at a score of 20, which jumps the score to 25. Directly computing 25 results in a score of 30, and no goal. Each time RL is clicked, one point is deducted. Three goals wins the game. '), (0, _dom.h)('br'), buttonNode, (0, _dom.h)('br'), (0, _dom.h)('button#4.op', 'add'), (0, _dom.h)('button#5.op', 'subtract'), (0, _dom.h)('button#6.op', 'mult'), (0, _dom.h)('button#7.op', 'div'), (0, _dom.h)('button#8.op', 'concat'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('div#dice', { style: { display: mMdice.x } }, [(0, _dom.h)('button#roll', 'ROLL'), (0, _dom.h)('br'), (0, _dom.h)('button#back.tao100', 'BACK'), (0, _dom.h)('button#ahead.tao1', 'FORWARD'), (0, _dom.h)('div.tao', 'Selected numbers: ' + fetch3(mMindex.x).join(', ') + ' '), (0, _dom.h)('div.tao', 'Operator: ' + fetch2(mMindex.x) + ' '), (0, _dom.h)('div.tao', 'Index: ' + mMindex.x + ' '), (0, _dom.h)('button#clear', 'Clear selected numbers'), (0, _dom.h)('div#log2', { style: { display: mMlog2.x } }, [(0, _dom.h)('span', 'Change group: '), (0, _dom.h)('input#group')]), (0, _dom.h)('p', mMsoloAlert.x)])]), (0, _dom.h)('div#rightPanel', { style: { display: mMrightPanel.x } }, [(0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('button#todoButton', { style: { fontSize: '16px', display: 'inline' } }, 'TOGGLE TODO_LIST'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('button#chat2', { style: { fontSize: '16px', display: 'inline' } }, 'TOGGLE CHAT'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'),
+	      return (0, _dom.h)('div.main', [(0, _dom.h)('div.preContent', [(0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('div', 'FUNCTIONAL REACTIVE PROGRAMMING'), (0, _dom.h)('div', 'WITH CUSTOM MONADS AND CYCLE.JS')]), (0, _dom.h)('br'), (0, _dom.h)('div.image_3', [(0, _dom.h)('img.image_2', { props: { src: "logo.svg" } }), (0, _dom.h)('span', ' '), (0, _dom.h)('a', { props: { href: "https://cycle.js.org/", target: "_blank" } }, 'A Cycle.js application')]), (0, _dom.h)('div.content', [(0, _dom.h)('p', ' Front-end web developers might be interested in seeing how I encapsule procedures and state in objects whose methods conform to a JavaScript version of the Haskell monad laws. It is fascinating to see how reactivity is achieved in Cycle.js. The Haskell server might also be of interest. '), (0, _dom.h)('p', 'People who are developing a feel for function reactive programming can cut through to its essence by seeing it implemented in various contexts. The combination of Lodash, Immutable.js, and RxJS running in Node.js is one possibility. Here we demonstrate how a front-end developer can create monads to suit their purposes, and obtain amazing reactivity by implementing them in a Cycle.js framework. '), (0, _dom.h)('span.tao1b', 'You can comment at '), (0, _dom.h)('a', { props: { href: 'https://redd.it/60c2xx' } }, 'Reddit'), (0, _dom.h)('span.tao1b', ' or in the '), (0, _dom.h)('a', { props: { href: '#comment' } }, 'comments'), (0, _dom.h)('br'), (0, _dom.h)('p', ' Snabbdom, Xstream, EventEmitter, and most of the monads and functions presented here are available in browser developer tools consoles and scratch pads. A production site would load these as modules, but this site is for experimention and learning. '), (0, _dom.h)('span#italic', ' These monads are like the Haskell monads in that they resemble the monads of category theory without actually being mathematical monads. See '), (0, _dom.h)('a', { props: { href: "http://math.andrej.com/2016/08/06/hask-is-not-a-category/", target: "_blank" } }, 'Hask is not a category.'), (0, _dom.h)('span', ' by Andrej Bauer and the '), (0, _dom.h)('a', { props: { href: '#discussion' } }, 'Discussion'), (0, _dom.h)('span', ' below. They provide a convenient interface for dealing with uncertainty and side effects in a purely functional manner. Adherence to the monad laws (see below) helps make the monads robust, versatile, and reliable tools for isolating and chaining sequences of javascript functions. State is modified in monads without mutating anything outside of them.'), (0, _dom.h)('p', ' The demonstrations include persistent, shared todo lists, text messaging, and a simulated dice game with a traversable history (all group members see your score decrease or increase as you navegate backwards and forwards). Monads are shown performing lengthy mathematical computations asycronously in web workers. Monads encapsulate state. The error checking monad carries occurances of NaN and runtime errors through sequences of computations much like the Haskell Maybe monad. '), (0, _dom.h)('span.tao', 'This project was created by, and is actively maintained by David Schalk. The code repository is at '), (0, _dom.h)('a', { props: { href: "https://github.com/dschalk/JS-monads-stable", target: "_blank" } }, 'https://github.com/dschalk/JS-monads-stable. '), (0, _dom.h)('span', 'The master branch is a Motorcycle.js application using the Most.js library. That branch has been abandoned. This is a Cycle.js application using Xstream instead of Most. The primary branch is named "xstream". '), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('span.tao', ' The game code is fairly concise and intuitive. A quick walk-through is presented '), (0, _dom.h)('a', { props: { href: '#gameExplanation' } }, 'here'), (0, _dom.h)('span', '. To see monadic functionality at work, I suggest that you take a look at the section captioned '), (0, _dom.h)('a', { props: { href: '#asyncExplanation' } }, 'Asynchronous Processes'), (0, _dom.h)('br'), (0, _dom.h)('p', ' But it might be best to first proceed down the page and see the examples of Monad instances manipulating data. If you are trying to wrap you head around the concept of pure, chainable functions, such as the functions in the Underscore and Jquery libraries, understanding Monad instances might finally put you in the comfort zone you seek. '), (0, _dom.h)('br'), (0, _dom.h)('h3', 'The Game'), (0, _dom.h)('p', 'People who are in the same group, other than the default group named "solo", share the same todo list, chat messages, and simulated dice game. In order to see any of these, you must establish a unique identity on the server by logging in. The websockets connection terminates if the first message the server receives does not come from the sign in form. You can enter any random numbers, letters, or special characters you like. The server checks only to make sure someone hasn\'t already signed in with the sequence you have selected. If you log in with a name that is already in use, a message will appear and this page will be re-loaded in the browser after a four-second pause. '), (0, _dom.h)('p', ' Data for the traversable game history accumulates until a player scores three goals and wins. The data array is then erased and the application is ready to start accumulating a new history. '), (0, _dom.h)('div#log1', { style: { display: mMlog1.x } }, [(0, _dom.h)('p', 'IN ORDER TO SEE THE GAME, TODOLIST, AND CHAT DEMONSTRATIONS, YOU MUST ENTER SOMETHING TO ESTABLISH A WEBSOCKET CONNECTION.'), (0, _dom.h)('span', 'Name: '), (0, _dom.h)('input.login')]), (0, _dom.h)('p', mM6.x)]), (0, _dom.h)('hr.len90', { style: { display: mMgameDiv2.x } }), (0, _dom.h)('br.len90', { style: { display: mMgameDiv2.x } }), (0, _dom.h)('div.heading', { style: { display: mMgameDiv2.x } }, 'Game, Todo List, Text Messages'), (0, _dom.h)('div#gameDiv2', { style: { display: mMgameDiv2.x } }, [(0, _dom.h)('br'), (0, _dom.h)('div#leftPanel', { style: { display: mMgameDiv2.x } }, [(0, _dom.h)('p', 'RULES: If clicking two numbers and an operator (in any order) results in 20 or 18, the score increases by 1 or 3, respectively. If the score becomes 0 or is evenly divisible by 5, 5 points are added. A score of 25 results in one goal. That can only be achieved by arriving at a score of 20, which jumps the score to 25. Directly computing 25 results in a score of 30, and no goal. Each time RL is clicked, one point is deducted. Three goals wins the game. '), (0, _dom.h)('br'), buttonNode, (0, _dom.h)('br'), (0, _dom.h)('button#4.op', 'add'), (0, _dom.h)('button#5.op', 'subtract'), (0, _dom.h)('button#6.op', 'mult'), (0, _dom.h)('button#7.op', 'div'), (0, _dom.h)('button#8.op', 'concat'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('div#dice', { style: { display: mMdice.x } }, [(0, _dom.h)('button#roll.tao1', 'ROLL'), (0, _dom.h)('button#back.tao100', 'BACK'), (0, _dom.h)('button#ahead.tao1', 'FORWARD'), (0, _dom.h)('div.tao', 'Selected numbers: ' + gameMonad.fetch3().join(', ') + ' '), (0, _dom.h)('div.tao', 'Operator: ' + gameMonad.fetch2() + ' '), (0, _dom.h)('div.tao', 'Index: ' + gameMonad.s[1]), (0, _dom.h)('button#clear', 'Clear selected numbers'), (0, _dom.h)('div#log2', { style: { display: mMlog2.x } }, [(0, _dom.h)('span', 'Change group: '), (0, _dom.h)('input#group')]), (0, _dom.h)('p', mMsoloAlert.x)])]), (0, _dom.h)('div#rightPanel', { style: { display: mMrightPanel.x } }, [(0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('button#todoButton', { style: { fontSize: '16px', display: 'inline' } }, 'TOGGLE TODO_LIST'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('button#chat2', { style: { fontSize: '16px', display: 'inline' } }, 'TOGGLE CHAT'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'),
 	      //    h('div.game', 'Name: ' + pMname.x ),
 	      //    h('div.game', 'Group: ' + pMgroup.x ),
 	      (0, _dom.h)('pre.game', 'Currently online:\n(Name score | goals) '), (0, _dom.h)('div.game', { props: { color: "gold" } }, '' + pMdata.x), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('div#a100', ' _________________________________________________ '), (0, _dom.h)('br'), (0, _dom.h)('div#todoDiv', { style: { display: mMtodoDiv.x } }, [(0, _dom.h)('div#taskList', taskL), (0, _dom.h)('div', 'Enter author, responsible rerson, and task here: '), (0, _dom.h)('br'), (0, _dom.h)('input.newTask')]), (0, _dom.h)('br'), (0, _dom.h)('span#alert', mMalert.x), (0, _dom.h)('br'), (0, _dom.h)('span#alert2'), (0, _dom.h)('br'), (0, _dom.h)('div#chatDiv', { style: { display: mMchatDiv.x } }, [(0, _dom.h)('div#messages', [(0, _dom.h)('span', 'Message: '), (0, _dom.h)('input.inputMessage'), (0, _dom.h)('div', messages), (0, _dom.h)('br')])])])]),
@@ -1135,7 +1047,7 @@
 
 	      //************************************************************************** START GAME
 
-	      (0, _dom.h)('h2', 'The Simulated Dice Game'), (0, _dom.h)('p', ' gameMonad is an instance of MonadState. The State of the game is saved in gameMonad.s, which is an array of five element arrays consisting of score, goals, operator, selected numbers, and displayed numbers. When a player earns three goals, gameMonad.s gets reset to [[0,0,0,[],[0,0,0,0]]] and the player is declared to be the winner. '), (0, _dom.h)('p', ' updateNums() is the only function that directly affects gameMonad. It doesn\'t change the current globally available gameMonad; rather, it creates a new, augmented instance of gameMonad accessible in the global space. In other words, window["gameMonad"] gets re-directed to the newly created instance of MonadState with id of "gameMonad". updateNums() also updates the virtual DOM by calling bNode(). Here again is the definition of MonadState, along with the definitions of playerMonad, updateNums(), styl(), and bNum(): '), _code2.default.gameMonad_2, (0, _dom.h)('p', ' The five functions prefixed by "fetch" save coding time and space, and help prevent careless errors. They are defined as follows: '), _code2.default.fetch, (0, _dom.h)('p', ' One goal is awarded each time a player lands on the number 25. The limit for the number of score changes in one turn is two. If the number of increases were not limited, landing on 5 would launch you into an series of increases through all the multiples of five terminating with a stack overflow error message. As a consequence of this rule, only one five-point jump is allowed per turn. '), (0, _dom.h)('p', ' Another way to increase a score, other than computing an number which equals 0 modulo 5 is to compute the number 20 for one additional point, or the number 18 for three additional points. A quick way to arrive at 20 is to start at -1, compute 18 twice, which takes you from -1 to 2 to 5 and jumps you to 10. Then click roll, which sets you back to 9, and compute 18 twice. That takes you from 9 to 12, to 15, jumping you to 20. You don\'t get another jump, so click ROLL and compute 20, taking your score from 19 to 20 to 25 and back to 0, with an increase of one goal. If it is your third goal, you win the game. '), (0, _dom.h)('p', ' Here is the code that handles roll, number and operator clicks: '), _code2.default.num_op, (0, _dom.h)('p', ' A new state is added to gameMonad.s when a new roll arrives from the server. This is the code that handles the message when it arrives: '), _code2.default.newRoll, (0, _dom.h)('p', ' Requests for new rolls inclue the name and group of the player making the request. That information is used by the server to deduct one point and to limit broadcast of the new roll to only members of the requesting player\'s group. The request also incudes the requesting player\'s score and goals. These are returned by the server (with one point deducted) and are v[7] and v[8] in the messages$ stream. '), (0, _dom.h)('p', ' Game traversal is controlled by changing the value of mMindex.x. Here is the code that is called when the BACK button is clicked: '), _code2.default.backAction, (0, _dom.h)('p', ' numClickAction$ and opClickAction$ call updateCalc() when gameMonad.s[mMindex.x][3] contains two numbers and gameMonad.s[mMindex.x][2] is no longer 0 (implying that an operator has been selected). updateCalc takes two arguments, the selected numbers and the selected operator. This is what happens when updateCalc receives that information: '), _code2.default.updateCalc, (0, _dom.h)('p', '  parseInt(calc(ar[0], op, ar[1]), 10) is not 18 or 20, updateCalc sets the operator back to - and empties the picked numbers array. I also pushes the result of the calculation into the display array. updateNums does the rest. '), (0, _dom.h)('p', ' If the calculation yields 18 or 20, score(result) is called. Here is the definition of score() '), _code2.default.score, (0, _dom.h)('p', ' If the score is computed to be 25, the result of increasing goals by 1 determines how state is modified. If the result is not 3, goals is incremented and newRoll() is called with arguments score and goals. If the result is 3, a winner is declared and gameMonad.s reverts to [[0,0,0,[],[0,0,0,0]]]). '), (0, _dom.h)('p', ' The monadic functionality of gameMonad was not needed. Although a simpler object could have been used, I stuck with my usual practice of preserving state in instances of MonadState. I don\'t like to unnecessarily create additional things to think about. '),
+	      (0, _dom.h)('h2', 'The Simulated Dice Game'), (0, _dom.h)('p', ' gameMonad is an instance of MonadState. The State of the game is saved in gameMonad.s, which is an array of five element arrays consisting of score, goals, operator, selected numbers, and displayed numbers. When a player earns three goals, gameMonad.s gets reset to [[0,0,0,[],[0,0,0,0]]] and the player is declared to be the winner. '), (0, _dom.h)('p', ' updateNums() is the only function that directly affects gameMonad. It doesn\'t change the current globally available gameMonad; rather, it creates a new, augmented instance of gameMonad accessible in the global space. In other words, window["gameMonad"] gets re-directed to the newly created instance of MonadState with id of "gameMonad". updateNums() also updates the virtual DOM by calling bNode(). Here again is the definition of MonadState, along with the definitions of playerMonad, updateNums(), styl(), and bNum(): '), _code2.default.gameMonad_2, (0, _dom.h)('p', ' The five functions prefixed by "gameMonad.fetch" save coding time and space, and help prevent careless errors. They are defined as follows: '), _code2.default.gameMonad.fetch, (0, _dom.h)('p', ' One goal is awarded each time a player lands on the number 25. The limit for the number of score changes in one turn is two. If the number of increases were not limited, landing on 5 would launch you into an series of increases through all the multiples of five terminating with a stack overflow error message. As a consequence of this rule, only one five-point jump is allowed per turn. '), (0, _dom.h)('p', ' Another way to increase a score, other than computing an number which equals 0 modulo 5 is to compute the number 20 for one additional point, or the number 18 for three additional points. A quick way to arrive at 20 is to start at -1, compute 18 twice, which takes you from -1 to 2 to 5 and jumps you to 10. Then click roll, which sets you back to 9, and compute 18 twice. That takes you from 9 to 12, to 15, jumping you to 20. You don\'t get another jump, so click ROLL and compute 20, taking your score from 19 to 20 to 25 and back to 0, with an increase of one goal. If it is your third goal, you win the game. '), (0, _dom.h)('p', ' Here is the code that handles roll, number and operator clicks: '), _code2.default.num_op, (0, _dom.h)('p', ' A new state is added to gameMonad.s when a new roll arrives from the server. This is the code that handles the message when it arrives: '), _code2.default.newRoll, (0, _dom.h)('p', ' Requests for new rolls inclue the name and group of the player making the request. That information is used by the server to deduct one point and to limit broadcast of the new roll to only members of the requesting player\'s group. The request also incudes the requesting player\'s score and goals. These are returned by the server (with one point deducted) and are v[7] and v[8] in the messages$ stream. '), (0, _dom.h)('p', ' Game traversal is controlled by changing the value of mMindex.x. Here is the code that is called when the BACK button is clicked: '), _code2.default.backAction, (0, _dom.h)('p', ' numClickAction$ and opClickAction$ call updateCalc() when gameMonad.s[mMindex.x][3] contains two numbers and gameMonad.s[mMindex.x][2] is no longer 0 (implying that an operator has been selected). updateCalc takes two arguments, the selected numbers and the selected operator. This is what happens when updateCalc receives that information: '), _code2.default.updateCalc, (0, _dom.h)('p', '  parseInt(calc(ar[0], op, ar[1]), 10) is not 18 or 20, updateCalc sets the operator back to - and empties the picked numbers array. I also pushes the result of the calculation into the display array. updateNums does the rest. '), (0, _dom.h)('p', ' If the calculation yields 18 or 20, score(result) is called. Here is the definition of score() '), _code2.default.score, (0, _dom.h)('p', ' If the score is computed to be 25, the result of increasing goals by 1 determines how state is modified. If the result is not 3, goals is incremented and newRoll() is called with arguments score and goals. If the result is 3, a winner is declared and gameMonad.s reverts to [[0,0,0,[],[0,0,0,0]]]). '), (0, _dom.h)('p', ' The monadic functionality of gameMonad was not needed. Although a simpler object could have been used, I stuck with my usual practice of preserving state in instances of MonadState. I don\'t like to unnecessarily create additional things to think about. '),
 
 	      //************************************************************************** END GAME
 
@@ -1168,7 +1080,6 @@
 /***/ function(module, exports) {
 
 	// shim for using process in browser
-
 	var process = module.exports = {};
 
 	// cached from whatever global is present so that test runners that stub it
@@ -1179,22 +1090,84 @@
 	var cachedSetTimeout;
 	var cachedClearTimeout;
 
+	function defaultSetTimout() {
+	    throw new Error('setTimeout has not been defined');
+	}
+	function defaultClearTimeout () {
+	    throw new Error('clearTimeout has not been defined');
+	}
 	(function () {
-	  try {
-	    cachedSetTimeout = setTimeout;
-	  } catch (e) {
-	    cachedSetTimeout = function () {
-	      throw new Error('setTimeout is not defined');
+	    try {
+	        if (typeof setTimeout === 'function') {
+	            cachedSetTimeout = setTimeout;
+	        } else {
+	            cachedSetTimeout = defaultSetTimout;
+	        }
+	    } catch (e) {
+	        cachedSetTimeout = defaultSetTimout;
 	    }
-	  }
-	  try {
-	    cachedClearTimeout = clearTimeout;
-	  } catch (e) {
-	    cachedClearTimeout = function () {
-	      throw new Error('clearTimeout is not defined');
+	    try {
+	        if (typeof clearTimeout === 'function') {
+	            cachedClearTimeout = clearTimeout;
+	        } else {
+	            cachedClearTimeout = defaultClearTimeout;
+	        }
+	    } catch (e) {
+	        cachedClearTimeout = defaultClearTimeout;
 	    }
-	  }
 	} ())
+	function runTimeout(fun) {
+	    if (cachedSetTimeout === setTimeout) {
+	        //normal enviroments in sane situations
+	        return setTimeout(fun, 0);
+	    }
+	    // if setTimeout wasn't available but was latter defined
+	    if ((cachedSetTimeout === defaultSetTimout || !cachedSetTimeout) && setTimeout) {
+	        cachedSetTimeout = setTimeout;
+	        return setTimeout(fun, 0);
+	    }
+	    try {
+	        // when when somebody has screwed with setTimeout but no I.E. maddness
+	        return cachedSetTimeout(fun, 0);
+	    } catch(e){
+	        try {
+	            // When we are in I.E. but the script has been evaled so I.E. doesn't trust the global object when called normally
+	            return cachedSetTimeout.call(null, fun, 0);
+	        } catch(e){
+	            // same as above but when it's a version of I.E. that must have the global object for 'this', hopfully our context correct otherwise it will throw a global error
+	            return cachedSetTimeout.call(this, fun, 0);
+	        }
+	    }
+
+
+	}
+	function runClearTimeout(marker) {
+	    if (cachedClearTimeout === clearTimeout) {
+	        //normal enviroments in sane situations
+	        return clearTimeout(marker);
+	    }
+	    // if clearTimeout wasn't available but was latter defined
+	    if ((cachedClearTimeout === defaultClearTimeout || !cachedClearTimeout) && clearTimeout) {
+	        cachedClearTimeout = clearTimeout;
+	        return clearTimeout(marker);
+	    }
+	    try {
+	        // when when somebody has screwed with setTimeout but no I.E. maddness
+	        return cachedClearTimeout(marker);
+	    } catch (e){
+	        try {
+	            // When we are in I.E. but the script has been evaled so I.E. doesn't  trust the global object when called normally
+	            return cachedClearTimeout.call(null, marker);
+	        } catch (e){
+	            // same as above but when it's a version of I.E. that must have the global object for 'this', hopfully our context correct otherwise it will throw a global error.
+	            // Some versions of I.E. have different rules for clearTimeout vs setTimeout
+	            return cachedClearTimeout.call(this, marker);
+	        }
+	    }
+
+
+
+	}
 	var queue = [];
 	var draining = false;
 	var currentQueue;
@@ -1219,7 +1192,7 @@
 	    if (draining) {
 	        return;
 	    }
-	    var timeout = cachedSetTimeout(cleanUpNextTick);
+	    var timeout = runTimeout(cleanUpNextTick);
 	    draining = true;
 
 	    var len = queue.length;
@@ -1236,7 +1209,7 @@
 	    }
 	    currentQueue = null;
 	    draining = false;
-	    cachedClearTimeout(timeout);
+	    runClearTimeout(timeout);
 	}
 
 	process.nextTick = function (fun) {
@@ -1248,7 +1221,7 @@
 	    }
 	    queue.push(new Item(fun, args));
 	    if (queue.length === 1 && !draining) {
-	        cachedSetTimeout(drainQueue, 0);
+	        runTimeout(drainQueue);
 	    }
 	};
 
@@ -6175,7 +6148,7 @@
 
 	'use strict';
 
-	var map = { function: true, object: true };
+	var map = { 'function': true, object: true };
 
 	module.exports = function (x) {
 		return ((x != null) && map[typeof x]) || false;
@@ -6643,7 +6616,7 @@
 /* 73 */
 /***/ function(module, exports, __webpack_require__) {
 
-	// ES2015 Symbol polyfill for environments that do not support it (or partially support it)
+	// ES2015 Symbol polyfill for environments that do not (or partially) support it
 
 	'use strict';
 
@@ -6688,7 +6661,7 @@
 	// Internal constructor (not one exposed) for creating Symbol instances.
 	// This one is used to ensure that `someSymbol instanceof Symbol` always return false
 	HiddenSymbol = function Symbol(description) {
-		if (this instanceof HiddenSymbol) throw new TypeError('TypeError: Symbol is not a constructor');
+		if (this instanceof HiddenSymbol) throw new TypeError('Symbol is not a constructor');
 		return SymbolPolyfill(description);
 	};
 
@@ -6696,7 +6669,7 @@
 	// (returns instances of HiddenSymbol)
 	module.exports = SymbolPolyfill = function Symbol(description) {
 		var symbol;
-		if (this instanceof Symbol) throw new TypeError('TypeError: Symbol is not a constructor');
+		if (this instanceof Symbol) throw new TypeError('Symbol is not a constructor');
 		if (isNativeSafe) return NativeSymbol(description);
 		symbol = create(HiddenSymbol.prototype);
 		description = (description === undefined ? '' : String(description));
@@ -6716,8 +6689,8 @@
 			for (key in globalSymbols) if (globalSymbols[key] === s) return key;
 		}),
 
-		// If there's native implementation of given symbol, let's fallback to it
-		// to ensure proper interoperability with other native functions e.g. Array.from
+		// To ensure proper interoperability with other native functions (e.g. Array.from)
+		// fallback to eventual native implementation of given symbol
 		hasInstance: d('', (NativeSymbol && NativeSymbol.hasInstance) || SymbolPolyfill('hasInstance')),
 		isConcatSpreadable: d('', (NativeSymbol && NativeSymbol.isConcatSpreadable) ||
 			SymbolPolyfill('isConcatSpreadable')),
@@ -7067,34 +7040,35 @@
 
 	'use strict';
 
-	var copy       = __webpack_require__(85)
-	  , map        = __webpack_require__(86)
-	  , callable   = __webpack_require__(57)
-	  , validValue = __webpack_require__(45)
+	var copy             = __webpack_require__(85)
+	  , normalizeOptions = __webpack_require__(65)
+	  , ensureCallable   = __webpack_require__(57)
+	  , map              = __webpack_require__(86)
+	  , callable         = __webpack_require__(57)
+	  , validValue       = __webpack_require__(45)
 
 	  , bind = Function.prototype.bind, defineProperty = Object.defineProperty
 	  , hasOwnProperty = Object.prototype.hasOwnProperty
 	  , define;
 
-	define = function (name, desc, bindTo) {
+	define = function (name, desc, options) {
 		var value = validValue(desc) && callable(desc.value), dgs;
 		dgs = copy(desc);
 		delete dgs.writable;
 		delete dgs.value;
 		dgs.get = function () {
-			if (hasOwnProperty.call(this, name)) return value;
-			desc.value = bind.call(value, (bindTo == null) ? this : this[bindTo]);
+			if (!options.overwriteDefinition && hasOwnProperty.call(this, name)) return value;
+			desc.value = bind.call(value, options.resolveContext ? options.resolveContext(this) : this);
 			defineProperty(this, name, desc);
 			return this[name];
 		};
 		return dgs;
 	};
 
-	module.exports = function (props/*, bindTo*/) {
-		var bindTo = arguments[1];
-		return map(props, function (desc, name) {
-			return define(name, desc, bindTo);
-		});
+	module.exports = function (props/*, options*/) {
+		var options = normalizeOptions(arguments[1]);
+		if (options.resolveContext != null) ensureCallable(options.resolveContext);
+		return map(props, function (desc, name) { return define(name, desc, options); });
 	};
 
 
