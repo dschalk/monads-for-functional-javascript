@@ -1920,10 +1920,7 @@ MonadState.prototype.run = function ([
   }
 
   function updateCalc(ar, op) {
-    console.log('In updateCalc. ar and op are', ar, op);
     var result = calc(ar[0], op, ar[1]);
-    console.log('In updateCalc. result is', result);
-    console.log('In updateCalc. score is', score);
     if (result === 18 || result === 20) {
       score(result);
     }
