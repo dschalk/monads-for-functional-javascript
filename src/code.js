@@ -358,8 +358,7 @@ var cleanup = h('pre',  `  function cleanup (x) {
     }
   };  `  ) 
 
-  var score = h('pre', `  function score(result) {
-    var sc = parseInt(gameMonad.fetch0());
+  var sco = h('pre', `  function score(result) { var sc = parseInt(gameMonad.fetch0());
     var sco = result === 18 ? sc + 3 : sc + 1;
     var scor = sco % 5 === 0 ? sco + 5 : sco;
     var goals = gameMonad.fetch1();
@@ -1754,4 +1753,4 @@ var prototypeAdditions = h('pre',  `  var gameMonad = new MonadState('gameMonad'
   };  ` )
 
 
-  export default { calculations, prototypeAdditions, styl, num_op, fetch, gameMonad_2, newRoll, primes3, primes2, primes, variations, MonadEmitter, clicks, bNode, MonadState2, gameMonad, cycle, monad, hardWay, hardWay2, async1, async2, execP, workerD$, fact_workerC, fact2_workerD, primes_state, workerB_Driver, workerC, worker$, errorDemo, monadEr, backAction, tests, mMZ10, test3, monad, equals, fmap, opM, e2, e2x, e3, e4, e4x, e6, e6x, driver, messages, monadIt, MonadSet, updateCalc, arrayFuncs, nums, cleanup, ret, C42, newTask, process, mM$task, colorClick, edit, testZ, quad, runTest, todoStream, inc, seed,  add, MonadState, primesMonad, fibsMonad, primeFibInterface, tr3, fpTransformer, factorsMonad, factorsInput, promise, promiseSnippet, timeout, timeoutSnippet, examples, examples2 }
+  export default { sco, calculations, prototypeAdditions, styl, num_op, fetch, gameMonad_2, newRoll, primes3, primes2, primes, variations, MonadEmitter, clicks, bNode, MonadState2, gameMonad, cycle, monad, hardWay, hardWay2, async1, async2, execP, workerD$, fact_workerC, fact2_workerD, primes_state, workerB_Driver, workerC, worker$, errorDemo, monadEr, backAction, tests, mMZ10, test3, monad, equals, fmap, opM, e2, e2x, e3, e4, e4x, e6, e6x, driver, messages, monadIt, MonadSet, updateCalc, arrayFuncs, nums, cleanup, ret, C42, newTask, process, mM$task, colorClick, edit, testZ, quad, runTest, todoStream, inc, seed,  add, MonadState, primesMonad, fibsMonad, primeFibInterface, tr3, fpTransformer, factorsMonad, factorsInput, promise, promiseSnippet, timeout, timeoutSnippet, examples, examples2 }
