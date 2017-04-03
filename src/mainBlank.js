@@ -6,8 +6,6 @@ import code from './code.js';
 console.log('If you can read this you are in main.js <@><@><@><@><@><@><@><@>');
 var textA = h('textarea', 'You bet!' );
 var formA = h('form#horses', 'You bet!' );
-console.log('textA is: ', textA);
-console.log('formA is: ', formA);
 
 function workerBDriver () {
   return xs.create({
@@ -100,7 +98,6 @@ function updateTasks (obArray) {
 function main(sources) {
 
   const worker$ = sources.WW.map(v => {
-    console.log('Message from worker: ', v );
     v.preventDefault();
     mMZ21.bnd(() => {
       mM11.ret(v.data[1]);
@@ -115,13 +112,11 @@ function main(sources) {
       mM14.ret(v.data[1])
     });
     mMZ25.bnd(() => {
-      console.log('??????????????????????????????????????????? mMZ25.bnd - - - v', v );
       if (typeof v.data[1] === 'string') {
         console.log('Major malfunction in worker.js  Reporting from main thread', v.data[1] )
       }
       else {
         mMres.ret(v.data[0]);
-        console.log('In main thread. Re-instanciating primesMonad with ', v.data[1]);
         primesMonad = new MonadState('primesMonad', v.data[1])
       }
     });
@@ -179,17 +174,14 @@ function next(x, y, instance, z) {
 };
 
 function testComments (data)  {
-    console.log('In testComments data is >>>>>>>>>>>>>>>>>>>>', data );
     var a1 = data.split('@');
     var a2 = a1[1];
-    console.log('In testComments a2 is >>>>>>>>>>>>>>>>>>>>', a2 );
     var arr = a2.split('\n');
     mM26.ret([]);
     for (let k of arr) {
       mM26.bnd(push, k, 'mM26');
       mM26.bnd(push, h('br'), 'mM26');
     }
-    console.log('In testComment ar is >>>>>>>>>>>>>>>>>>>>', mM26.x );
 };
 
 var comClick$ = sources.DOM.select('textarea#comment').events('click');
@@ -273,7 +265,7 @@ var comClickAction$ = comClick$.map( e => {
     .select('#roll').events('click');
 
   var rollClickAction$ = rollClick$.map(() => {
-    var a = gameMonad.fetch0().valueOf() - 1;
+    var a = gameMonad.fetch0().valueOf() - 1;    // Lose one point for clicking ROLL.
     var b = gameMonad.fetch1().valueOf();
     socket.send(`CA#$42,${pMgroup.x},${pMname.x},6,6,12,20,${a},${b}`);
   });
@@ -290,13 +282,12 @@ var comClickAction$ = comClick$.map( e => {
       var a = gameMonad.fetch3();
       var b = gameMonad.fetch4();
       a.push(b.splice(e.target.id, 1)[0]);
-      console.log('In numClickAction$ - - - gameMonad.index and gameMonad.s ', gameMonad.index, gameMonad.s ); 
       gameMonad.run([score,goals,op,a,b]);
       if (a.length === 2 && gameMonad.fetch2() != 0) {
         updateCalc(a, gameMonad.fetch2())
       }
     }
-  }).startWith([0, 0, 0, 0]);
+  });
 
   var opClick$ = sources.DOM
       .select('.op').events('click');
@@ -323,7 +314,7 @@ var comClickAction$ = comClick$.map( e => {
 
 var backAction$ = backClick$.map(() => {
   if (gameMonad.s[1] > 0) {
-    gameMonad.dec(); 
+    gameMonad.dec();
   }
 });
 
@@ -359,7 +350,6 @@ var forwardAction$ = forwardClick$.map(() => {
   // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> START PRIME FIB
 
   const workerB$ = sources.WWB.map(m => {
-    console.log('In workerB$ stream in the main thread. m, m[3] ', m, m.data[3] );
     if (m.data[3] === 'color') {
       fill1Monad.ret(m.data[0]);
       fill2Monad.ret(m.data[1]);
@@ -369,7 +359,6 @@ var forwardAction$ = forwardClick$.map(() => {
       mMprimeFibBlurb.ret(m.data[6]);
     }
     else {
-      console.log('m.data[3] ********************', m.data[3] );
       mMelapsed.ret(elapsed(m.data[0][3]))
       .bnd(v =>  console.log(v));
       mMres.ret(m.data[0])
@@ -394,7 +383,6 @@ var forwardAction$ = forwardClick$.map(() => {
   var factorsPress$ = sources.DOM
       .select('input#factors_1').events('keydown');
   var factorsAction$ = factorsPress$.map(function (e) {
-  console.log('&&&&&>>> ^ ^ ^   * * *   >>Cordial greetings from factorsAction$. e is', e );
     var factors = [];
     mMfactors3.ret('');
     if (e.keyCode === 13) {
@@ -410,7 +398,6 @@ var forwardAction$ = forwardClick$.map(() => {
   });
 
   const workerC$ = sources.WWC.map(m => {
-    console.log('Back in the main thread. m is', m );
     mMfactors.ret(m.data[0]);
     mMfactors23.ret(m.data[1]);
     window['primesMonad'] = new MonadState('primesMonad', m.data[2]);
@@ -425,7 +412,6 @@ var forwardAction$ = forwardClick$.map(() => {
     var factors = [];
     if (e.keyCode === 13) {
       var ar = (e.target.value).split(',').map(v => parseInt(v,10));
-      console.log('In fA$ ar is', ar );
       if (ar[0] !== ar[0] || ar[1] !== ar[1] || typeof ar[0] !== 'number' || typeof ar[1] !== 'number') {
         mMfactors7.ret('It works only if you enter two integers separated by a comma.');
         return;
@@ -438,7 +424,6 @@ var forwardAction$ = forwardClick$.map(() => {
   });
 
   const workerD$ = sources.WWD.map(m => {
-    console.log('Back in the main thread. m is', m );
     mMfactors6.ret(m.data[0][3]);
     window['primesMonad'] = new MonadState('primesMonad', m.data[0], primes_state);
     mMfactors8.ret(m.data[1]);
@@ -451,7 +436,6 @@ var forwardAction$ = forwardClick$.map(() => {
       .select('input#factors_1b').events('keydown');
 
   var factorsAction_b$ = factorsPress_b$.map(function (e) {
-  console.log('Cordial greetings from factorsAction$_b$. e is', e );
     var factors = [];
     mMfactors3_b.ret('');
     if (e.keyCode === 13) {
@@ -467,7 +451,6 @@ var forwardAction$ = forwardClick$.map(() => {
   });
 
   const workerE$ = sources.WWE.map(m => {
-    // console.log('Back in the main thread. m is', m );
     mMfactors_b.ret(m.data[0]);
     window['primesMonad'] = new MonadState('primesMonad', m.data[1]);
     window['decompMonad'] = new MonadState('decompMonad', m.data[2]);
@@ -481,7 +464,6 @@ var forwardAction$ = forwardClick$.map(() => {
     var factors = [];
     if (e.keyCode === 13) {
       var ar = (e.target.value).split(',').map(v => parseInt(v,10));
-      console.log('In fA$ ar is', ar );
       if (ar[0] !== ar[0] || ar[1] !== ar[1] || typeof ar[0] !== 'number' || typeof ar[1] !== 'number') {
         mMfactors7.ret('It works only if you enter two integers separated by a comma.');
         return;
@@ -493,7 +475,6 @@ var forwardAction$ = forwardClick$.map(() => {
   });
 
   const workerF$ = sources.WWF.map(m => {
-    console.log('Back in the main thread. m is', m );
     mMfactors6_b.ret(m.data[2][3]);
     window['primesMonad'] = new MonadState('primesMonad', m.data[0], primes_state);
     window['decompMonad'] = new MonadState('decompMonad', m.data[2], primes_state);
@@ -504,18 +485,15 @@ var forwardAction$ = forwardClick$.map(() => {
       .select('input#factors800').events('keyup');
 
     var fA_c$ = factorsP_c$.map(function (e) {
-      console.log('In fa_c$ *************************************************************'),
       mMfactors800.ret('');
       var factors = [];
       var ar = (e.target.value).split(',').map(v => parseInt(v,10));
       if (e.keyCode === 13) {
-        console.log('In fA_c$ ar is', ar );
         if (ar[0] !== ar[0] || ar[1] !== ar[1] || typeof ar[0] !== 'number' || typeof ar[1] !== 'number') {
           mMfactors7.ret('It works only if you enter two integers separated by a comma.');
           return;
         }
       else {
-        console.log('In fA_c$ else block. ar is', ar );
         mMfactors800.ret(simpleWay(ar[0], ar[1]));
         }
       }
@@ -757,7 +735,6 @@ var forwardAction$ = forwardClick$.map(() => {
     });
 
     var edit2$ = sources.DOM
-
         .select('#edit2').events('keypress');
 
     var edit2Action$ = edit2$.map(function (e) {
@@ -770,22 +747,12 @@ var forwardAction$ = forwardClick$.map(() => {
         }
     });
 
-  var process2 = function (str, index) {
-    var ar = str.split(',');
-    var task;
-    if (ar.length === 1) {
-        task = ar;
-    }
-    if (ar.length > 1) {
-        task = ar.reduce(function (a, b) { return a + '$*$*$' + b; });
-    }
-    console.log('In process2. str, ar and task are', str, ar, task );
-    var a = mMcurrentList.x.split(',');
-    a[6 * index] = task;
-    var b = a.reduce(function (a, b) { return a + ',' + b; });
-    console.log('Still in process2. task, a and b are', task, a, b );
-    task2(b);
-  };
+    var process2 = function (str, index) {
+        var a = mMcurrentList.x.split(',');
+        a[6 * index] = str;
+        var b = a.reduce(function (a, b) { return a + ',' + b; });
+        task2(b);
+    };
 
     var deleteClick$ = sources.DOM
         .select('.delete').events('click');
@@ -930,7 +897,6 @@ function MonadState3(g, state) {
   this.c.on(a, (b)  => {
     this.s.push(b);
     todoNode = this.s.map(v => tNode(v));
-    console.log('In MonadState3 - - - this.s and todoNode are', this.s, todoNode);
     // window[this.id] = new MonadState3(this.id, list)
     }
   )
@@ -982,7 +948,7 @@ h('span', 'The master branch is a Motorcycle.js application using the Most.js li
       h('a', { props: { href: '#asyncExplanation' } }, 'Asynchronous Processes'),
       h('br'),
       h('p', ' But it might be best to first proceed down the page and see the examples of Monad instances manipulating data. If you are trying to wrap you head around the concept of pure, chainable functions, such as the functions in the Underscore and Jquery libraries, understanding Monad instances might finally put you in the comfort zone you seek. ' ),
-h('br'),    
+h('br'),
 h('h3', 'The Game'),
 h('p', 'People who are in the same group, other than the default group named "solo", share the same todo list, chat messages, and simulated dice game. In order to see any of these, you must establish a unique identity on the server by logging in. The websockets connection terminates if the first message the server receives does not come from the sign in form. You can enter any random numbers, letters, or special characters you like. The server checks only to make sure someone hasn\'t already signed in with the sequence you have selected. If you log in with a name that is already in use, a message will appear and this page will be re-loaded in the browser after a four-second pause. '),
 h('p', ' Data for the traversable game history accumulates until a player scores three goals and wins. The data array is then erased and the application is ready to start accumulating a new history. '),
@@ -995,7 +961,7 @@ h('p', mM6.x ),
 ]),
 h('hr.len90', {style: { display: mMgameDiv2.x }}, ),
 h('br.len90', {style: { display: mMgameDiv2.x }}, ),
-h('div.heading',  {style: { display: mMgameDiv2.x }}, 'Game, Todo List, Text Messages' ), 
+h('div.heading',  {style: { display: mMgameDiv2.x }}, 'Game, Todo List, Text Messages' ),
 
 h('div#gameDiv2', {style: { display: mMgameDiv2.x }}, [
   h('br'),
@@ -1271,32 +1237,28 @@ h('a', { props: { href: '#top' } }, 'Back To The Top'),
 //************************************************************************** START GAME
 
 h('h2', 'The Simulated Dice Game' ),
-h('p', ' The game is controlled by gameMonad, which is an instance of MonadState. The state of the game after each click on one of the displayed numbers is saved in an array of five-member arrays comprised of three numbers and two arrays. ' ),
-h('p', ' The array of state arrays is kept in gameMonad.s[0]. The elements of the five-member arrays correspond to score, goals, operator, selected numbers, and displayed numbers. ' ),
-h('p', ' gameMonad.s[0][ganeMonad.s[1]] is the state in gameMonad.s[0] that is displayd in the browser. As the previous sentence implies, the index number of the displayed state is the value of gameMonad.s[1]. History traversal is accomplished by changing gameMonad.s[1]. Here is how the application responds to clickes of the BACK and FORWARD buttons:' ),
+h('p', ' The game is controlled by gameMonad, which is an instance of MonadState. The state of the game after each click on one of the displayed numbers is saved in an array of five member arrays comprised of three numbers and two arrays corresponding to score, goals, operator, selected numbers, and displayed numbers. The current state of the game is the index of one of the states in gameMonad.s[0]. The index number is held in gameMonad.s[1]. History traversal is accomplished by changing gameMonad.s[1]. Here is how the application responds to clickes of the BACK and FORWARD buttons:' ),
     code.backAction,
-h('p', ' gameMonad methods are responsible for everything that happens when the BACK or FORWARD buttons are clicked. These methods do not obtain information outside of the scope of gameMonad, and their side effects are confined to sending websockets messages and updating the DOM. gameMonad was designed to be secure against unpredictable behavior caused by code outside of its scope, and to also not interfere with code that is outside of its scope. gameMonad is an object whose methods conform to functional programming best practices. ' ),
-h('p', ' The traversal methods are additions to MonadState.prototype as defined in the monad.js file. monad.js is accessed only by functions working in the main thread. Web workers access an identical version of MonadState, only without the prototype additions. It is available to them in the script2.js file, which is never accessed by functions operating in the main thread. Here are the additions to MonadState.prototype: ' ),
+h('p', ' Traversal does not involve any outside of gameMonad. gameMonad methods are responsible for everything that happens when the BACK or FORWARD buttons are clicked. These methods are additions to MonadState in monad.js file, which is accessed only in the main thread. Web workers use the definition of MonadState in script2.js. Its prototype is not burdened with methods the web workers don\'t need. Here are the additions to MonadState.prototype: ' ),
     code.prototypeAdditions,
-h('h3', 'Scoring' ),  
 h('p', ' One goal is awarded each time a player lands on the number 25. The limit for the number of score changes in one turn is two. If the number of increases were not limited, landing on 5 would launch you into an series of increases through all the multiples of five terminating with a stack overflow error message. As a consequence of this rule, only one five-point jump is allowed per turn. '),
 h('p', ' Another way to increase a score, other than computing an number which equals 0 modulo 5, is to compute the number 20 for one additional point, or the number 18 for three additional points. A quick way to arrive at 20 is to start at -1, compute 18 twice, which takes you from -1 to 2 to 5 and jumps you to 10. Then click roll, which sets you back to 9, and compute 18 twice. That takes you from 9 to 12, to 15, jumping you to 20. You don\'t get another jump, so click ROLL and compute 20 or click ROLL three times and compute 18, taking your score from 19 or 17 to 20 and then on to 25 and back to 0, with an increase of one goal. If it is your third goal, you win the game. ' ),
-h('p', ' Now let\'s take a look at the code that responds to number and operator clicks: ' ),
+h('p', ' Now let\'s back up and take a look at the code that responds to number and operator clicks: ' ),
     code.num_op,
-h('p', ' Three types of events cause a state array to be added to gameMonad.s[0]. Clicking a number removes the clicked number from the display, and the new state is preserved in gameMonad.s[0]. Clicking an operator when two numbers have been selected causes a computation to be made, adding a number to the display or, if the result of the computation is 18 or 20, causing a score increase and a new roll of the dice. Either way, the result is preserved in gameMonad.s[0]. Finally, clicking the ROLL button reduces the clicker\'s score by 1 and causes four new numbers to be displayed. The resulting state is spliced into the gameMonad.s[0] array. ' ),
+h('p', ' A new state is added to gameMonad.s whenever a number is clicked, and also when the ROLL button is clicked. Here is the code that responds to clicking ROLL, along with the code that handles the message that consequently arrives from the server: ' ),
+    code.newRoll,
 h('p', ' Requests for new rolls include the name and group of the player making the request. That information is used by the server to deduct one point and to limit broadcast of the new roll to only members of the requesting player\'s group. The request also incudes the requesting player\'s score and goals. These are returned by the server (with one point deducted) and are v[7] and v[8] in the messages$ stream. ' ),
 h('p', ' Game traversal is controlled by changing the value of mMindex.x. Here is the code that is called when the BACK button is clicked: ' ),
     code.backAction,
-h('p', ' numClickAction$ and opClickAction$ call updateCalc() when gameMonad.s[0][1]][3] contains two numbers and gameMonad.s[0][1][2] is no longer 0 (implying that an operator has been selected). updateCalc takes two arguments, the selected numbers and the selected operator. This is what happens when updateCalc receives that information: ' ),
+h('p', ' numClickAction$ and opClickAction$ call updateCalc() when gameMonad.s[mMindex.x][3] contains two numbers and gameMonad.s[mMindex.x][2] is no longer 0 (implying that an operator has been selected). updateCalc takes two arguments, the selected numbers and the selected operator. This is what happens when updateCalc receives that information: ' ),
     code.updateCalc,
-h('p', '  If parseInt(calc(ar[0], op, ar[1]), 10) is not 18 or 20, updateCalc sets the operator back to 0 and empties the picked numbers array. It also pushes the result of the calculation into the display array. ' ),
+h('p', '  parseInt(calc(ar[0], op, ar[1]), 10) is not 18 or 20, updateCalc sets the operator back to - and empties the picked numbers array. I also pushes the result of the calculation into the display array. updateNums does the rest. ' ),
 h('p', ' If the calculation yields 18 or 20, score(result) is called. Here is the definition of score() ' ),
     code.score,
-h('p', ' If the score is computed to be 25, the result of increasing goals by 1 determines how state is modified. If the result is not 3, goals is incremented and newRoll() is called with arguments score and goals. If the result is 3, a winner is declared and gameMonad.s reverts to [[[0,0,0,[],[0,0,0,0]]], 0]. ' ),
-h('p', ' gameMonad does not use its bnd() method, but I stayed with the usual practice of preserving state in instances of MonadState. “A foolish consistency is the hobgoblin of little minds, adored by little statesmen and philosophers and divines." - Ralph Waldo Emerson. Very true, but keeping code easy to reason about is never foolish. ' ),
+h('p', ' If the score is computed to be 25, the result of increasing goals by 1 determines how state is modified. If the result is not 3, goals is incremented and newRoll() is called with arguments score and goals. If the result is 3, a winner is declared and gameMonad.s reverts to [[0,0,0,[],[0,0,0,0]]]). ' ),
+h('p', ' The monadic functionality of gameMonad was not needed. Although a simpler object could have been used, I stuck with my usual practice of preserving state in instances of MonadState. I don\'t like to unnecessarily create additional things to think about. ' ),
 
 //************************************************************************** END GAME
-
 
 
 
@@ -1375,5 +1337,3 @@ const sources = {
   WW: workerDriver
 }
 run(main, sources);
-
-console.log(sources.DOM);

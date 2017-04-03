@@ -346,35 +346,37 @@ var cleanup = h('pre',  `  function cleanup (x) {
 
   var updateCalc = h('pre',  `  function updateCalc(ar, op) {
     var result = calc(ar[0], op, ar[1]);
-    if (result === 18 || result === 20) { 
+    if (result === 18 || result === 20) {
       score(result);
     }
     else {
-      var a = fetch4(mMindex.x).slice();
+      var sco = gameMonad.fetch0();
+      var goals = gameMonad.fetch1();
+      var a = gameMonad.fetch4().slice();
       a.push(result);
-      updateNums([,,0,[],a]);
+      gameMonad.run([sco,goals,0,[],a]);
     }
-  };  `) 
+  };  `  ) 
 
   var score = h('pre', `  function score(result) {
-    var state = gameMonad.s[mMindex.x].slice();
-    var old = parseInt(state[0], 10);
-    var res = result === 18 ? old + 3 : old + 1;
-    var scor = res % 5 === 0 ? res + 5 : res;
-    
-    if (scor === 25 && state[1] === "2") {
+    var sc = parseInt(gameMonad.fetch0());
+    var sco = result === 18 ? sc + 3 : sc + 1;
+    var scor = sco % 5 === 0 ? sco + 5 : sco;
+    var goals = gameMonad.fetch1();
+
+    if (scor === 25 && gameMonad.fetch1() === "1") {
       mMindex.ret(0);
       gameMonad = new MonadState('gameMonad', [[0,0,0,[],[0,0,0,0]]]);
-      socket.send(\`CE#$42,${pMgroup.x},${pMname.x}\`);
+      socket.send(\`CE#$42,\${pMgroup.x},\${pMname.x}\`);
       scor = 0;
-      state[1] = 0;
+      goals = 0;
     }
-    if (scor === 25) {
-      state[1] = parseInt(state[1], 10) + 1;
+    if (scor === 25 && gameMonad.fetch1() === "0") {
       scor = 0;
+      goals = 1;
     }
-    newRoll(scor, state[1]);
-  }; `)
+    newRoll(scor, goals);
+  }; ` )
 
   var testZ = h('pre',  `  mMZ1.bnd(v => mMt1
   .bnd(add,v).bnd(w => {
@@ -785,20 +787,32 @@ var tr3 = h('pre',  `  var tr3 = function tr (fibsArray, primesArray) {
         return mMar11;
       }  `  )
 
-  var backAction = h('pre',  `  var backClick$ = sources.DOM
-    .select('#back').events('click');
+  var backAction = h('pre',  `  var rollClick$ = sources.DOM
+    .select('#roll').events('click');
+
+  var rollClickAction$ = rollClick$.map(() => {
+    var a = gameMonad.fetch0().valueOf() - 1;    // Lose one point for clicking ROLL.
+    var b = gameMonad.fetch1().valueOf();
+    socket.send(\`CA#$42,\${pMgroup.x},\${pMname.x},6,6,12,20,\${a},\${b}\`);
+  });
+  
+  var backClick$ = sources.DOM
+      .select('#back.tao100').events('click');
 
   var backAction$ = backClick$.map(() => {
-    if (mMindex.x > 0) {
-      mMindex.ret(mMindex.x - 1).bnd(i => {
-        gameMonad.s[i][2] = 0,
-        gameMonad.s[i][3] = [],
-        buttonNode = bNode(fetch4(i)),
-        sMplayers.s.clear(),
-        socket.send(\`CG#$42,\${pMgroup.x},\${pMname.x},\${fetch0(i)},\${fetch1(i)}\`)
-      });
-    };
-  });  `  )
+    if (gameMonad.s[1] > 0) {
+      gameMonad.dec(); 
+    }
+  });
+
+  var forwardClick$ = sources.DOM
+      .select('#ahead.tao1').events('click')
+
+  var forwardAction$ = forwardClick$.map(() => {
+    if (gameMonad.s[1] < gameMonad.s[0].length - 1) {
+      gameMonad.inc();
+    }
+  }); ` )
 
   var monadEr = h('pre',  `    function MonadEr (val, ID, er = []) {
           var test;
@@ -1408,35 +1422,6 @@ h('p', ' MonadState reproduces some of the functionality found in the Haskell Mo
      //code.fpTransformer,
 h('a#err', { props: { href: '#top' } }, 'Back To The Top') ])
 
-
-var bNode = h('pre',  ` function bNode (arr) {
-      var x = styl(arr.length);
-      var node = h('div', [
-         h('button#0.num', { style: { display: x[0] }}, arr[0] ),
-        h('button#1.num', { style: { display: x[1] }}, arr[1] ),
-        h('button#2.num', { style: { display: x[2] }}, arr[2] ),
-        h('button#3.num', { style: { display: x[3] }}, arr[3] )
-      ]);
-      return node;
-    }  `  )
-
-
-var styl = h('pre', `    function styl (s) {
-      switch(s) {
-        case (0): return ['none', 'none', 'none', 'none'];
-        break;
-        case (1): return ['inline', 'none', 'none', 'none'];
-        break;
-        case (2): return ['inline', 'inline', 'none', 'none'];
-        break;
-        case (3): return ['inline', 'inline', 'inline', 'none'];
-        break;
-        case (4): return ['inline', 'inline', 'inline', 'inline'];
-        break;
-        default: return;  //console.log('Bad argument in styl. s is', s );
-      }
-  }; ` )
-
 var MonadState2 = h('pre',  `    class MonadEmitter extends EventEmitter {}; 
 
     function MonadState2(g, state) {
@@ -1459,44 +1444,41 @@ var gameMonad = h('pre',  `    var gameMonad = new MonadState2('gameMonad',
       [ 0,0,0,[],[0,0,0,0],[[0,0,0,[],[0,0,0,0]]]]);
 `  )
 
-var clicks = h('pre',  `    var numClick$ = sources.DOM
-        .select('.num').events('click'); 
+var clicks = h('pre',  `  var numClick$ = sources.DOM
+      .select('.num').events('click');
 
-    var numClickAction$ = numClick$.map(e => {
-      console.log('In numClickAction$', e);
-      if (gameMonad.s[5][mMindex.x][3].length > 1) {
-        return;
+  var numClickAction$ = numClick$.map(e => {
+    if (gameMonad.fetch3().length < 2)  {
+      var score = gameMonad.fetch0();
+      var goals = gameMonad.fetch1();
+      var op = gameMonad.fetch2();
+      var a = gameMonad.fetch3();
+      var b = gameMonad.fetch4();
+      a.push(b.splice(e.target.id, 1)[0]);
+      gameMonad.run([score,goals,op,a,b]);
+      if (a.length === 2 && gameMonad.fetch2() != 0) {
+        updateCalc(a, gameMonad.fetch2())
       }
-      else {
-        var x = gameMonad.s[5][mMindex.x].slice();
-        x[3] = gameMonad.s[5][mMindex.x][3].slice();
-        x[4] = gameMonad.s[5][mMindex.x][4].slice();
-        x[4].splice(e.target.id,1)[0]; // Push the item spliced from x[4] into x[3].
-        x[3].push(e.target.textContent);
-        var s3 = x[3].slice();
-        buttonNode = bNode(x[4]);
-        console.log('In numClickAction$ ???????? s3 is', s3 );
-        gameMonad.c.emit(a,x);
-        if (s3.length === 2 && x[2] != 0) {
-          updateCalc(x[3], x[2]) 
-        }
-      }
-    }).startWith([0, 0, 0, 0]);
+    }
+  });
 
-    var opClick$ = sources.DOM
-        .select('.op').events('click');
+  var opClick$ = sources.DOM
+      .select('.op').events('click');
 
-    var opClickAction$ = opClick$.map(e => {
-      if (gameMonad.s[3].length === 2) {
-        var s3 = gameMonad.s[3].slice();
-        updateCalc(s3, e.target.textContent); 
-      }
-      else {
-        var state = gameMonad.s.slice();
-        state[5][mMindex.x][2] = e.target.innerHTML;
-        gameMonad = new MonadState2('gameMonad', state);
-      }
-    });  `  )
+  var opClickAction$ = opClick$.map(e => {
+    var s3 = gameMonad.fetch3();
+      var score = gameMonad.fetch0();
+      var goals = gameMonad.fetch1();
+      var a = gameMonad.fetch3().slice();
+      var b = gameMonad.fetch4().slice();
+    if (s3.length === 2) {
+      updateCalc(s3, e.target.innerHTML);
+    }
+    else {
+      gameMonad.run([score,goals,e.target.innerHTML,a,b]);
+    }
+  });
+`  )
 
 var MonadEmitter = h('pre',  `
 `  )
@@ -1582,19 +1564,9 @@ var gameMonad_2 = h('pre',  `  function MonadState(g, state) {
     };
   };
 
-  gameMonad = new MonadState('gameMonad', [ [0,0,0,[],[0,0,0,0] ]]);
+  gameMonad = new MonadState('gameMonad', [ [0,0,0,[],[0,0,0,0] ]]); `)
 
-  function updateNums ([score = fetch0(mMindex.x), goals = fetch1(mMindex.x), 
-      operator = fetch2(mMindex.x), a3 = fetch3(mMindex.x), 
-          display = fetch4(mMindex.x) ]) {
-    var s = gameMonad.s.slice();
-    s.push([score, goals, operator, a3, display]);
-    buttonNode = bNode(display);
-    mMindex.bnd(add,1);
-    gameMonad = new MonadState('gameMonad', s);
-  }
-
-  function styl (s) {
+var styl = h('pre', `  function styl (s) {
     switch(s) {
       case (0): return ['none', 'none', 'none', 'none'];
       break;
@@ -1625,66 +1597,40 @@ var gameMonad_2 = h('pre',  `  function MonadState(g, state) {
 var monCon = h('pre',  `
 `  )
 
-var newRoll = h('pre',  `  function updateNums ([score = fetch0(mMindex.x), goals = fetch1(mMindex.x),
-      operator = fetch2(mMindex.x), a3 = fetch3(mMindex.x),
-          display = fetch4(mMindex.x) ]) {
-    mMindex.bnd(add,1);
-    var s = gameMonad.s.slice();
-    s.splice(mMindex.x, 0, [score, goals, operator, a3, display]);
-    buttonNode = bNode(display);
-    gameMonad = new MonadState('gameMonad', s);
-  }
+var newRoll = h('pre',  `  var rollClick$ = sources.DOM
+    .select('#roll').events('click');
 
-const messages$ = sources.WS.map( e => {
-    console.log(e);
-    mMtem.ret(e.data.split(',')).bnd( v => {
-  console.log('Websockets e.data.split message v: ', v );    
-  mMZ10.bnd( () => {
-    updateNums([v[7], v[8], 0, [], [v[3], v[4], v[5], v[6]]]);
-  });   `  );
-
-var fetch = h('pre',  `  function fetch4 (n) {
-      return gameMonad.s[n][4];
-  }
-   
-  function fetch3 (n) {
-      return gameMonad.s[n][3];
-  }
-   
-  function fetch2 (n) {
-      return gameMonad.s[n][2];
-  }
-   
-  function fetch1 (n) {
-      return gameMonad.s[n][1];
-  }
-   
-  function fetch0 (n) {
-      return gameMonad.s[n][0];
-  }  `  )
+  var rollClickAction$ = rollClick$.map(() => {
+    var a = gameMonad.fetch0().valueOf() - 1;    // Lose one point for clicking ROLL.
+    var b = gameMonad.fetch1().valueOf();
+    socket.send(\`CA#$42,${pMgroup.x},${pMname.x},6,6,12,20,${a},${b}\`);
+  });
+`  );
 
 var num_op = h('pre',  `  var rollClick$ = sources.DOM
     .select('#roll').events('click');
 
   var rollClickAction$ = rollClick$.map(() => {
-    var a = fetch0(mMindex.x).valueOf() - 1;
-    var b = fetch1(mMindex.x).valueOf();
+    var a = gameMonad.fetch0().valueOf() - 1;
+    var b = gameMonad.fetch1().valueOf();
     socket.send(\`CA#$42,${pMgroup.x},${pMname.x},6,6,12,20,${a},${b}\`);
-  }); 
-  
+  });
+
   var numClick$ = sources.DOM
-      .select('.num').events('click'); 
+      .select('.num').events('click');
 
   var numClickAction$ = numClick$.map(e => {
-    var state = gameMonad.s[mMindex.x].slice();
-    console.log('state and mMindex.x', state, mMindex.x);
-    if (fetch3(mMindex.x).length < 2)  {
-      var a = state[3].slice();
-      var b = state[4].slice();
+    if (gameMonad.fetch3().length < 2)  {
+      var score = gameMonad.fetch0();
+      var goals = gameMonad.fetch1();
+      var op = gameMonad.fetch2();
+      var a = gameMonad.fetch3();
+      var b = gameMonad.fetch4();
       a.push(b.splice(e.target.id, 1)[0]);
-      updateNums([,,,a,b])
-      if (a.length === 2 && state[2] != 0) {
-        updateCalc(a, state[2])
+      console.log('In numClickAction$ - - - gameMonad.index and gameMonad.s ', gameMonad.index, gameMonad.s ); 
+      gameMonad.run([score,goals,op,a,b]);
+      if (a.length === 2 && gameMonad.fetch2() != 0) {
+        updateCalc(a, gameMonad.fetch2())
       }
     }
   }).startWith([0, 0, 0, 0]);
@@ -1693,18 +1639,119 @@ var num_op = h('pre',  `  var rollClick$ = sources.DOM
       .select('.op').events('click');
 
   var opClickAction$ = opClick$.map(e => {
-    var s3 = fetch3(mMindex.x).slice();
+    var s3 = gameMonad.fetch3();
+      var score = gameMonad.fetch0();
+      var goals = gameMonad.fetch1();
+      var a = gameMonad.fetch3().slice();
+      var b = gameMonad.fetch4().slice();
     if (s3.length === 2) {
-      updateCalc(s3, e.target.innerHTML); 
+      updateCalc(s3, e.target.innerHTML);
     }
     else {
-      var state = gameMonad.s;
-      state[mMindex.x][2] = e.target.innerHTML;
+      gameMonad.run([score,goals,e.target.innerHTML,a,b]);
     }
   });  `  )
 
-var p5f = h('pre',  `
-`  )
+var prototypeAdditions = h('pre',  `  var gameMonad = new MonadState('gameMonad', 
+    [[[0,0,0,[],[1,2,3,4]], [0,0,0,[],[0,0,0,0]]],1 ]);
+
+  MonadState.prototype.dec = function () {
+    this.s[1] -= 1;
+    buttonNode = bNode(this.s[0][this.s[1]][4]);
+    socket.send(\`CG#$42,${pMgroup.x},${pMname.x},\${this.s[0][this.s[1]][0]},\${this.s[0][this.s[1]][1]}\`)
+    window[this.id] = this;
+    return this;
+  };
+
+  MonadState.prototype.inc = function () {
+    this.s[1] += 1
+    buttonNode = bNode(this.s[0][this.s[1]][4]);
+    socket.send(\`CG#$42,${pMgroup.x},${pMname.x},\${this.s[0][this.s[1]][0]},\${this.s[0][this.s[1]][1]}\`)
+    window[this.id] = this;
+    return this;
+  };
+
+  MonadState.prototype.fetch0 = function () {
+      return this.s[0][this.s[1]][0];
+  }
+   
+  MonadState.prototype.fetch1 = function () {
+      return this.s[0][this.s[1]][1];
+  }
+   
+  MonadState.prototype.fetch2 = function () {
+      return this.s[0][this.s[1]][2];
+  }
+   
+  MonadState.prototype.fetch3 = function () {
+      return this.s[0][this.s[1]][3].slice();
+  }
+   
+  MonadState.prototype.fetch4 = function () {
+      return this.s[0][this.s[1]][4].slice();
+  }
+   
+  MonadState.prototype.clearPicked = function () {
+    var st = this.s.slice();
+    st[0][st[1]][3] = [];
+    st[1] += 1;
+    st.splice(this.s[1]+1, 0, st[0]); 
+    return window['gameMonad'] = new MonadState('gameMonad', st);
+  }
+
+  MonadState.prototype.run = function ([
+    score = this.s[0][this.s[1]][0], 
+    goals = this.s[0][this.s[1]][1],
+    operator = this.s[0][this.s[1]][2],
+    picked = this.s[0][this.s[1]][3].slice(),
+    display = this.s[0][this.s[1]][4].slice()
+  ]) {
+    this.s[1] += 1;
+    var newState = this.s.slice();
+    newState[0].splice(this.s[1], 0, [score, goals, operator, picked, display])  
+     console.log('[score, goals, operator, picked, display]', 
+      [score, goals, operator, picked, display]);  
+    this.s = newState;
+    buttonNode = bNode(display);
+    return window['gameMonad'] = new MonadState('gameMonad', newState);
+  }  `  )
+
+  var calculations = h('pre', `  function updateCalc(ar, op) {
+    console.log('In updateCalc. ar and op are', ar, op);
+    var result = calc(ar[0], op, ar[1]);
+    console.log('In updateCalc. result is', result);
+    console.log('In updateCalc. score is', score);
+    if (result === 18 || result === 20) {
+      score(result);
+    }
+    else {
+      var sco = gameMonad.fetch0();
+      var goals = gameMonad.fetch1();
+      var a = gameMonad.fetch4().slice();
+      a.push(result);
+      gameMonad.run([sco,goals,0,[],a]);
+    }
+  };
+
+  function score(result) {
+    var sc = parseInt(gameMonad.fetch0());
+    var sco = result === 18 ? sc + 3 : sc + 1;
+    var scor = sco % 5 === 0 ? sco + 5 : sco;
+    var goals = gameMonad.fetch1();
+
+    if (scor === 25 && gameMonad.fetch1() === "1") {
+      mMindex.ret(0);
+      gameMonad = new MonadState('gameMonad', [[0,0,0,[],[0,0,0,0]]]);
+      socket.send(\`CE#$42,${pMgroup.x},${pMname.x}\`);
+      scor = 0;
+      goals = 0;
+    }
+    if (scor === 25 && gameMonad.fetch1() === "0") {
+      scor = 0;
+      goals = 1;
+    }
+    newRoll(scor, goals);
+  };  ` )
 
 
-  export default { num_op, fetch, gameMonad_2, newRoll, primes3, primes2, primes, variations, MonadEmitter, clicks, bNode, styl, MonadState2, gameMonad, cycle, monad, hardWay, hardWay2, async1, async2, execP, workerD$, fact_workerC, fact2_workerD, primes_state, workerB_Driver, workerC, worker$, errorDemo, monadEr, backAction, tests, mMZ10, test3, monad, equals, fmap, opM, e2, e2x, e3, e4, e4x, e6, e6x, driver, messages, monadIt, MonadSet, updateCalc, arrayFuncs, nums, cleanup, ret, C42, newTask, process, mM$task, colorClick, edit, testZ, quad, runTest, todoStream, inc, seed,  add, MonadState, primesMonad, fibsMonad, primeFibInterface, tr3, fpTransformer, factorsMonad, factorsInput, promise, promiseSnippet, timeout, timeoutSnippet, examples, examples2 }
+  export default { calculations, prototypeAdditions, styl, num_op, fetch, gameMonad_2, newRoll, primes3, primes2, primes, variations, MonadEmitter, clicks, bNode, MonadState2, gameMonad, cycle, monad, hardWay, hardWay2, async1, async2, execP, workerD$, fact_workerC, fact2_workerD, primes_state, workerB_Driver, workerC, worker$, errorDemo, monadEr, backAction, tests, mMZ10, test3, monad, equals, fmap, opM, e2, e2x, e3, e4, e4x, e6, e6x, driver, messages, monadIt, MonadSet, updateCalc, arrayFuncs, nums, cleanup, ret, C42, newTask, process, mM$task, colorClick, edit, testZ, quad, runTest, todoStream, inc, seed,  add, MonadState, primesMonad, fibsMonad, primeFibInterface, tr3, fpTransformer, factorsMonad, factorsInput, promise, promiseSnippet, timeout, timeoutSnippet, examples, examples2 }

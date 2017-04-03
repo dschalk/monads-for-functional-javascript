@@ -1850,9 +1850,9 @@ function websocketsDriver() {
   });
 };
 
-var gameMonad = new MonadState('gameMonad', [[[0,0,0,[],[1,2,3,4]], [0,0,0,[],[0,0,0,0]]],1 ]);
-
 MonadState.prototype.setIndex = function(n = this.s[1]) { this.s[1] = n; return n };
+
+var gameMonad = new MonadState('gameMonad', [[[0,0,0,[],[1,2,3,4]], [0,0,0,[],[0,0,0,0]]],1 ]);
 
 MonadState.prototype.dec = function () {
   this.s[1] -= 1;
@@ -1919,6 +1919,23 @@ MonadState.prototype.run = function ([
     socket.send(`CA#$42,${pMgroup.x},${pMname.x},6,6,12,20,${a},${b}`);
   }
 
+  function updateCalc(ar, op) {
+    console.log('In updateCalc. ar and op are', ar, op);
+    var result = calc(ar[0], op, ar[1]);
+    console.log('In updateCalc. result is', result);
+    console.log('In updateCalc. score is', score);
+    if (result === 18 || result === 20) {
+      score(result);
+    }
+    else {
+      var sco = gameMonad.fetch0();
+      var goals = gameMonad.fetch1();
+      var a = gameMonad.fetch4().slice();
+      a.push(result);
+      gameMonad.run([sco,goals,0,[],a]);
+    }
+  };
+
   function score(result) {
     var sc = parseInt(gameMonad.fetch0());
     var sco = result === 18 ? sc + 3 : sc + 1;
@@ -1937,23 +1954,6 @@ MonadState.prototype.run = function ([
       goals = 1;
     }
     newRoll(scor, goals);
-  };
-
-  function updateCalc(ar, op) {
-    console.log('In updateCalc. ar and op are', ar, op);
-    var result = calc(ar[0], op, ar[1]);
-    console.log('In updateCalc. result is', result);
-    console.log('In updateCalc. score is', score);
-    if (result === 18 || result === 20) {
-      score(result);
-    }
-    else {
-      var sco = gameMonad.fetch0();
-      var goals = gameMonad.fetch1();
-      var a = gameMonad.fetch4().slice();
-      a.push(result);
-      gameMonad.run([sco,goals,0,[],a]);
-    }
   };
 
 
