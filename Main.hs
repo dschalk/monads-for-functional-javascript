@@ -307,13 +307,11 @@ talk conn state (_, _, _, _, _) = forever $ do
     else if "TD#$42" `T.isPrefixOf` msg
         then
             do
-                let tasks = (T.splitOn "@" (msg)) !! 1
-                print tasks
-                save (msgArray !! 1) $ tasks
+                save (msgArray !! 1) $ msg
                 st <- atomically $ readTMVar state
                 let subSt = subState sender group st
                 broadcast ("DD#$42," `mappend` group `mappend` "," 
-                    `mappend` sender `mappend` "," `mappend` tasks) subSt
+                    `mappend` sender `mappend` "," `mappend` msg) subSt
 
     else if "TG#$42" `T.isPrefixOf` msg
         then

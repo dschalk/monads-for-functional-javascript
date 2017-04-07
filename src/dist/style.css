@@ -99,18 +99,48 @@ h1 {
   text-align: center;
 }
 
-#edit1 { 
-  margin: 10px;
+#wrap {
+  color: "yellow";
+  text-decoration: "none";
+}
+
+.edit1 { 
+  margin: 5px;
   padding-top: 6px;
   font-size: 16px;
-  color: red;
+  color: green;
 }
 
 .delete { 
-  margin: 10px;
+  margin: 5px;
   padding-top: 6px;
   font-size: 16px;
-  color: red;
+  color: green;
+}
+
+.chBox { 
+  margin-right: 5px;
+  margin-top: 17px;
+  font-size: 16px;
+  color: green;
+  position: relative;
+  vertical-align: middle;
+  bottom: 5px;
+}
+
+.edit3 { 
+  margin: 5px;
+  font-size: 16px;
+  color: green;
+  position: relative;
+  vertical-align: middle;
+}
+
+.cbx {
+  width: 20px;
+  height: 20px;
+  margin-right: 5%;
+  margin-top: 5px;
 }
 
 .big {

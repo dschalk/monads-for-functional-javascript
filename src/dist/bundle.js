@@ -44,13 +44,13 @@
 /* 0 */
 /***/ function(module, exports, __webpack_require__) {
 
-	/* WEBPACK VAR INJECTION */(function(process) {"use strict";
+	"use strict";
 
-	var _xstreamRun = __webpack_require__(2);
+	var _xstreamRun = __webpack_require__(1);
 
-	var _dom = __webpack_require__(10);
+	var _dom = __webpack_require__(9);
 
-	var _code = __webpack_require__(125);
+	var _code = __webpack_require__(124);
 
 	var _code2 = _interopRequireDefault(_code);
 
@@ -62,138 +62,6 @@
 	var formA = (0, _dom.h)('form#horses', 'You bet!');
 	console.log('textA is: ', textA);
 	console.log('formA is: ', formA);
-
-	function workerBDriver() {
-	  return xs.create({
-	    start: function start(listener) {
-	      workerB.onmessage = function (msg) {
-	        return listener.next(msg);
-	      };
-	    },
-	    stop: function stop() {
-	      workerB.terminate();
-	    }
-	  });
-	};
-
-	function workerCDriver() {
-	  return xs.create({
-	    start: function start(listener) {
-	      workerC.onmessage = function (msg) {
-	        return listener.next(msg);
-	      };
-	    },
-	    stop: function stop() {
-	      workerC.terminate();
-	    }
-	  });
-	};
-
-	function workerDDriver() {
-	  return xs.create({
-	    start: function start(listener) {
-	      workerD.onmessage = function (msg) {
-	        return listener.next(msg);
-	      };
-	    },
-	    stop: function stop() {
-	      workerD.terminate();
-	    }
-	  });
-	};
-
-	function workerEDriver() {
-	  return xs.create({
-	    start: function start(listener) {
-	      workerE.onmessage = function (msg) {
-	        return listener.next(msg);
-	      };
-	    },
-	    stop: function stop() {
-	      workerE.terminate();
-	    }
-	  });
-	};
-
-	function workerFDriver() {
-	  return xs.create({
-	    start: function start(listener) {
-	      workerF.onmessage = function (msg) {
-	        return listener.next(msg);
-	      };
-	    },
-	    stop: function stop() {
-	      workerF.terminate();
-	    }
-	  });
-	};
-
-	function workerDriver() {
-	  return xs.create({
-	    start: function start(listener) {
-	      worker.onmessage = function (msg) {
-	        return listener.next(msg);
-	      };
-	    },
-	    stop: function stop() {
-	      worker.terminate();
-	    }
-	  });
-	};
-
-	/*function eM2Driver () {
-	  return xs.create({
-	    start: listener => { mM2.on = msg => listener.next(msg)},
-	    stop: () => { mM2.removeAllListeners() }
-	  });
-	};
-
-	function mMstreamDriver () {
-	  return xs.create({
-	    start: listener => { mMstream.x.on = msg => listener.next(msg)},
-	    stop: () => { mMstream.removeAllListeners() }
-	  });
-	};*/
-
-	socket.onmessage = function (event) {
-	  console.log('Socket message', event);
-	};
-
-	socket.onmessage = function (event) {
-	  console.log(event);
-	};
-
-	socket.onclose = function (event) {
-	  console.log('<><><> New message <><><> ', event);
-	};
-
-	function updateTasks(obArray) {
-	  var todoData = [];
-	  var _iteratorNormalCompletion = true;
-	  var _didIteratorError = false;
-	  var _iteratorError = undefined;
-
-	  try {
-	    for (var _iterator = obArray[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-	      var ob = _step.value;
-
-	      todoData = todoData.concat([(0, _dom.h)('span.task3', '{ style: { color: ' + ob.color + ', textDecoration: ' + ob.textDecoration + ' } }, \'Task: \' + ' + ob.task), (0, _dom.h)('br'), (0, _dom.h)('button#edit1', 'Edit'), (0, _dom.h)('input#edit2', '{ props: { type: textarea, value: ' + ob.task + '}}'), (0, _dom.h)('span#author.tao', 'Author: ' + ob.author + '  /  Responsibility: ' + ob.responsible), (0, _dom.h)('br'), (0, _dom.h)('input#cb', '{ props: { type: \'checkbox\', checked: ' + ob.checked + '}},\n           {style: { color: ' + ob.color + ', textDecoration: ' + ob.textDecoration + '}}'), (0, _dom.h)('label.cbox', { props: { for: '#cb' } }, 'Completed'), (0, _dom.h)('button.delete', 'Delete'), (0, _dom.h)('br'), (0, _dom.h)('hr')]);
-	    }
-	  } catch (err) {
-	    _didIteratorError = true;
-	    _iteratorError = err;
-	  } finally {
-	    try {
-	      if (!_iteratorNormalCompletion && _iterator.return) {
-	        _iterator.return();
-	      }
-	    } finally {
-	      if (_didIteratorError) {
-	        throw _iteratorError;
-	      }
-	    }
-	  }
-	};
 
 	function main(sources) {
 
@@ -258,7 +126,12 @@
 	        return testComments(e.data);
 	      });
 	      mMZ17.bnd(function () {
-	        return testTask(v[2], v[3], e.data);
+	        if (v[3] === "no file") {
+	          console.log('no file');return;
+	        }
+	        var str = e.data.substring(e.data.indexOf('@') + 1, e.data.length);
+	        console.log('In mMZ17. str is', str);
+	        taskMonad.run2(str);
 	      });
 	      mMZ18.bnd(function () {
 	        if (pMgroup.x != 'solo' || pMname.x === v[2]) updatePlayers(e.data);
@@ -284,28 +157,28 @@
 	    console.log('In testComments a2 is >>>>>>>>>>>>>>>>>>>>', a2);
 	    var arr = a2.split('\n');
 	    mM26.ret([]);
-	    var _iteratorNormalCompletion2 = true;
-	    var _didIteratorError2 = false;
-	    var _iteratorError2 = undefined;
+	    var _iteratorNormalCompletion = true;
+	    var _didIteratorError = false;
+	    var _iteratorError = undefined;
 
 	    try {
-	      for (var _iterator2 = arr[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
-	        var k = _step2.value;
+	      for (var _iterator = arr[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+	        var k = _step.value;
 
 	        mM26.bnd(push, k, 'mM26');
 	        mM26.bnd(push, (0, _dom.h)('br'), 'mM26');
 	      }
 	    } catch (err) {
-	      _didIteratorError2 = true;
-	      _iteratorError2 = err;
+	      _didIteratorError = true;
+	      _iteratorError = err;
 	    } finally {
 	      try {
-	        if (!_iteratorNormalCompletion2 && _iterator2.return) {
-	          _iterator2.return();
+	        if (!_iteratorNormalCompletion && _iterator.return) {
+	          _iterator.return();
 	        }
 	      } finally {
-	        if (_didIteratorError2) {
-	          throw _iteratorError2;
+	        if (_didIteratorError) {
+	          throw _iteratorError;
 	        }
 	      }
 	    }
@@ -383,27 +256,27 @@
 
 	  function updateScoreboard2(v) {
 	    var ar = [];
-	    var _iteratorNormalCompletion3 = true;
-	    var _didIteratorError3 = false;
-	    var _iteratorError3 = undefined;
+	    var _iteratorNormalCompletion2 = true;
+	    var _didIteratorError2 = false;
+	    var _iteratorError2 = undefined;
 
 	    try {
-	      for (var _iterator3 = v[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
-	        var k = _step3.value;
+	      for (var _iterator2 = v[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+	        var k = _step2.value;
 
 	        ar.push(['  ' + k]);
 	      }
 	    } catch (err) {
-	      _didIteratorError3 = true;
-	      _iteratorError3 = err;
+	      _didIteratorError2 = true;
+	      _iteratorError2 = err;
 	    } finally {
 	      try {
-	        if (!_iteratorNormalCompletion3 && _iterator3.return) {
-	          _iterator3.return();
+	        if (!_iteratorNormalCompletion2 && _iterator2.return) {
+	          _iterator2.return();
 	        }
 	      } finally {
-	        if (_didIteratorError3) {
-	          throw _iteratorError3;
+	        if (_didIteratorError2) {
+	          throw _iteratorError2;
 	        }
 	      }
 	    }
@@ -747,145 +620,6 @@
 	    socket.send('TD#$42,' + get(pMgroup) + ',' + get(pMname) + ',@' + str);
 	  };
 
-	  var newTask$ = sources.DOM.select('input.newTask').events('keydown');
-
-	  var newTaskAction$ = newTask$.map(function (e) {
-	    var ob = {};
-	    var alert = '';
-	    var task = '';
-	    if (e.keyCode === 13) {
-	      var ar = e.target.value.split(',');
-	      if (ar.length < 3) {
-	        mMalert.ret('You should enter "author, responsible party, task" separated by commas');
-	        return;
-	      }
-	      var ar2 = ar.slice(2);
-	      if (ar2.length === 1) {
-	        task = ar[2];
-	      }
-	      if (ar2.length > 1) {
-	        task = ar2.reduce(function (a, b) {
-	          return a + '$*$*$' + b;
-	        });
-	      }
-	      if (get(mMar2).filter(function (v) {
-	        return v.task === task;
-	      }).length > 0) {
-	        mMalert.ret(task + " is already listed.");
-	      } else if (ar.length > 2) {
-	        mMcurrentList.bnd(addString, task + ',yellow, none, false,' + ar[0] + ',' + ar[1], mMcurrentList);
-	        task2(get(mMcurrentList));
-	        e.target.value = '';
-	        mMalert.ret('');
-	      }
-	    }
-	  });
-
-	  function testTask(v2, v3, data) {
-	    if (v3 === 'no file' || v3 === 'empty') {
-	      mMtaskList.ret([]);
-	      taskL = (0, _dom.h)('span');
-	      return;
-	    }
-	    if (get(pMgroup) != 'solo' || get(pMgroup) === 'solo' && get(pMname) === v2) {
-	      process(data);
-	    }
-	  };
-
-	  var process = function process(str) {
-	    var a = str.split(",");
-	    if (a === undefined) {
-	      return;
-	    };
-
-	    if (a.length < 9) {
-	      return;
-	    };
-
-	    var ar = a.slice(3);
-	    var s = ar.reduce(function (a, b) {
-	      return a + ',' + b;
-	    });
-	    var tempArray = [];
-	    mMcurrentList.ret(s);
-	    process3(ar);
-	  };
-
-	  var process3 = function process3(a) {
-	    var ar5 = [];
-	    if (a.length % 6 === 0) {
-	      var keys = rang(0, a.length / 6);
-	      keys.map(function (_) {
-	        ar5.push({
-	          task: convertBack(a.shift()),
-	          color: a.shift(),
-	          textDecoration: a.shift(),
-	          checked: a.shift() === 'true',
-	          author: a.shift(),
-	          responsible: a.shift()
-	        });
-	      });
-	    }
-	    mMar2.ret(ar5);
-	    process4(ar5);
-	  };
-
-	  var process4 = function process4(a) {
-	    var tempArray = [];
-	    var keys = Object.keys(a);
-	    for (var k in keys) {
-	      tempArray.push((0, _dom.h)('div.todo', [(0, _dom.h)('span.task3', { style: { color: a[k].color, textDecoration: a[k].textDecoration } }, 'Task: ' + a[k].task), (0, _dom.h)('br'), (0, _dom.h)('button#edit1', 'Edit'), (0, _dom.h)('input#edit2', { props: { type: 'textarea', value: a[k].task }, style: { display: 'none' } }), (0, _dom.h)('span#author.tao', 'Author: ' + a[k].author + ' / ' + 'Responsibility: ' + a[k].responsible), (0, _dom.h)('br'), (0, _dom.h)('input#cb', { props: { type: 'checkbox', checked: a[k].checked }, style: { color: a[k].color,
-	          textDecoration: a[k].textDecoration } }), (0, _dom.h)('label.cbox', { props: { for: '#cb' } }, 'Completed'), (0, _dom.h)('button.delete', 'Delete'), (0, _dom.h)('br'), (0, _dom.h)('hr')]));
-	    }
-
-	    mMtaskList.ret(tempArray);
-	    taskL = tempArray;
-	  };
-
-	  var colorClick$ = sources.DOM.select('#cb').events('click');
-
-	  var colorAction$ = colorClick$.map(function (e) {
-	    var ind = getIndex(e);
-	    var index = parseInt(ind, 10);
-	    var s = get(mMcurrentList);
-	    var ar = s.split(',');
-	    var n = 6 * index + 3;
-	    var j = 6 * index + 2;
-	    var k = 6 * index + 1;
-	    var checked = ar[n];
-	    if (checked === 'true') {
-	      ar[n] = 'false';
-	      ar[k] = 'yellow';
-	      ar[j] = 'none';
-	    } else {
-	      ar[n] = 'true';
-	      ar[k] = 'lightGreen';
-	      ar[j] = 'line-through';
-	    }
-	    task2(ar.reduce(function (a, b) {
-	      return a + ',' + b;
-	    }));
-	  });
-
-	  var edit1$ = sources.DOM.select('#edit1').events('click');
-
-	  var edit1Action$ = edit1$.map(function (e) {
-	    var index = getIndex2(e);
-	    get(mMtaskList)[index].children[3].elm.style.display = 'block';
-	  });
-
-	  var edit2$ = sources.DOM.select('#edit2').events('keypress');
-
-	  var edit2Action$ = edit2$.map(function (e) {
-	    var v = noComma(e.target.value);
-	    var index = getIndex2(e);
-	    if (e.keyCode === 13) {
-	      process2(v, index);
-	      mMtaskList.x[index].children[3].elm.style.display = 'none';
-	      updateScoreboard2(namesList);
-	    }
-	  });
-
 	  var process2 = function process2(str, index) {
 	    var ar = str.split(',');
 	    var task;
@@ -906,24 +640,6 @@
 	    console.log('Still in process2. task, a and b are', task, a, b);
 	    task2(b);
 	  };
-
-	  var deleteClick$ = sources.DOM.select('.delete').events('click');
-
-	  var deleteAction$ = deleteClick$.map(function (e) {
-	    var index = parseInt(getIndex(e), 10);
-	    var s = get(mMcurrentList);
-	    var ar = s.split(',');
-	    if (ar.length < 7) {
-	      task2('empty');
-	      socket.send('TX#$42,' + get(pMgroup) + ',' + get(pMname));
-	      return;
-	    }
-	    var str = '';
-	    ar.splice(index * 6, 6);
-	    task2(ar.reduce(function (a, b) {
-	      return a + ',' + b;
-	    }));
-	  });
 
 	  // **********************************************************************END TODO LIST
 	  var chatClick$ = sources.DOM.select('#chat2').events('click');
@@ -1002,47 +718,93 @@
 	    }
 	  });
 
-	  function tNode(author, responsible, task, ch, dec, col) {
-	    var todo = (0, _dom.h)('div', [(0, _dom.h)('div', { style: { color: col, textDecoration: dec, checked: ch } }, task), (0, _dom.h)('p', 'Author: ' + author + ', Responsible Person: ' + responsible)]);
-	    return todo;
-	  };
+	  var chbox$ = sources.DOM.select('input.cbx').events('click');
 
-	  function MonadState3(g, state) {
-	    var _this = this;
+	  var chboxAction$ = chbox$.map(function (e) {
+	    console.log('<><><><> HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH  Here is e from chbox$', e);
+	    console.log('<@><#><@><#><@> >> getIndex(e), getIndex2(e)', getIndex(e), getIndex2(e));
+	    var s = taskMonad.s.slice();
+	    var index = e.target.parentNode.id;
+	    var test = e.target.checked;
+	    if (test) {
+	      s[index][1] = "green";
+	      s[index][2] = "line-through";
+	      s[index][3] = true;
+	    } else {
+	      s[index][1] = "yellow";
+	      s[index][2] = "none";
+	      s[index][3] = false;
+	    }
+	    var str = JSON.stringify(s);
+	    socket.send('TD#$42,' + get(pMgroup) + ',' + get(pMname) + ',@' + str);
+	  });
 
-	    this.id = g;
-	    this.s = state;
-	    this.c = new MonadEmitter();
-	    this.d = "task";
-	    this.bnd = function (func) {
-	      for (var _len = arguments.length, args = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
-	        args[_key - 1] = arguments[_key];
+	  var deleteClick$ = sources.DOM.select('.delete').events('click');
+
+	  var deleteAction$ = deleteClick$.map(function (e) {
+	    var s = taskMonad.s.slice();
+	    var index = e.target.parentNode.id;
+	    s.splice(index, 1);
+	    var str = JSON.stringify(s);
+	    socket.send('TD#$42,' + get(pMgroup) + ',' + get(pMname) + ',@' + str);
+	  });
+
+	  var edit1$ = sources.DOM.select('button.edit1').events('click');
+
+	  var edit1Action$ = edit1$.map(function (e) {
+	    console.log('In edit1Action$. e is', e);
+	    var index = getIndex2(e);
+	    var s = taskMonad.s.slice();
+	    s[index][6] = 'inline-block';
+	    mMtaskList.ret(process4(s));
+	  });
+
+	  var edit2$ = sources.DOM.select('#edit2').events('keypress');
+
+	  var edit2Action$ = edit2$.map(function (e) {
+	    console.log('In edit2Action$. e is', e);
+	    var arr;
+	    var str;
+	    if (e.keyCode === 13) {
+	      var s = taskMonad.s.slice();
+	      var index = e.target.parentNode.id;
+	      s[index][0] = e.target.value.replace(rep2, "<<>>");
+	      s[index][6] = "none";
+	      str = JSON.stringify(s);
+	      socket.send('TD#$42,' + get(pMgroup) + ',' + get(pMname) + ',@' + str);
+	    }
+	  });
+
+	  var newTask$ = sources.DOM.select('input.newTask').events('keydown');
+
+	  var newTaskAction$ = newTask$.map(function (e) {
+	    var alert = '';
+	    var s = taskMonad.s.slice();
+	    var todo = [];
+	    if (e.keyCode === 13) {
+	      var ar = e.target.value.split(',');
+	      if (ar.length < 3) {
+	        mMalert.ret('You should enter "author, responsible party, task" separated by commas');
+	        return;
+	      } else {
+	        todo[4] = ar.shift();
+	        todo[5] = ar.shift();
+	        todo[0] = ar.join('<<>>');
+	        todo[1] = "yellow";
+	        todo[2] = "none";
+	        todo[3] = false;
+	        todo[6] = "none";
+	        s.unshift(todo);
+	        var str = JSON.stringify(s);
+	        socket.send('TD#$42,' + get(pMgroup) + ',' + get(pMname) + ',@' + str);
 	      }
+	    }
+	  });
 
-	      return func.apply(undefined, [_this.s].concat(args));
-	    };
-	    this.ret = function (a) {
-	      return window[this.id] = new MonadState(this.id, a);
-	    };
-	    this.c.on(a, function (b) {
-	      _this.s.push(b);
-	      todoNode = _this.s.map(function (v) {
-	        return tNode(v);
-	      });
-	      console.log('In MonadState3 - - - this.s and todoNode are', _this.s, todoNode);
-	      // window[this.id] = new MonadState3(this.id, list)
-	    });
-	  };
-
-	  var todoMonad = new MonadState3('todoMonad', [['dummy task', 'yellow', 'none', false, 'default author', 'default responsible']]);
-
-	  var calcStream$ = xs.merge(comClickAction$, messagePressAction$, fA_c$, forwardAction$, backAction$, prAction$, factorsAction_b$, fA$, factorsP$, fA_b$, factorsP_b$, clearprimes$, worker$, workerB$, workerC$, workerD$, workerE$, workerF$, clearAction$, factorsAction$, primeFib$, fibPressAction$, quadAction$, edit1Action$, edit2Action$, testWAction$, testZAction$, testQAction$, colorAction$, deleteAction$, newTaskAction$, chatClickAction$, gameClickAction$, todoClickAction$, captionClickAction$, groupPressAction$, rollClickAction$, loginPressAction$, messages$, numClickAction$, opClickAction$);
+	  var calcStream$ = xs.merge(chboxAction$, comClickAction$, messagePressAction$, fA_c$, forwardAction$, backAction$, prAction$, factorsAction_b$, fA$, factorsP$, fA_b$, factorsP_b$, clearprimes$, worker$, workerB$, workerC$, workerD$, workerE$, workerF$, clearAction$, factorsAction$, primeFib$, fibPressAction$, quadAction$, edit1Action$, edit2Action$, testWAction$, testZAction$, testQAction$, deleteAction$, newTaskAction$, chatClickAction$, gameClickAction$, todoClickAction$, captionClickAction$, groupPressAction$, rollClickAction$, loginPressAction$, messages$, numClickAction$, opClickAction$);
 	  return {
 	    DOM: calcStream$.map(function () {
-	      return (0, _dom.h)('div.main', [(0, _dom.h)('div.preContent', [(0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('div', 'FUNCTIONAL REACTIVE PROGRAMMING'), (0, _dom.h)('div', 'WITH CUSTOM MONADS AND CYCLE.JS')]), (0, _dom.h)('br'), (0, _dom.h)('div.image_3', [(0, _dom.h)('img.image_2', { props: { src: "logo.svg" } }), (0, _dom.h)('span', ' '), (0, _dom.h)('a', { props: { href: "https://cycle.js.org/", target: "_blank" } }, 'A Cycle.js application')]), (0, _dom.h)('div.content', [(0, _dom.h)('p', ' Front-end web developers might be interested in seeing how I encapsule procedures and state in objects whose methods conform to a JavaScript version of the Haskell monad laws. It is fascinating to see how reactivity is achieved in Cycle.js. The Haskell server might also be of interest. '), (0, _dom.h)('p', 'People who are developing a feel for function reactive programming can cut through to its essence by seeing it implemented in various contexts. The combination of Lodash, Immutable.js, and RxJS running in Node.js is one possibility. Here we demonstrate how a front-end developer can create monads to suit their purposes, and obtain amazing reactivity by implementing them in a Cycle.js framework. '), (0, _dom.h)('span.tao1b', 'You can comment at '), (0, _dom.h)('a', { props: { href: 'https://redd.it/60c2xx' } }, 'Reddit'), (0, _dom.h)('span.tao1b', ' or in the '), (0, _dom.h)('a', { props: { href: '#comment' } }, 'comments'), (0, _dom.h)('br'), (0, _dom.h)('p', ' Snabbdom, Xstream, EventEmitter, and most of the monads and functions presented here are available in browser developer tools consoles and scratch pads. A production site would load these as modules, but this site is for experimention and learning. '), (0, _dom.h)('span#italic', ' These monads are like the Haskell monads in that they resemble the monads of category theory without actually being mathematical monads. See '), (0, _dom.h)('a', { props: { href: "http://math.andrej.com/2016/08/06/hask-is-not-a-category/", target: "_blank" } }, 'Hask is not a category.'), (0, _dom.h)('span', ' by Andrej Bauer and the '), (0, _dom.h)('a', { props: { href: '#discussion' } }, 'Discussion'), (0, _dom.h)('span', ' below. They provide a convenient interface for dealing with uncertainty and side effects in a purely functional manner. Adherence to the monad laws (see below) helps make the monads robust, versatile, and reliable tools for isolating and chaining sequences of javascript functions. State is modified in monads without mutating anything outside of them.'), (0, _dom.h)('p', ' The demonstrations include persistent, shared todo lists, text messaging, and a simulated dice game with a traversable history (all group members see your score decrease or increase as you navegate backwards and forwards). Monads are shown performing lengthy mathematical computations asycronously in web workers. Monads encapsulate state. The error checking monad carries occurances of NaN and runtime errors through sequences of computations much like the Haskell Maybe monad. '), (0, _dom.h)('span.tao', 'This project was created by, and is actively maintained by David Schalk. The code repository is at '), (0, _dom.h)('a', { props: { href: "https://github.com/dschalk/JS-monads-stable", target: "_blank" } }, 'https://github.com/dschalk/JS-monads-stable. '), (0, _dom.h)('span', 'The master branch is a Motorcycle.js application using the Most.js library. That branch has been abandoned. This is a Cycle.js application using Xstream instead of Most. The primary branch is named "xstream". '), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('span.tao', ' The game code is fairly concise and intuitive. A quick walk-through is presented '), (0, _dom.h)('a', { props: { href: '#gameExplanation' } }, 'here'), (0, _dom.h)('span', '. To see monadic functionality at work, I suggest that you take a look at the section captioned '), (0, _dom.h)('a', { props: { href: '#asyncExplanation' } }, 'Asynchronous Processes'), (0, _dom.h)('br'), (0, _dom.h)('p', ' But it might be best to first proceed down the page and see the examples of Monad instances manipulating data. If you are trying to wrap you head around the concept of pure, chainable functions, such as the functions in the Underscore and Jquery libraries, understanding Monad instances might finally put you in the comfort zone you seek. '), (0, _dom.h)('br'), (0, _dom.h)('h3', 'The Game'), (0, _dom.h)('p', 'People who are in the same group, other than the default group named "solo", share the same todo list, chat messages, and simulated dice game. In order to see any of these, you must establish a unique identity on the server by logging in. The websockets connection terminates if the first message the server receives does not come from the sign in form. You can enter any random numbers, letters, or special characters you like. The server checks only to make sure someone hasn\'t already signed in with the sequence you have selected. If you log in with a name that is already in use, a message will appear and this page will be re-loaded in the browser after a four-second pause. '), (0, _dom.h)('p', ' Data for the traversable game history accumulates until a player scores three goals and wins. The data array is then erased and the application is ready to start accumulating a new history. '), (0, _dom.h)('div#log1', { style: { display: mMlog1.x } }, [(0, _dom.h)('p', 'IN ORDER TO SEE THE GAME, TODOLIST, AND CHAT DEMONSTRATIONS, YOU MUST ENTER SOMETHING TO ESTABLISH A WEBSOCKET CONNECTION.'), (0, _dom.h)('span', 'Name: '), (0, _dom.h)('input.login')]), (0, _dom.h)('p', mM6.x)]), (0, _dom.h)('hr.len90', { style: { display: mMgameDiv2.x } }), (0, _dom.h)('br.len90', { style: { display: mMgameDiv2.x } }), (0, _dom.h)('div.heading', { style: { display: mMgameDiv2.x } }, 'Game, Todo List, Text Messages'), (0, _dom.h)('div#gameDiv2', { style: { display: mMgameDiv2.x } }, [(0, _dom.h)('br'), (0, _dom.h)('div#leftPanel', { style: { display: mMgameDiv2.x } }, [(0, _dom.h)('p', 'RULES: If clicking two numbers and an operator (in any order) results in 20 or 18, the score increases by 1 or 3, respectively. If the score becomes 0 or is evenly divisible by 5, 5 points are added. A score of 25 results in one goal. That can only be achieved by arriving at a score of 20, which jumps the score to 25. Directly computing 25 results in a score of 30, and no goal. Each time RL is clicked, one point is deducted. Three goals wins the game. '), (0, _dom.h)('br'), buttonNode, (0, _dom.h)('br'), (0, _dom.h)('button#4.op', 'add'), (0, _dom.h)('button#5.op', 'subtract'), (0, _dom.h)('button#6.op', 'mult'), (0, _dom.h)('button#7.op', 'div'), (0, _dom.h)('button#8.op', 'concat'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('div#dice', { style: { display: mMdice.x } }, [(0, _dom.h)('button#roll.tao1', 'ROLL'), (0, _dom.h)('button#back.tao100', 'BACK'), (0, _dom.h)('button#ahead.tao1', 'FORWARD'), (0, _dom.h)('div.tao', 'Selected numbers: ' + gameMonad.fetch3().join(', ') + ' '), (0, _dom.h)('div.tao', 'Operator: ' + gameMonad.fetch2() + ' '), (0, _dom.h)('div.tao', 'Index: ' + gameMonad.s[1]), (0, _dom.h)('button#clear', 'Clear selected numbers'), (0, _dom.h)('div#log2', { style: { display: mMlog2.x } }, [(0, _dom.h)('span', 'Change group: '), (0, _dom.h)('input#group')]), (0, _dom.h)('p', mMsoloAlert.x)])]), (0, _dom.h)('div#rightPanel', { style: { display: mMrightPanel.x } }, [(0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('button#todoButton', { style: { fontSize: '16px', display: 'inline' } }, 'TOGGLE TODO_LIST'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('button#chat2', { style: { fontSize: '16px', display: 'inline' } }, 'TOGGLE CHAT'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'),
-	      //    h('div.game', 'Name: ' + pMname.x ),
-	      //    h('div.game', 'Group: ' + pMgroup.x ),
-	      (0, _dom.h)('pre.game', 'Currently online:\n(Name score | goals) '), (0, _dom.h)('div.game', { props: { color: "gold" } }, '' + pMdata.x), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('div#a100', ' _________________________________________________ '), (0, _dom.h)('br'), (0, _dom.h)('div#todoDiv', { style: { display: mMtodoDiv.x } }, [(0, _dom.h)('div#taskList', taskL), (0, _dom.h)('div', 'Enter author, responsible rerson, and task here: '), (0, _dom.h)('br'), (0, _dom.h)('input.newTask')]), (0, _dom.h)('br'), (0, _dom.h)('span#alert', mMalert.x), (0, _dom.h)('br'), (0, _dom.h)('span#alert2'), (0, _dom.h)('br'), (0, _dom.h)('div#chatDiv', { style: { display: mMchatDiv.x } }, [(0, _dom.h)('div#messages', [(0, _dom.h)('span', 'Message: '), (0, _dom.h)('input.inputMessage'), (0, _dom.h)('div', messages), (0, _dom.h)('br')])])])]),
+	      return (0, _dom.h)('div.main', [(0, _dom.h)('div.preContent', [(0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('div', 'FUNCTIONAL REACTIVE PROGRAMMING'), (0, _dom.h)('div', 'WITH CUSTOM MONADS AND CYCLE.JS')]), (0, _dom.h)('br'), (0, _dom.h)('div.image_3', [(0, _dom.h)('img.image_2', { props: { src: "logo.svg" } }), (0, _dom.h)('span', ' '), (0, _dom.h)('a', { props: { href: "https://cycle.js.org/", target: "_blank" } }, 'A Cycle.js application')]), (0, _dom.h)('div.content', [(0, _dom.h)('p', ' Front-end web developers might be interested in seeing how I encapsule procedures and state in objects whose methods conform to a JavaScript version of the Haskell monad laws. It is fascinating to see how reactivity is achieved in Cycle.js. The Haskell server might also be of interest. '), (0, _dom.h)('p', 'People who are developing a feel for function reactive programming can cut through to its essence by seeing it implemented in various contexts. The combination of Lodash, Immutable.js, and RxJS running in Node.js is one possibility. Here we demonstrate how a front-end developer can create monads to suit their purposes, and obtain amazing reactivity by implementing them in a Cycle.js framework. '), (0, _dom.h)('span.tao1b', 'You can comment at '), (0, _dom.h)('a', { props: { href: 'https://redd.it/60c2xx' } }, 'Reddit'), (0, _dom.h)('span.tao1b', ' or in the '), (0, _dom.h)('a', { props: { href: '#comment' } }, 'comments'), (0, _dom.h)('br'), (0, _dom.h)('p', ' Snabbdom, Xstream, EventEmitter, and most of the monads and functions presented here are available in browser developer tools consoles and scratch pads. A production site would load these as modules, but this site is for experimention and learning. '), (0, _dom.h)('span#italic', ' These monads are like the Haskell monads in that they resemble the monads of category theory without actually being mathematical monads. See '), (0, _dom.h)('a', { props: { href: "http://math.andrej.com/2016/08/06/hask-is-not-a-category/", target: "_blank" } }, 'Hask is not a category.'), (0, _dom.h)('span', ' by Andrej Bauer and the '), (0, _dom.h)('a', { props: { href: '#discussion' } }, 'Discussion'), (0, _dom.h)('span', ' below. They provide a convenient interface for dealing with uncertainty and side effects in a purely functional manner. Adherence to the monad laws (see below) helps make the monads robust, versatile, and reliable tools for isolating and chaining sequences of javascript functions. State is modified in monads without mutating anything outside of them.'), (0, _dom.h)('p', ' The demonstrations include persistent, shared todo lists, text messaging, and a simulated dice game with a traversable history (all group members see your score decrease or increase as you navegate backwards and forwards). Monads are shown performing lengthy mathematical computations asycronously in web workers. Monads encapsulate state. The error checking monad carries occurances of NaN and runtime errors through sequences of computations much like the Haskell Maybe monad. '), (0, _dom.h)('span.tao', 'This project was created by, and is actively maintained by David Schalk. The code repository is at '), (0, _dom.h)('a', { props: { href: "https://github.com/dschalk/JS-monads-stable", target: "_blank" } }, 'https://github.com/dschalk/JS-monads-stable. '), (0, _dom.h)('span', 'The master branch is a Motorcycle.js application using the Most.js library. That branch has been abandoned. This is a Cycle.js application using Xstream instead of Most. The primary branch is named "xstream". '), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('span.tao', ' The game code is fairly concise and intuitive. A quick walk-through is presented '), (0, _dom.h)('a', { props: { href: '#gameExplanation' } }, 'here'), (0, _dom.h)('span', '. To see monadic functionality at work, I suggest that you take a look at the section captioned '), (0, _dom.h)('a', { props: { href: '#asyncExplanation' } }, 'Asynchronous Processes'), (0, _dom.h)('br'), (0, _dom.h)('p', ' But it might be best to first proceed down the page and see the examples of Monad instances manipulating data. If you are trying to wrap you head around the concept of pure, chainable functions, such as the functions in the Underscore and Jquery libraries, understanding Monad instances might finally put you in the comfort zone you seek. '), (0, _dom.h)('br'), (0, _dom.h)('h3', 'The Game'), (0, _dom.h)('p', 'People who are in the same group, other than the default group named "solo", share the same todo list, chat messages, and simulated dice game. In order to see any of these, you must establish a unique identity on the server by logging in. The websockets connection terminates if the first message the server receives does not come from the sign in form. You can enter any random numbers, letters, or special characters you like. The server checks only to make sure someone hasn\'t already signed in with the sequence you have selected. If you log in with a name that is already in use, a message will appear and this page will be re-loaded in the browser after a four-second pause. '), (0, _dom.h)('p', ' Data for the traversable game history accumulates until a player scores three goals and wins. The data array is then erased and the application is ready to start accumulating a new history. '), (0, _dom.h)('div#log1', { style: { display: mMlog1.x } }, [(0, _dom.h)('p', 'IN ORDER TO SEE THE GAME, TODOLIST, AND CHAT DEMONSTRATIONS, YOU MUST ENTER SOMETHING TO ESTABLISH A WEBSOCKET CONNECTION.'), (0, _dom.h)('span', 'Name: '), (0, _dom.h)('input.login', { props: { autofocus: true } })]), (0, _dom.h)('p', mM6.x)]), (0, _dom.h)('hr.len90', { style: { display: mMgameDiv2.x } }), (0, _dom.h)('br.len90', { style: { display: mMgameDiv2.x } }), (0, _dom.h)('div.heading', { style: { display: mMgameDiv2.x } }, 'Game, Todo List, Text Messages'), (0, _dom.h)('div#gameDiv2', { style: { display: mMgameDiv2.x } }, [(0, _dom.h)('br'), (0, _dom.h)('div#leftPanel', { style: { display: mMgameDiv2.x } }, [(0, _dom.h)('p', 'RULES: If clicking two numbers and an operator (in any order) results in 20 or 18, the score increases by 1 or 3, respectively. If the score becomes 0 or is evenly divisible by 5, 5 points are added. A score of 25 results in one goal. That can only be achieved by arriving at a score of 20, which jumps the score to 25. Directly computing 25 results in a score of 30, and no goal. Each time RL is clicked, one point is deducted. Three goals wins the game. '), (0, _dom.h)('br'), buttonNode, (0, _dom.h)('br'), (0, _dom.h)('button#4.op', 'add'), (0, _dom.h)('button#5.op', 'subtract'), (0, _dom.h)('button#6.op', 'mult'), (0, _dom.h)('button#7.op', 'div'), (0, _dom.h)('button#8.op', 'concat'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('div#dice', { style: { display: mMdice.x } }, [(0, _dom.h)('button#roll.tao1', 'ROLL'), (0, _dom.h)('button#back.tao100', 'BACK'), (0, _dom.h)('button#ahead.tao1', 'FORWARD'), (0, _dom.h)('div.tao', 'Selected numbers: ' + gameMonad.fetch3().join(', ') + ' '), (0, _dom.h)('div.tao', 'Operator: ' + gameMonad.fetch2() + ' '), (0, _dom.h)('div.tao', 'Index: ' + gameMonad.s[1]), (0, _dom.h)('button#clear', 'Clear selected numbers'), (0, _dom.h)('div#log2', { style: { display: mMlog2.x } }, [(0, _dom.h)('span', 'Change group: '), (0, _dom.h)('input#group', { props: { autofocus: true } }, 'test')]), (0, _dom.h)('p', mMsoloAlert.x)])]), (0, _dom.h)('div#rightPanel', { style: { display: mMrightPanel.x } }, [(0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('button#todoButton', { style: { fontSize: '16px', display: 'inline' } }, 'TOGGLE TODO_LIST'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('button#chat2', { style: { fontSize: '16px', display: 'inline' } }, 'TOGGLE CHAT'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('div.game', 'Name: ' + pMname.x), (0, _dom.h)('div.game', 'Group: ' + pMgroup.x), (0, _dom.h)('pre.game', 'Currently online:\n(Name score | goals) '), (0, _dom.h)('div.game', { props: { color: "gold" } }, '' + pMdata.x), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('div#a100', ' _________________________________________________ '), (0, _dom.h)('br'), (0, _dom.h)('div#todoDiv', { style: { display: mMtodoDiv.x } }, [(0, _dom.h)('div#taskList', mMtaskList.x), (0, _dom.h)('div', 'Enter author, responsible person, and task here: '), (0, _dom.h)('br'), (0, _dom.h)('input.newTask')]), (0, _dom.h)('br'), (0, _dom.h)('span#alert', mMalert.x), (0, _dom.h)('br'), (0, _dom.h)('span#alert2'), (0, _dom.h)('br'), (0, _dom.h)('div#chatDiv', { style: { display: mMchatDiv.x } }, [(0, _dom.h)('div#messages', [(0, _dom.h)('span', 'Message: '), (0, _dom.h)('input.inputMessage'), (0, _dom.h)('div', messages), (0, _dom.h)('br')])])])]),
 	      // h('div#a100', ' ____________________________________________________________________________________________________________ ' ),
 	      (0, _dom.h)('div.content', [
 
@@ -1085,201 +847,14 @@
 	(0, _xstreamRun.run)(main, sources);
 
 	console.log(sources.DOM);
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ },
 /* 1 */
-/***/ function(module, exports) {
-
-	// shim for using process in browser
-	var process = module.exports = {};
-
-	// cached from whatever global is present so that test runners that stub it
-	// don't break things.  But we need to wrap it in a try catch in case it is
-	// wrapped in strict mode code which doesn't define any globals.  It's inside a
-	// function because try/catches deoptimize in certain engines.
-
-	var cachedSetTimeout;
-	var cachedClearTimeout;
-
-	function defaultSetTimout() {
-	    throw new Error('setTimeout has not been defined');
-	}
-	function defaultClearTimeout () {
-	    throw new Error('clearTimeout has not been defined');
-	}
-	(function () {
-	    try {
-	        if (typeof setTimeout === 'function') {
-	            cachedSetTimeout = setTimeout;
-	        } else {
-	            cachedSetTimeout = defaultSetTimout;
-	        }
-	    } catch (e) {
-	        cachedSetTimeout = defaultSetTimout;
-	    }
-	    try {
-	        if (typeof clearTimeout === 'function') {
-	            cachedClearTimeout = clearTimeout;
-	        } else {
-	            cachedClearTimeout = defaultClearTimeout;
-	        }
-	    } catch (e) {
-	        cachedClearTimeout = defaultClearTimeout;
-	    }
-	} ())
-	function runTimeout(fun) {
-	    if (cachedSetTimeout === setTimeout) {
-	        //normal enviroments in sane situations
-	        return setTimeout(fun, 0);
-	    }
-	    // if setTimeout wasn't available but was latter defined
-	    if ((cachedSetTimeout === defaultSetTimout || !cachedSetTimeout) && setTimeout) {
-	        cachedSetTimeout = setTimeout;
-	        return setTimeout(fun, 0);
-	    }
-	    try {
-	        // when when somebody has screwed with setTimeout but no I.E. maddness
-	        return cachedSetTimeout(fun, 0);
-	    } catch(e){
-	        try {
-	            // When we are in I.E. but the script has been evaled so I.E. doesn't trust the global object when called normally
-	            return cachedSetTimeout.call(null, fun, 0);
-	        } catch(e){
-	            // same as above but when it's a version of I.E. that must have the global object for 'this', hopfully our context correct otherwise it will throw a global error
-	            return cachedSetTimeout.call(this, fun, 0);
-	        }
-	    }
-
-
-	}
-	function runClearTimeout(marker) {
-	    if (cachedClearTimeout === clearTimeout) {
-	        //normal enviroments in sane situations
-	        return clearTimeout(marker);
-	    }
-	    // if clearTimeout wasn't available but was latter defined
-	    if ((cachedClearTimeout === defaultClearTimeout || !cachedClearTimeout) && clearTimeout) {
-	        cachedClearTimeout = clearTimeout;
-	        return clearTimeout(marker);
-	    }
-	    try {
-	        // when when somebody has screwed with setTimeout but no I.E. maddness
-	        return cachedClearTimeout(marker);
-	    } catch (e){
-	        try {
-	            // When we are in I.E. but the script has been evaled so I.E. doesn't  trust the global object when called normally
-	            return cachedClearTimeout.call(null, marker);
-	        } catch (e){
-	            // same as above but when it's a version of I.E. that must have the global object for 'this', hopfully our context correct otherwise it will throw a global error.
-	            // Some versions of I.E. have different rules for clearTimeout vs setTimeout
-	            return cachedClearTimeout.call(this, marker);
-	        }
-	    }
-
-
-
-	}
-	var queue = [];
-	var draining = false;
-	var currentQueue;
-	var queueIndex = -1;
-
-	function cleanUpNextTick() {
-	    if (!draining || !currentQueue) {
-	        return;
-	    }
-	    draining = false;
-	    if (currentQueue.length) {
-	        queue = currentQueue.concat(queue);
-	    } else {
-	        queueIndex = -1;
-	    }
-	    if (queue.length) {
-	        drainQueue();
-	    }
-	}
-
-	function drainQueue() {
-	    if (draining) {
-	        return;
-	    }
-	    var timeout = runTimeout(cleanUpNextTick);
-	    draining = true;
-
-	    var len = queue.length;
-	    while(len) {
-	        currentQueue = queue;
-	        queue = [];
-	        while (++queueIndex < len) {
-	            if (currentQueue) {
-	                currentQueue[queueIndex].run();
-	            }
-	        }
-	        queueIndex = -1;
-	        len = queue.length;
-	    }
-	    currentQueue = null;
-	    draining = false;
-	    runClearTimeout(timeout);
-	}
-
-	process.nextTick = function (fun) {
-	    var args = new Array(arguments.length - 1);
-	    if (arguments.length > 1) {
-	        for (var i = 1; i < arguments.length; i++) {
-	            args[i - 1] = arguments[i];
-	        }
-	    }
-	    queue.push(new Item(fun, args));
-	    if (queue.length === 1 && !draining) {
-	        runTimeout(drainQueue);
-	    }
-	};
-
-	// v8 likes predictible objects
-	function Item(fun, array) {
-	    this.fun = fun;
-	    this.array = array;
-	}
-	Item.prototype.run = function () {
-	    this.fun.apply(null, this.array);
-	};
-	process.title = 'browser';
-	process.browser = true;
-	process.env = {};
-	process.argv = [];
-	process.version = ''; // empty string to avoid regexp issues
-	process.versions = {};
-
-	function noop() {}
-
-	process.on = noop;
-	process.addListener = noop;
-	process.once = noop;
-	process.off = noop;
-	process.removeListener = noop;
-	process.removeAllListeners = noop;
-	process.emit = noop;
-
-	process.binding = function (name) {
-	    throw new Error('process.binding is not supported');
-	};
-
-	process.cwd = function () { return '/' };
-	process.chdir = function (dir) {
-	    throw new Error('process.chdir is not supported');
-	};
-	process.umask = function() { return 0; };
-
-
-/***/ },
-/* 2 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-	var base_1 = __webpack_require__(3);
-	var xstream_adapter_1 = __webpack_require__(4);
+	var base_1 = __webpack_require__(2);
+	var xstream_adapter_1 = __webpack_require__(3);
 	/**
 	 * Takes a `main` function and circularly connects it to the given collection
 	 * of driver functions.
@@ -1356,7 +931,7 @@
 	//# sourceMappingURL=index.js.map
 
 /***/ },
-/* 3 */
+/* 2 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -1494,11 +1069,11 @@
 	//# sourceMappingURL=index.js.map
 
 /***/ },
-/* 4 */
+/* 3 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-	var xstream_1 = __webpack_require__(5);
+	var xstream_1 = __webpack_require__(4);
 	var XStreamAdapter = {
 	    adapt: function (originStream, originStreamSubscribe) {
 	        if (XStreamAdapter.isValidStream(originStream)) {
@@ -1544,7 +1119,7 @@
 	//# sourceMappingURL=index.js.map
 
 /***/ },
-/* 5 */
+/* 4 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -1553,7 +1128,7 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var symbol_observable_1 = __webpack_require__(6);
+	var symbol_observable_1 = __webpack_require__(5);
 	var NO = {};
 	exports.NO = NO;
 	function noop() { }
@@ -3420,14 +2995,14 @@
 	//# sourceMappingURL=index.js.map
 
 /***/ },
-/* 6 */
+/* 5 */
 /***/ function(module, exports, __webpack_require__) {
 
-	module.exports = __webpack_require__(7);
+	module.exports = __webpack_require__(6);
 
 
 /***/ },
-/* 7 */
+/* 6 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(global, module) {'use strict';
@@ -3436,7 +3011,7 @@
 	  value: true
 	});
 
-	var _ponyfill = __webpack_require__(9);
+	var _ponyfill = __webpack_require__(8);
 
 	var _ponyfill2 = _interopRequireDefault(_ponyfill);
 
@@ -3459,10 +3034,10 @@
 
 	var result = (0, _ponyfill2['default'])(root);
 	exports['default'] = result;
-	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }()), __webpack_require__(8)(module)))
+	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }()), __webpack_require__(7)(module)))
 
 /***/ },
-/* 8 */
+/* 7 */
 /***/ function(module, exports) {
 
 	module.exports = function(module) {
@@ -3478,7 +3053,7 @@
 
 
 /***/ },
-/* 9 */
+/* 8 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -3506,11 +3081,11 @@
 	};
 
 /***/ },
-/* 10 */
+/* 9 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-	var thunk = __webpack_require__(11);
+	var thunk = __webpack_require__(10);
 	exports.thunk = thunk;
 	/**
 	 * A factory for the DOM driver function.
@@ -3548,7 +3123,7 @@
 	 * of VNode as input, and outputs the DOMSource object.
 	 * @function makeDOMDriver
 	 */
-	var makeDOMDriver_1 = __webpack_require__(15);
+	var makeDOMDriver_1 = __webpack_require__(14);
 	exports.makeDOMDriver = makeDOMDriver_1.makeDOMDriver;
 	/**
 	 * A factory for the HTML driver function.
@@ -3596,7 +3171,7 @@
 	 * of VNode as input, and outputs the DOMSource object.
 	 * @function makeHTMLDriver
 	 */
-	var makeHTMLDriver_1 = __webpack_require__(95);
+	var makeHTMLDriver_1 = __webpack_require__(94);
 	exports.makeHTMLDriver = makeHTMLDriver_1.makeHTMLDriver;
 	/**
 	 * A factory function to create mocked DOMSource objects, for testing purposes.
@@ -3646,7 +3221,7 @@
 	 *
 	 * @function mockDOMSource
 	 */
-	var mockDOMSource_1 = __webpack_require__(123);
+	var mockDOMSource_1 = __webpack_require__(122);
 	exports.mockDOMSource = mockDOMSource_1.mockDOMSource;
 	/**
 	 * The hyperscript function `h()` is a function to create virtual DOM objects,
@@ -3688,9 +3263,9 @@
 	 *
 	 * @function h
 	 */
-	var hyperscript_1 = __webpack_require__(29);
+	var hyperscript_1 = __webpack_require__(28);
 	exports.h = hyperscript_1.h;
-	var hyperscript_helpers_1 = __webpack_require__(124);
+	var hyperscript_helpers_1 = __webpack_require__(123);
 	exports.svg = hyperscript_helpers_1.default.svg;
 	exports.a = hyperscript_helpers_1.default.a;
 	exports.abbr = hyperscript_helpers_1.default.abbr;
@@ -3795,10 +3370,10 @@
 	//# sourceMappingURL=index.js.map
 
 /***/ },
-/* 11 */
+/* 10 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var h = __webpack_require__(12);
+	var h = __webpack_require__(11);
 
 	function copyToThunk(vnode, thunk) {
 	  thunk.elm = vnode.elm;
@@ -3847,11 +3422,11 @@
 
 
 /***/ },
-/* 12 */
+/* 11 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var VNode = __webpack_require__(13);
-	var is = __webpack_require__(14);
+	var VNode = __webpack_require__(12);
+	var is = __webpack_require__(13);
 
 	function addNS(data, children) {
 	  data.ns = 'http://www.w3.org/2000/svg';
@@ -3886,7 +3461,7 @@
 
 
 /***/ },
-/* 13 */
+/* 12 */
 /***/ function(module, exports) {
 
 	module.exports = function(sel, data, children, text, elm) {
@@ -3897,7 +3472,7 @@
 
 
 /***/ },
-/* 14 */
+/* 13 */
 /***/ function(module, exports) {
 
 	module.exports = {
@@ -3907,20 +3482,20 @@
 
 
 /***/ },
-/* 15 */
+/* 14 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-	var snabbdom_1 = __webpack_require__(16);
-	var xstream_1 = __webpack_require__(5);
-	var MainDOMSource_1 = __webpack_require__(18);
-	var VNodeWrapper_1 = __webpack_require__(28);
-	var utils_1 = __webpack_require__(24);
-	var modules_1 = __webpack_require__(33);
-	var isolateModule_1 = __webpack_require__(40);
-	var transposition_1 = __webpack_require__(94);
-	var xstream_adapter_1 = __webpack_require__(4);
-	var MapPolyfill = __webpack_require__(41);
+	var snabbdom_1 = __webpack_require__(15);
+	var xstream_1 = __webpack_require__(4);
+	var MainDOMSource_1 = __webpack_require__(17);
+	var VNodeWrapper_1 = __webpack_require__(27);
+	var utils_1 = __webpack_require__(23);
+	var modules_1 = __webpack_require__(32);
+	var isolateModule_1 = __webpack_require__(39);
+	var transposition_1 = __webpack_require__(93);
+	var xstream_adapter_1 = __webpack_require__(3);
+	var MapPolyfill = __webpack_require__(40);
 	function makeDOMDriverInputGuard(modules) {
 	    if (!Array.isArray(modules)) {
 	        throw new Error("Optional modules option must be " +
@@ -3970,16 +3545,16 @@
 	//# sourceMappingURL=makeDOMDriver.js.map
 
 /***/ },
-/* 16 */
+/* 15 */
 /***/ function(module, exports, __webpack_require__) {
 
 	// jshint newcap: false
 	/* global require, module, document, Node */
 	'use strict';
 
-	var VNode = __webpack_require__(13);
-	var is = __webpack_require__(14);
-	var domApi = __webpack_require__(17);
+	var VNode = __webpack_require__(12);
+	var is = __webpack_require__(13);
+	var domApi = __webpack_require__(16);
 
 	function isUndef(s) { return s === undefined; }
 	function isDef(s) { return s !== undefined; }
@@ -4234,7 +3809,7 @@
 
 
 /***/ },
-/* 17 */
+/* 16 */
 /***/ function(module, exports) {
 
 	function createElement(tagName){
@@ -4294,22 +3869,22 @@
 
 
 /***/ },
-/* 18 */
+/* 17 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-	var xstream_adapter_1 = __webpack_require__(4);
-	var DocumentDOMSource_1 = __webpack_require__(19);
-	var BodyDOMSource_1 = __webpack_require__(21);
-	var xstream_1 = __webpack_require__(5);
-	var ElementFinder_1 = __webpack_require__(22);
-	var fromEvent_1 = __webpack_require__(20);
-	var isolate_1 = __webpack_require__(26);
-	var EventDelegator_1 = __webpack_require__(27);
-	var utils_1 = __webpack_require__(24);
+	var xstream_adapter_1 = __webpack_require__(3);
+	var DocumentDOMSource_1 = __webpack_require__(18);
+	var BodyDOMSource_1 = __webpack_require__(20);
+	var xstream_1 = __webpack_require__(4);
+	var ElementFinder_1 = __webpack_require__(21);
+	var fromEvent_1 = __webpack_require__(19);
+	var isolate_1 = __webpack_require__(25);
+	var EventDelegator_1 = __webpack_require__(26);
+	var utils_1 = __webpack_require__(23);
 	var matchesSelector;
 	try {
-	    matchesSelector = __webpack_require__(25);
+	    matchesSelector = __webpack_require__(24);
 	}
 	catch (e) {
 	    matchesSelector = Function.prototype;
@@ -4496,13 +4071,13 @@
 	//# sourceMappingURL=MainDOMSource.js.map
 
 /***/ },
-/* 19 */
+/* 18 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-	var xstream_1 = __webpack_require__(5);
-	var xstream_adapter_1 = __webpack_require__(4);
-	var fromEvent_1 = __webpack_require__(20);
+	var xstream_1 = __webpack_require__(4);
+	var xstream_adapter_1 = __webpack_require__(3);
+	var fromEvent_1 = __webpack_require__(19);
 	var DocumentDOMSource = (function () {
 	    function DocumentDOMSource(_runStreamAdapter, _name) {
 	        this._runStreamAdapter = _runStreamAdapter;
@@ -4537,11 +4112,11 @@
 	//# sourceMappingURL=DocumentDOMSource.js.map
 
 /***/ },
-/* 20 */
+/* 19 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-	var xstream_1 = __webpack_require__(5);
+	var xstream_1 = __webpack_require__(4);
 	function fromEvent(element, eventName, useCapture) {
 	    if (useCapture === void 0) { useCapture = false; }
 	    return xstream_1.Stream.create({
@@ -4560,13 +4135,13 @@
 	//# sourceMappingURL=fromEvent.js.map
 
 /***/ },
-/* 21 */
+/* 20 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-	var xstream_1 = __webpack_require__(5);
-	var xstream_adapter_1 = __webpack_require__(4);
-	var fromEvent_1 = __webpack_require__(20);
+	var xstream_1 = __webpack_require__(4);
+	var xstream_adapter_1 = __webpack_require__(3);
+	var fromEvent_1 = __webpack_require__(19);
 	var BodyDOMSource = (function () {
 	    function BodyDOMSource(_runStreamAdapter, _name) {
 	        this._runStreamAdapter = _runStreamAdapter;
@@ -4601,15 +4176,15 @@
 	//# sourceMappingURL=BodyDOMSource.js.map
 
 /***/ },
-/* 22 */
+/* 21 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-	var ScopeChecker_1 = __webpack_require__(23);
-	var utils_1 = __webpack_require__(24);
+	var ScopeChecker_1 = __webpack_require__(22);
+	var utils_1 = __webpack_require__(23);
 	var matchesSelector;
 	try {
-	    matchesSelector = __webpack_require__(25);
+	    matchesSelector = __webpack_require__(24);
 	}
 	catch (e) {
 	    matchesSelector = Function.prototype;
@@ -4648,7 +4223,7 @@
 	//# sourceMappingURL=ElementFinder.js.map
 
 /***/ },
-/* 23 */
+/* 22 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -4675,7 +4250,7 @@
 	//# sourceMappingURL=ScopeChecker.js.map
 
 /***/ },
-/* 24 */
+/* 23 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -4715,7 +4290,7 @@
 	//# sourceMappingURL=utils.js.map
 
 /***/ },
-/* 25 */
+/* 24 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -4749,11 +4324,11 @@
 	}
 
 /***/ },
-/* 26 */
+/* 25 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-	var utils_1 = __webpack_require__(24);
+	var utils_1 = __webpack_require__(23);
 	function isolateSource(source, scope) {
 	    return source.select(utils_1.SCOPE_PREFIX + scope);
 	}
@@ -4779,15 +4354,15 @@
 	//# sourceMappingURL=isolate.js.map
 
 /***/ },
-/* 27 */
+/* 26 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-	var ScopeChecker_1 = __webpack_require__(23);
-	var utils_1 = __webpack_require__(24);
+	var ScopeChecker_1 = __webpack_require__(22);
+	var utils_1 = __webpack_require__(23);
 	var matchesSelector;
 	try {
-	    matchesSelector = __webpack_require__(25);
+	    matchesSelector = __webpack_require__(24);
 	}
 	catch (e) {
 	    matchesSelector = Function.prototype;
@@ -4918,13 +4493,13 @@
 	//# sourceMappingURL=EventDelegator.js.map
 
 /***/ },
-/* 28 */
+/* 27 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-	var hyperscript_1 = __webpack_require__(29);
-	var classNameFromVNode_1 = __webpack_require__(30);
-	var selectorParser_1 = __webpack_require__(31);
+	var hyperscript_1 = __webpack_require__(28);
+	var classNameFromVNode_1 = __webpack_require__(29);
+	var selectorParser_1 = __webpack_require__(30);
 	var VNodeWrapper = (function () {
 	    function VNodeWrapper(rootElement) {
 	        this.rootElement = rootElement;
@@ -4955,12 +4530,12 @@
 	//# sourceMappingURL=VNodeWrapper.js.map
 
 /***/ },
-/* 29 */
+/* 28 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-	var is = __webpack_require__(14);
-	var vnode = __webpack_require__(13);
+	var is = __webpack_require__(13);
+	var vnode = __webpack_require__(12);
 	function isGenericStream(x) {
 	    return !Array.isArray(x) && typeof x.map === "function";
 	}
@@ -5023,7 +4598,7 @@
 	//# sourceMappingURL=hyperscript.js.map
 
 /***/ },
-/* 30 */
+/* 29 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -5033,7 +4608,7 @@
 	});
 	exports.default = classNameFromVNode;
 
-	var _selectorParser2 = __webpack_require__(31);
+	var _selectorParser2 = __webpack_require__(30);
 
 	var _selectorParser3 = _interopRequireDefault(_selectorParser2);
 
@@ -5069,7 +4644,7 @@
 	}
 
 /***/ },
-/* 31 */
+/* 30 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -5079,7 +4654,7 @@
 	});
 	exports.default = selectorParser;
 
-	var _browserSplit = __webpack_require__(32);
+	var _browserSplit = __webpack_require__(31);
 
 	var _browserSplit2 = _interopRequireDefault(_browserSplit);
 
@@ -5131,7 +4706,7 @@
 	}
 
 /***/ },
-/* 32 */
+/* 31 */
 /***/ function(module, exports) {
 
 	/*!
@@ -5243,28 +4818,28 @@
 
 
 /***/ },
-/* 33 */
+/* 32 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-	var ClassModule = __webpack_require__(34);
+	var ClassModule = __webpack_require__(33);
 	exports.ClassModule = ClassModule;
-	var PropsModule = __webpack_require__(35);
+	var PropsModule = __webpack_require__(34);
 	exports.PropsModule = PropsModule;
-	var AttrsModule = __webpack_require__(36);
+	var AttrsModule = __webpack_require__(35);
 	exports.AttrsModule = AttrsModule;
-	var EventsModule = __webpack_require__(37);
+	var EventsModule = __webpack_require__(36);
 	exports.EventsModule = EventsModule;
-	var StyleModule = __webpack_require__(38);
+	var StyleModule = __webpack_require__(37);
 	exports.StyleModule = StyleModule;
-	var HeroModule = __webpack_require__(39);
+	var HeroModule = __webpack_require__(38);
 	exports.HeroModule = HeroModule;
 	Object.defineProperty(exports, "__esModule", { value: true });
 	exports.default = [StyleModule, ClassModule, PropsModule, AttrsModule];
 	//# sourceMappingURL=modules.js.map
 
 /***/ },
-/* 34 */
+/* 33 */
 /***/ function(module, exports) {
 
 	function updateClass(oldVnode, vnode) {
@@ -5288,7 +4863,7 @@
 
 
 /***/ },
-/* 35 */
+/* 34 */
 /***/ function(module, exports) {
 
 	function updateProps(oldVnode, vnode) {
@@ -5312,7 +4887,7 @@
 
 
 /***/ },
-/* 36 */
+/* 35 */
 /***/ function(module, exports) {
 
 	var booleanAttrs = ["allowfullscreen", "async", "autofocus", "autoplay", "checked", "compact", "controls", "declare", 
@@ -5357,10 +4932,10 @@
 
 
 /***/ },
-/* 37 */
+/* 36 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var is = __webpack_require__(14);
+	var is = __webpack_require__(13);
 
 	function arrInvoker(arr) {
 	  return function() {
@@ -5421,7 +4996,7 @@
 
 
 /***/ },
-/* 38 */
+/* 37 */
 /***/ function(module, exports) {
 
 	var raf = (typeof window !== 'undefined' && window.requestAnimationFrame) || setTimeout;
@@ -5491,7 +5066,7 @@
 
 
 /***/ },
-/* 39 */
+/* 38 */
 /***/ function(module, exports) {
 
 	var raf = (typeof window !== 'undefined' && window.requestAnimationFrame) || setTimeout;
@@ -5649,11 +5224,11 @@
 
 
 /***/ },
-/* 40 */
+/* 39 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-	var MapPolyfill = __webpack_require__(41);
+	var MapPolyfill = __webpack_require__(40);
 	var IsolateModule = (function () {
 	    function IsolateModule(isolatedElements) {
 	        this.isolatedElements = isolatedElements;
@@ -5758,16 +5333,16 @@
 	//# sourceMappingURL=isolateModule.js.map
 
 /***/ },
-/* 41 */
+/* 40 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	module.exports = __webpack_require__(42)() ? Map : __webpack_require__(43);
+	module.exports = __webpack_require__(41)() ? Map : __webpack_require__(42);
 
 
 /***/ },
-/* 42 */
+/* 41 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -5805,23 +5380,23 @@
 
 
 /***/ },
-/* 43 */
+/* 42 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var clear          = __webpack_require__(44)
-	  , eIndexOf       = __webpack_require__(46)
-	  , setPrototypeOf = __webpack_require__(52)
-	  , callable       = __webpack_require__(57)
-	  , validValue     = __webpack_require__(45)
-	  , d              = __webpack_require__(58)
-	  , ee             = __webpack_require__(70)
-	  , Symbol         = __webpack_require__(71)
-	  , iterator       = __webpack_require__(76)
-	  , forOf          = __webpack_require__(80)
-	  , Iterator       = __webpack_require__(90)
-	  , isNative       = __webpack_require__(93)
+	var clear          = __webpack_require__(43)
+	  , eIndexOf       = __webpack_require__(45)
+	  , setPrototypeOf = __webpack_require__(51)
+	  , callable       = __webpack_require__(56)
+	  , validValue     = __webpack_require__(44)
+	  , d              = __webpack_require__(57)
+	  , ee             = __webpack_require__(69)
+	  , Symbol         = __webpack_require__(70)
+	  , iterator       = __webpack_require__(75)
+	  , forOf          = __webpack_require__(79)
+	  , Iterator       = __webpack_require__(89)
+	  , isNative       = __webpack_require__(92)
 
 	  , call = Function.prototype.call
 	  , defineProperties = Object.defineProperties, getPrototypeOf = Object.getPrototypeOf
@@ -5915,7 +5490,7 @@
 
 
 /***/ },
-/* 44 */
+/* 43 */
 /***/ function(module, exports, __webpack_require__) {
 
 	// Inspired by Google Closure:
@@ -5924,7 +5499,7 @@
 
 	'use strict';
 
-	var value = __webpack_require__(45);
+	var value = __webpack_require__(44);
 
 	module.exports = function () {
 		value(this).length = 0;
@@ -5933,7 +5508,7 @@
 
 
 /***/ },
-/* 45 */
+/* 44 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -5945,13 +5520,13 @@
 
 
 /***/ },
-/* 46 */
+/* 45 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var toPosInt = __webpack_require__(47)
-	  , value    = __webpack_require__(45)
+	var toPosInt = __webpack_require__(46)
+	  , value    = __webpack_require__(44)
 
 	  , indexOf = Array.prototype.indexOf
 	  , hasOwnProperty = Object.prototype.hasOwnProperty
@@ -5980,12 +5555,12 @@
 
 
 /***/ },
-/* 47 */
+/* 46 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var toInteger = __webpack_require__(48)
+	var toInteger = __webpack_require__(47)
 
 	  , max = Math.max;
 
@@ -5993,12 +5568,12 @@
 
 
 /***/ },
-/* 48 */
+/* 47 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var sign = __webpack_require__(49)
+	var sign = __webpack_require__(48)
 
 	  , abs = Math.abs, floor = Math.floor;
 
@@ -6011,18 +5586,18 @@
 
 
 /***/ },
-/* 49 */
+/* 48 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	module.exports = __webpack_require__(50)()
+	module.exports = __webpack_require__(49)()
 		? Math.sign
-		: __webpack_require__(51);
+		: __webpack_require__(50);
 
 
 /***/ },
-/* 50 */
+/* 49 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -6035,7 +5610,7 @@
 
 
 /***/ },
-/* 51 */
+/* 50 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -6048,18 +5623,18 @@
 
 
 /***/ },
-/* 52 */
+/* 51 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	module.exports = __webpack_require__(53)()
+	module.exports = __webpack_require__(52)()
 		? Object.setPrototypeOf
-		: __webpack_require__(54);
+		: __webpack_require__(53);
 
 
 /***/ },
-/* 53 */
+/* 52 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -6076,7 +5651,7 @@
 
 
 /***/ },
-/* 54 */
+/* 53 */
 /***/ function(module, exports, __webpack_require__) {
 
 	// Big thanks to @WebReflection for sorting this out
@@ -6084,8 +5659,8 @@
 
 	'use strict';
 
-	var isObject      = __webpack_require__(55)
-	  , value         = __webpack_require__(45)
+	var isObject      = __webpack_require__(54)
+	  , value         = __webpack_require__(44)
 
 	  , isPrototypeOf = Object.prototype.isPrototypeOf
 	  , defineProperty = Object.defineProperty
@@ -6151,11 +5726,11 @@
 		return false;
 	}())));
 
-	__webpack_require__(56);
+	__webpack_require__(55);
 
 
 /***/ },
-/* 55 */
+/* 54 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -6168,7 +5743,7 @@
 
 
 /***/ },
-/* 56 */
+/* 55 */
 /***/ function(module, exports, __webpack_require__) {
 
 	// Workaround for http://code.google.com/p/v8/issues/detail?id=2804
@@ -6177,8 +5752,8 @@
 
 	var create = Object.create, shim;
 
-	if (!__webpack_require__(53)()) {
-		shim = __webpack_require__(54);
+	if (!__webpack_require__(52)()) {
+		shim = __webpack_require__(53);
 	}
 
 	module.exports = (function () {
@@ -6210,7 +5785,7 @@
 
 
 /***/ },
-/* 57 */
+/* 56 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -6222,15 +5797,15 @@
 
 
 /***/ },
-/* 58 */
+/* 57 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var assign        = __webpack_require__(59)
-	  , normalizeOpts = __webpack_require__(65)
-	  , isCallable    = __webpack_require__(66)
-	  , contains      = __webpack_require__(67)
+	var assign        = __webpack_require__(58)
+	  , normalizeOpts = __webpack_require__(64)
+	  , isCallable    = __webpack_require__(65)
+	  , contains      = __webpack_require__(66)
 
 	  , d;
 
@@ -6291,18 +5866,18 @@
 
 
 /***/ },
-/* 59 */
+/* 58 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	module.exports = __webpack_require__(60)()
+	module.exports = __webpack_require__(59)()
 		? Object.assign
-		: __webpack_require__(61);
+		: __webpack_require__(60);
 
 
 /***/ },
-/* 60 */
+/* 59 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -6317,13 +5892,13 @@
 
 
 /***/ },
-/* 61 */
+/* 60 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var keys  = __webpack_require__(62)
-	  , value = __webpack_require__(45)
+	var keys  = __webpack_require__(61)
+	  , value = __webpack_require__(44)
 
 	  , max = Math.max;
 
@@ -6345,18 +5920,18 @@
 
 
 /***/ },
-/* 62 */
+/* 61 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	module.exports = __webpack_require__(63)()
+	module.exports = __webpack_require__(62)()
 		? Object.keys
-		: __webpack_require__(64);
+		: __webpack_require__(63);
 
 
 /***/ },
-/* 63 */
+/* 62 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -6370,7 +5945,7 @@
 
 
 /***/ },
-/* 64 */
+/* 63 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -6383,7 +5958,7 @@
 
 
 /***/ },
-/* 65 */
+/* 64 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -6406,7 +5981,7 @@
 
 
 /***/ },
-/* 66 */
+/* 65 */
 /***/ function(module, exports) {
 
 	// Deprecated
@@ -6417,18 +5992,18 @@
 
 
 /***/ },
-/* 67 */
+/* 66 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	module.exports = __webpack_require__(68)()
+	module.exports = __webpack_require__(67)()
 		? String.prototype.contains
-		: __webpack_require__(69);
+		: __webpack_require__(68);
 
 
 /***/ },
-/* 68 */
+/* 67 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -6442,7 +6017,7 @@
 
 
 /***/ },
-/* 69 */
+/* 68 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -6455,13 +6030,13 @@
 
 
 /***/ },
-/* 70 */
+/* 69 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var d        = __webpack_require__(58)
-	  , callable = __webpack_require__(57)
+	var d        = __webpack_require__(57)
+	  , callable = __webpack_require__(56)
 
 	  , apply = Function.prototype.apply, call = Function.prototype.call
 	  , create = Object.create, defineProperty = Object.defineProperty
@@ -6593,16 +6168,16 @@
 
 
 /***/ },
-/* 71 */
+/* 70 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	module.exports = __webpack_require__(72)() ? Symbol : __webpack_require__(73);
+	module.exports = __webpack_require__(71)() ? Symbol : __webpack_require__(72);
 
 
 /***/ },
-/* 72 */
+/* 71 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -6625,15 +6200,15 @@
 
 
 /***/ },
-/* 73 */
+/* 72 */
 /***/ function(module, exports, __webpack_require__) {
 
 	// ES2015 Symbol polyfill for environments that do not (or partially) support it
 
 	'use strict';
 
-	var d              = __webpack_require__(58)
-	  , validateSymbol = __webpack_require__(74)
+	var d              = __webpack_require__(57)
+	  , validateSymbol = __webpack_require__(73)
 
 	  , create = Object.create, defineProperties = Object.defineProperties
 	  , defineProperty = Object.defineProperty, objPrototype = Object.prototype
@@ -6749,12 +6324,12 @@
 
 
 /***/ },
-/* 74 */
+/* 73 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var isSymbol = __webpack_require__(75);
+	var isSymbol = __webpack_require__(74);
 
 	module.exports = function (value) {
 		if (!isSymbol(value)) throw new TypeError(value + " is not a symbol");
@@ -6763,7 +6338,7 @@
 
 
 /***/ },
-/* 75 */
+/* 74 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -6778,12 +6353,12 @@
 
 
 /***/ },
-/* 76 */
+/* 75 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var isIterable = __webpack_require__(77);
+	var isIterable = __webpack_require__(76);
 
 	module.exports = function (value) {
 		if (!isIterable(value)) throw new TypeError(value + " is not iterable");
@@ -6792,14 +6367,14 @@
 
 
 /***/ },
-/* 77 */
+/* 76 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var isArguments    = __webpack_require__(78)
-	  , isString       = __webpack_require__(79)
-	  , iteratorSymbol = __webpack_require__(71).iterator
+	var isArguments    = __webpack_require__(77)
+	  , isString       = __webpack_require__(78)
+	  , iteratorSymbol = __webpack_require__(70).iterator
 
 	  , isArray = Array.isArray;
 
@@ -6813,7 +6388,7 @@
 
 
 /***/ },
-/* 78 */
+/* 77 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -6826,7 +6401,7 @@
 
 
 /***/ },
-/* 79 */
+/* 78 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -6842,15 +6417,15 @@
 
 
 /***/ },
-/* 80 */
+/* 79 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var isArguments = __webpack_require__(78)
-	  , callable    = __webpack_require__(57)
-	  , isString    = __webpack_require__(79)
-	  , get         = __webpack_require__(81)
+	var isArguments = __webpack_require__(77)
+	  , callable    = __webpack_require__(56)
+	  , isString    = __webpack_require__(78)
+	  , get         = __webpack_require__(80)
 
 	  , isArray = Array.isArray, call = Function.prototype.call
 	  , some = Array.prototype.some;
@@ -6894,17 +6469,17 @@
 
 
 /***/ },
-/* 81 */
+/* 80 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var isArguments    = __webpack_require__(78)
-	  , isString       = __webpack_require__(79)
-	  , ArrayIterator  = __webpack_require__(82)
-	  , StringIterator = __webpack_require__(89)
-	  , iterable       = __webpack_require__(76)
-	  , iteratorSymbol = __webpack_require__(71).iterator;
+	var isArguments    = __webpack_require__(77)
+	  , isString       = __webpack_require__(78)
+	  , ArrayIterator  = __webpack_require__(81)
+	  , StringIterator = __webpack_require__(88)
+	  , iterable       = __webpack_require__(75)
+	  , iteratorSymbol = __webpack_require__(70).iterator;
 
 	module.exports = function (obj) {
 		if (typeof iterable(obj)[iteratorSymbol] === 'function') return obj[iteratorSymbol]();
@@ -6915,15 +6490,15 @@
 
 
 /***/ },
-/* 82 */
+/* 81 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var setPrototypeOf = __webpack_require__(52)
-	  , contains       = __webpack_require__(67)
-	  , d              = __webpack_require__(58)
-	  , Iterator       = __webpack_require__(83)
+	var setPrototypeOf = __webpack_require__(51)
+	  , contains       = __webpack_require__(66)
+	  , d              = __webpack_require__(57)
+	  , Iterator       = __webpack_require__(82)
 
 	  , defineProperty = Object.defineProperty
 	  , ArrayIterator;
@@ -6951,18 +6526,18 @@
 
 
 /***/ },
-/* 83 */
+/* 82 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var clear    = __webpack_require__(44)
-	  , assign   = __webpack_require__(59)
-	  , callable = __webpack_require__(57)
-	  , value    = __webpack_require__(45)
-	  , d        = __webpack_require__(58)
-	  , autoBind = __webpack_require__(84)
-	  , Symbol   = __webpack_require__(71)
+	var clear    = __webpack_require__(43)
+	  , assign   = __webpack_require__(58)
+	  , callable = __webpack_require__(56)
+	  , value    = __webpack_require__(44)
+	  , d        = __webpack_require__(57)
+	  , autoBind = __webpack_require__(83)
+	  , Symbol   = __webpack_require__(70)
 
 	  , defineProperty = Object.defineProperty
 	  , defineProperties = Object.defineProperties
@@ -7047,17 +6622,17 @@
 
 
 /***/ },
-/* 84 */
+/* 83 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var copy             = __webpack_require__(85)
-	  , normalizeOptions = __webpack_require__(65)
-	  , ensureCallable   = __webpack_require__(57)
-	  , map              = __webpack_require__(86)
-	  , callable         = __webpack_require__(57)
-	  , validValue       = __webpack_require__(45)
+	var copy             = __webpack_require__(84)
+	  , normalizeOptions = __webpack_require__(64)
+	  , ensureCallable   = __webpack_require__(56)
+	  , map              = __webpack_require__(85)
+	  , callable         = __webpack_require__(56)
+	  , validValue       = __webpack_require__(44)
 
 	  , bind = Function.prototype.bind, defineProperty = Object.defineProperty
 	  , hasOwnProperty = Object.prototype.hasOwnProperty
@@ -7085,13 +6660,13 @@
 
 
 /***/ },
-/* 85 */
+/* 84 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var assign = __webpack_require__(59)
-	  , value  = __webpack_require__(45);
+	var assign = __webpack_require__(58)
+	  , value  = __webpack_require__(44);
 
 	module.exports = function (obj) {
 		var copy = Object(value(obj));
@@ -7101,13 +6676,13 @@
 
 
 /***/ },
-/* 86 */
+/* 85 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var callable = __webpack_require__(57)
-	  , forEach  = __webpack_require__(87)
+	var callable = __webpack_require__(56)
+	  , forEach  = __webpack_require__(86)
 
 	  , call = Function.prototype.call;
 
@@ -7122,16 +6697,16 @@
 
 
 /***/ },
-/* 87 */
+/* 86 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	module.exports = __webpack_require__(88)('forEach');
+	module.exports = __webpack_require__(87)('forEach');
 
 
 /***/ },
-/* 88 */
+/* 87 */
 /***/ function(module, exports, __webpack_require__) {
 
 	// Internal method, used by iteration functions.
@@ -7140,8 +6715,8 @@
 
 	'use strict';
 
-	var callable = __webpack_require__(57)
-	  , value    = __webpack_require__(45)
+	var callable = __webpack_require__(56)
+	  , value    = __webpack_require__(44)
 
 	  , bind = Function.prototype.bind, call = Function.prototype.call, keys = Object.keys
 	  , propertyIsEnumerable = Object.prototype.propertyIsEnumerable;
@@ -7166,7 +6741,7 @@
 
 
 /***/ },
-/* 89 */
+/* 88 */
 /***/ function(module, exports, __webpack_require__) {
 
 	// Thanks @mathiasbynens
@@ -7174,9 +6749,9 @@
 
 	'use strict';
 
-	var setPrototypeOf = __webpack_require__(52)
-	  , d              = __webpack_require__(58)
-	  , Iterator       = __webpack_require__(83)
+	var setPrototypeOf = __webpack_require__(51)
+	  , d              = __webpack_require__(57)
+	  , Iterator       = __webpack_require__(82)
 
 	  , defineProperty = Object.defineProperty
 	  , StringIterator;
@@ -7209,16 +6784,16 @@
 
 
 /***/ },
-/* 90 */
+/* 89 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var setPrototypeOf    = __webpack_require__(52)
-	  , d                 = __webpack_require__(58)
-	  , Iterator          = __webpack_require__(83)
-	  , toStringTagSymbol = __webpack_require__(71).toStringTag
-	  , kinds             = __webpack_require__(91)
+	var setPrototypeOf    = __webpack_require__(51)
+	  , d                 = __webpack_require__(57)
+	  , Iterator          = __webpack_require__(82)
+	  , toStringTagSymbol = __webpack_require__(70).toStringTag
+	  , kinds             = __webpack_require__(90)
 
 	  , defineProperties = Object.defineProperties
 	  , unBind = Iterator.prototype._unBind
@@ -7253,17 +6828,17 @@
 
 
 /***/ },
-/* 91 */
+/* 90 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	module.exports = __webpack_require__(92)('key',
+	module.exports = __webpack_require__(91)('key',
 		'value', 'key+value');
 
 
 /***/ },
-/* 92 */
+/* 91 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -7278,7 +6853,7 @@
 
 
 /***/ },
-/* 93 */
+/* 92 */
 /***/ function(module, exports) {
 
 	// Exports true if environment provides native `Map` implementation,
@@ -7293,12 +6868,12 @@
 
 
 /***/ },
-/* 94 */
+/* 93 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-	var xstream_adapter_1 = __webpack_require__(4);
-	var xstream_1 = __webpack_require__(5);
+	var xstream_adapter_1 = __webpack_require__(3);
+	var xstream_1 = __webpack_require__(4);
 	function createVTree(vnode, children) {
 	    return {
 	        sel: vnode.sel,
@@ -7349,14 +6924,14 @@
 	//# sourceMappingURL=transposition.js.map
 
 /***/ },
-/* 95 */
+/* 94 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-	var xstream_adapter_1 = __webpack_require__(4);
-	var transposition_1 = __webpack_require__(94);
-	var HTMLSource_1 = __webpack_require__(96);
-	var toHTML = __webpack_require__(97);
+	var xstream_adapter_1 = __webpack_require__(3);
+	var transposition_1 = __webpack_require__(93);
+	var HTMLSource_1 = __webpack_require__(95);
+	var toHTML = __webpack_require__(96);
 	var noop = function () { };
 	function makeHTMLDriver(effect, options) {
 	    if (!options) {
@@ -7382,12 +6957,12 @@
 	//# sourceMappingURL=makeHTMLDriver.js.map
 
 /***/ },
-/* 96 */
+/* 95 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-	var xstream_1 = __webpack_require__(5);
-	var xstream_adapter_1 = __webpack_require__(4);
+	var xstream_1 = __webpack_require__(4);
+	var xstream_adapter_1 = __webpack_require__(3);
 	var HTMLSource = (function () {
 	    function HTMLSource(html$, runSA, _name) {
 	        this.runSA = runSA;
@@ -7414,22 +6989,22 @@
 	//# sourceMappingURL=HTMLSource.js.map
 
 /***/ },
+/* 96 */
+/***/ function(module, exports, __webpack_require__) {
+
+	
+	var init = __webpack_require__(97);
+
+	module.exports = init([__webpack_require__(101), __webpack_require__(118)]);
+
+/***/ },
 /* 97 */
 /***/ function(module, exports, __webpack_require__) {
 
 	
-	var init = __webpack_require__(98);
-
-	module.exports = init([__webpack_require__(102), __webpack_require__(119)]);
-
-/***/ },
-/* 98 */
-/***/ function(module, exports, __webpack_require__) {
-
-	
-	var parseSelector = __webpack_require__(99);
-	var VOID_ELEMENTS = __webpack_require__(100);
-	var CONTAINER_ELEMENTS = __webpack_require__(101);
+	var parseSelector = __webpack_require__(98);
+	var VOID_ELEMENTS = __webpack_require__(99);
+	var CONTAINER_ELEMENTS = __webpack_require__(100);
 
 	module.exports = function init(modules) {
 	  function parse(data) {
@@ -7487,13 +7062,13 @@
 	};
 
 /***/ },
-/* 99 */
+/* 98 */
 /***/ function(module, exports, __webpack_require__) {
 
 	
 	// https://github.com/Matt-Esch/virtual-dom/blob/master/virtual-hyperscript/parse-tag.js
 
-	var split = __webpack_require__(32);
+	var split = __webpack_require__(31);
 
 	var classIdSplit = /([\.#]?[a-zA-Z0-9\u007F-\uFFFF_:-]+)/;
 	var notClassId = /^\.|#/;
@@ -7538,7 +7113,7 @@
 	};
 
 /***/ },
-/* 100 */
+/* 99 */
 /***/ function(module, exports) {
 
 	
@@ -7563,7 +7138,7 @@
 	};
 
 /***/ },
-/* 101 */
+/* 100 */
 /***/ function(module, exports) {
 
 	
@@ -7590,15 +7165,15 @@
 	};
 
 /***/ },
-/* 102 */
+/* 101 */
 /***/ function(module, exports, __webpack_require__) {
 
 	
-	var forOwn = __webpack_require__(103);
-	var escape = __webpack_require__(110);
-	var union = __webpack_require__(112);
+	var forOwn = __webpack_require__(102);
+	var escape = __webpack_require__(109);
+	var union = __webpack_require__(111);
 
-	var parseSelector = __webpack_require__(99);
+	var parseSelector = __webpack_require__(98);
 
 	// data.attrs, data.props, data.class
 
@@ -7659,7 +7234,7 @@
 	}
 
 /***/ },
-/* 103 */
+/* 102 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -7670,9 +7245,9 @@
 	 * Copyright 2009-2015 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
 	 * Available under MIT license <https://lodash.com/license>
 	 */
-	var baseFor = __webpack_require__(104),
-	    bindCallback = __webpack_require__(105),
-	    keys = __webpack_require__(106);
+	var baseFor = __webpack_require__(103),
+	    bindCallback = __webpack_require__(104),
+	    keys = __webpack_require__(105);
 
 	/**
 	 * The base implementation of `_.forOwn` without support for callback
@@ -7736,7 +7311,7 @@
 
 
 /***/ },
-/* 104 */
+/* 103 */
 /***/ function(module, exports) {
 
 	/**
@@ -7790,7 +7365,7 @@
 
 
 /***/ },
-/* 105 */
+/* 104 */
 /***/ function(module, exports) {
 
 	/**
@@ -7861,7 +7436,7 @@
 
 
 /***/ },
-/* 106 */
+/* 105 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -7872,9 +7447,9 @@
 	 * Copyright 2009-2015 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
 	 * Available under MIT license <https://lodash.com/license>
 	 */
-	var getNative = __webpack_require__(107),
-	    isArguments = __webpack_require__(108),
-	    isArray = __webpack_require__(109);
+	var getNative = __webpack_require__(106),
+	    isArguments = __webpack_require__(107),
+	    isArray = __webpack_require__(108);
 
 	/** Used to detect unsigned integer values. */
 	var reIsUint = /^\d+$/;
@@ -8103,7 +7678,7 @@
 
 
 /***/ },
-/* 107 */
+/* 106 */
 /***/ function(module, exports) {
 
 	/**
@@ -8246,7 +7821,7 @@
 
 
 /***/ },
-/* 108 */
+/* 107 */
 /***/ function(module, exports) {
 
 	/**
@@ -8481,7 +8056,7 @@
 
 
 /***/ },
-/* 109 */
+/* 108 */
 /***/ function(module, exports) {
 
 	/**
@@ -8667,7 +8242,7 @@
 
 
 /***/ },
-/* 110 */
+/* 109 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -8678,7 +8253,7 @@
 	 * Copyright 2009-2016 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
 	 * Available under MIT license <https://lodash.com/license>
 	 */
-	var root = __webpack_require__(111);
+	var root = __webpack_require__(110);
 
 	/** Used as references for various `Number` constants. */
 	var INFINITY = 1 / 0;
@@ -8853,7 +8428,7 @@
 
 
 /***/ },
-/* 111 */
+/* 110 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(module, global) {/**
@@ -8916,10 +8491,10 @@
 
 	module.exports = root;
 
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(8)(module), (function() { return this; }())))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(7)(module), (function() { return this; }())))
 
 /***/ },
-/* 112 */
+/* 111 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -8930,9 +8505,9 @@
 	 * Copyright 2009-2015 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
 	 * Available under MIT license <https://lodash.com/license>
 	 */
-	var baseFlatten = __webpack_require__(113),
-	    baseUniq = __webpack_require__(114),
-	    restParam = __webpack_require__(118);
+	var baseFlatten = __webpack_require__(112),
+	    baseUniq = __webpack_require__(113),
+	    restParam = __webpack_require__(117);
 
 	/**
 	 * Creates an array of unique values, in order, of the provided arrays using
@@ -8960,7 +8535,7 @@
 
 
 /***/ },
-/* 113 */
+/* 112 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -8971,8 +8546,8 @@
 	 * Copyright 2009-2015 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
 	 * Available under MIT license <https://lodash.com/license>
 	 */
-	var isArguments = __webpack_require__(108),
-	    isArray = __webpack_require__(109);
+	var isArguments = __webpack_require__(107),
+	    isArray = __webpack_require__(108);
 
 	/**
 	 * Checks if `value` is object-like.
@@ -9097,7 +8672,7 @@
 
 
 /***/ },
-/* 114 */
+/* 113 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -9108,9 +8683,9 @@
 	 * Copyright 2009-2015 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
 	 * Available under MIT license <https://lodash.com/license>
 	 */
-	var baseIndexOf = __webpack_require__(115),
-	    cacheIndexOf = __webpack_require__(116),
-	    createCache = __webpack_require__(117);
+	var baseIndexOf = __webpack_require__(114),
+	    cacheIndexOf = __webpack_require__(115),
+	    createCache = __webpack_require__(116);
 
 	/** Used as the size to enable large array optimizations. */
 	var LARGE_ARRAY_SIZE = 200;
@@ -9171,7 +8746,7 @@
 
 
 /***/ },
-/* 115 */
+/* 114 */
 /***/ function(module, exports) {
 
 	/**
@@ -9234,7 +8809,7 @@
 
 
 /***/ },
-/* 116 */
+/* 115 */
 /***/ function(module, exports) {
 
 	/**
@@ -9293,7 +8868,7 @@
 
 
 /***/ },
-/* 117 */
+/* 116 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(global) {/**
@@ -9304,7 +8879,7 @@
 	 * Copyright 2009-2015 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
 	 * Available under MIT license <https://lodash.com/license>
 	 */
-	var getNative = __webpack_require__(107);
+	var getNative = __webpack_require__(106);
 
 	/** Native method references. */
 	var Set = getNative(global, 'Set');
@@ -9391,7 +8966,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }())))
 
 /***/ },
-/* 118 */
+/* 117 */
 /***/ function(module, exports) {
 
 	/**
@@ -9464,14 +9039,14 @@
 
 
 /***/ },
-/* 119 */
+/* 118 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
-	var forOwn = __webpack_require__(103);
-	var escape = __webpack_require__(110);
-	var kebabCase = __webpack_require__(120);
+	var forOwn = __webpack_require__(102);
+	var escape = __webpack_require__(109);
+	var kebabCase = __webpack_require__(119);
 
 	// data.style
 
@@ -9495,7 +9070,7 @@
 	};
 
 /***/ },
-/* 120 */
+/* 119 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -9506,8 +9081,8 @@
 	 * Copyright 2009-2016 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
 	 * Available under MIT license <https://lodash.com/license>
 	 */
-	var deburr = __webpack_require__(121),
-	    words = __webpack_require__(122);
+	var deburr = __webpack_require__(120),
+	    words = __webpack_require__(121);
 
 	/**
 	 * A specialized version of `_.reduce` for arrays without support for
@@ -9573,7 +9148,7 @@
 
 
 /***/ },
-/* 121 */
+/* 120 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -9584,7 +9159,7 @@
 	 * Copyright 2009-2016 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
 	 * Available under MIT license <https://lodash.com/license>
 	 */
-	var root = __webpack_require__(111);
+	var root = __webpack_require__(110);
 
 	/** Used as references for various `Number` constants. */
 	var INFINITY = 1 / 0;
@@ -9762,7 +9337,7 @@
 
 
 /***/ },
-/* 122 */
+/* 121 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -9773,7 +9348,7 @@
 	 * Copyright 2009-2016 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
 	 * Available under MIT license <https://lodash.com/license>
 	 */
-	var root = __webpack_require__(111);
+	var root = __webpack_require__(110);
 
 	/** Used as references for various `Number` constants. */
 	var INFINITY = 1 / 0;
@@ -9966,12 +9541,12 @@
 
 
 /***/ },
-/* 123 */
+/* 122 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-	var xstream_adapter_1 = __webpack_require__(4);
-	var xstream_1 = __webpack_require__(5);
+	var xstream_adapter_1 = __webpack_require__(3);
+	var xstream_1 = __webpack_require__(4);
 	var SCOPE_PREFIX = '___';
 	var MockedDOMSource = (function () {
 	    function MockedDOMSource(_streamAdapter, _mockConfig) {
@@ -10041,11 +9616,11 @@
 	//# sourceMappingURL=mockDOMSource.js.map
 
 /***/ },
-/* 124 */
+/* 123 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-	var hyperscript_1 = __webpack_require__(29);
+	var hyperscript_1 = __webpack_require__(28);
 	function isValidString(param) {
 	    return typeof param === 'string' && param.length > 0;
 	}
@@ -10118,7 +9693,7 @@
 	//# sourceMappingURL=hyperscript-helpers.js.map
 
 /***/ },
-/* 125 */
+/* 124 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -10129,7 +9704,7 @@
 
 	var _sco$calculations$pro;
 
-	var _dom = __webpack_require__(10);
+	var _dom = __webpack_require__(9);
 
 	function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 

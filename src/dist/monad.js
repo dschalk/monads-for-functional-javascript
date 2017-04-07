@@ -7,9 +7,9 @@ var res = [];
 var todoDiv = 'none';
 var gameDiv = 'none';
 var chatDiv = 'none';
-var captionDiv = 'none';
 var CHANGE = 'cow';
 var chatNode;
+var captionDiv = 'none';
 var xs = xstream.default;
 var h = h.h;
 const messages = [];
@@ -1830,26 +1830,6 @@ function execP (state, num) {
 */
 
 
-function createWebSocket(path) {
-    var host = window.location.hostname;
-    if (host === '')
-        host = 'localhost';
-    var uri = 'ws://' + host + ':3055' + path;
-    var Socket = "MozWebSocket" in window ? MozWebSocket : WebSocket;
-
-    return new Socket(uri);
-}
-
-var socket = createWebSocket('/');
-console.log('########## socket: ', socket);
-
-function websocketsDriver() {
-  return xs.create({
-    start: listener => { socket.onmessage = msg => listener.next(msg)},
-    stop: () => { socket.close() }
-  });
-};
-
 MonadState.prototype.setIndex = function(n = this.s[1]) { this.s[1] = n; return n };
 
 var gameMonad = new MonadState('gameMonad', [[[0,0,0,[],[1,2,3,4]], [0,0,0,[],[0,0,0,0]]],1 ]);
@@ -1952,6 +1932,7 @@ MonadState.prototype.run = function ([
     }
     newRoll(scor, goals);
   };
+
 
 
 

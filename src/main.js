@@ -9,94 +9,6 @@ var formA = h('form#horses', 'You bet!' );
 console.log('textA is: ', textA);
 console.log('formA is: ', formA);
 
-function workerBDriver () {
-  return xs.create({
-    start: listener => { workerB.onmessage = msg => listener.next(msg)},
-    stop: () => { workerB.terminate() }
-  });
-};
-
-function workerCDriver () {
-  return xs.create({
-    start: listener => { workerC.onmessage = msg => listener.next(msg)},
-    stop: () => { workerC.terminate() }
-  });
-};
-
-function workerDDriver () {
-  return xs.create({
-    start: listener => { workerD.onmessage = msg => listener.next(msg)},
-    stop: () => { workerD.terminate() }
-  });
-};
-
-function workerEDriver () {
-  return xs.create({
-    start: listener => { workerE.onmessage = msg => listener.next(msg)},
-    stop: () => { workerE.terminate() }
-  });
-};
-
-function workerFDriver () {
-  return xs.create({
-    start: listener => { workerF.onmessage = msg => listener.next(msg)},
-    stop: () => { workerF.terminate() }
-  });
-};
-
-function workerDriver () {
-  return xs.create({
-    start: listener => { worker.onmessage = msg => listener.next(msg)},
-    stop: () => { worker.terminate() }
-  });
-};
-
-/*function eM2Driver () {
-  return xs.create({
-    start: listener => { mM2.on = msg => listener.next(msg)},
-    stop: () => { mM2.removeAllListeners() }
-  });
-};
-
-function mMstreamDriver () {
-  return xs.create({
-    start: listener => { mMstream.x.on = msg => listener.next(msg)},
-    stop: () => { mMstream.removeAllListeners() }
-  });
-};*/
-
-socket.onmessage = function (event) {
-    console.log('Socket message',event);
-};
-
-socket.onmessage = function (event) {
-    console.log(event);
-};
-
-socket.onclose = function (event) {
-    console.log('<><><> New message <><><> ', event);
-};
-
-function updateTasks (obArray) {
-  var todoData = [];
-  for (let ob of obArray) {
-  todoData = todoData.concat([
-    h('span.task3', `{ style: { color: ${ob.color}, textDecoration: ${ob.textDecoration} } }, 'Task: ' + ${ob.task}`),
-    h('br'),
-    h('button#edit1', 'Edit'),
-    h('input#edit2', `{ props: { type: textarea, value: ${ob.task}}}`),
-    h('span#author.tao', `Author: ${ob.author}  /  Responsibility: ${ob.responsible}`),
-    h('br'),
-    h('input#cb', `{ props: { type: 'checkbox', checked: ${ob.checked }}},
-           {style: { color: ${ob.color}, textDecoration: ${ob.textDecoration}}}` ),
-    h('label.cbox',   { props: { for: '#cb' } }, 'Completed'   ),
-    h('button.delete', 'Delete'),
-    h('br'),
-    h('hr') ])
-    }
-};
-
-
 function main(sources) {
 
   const worker$ = sources.WW.map(v => {
@@ -154,7 +66,12 @@ function main(sources) {
         ' is currently logged in. Page will refresh in 4 seconds.')
       refresh() });
     mMZ16.bnd( () => testComments(e.data));
-    mMZ17.bnd( () => testTask(v[2], v[3], e.data) );
+    mMZ17.bnd( () => {
+      if (v[3] === "no file") {console.log('no file'); return;}
+      var str = e.data.substring(e.data.indexOf('@')+1, e.data.length) ;
+      console.log('In mMZ17. str is', str);
+      taskMonad.run2(str); 
+    });
     mMZ18.bnd( () => {
       if (pMgroup.x != 'solo' || pMname.x === v[2] ) updatePlayers(e.data)  });
     mMZ19.bnd( () => testComments(e.data));
@@ -621,155 +538,6 @@ var forwardAction$ = forwardClick$.map(() => {
         socket.send(`TD#$42,${get(pMgroup)},${get(pMname)},@${str}`)
     };
 
-    var newTask$ = sources.DOM
-        .select('input.newTask').events('keydown');
-
-    var newTaskAction$ = newTask$.map(function (e) {
-        var ob = {};
-        var alert = '';
-        var task = '';
-        if (e.keyCode === 13) {
-            var ar = e.target.value.split(',');
-            if (ar.length < 3) {
-              mMalert.ret('You should enter "author, responsible party, task" separated by commas');
-              return;
-            }
-            var ar2 = ar.slice(2);
-            if (ar2.length === 1) {
-                task = ar[2];
-            }
-            if (ar2.length > 1) {
-                task = ar2.reduce(function (a, b) { return a + '$*$*$' + b; });
-            }
-            if ((get(mMar2).filter(function (v) { return (v.task === task); }).length) > 0) {
-                mMalert.ret(task + " is already listed.");
-            }
-            else if (ar.length > 2) {
-                mMcurrentList.bnd(addString, task + ',yellow, none, false,' + ar[0] + ',' + ar[1], mMcurrentList);
-                task2(get(mMcurrentList));
-                e.target.value = '';
-                mMalert.ret('');
-            }
-        }
-    });
-
-  function testTask (v2, v3, data)  {
-    if (v3 === 'no file' || v3 === 'empty') {
-      mMtaskList.ret([]);
-      taskL = h('span' );
-      return;
-    }
-    if (get(pMgroup) != 'solo' || get(pMgroup) === 'solo' &&  get(pMname) === v2) {
-      process(data);
-    }
-  };
-
-  var process = function (str) {
-      var a = str.split(",");
-      if (a === undefined) {
-          return;
-      };
-
-      if (a.length < 9) {
-          return;
-      };
-
-      var ar = a.slice(3);
-      var s = ar.reduce(function (a, b) { return a + ',' + b; });
-      var tempArray = [];
-      mMcurrentList.ret(s);
-      process3(ar);
-  };
-
-    var process3 = function (a) {
-      var ar5 = [];
-      if (a.length % 6 === 0) {
-        var keys = rang(0, a.length / 6);
-        keys.map( _ => {
-          ar5.push({
-            task: convertBack(a.shift()),
-            color: a.shift(),
-            textDecoration: a.shift(),
-            checked: a.shift() === 'true',
-            author: a.shift(),
-            responsible: a.shift()
-          });
-        });
-      }
-      mMar2.ret(ar5);
-      process4(ar5);
-    };
-
-    var process4 = function (a) {
-        var tempArray = [];
-        var keys = Object.keys(a);
-        for (var k in keys) {
-            tempArray.push(h('div.todo', [
-                h('span.task3', { style: { color: a[k].color, textDecoration: a[k].textDecoration } }, 'Task: ' + a[k].task),
-                h('br'),
-                h('button#edit1', 'Edit'),
-                h('input#edit2', { props: { type: 'textarea', value: a[k].task }, style: { display: 'none' } }),
-                h('span#author.tao', 'Author: ' + a[k].author + ' / ' + 'Responsibility: ' + a[k].responsible),
-                h('br'),
-                h('input#cb', { props: { type: 'checkbox', checked: a[k].checked }, style: { color: a[k].color,
-                        textDecoration: a[k].textDecoration } }),
-                h('label.cbox', { props: { for: '#cb' } }, 'Completed'),
-                h('button.delete', 'Delete'),
-                h('br'),
-                h('hr')]));
-        }
-
-        mMtaskList.ret(tempArray);
-        taskL = tempArray;
-    };
-
-    var colorClick$ = sources.DOM
-        .select('#cb').events('click');
-
-    var colorAction$ = colorClick$.map(function (e) {
-        var ind = getIndex(e);
-        var index = parseInt(ind, 10);
-        var s = get(mMcurrentList);
-        var ar = s.split(',');
-        var n = 6 * index + 3;
-        var j = 6 * index + 2;
-        var k = 6 * index + 1;
-        var checked = ar[n];
-        if (checked === 'true') {
-            ar[n] = 'false';
-            ar[k] = 'yellow';
-            ar[j] = 'none';
-        }
-        else {
-            ar[n] = 'true';
-            ar[k] = 'lightGreen';
-            ar[j] = 'line-through';
-        }
-        task2(ar.reduce(function (a, b) { return a + ',' + b; }));
-    });
-
-    var edit1$ = sources.DOM
-        .select('#edit1').events('click');
-
-    var edit1Action$ = edit1$.map(function (e) {
-        var index = getIndex2(e);
-        get(mMtaskList)[index].children[3].elm.style.display = 'block';
-    });
-
-    var edit2$ = sources.DOM
-
-        .select('#edit2').events('keypress');
-
-    var edit2Action$ = edit2$.map(function (e) {
-        var v = noComma(e.target.value);
-        var index = getIndex2(e);
-        if (e.keyCode === 13) {
-            process2(v, index);
-            mMtaskList.x[index].children[3].elm.style.display = 'none';
-        updateScoreboard2(namesList);
-        }
-    });
-
   var process2 = function (str, index) {
     var ar = str.split(',');
     var task;
@@ -786,23 +554,6 @@ var forwardAction$ = forwardClick$.map(() => {
     console.log('Still in process2. task, a and b are', task, a, b );
     task2(b);
   };
-
-    var deleteClick$ = sources.DOM
-        .select('.delete').events('click');
-
-    var deleteAction$ = deleteClick$.map(function (e) {
-        var index = parseInt(getIndex(e), 10);
-        var s = get(mMcurrentList);
-        var ar = s.split(',');
-        if (ar.length < 7) {
-          task2('empty');
-          socket.send( `TX#$42,${get(pMgroup)},${get(pMname)}` );
-          return;
-        }
-        var str = '';
-        ar.splice(index * 6, 6);
-        task2(ar.reduce(function (a, b) { return a + ',' + b; }));
-    });
 
 // **********************************************************************END TODO LIST
     var chatClick$ = sources.DOM
@@ -910,37 +661,97 @@ var prAction$ = pr$.map(function (e) {
     }
 });
 
-function tNode (author, responsible, task, ch, dec, col) {
-  var todo = h('div', [
-    h('div',  { style: { color: col, textDecoration: dec, checked: ch } }, task),
-    h('p', 'Author: ' + author + ', Responsible Person: ' + responsible ),
-  ]);
-  return todo;
-};
+var chbox$ = sources.DOM.select('input.cbx').events('click');
 
-function MonadState3(g, state) {
-  this.id = g;
-  this.s = state;
-  this.c = new MonadEmitter();
-  this.d = "task";
-  this.bnd = (func, ...args) => func(this.s, ...args);
-  this.ret = function (a) {
-    return window[this.id] = new MonadState(this.id, a);
-  };
-  this.c.on(a, (b)  => {
-    this.s.push(b);
-    todoNode = this.s.map(v => tNode(v));
-    console.log('In MonadState3 - - - this.s and todoNode are', this.s, todoNode);
-    // window[this.id] = new MonadState3(this.id, list)
+var chboxAction$ = chbox$.map(e => {
+  console.log('<><><><> HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH  Here is e from chbox$', e);
+  console.log('<@><#><@><#><@> >> getIndex(e), getIndex2(e)', getIndex(e), getIndex2(e) );
+  var s = taskMonad.s.slice();
+  var index = e.target.parentNode.id;
+  var test = e.target.checked;
+  if (test) {
+    s[index][1] = "green"
+    s[index][2] = "line-through"
+    s[index][3] = true
+  }
+  else { 
+    s[index][1] = "yellow"
+    s[index][2] = "none"
+    s[index][3] = false
+  } 
+  var str = JSON.stringify(s);
+  socket.send(`TD#$42,${get(pMgroup)},${get(pMname)},@${str}`);
+});
+
+var deleteClick$ = sources.DOM
+    .select('.delete').events('click');
+
+var deleteAction$ = deleteClick$.map(function (e) {
+  var s = taskMonad.s.slice();
+  var index = e.target.parentNode.id;
+  s.splice(index, 1);
+  var str = JSON.stringify(s);
+  socket.send(`TD#$42,${get(pMgroup)},${get(pMname)},@${str}`);
+});
+
+var edit1$ = sources.DOM
+    .select('button.edit1').events('click');
+
+var edit1Action$ = edit1$.map(function (e) {
+  console.log('In edit1Action$. e is', e );
+  var index = getIndex2(e);
+  var s = taskMonad.s.slice();
+  s[index][6] = 'inline-block';
+  mMtaskList.ret(process4(s));  
+});
+
+var edit2$ = sources.DOM
+    .select('#edit2').events('keypress');
+
+var edit2Action$ = edit2$.map(function (e) {
+  console.log('In edit2Action$. e is', e );
+  var arr;
+  var str;
+  if (e.keyCode === 13) {
+    var s = taskMonad.s.slice();
+    var index = e.target.parentNode.id;
+    s[index][0] = e.target.value.replace(rep2, "<<>>");
+    s[index][6] = "none";
+    str = JSON.stringify(s)
+    socket.send(`TD#$42,${get(pMgroup)},${get(pMname)},@${str}`);
+  }
+});
+
+var newTask$ = sources.DOM
+    .select('input.newTask').events('keydown');
+
+var newTaskAction$ = newTask$.map(function (e) {
+  var alert = '';
+  var s = taskMonad.s.slice();
+  var todo = [];
+  if (e.keyCode === 13) {
+    var ar = e.target.value.split(',');
+    if (ar.length < 3) {
+      mMalert.ret('You should enter "author, responsible party, task" separated by commas');
+      return;
     }
-  )
-};
+    else {
+      todo[4] = ar.shift();
+      todo[5] = ar.shift();
+      todo[0] = ar.join('<<>>');
+      todo[1] = "yellow";
+      todo[2] = "none";
+      todo[3] = false;
+      todo[6] = "none";
+      s.unshift(todo);
+      var str = JSON.stringify(s);
+      socket.send(`TD#$42,${get(pMgroup)},${get(pMname)},@${str}`);
+    }
+  }
+});
 
-var todoMonad = new MonadState3('todoMonad',
-  [[ 'dummy task', 'yellow', 'none', false, 'default author', 'default responsible' ]]
-);
 
-  var calcStream$ = xs.merge( comClickAction$, messagePressAction$, fA_c$, forwardAction$, backAction$, prAction$, factorsAction_b$, fA$, factorsP$, fA_b$, factorsP_b$, clearprimes$, worker$, workerB$, workerC$, workerD$, workerE$, workerF$, clearAction$, factorsAction$, primeFib$, fibPressAction$, quadAction$, edit1Action$, edit2Action$, testWAction$, testZAction$, testQAction$, colorAction$, deleteAction$, newTaskAction$, chatClickAction$, gameClickAction$, todoClickAction$, captionClickAction$, groupPressAction$, rollClickAction$, loginPressAction$, messages$, numClickAction$, opClickAction$);
+  var calcStream$ = xs.merge( chboxAction$, comClickAction$, messagePressAction$, fA_c$, forwardAction$, backAction$, prAction$, factorsAction_b$, fA$, factorsP$, fA_b$, factorsP_b$, clearprimes$, worker$, workerB$, workerC$, workerD$, workerE$, workerF$, clearAction$, factorsAction$, primeFib$, fibPressAction$, quadAction$, edit1Action$, edit2Action$, testWAction$, testZAction$, testQAction$, deleteAction$, newTaskAction$, chatClickAction$, gameClickAction$, todoClickAction$, captionClickAction$, groupPressAction$, rollClickAction$, loginPressAction$, messages$, numClickAction$, opClickAction$);
   return {
   DOM: calcStream$.map(function () {
   return h('div.main', [
@@ -954,11 +765,10 @@ var todoMonad = new MonadState3('todoMonad',
       h('img.image_2', {props: {src: "logo.svg" }}  ),
       h('span', ' ' ),
       h('a', { props: { href: "https://cycle.js.org/", target: "_blank" } }, 'A Cycle.js application') ]),
-  h('div.content', [
+h('div.content', [
       h('p', ' Front-end web developers might be interested in seeing how I encapsule procedures and state in objects whose methods conform to a JavaScript version of the Haskell monad laws. It is fascinating to see how reactivity is achieved in Cycle.js. The Haskell server might also be of interest. '),
 h('p', 'People who are developing a feel for function reactive programming can cut through to its essence by seeing it implemented in various contexts. The combination of Lodash, Immutable.js, and RxJS running in Node.js is one possibility. Here we demonstrate how a front-end developer can create monads to suit their purposes, and obtain amazing reactivity by implementing them in a Cycle.js framework. ' ),
-
-  h('span.tao1b', 'You can comment at ' ),
+h('span.tao1b', 'You can comment at ' ),
       h('a', { props: { href: 'https://redd.it/60c2xx' }}, 'Reddit' ),
       h('span.tao1b', ' or in the ' ),
       h('a', {props: { href: '#comment' }}, 'comments' ),
@@ -990,7 +800,7 @@ h('p', ' Data for the traversable game history accumulates until a player scores
 h('div#log1',  {style: { display: mMlog1.x }}, [
 h('p', 'IN ORDER TO SEE THE GAME, TODOLIST, AND CHAT DEMONSTRATIONS, YOU MUST ENTER SOMETHING TO ESTABLISH A WEBSOCKET CONNECTION.'),
 h('span', 'Name: '),
-h('input.login', )]),
+h('input.login', {props: {autofocus: true}}, )]),
 h('p', mM6.x ),
 ]),
 h('hr.len90', {style: { display: mMgameDiv2.x }}, ),
@@ -1021,7 +831,7 @@ h('div#gameDiv2', {style: { display: mMgameDiv2.x }}, [
       h('button#clear', 'Clear selected numbers' ),
       h('div#log2', { style: { display: mMlog2.x } }, [
           h('span', 'Change group: '),
-          h('input#group')]),
+          h('input#group', {props: {autofocus: true}}, 'test',  )]),
       h('p', mMsoloAlert.x ),
     ])
   ]),
@@ -1041,8 +851,8 @@ h('div#gameDiv2', {style: { display: mMgameDiv2.x }}, [
     h('br'),
     h('br'),
     h('br'),
-//    h('div.game', 'Name: ' + pMname.x ),
-//    h('div.game', 'Group: ' + pMgroup.x ),
+    h('div.game', 'Name: ' + pMname.x ),
+    h('div.game', 'Group: ' + pMgroup.x ),
     h('pre.game', `Currently online:
 (Name score | goals) `  ),
     h('div.game', {props: {color: "gold"}}, '' + pMdata.x  ),
@@ -1051,8 +861,8 @@ h('div#gameDiv2', {style: { display: mMgameDiv2.x }}, [
     h('div#a100', ' _________________________________________________ ' ),
     h('br'),
     h('div#todoDiv',  { style: { display: mMtodoDiv.x } }, [
-      h('div#taskList', taskL  ),
-      h('div', 'Enter author, responsible rerson, and task here: '),
+      h('div#taskList', mMtaskList.x ),
+      h('div', 'Enter author, responsible person, and task here: '),
       h('br'),
       h('input.newTask') ]),
     h('br'),
