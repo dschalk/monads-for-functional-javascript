@@ -21,6 +21,7 @@ body {
 
 input, textarea {
   background-color: #efe1a7;
+  color: #000000;
   border-radius: 5px;
   -webkit-transition: all 0.60s ease-in-out;
   -moz-transition: all 0.60s ease-in-out;
@@ -37,6 +38,19 @@ input:focus, textarea:focus {
   -moz-box-shadow:    0px 0px 20px 0px rgb(255, 215, 0);
   box-shadow:         0px 0px 20px 0px rgb(255, 215, 0);
   padding: 3px 0px 3px 3px;
+}
+
+input, checkbox: {
+  background-color: #efe1a7;
+  color: #00AADD;
+  border-radius: 5px;
+  outline: none;
+  -webkit-box-shadow: 0px 0px 20px 0px rgb(255, 215, 0);
+  -moz-box-shadow:    0px 0px 20px 0px rgb(255, 215, 0);
+  box-shadow:         0px 0px 20px 0px rgb(255, 215, 0);
+  padding: 3px 0px 3px 3px;
+  margin: 5px 1px 3px 0px;
+  border: 3px solid #DDDDDD;
 }
 
 pre {
@@ -104,28 +118,48 @@ h1 {
   text-decoration: "none";
 }
 
-.edit1 { 
-  margin: 5px;
+#edit1 { 
+  margin: 5px
   padding-top: 6px;
   font-size: 16px;
-  color: green;
+  color: #C6EDB9;
 }
 
-.delete { 
-  margin: 5px;
+#edit1:hover {
+  color: #0000CC;
+}
+
+#delete { 
+  margin-left: 4%;
+  padding-top: 4px;
+  font-size: 16px;
+  color: #C6EDB9;
+}
+
+#delete:hover {
+  color: #0000CC;
+}
+
+#chbox1 { 
+  margin: 5px
   padding-top: 6px;
   font-size: 16px;
-  color: green;
+  color: #C6EDB9;
 }
 
-.chBox { 
-  margin-right: 5px;
-  margin-top: 17px;
+#chbox1:hover {
+  color: #0000CC;
+}
+
+#chbox2 { 
+  margin: 5px
+  padding-top: 6px;
   font-size: 16px;
-  color: green;
-  position: relative;
-  vertical-align: middle;
-  bottom: 5px;
+  color: #C6EDB9;
+}
+
+#chbox2:hover {
+  color: #0000CC;
 }
 
 .edit3 { 
@@ -136,11 +170,36 @@ h1 {
   vertical-align: middle;
 }
 
-.cbx {
+#cbx {
+  position: relative;
+  top: 4px;
   width: 20px;
+  color: #361B01;
+  background-color: #C9C949;
   height: 20px;
-  margin-right: 5%;
-  margin-top: 5px;
+  border-radius: 5px;
+  outline: none;
+  padding: 2px 2px 2px 2px;
+  margin-left: 22px;
+  margin-right: 8px;
+  margin-bottom: 4%;
+  border: 3px solid #DDDDDD;
+}
+
+#cbx:hover {
+  -webkit-box-shadow: 0px 0px 20px 0px rgb(255, 215, 0);
+  -moz-box-shadow:    0px 0px 20px 0px rgb(255, 215, 0);
+  box-shadow:         0px 0px 20px 0px rgb(255, 215, 0);
+}
+
+.tao4 {
+  color: #b5f4ce;
+  font-size: 15px;
+  bottom: 14px;
+}
+
+#task4 {
+  bottom 14px;
 }
 
 .big {
@@ -631,6 +690,3 @@ h3 {
   font-size: 14px;
 }
 
-#delete {
-  font-size:20px;
-}

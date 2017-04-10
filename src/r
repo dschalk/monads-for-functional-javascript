@@ -1,1 +1,0 @@
-cd ../ && stack runghc Main -v

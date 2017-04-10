@@ -70,6 +70,7 @@ function main(sources) {
       if (v[3] === "no file") {console.log('no file'); return;}
       var str = e.data.substring(e.data.indexOf('@')+1, e.data.length) ;
       console.log('In mMZ17. str is', str);
+      console.log('In mMZ17. typeof str is', typeof str);
       taskMonad.run2(str); 
     });
     mMZ18.bnd( () => {
@@ -614,8 +615,8 @@ var forwardAction$ = forwardClick$.map(() => {
         .select('#chat2').events('click');
 
     var chatClickAction$ = chatClick$.map(function () {
-        (get(mMchatDiv)  === 'none') ?
-            mMchatDiv.ret('block') :
+        (get(mMchatDiv)  === 'none') 
+            mMchatDiv.ret('block') 
             mMchatDiv.ret('none')
     });
 
@@ -661,48 +662,77 @@ var prAction$ = pr$.map(function (e) {
     }
 });
 
-var chbox$ = sources.DOM.select('input.cbx').events('click');
+var chbox1Click$ = sources.DOM.select('#chbox1').events('click');
+var chbox2Click$ = sources.DOM.select('#chbox2').events('click');
 
-var chboxAction$ = chbox$.map(e => {
+// Clicking the checkbox to indicate that a task has been finished.
+var cbx$ = sources.DOM.select('input#cbx').events('click');
+
+var cbxAction$ = cbx$.map(e => {
   console.log('<><><><> HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH  Here is e from chbox$', e);
-  console.log('<@><#><@><#><@> >> getIndex(e), getIndex2(e)', getIndex(e), getIndex2(e) );
   var s = taskMonad.s.slice();
   var index = e.target.parentNode.id;
-  var test = e.target.checked;
-  if (test) {
-    s[index][1] = "green"
-    s[index][2] = "line-through"
-    s[index][3] = true
-  }
-  else { 
-    s[index][1] = "yellow"
-    s[index][2] = "none"
-    s[index][3] = false
-  } 
-  var str = JSON.stringify(s);
+  s[index][1] = eval(s[index][1]);
+  console.log('In cbxAction$. s and index are is', s, index);
+  console.log('**********************************************************');
+  console.log('In cbxAction$. s[index][1] is', s[index][1]);
+  s[index][1] = s[index][1] === false ? true : false 
+  console.log('In cbxAction$. s[index][1] is', s[index][1]);
+  console.log('**********************************************************');
+  s.map(v => v[0] = v[0].replace(rep2, '<<>>'));
+  var str = s.join('@');
+  console.log('In cbxAction$. str is', str);
   socket.send(`TD#$42,${get(pMgroup)},${get(pMname)},@${str}`);
 });
 
+// Clicking the completed / not completed buttons.
+var chbox1Action$ = chbox1Click$.map( e => {
+  var s = taskMonad.s.slice();
+  console.log('In chbox1Action. e and s are', e, s); 
+  var index = e.target.parentNode.id;
+  s[index][1] = false;
+  s.map(v => v[0] = v[0].replace(rep2, '<<>>'));
+  var str = s.join('@');
+  console.log('In chbox1Action. str is', str); 
+  socket.send(`TD#$42,${get(pMgroup)},${get(pMname)},@${str}`);  
+});
+
+var chbox2Action$ = chbox2Click$.map( e => {
+  var s = taskMonad.s.slice();
+  console.log('In chbox2Action. e and s are', e, s); 
+  var index = e.target.parentNode.id;
+  s[index][1] = true;
+  s.map(v => v[0] = v[0].replace(rep2, '<<>>'));
+  var str = s.join('@');
+  socket.send(`TD#$42,${get(pMgroup)},${get(pMname)},@${str}`);
+});
+
+// Clicking the DELETE button.
 var deleteClick$ = sources.DOM
-    .select('.delete').events('click');
+    .select('#delete').events('click');
 
 var deleteAction$ = deleteClick$.map(function (e) {
   var s = taskMonad.s.slice();
   var index = e.target.parentNode.id;
   s.splice(index, 1);
-  var str = JSON.stringify(s);
+  s.map(v => v[0] = v[0].replace(rep2, '<<>>'));
+  var str = s.join('@');
   socket.send(`TD#$42,${get(pMgroup)},${get(pMname)},@${str}`);
 });
 
+// Editing a task.
 var edit1$ = sources.DOM
-    .select('button.edit1').events('click');
+    .select('button#edit1').events('click');
 
 var edit1Action$ = edit1$.map(function (e) {
   console.log('In edit1Action$. e is', e );
   var index = getIndex2(e);
   var s = taskMonad.s.slice();
-  s[index][6] = 'inline-block';
-  mMtaskList.ret(process4(s));  
+  var str;
+  s.map(v => v[0] = v[0].replace(rep2, '<<>>'));
+  s[index][4] = 'inline-block';
+  str = s.join('@');
+  taskMonad.run2(str);  
 });
 
 var edit2$ = sources.DOM
@@ -715,19 +745,24 @@ var edit2Action$ = edit2$.map(function (e) {
   if (e.keyCode === 13) {
     var s = taskMonad.s.slice();
     var index = e.target.parentNode.id;
-    s[index][0] = e.target.value.replace(rep2, "<<>>");
-    s[index][6] = "none";
-    str = JSON.stringify(s)
+    s[index][0] = e.target.value;
+    s[index][1] = false;
+    s[index][4] = "none";
+    s.map(v => v[0] = v[0].replace(rep2, '<<>>'));
+    var str = s.join('@');
     socket.send(`TD#$42,${get(pMgroup)},${get(pMname)},@${str}`);
   }
 });
 
+// Creating a new task
 var newTask$ = sources.DOM
     .select('input.newTask').events('keydown');
 
 var newTaskAction$ = newTask$.map(function (e) {
   var alert = '';
   var s = taskMonad.s.slice();
+  s = s.map(v => v[0].replace(rep2, '<<>>'));
+  console.log('In newTaskAction$. <><><><><><><> s is', s);
   var todo = [];
   if (e.keyCode === 13) {
     var ar = e.target.value.split(',');
@@ -736,22 +771,24 @@ var newTaskAction$ = newTask$.map(function (e) {
       return;
     }
     else {
+      console.log('In newTaskAction$. ar is', ar );
+      todo[3] = ar.shift();
+      console.log('In newTaskAction$. ar is', ar );
       todo[4] = ar.shift();
-      todo[5] = ar.shift();
-      todo[0] = ar.join('<<>>');
-      todo[1] = "yellow";
+      console.log('In newTaskAction$. ar is', ar );
+      todo[0] = ar.join(',').replace(rep2, '<<>>');
+      console.log('In newTaskAction$. todo[0] is', todo[0]);
+      todo[1] = false;
       todo[2] = "none";
-      todo[3] = false;
-      todo[6] = "none";
       s.unshift(todo);
-      var str = JSON.stringify(s);
+      var str = s.join('@');
       socket.send(`TD#$42,${get(pMgroup)},${get(pMname)},@${str}`);
     }
   }
 });
 
 
-  var calcStream$ = xs.merge( chboxAction$, comClickAction$, messagePressAction$, fA_c$, forwardAction$, backAction$, prAction$, factorsAction_b$, fA$, factorsP$, fA_b$, factorsP_b$, clearprimes$, worker$, workerB$, workerC$, workerD$, workerE$, workerF$, clearAction$, factorsAction$, primeFib$, fibPressAction$, quadAction$, edit1Action$, edit2Action$, testWAction$, testZAction$, testQAction$, deleteAction$, newTaskAction$, chatClickAction$, gameClickAction$, todoClickAction$, captionClickAction$, groupPressAction$, rollClickAction$, loginPressAction$, messages$, numClickAction$, opClickAction$);
+  var calcStream$ = xs.merge( cbxAction$, chbox1Action$, chbox2Action$, comClickAction$, messagePressAction$, fA_c$, forwardAction$, backAction$, prAction$, factorsAction_b$, fA$, factorsP$, fA_b$, factorsP_b$, clearprimes$, worker$, workerB$, workerC$, workerD$, workerE$, workerF$, clearAction$, factorsAction$, primeFib$, fibPressAction$, quadAction$, edit1Action$, edit2Action$, testWAction$, testZAction$, testQAction$, deleteAction$, newTaskAction$, chatClickAction$, gameClickAction$, todoClickAction$, captionClickAction$, groupPressAction$, rollClickAction$, loginPressAction$, messages$, numClickAction$, opClickAction$);
   return {
   DOM: calcStream$.map(function () {
   return h('div.main', [
@@ -800,7 +837,7 @@ h('p', ' Data for the traversable game history accumulates until a player scores
 h('div#log1',  {style: { display: mMlog1.x }}, [
 h('p', 'IN ORDER TO SEE THE GAME, TODOLIST, AND CHAT DEMONSTRATIONS, YOU MUST ENTER SOMETHING TO ESTABLISH A WEBSOCKET CONNECTION.'),
 h('span', 'Name: '),
-h('input.login', {props: {autofocus: true}}, )]),
+h('input.login', {props: {autofocus: false}},  )]),
 h('p', mM6.x ),
 ]),
 h('hr.len90', {style: { display: mMgameDiv2.x }}, ),
@@ -831,7 +868,7 @@ h('div#gameDiv2', {style: { display: mMgameDiv2.x }}, [
       h('button#clear', 'Clear selected numbers' ),
       h('div#log2', { style: { display: mMlog2.x } }, [
           h('span', 'Change group: '),
-          h('input#group', {props: {autofocus: true}}, 'test',  )]),
+          h('input#group', {props: {autofocus: false}}, 'test',  )]),
       h('p', mMsoloAlert.x ),
     ])
   ]),
@@ -861,7 +898,7 @@ h('div#gameDiv2', {style: { display: mMgameDiv2.x }}, [
     h('div#a100', ' _________________________________________________ ' ),
     h('br'),
     h('div#todoDiv',  { style: { display: mMtodoDiv.x } }, [
-      h('div#taskList', mMtaskList.x ),
+      h('div#taskList', taskMonad.html ),
       h('div', 'Enter author, responsible person, and task here: '),
       h('br'),
       h('input.newTask') ]),
@@ -1105,11 +1142,16 @@ h('p', ' If the calculation yields 18 or 20, score(result) is called. Here is th
 h('p', ' If the score is computed to be 25, the result of increasing goals by 1 determines how state is modified. If the result is not 3, goals is incremented and newRoll() is called with arguments score and goals. If the result is 3, a winner is declared and gameMonad.s reverts to [[[0,0,0,[],[0,0,0,0]]], 0]. ' ),
 h('p', ' gameMonad does not use its bnd() method, but I stayed with the usual practice of preserving state in instances of MonadState. “A foolish consistency is the hobgoblin of little minds, adored by little statesmen and philosophers and divines." - Ralph Waldo Emerson. Very true, but keeping code easy to reason about is never foolish. ' ),
 
+h('br'),  
 //************************************************************************** END GAME
-
-
-
-
+h('h2', 'The Todo List' ),
+h('p', ' The todo list is shared be the members of each group. It is stored by the server in a file bearing the groups name. Changing to a group causes that group\'s todo list to display. Changes made by one member are immediately seen by other members. ' ),
+h('p', ' Tasks are held in taskMonad.s (Nested arrays of values) and in taskMonad.html (finished HTML residing in the virtural DOM). MonadState2 has the same basic definition as MonadState, but the run 2() method added to its prototype is not the same as MonadState.run. Rather than burden MonadState.prototype with both run() and run2(), I named taskMonad\'s constructor MonadState2. ' ),
+h('p', ' When a todo is created, edited, marked as completed, or deleteted, the modified list of all todos is sent to the server, where the new version replaces the former version in the file named after the group and the new version is broadcast to all group members. Here is the code that runs when a todo list arrives at a browser: ' ),
+    code.todo1,
+h('p', ' And here is the code that creates, modifies and adds to a list of tasks. It is the entire contents of a file named "tasks.js", which is placed in script tags in index.html. Code in script tags is readily available in the browser consoles, unlike modules loaded in main.js. '),  
+    code.todo2,
+h('p', ' Tasks can be marked a complete or not complete by clicking the checkbox or the complete / not complete buttons. When the checkbox is clicked, the index of the todo is determined and the value of a clone of taskMonad.s named "s" is changed at s[index][1]. If its value is true, it becomes false and if it is false, it becomes true. The color of the task and the line-through attribute are controlled by s[index][1]. Whether or not the completed or not completed button shows also depends on the value of s[index][1]. When one of those buttons is clicked, the value of s[index][1] is changed, causing the check mark in the checkbox to appear or diappear, changing the task color and its line-through attribute, and changing which button ("complete" or "not complete") displays.  ' ),
 
 //************************************************************************** END GameTraversal
 
