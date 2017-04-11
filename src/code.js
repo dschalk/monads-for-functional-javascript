@@ -1735,7 +1735,7 @@ var prototypeAdditions = h('pre',  `  var gameMonad = new MonadState('gameMonad'
     if (scor === 25 && gameMonad.fetch1() === "1") {
       mMindex.ret(0);
       gameMonad = new MonadState('gameMonad', [[0,0,0,[],[0,0,0,0]]]);
-      socket.send(\`CE#$42,${pMgroup.x},${pMname.x}\`);
+      socket.send(\`CE#$42,\${pMgroup.x},\${pMname.x}\`);
       scor = 0;
       goals = 0;
     }
@@ -1747,84 +1747,104 @@ var prototypeAdditions = h('pre',  `  var gameMonad = new MonadState('gameMonad'
   }  ` )
 
   var todo1 = h('pre',  `  var rep = new RegExp('<<>>', 'g');
-  var rep2 = new RegExp(',', 'g');
 
-  function MonadState2(g, state) {
-    this.id = g;
-    this.s = state;
-    this.bnd = (func, ...args) => func(this.s, ...args);  
-    this.ret = function (a) {
-      return window[this.id] = new MonadState(this.id, a);
+    var rep = new RegExp('<<>>', 'g');
+    var rep2 = new RegExp(',', 'g');
+
+    function MonadState2(g, state) {
+      console.log('someone called with g and state', g, state);
+      this.id = g;
+      this.s = state;
+      this.bnd = (func, ...args) => func(this.s, ...args);  
+      this.ret = function (a) {
+        return window[this.id] = new MonadState(this.id, a);
+      };
     };
-  };
 
-  taskMonad = new MonadState2( 'taskMonad', [ [] ] );
+    taskMonad = new MonadState2( 'taskMonad', [] );
 
-  MonadState2.prototype.html = [];
+    MonadState2.prototype.html = "";
 
-  MonadState2.prototype.run2 = function (str) {
-    var newAr = str.split('@').map(v => v.split(','));
-    newAr.map(v => {
-      v[0] = v[0].replace(rep, ',');
-      v[1] = eval(v[1]);
-    });
-    this.s = newAr;
-    var arr = this.s.slice();
-    var nodeObject = [];
-    var n = -1
-    var showCheck, showUnCheck, showGreen, showLineThrough;
-    arr.map(a => {
-      n+=1
-      showCheck = a[1] ? "none" : "inline"
-      showUnCheck = a[1] ? "inline" : "none"
-      showGreen = a[1] ? "green" : "yellow"
-      showLineThrough = a[1] ? "line-through" : "none"
-      nodeObject.push(h('div#' + n +'.todo', [
-        h('span.task3', { style: { color: showGreen, textDecoration: showLineThrough } }, 'Task: ' + a[0]),
-        h('input#cbx',  { props: { type: 'checkbox', checked: a[1] }}), 
-        h('span.tao4', {style: {display: showUnCheck}}, 'completed' ),
-        h('span.tao4', {style: {display: showCheck}}, 'not completed' ),
-        h('br'),
-        h('span.tao', 'Author: ' + a[2] + ' / ' + 'Responsibility: ' + a[3]),
-        h('br'),
-        h('br'),
-        h('button#edit1', {props: {innerHTML: 'edit'}}),
-        h('input#edit2', { props: { type:'textarea', value: a[0] }, style: { display: a[4] } }),
-        h('button#chbox1', {style: {display: showUnCheck}}, 'not completed'),
-        h('button#chbox2', {style: {display: showCheck}}, 'completed'),
-        h('button#delete', 'delete'),
-        h('hr')   
-      ])) 
-    });  
-    taskMonad.html = nodeObject;
+    MonadState2.prototype.run2 = function (str) {
+     var newAr = str.split('@').map(v => v.split(','));
+      newAr.map(v => {
+        v[0] = v[0].replace(rep, ',');
+        v[1] = eval(v[1]);
+      });
+      this.s = newAr;
+      console.log('In run >>>>>>>>>>>>>>>>>>>> this.s is', this.s );
+      // "two",false,"alfred","jane","none"
+      var arr = this.s.slice();
+      console.log('In MonadState.run2. <o><o><o><o><o><o><o> this.s is', this.s );
+      var nodeObject = [];
+      var n = -1
+      var showCheck, showUnCheck, showGreen, showLineThrough;
+      arr.map(a => {
+        n+=1
+        showCheck = a[1] ? "none" : "inline"
+        showUnCheck = a[1] ? "inline" : "none"
+        showGreen = a[1] ? "green" : "yellow"
+        showLineThrough = a[1] ? "line-through" : "none"
+        console.log('In MonadState2.prototype.run2. a[1], showCheck, showUnCheck, showGreen, showLineThrough', 
+          a[1] === "checked", showCheck, showUnCheck, showGreen, showLineThrough);
+        nodeObject.push(h('div#' + n +'.todo', [
+          h('span.task3', { style: { color: showGreen, textDecoration: showLineThrough } }, 'Task: ' + a[0]),
+          h('br'),
+          h('input#cbx',  { props: { type: 'checkbox', checked: a[1] }}), 
+          h('label.tao4', { for: 'cbx', style: {display: showUnCheck}}, 'The task is completed' ),
+          h('label.tao4', { for: 'cbx', style: {display: showCheck}}, 'The task is not completed' ),
+          h('br'),
+          h('span.tao', 'Author: ' + a[2] + ' / ' + 'Responsibility: ' + a[3]),
+          h('br'),
+          h('button#edit1', {props: {innerHTML: 'edit'}}),
+          h('input#edit2', { props: { type:'textarea', value: a[0] }, style: { display: a[4] } }),
+          h('button#delete', 'delete'),
+          h('br'),
+          h('button#chbox1', {style: {display: showUnCheck}}, 'change to not completed'),
+          h('button#chbox2', {style: {display: showCheck}}, 'change to completed'),
+          h('hr')   
+        ])) 
+      });  
+      taskMonad.html = nodeObject;
   }; `  )
 
 var todo2 = h('pre',  `  // Clicking the checkbox to indicate that a task has been finished.
   var cbx$ = sources.DOM.select('input#cbx').events('click');
 
   var cbxAction$ = cbx$.map(e => {
+    console.log('************************************ event detected');
     var s = taskMonad.s.slice();
+    console.log('1 in cbxAction$. s is', s );
     var index = e.target.parentNode.id;
+    s[index][1] = eval(s[index][1]) === true ? false : true
     s.map(v => v[0] = v[0].replace(rep2, '<<>>'));
+    console.log('2 in cbxAction$. s is', s );
     var str = s.join('@');
+    console.log('3 in cbxAction$. str is', str);
     socket.send(\`TD#$42,\${get(pMgroup)},\${get(pMname)},@\${str}\`);
   });
 
   // Clicking the completed / not completed buttons.
   var chbox1Click$ = sources.DOM.select('#chbox1').events('click');
-  var chbox2Click$ = sources.DOM.select('#chbox2').events('click');
 
   var chbox1Action$ = chbox1Click$.map( e => {
+    console.log('************************************ event detected');
     var s = taskMonad.s.slice();
+    console.log('In chbox1Action. $$$$$$$$$$$$$$$$$$$$$ e and s are', e, s); 
     var index = e.target.parentNode.id;
     s[index][1] = false;
     s.map(v => v[0] = v[0].replace(rep2, '<<>>'));
     var str = s.join('@');
+    console.log('In chbox1Action. str is', str); 
     socket.send(\`TD#$42,\${get(pMgroup)},\${get(pMname)},@\${str}\`);  
   });
 
+  var chbox2Click$ = sources.DOM.select('#chbox2').events('click');
+
   var chbox2Action$ = chbox2Click$.map( e => {
+    console.log('************************************ event detected');
     var s = taskMonad.s.slice();
+    console.log('In chbox2Action. e and s are', e, s); 
     var index = e.target.parentNode.id;
     s[index][1] = true;
     s.map(v => v[0] = v[0].replace(rep2, '<<>>'));
@@ -1837,12 +1857,21 @@ var todo2 = h('pre',  `  // Clicking the checkbox to indicate that a task has be
       .select('#delete').events('click');
 
   var deleteAction$ = deleteClick$.map(function (e) {
-    var s = taskMonad.s.slice();
-    var index = e.target.parentNode.id;
-    s.splice(index, 1);
-    s.map(v => v[0] = v[0].replace(rep2, '<<>>'));
-    var str = s.join('@');
-    socket.send(\`TD#$42,\${get(pMgroup)},\${get(pMname)},@\${str}\`);
+    console.log('************************************ event detected');
+    if (taskMonad.s.length < 2) {
+      console.log('Now removing the',pMgroup.x,'file');
+      taskMonad.html = '';
+      taskMonad.s = [];
+      socket.send(\`TX#$42,\${get(pMgroup)},\${get(pMname)}\`);
+    }
+    else {
+      var s = taskMonad.s.slice();
+      var index = e.target.parentNode.id;
+      s.splice(index, 1);
+      s.map(v => v[0] = v[0].replace(rep2, '<<>>'));
+      var str = s.join('@');
+      socket.send(\`TD#$42,\${get(pMgroup)},\${get(pMname)},@\${str}\`);
+    }
   });
 
   // Editing a task.
@@ -1850,6 +1879,8 @@ var todo2 = h('pre',  `  // Clicking the checkbox to indicate that a task has be
       .select('button#edit1').events('click');
 
   var edit1Action$ = edit1$.map(function (e) {
+    console.log('************************************ event detected');
+    console.log('In edit1Action$. e is', e );
     var index = getIndex2(e);
     var s = taskMonad.s.slice();
     var str;
@@ -1863,6 +1894,8 @@ var todo2 = h('pre',  `  // Clicking the checkbox to indicate that a task has be
       .select('#edit2').events('keypress');
 
   var edit2Action$ = edit2$.map(function (e) {
+    console.log('************************************ event detected');
+    console.log('In edit2Action$. e is', e );
     var arr;
     var str;
     if (e.keyCode === 13) {
@@ -1882,9 +1915,11 @@ var todo2 = h('pre',  `  // Clicking the checkbox to indicate that a task has be
       .select('input.newTask').events('keydown');
 
   var newTaskAction$ = newTask$.map(function (e) {
+    console.log('************************************ event detected');
     var alert = '';
     var s = taskMonad.s.slice();
-    s = s.map(v => v[0].replace(rep2, '<<>>'));
+    s.map(v => v[0] = v[0].replace(rep2, '<<>>'));
+    console.log('In newTaskAction$. <><><><><><><> s is', s);
     var todo = [];
     if (e.keyCode === 13) {
       var ar = e.target.value.split(',');
@@ -1893,17 +1928,19 @@ var todo2 = h('pre',  `  // Clicking the checkbox to indicate that a task has be
         return;
       }
       else {
+        todo[2] = ar.shift();
         todo[3] = ar.shift();
-        todo[4] = ar.shift();
         todo[0] = ar.join(',').replace(rep2, '<<>>');
         todo[1] = false;
-        todo[2] = "none";
-        s.unshift(todo);
+        todo[4] = "none";
+        s.push(todo);
+        console.log('In newTask. s is', s );
         var str = s.join('@');
+        console.log('<><><><><><><><><><><><><><><><><><> In newTaskAction$. str is', str);
         socket.send(\`TD#$42,\${get(pMgroup)},\${get(pMname)},@\${str}\`);
       }
     }
-  }  ` );
+  });  ` );
 
 
   export default { todo1, todo2, sco, calculations, prototypeAdditions, styl, num_op, fetch, gameMonad_2, newRoll, primes3, primes2, primes, variations, MonadEmitter, clicks, bNode, MonadState2, gameMonad, cycle, monad, hardWay, hardWay2, async1, async2, execP, workerD$, fact_workerC, fact2_workerD, primes_state, workerB_Driver, workerC, worker$, errorDemo, monadEr, backAction, tests, mMZ10, test3, monad, equals, fmap, opM, e2, e2x, e3, e4, e4x, e6, e6x, driver, messages, monadIt, MonadSet, updateCalc, arrayFuncs, nums, cleanup, ret, C42, newTask, process, mM$task, colorClick, edit, testZ, quad, runTest, todoStream, inc, seed,  add, MonadState, primesMonad, fibsMonad, primeFibInterface, tr3, fpTransformer, factorsMonad, factorsInput, promise, promiseSnippet, timeout, timeoutSnippet, examples, examples2 }

@@ -17,13 +17,7 @@ taskMonad = new MonadState2( 'taskMonad', [] );
 MonadState2.prototype.html = "";
 
 MonadState2.prototype.run2 = function (str) {
-  console.log('[o]o[o]o[o]o[o]o[o]o[o]o[o]o[o]o[o] In run2. str and typeof str are ', str, typeof str );
-  if (typeof str === 'undefined' || str === "no file") {
-    this.s = [];
-    this.html = '';
-    return;
-  }
-  var newAr = str.split('@').map(v => v.split(','));
+ var newAr = str.split('@').map(v => v.split(','));
   newAr.map(v => {
     v[0] = v[0].replace(rep, ',');
     v[1] = eval(v[1]);
