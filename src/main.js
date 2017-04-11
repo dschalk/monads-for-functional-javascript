@@ -67,11 +67,16 @@ function main(sources) {
       refresh() });
     mMZ16.bnd( () => testComments(e.data));
     mMZ17.bnd( () => {
-      if (v[3] === "no file") {console.log('no file'); return;}
-      var str = e.data.substring(e.data.indexOf('@')+1, e.data.length) ;
-      console.log('In mMZ17. str is', str);
-      console.log('In mMZ17. typeof str is', typeof str);
-      taskMonad.run2(str); 
+      if (v[3] === "no file" || typeof v[3] == 'undefined') {
+        console.log('"no file" or "undefined" arrived at mMZ17'); 
+        taskMonad.s = [];
+        taskMonad.html = "";
+      }
+      else {
+        var str = e.data.substring(e.data.indexOf('@')+1, e.data.length) ;
+        console.log('Greetings from mMZ17. str is: ', str );
+        taskMonad.run2(str);
+      }
     });
     mMZ18.bnd( () => {
       if (pMgroup.x != 'solo' || pMname.x === v[2] ) updatePlayers(e.data)  });
@@ -662,33 +667,30 @@ var prAction$ = pr$.map(function (e) {
     }
 });
 
-var chbox1Click$ = sources.DOM.select('#chbox1').events('click');
-var chbox2Click$ = sources.DOM.select('#chbox2').events('click');
 
 // Clicking the checkbox to indicate that a task has been finished.
 var cbx$ = sources.DOM.select('input#cbx').events('click');
 
 var cbxAction$ = cbx$.map(e => {
-  console.log('<><><><> HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH  Here is e from chbox$', e);
+  console.log('************************************ event detected');
   var s = taskMonad.s.slice();
+  console.log('1 in cbxAction$. s is', s );
   var index = e.target.parentNode.id;
-  s[index][1] = eval(s[index][1]);
-  console.log('In cbxAction$. s and index are is', s, index);
-  console.log('**********************************************************');
-  console.log('In cbxAction$. s[index][1] is', s[index][1]);
-  s[index][1] = s[index][1] === false ? true : false 
-  console.log('In cbxAction$. s[index][1] is', s[index][1]);
-  console.log('**********************************************************');
+  s[index][1] = eval(s[index][1]) === true ? false : true
   s.map(v => v[0] = v[0].replace(rep2, '<<>>'));
+  console.log('2 in cbxAction$. s is', s );
   var str = s.join('@');
-  console.log('In cbxAction$. str is', str);
+  console.log('3 in cbxAction$. str is', str);
   socket.send(`TD#$42,${get(pMgroup)},${get(pMname)},@${str}`);
 });
 
 // Clicking the completed / not completed buttons.
+var chbox1Click$ = sources.DOM.select('#chbox1').events('click');
+
 var chbox1Action$ = chbox1Click$.map( e => {
+  console.log('************************************ event detected');
   var s = taskMonad.s.slice();
-  console.log('In chbox1Action. e and s are', e, s); 
+  console.log('In chbox1Action. $$$$$$$$$$$$$$$$$$$$$ e and s are', e, s); 
   var index = e.target.parentNode.id;
   s[index][1] = false;
   s.map(v => v[0] = v[0].replace(rep2, '<<>>'));
@@ -697,7 +699,10 @@ var chbox1Action$ = chbox1Click$.map( e => {
   socket.send(`TD#$42,${get(pMgroup)},${get(pMname)},@${str}`);  
 });
 
+var chbox2Click$ = sources.DOM.select('#chbox2').events('click');
+
 var chbox2Action$ = chbox2Click$.map( e => {
+  console.log('************************************ event detected');
   var s = taskMonad.s.slice();
   console.log('In chbox2Action. e and s are', e, s); 
   var index = e.target.parentNode.id;
@@ -712,12 +717,21 @@ var deleteClick$ = sources.DOM
     .select('#delete').events('click');
 
 var deleteAction$ = deleteClick$.map(function (e) {
-  var s = taskMonad.s.slice();
-  var index = e.target.parentNode.id;
-  s.splice(index, 1);
-  s.map(v => v[0] = v[0].replace(rep2, '<<>>'));
-  var str = s.join('@');
-  socket.send(`TD#$42,${get(pMgroup)},${get(pMname)},@${str}`);
+  console.log('************************************ event detected');
+  if (taskMonad.s.length < 2) {
+    console.log('Now removing the',pMgroup.x,'file');
+    taskMonad.html = '';
+    taskMonad.s = [];
+    socket.send(`TX#$42,${get(pMgroup)},${get(pMname)}`);
+  }
+  else {
+    var s = taskMonad.s.slice();
+    var index = e.target.parentNode.id;
+    s.splice(index, 1);
+    s.map(v => v[0] = v[0].replace(rep2, '<<>>'));
+    var str = s.join('@');
+    socket.send(`TD#$42,${get(pMgroup)},${get(pMname)},@${str}`);
+  }
 });
 
 // Editing a task.
@@ -725,6 +739,7 @@ var edit1$ = sources.DOM
     .select('button#edit1').events('click');
 
 var edit1Action$ = edit1$.map(function (e) {
+  console.log('************************************ event detected');
   console.log('In edit1Action$. e is', e );
   var index = getIndex2(e);
   var s = taskMonad.s.slice();
@@ -739,6 +754,7 @@ var edit2$ = sources.DOM
     .select('#edit2').events('keypress');
 
 var edit2Action$ = edit2$.map(function (e) {
+  console.log('************************************ event detected');
   console.log('In edit2Action$. e is', e );
   var arr;
   var str;
@@ -759,9 +775,10 @@ var newTask$ = sources.DOM
     .select('input.newTask').events('keydown');
 
 var newTaskAction$ = newTask$.map(function (e) {
+  console.log('************************************ event detected');
   var alert = '';
   var s = taskMonad.s.slice();
-  s = s.map(v => v[0].replace(rep2, '<<>>'));
+  s.map(v => v[0] = v[0].replace(rep2, '<<>>'));
   console.log('In newTaskAction$. <><><><><><><> s is', s);
   var todo = [];
   if (e.keyCode === 13) {
@@ -771,17 +788,15 @@ var newTaskAction$ = newTask$.map(function (e) {
       return;
     }
     else {
-      console.log('In newTaskAction$. ar is', ar );
+      todo[2] = ar.shift();
       todo[3] = ar.shift();
-      console.log('In newTaskAction$. ar is', ar );
-      todo[4] = ar.shift();
-      console.log('In newTaskAction$. ar is', ar );
       todo[0] = ar.join(',').replace(rep2, '<<>>');
-      console.log('In newTaskAction$. todo[0] is', todo[0]);
       todo[1] = false;
-      todo[2] = "none";
-      s.unshift(todo);
+      todo[4] = "none";
+      s.push(todo);
+      console.log('In newTask. s is', s );
       var str = s.join('@');
+      console.log('<><><><><><><><><><><><><><><><><><> In newTaskAction$. str is', str);
       socket.send(`TD#$42,${get(pMgroup)},${get(pMname)},@${str}`);
     }
   }
@@ -900,7 +915,6 @@ h('div#gameDiv2', {style: { display: mMgameDiv2.x }}, [
     h('div#todoDiv',  { style: { display: mMtodoDiv.x } }, [
       h('div#taskList', taskMonad.html ),
       h('div', 'Enter author, responsible person, and task here: '),
-      h('br'),
       h('input.newTask') ]),
     h('br'),
     h('span#alert', mMalert.x ),

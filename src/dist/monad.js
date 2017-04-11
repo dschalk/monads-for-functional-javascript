@@ -16,6 +16,7 @@ const messages = [];
 var crapTunnel = [];
 var buttonNode;
 var stat;
+var solo = "solo";
 
 function testPrefix (x,y) {
    var t = y;

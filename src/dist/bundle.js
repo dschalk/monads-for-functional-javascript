@@ -46,8 +46,6 @@
 
 	"use strict";
 
-	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
-
 	var _xstreamRun = __webpack_require__(1);
 
 	var _dom = __webpack_require__(9);
@@ -128,13 +126,15 @@
 	        return testComments(e.data);
 	      });
 	      mMZ17.bnd(function () {
-	        if (v[3] === "no file") {
-	          console.log('no file');return;
+	        if (v[3] === "no file" || typeof v[3] == 'undefined') {
+	          console.log('"no file" or "undefined" arrived at mMZ17');
+	          taskMonad.s = [];
+	          taskMonad.html = "";
+	        } else {
+	          var str = e.data.substring(e.data.indexOf('@') + 1, e.data.length);
+	          console.log('Greetings from mMZ17. str is: ', str);
+	          taskMonad.run2(str);
 	        }
-	        var str = e.data.substring(e.data.indexOf('@') + 1, e.data.length);
-	        console.log('In mMZ17. str is', str);
-	        console.log('In mMZ17. typeof str is', typeof str === 'undefined' ? 'undefined' : _typeof(str));
-	        taskMonad.run2(str);
 	      });
 	      mMZ18.bnd(function () {
 	        if (pMgroup.x != 'solo' || pMname.x === v[2]) updatePlayers(e.data);
@@ -723,35 +723,31 @@
 	    }
 	  });
 
-	  var chbox1Click$ = sources.DOM.select('#chbox1').events('click');
-	  var chbox2Click$ = sources.DOM.select('#chbox2').events('click');
-
 	  // Clicking the checkbox to indicate that a task has been finished.
 	  var cbx$ = sources.DOM.select('input#cbx').events('click');
 
 	  var cbxAction$ = cbx$.map(function (e) {
-	    console.log('<><><><> HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH  Here is e from chbox$', e);
+	    console.log('************************************ event detected');
 	    var s = taskMonad.s.slice();
+	    console.log('1 in cbxAction$. s is', s);
 	    var index = e.target.parentNode.id;
-	    s[index][1] = eval(s[index][1]);
-	    console.log('In cbxAction$. s and index are is', s, index);
-	    console.log('**********************************************************');
-	    console.log('In cbxAction$. s[index][1] is', s[index][1]);
-	    s[index][1] = s[index][1] === false ? true : false;
-	    console.log('In cbxAction$. s[index][1] is', s[index][1]);
-	    console.log('**********************************************************');
+	    s[index][1] = eval(s[index][1]) === true ? false : true;
 	    s.map(function (v) {
 	      return v[0] = v[0].replace(rep2, '<<>>');
 	    });
+	    console.log('2 in cbxAction$. s is', s);
 	    var str = s.join('@');
-	    console.log('In cbxAction$. str is', str);
+	    console.log('3 in cbxAction$. str is', str);
 	    socket.send('TD#$42,' + get(pMgroup) + ',' + get(pMname) + ',@' + str);
 	  });
 
 	  // Clicking the completed / not completed buttons.
+	  var chbox1Click$ = sources.DOM.select('#chbox1').events('click');
+
 	  var chbox1Action$ = chbox1Click$.map(function (e) {
+	    console.log('************************************ event detected');
 	    var s = taskMonad.s.slice();
-	    console.log('In chbox1Action. e and s are', e, s);
+	    console.log('In chbox1Action. $$$$$$$$$$$$$$$$$$$$$ e and s are', e, s);
 	    var index = e.target.parentNode.id;
 	    s[index][1] = false;
 	    s.map(function (v) {
@@ -762,7 +758,10 @@
 	    socket.send('TD#$42,' + get(pMgroup) + ',' + get(pMname) + ',@' + str);
 	  });
 
+	  var chbox2Click$ = sources.DOM.select('#chbox2').events('click');
+
 	  var chbox2Action$ = chbox2Click$.map(function (e) {
+	    console.log('************************************ event detected');
 	    var s = taskMonad.s.slice();
 	    console.log('In chbox2Action. e and s are', e, s);
 	    var index = e.target.parentNode.id;
@@ -778,20 +777,29 @@
 	  var deleteClick$ = sources.DOM.select('#delete').events('click');
 
 	  var deleteAction$ = deleteClick$.map(function (e) {
-	    var s = taskMonad.s.slice();
-	    var index = e.target.parentNode.id;
-	    s.splice(index, 1);
-	    s.map(function (v) {
-	      return v[0] = v[0].replace(rep2, '<<>>');
-	    });
-	    var str = s.join('@');
-	    socket.send('TD#$42,' + get(pMgroup) + ',' + get(pMname) + ',@' + str);
+	    console.log('************************************ event detected');
+	    if (taskMonad.s.length < 2) {
+	      console.log('Now removing the', pMgroup.x, 'file');
+	      taskMonad.html = '';
+	      taskMonad.s = [];
+	      socket.send('TX#$42,' + get(pMgroup) + ',' + get(pMname));
+	    } else {
+	      var s = taskMonad.s.slice();
+	      var index = e.target.parentNode.id;
+	      s.splice(index, 1);
+	      s.map(function (v) {
+	        return v[0] = v[0].replace(rep2, '<<>>');
+	      });
+	      var str = s.join('@');
+	      socket.send('TD#$42,' + get(pMgroup) + ',' + get(pMname) + ',@' + str);
+	    }
 	  });
 
 	  // Editing a task.
 	  var edit1$ = sources.DOM.select('button#edit1').events('click');
 
 	  var edit1Action$ = edit1$.map(function (e) {
+	    console.log('************************************ event detected');
 	    console.log('In edit1Action$. e is', e);
 	    var index = getIndex2(e);
 	    var s = taskMonad.s.slice();
@@ -807,6 +815,7 @@
 	  var edit2$ = sources.DOM.select('#edit2').events('keypress');
 
 	  var edit2Action$ = edit2$.map(function (e) {
+	    console.log('************************************ event detected');
 	    console.log('In edit2Action$. e is', e);
 	    var arr;
 	    var str;
@@ -828,10 +837,11 @@
 	  var newTask$ = sources.DOM.select('input.newTask').events('keydown');
 
 	  var newTaskAction$ = newTask$.map(function (e) {
+	    console.log('************************************ event detected');
 	    var alert = '';
 	    var s = taskMonad.s.slice();
-	    s = s.map(function (v) {
-	      return v[0].replace(rep2, '<<>>');
+	    s.map(function (v) {
+	      return v[0] = v[0].replace(rep2, '<<>>');
 	    });
 	    console.log('In newTaskAction$. <><><><><><><> s is', s);
 	    var todo = [];
@@ -841,17 +851,15 @@
 	        mMalert.ret('You should enter "author, responsible party, task" separated by commas');
 	        return;
 	      } else {
-	        console.log('In newTaskAction$. ar is', ar);
+	        todo[2] = ar.shift();
 	        todo[3] = ar.shift();
-	        console.log('In newTaskAction$. ar is', ar);
-	        todo[4] = ar.shift();
-	        console.log('In newTaskAction$. ar is', ar);
 	        todo[0] = ar.join(',').replace(rep2, '<<>>');
-	        console.log('In newTaskAction$. todo[0] is', todo[0]);
 	        todo[1] = false;
-	        todo[2] = "none";
-	        s.unshift(todo);
+	        todo[4] = "none";
+	        s.push(todo);
+	        console.log('In newTask. s is', s);
 	        var str = s.join('@');
+	        console.log('<><><><><><><><><><><><><><><><><><> In newTaskAction$. str is', str);
 	        socket.send('TD#$42,' + get(pMgroup) + ',' + get(pMname) + ',@' + str);
 	      }
 	    }
@@ -860,7 +868,7 @@
 	  var calcStream$ = xs.merge(cbxAction$, chbox1Action$, chbox2Action$, comClickAction$, messagePressAction$, fA_c$, forwardAction$, backAction$, prAction$, factorsAction_b$, fA$, factorsP$, fA_b$, factorsP_b$, clearprimes$, worker$, workerB$, workerC$, workerD$, workerE$, workerF$, clearAction$, factorsAction$, primeFib$, fibPressAction$, quadAction$, edit1Action$, edit2Action$, testWAction$, testZAction$, testQAction$, deleteAction$, newTaskAction$, chatClickAction$, gameClickAction$, todoClickAction$, captionClickAction$, groupPressAction$, rollClickAction$, loginPressAction$, messages$, numClickAction$, opClickAction$);
 	  return {
 	    DOM: calcStream$.map(function () {
-	      return (0, _dom.h)('div.main', [(0, _dom.h)('div.preContent', [(0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('div', 'FUNCTIONAL REACTIVE PROGRAMMING'), (0, _dom.h)('div', 'WITH CUSTOM MONADS AND CYCLE.JS')]), (0, _dom.h)('br'), (0, _dom.h)('div.image_3', [(0, _dom.h)('img.image_2', { props: { src: "logo.svg" } }), (0, _dom.h)('span', ' '), (0, _dom.h)('a', { props: { href: "https://cycle.js.org/", target: "_blank" } }, 'A Cycle.js application')]), (0, _dom.h)('div.content', [(0, _dom.h)('p', ' Front-end web developers might be interested in seeing how I encapsule procedures and state in objects whose methods conform to a JavaScript version of the Haskell monad laws. It is fascinating to see how reactivity is achieved in Cycle.js. The Haskell server might also be of interest. '), (0, _dom.h)('p', 'People who are developing a feel for function reactive programming can cut through to its essence by seeing it implemented in various contexts. The combination of Lodash, Immutable.js, and RxJS running in Node.js is one possibility. Here we demonstrate how a front-end developer can create monads to suit their purposes, and obtain amazing reactivity by implementing them in a Cycle.js framework. '), (0, _dom.h)('span.tao1b', 'You can comment at '), (0, _dom.h)('a', { props: { href: 'https://redd.it/60c2xx' } }, 'Reddit'), (0, _dom.h)('span.tao1b', ' or in the '), (0, _dom.h)('a', { props: { href: '#comment' } }, 'comments'), (0, _dom.h)('br'), (0, _dom.h)('p', ' Snabbdom, Xstream, EventEmitter, and most of the monads and functions presented here are available in browser developer tools consoles and scratch pads. A production site would load these as modules, but this site is for experimention and learning. '), (0, _dom.h)('span#italic', ' These monads are like the Haskell monads in that they resemble the monads of category theory without actually being mathematical monads. See '), (0, _dom.h)('a', { props: { href: "http://math.andrej.com/2016/08/06/hask-is-not-a-category/", target: "_blank" } }, 'Hask is not a category.'), (0, _dom.h)('span', ' by Andrej Bauer and the '), (0, _dom.h)('a', { props: { href: '#discussion' } }, 'Discussion'), (0, _dom.h)('span', ' below. They provide a convenient interface for dealing with uncertainty and side effects in a purely functional manner. Adherence to the monad laws (see below) helps make the monads robust, versatile, and reliable tools for isolating and chaining sequences of javascript functions. State is modified in monads without mutating anything outside of them.'), (0, _dom.h)('p', ' The demonstrations include persistent, shared todo lists, text messaging, and a simulated dice game with a traversable history (all group members see your score decrease or increase as you navegate backwards and forwards). Monads are shown performing lengthy mathematical computations asycronously in web workers. Monads encapsulate state. The error checking monad carries occurances of NaN and runtime errors through sequences of computations much like the Haskell Maybe monad. '), (0, _dom.h)('span.tao', 'This project was created by, and is actively maintained by David Schalk. The code repository is at '), (0, _dom.h)('a', { props: { href: "https://github.com/dschalk/JS-monads-stable", target: "_blank" } }, 'https://github.com/dschalk/JS-monads-stable. '), (0, _dom.h)('span', 'The master branch is a Motorcycle.js application using the Most.js library. That branch has been abandoned. This is a Cycle.js application using Xstream instead of Most. The primary branch is named "xstream". '), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('span.tao', ' The game code is fairly concise and intuitive. A quick walk-through is presented '), (0, _dom.h)('a', { props: { href: '#gameExplanation' } }, 'here'), (0, _dom.h)('span', '. To see monadic functionality at work, I suggest that you take a look at the section captioned '), (0, _dom.h)('a', { props: { href: '#asyncExplanation' } }, 'Asynchronous Processes'), (0, _dom.h)('br'), (0, _dom.h)('p', ' But it might be best to first proceed down the page and see the examples of Monad instances manipulating data. If you are trying to wrap you head around the concept of pure, chainable functions, such as the functions in the Underscore and Jquery libraries, understanding Monad instances might finally put you in the comfort zone you seek. '), (0, _dom.h)('br'), (0, _dom.h)('h3', 'The Game'), (0, _dom.h)('p', 'People who are in the same group, other than the default group named "solo", share the same todo list, chat messages, and simulated dice game. In order to see any of these, you must establish a unique identity on the server by logging in. The websockets connection terminates if the first message the server receives does not come from the sign in form. You can enter any random numbers, letters, or special characters you like. The server checks only to make sure someone hasn\'t already signed in with the sequence you have selected. If you log in with a name that is already in use, a message will appear and this page will be re-loaded in the browser after a four-second pause. '), (0, _dom.h)('p', ' Data for the traversable game history accumulates until a player scores three goals and wins. The data array is then erased and the application is ready to start accumulating a new history. '), (0, _dom.h)('div#log1', { style: { display: mMlog1.x } }, [(0, _dom.h)('p', 'IN ORDER TO SEE THE GAME, TODOLIST, AND CHAT DEMONSTRATIONS, YOU MUST ENTER SOMETHING TO ESTABLISH A WEBSOCKET CONNECTION.'), (0, _dom.h)('span', 'Name: '), (0, _dom.h)('input.login', { props: { autofocus: false } })]), (0, _dom.h)('p', mM6.x)]), (0, _dom.h)('hr.len90', { style: { display: mMgameDiv2.x } }), (0, _dom.h)('br.len90', { style: { display: mMgameDiv2.x } }), (0, _dom.h)('div.heading', { style: { display: mMgameDiv2.x } }, 'Game, Todo List, Text Messages'), (0, _dom.h)('div#gameDiv2', { style: { display: mMgameDiv2.x } }, [(0, _dom.h)('br'), (0, _dom.h)('div#leftPanel', { style: { display: mMgameDiv2.x } }, [(0, _dom.h)('p', 'RULES: If clicking two numbers and an operator (in any order) results in 20 or 18, the score increases by 1 or 3, respectively. If the score becomes 0 or is evenly divisible by 5, 5 points are added. A score of 25 results in one goal. That can only be achieved by arriving at a score of 20, which jumps the score to 25. Directly computing 25 results in a score of 30, and no goal. Each time RL is clicked, one point is deducted. Three goals wins the game. '), (0, _dom.h)('br'), buttonNode, (0, _dom.h)('br'), (0, _dom.h)('button#4.op', 'add'), (0, _dom.h)('button#5.op', 'subtract'), (0, _dom.h)('button#6.op', 'mult'), (0, _dom.h)('button#7.op', 'div'), (0, _dom.h)('button#8.op', 'concat'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('div#dice', { style: { display: mMdice.x } }, [(0, _dom.h)('button#roll.tao1', 'ROLL'), (0, _dom.h)('button#back.tao100', 'BACK'), (0, _dom.h)('button#ahead.tao1', 'FORWARD'), (0, _dom.h)('div.tao', 'Selected numbers: ' + gameMonad.fetch3().join(', ') + ' '), (0, _dom.h)('div.tao', 'Operator: ' + gameMonad.fetch2() + ' '), (0, _dom.h)('div.tao', 'Index: ' + gameMonad.s[1]), (0, _dom.h)('button#clear', 'Clear selected numbers'), (0, _dom.h)('div#log2', { style: { display: mMlog2.x } }, [(0, _dom.h)('span', 'Change group: '), (0, _dom.h)('input#group', { props: { autofocus: false } }, 'test')]), (0, _dom.h)('p', mMsoloAlert.x)])]), (0, _dom.h)('div#rightPanel', { style: { display: mMrightPanel.x } }, [(0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('button#todoButton', { style: { fontSize: '16px', display: 'inline' } }, 'TOGGLE TODO_LIST'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('button#chat2', { style: { fontSize: '16px', display: 'inline' } }, 'TOGGLE CHAT'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('div.game', 'Name: ' + pMname.x), (0, _dom.h)('div.game', 'Group: ' + pMgroup.x), (0, _dom.h)('pre.game', 'Currently online:\n(Name score | goals) '), (0, _dom.h)('div.game', { props: { color: "gold" } }, '' + pMdata.x), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('div#a100', ' _________________________________________________ '), (0, _dom.h)('br'), (0, _dom.h)('div#todoDiv', { style: { display: mMtodoDiv.x } }, [(0, _dom.h)('div#taskList', taskMonad.html), (0, _dom.h)('div', 'Enter author, responsible person, and task here: '), (0, _dom.h)('br'), (0, _dom.h)('input.newTask')]), (0, _dom.h)('br'), (0, _dom.h)('span#alert', mMalert.x), (0, _dom.h)('br'), (0, _dom.h)('span#alert2'), (0, _dom.h)('br'), (0, _dom.h)('div#chatDiv', { style: { display: mMchatDiv.x } }, [(0, _dom.h)('div#messages', [(0, _dom.h)('span', 'Message: '), (0, _dom.h)('input.inputMessage'), (0, _dom.h)('div', messages), (0, _dom.h)('br')])])])]),
+	      return (0, _dom.h)('div.main', [(0, _dom.h)('div.preContent', [(0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('div', 'FUNCTIONAL REACTIVE PROGRAMMING'), (0, _dom.h)('div', 'WITH CUSTOM MONADS AND CYCLE.JS')]), (0, _dom.h)('br'), (0, _dom.h)('div.image_3', [(0, _dom.h)('img.image_2', { props: { src: "logo.svg" } }), (0, _dom.h)('span', ' '), (0, _dom.h)('a', { props: { href: "https://cycle.js.org/", target: "_blank" } }, 'A Cycle.js application')]), (0, _dom.h)('div.content', [(0, _dom.h)('p', ' Front-end web developers might be interested in seeing how I encapsule procedures and state in objects whose methods conform to a JavaScript version of the Haskell monad laws. It is fascinating to see how reactivity is achieved in Cycle.js. The Haskell server might also be of interest. '), (0, _dom.h)('p', 'People who are developing a feel for function reactive programming can cut through to its essence by seeing it implemented in various contexts. The combination of Lodash, Immutable.js, and RxJS running in Node.js is one possibility. Here we demonstrate how a front-end developer can create monads to suit their purposes, and obtain amazing reactivity by implementing them in a Cycle.js framework. '), (0, _dom.h)('span.tao1b', 'You can comment at '), (0, _dom.h)('a', { props: { href: 'https://redd.it/60c2xx' } }, 'Reddit'), (0, _dom.h)('span.tao1b', ' or in the '), (0, _dom.h)('a', { props: { href: '#comment' } }, 'comments'), (0, _dom.h)('br'), (0, _dom.h)('p', ' Snabbdom, Xstream, EventEmitter, and most of the monads and functions presented here are available in browser developer tools consoles and scratch pads. A production site would load these as modules, but this site is for experimention and learning. '), (0, _dom.h)('span#italic', ' These monads are like the Haskell monads in that they resemble the monads of category theory without actually being mathematical monads. See '), (0, _dom.h)('a', { props: { href: "http://math.andrej.com/2016/08/06/hask-is-not-a-category/", target: "_blank" } }, 'Hask is not a category.'), (0, _dom.h)('span', ' by Andrej Bauer and the '), (0, _dom.h)('a', { props: { href: '#discussion' } }, 'Discussion'), (0, _dom.h)('span', ' below. They provide a convenient interface for dealing with uncertainty and side effects in a purely functional manner. Adherence to the monad laws (see below) helps make the monads robust, versatile, and reliable tools for isolating and chaining sequences of javascript functions. State is modified in monads without mutating anything outside of them.'), (0, _dom.h)('p', ' The demonstrations include persistent, shared todo lists, text messaging, and a simulated dice game with a traversable history (all group members see your score decrease or increase as you navegate backwards and forwards). Monads are shown performing lengthy mathematical computations asycronously in web workers. Monads encapsulate state. The error checking monad carries occurances of NaN and runtime errors through sequences of computations much like the Haskell Maybe monad. '), (0, _dom.h)('span.tao', 'This project was created by, and is actively maintained by David Schalk. The code repository is at '), (0, _dom.h)('a', { props: { href: "https://github.com/dschalk/JS-monads-stable", target: "_blank" } }, 'https://github.com/dschalk/JS-monads-stable. '), (0, _dom.h)('span', 'The master branch is a Motorcycle.js application using the Most.js library. That branch has been abandoned. This is a Cycle.js application using Xstream instead of Most. The primary branch is named "xstream". '), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('span.tao', ' The game code is fairly concise and intuitive. A quick walk-through is presented '), (0, _dom.h)('a', { props: { href: '#gameExplanation' } }, 'here'), (0, _dom.h)('span', '. To see monadic functionality at work, I suggest that you take a look at the section captioned '), (0, _dom.h)('a', { props: { href: '#asyncExplanation' } }, 'Asynchronous Processes'), (0, _dom.h)('br'), (0, _dom.h)('p', ' But it might be best to first proceed down the page and see the examples of Monad instances manipulating data. If you are trying to wrap you head around the concept of pure, chainable functions, such as the functions in the Underscore and Jquery libraries, understanding Monad instances might finally put you in the comfort zone you seek. '), (0, _dom.h)('br'), (0, _dom.h)('h3', 'The Game'), (0, _dom.h)('p', 'People who are in the same group, other than the default group named "solo", share the same todo list, chat messages, and simulated dice game. In order to see any of these, you must establish a unique identity on the server by logging in. The websockets connection terminates if the first message the server receives does not come from the sign in form. You can enter any random numbers, letters, or special characters you like. The server checks only to make sure someone hasn\'t already signed in with the sequence you have selected. If you log in with a name that is already in use, a message will appear and this page will be re-loaded in the browser after a four-second pause. '), (0, _dom.h)('p', ' Data for the traversable game history accumulates until a player scores three goals and wins. The data array is then erased and the application is ready to start accumulating a new history. '), (0, _dom.h)('div#log1', { style: { display: mMlog1.x } }, [(0, _dom.h)('p', 'IN ORDER TO SEE THE GAME, TODOLIST, AND CHAT DEMONSTRATIONS, YOU MUST ENTER SOMETHING TO ESTABLISH A WEBSOCKET CONNECTION.'), (0, _dom.h)('span', 'Name: '), (0, _dom.h)('input.login', { props: { autofocus: false } })]), (0, _dom.h)('p', mM6.x)]), (0, _dom.h)('hr.len90', { style: { display: mMgameDiv2.x } }), (0, _dom.h)('br.len90', { style: { display: mMgameDiv2.x } }), (0, _dom.h)('div.heading', { style: { display: mMgameDiv2.x } }, 'Game, Todo List, Text Messages'), (0, _dom.h)('div#gameDiv2', { style: { display: mMgameDiv2.x } }, [(0, _dom.h)('br'), (0, _dom.h)('div#leftPanel', { style: { display: mMgameDiv2.x } }, [(0, _dom.h)('p', 'RULES: If clicking two numbers and an operator (in any order) results in 20 or 18, the score increases by 1 or 3, respectively. If the score becomes 0 or is evenly divisible by 5, 5 points are added. A score of 25 results in one goal. That can only be achieved by arriving at a score of 20, which jumps the score to 25. Directly computing 25 results in a score of 30, and no goal. Each time RL is clicked, one point is deducted. Three goals wins the game. '), (0, _dom.h)('br'), buttonNode, (0, _dom.h)('br'), (0, _dom.h)('button#4.op', 'add'), (0, _dom.h)('button#5.op', 'subtract'), (0, _dom.h)('button#6.op', 'mult'), (0, _dom.h)('button#7.op', 'div'), (0, _dom.h)('button#8.op', 'concat'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('div#dice', { style: { display: mMdice.x } }, [(0, _dom.h)('button#roll.tao1', 'ROLL'), (0, _dom.h)('button#back.tao100', 'BACK'), (0, _dom.h)('button#ahead.tao1', 'FORWARD'), (0, _dom.h)('div.tao', 'Selected numbers: ' + gameMonad.fetch3().join(', ') + ' '), (0, _dom.h)('div.tao', 'Operator: ' + gameMonad.fetch2() + ' '), (0, _dom.h)('div.tao', 'Index: ' + gameMonad.s[1]), (0, _dom.h)('button#clear', 'Clear selected numbers'), (0, _dom.h)('div#log2', { style: { display: mMlog2.x } }, [(0, _dom.h)('span', 'Change group: '), (0, _dom.h)('input#group', { props: { autofocus: false } }, 'test')]), (0, _dom.h)('p', mMsoloAlert.x)])]), (0, _dom.h)('div#rightPanel', { style: { display: mMrightPanel.x } }, [(0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('button#todoButton', { style: { fontSize: '16px', display: 'inline' } }, 'TOGGLE TODO_LIST'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('button#chat2', { style: { fontSize: '16px', display: 'inline' } }, 'TOGGLE CHAT'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('div.game', 'Name: ' + pMname.x), (0, _dom.h)('div.game', 'Group: ' + pMgroup.x), (0, _dom.h)('pre.game', 'Currently online:\n(Name score | goals) '), (0, _dom.h)('div.game', { props: { color: "gold" } }, '' + pMdata.x), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('div#a100', ' _________________________________________________ '), (0, _dom.h)('br'), (0, _dom.h)('div#todoDiv', { style: { display: mMtodoDiv.x } }, [(0, _dom.h)('div#taskList', taskMonad.html), (0, _dom.h)('div', 'Enter author, responsible person, and task here: '), (0, _dom.h)('input.newTask')]), (0, _dom.h)('br'), (0, _dom.h)('span#alert', mMalert.x), (0, _dom.h)('br'), (0, _dom.h)('span#alert2'), (0, _dom.h)('br'), (0, _dom.h)('div#chatDiv', { style: { display: mMchatDiv.x } }, [(0, _dom.h)('div#messages', [(0, _dom.h)('span', 'Message: '), (0, _dom.h)('input.inputMessage'), (0, _dom.h)('div', messages), (0, _dom.h)('br')])])])]),
 	      // h('div#a100', ' ____________________________________________________________________________________________________________ ' ),
 	      (0, _dom.h)('div.content', [
 

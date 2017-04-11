@@ -269,10 +269,11 @@ talk conn state (_, _, _, _, _) = forever $ do
                 atomically $ putTMVar state new
                 let subSt1 = subState sender extra new
                 tasks <- liftIO $ read2 (msgArray !! 3)
+                print $ "The server is sending: " ++ (T.unpack tasks)
                 st <- atomically $ readTMVar state
                 let subSt2 = subState sender group st
                 broadcast ("DD#$42," `mappend` group `mappend` "," `mappend` sender `mappend` "," `mappend` tasks) subSt1
-                -- broadcast ("DD#$42," `mappend` extra `mappend` "," `mappend` sender `mappend` "," `mappend` tasks) subSt2
+                -- broadcast ("DD#$42," `mappend` extra `mappend` "," `mappend` sender `mappend` "," `mappend` extra) subSt2
                 broadcast ("NN#$42," `mappend` group `mappend` "," `mappend` (T.pack "Bozo") `mappend` "," 
                     `mappend` (T.pack "<br>") `mappend` T.concat (intersperse "<br>" (textState subSt2))) subSt2
 
@@ -296,22 +297,19 @@ talk conn state (_, _, _, _, _) = forever $ do
                 broadcast ("NN#$42," `mappend` group `mappend` "," `mappend` sender `mappend` "," 
                     `mappend` (T.pack "<br>") `mappend` T.concat (intersperse "<br>" (textState subSt))) subSt
 
-
-    else if "DD#$42" `T.isPrefixOf` msg
-            then do
-                tasks <- liftIO $ read2 (msgArray !! 1)
-                st <- atomically $ readTMVar state
-                let subSt = subState sender group st
-                broadcast ("DD#$42," `mappend` group `mappend` "," `mappend` sender `mappend` "," `mappend` tasks) subSt
-
     else if "TD#$42" `T.isPrefixOf` msg
         then
             do
-                save (msgArray !! 1) $ msg
                 st <- atomically $ readTMVar state
                 let subSt = subState sender group st
+                let shorter = drop 3 msgArray
+                let tex = Prelude.map T.pack shorter
+                let comma = T.pack ", "
+                let trunc = T.intercalate comma tex
+                save (msgArray !! 1) $ trunc
+                print $ "The server is sending: " ++ (T.unpack trunc)
                 broadcast ("DD#$42," `mappend` group `mappend` "," 
-                    `mappend` sender `mappend` "," `mappend` msg) subSt
+                    `mappend` sender `mappend` "," `mappend` trunc) subSt
 
     else if "TG#$42" `T.isPrefixOf` msg
         then
