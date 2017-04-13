@@ -1746,9 +1746,7 @@ var prototypeAdditions = h('pre',  `  var gameMonad = new MonadState('gameMonad'
     newRoll(scor, goals);
   }  ` )
 
-  var todo1 = h('pre',  `  var rep = new RegExp('<<>>', 'g');
-
-    var rep = new RegExp('<<>>', 'g');
+  var todo1 = h('pre',  `    var rep = new RegExp('<<>>', 'g');
     var rep2 = new RegExp(',', 'g');
 
     function MonadState2(g, state) {
