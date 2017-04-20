@@ -9,6 +9,7 @@ var formA = h('form#horses', 'You bet!' );
 console.log('textA is: ', textA);
 console.log('formA is: ', formA);
 
+
 function main(sources) {
 
   const worker$ = sources.WW.map(v => {
@@ -47,6 +48,9 @@ function main(sources) {
   const messages$ = sources.WS.map( e => {
     console.log(e);
     mMtem.ret(e.data.split(',')).bnd( v => {
+      var group = v[1]
+      var name =  v[2];
+      var extra = v[3];
       console.log('Websockets e.data.split message v: ', v );
       mMZ10.bnd( () => {
         gameMonad.run([v[7], v[8], 0, [], [v[3], v[4], v[5], v[6]]]);
@@ -65,7 +69,6 @@ function main(sources) {
       mMgoals2.ret('A player named ' + v[2] +
         ' is currently logged in. Page will refresh in 4 seconds.')
       refresh() });
-    mMZ16.bnd( () => testComments(e.data));
     mMZ17.bnd( () => {
       if (v[3] === "no file" || typeof v[3] == 'undefined') {
         console.log('"no file" or "undefined" arrived at mMZ17'); 
@@ -79,8 +82,20 @@ function main(sources) {
       }
     });
     mMZ18.bnd( () => {
-      if (pMgroup.x != 'solo' || pMname.x === v[2] ) updatePlayers(e.data)  });
-    mMZ19.bnd( () => testComments(e.data));
+      if (pMgroup.x != 'solo' || pMname.x === v[2] ) updatePlayers(e.data)  
+    });
+
+     mMZ19.bnd( () => {
+      var str = e.data.substring(e.data.indexOf('<@>')+3, e.data.length) ;
+      commentMonad.run3(str)
+      // console.log('Another message from mMZ19. str is', str )
+    });
+
+    mMZ20.bnd( () => {
+      var ar = extra.split('<o>');   
+      users.run(ar[0], ar[1]);
+    });
+
   })
   mMtemp.ret(e.data.split(',')[0])
   .bnd(next, 'CA#$42', mMZ10)
@@ -91,7 +106,8 @@ function main(sources) {
   .bnd(next, 'DD#$42', mMZ17)
   .bnd(next, 'NN#$42', mMZ18)
   .bnd(next, 'GG#$42', mMZ19)
-  .bnd(next, 'TG#$40', mMZ20)
+  .bnd(next, 'CC#$42', mMZ19)
+  .bnd(next, 'CZ#$42', mMZ20)
   });
 
 function next(x, y, instance, z) {
@@ -101,25 +117,44 @@ function next(x, y, instance, z) {
   return ret(x);
 };
 
-function testComments (data)  {
-    console.log('In testComments data is >>>>>>>>>>>>>>>>>>>>', data );
-    var a1 = data.split('@');
-    var a2 = a1[1];
-    console.log('In testComments a2 is >>>>>>>>>>>>>>>>>>>>', a2 );
-    var arr = a2.split('\n');
-    mM26.ret([]);
-    for (let k of arr) {
-      mM26.bnd(push, k, 'mM26');
-      mM26.bnd(push, h('br'), 'mM26');
-    }
-    console.log('In testComment ar is >>>>>>>>>>>>>>>>>>>>', mM26.x );
-};
-
-var comClick$ = sources.DOM.select('textarea#comment').events('click');
+var comClick$ = sources.DOM.select('#save').events('click');
 
 var comClickAction$ = comClick$.map( e => {
-  if (e.target.value !== '') socket.send(`TG#$42,${get(pMgroup)},${get(pMname)},@${e.target.value}\n*****************************`);
-})
+  console.log('In comClickAction$. <q><><><><>(a)(b)(c)(d)(e)<><><><><q> e is', e);
+  var m = e.path[1].childNodes[4].value;
+  var tx = pMname.x + '<o>' + m;
+  var txt = tx.replace(rep2, "<<>>");
+  socket.send('GG#$42,' + pMgroup.x + ',' + pMname.x + ',<@>' + txt);
+  console.log('In comClickAction$. <><><><><>(a)(b)(c)(d)(e)<><><><><> txt is', txt);
+});
+
+var edit4$ = sources.DOM
+    .select('button#edit4').events('click');
+
+var edit4Action$ = edit4$.map(function (e) {
+  showEditB = 'inline-block'; 
+  console.log('************ showEditB is', showEditB );
+  var s = commentMonad.s.slice();
+  commentMonad.run3(s);
+});
+
+var edit4B$ = sources.DOM
+    .select('input#edit4B').events('keydown');
+
+var edit4BAction$ = edit4B$.map( function (e) {
+  var ar2;
+  var s = commentMonad.s.slice();
+  var ar = s.split('@');
+  var index = e.target.parentNode.id; 
+  console.log('In edit4BAction$ - - - index and ar are ', index, ar ),
+  ar2 = ar[index].split('<o>')
+  ar2[1] = e.target.value;
+  ar2.join('<o>');
+  ar[index] = ar2
+  var str = ar.join('<@>');
+  console.log('<$><$><$><$><$><$><$><$><$><$><$><$> str in edit4B$', str );
+  socket.send('GG#$42,' + pMgroup.x + ',' + pMname.x + ',<@>' + str);
+})  
 
   var loginPress$ = sources.DOM
       .select('input.login').events('keypress');
@@ -131,7 +166,6 @@ var comClickAction$ = comClick$.map( e => {
       pMgroup.ret('solo');
       socket.send('CC#$42' + v );
       pMclicked.ret([]);
-      socket.send('TG#$41,solo,' + v);
       mMdice.ret('block');
       mMrightPanel.ret('block');
       mMrightPanel2.ret('none');
@@ -150,10 +184,54 @@ var comClickAction$ = comClick$.map( e => {
       mMcom2.ret('none')
       mMcom3.ret('block')
       socket.send(`CG#$42,${pMgroup.x},${pMname.x},0,0`);
-      socket.send(`TG#$40,${pMgroup.x},${pMname.x}`);
+      socket.send(`GZ#$42,${pMgroup.x},${pMname.x}`);
+      socket.send(`CZ#$42,${pMgroup.x},${pMname.x}`);
     };
   });
+  
+  var loginPress2$ = sources.DOM
+      .select('input.login2').events('keypress');
 
+  var loginPressAction2$ = loginPress2$.map(e => {
+    var index1 = e.target.value.indexOf(',');
+    var index2 = e.target.value.lastIndexOf(',');
+    if (index1 === -1 || index1 !== index2) {
+      mM6.ret(' There should be one and only one comma' );
+      return;
+    }
+    var v = (e.target.value).split(',');
+    var combo = v.join('<o>');
+    mMcombo.ret(combo);
+    if (e.keyCode === 13) {
+      pMname.ret(v[0]);
+      pMpassword.ret(v[1]);
+      user.run( v[0], v[1] );
+      pMgroup.ret('solo');
+      socket.send('CR#$42' + combo);
+      pMclicked.ret([]);
+      mMdice.ret('block');
+      mMrightPanel.ret('block');
+      mMrightPanel2.ret('none');
+      mMgameDiv2.ret('block')
+      mMlogin.ret('none');
+      mMlog1.ret('none');
+      mMlog2.ret('block');
+      mMcaptionDiv.ret('block')
+      mMchatDiv.ret('block')
+      mMtodoDiv.ret('block')
+      mMgameDiv.ret('block')
+      mMchat.ret('inline')
+      mMcaption.ret('inline');
+      mMgame.ret('inline')
+      mMtodo.ret('inline')
+      mMcom2.ret('none')
+      mMcom3.ret('block')
+      socket.send(`CG#$42,${pMgroup.x},${pMname.x},0,0`);
+      socket.send(`GZ#$42,${pMgroup.x},${pMname.x}`);
+      socket.send(`CZ#$42,${pMgroup.x},${pMname.x}`);
+    };
+  });
+  
   var groupPress$ = sources.DOM
       .select('input#group').events('keypress');
 
@@ -770,20 +848,39 @@ var edit2Action$ = edit2$.map(function (e) {
   }
 });
 
+// Editting a comment.
+/*var edit4B$ = sources.DOM
+    .select('.edit4B').events('keypress');
+
+var edit4BAction$ = edit4B$.map(function (e) {
+  console.log('************************************ event detected');
+  console.log('In edit4BAction$. e is', e );
+  var arr;
+  var str;
+  if (e.keyCode === 13) {
+    var s = commentMonad.s.slice().split('@');
+    s.push(pMname.x + '<o>' + e.target.value);
+    var str = s.join('@');
+    console.log('<*><*><*><*>*<*><*><*><*> In edit4BAction$. s and str are', s, str); 
+    socket.send(`TD#$42,${get(pMgroup)},${get(pMname)},@${str}`);
+    showEditB = 'none';
+  }
+});   */
+
 // Creating a new task
 var newTask$ = sources.DOM
     .select('input.newTask').events('keydown');
 
 var newTaskAction$ = newTask$.map(function (e) {
-  console.log('************************************ event detected');
+  console.log('************************************ event detected, e',e);
+  if (e.keyCode === 13) {
   var alert = '';
   var s = taskMonad.s.slice();
   s.map(v => v[0] = v[0].replace(rep2, '<<>>'));
   console.log('In newTaskAction$. <><><><><><><> s is', s);
   var todo = [];
-  if (e.keyCode === 13) {
     var ar = e.target.value.split(',');
-    if (ar.length < 3) {
+    if (ar.length < 2) {
       mMalert.ret('You should enter "author, responsible party, task" separated by commas');
       return;
     }
@@ -798,12 +895,14 @@ var newTaskAction$ = newTask$.map(function (e) {
       var str = s.join('@');
       console.log('<><><><><><><><><><><><><><><><><><> In newTaskAction$. str is', str);
       socket.send(`TD#$42,${get(pMgroup)},${get(pMname)},@${str}`);
+      e.target.value = '';
     }
   }
 });
 
+console.log('Just before calcStream@');
 
-  var calcStream$ = xs.merge( cbxAction$, chbox1Action$, chbox2Action$, comClickAction$, messagePressAction$, fA_c$, forwardAction$, backAction$, prAction$, factorsAction_b$, fA$, factorsP$, fA_b$, factorsP_b$, clearprimes$, worker$, workerB$, workerC$, workerD$, workerE$, workerF$, clearAction$, factorsAction$, primeFib$, fibPressAction$, quadAction$, edit1Action$, edit2Action$, testWAction$, testZAction$, testQAction$, deleteAction$, newTaskAction$, chatClickAction$, gameClickAction$, todoClickAction$, captionClickAction$, groupPressAction$, rollClickAction$, loginPressAction$, messages$, numClickAction$, opClickAction$);
+  var calcStream$ = xs.merge( loginClickAction$, cbxAction$, chbox1Action$, chbox2Action$, comClickAction$, messagePressAction$, fA_c$, forwardAction$, backAction$, prAction$, factorsAction_b$, fA$, factorsP$, fA_b$, factorsP_b$, clearprimes$, worker$, workerB$, workerC$, workerD$, workerE$, workerF$, clearAction$, factorsAction$, primeFib$, fibPressAction$, quadAction$, edit1Action$, edit2Action$, edit4Action$, edit4BAction$, testWAction$, testZAction$, testQAction$, deleteAction$, newTaskAction$, chatClickAction$, gameClickAction$, todoClickAction$, captionClickAction$, groupPressAction$, rollClickAction$, loginPressAction$, loginPressAction2$, messages$, numClickAction$, opClickAction$);
   return {
   DOM: calcStream$.map(function () {
   return h('div.main', [
@@ -826,15 +925,13 @@ h('br' ),
 h('br' ),  
 h('span.tao', 'This project was created by, and is actively maintained by me, David Schalk. The code repository is at '),
 h('a', { props: { href: "https://github.com/dschalk/JS-monads-stable", target: "_blank" } }, 'JS-monads'),
-h('span', ' The master branch is a Motorcycle.js application using the Most.js library. That branch has been abandoned. This is a '),
+h('span', ' The master branch is a Motorcycle.js application using the Most.js library. That branch has been abandoned. This is an '),
 h('span', ' application using xstream instead of Most. The primary branch is named "xstream". '),
 h('span', ' You can comment at ' ),
 h('a', { props: { href: 'https://redd.it/60c2xx' }}, 'Reddit' ),
 h('span', ' or in the ' ),
 h('a', { props: { href: '#cmment'}}, 'comment' ),
-h('span', ' I will edit or delete you comment as you wish if you send instructions to '),
-h('a', { props: {href: "mailto:pyschalk@gmail.com"}}, 'email' ),
-h('span', ' or send a personal tweet to @schalk1234' ),
+h('span', ' section below. '),
 h('br' ),
       h('p', ' Snabbdom, xstream, and most of the monads and functions presented here are available in browser developer tools consoles and scratch pads. A production site would load these as modules, but this site is for experimention and learning. ' ),
       h('span.italic', ' These monads are like the Haskell monads in that they resemble the monads of category theory without actually being mathematical monads. See ' ),
@@ -854,10 +951,18 @@ h('h3', 'The Game'),
 h('p', 'People who are in the same group, other than the default group named "solo", share the same todo list, chat messages, and simulated dice game. In order to see any of these, you must establish a unique identity on the server by logging in. The websockets connection terminates if the first message the server receives does not come from the sign in form. You can enter any random numbers, letters, or special characters you like. The server checks only to make sure someone hasn\'t already signed in with the sequence you have selected. If you log in with a name that is already in use, a message will appear and this page will be re-loaded in the browser after a four-second pause. '),
 h('p', ' Data for the traversable game history accumulates until a player scores three goals and wins. The data array is then erased and the application is ready to start accumulating a new history. '),
 
-h('div#log1',  {style: { display: mMlog1.x }}, [
-h('p', 'IN ORDER TO SEE THE GAME, TODOLIST, AND CHAT DEMONSTRATIONS, YOU MUST ENTER SOMETHING TO ESTABLISH A WEBSOCKET CONNECTION.'),
+h('div#log1',  {style: { display: mMlog1.x }}),
+h('div#log2',  {style: { display: 'block' }}, [
+h('p', 'IN ORDER TO SEE THE GAME, TODOLIST, AND CHAT DEMONSTRATIONS, YOU MUST ESTABLISH A WEBSOCKET IDENTITY. You can click the button and get a random identity or you can enter a name.'),
+h('span', 'Random identity' ),
+h('button#login', {style: { fontSize: '14px', borderWidth: '0px' }}, 'random identity' ), 
+h('br'),  
 h('span', 'Name: '),
-h('input.login', {props: {autofocus: false}},  )]),
+h('input.login', {props: {autofocus: false}},  ) ]),
+h('br'),  
+h('p', ' If you would like to save a user name and password, enter both - SEPARATED BY A COMMA. This will enable you to save comments and later edit or delete them.' ), 
+h('span', 'Name: '),
+h('input.login2', {props: {autofocus: false}},  ),
 h('p', mM6.x ),
 ]),
 h('hr.len90', {style: { display: mMgameDiv2.x }}, ),
@@ -888,7 +993,8 @@ h('div#gameDiv2', {style: { display: mMgameDiv2.x }}, [
       h('button#clear', 'Clear selected numbers' ),
       h('div#log2', { style: { display: mMlog2.x } }, [
           h('span', 'Change group: '),
-          h('input#group', {props: {autofocus: false}}, 'test',  )]),
+          h('input#group', 'test' )
+      ]),
       h('p', mMsoloAlert.x ),
     ])
   ]),
@@ -900,10 +1006,10 @@ h('div#gameDiv2', {style: { display: mMgameDiv2.x }}, [
     h('br'),
     h('br'),
     h('br'),
-    h('button#todoButton', { style: { fontSize: '16px', display: 'inline' } }, 'TOGGLE TODO_LIST'),
+    h('button#todoButton.cow', {style: { color: '#C6EDB9' }}, 'TOGGLE TODO_LIST'), 
     h('br'),
     h('br'),
-    h('button#chat2', { style: { fontSize: '16px', display: 'inline' } }, 'TOGGLE CHAT'),
+    h('button#chat2.cow', {style: { color: '#C6EDB9' }}, 'TOGGLE CHAT'),
     h('br'),
     h('br'),
     h('br'),
@@ -1191,17 +1297,20 @@ code.MonadSet,
   h('br'),
   h('h2', 'COMMENTS' ),
   h('div#com2',  { style: { display: mMcom2.x } }, [
-  h('span', 'In order to write a comment, please log in here: '),
-  h('input.login', )]),
-  h('br'),
-
+  h('span', 'In order to write a comment, please log in here with a user name and password, separated by a comma. If you are already logged in with only a name, log in again here: '),
+  h('input.login2', )]),
+  h(' Your user name and password will be stored for future use.' ),
   h('div#com2',  { style: { display: mMcom3.x } }, [
-  h('label#label', 'Click the Comment Box to Save Comment' ),
-  h('br'),
-  h('textarea#comment', ),
-  h('div', mM26.x ) ]),
-
-
+    h('span', ' Since logging in does not involve unique identifiers, such as emal and password, I can either let anyone edit or delete any comment or else not provide a way to edit and delete comments. I chose the latter. If you want a comment edited or deleteted, send a message to '), 
+    h('a', { props: {href: "mailto:pyschalk@gmail.com"}}, 'email' ),
+    h('span', ' or send a personal tweet to @schalk1234' ),
+    h('br' ),
+    h('textarea.comment', ),
+    h('button#save', 'Save Comment' ),   
+    h('br' ),
+    h('br' ),
+    h('div', commentMonad.comments ) 
+  ]),
   h('br'),
   h('br'),
   h('a', { props: { href: '#top' } }, 'Back To The Top'),
