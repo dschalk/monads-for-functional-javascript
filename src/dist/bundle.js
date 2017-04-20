@@ -102,6 +102,9 @@
 	  var messages$ = sources.WS.map(function (e) {
 	    console.log(e);
 	    mMtem.ret(e.data.split(',')).bnd(function (v) {
+	      var group = v[1];
+	      var name = v[2];
+	      var extra = v[3];
 	      console.log('Websockets e.data.split message v: ', v);
 	      mMZ10.bnd(function () {
 	        gameMonad.run([v[7], v[8], 0, [], [v[3], v[4], v[5], v[6]]]);
@@ -124,9 +127,6 @@
 	        mMgoals2.ret('A player named ' + v[2] + ' is currently logged in. Page will refresh in 4 seconds.');
 	        refresh();
 	      });
-	      mMZ16.bnd(function () {
-	        return testComments(e.data);
-	      });
 	      mMZ17.bnd(function () {
 	        if (v[3] === "no file" || typeof v[3] == 'undefined') {
 	          console.log('"no file" or "undefined" arrived at mMZ17');
@@ -141,11 +141,19 @@
 	      mMZ18.bnd(function () {
 	        if (pMgroup.x != 'solo' || pMname.x === v[2]) updatePlayers(e.data);
 	      });
+
 	      mMZ19.bnd(function () {
-	        return testComments(e.data);
+	        var str = e.data.substring(e.data.indexOf('<@>') + 3, e.data.length);
+	        commentMonad.run3(str);
+	        // console.log('Another message from mMZ19. str is', str )
+	      });
+
+	      mMZ20.bnd(function () {
+	        var ar = extra.split('<o>');
+	        users.run(ar[0], ar[1]);
 	      });
 	    });
-	    mMtemp.ret(e.data.split(',')[0]).bnd(next, 'CA#$42', mMZ10).bnd(next, 'CD#$42', mMZ13).bnd(next, 'CE#$42', mMZ14).bnd(next, 'EE#$42', mMZ15).bnd(next, 'TG#$41', mMZ16).bnd(next, 'DD#$42', mMZ17).bnd(next, 'NN#$42', mMZ18).bnd(next, 'GG#$42', mMZ19).bnd(next, 'TG#$40', mMZ20);
+	    mMtemp.ret(e.data.split(',')[0]).bnd(next, 'CA#$42', mMZ10).bnd(next, 'CD#$42', mMZ13).bnd(next, 'CE#$42', mMZ14).bnd(next, 'EE#$42', mMZ15).bnd(next, 'TG#$41', mMZ16).bnd(next, 'DD#$42', mMZ17).bnd(next, 'NN#$42', mMZ18).bnd(next, 'GG#$42', mMZ19).bnd(next, 'CC#$42', mMZ19).bnd(next, 'CZ#$42', mMZ20);
 	  });
 
 	  function next(x, y, instance, z) {
@@ -155,46 +163,40 @@
 	    return ret(x);
 	  };
 
-	  function testComments(data) {
-	    console.log('In testComments data is >>>>>>>>>>>>>>>>>>>>', data);
-	    var a1 = data.split('@');
-	    var a2 = a1[1];
-	    console.log('In testComments a2 is >>>>>>>>>>>>>>>>>>>>', a2);
-	    var arr = a2.split('\n');
-	    mM26.ret([]);
-	    var _iteratorNormalCompletion = true;
-	    var _didIteratorError = false;
-	    var _iteratorError = undefined;
-
-	    try {
-	      for (var _iterator = arr[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-	        var k = _step.value;
-
-	        mM26.bnd(push, k, 'mM26');
-	        mM26.bnd(push, (0, _dom.h)('br'), 'mM26');
-	      }
-	    } catch (err) {
-	      _didIteratorError = true;
-	      _iteratorError = err;
-	    } finally {
-	      try {
-	        if (!_iteratorNormalCompletion && _iterator.return) {
-	          _iterator.return();
-	        }
-	      } finally {
-	        if (_didIteratorError) {
-	          throw _iteratorError;
-	        }
-	      }
-	    }
-
-	    console.log('In testComment ar is >>>>>>>>>>>>>>>>>>>>', mM26.x);
-	  };
-
-	  var comClick$ = sources.DOM.select('textarea#comment').events('click');
+	  var comClick$ = sources.DOM.select('#save').events('click');
 
 	  var comClickAction$ = comClick$.map(function (e) {
-	    if (e.target.value !== '') socket.send('TG#$42,' + get(pMgroup) + ',' + get(pMname) + ',@' + e.target.value + '\n*****************************');
+	    console.log('In comClickAction$. <q><><><><>(a)(b)(c)(d)(e)<><><><><q> e is', e);
+	    var m = e.path[1].childNodes[4].value;
+	    var tx = pMname.x + '<o>' + m;
+	    var txt = tx.replace(rep2, "<<>>");
+	    socket.send('GG#$42,' + pMgroup.x + ',' + pMname.x + ',<@>' + txt);
+	    console.log('In comClickAction$. <><><><><>(a)(b)(c)(d)(e)<><><><><> txt is', txt);
+	  });
+
+	  var edit4$ = sources.DOM.select('button#edit4').events('click');
+
+	  var edit4Action$ = edit4$.map(function (e) {
+	    showEditB = 'inline-block';
+	    console.log('************ showEditB is', showEditB);
+	    var s = commentMonad.s.slice();
+	    commentMonad.run3(s);
+	  });
+
+	  var edit4B$ = sources.DOM.select('input#edit4B').events('keydown');
+
+	  var edit4BAction$ = edit4B$.map(function (e) {
+	    var ar2;
+	    var s = commentMonad.s.slice();
+	    var ar = s.split('@');
+	    var index = e.target.parentNode.id;
+	    console.log('In edit4BAction$ - - - index and ar are ', index, ar), ar2 = ar[index].split('<o>');
+	    ar2[1] = e.target.value;
+	    ar2.join('<o>');
+	    ar[index] = ar2;
+	    var str = ar.join('<@>');
+	    console.log('<$><$><$><$><$><$><$><$><$><$><$><$> str in edit4B$', str);
+	    socket.send('GG#$42,' + pMgroup.x + ',' + pMname.x + ',<@>' + str);
 	  });
 
 	  var loginPress$ = sources.DOM.select('input.login').events('keypress');
@@ -206,7 +208,6 @@
 	      pMgroup.ret('solo');
 	      socket.send('CC#$42' + v);
 	      pMclicked.ret([]);
-	      socket.send('TG#$41,solo,' + v);
 	      mMdice.ret('block');
 	      mMrightPanel.ret('block');
 	      mMrightPanel2.ret('none');
@@ -225,7 +226,50 @@
 	      mMcom2.ret('none');
 	      mMcom3.ret('block');
 	      socket.send('CG#$42,' + pMgroup.x + ',' + pMname.x + ',0,0');
-	      socket.send('TG#$40,' + pMgroup.x + ',' + pMname.x);
+	      socket.send('GZ#$42,' + pMgroup.x + ',' + pMname.x);
+	      socket.send('CZ#$42,' + pMgroup.x + ',' + pMname.x);
+	    };
+	  });
+
+	  var loginPress2$ = sources.DOM.select('input.login2').events('keypress');
+
+	  var loginPressAction2$ = loginPress2$.map(function (e) {
+	    var index1 = e.target.value.indexOf(',');
+	    var index2 = e.target.value.lastIndexOf(',');
+	    if (index1 === -1 || index1 !== index2) {
+	      mM6.ret(' There should be one and only one comma');
+	      return;
+	    }
+	    var v = e.target.value.split(',');
+	    var combo = v.join('<o>');
+	    mMcombo.ret(combo);
+	    if (e.keyCode === 13) {
+	      pMname.ret(v[0]);
+	      pMpassword.ret(v[1]);
+	      user.run(v[0], v[1]);
+	      pMgroup.ret('solo');
+	      socket.send('CR#$42' + combo);
+	      pMclicked.ret([]);
+	      mMdice.ret('block');
+	      mMrightPanel.ret('block');
+	      mMrightPanel2.ret('none');
+	      mMgameDiv2.ret('block');
+	      mMlogin.ret('none');
+	      mMlog1.ret('none');
+	      mMlog2.ret('block');
+	      mMcaptionDiv.ret('block');
+	      mMchatDiv.ret('block');
+	      mMtodoDiv.ret('block');
+	      mMgameDiv.ret('block');
+	      mMchat.ret('inline');
+	      mMcaption.ret('inline');
+	      mMgame.ret('inline');
+	      mMtodo.ret('inline');
+	      mMcom2.ret('none');
+	      mMcom3.ret('block');
+	      socket.send('CG#$42,' + pMgroup.x + ',' + pMname.x + ',0,0');
+	      socket.send('GZ#$42,' + pMgroup.x + ',' + pMname.x);
+	      socket.send('CZ#$42,' + pMgroup.x + ',' + pMname.x);
 	    };
 	  });
 
@@ -261,27 +305,27 @@
 
 	  function updateScoreboard2(v) {
 	    var ar = [];
-	    var _iteratorNormalCompletion2 = true;
-	    var _didIteratorError2 = false;
-	    var _iteratorError2 = undefined;
+	    var _iteratorNormalCompletion = true;
+	    var _didIteratorError = false;
+	    var _iteratorError = undefined;
 
 	    try {
-	      for (var _iterator2 = v[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
-	        var k = _step2.value;
+	      for (var _iterator = v[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+	        var k = _step.value;
 
 	        ar.push(['  ' + k]);
 	      }
 	    } catch (err) {
-	      _didIteratorError2 = true;
-	      _iteratorError2 = err;
+	      _didIteratorError = true;
+	      _iteratorError = err;
 	    } finally {
 	      try {
-	        if (!_iteratorNormalCompletion2 && _iterator2.return) {
-	          _iterator2.return();
+	        if (!_iteratorNormalCompletion && _iterator.return) {
+	          _iterator.return();
 	        }
 	      } finally {
-	        if (_didIteratorError2) {
-	          throw _iteratorError2;
+	        if (_didIteratorError) {
+	          throw _iteratorError;
 	        }
 	      }
 	    }
@@ -835,21 +879,40 @@
 	    }
 	  });
 
+	  // Editting a comment.
+	  /*var edit4B$ = sources.DOM
+	      .select('.edit4B').events('keypress');
+	  
+	  var edit4BAction$ = edit4B$.map(function (e) {
+	    console.log('************************************ event detected');
+	    console.log('In edit4BAction$. e is', e );
+	    var arr;
+	    var str;
+	    if (e.keyCode === 13) {
+	      var s = commentMonad.s.slice().split('@');
+	      s.push(pMname.x + '<o>' + e.target.value);
+	      var str = s.join('@');
+	      console.log('<*><*><*><*>*<*><*><*><*> In edit4BAction$. s and str are', s, str); 
+	      socket.send(`TD#$42,${get(pMgroup)},${get(pMname)},@${str}`);
+	      showEditB = 'none';
+	    }
+	  });   */
+
 	  // Creating a new task
 	  var newTask$ = sources.DOM.select('input.newTask').events('keydown');
 
 	  var newTaskAction$ = newTask$.map(function (e) {
-	    console.log('************************************ event detected');
-	    var alert = '';
-	    var s = taskMonad.s.slice();
-	    s.map(function (v) {
-	      return v[0] = v[0].replace(rep2, '<<>>');
-	    });
-	    console.log('In newTaskAction$. <><><><><><><> s is', s);
-	    var todo = [];
+	    console.log('************************************ event detected, e', e);
 	    if (e.keyCode === 13) {
+	      var alert = '';
+	      var s = taskMonad.s.slice();
+	      s.map(function (v) {
+	        return v[0] = v[0].replace(rep2, '<<>>');
+	      });
+	      console.log('In newTaskAction$. <><><><><><><> s is', s);
+	      var todo = [];
 	      var ar = e.target.value.split(',');
-	      if (ar.length < 3) {
+	      if (ar.length < 2) {
 	        mMalert.ret('You should enter "author, responsible party, task" separated by commas');
 	        return;
 	      } else {
@@ -863,14 +926,17 @@
 	        var str = s.join('@');
 	        console.log('<><><><><><><><><><><><><><><><><><> In newTaskAction$. str is', str);
 	        socket.send('TD#$42,' + get(pMgroup) + ',' + get(pMname) + ',@' + str);
+	        e.target.value = '';
 	      }
 	    }
 	  });
 
-	  var calcStream$ = xs.merge(cbxAction$, chbox1Action$, chbox2Action$, comClickAction$, messagePressAction$, fA_c$, forwardAction$, backAction$, prAction$, factorsAction_b$, fA$, factorsP$, fA_b$, factorsP_b$, clearprimes$, worker$, workerB$, workerC$, workerD$, workerE$, workerF$, clearAction$, factorsAction$, primeFib$, fibPressAction$, quadAction$, edit1Action$, edit2Action$, testWAction$, testZAction$, testQAction$, deleteAction$, newTaskAction$, chatClickAction$, gameClickAction$, todoClickAction$, captionClickAction$, groupPressAction$, rollClickAction$, loginPressAction$, messages$, numClickAction$, opClickAction$);
+	  console.log('Just before calcStream@');
+
+	  var calcStream$ = xs.merge(loginClickAction$, cbxAction$, chbox1Action$, chbox2Action$, comClickAction$, messagePressAction$, fA_c$, forwardAction$, backAction$, prAction$, factorsAction_b$, fA$, factorsP$, fA_b$, factorsP_b$, clearprimes$, worker$, workerB$, workerC$, workerD$, workerE$, workerF$, clearAction$, factorsAction$, primeFib$, fibPressAction$, quadAction$, edit1Action$, edit2Action$, edit4Action$, edit4BAction$, testWAction$, testZAction$, testQAction$, deleteAction$, newTaskAction$, chatClickAction$, gameClickAction$, todoClickAction$, captionClickAction$, groupPressAction$, rollClickAction$, loginPressAction$, loginPressAction2$, messages$, numClickAction$, opClickAction$);
 	  return {
 	    DOM: calcStream$.map(function () {
-	      return (0, _dom.h)('div.main', [(0, _dom.h)('div.preContent', [(0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('div', 'FUNCTIONAL REACTIVE PROGRAMMING'), (0, _dom.h)('div', 'WITH CUSTOM MONADS AND CYCLE.JS')]), (0, _dom.h)('br'), (0, _dom.h)('div.image_3', [(0, _dom.h)('img.image_2', { props: { src: "logo.svg" } }), (0, _dom.h)('span', ' '), (0, _dom.h)('a', { props: { href: "https://cycle.js.org/", target: "_blank" } }, 'A Cycle.js application')]), (0, _dom.h)('div.content', [(0, _dom.h)('p', ' Front-end web developers might be interested in seeing how I encapsule procedures and state in objects whose methods conform to a JavaScript version of the Haskell monad laws. It is fascinating to see how reactivity is achieved in Cycle.js. The Haskell server might also be of interest. '), (0, _dom.h)('p', 'People who are developing a feel for function reactive programming can cut through to its essence by seeing it implemented in various contexts. The combination of Lodash, Immutable.js, and RxJS running in Node.js is one possibility. Here we demonstrate how a front-end developer can create monads to suit their purposes, and obtain all the reactivity they need by implementing them in a Cycle.js framework. '), (0, _dom.h)('span.tao', 'None of the monads employed in these demonstrations emit or listen for events, yet they immediately react to user input and websockets messages, causing Snabbdom to modify the DOM. Moreover, none of the virtual DOM elements contain functions that interact with callbacks. A video presentation showing how Cycle.js performs its magic can be fount at '), (0, _dom.h)('a', { props: { href: "https://egghead.io/lessons/rxjs-overview-of-cycle-js", target: "_blank" } }, 'Overview of Cycle.js.'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('span.tao', 'This project was created by, and is actively maintained by me, David Schalk. The code repository is at '), (0, _dom.h)('a', { props: { href: "https://github.com/dschalk/JS-monads-stable", target: "_blank" } }, 'JS-monads'), (0, _dom.h)('span', ' The master branch is a Motorcycle.js application using the Most.js library. That branch has been abandoned. This is a '), (0, _dom.h)('span', ' application using xstream instead of Most. The primary branch is named "xstream". '), (0, _dom.h)('span', ' You can comment at '), (0, _dom.h)('a', { props: { href: 'https://redd.it/60c2xx' } }, 'Reddit'), (0, _dom.h)('span', ' or in the '), (0, _dom.h)('a', { props: { href: '#cmment' } }, 'comment'), (0, _dom.h)('span', ' I will edit or delete you comment as you wish if you send instructions to '), (0, _dom.h)('a', { props: { href: "mailto:pyschalk@gmail.com" } }, 'email'), (0, _dom.h)('span', ' or send a personal tweet to @schalk1234'), (0, _dom.h)('br'), (0, _dom.h)('p', ' Snabbdom, xstream, and most of the monads and functions presented here are available in browser developer tools consoles and scratch pads. A production site would load these as modules, but this site is for experimention and learning. '), (0, _dom.h)('span.italic', ' These monads are like the Haskell monads in that they resemble the monads of category theory without actually being mathematical monads. See '), (0, _dom.h)('a', { props: { href: "http://math.andrej.com/2016/08/06/hask-is-not-a-category/", target: "_blank" } }, 'Hask is not a category.'), (0, _dom.h)('span', ' by Andrej Bauer and the '), (0, _dom.h)('a', { props: { href: '#discussion' } }, 'Discussion'), (0, _dom.h)('span', ' below. They provide a convenient interface for dealing with uncertainty and side effects in a purely functional manner. Adherence to the monad laws (see below) helps make the monads robust, versatile, and reliable tools for isolating and chaining sequences of javascript functions. State is modified in monads without mutating anything outside of them.'), (0, _dom.h)('p', ' The demonstrations include persistent, shared todo lists, text messaging, and a simulated dice game with a traversable history (all group members see your score decrease or increase as you navegate backwards and forwards). Monads are shown performing lengthy mathematical computations asycronously in web workers. Monads encapsulate state. The error checking monad carries occurances of NaN and runtime errors through sequences of computations much like the Haskell Maybe monad. '), (0, _dom.h)('span.tao', ' The game code is fairly concise and intuitive. A quick walk-through is presented '), (0, _dom.h)('a', { props: { href: '#gameExplanation' } }, 'here'), (0, _dom.h)('span', '. To see monadic functionality at work, I suggest that you take a look at the section captioned '), (0, _dom.h)('a', { props: { href: '#asyncExplanation' } }, 'Asynchronous Processes'), (0, _dom.h)('br'), (0, _dom.h)('p', ' But it might be best to first proceed down the page and see the examples of Monad instances manipulating data. If you are trying to wrap you head around the concept of pure, chainable functions, such as the functions in the Underscore and Jquery libraries, understanding Monad instances might finally put you in the comfort zone you seek. '), (0, _dom.h)('h3', 'The Game'), (0, _dom.h)('p', 'People who are in the same group, other than the default group named "solo", share the same todo list, chat messages, and simulated dice game. In order to see any of these, you must establish a unique identity on the server by logging in. The websockets connection terminates if the first message the server receives does not come from the sign in form. You can enter any random numbers, letters, or special characters you like. The server checks only to make sure someone hasn\'t already signed in with the sequence you have selected. If you log in with a name that is already in use, a message will appear and this page will be re-loaded in the browser after a four-second pause. '), (0, _dom.h)('p', ' Data for the traversable game history accumulates until a player scores three goals and wins. The data array is then erased and the application is ready to start accumulating a new history. '), (0, _dom.h)('div#log1', { style: { display: mMlog1.x } }, [(0, _dom.h)('p', 'IN ORDER TO SEE THE GAME, TODOLIST, AND CHAT DEMONSTRATIONS, YOU MUST ENTER SOMETHING TO ESTABLISH A WEBSOCKET CONNECTION.'), (0, _dom.h)('span', 'Name: '), (0, _dom.h)('input.login', { props: { autofocus: false } })]), (0, _dom.h)('p', mM6.x)]), (0, _dom.h)('hr.len90', { style: { display: mMgameDiv2.x } }), (0, _dom.h)('br.len90', { style: { display: mMgameDiv2.x } }), (0, _dom.h)('div.heading', { style: { display: mMgameDiv2.x } }, 'Game, Todo List, Text Messages'), (0, _dom.h)('div#gameDiv2', { style: { display: mMgameDiv2.x } }, [(0, _dom.h)('br'), (0, _dom.h)('div#leftPanel', { style: { display: mMgameDiv2.x } }, [(0, _dom.h)('p', 'RULES: If clicking two numbers and an operator (in any order) results in 20 or 18, the score increases by 1 or 3, respectively. If the score becomes 0 or is evenly divisible by 5, 5 points are added. A score of 25 results in one goal. That can only be achieved by arriving at a score of 20, which jumps the score to 25. Directly computing 25 results in a score of 30, and no goal. Each time RL is clicked, one point is deducted. Three goals wins the game. '), (0, _dom.h)('br'), buttonNode, (0, _dom.h)('br'), (0, _dom.h)('button#4.op', 'add'), (0, _dom.h)('button#5.op', 'subtract'), (0, _dom.h)('button#6.op', 'mult'), (0, _dom.h)('button#7.op', 'div'), (0, _dom.h)('button#8.op', 'concat'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('div#dice', { style: { display: mMdice.x } }, [(0, _dom.h)('button#roll.tao1', 'ROLL'), (0, _dom.h)('button#back.tao100', 'BACK'), (0, _dom.h)('button#ahead.tao1', 'FORWARD'), (0, _dom.h)('div.tao', 'Selected numbers: ' + gameMonad.fetch3().join(', ') + ' '), (0, _dom.h)('div.tao', 'Operator: ' + gameMonad.fetch2() + ' '), (0, _dom.h)('div.tao', 'Index: ' + gameMonad.s[1]), (0, _dom.h)('button#clear', 'Clear selected numbers'), (0, _dom.h)('div#log2', { style: { display: mMlog2.x } }, [(0, _dom.h)('span', 'Change group: '), (0, _dom.h)('input#group', { props: { autofocus: false } }, 'test')]), (0, _dom.h)('p', mMsoloAlert.x)])]), (0, _dom.h)('div#rightPanel', { style: { display: mMrightPanel.x } }, [(0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('button#todoButton', { style: { fontSize: '16px', display: 'inline' } }, 'TOGGLE TODO_LIST'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('button#chat2', { style: { fontSize: '16px', display: 'inline' } }, 'TOGGLE CHAT'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('div.game', 'Name: ' + pMname.x), (0, _dom.h)('div.game', 'Group: ' + pMgroup.x), (0, _dom.h)('pre.game', 'Currently online:\n(Name score | goals) '), (0, _dom.h)('div.game', { props: { color: "gold" } }, '' + pMdata.x), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('div#a100', ' _________________________________________________ '), (0, _dom.h)('p.italic', ' Join group "t" if you want to see some previously created tasks. '), (0, _dom.h)('br'), (0, _dom.h)('div#todoDiv', { style: { display: mMtodoDiv.x } }, [(0, _dom.h)('div#taskList', taskMonad.html), (0, _dom.h)('div', 'Enter author, responsible person, and task here: '), (0, _dom.h)('input.newTask')]), (0, _dom.h)('br'), (0, _dom.h)('span#alert', mMalert.x), (0, _dom.h)('br'), (0, _dom.h)('span#alert2'), (0, _dom.h)('br'), (0, _dom.h)('div#chatDiv', { style: { display: mMchatDiv.x } }, [(0, _dom.h)('div#messages', [(0, _dom.h)('span', 'Message: '), (0, _dom.h)('input.inputMessage'), (0, _dom.h)('div', messages), (0, _dom.h)('br')])])])]),
+	      return (0, _dom.h)('div.main', [(0, _dom.h)('div.preContent', [(0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('div', 'FUNCTIONAL REACTIVE PROGRAMMING'), (0, _dom.h)('div', 'WITH CUSTOM MONADS AND CYCLE.JS')]), (0, _dom.h)('br'), (0, _dom.h)('div.image_3', [(0, _dom.h)('img.image_2', { props: { src: "logo.svg" } }), (0, _dom.h)('span', ' '), (0, _dom.h)('a', { props: { href: "https://cycle.js.org/", target: "_blank" } }, 'A Cycle.js application')]), (0, _dom.h)('div.content', [(0, _dom.h)('p', ' Front-end web developers might be interested in seeing how I encapsule procedures and state in objects whose methods conform to a JavaScript version of the Haskell monad laws. It is fascinating to see how reactivity is achieved in Cycle.js. The Haskell server might also be of interest. '), (0, _dom.h)('p', 'People who are developing a feel for function reactive programming can cut through to its essence by seeing it implemented in various contexts. The combination of Lodash, Immutable.js, and RxJS running in Node.js is one possibility. Here we demonstrate how a front-end developer can create monads to suit their purposes, and obtain all the reactivity they need by implementing them in a Cycle.js framework. '), (0, _dom.h)('span.tao', 'None of the monads employed in these demonstrations emit or listen for events, yet they immediately react to user input and websockets messages, causing Snabbdom to modify the DOM. Moreover, none of the virtual DOM elements contain functions that interact with callbacks. A video presentation showing how Cycle.js performs its magic can be fount at '), (0, _dom.h)('a', { props: { href: "https://egghead.io/lessons/rxjs-overview-of-cycle-js", target: "_blank" } }, 'Overview of Cycle.js.'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('span.tao', 'This project was created by, and is actively maintained by me, David Schalk. The code repository is at '), (0, _dom.h)('a', { props: { href: "https://github.com/dschalk/JS-monads-stable", target: "_blank" } }, 'JS-monads'), (0, _dom.h)('span', ' The master branch is a Motorcycle.js application using the Most.js library. That branch has been abandoned. This is an '), (0, _dom.h)('span', ' application using xstream instead of Most. The primary branch is named "xstream". '), (0, _dom.h)('span', ' You can comment at '), (0, _dom.h)('a', { props: { href: 'https://redd.it/60c2xx' } }, 'Reddit'), (0, _dom.h)('span', ' or in the '), (0, _dom.h)('a', { props: { href: '#cmment' } }, 'comment'), (0, _dom.h)('span', ' section below. '), (0, _dom.h)('br'), (0, _dom.h)('p', ' Snabbdom, xstream, and most of the monads and functions presented here are available in browser developer tools consoles and scratch pads. A production site would load these as modules, but this site is for experimention and learning. '), (0, _dom.h)('span.italic', ' These monads are like the Haskell monads in that they resemble the monads of category theory without actually being mathematical monads. See '), (0, _dom.h)('a', { props: { href: "http://math.andrej.com/2016/08/06/hask-is-not-a-category/", target: "_blank" } }, 'Hask is not a category.'), (0, _dom.h)('span', ' by Andrej Bauer and the '), (0, _dom.h)('a', { props: { href: '#discussion' } }, 'Discussion'), (0, _dom.h)('span', ' below. They provide a convenient interface for dealing with uncertainty and side effects in a purely functional manner. Adherence to the monad laws (see below) helps make the monads robust, versatile, and reliable tools for isolating and chaining sequences of javascript functions. State is modified in monads without mutating anything outside of them.'), (0, _dom.h)('p', ' The demonstrations include persistent, shared todo lists, text messaging, and a simulated dice game with a traversable history (all group members see your score decrease or increase as you navegate backwards and forwards). Monads are shown performing lengthy mathematical computations asycronously in web workers. Monads encapsulate state. The error checking monad carries occurances of NaN and runtime errors through sequences of computations much like the Haskell Maybe monad. '), (0, _dom.h)('span.tao', ' The game code is fairly concise and intuitive. A quick walk-through is presented '), (0, _dom.h)('a', { props: { href: '#gameExplanation' } }, 'here'), (0, _dom.h)('span', '. To see monadic functionality at work, I suggest that you take a look at the section captioned '), (0, _dom.h)('a', { props: { href: '#asyncExplanation' } }, 'Asynchronous Processes'), (0, _dom.h)('br'), (0, _dom.h)('p', ' But it might be best to first proceed down the page and see the examples of Monad instances manipulating data. If you are trying to wrap you head around the concept of pure, chainable functions, such as the functions in the Underscore and Jquery libraries, understanding Monad instances might finally put you in the comfort zone you seek. '), (0, _dom.h)('h3', 'The Game'), (0, _dom.h)('p', 'People who are in the same group, other than the default group named "solo", share the same todo list, chat messages, and simulated dice game. In order to see any of these, you must establish a unique identity on the server by logging in. The websockets connection terminates if the first message the server receives does not come from the sign in form. You can enter any random numbers, letters, or special characters you like. The server checks only to make sure someone hasn\'t already signed in with the sequence you have selected. If you log in with a name that is already in use, a message will appear and this page will be re-loaded in the browser after a four-second pause. '), (0, _dom.h)('p', ' Data for the traversable game history accumulates until a player scores three goals and wins. The data array is then erased and the application is ready to start accumulating a new history. '), (0, _dom.h)('div#log1', { style: { display: mMlog1.x } }), (0, _dom.h)('div#log2', { style: { display: 'block' } }, [(0, _dom.h)('p', 'IN ORDER TO SEE THE GAME, TODOLIST, AND CHAT DEMONSTRATIONS, YOU MUST ESTABLISH A WEBSOCKET IDENTITY. You can click the button and get a random identity or you can enter a name.'), (0, _dom.h)('span', 'Random identity'), (0, _dom.h)('button#login', { style: { fontSize: '14px', borderWidth: '0px' } }, 'random identity'), (0, _dom.h)('br'), (0, _dom.h)('span', 'Name: '), (0, _dom.h)('input.login', { props: { autofocus: false } })]), (0, _dom.h)('br'), (0, _dom.h)('p', ' If you would like to save a user name and password, enter both - SEPARATED BY A COMMA. This will enable you to save comments and later edit or delete them.'), (0, _dom.h)('span', 'Name: '), (0, _dom.h)('input.login2', { props: { autofocus: false } }), (0, _dom.h)('p', mM6.x)]), (0, _dom.h)('hr.len90', { style: { display: mMgameDiv2.x } }), (0, _dom.h)('br.len90', { style: { display: mMgameDiv2.x } }), (0, _dom.h)('div.heading', { style: { display: mMgameDiv2.x } }, 'Game, Todo List, Text Messages'), (0, _dom.h)('div#gameDiv2', { style: { display: mMgameDiv2.x } }, [(0, _dom.h)('br'), (0, _dom.h)('div#leftPanel', { style: { display: mMgameDiv2.x } }, [(0, _dom.h)('p', 'RULES: If clicking two numbers and an operator (in any order) results in 20 or 18, the score increases by 1 or 3, respectively. If the score becomes 0 or is evenly divisible by 5, 5 points are added. A score of 25 results in one goal. That can only be achieved by arriving at a score of 20, which jumps the score to 25. Directly computing 25 results in a score of 30, and no goal. Each time RL is clicked, one point is deducted. Three goals wins the game. '), (0, _dom.h)('br'), buttonNode, (0, _dom.h)('br'), (0, _dom.h)('button#4.op', 'add'), (0, _dom.h)('button#5.op', 'subtract'), (0, _dom.h)('button#6.op', 'mult'), (0, _dom.h)('button#7.op', 'div'), (0, _dom.h)('button#8.op', 'concat'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('div#dice', { style: { display: mMdice.x } }, [(0, _dom.h)('button#roll.tao1', 'ROLL'), (0, _dom.h)('button#back.tao100', 'BACK'), (0, _dom.h)('button#ahead.tao1', 'FORWARD'), (0, _dom.h)('div.tao', 'Selected numbers: ' + gameMonad.fetch3().join(', ') + ' '), (0, _dom.h)('div.tao', 'Operator: ' + gameMonad.fetch2() + ' '), (0, _dom.h)('div.tao', 'Index: ' + gameMonad.s[1]), (0, _dom.h)('button#clear', 'Clear selected numbers'), (0, _dom.h)('div#log2', { style: { display: mMlog2.x } }, [(0, _dom.h)('span', 'Change group: '), (0, _dom.h)('input#group', 'test')]), (0, _dom.h)('p', mMsoloAlert.x)])]), (0, _dom.h)('div#rightPanel', { style: { display: mMrightPanel.x } }, [(0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('button#todoButton.cow', { style: { color: '#C6EDB9' } }, 'TOGGLE TODO_LIST'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('button#chat2.cow', { style: { color: '#C6EDB9' } }, 'TOGGLE CHAT'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('div.game', 'Name: ' + pMname.x), (0, _dom.h)('div.game', 'Group: ' + pMgroup.x), (0, _dom.h)('pre.game', 'Currently online:\n(Name score | goals) '), (0, _dom.h)('div.game', { props: { color: "gold" } }, '' + pMdata.x), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('div#a100', ' _________________________________________________ '), (0, _dom.h)('p.italic', ' Join group "t" if you want to see some previously created tasks. '), (0, _dom.h)('br'), (0, _dom.h)('div#todoDiv', { style: { display: mMtodoDiv.x } }, [(0, _dom.h)('div#taskList', taskMonad.html), (0, _dom.h)('div', 'Enter author, responsible person, and task here: '), (0, _dom.h)('input.newTask')]), (0, _dom.h)('br'), (0, _dom.h)('span#alert', mMalert.x), (0, _dom.h)('br'), (0, _dom.h)('span#alert2'), (0, _dom.h)('br'), (0, _dom.h)('div#chatDiv', { style: { display: mMchatDiv.x } }, [(0, _dom.h)('div#messages', [(0, _dom.h)('span', 'Message: '), (0, _dom.h)('input.inputMessage'), (0, _dom.h)('div', messages), (0, _dom.h)('br')])])])]),
 	      // h('div#a100', ' ____________________________________________________________________________________________________________ ' ),
 	      (0, _dom.h)('div.content', [
 
@@ -894,7 +960,7 @@
 	      //************************************************************************** END GameTraversal
 
 
-	      (0, _dom.h)('h2', ' MonadSet '), (0, _dom.h)('p', ' The list of online group members at the bottom of the scoreboard is very responsive to change. When someone joins the group, changes to a different group, or closes a browser session, a message prefixed by NN#$42 goes out from the server providing group members with the updated list of group members. MonadSet acts upon messages prefixed by NN#$42. Here are the definitions of MonadSet and the MonadSet instance sMplayers '), _code2.default.MonadSet, (0, _dom.h)('h3', ' Websocket messages'), (0, _dom.h)('p#demo', ' Incoming websockets messages trigger updates to the game display, the chat display, and the todo list display. The members of a group see what other members are doing; and in the case of the todo list, they see the current list when they sign in to the group. When any member of a group adds a task, crosses it out as completed, edits its description, or removes it, the server updates the persistent file and all members of the group immediately see the revised list.  '), (0, _dom.h)('p', 'The code below shows how incoming websockets messages are routed. For example, mMZ10.release() is called when a new dice roll (prefixed by CA#$42) comes in.   '), _code2.default.messages, (0, _dom.h)('p#cmment', ' The "mMZ" prefix designates instances of MonadItter. An instance\'s bnd() method assigns its argument to its "p" attribute. "p" runs if and when its release() method is called. The next() function releases a specified MonadItter instance when the calling monad\'s value matches the specified value in the expression. In the messages$ stream, the MonadItter instance\'s bnd methods do not take argumants, but next is capable of sending arguments when bnd() is called on functions requiring them. Here is an example: '), (0, _dom.h)('a#tdList2', { props: { href: '#itterLink' } }, 'release() with arguments'), (0, _dom.h)('span#comment', ''), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('h2', 'COMMENTS'), (0, _dom.h)('div#com2', { style: { display: mMcom2.x } }, [(0, _dom.h)('span', 'In order to write a comment, please log in here: '), (0, _dom.h)('input.login')]), (0, _dom.h)('br'), (0, _dom.h)('div#com2', { style: { display: mMcom3.x } }, [(0, _dom.h)('label#label', 'Click the Comment Box to Save Comment'), (0, _dom.h)('br'), (0, _dom.h)('textarea#comment'), (0, _dom.h)('div', mM26.x)]), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('a', { props: { href: '#top' } }, 'Back To The Top'), (0, _dom.h)('h2', 'Appendix - Under Construction '), (0, _dom.h)('h3', 'The functions that produce the examples'), (0, _dom.h)('p', ' Here are the definitions of MonadEr, its helper functions, and the function that serve as parameters to the bnd() method in the demonstration. '), _code2.default.monadEr, (0, _dom.h)('p', ' and here is the code that produced the Chrome console log entries: '), _code2.default.errorDemo, (0, _dom.h)('span.tao', ' When  a MonadEr instance encounters a function or an argument in quotation marks of types "undefined" or "NaN", a string gets pushed into the instance\'s e attribue. After that, the  bnd() method will not process any function other than clean(). It will stop at the'), (0, _dom.h)('span.turk', 'if (e.length > 0)'), (0, _dom.h)('span', 'block. clean() resets an instance to normal functioning mode by setting its e attribute back to []. '), (0, _dom.h)('br'), (0, _dom.h)('p'), (0, _dom.h)('p'), (0, _dom.h)('p', '.'), (0, _dom.h)('p', '.'), (0, _dom.h)('p', '.'), (0, _dom.h)('p', '.'), (0, _dom.h)('p', '.'), (0, _dom.h)('p'), (0, _dom.h)('p'), (0, _dom.h)('p'), (0, _dom.h)('p'), (0, _dom.h)('p')])]);
+	      (0, _dom.h)('h2', ' MonadSet '), (0, _dom.h)('p', ' The list of online group members at the bottom of the scoreboard is very responsive to change. When someone joins the group, changes to a different group, or closes a browser session, a message prefixed by NN#$42 goes out from the server providing group members with the updated list of group members. MonadSet acts upon messages prefixed by NN#$42. Here are the definitions of MonadSet and the MonadSet instance sMplayers '), _code2.default.MonadSet, (0, _dom.h)('h3', ' Websocket messages'), (0, _dom.h)('p#demo', ' Incoming websockets messages trigger updates to the game display, the chat display, and the todo list display. The members of a group see what other members are doing; and in the case of the todo list, they see the current list when they sign in to the group. When any member of a group adds a task, crosses it out as completed, edits its description, or removes it, the server updates the persistent file and all members of the group immediately see the revised list.  '), (0, _dom.h)('p', 'The code below shows how incoming websockets messages are routed. For example, mMZ10.release() is called when a new dice roll (prefixed by CA#$42) comes in.   '), _code2.default.messages, (0, _dom.h)('p#cmment', ' The "mMZ" prefix designates instances of MonadItter. An instance\'s bnd() method assigns its argument to its "p" attribute. "p" runs if and when its release() method is called. The next() function releases a specified MonadItter instance when the calling monad\'s value matches the specified value in the expression. In the messages$ stream, the MonadItter instance\'s bnd methods do not take argumants, but next is capable of sending arguments when bnd() is called on functions requiring them. Here is an example: '), (0, _dom.h)('a#tdList2', { props: { href: '#itterLink' } }, 'release() with arguments'), (0, _dom.h)('span#comment', ''), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('h2', 'COMMENTS'), (0, _dom.h)('div#com2', { style: { display: mMcom2.x } }, [(0, _dom.h)('span', 'In order to write a comment, please log in here with a user name and password, separated by a comma. If you are already logged in with only a name, log in again here: '), (0, _dom.h)('input.login2')]), (0, _dom.h)(' Your user name and password will be stored for future use.'), (0, _dom.h)('div#com2', { style: { display: mMcom3.x } }, [(0, _dom.h)('span', ' Since logging in does not involve unique identifiers, such as emal and password, I can either let anyone edit or delete any comment or else not provide a way to edit and delete comments. I chose the latter. If you want a comment edited or deleteted, send a message to '), (0, _dom.h)('a', { props: { href: "mailto:pyschalk@gmail.com" } }, 'email'), (0, _dom.h)('span', ' or send a personal tweet to @schalk1234'), (0, _dom.h)('br'), (0, _dom.h)('textarea.comment'), (0, _dom.h)('button#save', 'Save Comment'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('div', commentMonad.comments)]), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('a', { props: { href: '#top' } }, 'Back To The Top'), (0, _dom.h)('h2', 'Appendix - Under Construction '), (0, _dom.h)('h3', 'The functions that produce the examples'), (0, _dom.h)('p', ' Here are the definitions of MonadEr, its helper functions, and the function that serve as parameters to the bnd() method in the demonstration. '), _code2.default.monadEr, (0, _dom.h)('p', ' and here is the code that produced the Chrome console log entries: '), _code2.default.errorDemo, (0, _dom.h)('span.tao', ' When  a MonadEr instance encounters a function or an argument in quotation marks of types "undefined" or "NaN", a string gets pushed into the instance\'s e attribue. After that, the  bnd() method will not process any function other than clean(). It will stop at the'), (0, _dom.h)('span.turk', 'if (e.length > 0)'), (0, _dom.h)('span', 'block. clean() resets an instance to normal functioning mode by setting its e attribute back to []. '), (0, _dom.h)('br'), (0, _dom.h)('p'), (0, _dom.h)('p'), (0, _dom.h)('p', '.'), (0, _dom.h)('p', '.'), (0, _dom.h)('p', '.'), (0, _dom.h)('p', '.'), (0, _dom.h)('p', '.'), (0, _dom.h)('p'), (0, _dom.h)('p'), (0, _dom.h)('p'), (0, _dom.h)('p'), (0, _dom.h)('p')])]);
 	    })
 	  };
 	}
@@ -9935,7 +10001,7 @@
 
 	var hardWay2 = (0, _dom.h)('div', [(0, _dom.h)('p', ' The next demonstration shares the array of arrays of prime decompositions with the previous demonstration. That array is kept in a MonadState instance named "decompMonad". Computing prime decompositions of numbers that end up being ignored is clearly inefficient, so please bear in mind that a demonstration of a JS-monads way to keep mutable state in immutable, composable, globally accessable objects. '), (0, _dom.h)('label', ' Enter two comma-separated integers here: '), (0, _dom.h)('input#factors_5b'), (0, _dom.h)('br'), (0, _dom.h)('br')]);
 
-	var monad = (0, _dom.h)('div', [(0, _dom.h)('h1', 'The Monads'), (0, _dom.h)('p', ' The definition of Monad, which is the basic monad constructor, is a little complicated. It isn\'t intended as a puzzle, so a little explanation is in order. '), (0, _dom.h)('p', ' The term "monad" will mean "instance of Monad". Monad could have been defined as a class, but the current definition suffices. '), (0, _dom.h)('p', ' Monads are created by code such as "const m = new Monad("anything", "m")". The arguments will be the values of m.x and m.id. The first argument can be any Javascript value, such as string, array, or monad. The second argument should be the name of the monad. '), (0, _dom.h)('p', ' A monad, say "m", can be replaced by another monad named "m" in the global space through the use of the method "ret()". It looks like m.x gets mutated, but that isn\'t what happens. Previously defined references to m retain their values, as demonstrated below: '), (0, _dom.h)('pre', 'var m = new Monad (5, \'m\');\nvar arr = [m];\nvar p = m;\nm.ret(100);\nconsole.log(m.x, arr[0].x, p.x);  // 100, 5, 5\n'), (0, _dom.h)('p', ' In global scope (window in the browser), m.x changed to 100; but p and arr still refer to 5, the previous value of m.x. Similarly, when a monad uses its bnd() method to modify its x attribute, the change is seen globally, but nowhere else. Previous references to the monad remain stable, as this example illustrates: '), (0, _dom.h)('pre', 'var m = new Monad (5, \'m\');\nvar arr = [m];\nvar p = m;\nm.bnd(add,95);\nconsole.log(m.x, arr[0].x, p.x);  // 100, 5, 5\n'), (0, _dom.h)('p', ' Had there been no reference to m, the previous instance would have been subject to removal by the garbage collector. '), (0, _dom.h)('p', ' It is possible to mutate monads with code such as m.x = 888. That might be a good thing to do in a function with many recursions, but it seems like a misuse of monads. Monads are never mutated on this website. Object.freeze() is used to prevent mutation in the definition of primesMonad (shown below). '), (0, _dom.h)('p', ' The bnd() method can leave the calling monad\'s global value unchanged while assigning a value (in the global space) to another previously defined monad, or to a freshly created monad. So regardless of whether or not "m2" is defined, m.ret(4).bnd(cube,"$m2") causes m.x === 4 and m2.x === 64 to both return true. '), (0, _dom.h)('pre', 'm.ret(4).bnd(cube,"$m2")\nconsole.log(m.x, m2.x)   // 4 64\nm.ret(0).bnd(add,3,"$m2").bnd(cube,"$m3")\nconsole.log(m.x, m2.x, m3.x)  // 0 3 27\n'), (0, _dom.h)('p', ' The definition of Monad (below) shows how bnd() checks to see if func(m.x, ...args) returns a monad. If it does, "testPrefix" looks for a pattern that matches "$val" in the arguments that were provided to m.bnd(func, ...args). If the pattern is found, the global space acquires a monad named "val" with val.x === func(m.x, ...args). If no monad named "val" previously existed, one is created. Otherwise, val\'s global definition gets superseded. val can be any sequence of characters that constitute a valid javascript identifier. '), (0, _dom.h)('p', ' Instances of Monad facilitate changing values without mutation. They also provide a way to chain function calls. For example, m.ret(2).bnd(add, 1).bnd(cube) causes m.x === 27 to return true. This works because ret(), add, and cube all return monads when they are applied to m.x. The definition of add and cube are shown below and can be found in the Github repository. '), (0, _dom.h)('p', ' If the three numbers from the previous sequence were all that we required, we could obtain them more efficiently by running: '), (0, _dom.h)('pre', 'var demoResult = ret(0).bnd(x => add(x, 3).bnd(y => cube(y).bnd(z => [x,y,z])));\nconsole.log(\'We started with\', demoResult[0], \n    \'and got\', demoResult[1], \'and\', demoResult[2]);\nThe console displays "We started with 0 and got 3 and 27"\n'), (0, _dom.h)('p', ' Doing it that was leaves only one monad - the one named "temp" - for the garbage collector. It also eliminates concern about name collisions among the monads. There is little danger that a monad named "temp" is being used to store a value somewhere else in the application code. The temp monad is obviously not a monad for preserving values. The result could have been logged to the console or used in further computations without creating a reference to it.'), (0, _dom.h)('pre', 'ret(0).bnd(x => add(x, 3).bnd(y => cube(y).bnd(z =>\nconsole.log(\'We started with\', x, \'and got\', y, \'and\', z))));\nThe console displays "We started with 0 and got 3 and 27"\n'), (0, _dom.h)('p', ' More complex, multi-stage computations in sequenced monads are demonstrated later in this presentation. If such monads don\'t depend on information that exists outside of their scope, their effects in a running application are easier to grasp, and opportunities for unintended behavior in edge cases are minimized. Developers can gain further control and confidence in their applications by allowing only the last monad in any sequence to make changes in global scope. Code is easier to write and maintain when you can readily pinpoint a minimal number of places where an application\'s state gets updated. '), (0, _dom.h)('p', ' So, with that out of the way, here are the definitions of Monad and testPrefix: '), (0, _dom.h)('h3', ' Monad '), (0, _dom.h)('pre', '  var Monad = function Monad(z = 42, g = \'generic\') {\n    this.x = z;\n    this.id = g;\n    this.bnd = function (func, ...args) {\n      var m = func(this.x, ...args)\n      var mon;\n      if (m instanceof Monad) {\n        mon = testPrefix(args,this.id);\n        return window[mon] = new Monad(m.x, mon);\n      }\n      else return m;\n    };\n    this.ret = function (a) {\n      return window[_this.id] = new Monad(a,_this.id);\n    };\n  };\n\n  function testPrefix (x,y) {\n    var t = y;\n    var s;\n    if (Array.isArray(x)) {\n      x.some(v => {\n        if (typeof v === \'string\' && v.charAt() === \'$\') {\n           t = v.slice(1, v.length);\n        }\n      })\n    }\n    return t;\n  }  ')]);
+	var monad = (0, _dom.h)('div', [(0, _dom.h)('h1', 'The Monads'), (0, _dom.h)('p', ' The definition of Monad, which is the basic monad constructor, is a little complicated. It isn\'t intended as a puzzle, so a little explanation is in order. '), (0, _dom.h)('p', ' The term "monad" will mean "instance of Monad". Monad could have been defined as a class, but the current definition suffices. '), (0, _dom.h)('p', ' Monads are created by code such as "const m = new Monad("anything", "m")". The arguments will be the values of m.x and m.id. The first argument can be any Javascript value, such as string, array, or monad. The second argument should be the name of the monad. '), (0, _dom.h)('p', ' A monad, say "m", can be replaced by another monad named "m" in the global space through the use of the method "ret()". It looks like m.x gets mutated, but that isn\'t what happens. Previously defined references to m retain their values, as demonstrated below: '), (0, _dom.h)('pre', 'var m = new Monad (5, \'m\');\nvar arr = [m];\nvar p = m;\nm.ret(100);\nconsole.log(m.x, arr[0].x, p.x);\n// 100, 5, 5\n'), (0, _dom.h)('p', ' In global scope (window in the browser), m.x changed to 100; but p and arr still refer to 5, the previous value of m.x. Similarly, when a monad uses its bnd() method to modify its x attribute, the change is seen globally, but nowhere else. Previous references to the monad remain stable, as this example illustrates: '), (0, _dom.h)('pre', 'var m = new Monad (5, \'m\');\nvar arr = [m];\nvar p = m;\nm.bnd(add,95);\nconsole.log(m.x, arr[0].x, p.x);\n// 100, 5, 5\n'), (0, _dom.h)('p', ' Had there been no reference to m, the previous instance would have been subject to removal by the garbage collector. '), (0, _dom.h)('p', ' It is possible to mutate monads with code such as m.x = 888. That might be a good thing to do in a function with many recursions, but it seems like a misuse of monads. Monads are never mutated on this website. Object.freeze() is used to prevent mutation in the definition of primesMonad (shown below). '), (0, _dom.h)('p', ' The bnd() method can leave the calling monad\'s global value unchanged while assigning a value (in the global space) to another previously defined monad, or to a freshly created monad. So regardless of whether or not "m2" is defined, m.ret(4).bnd(cube,"$m2") causes m.x === 4 and m2.x === 64 to both return true. '), (0, _dom.h)('pre', 'm.ret(4).bnd(cube,"$m2")\nconsole.log(m.x, m2.x)   // 4 64\nm.ret(0).bnd(add,3,"$m2").bnd(cube,"$m3")\nconsole.log(m.x, m2.x, m3.x)  // 0 3 27\n'), (0, _dom.h)('p', ' The definition of Monad (below) shows how bnd() checks to see if func(m.x, ...args) returns a monad. If it does, "testPrefix" looks for a pattern that matches "$val" in the arguments that were provided to m.bnd(func, ...args). If the pattern is found, the global space acquires a monad named "val" with val.x === func(m.x, ...args). If no monad named "val" previously existed, one is created. Otherwise, val\'s global definition gets superseded. val can be any sequence of characters that constitute a valid javascript identifier. '), (0, _dom.h)('p', ' Instances of Monad facilitate changing values without mutation. They also provide a way to chain function calls. For example, m.ret(2).bnd(add, 1).bnd(cube) causes m.x === 27 to return true. This works because ret(), add, and cube all return monads when they are applied to m.x. The definition of add and cube are shown below and can be found in the Github repository. '), (0, _dom.h)('p', ' If the three numbers from the previous sequence were all that we required, we could obtain them more efficiently by running: '), (0, _dom.h)('pre', 'var demoResult = ret(0).bnd(x => add(x, 3).bnd(y => cube(y).bnd(z => [x,y,z])));\nconsole.log(\'We started with\', demoResult[0], \n    \'and got\', demoResult[1], \'and\', demoResult[2]);\nThe console displays "We started with 0 and got 3 and 27"\n'), (0, _dom.h)('p', ' Doing it that was leaves only one monad - the one named "temp" - for the garbage collector. It also eliminates concern about name collisions among the monads. There is little danger that a monad named "temp" is being used to store a value somewhere else in the application code. The temp monad is obviously not a monad for preserving values. The result could have been logged to the console or used in further computations without creating a reference to it.'), (0, _dom.h)('pre', 'ret(0).bnd(x => add(x, 3).bnd(y => cube(y).bnd(z =>\nconsole.log(\'We started with\', x, \'and got\', y, \'and\', z))));\nThe console displays "We started with 0 and got 3 and 27"\n'), (0, _dom.h)('p', ' More complex, multi-stage computations in sequenced monads are demonstrated later in this presentation. If such monads don\'t depend on information that exists outside of their scope, their effects in a running application are easier to grasp, and opportunities for unintended behavior in edge cases are minimized. Developers can gain further control and confidence in their applications by allowing only the last monad in any sequence to make changes in global scope. Code is easier to write and maintain when you can readily pinpoint a minimal number of places where an application\'s state gets updated. '), (0, _dom.h)('p', ' So, with that out of the way, here are the definitions of Monad and testPrefix: '), (0, _dom.h)('h3', ' Monad '), (0, _dom.h)('pre', '  var Monad = function Monad(z = 42, g = \'generic\') {\n    this.x = z;\n    this.id = g;\n    this.bnd = function (func, ...args) {\n      var m = func(this.x, ...args)\n      var mon;\n      if (m instanceof Monad) {\n        mon = testPrefix(args,this.id);\n        return window[mon] = new Monad(m.x, mon);\n      }\n      else return m;\n    };\n    this.ret = function (a) {\n      return window[_this.id] = new Monad(a,_this.id);\n    };\n  };\n\n  function testPrefix (x,y) {\n    var t = y;\n    var s;\n    if (Array.isArray(x)) {\n      x.some(v => {\n        if (typeof v === \'string\' && v.charAt() === \'$\') {\n           t = v.slice(1, v.length);\n        }\n      })\n    }\n    return t;\n  }  ')]);
 
 	var variations = (0, _dom.h)('div', [(0, _dom.h)('h3', 'Variations on the Theme'), (0, _dom.h)('p', ' Variations on the Monad theme serve diverse purposes. Instances of MonadState preserve computations so they won\'t have to be performed again. An instance of MonadState2 keeps a record of game play allowing players to back up and resume play from a previous display of numbers. It also keeps the current game parameters - score, goals, operator, selected numbers, and remaining numbers - in a single array which is stored in the archive whenever a new state is created. MonadItter instances are used to parse websockets messages and organize the callbacks neatly. MonadEr catches NaN and prefents crashes when undefined variables are encountered. I defined a message emitting monad but it seemed useless in this Cycle application where reactivity is pervasive. When you want to emit and listen for messages, it is better to build a driver and merge its stream of messages into the application cycle. '), (0, _dom.h)('p', ' The various monad constructors demonstrate a way of encapsulating procedures and state in chainable objects. You might incorporate Monad or one of the other constructors presented here in your application, but I think the thing that is most valuable is the general concept. I prefer Cycle.js, but I think the monads might make Node, React and some of the other frameworks more manageable. '), (0, _dom.h)('h3', 'Computations'), (0, _dom.h)('p', ' Computations are easy to link if each result is returned in an instance of Monad. Here are a few examples of functions that return instances of Monad: '), (0, _dom.h)('pre', '  function ret(v, id = \'temp\') {\n      window[id] = new Monad(v, id);\n      return window[id];\n    }\n\n    function cube (v, id) {\n      return ret(v * v * v);\n    };\n\n    function add (x, b) {\n      return ret(parseInt(x,10) + parseInt(b,10) );\n    };\n\n    function log(x,y) {\n        console.log(y)\n        return ret(x);\n    };  '), (0, _dom.h)('p', ' The "$" prefix provides control over the destination of computation results. In the following example, m1, m2, and m3 have already been declared. Here is a comparison of the results obtained when the "$" prefix is used and when it is omitted: '), (0, _dom.h)('pre', '    m1.ret(7).bnd(m2.ret).bnd(m3.ret)  // All three monads get the value 7.\n    m1.ret(0).bnd(add,3,\'m2\').bnd(cube,\'m3\')  // \'m1\', \'m2\', and \'m3\' are ignored'), (0, _dom.h)('pre', '    Result: m1.x === 27\n            m2.x === 7\n            m3.x === 7  '), (0, _dom.h)('pre', '    m1.ret(0).bnd(add,3,\'$m2\').bnd(cube,\'$m3\')   '), (0, _dom.h)('pre', '    Result: m1.x === 0\n            m2.x === 3\n            m3.x === 27  '), (0, _dom.h)('p', ' If the prefix "$" is absent, bnd() ignores the string argument. But when the "$" prefix is present, m1 retains its initial value, m2 retains the value it gets from from adding m\'s value (which is 0) to 3, and m3.x is the result of applying "cube" to m2.x. Both forms could be useful. '), (0, _dom.h)('p', ' The following example shows lambda expressions sending variables v1 and v2 through a sequence of computations and v3 sending the final result to the string that is logged. It also shows monads a, b, c, d, e, f, and g being updated and preserved in an array that is not affected by further updates. That is because calling the ret() method does not mutate a monad; it creates a fresh instance with the same name. Here is the example, shown in a screen shot of the Chrome console:. '), (0, _dom.h)('img.image', { props: { src: "demo_000.png" } }), (0, _dom.h)('h3', ' The Monad Laws '), (0, _dom.h)('p', ' In the following discussion, "x === y" signifies that the expression x === y returns true. Let J be the collection of all Javascript values, including functions, instances of Monad, etc, and let F be the collection of all functions mapping values in J to instances of Monad with references (names) matching their ids; that is, with window[id] === m.id for some id which is a valid es2015 variable name. The collection of all such instances of Monad along and all of the functions in F is called "M". For any instances of Monad m, m1, and m2 in M and any functions f and g in F, the following relationships follow easily from the definition of Monad: '), (0, _dom.h)('div', 'Left Identity '), (0, _dom.h)('pre', '    m.ret(v, ...args).bnd(f, ...args).x === f(v, ...args).x\n    ret(v, ...args).bnd(f, ...args).x === f(v, ...args).x\n    Examples: m.ret(3).bnd(cube).x === cube(3).x  Tested and verified\n    ret(3).bnd(cube).x === cube(3).x     Tested and verified\n    Haskell monad law: (return x) >>= f \u2261 f x  '), (0, _dom.h)('div#discussion', ' Right Identity  '), (0, _dom.h)('pre', '    m.bnd(m.ret) === m      Tested and verified\n    m.bnd(m.ret) === m   Tested and verified\n    m.bnd(ret) === m  Tested and verified\n    Haskell monad law: m >>= return \u2261 m '), (0, _dom.h)('div', ' Commutivity  '), (0, _dom.h)('pre', '    m.bnd(f1, ...args).bnd(f2, ...args).x === m.bnd(v => f1(v, ...args).bnd(f2, ...args)).x\n    Example: m.ret(0).bnd(add, 3).bnd(cube).x ===\n    m.ret(0).bnd(v => add(v,3).bnd(cube)).x  Tested amd verified\n    Haskell monad law: (m >>= f) >>= g \u2261 m >>= ( \\x -> (f x >>= g) ) '), (0, _dom.h)('a', { props: { href: '#top' } }, 'Back To The Top'), (0, _dom.h)('h3', ' Disussion '), (0, _dom.h)('span.tao', ' The Haskell statement '), (0, _dom.h)('span.turk6', 'f \u2261 g'), (0, _dom.h)('span', ' means that f x == g x for all Haskell values x of the appropriate type. That is the test applied to Javascript expressions in the "Monad Laws" section (above). Neither the == nor the === operator would provide useful information about the behavior of instances of Monad, which are objects. Those operators test objects for location in memory. If the left and right sides of predicates create new instances of m, then the left side m and the right side m wind up in different locations in memory. So we expect m.ret(3) === m.ret(3) to return false, and it does. The question we want answered is the question \u2261 answers in Haskell: Can the left and right sides be substituted for one another and still yield the same results.'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('span.tao', ' The Haskell programming language borrowed the term "monad" from the branch of mathematics known as category theory. This was apropriate because Haskell monads, along with the function return and the operator >>=, behave quite a bit like category theory monads, and the inspiration for them came out of category theory. For Haskell monads to actually be category theory monads, they would need to reside in a category-theory category. They don\'t, although the Haskell mystique tends to give newcommers to the language the impression that they do. See '), (0, _dom.h)('a', { props: { href: "http://math.andrej.com/2016/08/06/hask-is-not-a-category/", target: "_blank" } }, 'Hask is not a category.'), (0, _dom.h)('br'), (0, _dom.h)('p', ' Research into ways of defining a Haskell category appears to be ongoing. It involves tinkering with special constraints, omitted features, and definitions of morphisms that are not Haskell functions. When a definition of the category is established, Haskell monads are then shown to be, in some contrived context, category-theory monads. Devising such schemes are instructive academic exercises, but I don\'t think they can provide anything useful to programmers working on applications for industry, commerce, and the Internet. '), (0, _dom.h)('p', ' However, imitating definitions and patterns found in category theory, as Haskell does in defining the functor, monoid, and monad type classes, was a stroke of genius that vastly enriched the Haskell programming language and brought it into the mainstream as a viable alternative to java, c++, etc.  This website runs efficiently on a Haskell websockets server. The modified Haskell Wai Websockets server has proven to be extraordinarily easy to maintain as new requirements become necessary. For example, modifying the server to send chat messages and shared todo lists only to members of the same group was a trivial task. It required just a tiny amount of pattern-matching code. Category theory patterns make the Haskell interface to the Cycle front end robust, versitile, and reliable. Those are the qualities that I strive to emulate with JS-monads.')]);
 

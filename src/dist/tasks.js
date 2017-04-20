@@ -37,12 +37,13 @@ MonadState2.prototype.run2 = function (str) {
     showGreen = a[1] ? "green" : "yellow"
     showLineThrough = a[1] ? "line-through" : "none"
     console.log('In MonadState2.prototype.run2. a[1], showCheck, showUnCheck, showGreen, showLineThrough', a[1] === "checked", showCheck, showUnCheck, showGreen, showLineThrough);
+
     nodeObject.push(h('div#' + n +'.todo', [
       h('span.task3', { style: { color: showGreen, textDecoration: showLineThrough } }, 'Task: ' + a[0]),
       h('br'),
       h('input#cbx',  { props: { type: 'checkbox', checked: a[1] }}), 
-      h('label.tao4', { for: 'cbx', style: {display: showUnCheck}}, 'The task is completed' ),
-      h('label.tao4', { for: 'cbx', style: {display: showCheck}}, 'The task is not completed' ),
+      h('span.tao4', { for: 'cbx', style: {display: showUnCheck}}, 'The task is completed' ),
+      h('span.tao4', { for: 'cbx', style: {display: showCheck}}, 'The task is not completed' ),
       h('br'),
       h('span.tao', 'Author: ' + a[2] + ' / ' + 'Responsibility: ' + a[3]),
       h('br'),
@@ -57,8 +58,4 @@ MonadState2.prototype.run2 = function (str) {
   });  
   taskMonad.html = nodeObject;
 };
-
-
-
-
 

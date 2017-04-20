@@ -79,7 +79,7 @@
   button:hover {
     color: blue;
     background-color: lightblue;
-    border-color: #F7EDC1;
+    border-color: #0000AA;
     border-radius: 10px;
   }
 
@@ -132,6 +132,34 @@
   color: #0000CC;
 }
 
+  #edit4 { 
+    margin: 5px
+    padding-top: 6px;
+    font-size: 16px;
+    color: #C6EDB9;
+    margin-right: 6px;
+    margin-top: 4px;
+    margin-bottom: 3px;
+  }
+
+  #edit4:hover {
+  color: #0000CC;
+}
+
+  #edit4B { 
+    margin: 5px
+    padding-top: 6px;
+    font-size: 16px;
+    color: #C6EDB9;
+    margin-right: 6px;
+    margin-top: 4px;
+    margin-bottom: 3px;
+  }
+
+  #edit4B:hover {
+  color: #0000CC;
+}
+
 #delete { 
   margin-top: 4px;
   margin-bottom: 3px;
@@ -143,6 +171,49 @@
 
 #delete:hover {
   color: #0000CC;
+}
+
+#delete4 { 
+  margin-top: 4px;
+  margin-bottom: 3px;
+  margin-left: 4%;
+  padding-top: 4px;
+  font-size: 16px;
+  color: #C6EDB9;
+}
+
+#delete4:hover {
+  color: #0000CC;
+}
+
+#todoButton {
+  font-size: 11px;
+  padding-top:7px;
+  color: #C6EDB9;
+}
+
+#todoButton:hover {
+  background-color: rgb(7, 4, 94)
+}
+
+#chat2 {
+  font-size: 11px;
+  padding-top:7px;
+  color: #C6EDB9;
+}
+
+#chat2:hover {
+  background-color: rgb(7, 4, 94)
+}
+
+.cow {
+  font-size: 11px;
+  padding-top:7px;
+  color: #C6EDB9;
+}
+
+#cow:hover {
+  background-color: rgb(7, 4, 94)
 }
 
 #chbox1 { 
@@ -173,6 +244,15 @@
   color: green;
   position: relative;
   vertical-align: middle;
+}
+
+.edit4B { 
+  width: 30%;
+  margin: 5px;
+  font-size: 16px;
+  color: green;
+  position: relative;
+  vertical-align: ;
 }
 
 #cbx {
@@ -325,7 +405,7 @@ a {
   font-size: 22;
 }
 
-#comment {
+.comment {
   width: 70%;
   height: 100px;
 }

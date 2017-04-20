@@ -13,7 +13,6 @@ var captionDiv = 'none';
 var xs = xstream.default;
 var h = h.h;
 const messages = [];
-var crapTunnel = [];
 var buttonNode;
 var stat;
 var solo = "solo";
@@ -100,7 +99,9 @@ function get2 (m) {
   return v;
 }  
 var mMob = new Monad (0, 'mMob')
-var pMname = new Monad('1v65n$%pqw3*@#9', 'pMname');
+var pMname = new Monad('1v65n$%pqw3*@#9', 'pMname'); 
+var pMpassword = new Monad('password', 'pMpassword');
+var pMcombo = new Monad('1v65n$%pqw3*@#9<o>none', 'pMcombo'); 
 var pMgroup = new Monad('solo', 'pMgroup');
 var pMscore = new Monad(0, 'pMscore');
 var pMgoals = new Monad(0, 'pMgoals');
@@ -773,32 +774,10 @@ var mMcaption = new Monad('inline','mMcaptionDiv');
 var mMtodo = new Monad('inline','mMtodoDiv');
 var mMgame = new Monad('none','mMgameDiv');
 
-function lcm (c,d) {
-  var ar= [];
-  var r;
-  d.map(v => {
-    c.map(x => {
-      if (x === v) {
-      ar.push(v)
-      c.splice(c.indexOf(v),1)
-      d.splice(d.indexOf(v),1)
-      }
-    })
-  })
-  r = ar.concat(d).concat(c).reduce(function (a,b) {return a*b})
-  return r
-}
-
-
-function lc (str) {
-  str.split(',').map(x => parseInt(x)).reduce((a,b) => lcm(mMfactors6.x[a], mMfactors6.x[b]))
+function rand () {
+  var chars = ['A','B','C','D','E','F','G','H','I','J','K','L','M','N']
+  return chars.sort( function() { return 0.5 - Math.random() } ).join('');
 };
-
-function stripchars(string, chars) {
-  return string.replace(RegExp('['+chars+']','g'), '');
-}
-
-  function id (x) {return ret(x)};
 
   function numProtect (x) {return (new Number (x))*1; }; 
 
@@ -1933,6 +1912,26 @@ MonadState.prototype.run = function ([
     }
     newRoll(scor, goals);
   };
+
+function MonadState4(g, state) {
+  console.log('someone called with g and state in MonadState4', g, state);
+  this.id = g;
+  this.s = state;
+  this.bnd = (func, ...args) => func(this.s, ...args);  
+  this.ret = function (a) {
+    return window[this.id] = new MonadState(this.id, a);
+  };
+};
+
+MonadState4.prototype.run = function (name, password) {
+  this.s.name = {name, password};
+  return this;
+};
+
+var users = new MonadState4('users', {} );
+
+
+
 
 
 
