@@ -1,0 +1,11 @@
+messagePress$ -> socket.send(`CD#$42,${pMgroup.x},${pMname.x},${e.target.value}`);
+
+Everyone who receives the substate broadcast should see "let mes = "<><><><><> Outgoing message from Main.hs "
+
+mMZ13.bnd( () => {
+  var message = v.slice(3,v.length).join(', ');
+  var str = v[2] + ': ' + message;
+  messages.unshift(h('span', str ), h('br'));
+});
+
+

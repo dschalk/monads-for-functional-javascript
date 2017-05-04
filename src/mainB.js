@@ -1,51 +1,65 @@
 "use strict";
-import {run} from '@cycle/xstream-run';
+import {run} from '@cycle/xstream-run'
 import {h, p, span, h1, h2, h3, pre, br, div, label, input, hr, makeDOMDriver} from '@cycle/dom';
 import code from './code.js';
 // import {EventEmitter} from 'events'
 console.log('If you can read this you are in main.js <@><@><@><@><@><@><@><@>');
 var textA = h('textarea', 'You bet!' );
 var formA = h('form#horses', 'You bet!' );
+console.log('textA is: ', textA);
+console.log('formA is: ', formA);
 
-socket.addEventListener('message', function (event) {
-  console.log('<$><$><$><$><$><$><$><$><$> $$ Message from server: event.data ', event.data);
-});
 
-socket.onopen = function login () {
-    var v = rand();
-    var v2 = rand();
-    pMname.ret(v);
-    pMgroup.ret('solo');
-    socket.send('CC#$42' + v + '<o>' + v2 );
-    pMclicked.ret([]);
-};
-  
 function main(sources) {
- console.log('0^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ got this far');
+
+  const worker$ = sources.WW.map(v => {
+    console.log('Message from worker: ', v );
+    v.preventDefault();
+    mMZ21.bnd(() => {
+      mM11.ret(v.data[1]);
+      });
+    mMZ22.bnd(() => {
+      mM12.ret(v.data[1])
+    });
+    mMZ23.bnd(() => {
+      mM13.ret(v.data[1])
+    });
+    mMZ24.bnd(() => {
+      mM14.ret(v.data[1])
+    });
+    mMZ25.bnd(() => {
+      console.log('??????????????????????????????????????????? mMZ25.bnd - - - v', v );
+      if (typeof v.data[1] === 'string') {
+        console.log('Major malfunction in worker.js  Reporting from main thread', v.data[1] )
+      }
+      else {
+        mMres.ret(v.data[0]);
+        console.log('In main thread. Re-instanciating primesMonad with ', v.data[1]);
+        primesMonad = new MonadState('primesMonad', v.data[1])
+      }
+    });
+    next(v.data[0], 'CA#$41', mMZ21)
+    next(v.data[0], 'CB#$41', mMZ22)
+    next(v.data[0], 'CC#$41', mMZ23)
+    next(v.data[0], 'CD#$41', mMZ24)
+    next(v.data[0], 'CE#$41', mMZ25)
+    });
+
   const messages$ = sources.WS.map( e => {
     console.log(e);
     mMtem.ret(e.data.split(',')).bnd( v => {
       var group = v[1]
-      var sender =  v[2];
+      var name =  v[2];
       var extra = v[3];
       console.log('Websockets e.data.split message v: ', v );
       mMZ10.bnd( () => {
         gameMonad.run([v[7], v[8], 0, [], [v[3], v[4], v[5], v[6]]]);
       });
-      mMZ11.bnd( () => {
-        commentMonad.init(extra);
-        socket.send(`GZ#$42,${pMgroup.x},${v[2]}`);    // Load the comments
-      });
-      mMZ12.bnd( () => {
-        mM6.ret(v[2] + ' successfully logged in.');
-        socket.send(`ZZ#$42,${pMgroup.x},${v[2]}`);    // Load the registered names 
-      });
+      mMZ12.bnd( () => mM6.ret(v[2] + ' successfully logged in.'));
       mMZ13.bnd( () => {
-        console.log('The message arrived', messages);
         var message = v.slice(3,v.length).join(', ');
         var str = v[2] + ': ' + message;
         messages.unshift(h('span', str ), h('br'));
-        console.log('The message was added to messages', messages);
       });
       mMZ14.bnd( () => {
         mMgoals2.ret('The winner is ' + v[2]);
@@ -71,56 +85,20 @@ function main(sources) {
       if (pMgroup.x != 'solo' || pMname.x === v[2] ) updatePlayers(e.data)  
     });
 
-
-//*********************************************************************** BEGIN NAMES
-
-   /* mMZ20.bnd( () => {
-      var ar = extra.split('<@>');              // Get names and passwords
-      users.run(ar);
-    });   
-
-    mMZ21.bnd( () => {                                   // Append a name
-      console.log('In mMZ21.bnd - - extra is', extra );
-      users.run(extra);
-    });  */
-
-    mMZ19.bnd( () => {                          // Clear all comments
-      commentMonad.clear();
-      var str = e.data.substring(e.data.indexOf('<@>')+3, e.data.length);
-      commentMonad.run3(str)                    // Receive all comments from server  
-      console.log('Another message from mMZ19. str typeof str are', str, typeof str )
+     mMZ19.bnd( () => {
+      var str = e.data.substring(e.data.indexOf('<@>')+3, e.data.length) ;
+      commentMonad.run3(str)
+      // console.log('Another message from mMZ19. str is', str )
     });
 
-    mMZ23.bnd( () => {                             // Test registration CJ#$42
-      socket.close();
-      setTimeout ( function () {
-        socket = createWebSocket('/');
-      },1500 );
-    })   
-
-    mMZ24.bnd( () => {                                  // Test login CK#$42
-      if (extra == "False") { 
-        mM15.ret("You should register before logging in");
-        return;
-      }
-      if (extra == "True") {
-        if (sender === pMname.x) pMname.ret(v[4]);
-      }
-    });
-
-    mMZ25.bnd( () => {
-      registered.run4(extra);
-    });
-
-    mMZ26.bnd( () => {
-      socket.send(`CJ#$42,${pMgroup.x},${pMname.x}`);
+    mMZ20.bnd( () => {
+      var ar = extra.split('<o>');   
+      users.run(ar[0], ar[1]);
     });
 
   })
-  ret(e.data.split(',')[0])
+  mMtemp.ret(e.data.split(',')[0])
   .bnd(next, 'CA#$42', mMZ10)
-  .bnd(next, 'GZ#$42', mMZ11)
-  .bnd(next, 'CC#$42', mMZ12)
   .bnd(next, 'CD#$42', mMZ13)
   .bnd(next, 'CE#$42', mMZ14)
   .bnd(next, 'EE#$42', mMZ15)
@@ -128,15 +106,10 @@ function main(sources) {
   .bnd(next, 'DD#$42', mMZ17)
   .bnd(next, 'NN#$42', mMZ18)
   .bnd(next, 'GG#$42', mMZ19)
+  .bnd(next, 'CC#$42', mMZ19)
   .bnd(next, 'CZ#$42', mMZ20)
-  .bnd(next, 'CX#$42', mMZ21)
-  .bnd(next, 'CJ#$42', mMZ23)
-  .bnd(next, 'CK#$42', mMZ24)
-  .bnd(next, 'ZZ#$42', mMZ25)
-  .bnd(next, 'CJ#$42', mMZ26)
   });
 
- console.log('1^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ got this far');
 function next(x, y, instance, z) {
   if (x == y) {
       instance.release(z);
@@ -144,101 +117,121 @@ function next(x, y, instance, z) {
   return ret(x);
 };
 
-var comClick$ = sources.DOM.select('#comment').events('click');
+var comClick$ = sources.DOM.select('#save').events('click');
 
 var comClickAction$ = comClick$.map( e => {
-  var com = e.target.value;
-  var comm = com.replace(rep2,'<<>>')
-  var commx = '<@>' + pMname.x + '<o>' + comm;
-  socket.send(`GG#$42,${pMgroup.x},${pMname.x},${commx}`);
+  console.log('In comClickAction$. <q><><><><>(a)(b)(c)(d)(e)<><><><><q> e is', e);
+  var m = e.path[1].childNodes[4].value;
+  var tx = pMname.x + '<o>' + m;
+  var txt = tx.replace(rep2, "<<>>");
+  socket.send('GG#$42,' + pMgroup.x + ',' + pMname.x + ',<@>' + txt);
+  console.log('In comClickAction$. <><><><><>(a)(b)(c)(d)(e)<><><><><> txt is', txt);
 });
 
 var edit4$ = sources.DOM
-    .select('buton#edit4').events('click');
+    .select('button#edit4').events('click');
 
 var edit4Action$ = edit4$.map(function (e) {
   showEditB = 'inline-block'; 
   console.log('************ showEditB is', showEditB );
-commentMonad.comments[1].children[0].elm.style.display = 'none'
   var s = commentMonad.s.slice();
+  commentMonad.run3(s);
 });
 
 var edit4B$ = sources.DOM
-    .select('input#edit4B').events('click');
+    .select('input#edit4B').events('keydown');
 
 var edit4BAction$ = edit4B$.map( function (e) {
-  var s0 = commentMonad.s.slice();
+  var ar2;
+  var s = commentMonad.s.slice();
+  var ar = s.split('@');
   var index = e.target.parentNode.id; 
-  s0[index][1] = e.target.value;
-  var s1 = s0.map(v => v.join('<o>'));
-  var s2 = s1.join('<@>');
-  console.log('<$><$><$><$><$><$><$><$><$><$><$><$> s2 in edit4B$', s2 );
-  commentMonad.clear();
-  socket.send('GS#$42,' + pMgroup.x + ',' + pMname.x + ',<@>' + s2);
+  console.log('In edit4BAction$ - - - index and ar are ', index, ar ),
+  ar2 = ar[index].split('<o>')
+  ar2[1] = e.target.value;
+  ar2.join('<o>');
+  ar[index] = ar2
+  var str = ar.join('<@>');
+  console.log('<$><$><$><$><$><$><$><$><$><$><$><$> str in edit4B$', str );
+  socket.send('GG#$42,' + pMgroup.x + ',' + pMname.x + ',<@>' + str);
 })  
-
-
-var abcde = 'inline';
-var fghij = 'inline';
-
-  var registerPress$ = sources.DOM
-      .select('input.register').events('keypress');
-
-  var registerPressAction$ = registerPress$.map(e => {
-    if (e.keyCode === 13) {
-      mM15.ret('');
-      console.log('In registerPressAction$. e is', e );
-      var index1 = e.target.value.indexOf(',');
-      var index2 = e.target.value.lastIndexOf(',');
-      if (index1 === -1 || index1 !== index2) {
-        mM15.ret(' There should be one and only one comma' );
-        return;
-      }
-      var ar = (e.target.value).split(',');
-      var combo = ar.join('<o>');
-      if (!registered.test(e.target.value)) {
-        socket.send(`CJ#$42,${pMgroup.x},${pMname.x},${ar[0]},${combo}`);
-        pMcombo.ret(combo);
-        pMname.ret(ar[0]);
-      } 
-    }
-  });
-
-/*
-
-        if (users.s.includes(combo + '\n')) {
-        console.log("NAME TAKEN OOOOOOOOOOOOOOOOOOOO");  
-        mM15.ret('That user name is already in the system');
-        return;
-      }
-      else {
-        socket.send(`CV#$42,${pMgroup.x},${pMname.x},${ar[0]}`);
-        pMcombo.ret(combo);
-        pMclicked.ret([]);
-        var name = ar[0];
-        pMname.ret(name);
-        pMpassword.ret(ar[1]);
-        socket.send(`CG#$42,${pMgroup.x},${ar[0]},${pMscore.x},${pMgoals.x}`);
-        abcde = 'none';
-        fghij = 'none';
-      }
-    }
-  });    */
 
   var loginPress$ = sources.DOM
       .select('input.login').events('keypress');
 
-  var loginPressAction$ = loginPress$.map (e => {
-    console.log('In loginPressAction$ -<$><$><$><$><$><$><$><$><$><$> - - e is', e );
+  var loginPressAction$ = loginPress$.map(e => {
+    var v = e.target.value;
     if (e.keyCode === 13) {
-      console.log('*********************************** In loginPressAction$ -- e.keyCode === 13');
-      var ar = e.target.value.split(',');
-      var str = ar.join('<o>');
-      pMcombo.ret(str);
-      socket.send(`CK#$42,${pMgroup.x},${pMname.x},${ar[0]},${str}`);
+      pMname.ret(v);
+      pMgroup.ret('solo');
+      socket.send('CC#$42' + v );
+      pMclicked.ret([]);
+      mMdice.ret('block');
+      mMrightPanel.ret('block');
+      mMrightPanel2.ret('none');
+      mMgameDiv2.ret('block')
+      mMlogin.ret('none');
+      mMlog1.ret('none');
+      mMlog2.ret('block');
+      mMcaptionDiv.ret('block')
+      mMchatDiv.ret('block')
+      mMtodoDiv.ret('block')
+      mMgameDiv.ret('block')
+      mMchat.ret('inline')
+      mMcaption.ret('inline');
+      mMgame.ret('inline')
+      mMtodo.ret('inline')
+      mMcom2.ret('none')
+      mMcom3.ret('block')
+      socket.send(`CG#$42,${pMgroup.x},${pMname.x},0,0`);
+      socket.send(`GZ#$42,${pMgroup.x},${pMname.x}`);
+      socket.send(`CZ#$42,${pMgroup.x},${pMname.x}`);
     };
   });
+  
+  var loginPress2$ = sources.DOM
+      .select('input.login2').events('keypress');
 
+  var loginPressAction2$ = loginPress2$.map(e => {
+    var index1 = e.target.value.indexOf(',');
+    var index2 = e.target.value.lastIndexOf(',');
+    if (index1 === -1 || index1 !== index2) {
+      mM6.ret(' There should be one and only one comma' );
+      return;
+    }
+    var v = (e.target.value).split(',');
+    var combo = v.join('<o>');
+    mMcombo.ret(combo);
+    if (e.keyCode === 13) {
+      pMname.ret(v[0]);
+      pMpassword.ret(v[1]);
+      user.run( v[0], v[1] );
+      pMgroup.ret('solo');
+      socket.send('CR#$42' + combo);
+      pMclicked.ret([]);
+      mMdice.ret('block');
+      mMrightPanel.ret('block');
+      mMrightPanel2.ret('none');
+      mMgameDiv2.ret('block')
+      mMlogin.ret('none');
+      mMlog1.ret('none');
+      mMlog2.ret('block');
+      mMcaptionDiv.ret('block')
+      mMchatDiv.ret('block')
+      mMtodoDiv.ret('block')
+      mMgameDiv.ret('block')
+      mMchat.ret('inline')
+      mMcaption.ret('inline');
+      mMgame.ret('inline')
+      mMtodo.ret('inline')
+      mMcom2.ret('none')
+      mMcom3.ret('block')
+      socket.send(`CG#$42,${pMgroup.x},${pMname.x},0,0`);
+      socket.send(`GZ#$42,${pMgroup.x},${pMname.x}`);
+      socket.send(`CZ#$42,${pMgroup.x},${pMname.x}`);
+    };
+  });
+  
   var groupPress$ = sources.DOM
       .select('input#group').events('keypress');
 
@@ -257,17 +250,15 @@ var fghij = 'inline';
   var messagePressAction$ = messagePress$.map(function (e) {
       if (e.keyCode === 13) {
           socket.send(`CD#$42,${pMgroup.x},${pMname.x},${e.target.value}`);
-          console.log('In messagePressAction$ pMname.x is', pMname.x );
-          console.log('$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$')
           e.target.value = '';
       }
   });
 
   var updatePlayers = function updatePlayers (data) {
-    sMplayers.s.clear();
-    var namesL = data.split("<br>");
-    namesList = namesL.slice(1);
-    updateScoreboard2(namesList);
+        sMplayers.s.clear();
+        var namesL = data.split("<br>");
+        namesList = namesL.slice(1);
+        updateScoreboard2(namesList);
     namesList.forEach(player => sMplayers.s.add(player.trim()));
   }
 
@@ -743,6 +734,8 @@ var elemB$ = sources.DOM.select('input#message2').events('keyup')
   worker.postMessage([mM9.x, e.target.value]);
 });
 
+mMrightPanel.ret('none');
+
 var pr$ = sources.DOM
     .select('#primeNumbers').events('keypress');
 
@@ -909,7 +902,7 @@ var newTaskAction$ = newTask$.map(function (e) {
 
 console.log('Just before calcStream@');
 
-  var calcStream$ = xs.merge( cbxAction$, chbox1Action$, chbox2Action$, comClickAction$, messagePressAction$, fA_c$, forwardAction$, backAction$, prAction$, factorsAction_b$, fA$, factorsP$, fA_b$, factorsP_b$, clearprimes$, workerB$, workerC$, workerD$, workerE$, workerF$, clearAction$, factorsAction$, primeFib$, fibPressAction$, quadAction$, edit1Action$, edit2Action$, edit4Action$, edit4BAction$, testWAction$, testZAction$, testQAction$, deleteAction$, newTaskAction$, chatClickAction$, gameClickAction$, todoClickAction$, captionClickAction$, groupPressAction$, rollClickAction$, loginPressAction$, registerPressAction$, messages$, numClickAction$, opClickAction$);
+  var calcStream$ = xs.merge( cbxAction$, chbox1Action$, chbox2Action$, comClickAction$, messagePressAction$, fA_c$, forwardAction$, backAction$, prAction$, factorsAction_b$, fA$, factorsP$, fA_b$, factorsP_b$, clearprimes$, worker$, workerB$, workerC$, workerD$, workerE$, workerF$, clearAction$, factorsAction$, primeFib$, fibPressAction$, quadAction$, edit1Action$, edit2Action$, edit4Action$, edit4BAction$, testWAction$, testZAction$, testQAction$, deleteAction$, newTaskAction$, chatClickAction$, gameClickAction$, todoClickAction$, captionClickAction$, groupPressAction$, rollClickAction$, loginPressAction$, loginPressAction2$, messages$, numClickAction$, opClickAction$);
   return {
   DOM: calcStream$.map(function () {
   return h('div.main', [
@@ -957,8 +950,21 @@ h('br' ),
 h('h3', 'The Game'),
 h('p', 'People who are in the same group, other than the default group named "solo", share the same todo list, chat messages, and simulated dice game. In order to see any of these, you must establish a unique identity on the server by logging in. The websockets connection terminates if the first message the server receives does not come from the sign in form. You can enter any random numbers, letters, or special characters you like. The server checks only to make sure someone hasn\'t already signed in with the sequence you have selected. If you log in with a name that is already in use, a message will appear and this page will be re-loaded in the browser after a four-second pause. '),
 h('p', ' Data for the traversable game history accumulates until a player scores three goals and wins. The data array is then erased and the application is ready to start accumulating a new history. '),
-h('p', ' Your user name for trying out the game, todo list, and chat demonstrations is a random permutation of the first 14 letters of the alphabet. In the comments section, near the bottom of this page, you can chose your own user name and a password. These facilitate leaving comments which can later be revised or removed.' ),
-h('br') ]),
+
+h('div#log1',  {style: { display: mMlog1.x }}),
+h('div#log2',  {style: { display: 'block' }}, [
+h('p', 'IN ORDER TO SEE THE GAME, TODOLIST, AND CHAT DEMONSTRATIONS, YOU MUST ESTABLISH A WEBSOCKET IDENTITY. You can click the button and get a random identity or you can enter a name.'),
+h('span', 'Random identity' ),
+h('button#login', {style: { fontSize: '14px', borderWidth: '0px' }}, 'random identity' ), 
+h('br'),  
+h('span', 'Name: '),
+h('input.login', {props: {autofocus: false}},  ) ]),
+h('br'),  
+h('p', ' If you would like to save a user name and password, enter both - SEPARATED BY A COMMA. This will enable you to save comments and later edit or delete them.' ), 
+h('span', 'Name: '),
+h('input.login2', {props: {autofocus: false}},  ),
+h('p', mM6.x ),
+]),
 h('hr.len90', {style: { display: mMgameDiv2.x }}, ),
 h('br.len90', {style: { display: mMgameDiv2.x }}, ),
 h('div.heading',  {style: { display: mMgameDiv2.x }}, 'Game, Todo List, Text Messages' ), 
@@ -985,24 +991,25 @@ h('div#gameDiv2', {style: { display: mMgameDiv2.x }}, [
       h('div.tao', `Operator: ${gameMonad.fetch2()} ` ),
       h('div.tao', 'Index: ' + gameMonad.s[1] ),
       h('button#clear', 'Clear selected numbers' ),
-      h('p', ' When traversing the game history, any time there are two selected numbers you can click any operator to obtain a result; or you can clear the selected numbers and click numbers of your choice. You can do anything you want with displayed numbers, but if there is a previously selected operater and you click a second number (shown after "Selected numbers:"), a computation will be performed using the previously selected operator. If that happens and it isn\'t what you want, you can back up and select a different operater before clicking a second number.'),
+      h('div#log2', { style: { display: mMlog2.x } }, [
           h('span', 'Change group: '),
-          h('input#group', 'test' ),
+          h('input#group', 'test' )
+      ]),
       h('p', mMsoloAlert.x ),
     ])
   ]),
 
-  h('div#rightPanel', { style: { display: 'block' } }, [
+  h('div#rightPanel', { style: { display: mMrightPanel.x } }, [
     h('br'),
     h('br'),
     h('br'),
     h('br'),
     h('br'),
     h('br'),
-    h('button#todoButton.cow', 'TOGGLE TODO_LIST'), 
+    h('button#todoButton.cow', {style: { color: '#C6EDB9' }}, 'TOGGLE TODO_LIST'), 
     h('br'),
     h('br'),
-    h('button#chat2.cow', 'TOGGLE CHAT'),
+    h('button#chat2.cow', {style: { color: '#C6EDB9' }}, 'TOGGLE CHAT'),
     h('br'),
     h('br'),
     h('br'),
@@ -1288,30 +1295,25 @@ code.MonadSet,
   h('br'),
   h('br'),
   h('br'),
-
-  h('h1', ' The comments section is undergoing drastic revision. It is down for repairs' ),
   h('h2', 'COMMENTS' ),
-  h('div#com2',  { style: { display: abcde} }, [
-  h('p', 'In order to write a comment, you need to be logged in with a user name and password. You can register and automatically be logged in below. Just enter some characters, separated by a comma. Everything before the comma is your user name; everything after is your password. '),
-  h('input.register', {style: {display: abcde }}, ),
-  h('p', ' If you already have a user name and passwork, you can enter them below, separated by a comma. '),
-  h('input.login', {style: {display: fghij }}, ),
-  h('p', 'Your user name and password will be stored for future use.' ),
-  h('div#com2',  {style: { display: 'block' }}, ),
-    h('span', ' When this page loads in the browser, a user name is automatically generated in order to establish a unique Websocket handle, named "socket". This makes it possible to exchange text messages with other group members, play the game, and work on a shared todo list. If you want to leave a comment, you should log in with a user name '), ]),
-    // h('a', { props: {href: "mailto:pyschalk@gmail.com"}}, 'email' ),
-    // h('span', ' or send a personal tweet to @schalk1234' ),
+  h('div#com2',  { style: { display: mMcom2.x } }, [
+  h('span', 'In order to write a comment, please log in here with a user name and password, separated by a comma. If you are already logged in with only a name, log in again here: '),
+  h('input.login2', )]),
+  h('p', ' Your user name and password will be stored for future use.' ),
+  h('div#com2',  { style: { display: mMcom3.x } }, [
+    h('span', ' Since logging in does not involve unique identifiers, such as emal and password, I can either let anyone edit or delete any comment or else not provide a way to edit and delete comments. I chose the latter. If you want a comment edited or deleteted, send a message to '), 
+    h('a', { props: {href: "mailto:pyschalk@gmail.com"}}, 'email' ),
+    h('span', ' or send a personal tweet to @schalk1234' ),
     h('br' ),
-    h('textarea#comment', ),
-    h('button#commentClick', 'Save Comment' ),   
+    h('textarea.comment', ),
+    h('button#save', 'Save Comment' ),   
     h('br' ),
     h('br' ),
-    h('div', commentMonad.comments ),
+    h('div', commentMonad.comments ) 
+  ]),
   h('br'),
   h('br'),
   h('a', { props: { href: '#top' } }, 'Back To The Top'),
-
-
 
   h('h2', 'Appendix - Under Construction ' ),
   h('h3', 'The functions that produce the examples' ),

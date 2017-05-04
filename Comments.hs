@@ -2,13 +2,14 @@ module Comments where
 import Data.Text
 import Data.Text.IO
 import Control.Exception
-import Prelude hiding (catch, readFile, writeFile, appendFile)
+import Prelude hiding (init, tail, drop, catch, readFile, writeFile, appendFile)
+import Control.Monad.IO.Class (liftIO)
 
 save :: FilePath -> Text -> IO ()
 save fh f = writeFile fh f
 
-append :: FilePath -> Text -> IO()
-append fh f = appendFile fh f
+append2 :: FilePath -> Text -> IO()
+append2 fh f = appendFile fh f
 
 read2 :: FilePath -> IO Text
 read2 f = do

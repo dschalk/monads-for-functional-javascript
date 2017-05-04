@@ -4,12 +4,12 @@ var taskL = [];
 var namesList;
 var MESSAGES = [];
 var res = [];
-var todoDiv = 'block';
-var gameDiv = 'block';
-var chatDiv = 'block';
+var todoDiv = 'none';
+var gameDiv = 'none';
+var chatDiv = 'none';
 var CHANGE = 'cow';
 var chatNode;
-var captionDiv = 'block';
+var captionDiv = 'none';
 var xs = xstream.default;
 var h = h.h;
 const messages = [];
@@ -111,7 +111,6 @@ var pMdata = new Monad([], 'pMdata');
 var pMelms = new Monad( [0,0,0,0], 'pMelms' );
 var pMstyle = new Monad( ['inline','inline','inline','inline'], 'pMstyle' );
 var pMdisplay = new Monad([], 'pMdisplay');
-var pMnewName = new Monad('', 'pMnewName');
 
 var mMnums = new Monad([0,0,0,0], 'mMnums');
 var mMnumEls = new Monad([], 'mMnumEls');
@@ -757,23 +756,28 @@ function primes(n, ar) {
   var mMitterPF2 = MI();
   var style = ['inline', 'inline', 'inline', 'inline'];
   var nums = [0,0,0,0];  
-var mMdice = new Monad('block','mMdice');
-var mMrightPanel = new Monad('block','mMrightPanel');
-var mMrightPanel2 = new Monad('block','mMrightPanel2');
-var mMgameDiv2 = new Monad('block','mMgameDiv2');
+var mMdice = new Monad('none','mMdice');
+var mMrightPanel = new Monad('none','mMrightPanel');
+var mMrightPanel2 = new Monad('inline','mMrightPanel2');
+var mMgameDiv2 = new Monad('none','mMgameDiv2');
 var mMgameDiv = new Monad('block','mMgameDiv');
-var mMlogin = new Monad('block','mMlogin');
-var mMlog1 = new Monad('block','mMlog1');
-var mMlog2 = new Monad('block','mMlog2');
+var mMlogin = new Monad('inline','mMlogin');
+var mMlog1 = new Monad('inline','mMlog1');
+var mMlog2 = new Monad('none','mMlog2');
 var mMtodoDiv = new Monad('block','mMtodoDiv');
 var mMchatDiv = new Monad('block','mMchatDiv');
 var mMcaptionDiv = new Monad('block','mMcaptionDiv');
 var mMtodoDiv = new Monad('block','mMtodoDiv');
-var mMtodo = new Monad('inline-block','mMtodo');
-var mMchat = new Monad('inline-block','mMchatDiv');
-var mMcaption = new Monad('block','mMcaptionDiv');
+var mMtodo = new Monad('inline','mMtodo');
+var mMchat = new Monad('inline','mMchatDiv');
+var mMcaption = new Monad('inline','mMcaptionDiv');
 var mMtodo = new Monad('inline','mMtodoDiv');
-var mMgame = new Monad('block','mMgameDiv');
+var mMgame = new Monad('none','mMgameDiv');
+
+function rand () {
+  var chars = ['A','B','C','D','E','F','G','H','I','J','K','L','M','N']
+  return chars.sort( function() { return 0.5 - Math.random() } ).join('');
+};
 
   function numProtect (x) {return (new Number (x))*1; }; 
 
@@ -1395,7 +1399,7 @@ var producer = {
   stop: function () {
   },
 
-  id: 0
+  id: 0,
 }
 
 var listener = {
@@ -1636,7 +1640,6 @@ var mMprimeFibBlurb = new Monad('','mMprimeFibBlurb');
 var mMelapsed = new Monad(0, 'mMelapsed');
 var mMcom2 = new Monad('block', 'mMcom2');
 var mMcom3 = new Monad('none', 'mMcom3');
-var mMcombo = new Monad('block', 'mMcombo');
 
 function elapsed (t) {
   var x = Date.now();
@@ -1852,7 +1855,7 @@ MonadState.prototype.clearPicked = function () {
   st[0][st[1]][3] = [];
   st[1] += 1;
   st.splice(this.s[1]+1, 0, st[0]); 
-  return new MonadState('gameMonad', st);
+  return window['gameMonad'] = new MonadState('gameMonad', st);
 }
 
 MonadState.prototype.run = function ([
@@ -1862,7 +1865,6 @@ MonadState.prototype.run = function ([
   picked = this.s[0][this.s[1]][3].slice(),
   display = this.s[0][this.s[1]][4].slice()
 ]) {
-  console.log('In MonadState run ***************%%%%%%%^^^^^^&&&&&&&');
   this.s[1] += 1;
   var newState = this.s.slice();
   newState[0].splice(this.s[1], 0, [score, goals, operator, picked, display])  
@@ -1917,32 +1919,18 @@ function MonadState4(g, state) {
   this.s = state;
   this.bnd = (func, ...args) => func(this.s, ...args);  
   this.ret = function (a) {
-    return window[this.id] = new MonadState4(this.id, a);
+    return window[this.id] = new MonadState(this.id, a);
   };
 };
 
-var registered = new MonadState4('registered', [] );
-
-MonadState4.prototype.run4 = function (str) {
-  var s = str.split(',');
-  return window[this.id] = new MonadState4(this.id, s);
+MonadState4.prototype.run = function (name, password) {
+  this.s.name = {name, password};
+  return this;
 };
 
-MonadState4.prototype.test = function (name) {
-  return this.s.some(v => v === name);
-};
-
-MonadState4.prototype.reg = 'inline';
-MonadState4.prototype.login = 'inline';
-MonadState4.prototype.clear = function () {this.s = []}
+var users = new MonadState4('users', {} );
 
 
-function rand () {
-  var chars = ['a','b','c','d','e','f','g','h','i','j','k','l','m','n']
-  return chars.sort( function() { return 0.5 - Math.random() } ).join('');
-};
-
-var rand$ = xs.of(rand());
 
 
 

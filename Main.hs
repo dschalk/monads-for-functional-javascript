@@ -1,7 +1,6 @@
-{-# LANGUAGE OverloadedStrings, TemplateHaskell #-}
+{-# LANGUAGE OverloadedStrings, DataKinds, TemplateHaskell #-}
 import Data.Monoid (mappend)
 import Data.Text (Text)
-import Data.Text.IO as D
 import Control.Exception (finally)
 import Control.Monad (forM_, forever)
 import Control.Concurrent (forkIO)
@@ -9,7 +8,7 @@ import Control.Concurrent.STM
 import Control.Monad.IO.Class (liftIO)
 import Network.WebSockets (sendClose)
 import qualified Data.Text as T
-import qualified Data.Text.IO as T
+import qualified Data.Text.IO as TIO
 import qualified Network.WebSockets as WS
 import qualified Network.Wai
 import qualified Network.Wai.Handler.Warp as Warp
@@ -26,23 +25,55 @@ import System.Directory
 
 solo :: Text
 solo = "solo"
+
 com = T.pack ","
+
+oh :: Text
+oh = "<o>"
 
 type Name = Text
 type Score = Int
 type Goal = Int
 type Group = Text
-type Client = (Name, Score, Goal, Group, WS.Connection)
+type Password = Text
+type Client = (Name, Score, Goal, Group, WS.Connection, Password)
 type ServerState = [Client]
 
-getName :: Client -> Name
-getName (a,_,_,_,_) = a
+getName :: Client -> Text
+getName (a,_,_,_,_,_) = a
 
-findGroup :: Client -> Name
-findGroup (_,_,_,d,_) = d
+getScore :: Client -> Score
+getScore (_,b,_,_,_,_) = b
+
+getGoal :: Client -> Goal
+getGoal (_,_,c,_,_,_) = c
+
+findGroup :: Client -> Group
+findGroup (_,_,_,d,_,_) = d
 
 getConn :: Client -> WS.Connection
-getConn (_,_,_,_,e) = e
+getConn (_,_,_,_,e,_) = e
+
+checkName :: String -> String -> IO Bool
+checkName n f = do
+  let b = splitOn "<@>" f
+  let c = map (splitOn "<o>") b
+  let d = [a | [a,b] <- c]
+  let e = any (n==) d
+  return e
+
+checkCombo nt ft = do
+  let n = T.unpack nt
+  print n
+  let f = T.unpack ft
+  print f
+  let c = splitOn "<@>" f
+  print c
+  let d = filter (\x -> (length x) > 0)  c
+  print d
+  let e = any (n==) c
+  print $ show e
+  return e
 
 get4 :: [String] -> [Int]
 get4 [_,_,_,a,b,c,d,_,_] = fmap read [a,b,c,d]
@@ -60,39 +91,54 @@ get2G :: [String] -> [Int]
 get2G [_,_,_,_,_,_,_,e,f] = fmap read [e,f]
 get2G _ = [8888, 8888]
 
-subState :: Text -> Text -> [(Text,Int,Int,Text,WS.Connection)] -> [(Text,Int,Int,Text,WS.Connection)]
-subState name gr state  | gr /= solo  = [ (a,b,c,d,e) | (a,b,c,d,e) <- state, gr == d ]
-                        | gr == solo = [ (a,b,c,d,e) | (a,b,c,d,e) <- state, name == a]
-
-groupNames :: Text -> [(Text,Int,Int,Text,WS.Connection)] -> [Text]
-groupNames gr state  | gr /= solo  = [ a `mappend` (", " :: Text) `mappend` T.pack (show b) `mappend` (", " :: Text) `mappend` T.pack (show c) | (a,b,c,d,e) <- state, gr == d ]
-                     | otherwise = [T.empty]
+subState :: Text -> Text -> [(Text,Int,Int,Text,WS.Connection,Text)] -> [(Text,Int,Int,Text,WS.Connection,Text)]
+subState name gr state  | gr /= solo  = [ (a,b,c,d,e,f) | (a,b,c,d,e,f) <- state, gr == d ]
+                        | gr == solo = [ (a,b,c,d,e,f) | (a,b,c,d,e,f) <- state, name == a]
 
 extract :: [Text] -> Text
 extract [x] = x
 extract _ = "Error in extract"
 
-getGroup :: Eq a => a -> [(a, t, t1, Text, t2)] -> Text
-getGroup name state = extract [ d | (a,_,_,d,_) <- state, name == a ]
+getGroup name state = extract [ d | (a,_,_,d,_,_) <- state, name == a ]
 
-first :: (a,a1,a2,a3,a4) -> a
-first (w,_,_,_,_) = w
+content :: [String] -> String
+content [] = "Empty List"
+content [x] = x
+content _ = "Major malfunction in the function named 'content'."
+
+extractClient :: [Client] -> Client
+extractClient [(a,b,c,d,e,f)] = (a,b,c,d,e,f)
+
+first :: (a,a1,a2,a3,a4,a5) -> a
+first (w,_,_,_,_,_) = w
 
 bcast :: Text -> ServerState -> IO ()
 bcast message clients = do
-    T.putStrLn message
-    forM_ clients $ \(_ ,_, _, _, conn) -> WS.sendTextData conn message
+    TIO.putStrLn message
+    forM_ clients $ \(_ ,_, _, _, conn,_) -> WS.sendTextData conn message
 
-textState :: (Show a1, Show a) => [(Text, a, a1, t, t1)] -> [Text]
-textState s = [ a  `mappend` " " `mappend` T.pack (show b) `mappend` " | " `mappend` T.pack (show c) `mappend` " | "  | (a,b,c,_,_) <- s]
+textState s = [ a  `mappend` " " `mappend` T.pack (show b) `mappend` " | " `mappend` T.pack (show c) `mappend` " | "  | (a,b,c,_,_,_) <- s]
 
 newGroup :: Text -> Text -> Client -> Client
-newGroup name group (a, b, c, d, e)   | name == a  = (a, 0, 0, group, e)
-                                      | otherwise = (a, b, c, d, e)
+newGroup name group (a, b, c, d, e, f)   | name == a  = (a, 0, 0, group, e, f)
+                                      | otherwise = (a, b, c, d, e, f)
+
+extractName :: String -> IO Text
+extractName combo = do
+  let a = splitOn "<o>" combo
+  let b = T.pack $ head a
+  return b
+
+newName :: Text -> Text -> Text -> Client -> Client
+newName name1 name2 name3(a, b, c, d, e, f) | name1 == a  = (name2, b, c, d, e, name3)
+                                    | otherwise = (a, b, c, d, e, f)
+
+changeName :: Text -> Text -> Text -> ServerState -> ServerState
+changeName name1 name2 name3 = map (newName name1 name2 name3)
 
 newGroupKeepScore :: Text -> Text -> Client -> Client
-newGroupKeepScore name group (a, b, c, d, e)  | name == a  = (a, b, c, group, e)
-                                   | otherwise = (a, b, c, d, e)
+newGroupKeepScore name group (a, b, c, d, e, f)  | name == a  = (a, b, c, group, e, f)
+                                   | otherwise = (a, b, c, d, e, f)
 
 changeGroupKeepScore :: Text -> Text -> ServerState -> ServerState
 changeGroupKeepScore name group = map (newGroupKeepScore name group)
@@ -101,12 +147,12 @@ changeGroup :: Text -> Text -> ServerState -> ServerState
 changeGroup name group = map (newGroup name group)
 
 changeS :: Text -> Int -> Int -> Client -> Client
-changeS x y z (a, b, c, d, e) | x == a    = (a, y, z, d, e)
-                         | otherwise = (a, b, c, d, e)
+changeS x y z (a, b, c, d, e, f) | x == a    = (a, y, z, d, e, f)
+                         | otherwise = (a, b, c, d, e, f)
 
 chg6 :: Text -> Int -> Int -> Client -> Client
-chg6 x y z (a, b, c, d, e) | x == a    = (a, y, z, d, e)
-                         | otherwise = (a, b, c, d, e)
+chg6 x y z (a, b, c, d, e, f) | x == a    = (a, y, z, d, e, f)
+                         | otherwise = (a, b, c, d, e, f)
 
 changeScore :: Text -> Int -> Int -> ServerState -> ServerState
 changeScore name k q = map (changeS name k q)
@@ -145,8 +191,8 @@ closeClientConn client s = do
 
 broadcast :: Text -> ServerState -> IO ()
 broadcast message clients = do
-    T.putStrLn message
-    forM_ clients $ \(_ , _, _, _, conn) -> WS.sendTextData conn message
+    TIO.putStrLn message
+    forM_ clients $ \(_ , _, _, _, conn,_) -> WS.sendTextData conn message
 
 main :: IO ()
 main = do
@@ -165,7 +211,7 @@ application state pending = do
     print "App is fired up"
     conn <- WS.acceptRequest pending
     msg <- WS.receiveData conn
-    print $ (T.unpack msg)
+    print $ T.unpack msg
     clients <- atomically $ readTMVar state
     case msg of
         _   | not (prefix `T.isPrefixOf` msg) ->
@@ -186,47 +232,54 @@ application state pending = do
                     talk conn state client
          where
                 prefix     = "CC#$42"
-                client     = (T.drop (T.length prefix) msg, 0, 0, T.pack "solo", conn)
+                namePword = T.splitOn oh $ T.drop (T.length prefix) msg
+                client     = ((head namePword) :: Name, 0, 0, solo, conn, (namePword !! 1) :: Password)
                 disconnect = do
                     let name = getName client
+                    print $ T.unpack name ++ " is leaving"
                     s <- atomically $ takeTMVar state
+                    let grp = getGroup name s 
                     let s' = removeClient client s
                     atomically $ putTMVar state s'
-                    let gr = getGroup (first client) s
-                    let subSt = subState (getName client) gr s'
-                    broadcast ("NN#$42," `mappend` gr `mappend` "," `mappend` name `mappend` ","
+                    let subSt = subState name grp s'
+                    broadcast ("NN#$42," `mappend` grp `mappend` ",nobody,"
                         `mappend` (T.pack "<br>") `mappend` T.concat (intersperse "<br>" (textState subSt))) subSt
 
+
 talk :: WS.Connection -> TMVar ServerState -> Client -> IO ()
-talk conn state (_, _, _, _, _) = forever $ do
-    print "In talk"
+talk conn state client = forever $ do
     msg <- WS.receiveData conn
-    print $ "Incoming msg " ++ (T.unpack msg)
-    let msgArray = splitOn "," (T.unpack msg)
-    let group = T.pack (msgArray !! 1)
-    let sender = T.pack (msgArray !! 2)
-    let extra = T.pack (msgArray !! 3)
-    let extra2 = T.pack (msgArray !! 4)
-    let extraNum = read (msgArray !! 3) :: Int
-    let extraNum2 = read (msgArray !! 4) :: Int
+    let msg2 = T.unpack msg
+    print $ "In talk. The incoming message is " ++ msg2
+    let mArr = splitOn "," msg2 
+    let msgArray = T.splitOn "," msg
+    let group = msgArray !! 1
+    let sender = msgArray !! 2
+    let extra = msgArray !! 3
+    let extra2 = msgArray !! 4
+    let extraNum = read (mArr !! 3) :: Int
+    let extraNum2 = read (mArr !! 4) :: Int
     let mes = "<><><><><> Outgoing message from Main.hs " :: Text
     let xcomments = "xcomments" :: FilePath
     let xnames = "xnames" :: FilePath
-
+    let at = T.pack "<@>"
+    let oh = T.pack "<o>"
+    let comma = T.pack ", "
+    let comma2 = T.pack ","
 
     if "CA#$42" `T.isPrefixOf` msg
         then
             do
                 old <- atomically $ takeTMVar state
-                let sg = get2G msgArray
+                let sg = get2G mArr
                 let new = chgScore sender (sg !! 0) (sg !! 1) old
                 atomically $ putTMVar state new
                 st <- atomically $ readTMVar state
                 let subSt = subState sender group st
                 broadcast ("NN#$42," `mappend` group `mappend` "," `mappend` sender `mappend` ","
                     `mappend` (T.pack "<br>") `mappend` T.concat (intersperse "<br>" (textState subSt))) subSt
-                z <- rText $ get4 msgArray
-                let x = get2 msgArray
+                z <- rText $ get4 mArr
+                let x = get2 mArr
                 print $ show z
                 print $ show x
                 broadcast ("CA#$42," `mappend` group `mappend` ","
@@ -234,7 +287,7 @@ talk conn state (_, _, _, _, _) = forever $ do
 
     else if "DZ#$42" `T.isPrefixOf` msg
             then do
-                y <- liftIO $ truck $ get5 msgArray
+                y <- liftIO $ truck $ get5 mArr
                 let yzz = T.pack y
                 st <- atomically $ readTMVar state
                 let subSt = subState sender group st
@@ -242,8 +295,8 @@ talk conn state (_, _, _, _, _) = forever $ do
                     `mappend` sender `mappend` "," `mappend` yzz) subSt
 
     else if "CE#$42" `T.isPrefixOf` msg ||
-        "CH#$42" `T.isPrefixOf` msg || "CK#$42" `T.isPrefixOf` msg || "XY#$42" `T.isPrefixOf` msg ||
-        "CQ#$42" `T.isPrefixOf` msg || "DE#$42" `T.isPrefixOf` msg || "EQ#$42" `T.isPrefixOf` msg ||
+        "CH#$42" `T.isPrefixOf` msg || "XY#$42" `T.isPrefixOf` msg ||
+        "DE#$42" `T.isPrefixOf` msg || "EQ#$42" `T.isPrefixOf` msg ||
         "GQ#$42" `T.isPrefixOf` msg || "CF#$42" `T.isPrefixOf` msg ||
         "CY#$42" `T.isPrefixOf` msg || "CR#$42" `T.isPrefixOf` msg || "CD#$42" `T.isPrefixOf` msg ||
         "IA#$42" `T.isPrefixOf` msg || "DY#$42" `T.isPrefixOf` msg
@@ -253,6 +306,9 @@ talk conn state (_, _, _, _, _) = forever $ do
                 let subSt = subState sender group st
                 broadcast msg subSt
                 print $ mes `mappend` msg
+                let names = [a | (a,_,_,_,_,_) <- st]
+                print "Here are the names which are currently being served"
+                mapM_ print names
 
     else if "CO#$42" `T.isPrefixOf` msg
         then
@@ -261,23 +317,20 @@ talk conn state (_, _, _, _, _) = forever $ do
                 let new = changeGroup sender extra old
                 atomically $ putTMVar state new
                 let subSt1 = subState sender extra new
-                tasks <- liftIO $ read2 (msgArray !! 3)
+                tasks <- liftIO $ read2 (mArr !! 3)
                 print $ "The server is sending: " ++ (T.unpack tasks)
                 st <- atomically $ readTMVar state
                 let subSt2 = subState sender group st
                 broadcast ("DD#$42," `mappend` group `mappend` "," `mappend` sender `mappend` "," `mappend` tasks) subSt1
-                -- broadcast ("DD#$42," `mappend` extra `mappend` "," `mappend` sender `mappend` "," `mappend` extra) subSt2
                 broadcast ("NN#$42," `mappend` group `mappend` "," `mappend` (T.pack "Bozo") `mappend` ","
                     `mappend` (T.pack "<br>") `mappend` T.concat (intersperse "<br>" (textState subSt2))) subSt2
 
-    else if "HQ#$42" `T.isPrefixOf` msg
+    else if "XX#$42" `T.isPrefixOf` msg
         then
             mask_ $ do
-                s <- atomically $ readTMVar state
-                let subSt = subState sender group s
-                broadcast msg subSt
-                broadcast ("CB#$42," `mappend` group `mappend` ","
-                    `mappend` sender `mappend` "," `mappend` T.concat (intersperse "<br>" (textState subSt))) subSt
+                s <- atomically $ takeTMVar state
+                let new = filter (\(a,_,_,_,_,_) -> a == sender) s
+                atomically $ putTMVar state new 
 
     else if "CG#$42" `T.isPrefixOf` msg
         then
@@ -295,11 +348,10 @@ talk conn state (_, _, _, _, _) = forever $ do
             do
                 st <- atomically $ readTMVar state
                 let subSt = subState sender group st
-                let shorter = drop 3 msgArray
+                let shorter = drop 3 mArr
                 let tex = Prelude.map T.pack shorter
-                let comma = T.pack ", "
                 let trunc = T.intercalate comma tex
-                save (msgArray !! 1) $ trunc
+                save (mArr !! 1) $ trunc
                 print $ "The server is sending: " ++ (T.unpack trunc)
                 broadcast ("DD#$42," `mappend` group `mappend` ","
                     `mappend` sender `mappend` "," `mappend` trunc) subSt
@@ -309,9 +361,9 @@ talk conn state (_, _, _, _, _) = forever $ do
             do
                 let comment = (T.splitOn "@" msg) !! 1
                 print comment
-                old <- T.readFile "COMMENTS.txt"
+                old <- TIO.readFile "COMMENTS.txt"
                 let allComments = old `mappend` "\n" `mappend` sender `mappend ` " commented: " `mappend` comment
-                T.writeFile "COMMENTS.txt" allComments
+                TIO.writeFile "COMMENTS.txt" allComments
                 st <- atomically $ readTMVar state
                 broadcast ("GG#$42," `mappend` group `mappend` ","
                     `mappend` sender `mappend` ",@" `mappend` allComments) st
@@ -319,7 +371,7 @@ talk conn state (_, _, _, _, _) = forever $ do
     else if "TG#$41" `T.isPrefixOf` msg
         then
             do
-                old <- T.readFile "COMMENTS.txt"
+                old <- TIO.readFile "COMMENTS.txt"
                 st <- atomically $ readTMVar state
                 broadcast ("TG#$41," `mappend` group `mappend` ","
                     `mappend` sender `mappend` ",@" `mappend` old) st
@@ -327,10 +379,10 @@ talk conn state (_, _, _, _, _) = forever $ do
     else if "TG#$40" `T.isPrefixOf` msg
         then
             do
-                old <- T.readFile "_count"
+                old <- TIO.readFile "_count"
                 let new = (read (T.unpack old) :: Integer) + 1
                 let new2 = T.pack(show new)
-                T.writeFile "_count" new2
+                TIO.writeFile "_count" new2
                 print new
                 st <- atomically $ readTMVar state
                 let subSt = subState sender group st
@@ -341,57 +393,77 @@ talk conn state (_, _, _, _, _) = forever $ do
     else if "TX#$42" `T.isPrefixOf` msg
         then
             do
-                removeFile (msgArray !! 1)
+                removeFile (mArr !! 1)
 
     else if "NT#$42" `T.isPrefixOf` msg
         then
             do
                 let task = (T.splitOn "@" (msg)) !! 1
-                save(msgArray !! 1) $ task
+                save(mArr !! 1) $ task
                 st <- atomically $ readTMVar state
                 let subSt = subState sender group st
-                tasks <- liftIO $ read2 (msgArray !! 1)
+                tasks <- liftIO $ read2 (mArr !! 1)
                 broadcast ("DD#$42," `mappend` group `mappend` ","
                     `mappend` sender `mappend` "," `mappend` tasks) subSt
 
-    else if "GG#$42" `T.isPrefixOf` msg
-        then
-            do
-                comms <- liftIO $ read2 xcomments
-                st <- atomically $ readTMVar state
-                save xcomments $ comms `mappend` extra
-                broadcast ("GG#$42," `mappend` group `mappend` ","
-                    `mappend` sender `mappend` "," `mappend` comms `mappend` extra) st
+-- ************************************************************************************ START COMMENTS
 
-    else if "GZ#$42" `T.isPrefixOf` msg
+    else if "GG#$42" `T.isPrefixOf` msg                              --APPEND
+        then
+            do
+                TIO.appendFile xcomments extra                       -- Append a comment
+                st <- atomically $ readTMVar state
+                broadcast ("GG#$42," `mappend` group `mappend` ","   -- Send the comment
+                    `mappend` sender `mappend` "," `mappend` extra ) st
+
+
+
+    else if "GZ#$42" `T.isPrefixOf` msg                            -- SEND ALL ON LOAD 
         then
             do
                 comms <- liftIO $ read2 xcomments
                 st <- atomically $ readTMVar state
-                broadcast ("GG#$42," `mappend` group `mappend` ","
+                broadcast ("GZ#$42," `mappend` group `mappend` ","
                     `mappend` sender `mappend` "," `mappend` comms) st
 
-    else if "CZ#$42" `T.isPrefixOf` msg
-            then do
-                names <- liftIO $ read2 xnames
-                st <- atomically $ readTMVar state
-                broadcast ("CZ#$42," `mappend` group `mappend` ","
-                    `mappend` sender `mappend` "," `mappend` names) st
 
-    else if "CR#$42" `T.isPrefixOf` msg
+
+    else if "GR#$42" `T.isPrefixOf` msg                          -- REPLACE A COMMENT 
         then
             do
-                let client = (T.drop 5 msg, 0, 0, T.pack "solo", conn)
-                let name = getName client
-                save xnames name;
-                st <- atomically $ takeTMVar state
-                let st2 = addClient client st
-                atomically $ putTMVar state st2
-                WS.sendTextData conn ("CR#$42,solo," `mappend` name `mappend` " ,joined" :: Text)
-                talk conn state client
+                comms <- liftIO $ read2 xcomments
+                st <- atomically $ readTMVar state
+                -- let new = replace extra extra2 comms
+                broadcast ("GR#$42," `mappend` group `mappend` ","
+                    `mappend` sender `mappend` "," `mappend` comms) st
 
+
+
+ 
+-- ********************************************************************************** END  COMMENTS                   
+
+-- ********************************************************************************** BEGIN LOGIN
+
+
+    else if "ZZ#$42" `T.isPrefixOf` msg                                  -- Load names on browser boot 
+        then
+            do
+                st <- atomically $ readTMVar state
+                names <- read2 xnames
+                let na = T.splitOn at names
+                let nam = fmap (T.splitOn oh) na
+                let namz = [a | [a,b] <- nam]
+                let namzes = T.intercalate comma2 namz;
+                broadcast ("ZZ#$42," `mappend` group `mappend` ","
+                    `mappend` sender `mappend` "," `mappend` namzes) st
+
+    
     else do
         print "*********************************************************"
         print "Message fell through to the bottom in Main.hs"
         print msg
         print "*********************************************************"
+
+    
+
+        

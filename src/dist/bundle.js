@@ -42,7 +42,7 @@
 /************************************************************************/
 /******/ ([
 /* 0 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	"use strict";
 
@@ -62,60 +62,46 @@
 	console.log('If you can read this you are in main.js <@><@><@><@><@><@><@><@>');
 	var textA = (0, _dom.h)('textarea', 'You bet!');
 	var formA = (0, _dom.h)('form#horses', 'You bet!');
-	console.log('textA is: ', textA);
-	console.log('formA is: ', formA);
+
+	socket.addEventListener('message', function (event) {
+	  console.log('<$><$><$><$><$><$><$><$><$> $$ Message from server: event.data ', event.data);
+	});
+
+	socket.onopen = function login() {
+	  var v = rand();
+	  var v2 = rand();
+	  pMname.ret(v);
+	  pMgroup.ret('solo');
+	  socket.send('CC#$42' + v + '<o>' + v2);
+	  pMclicked.ret([]);
+	};
 
 	function main(sources) {
-
-	  var worker$ = sources.WW.map(function (v) {
-	    console.log('Message from worker: ', v);
-	    v.preventDefault();
-	    mMZ21.bnd(function () {
-	      mM11.ret(v.data[1]);
-	    });
-	    mMZ22.bnd(function () {
-	      mM12.ret(v.data[1]);
-	    });
-	    mMZ23.bnd(function () {
-	      mM13.ret(v.data[1]);
-	    });
-	    mMZ24.bnd(function () {
-	      mM14.ret(v.data[1]);
-	    });
-	    mMZ25.bnd(function () {
-	      console.log('??????????????????????????????????????????? mMZ25.bnd - - - v', v);
-	      if (typeof v.data[1] === 'string') {
-	        console.log('Major malfunction in worker.js  Reporting from main thread', v.data[1]);
-	      } else {
-	        mMres.ret(v.data[0]);
-	        console.log('In main thread. Re-instanciating primesMonad with ', v.data[1]);
-	        primesMonad = new MonadState('primesMonad', v.data[1]);
-	      }
-	    });
-	    next(v.data[0], 'CA#$41', mMZ21);
-	    next(v.data[0], 'CB#$41', mMZ22);
-	    next(v.data[0], 'CC#$41', mMZ23);
-	    next(v.data[0], 'CD#$41', mMZ24);
-	    next(v.data[0], 'CE#$41', mMZ25);
-	  });
-
+	  console.log('0^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ got this far');
 	  var messages$ = sources.WS.map(function (e) {
 	    console.log(e);
 	    mMtem.ret(e.data.split(',')).bnd(function (v) {
 	      var group = v[1];
-	      var name = v[2];
+	      var sender = v[2];
 	      var extra = v[3];
 	      console.log('Websockets e.data.split message v: ', v);
 	      mMZ10.bnd(function () {
 	        gameMonad.run([v[7], v[8], 0, [], [v[3], v[4], v[5], v[6]]]);
 	      });
+	      mMZ11.bnd(function () {
+	        commentMonad.init(extra);
+	        socket.send('GZ#$42,' + pMgroup.x + ',' + v[2]); // Load the comments
+	      });
 	      mMZ12.bnd(function () {
-	        return mM6.ret(v[2] + ' successfully logged in.');
+	        mM6.ret(v[2] + ' successfully logged in.');
+	        socket.send('ZZ#$42,' + pMgroup.x + ',' + v[2]); // Load the registered names 
 	      });
 	      mMZ13.bnd(function () {
+	        console.log('The message arrived', messages);
 	        var message = v.slice(3, v.length).join(', ');
 	        var str = v[2] + ': ' + message;
 	        messages.unshift((0, _dom.h)('span', str), (0, _dom.h)('br'));
+	        console.log('The message was added to messages', messages);
 	      });
 	      mMZ14.bnd(function () {
 	        mMgoals2.ret('The winner is ' + v[2]);
@@ -142,20 +128,56 @@
 	        if (pMgroup.x != 'solo' || pMname.x === v[2]) updatePlayers(e.data);
 	      });
 
+	      //*********************************************************************** BEGIN NAMES
+
+	      /* mMZ20.bnd( () => {
+	         var ar = extra.split('<@>');              // Get names and passwords
+	         users.run(ar);
+	       });   
+	        mMZ21.bnd( () => {                                   // Append a name
+	         console.log('In mMZ21.bnd - - extra is', extra );
+	         users.run(extra);
+	       });  */
+
 	      mMZ19.bnd(function () {
+	        // Clear all comments
+	        commentMonad.clear();
 	        var str = e.data.substring(e.data.indexOf('<@>') + 3, e.data.length);
-	        commentMonad.run3(str);
-	        // console.log('Another message from mMZ19. str is', str )
+	        commentMonad.run3(str); // Receive all comments from server  
+	        console.log('Another message from mMZ19. str typeof str are', str, typeof str === 'undefined' ? 'undefined' : _typeof(str));
 	      });
 
-	      mMZ20.bnd(function () {
-	        var ar = extra.split('<o>');
-	        users.run(ar[0], ar[1]);
+	      mMZ23.bnd(function () {
+	        // Test registration CJ#$42
+	        socket.close();
+	        setTimeout(function () {
+	          socket = createWebSocket('/');
+	        }, 1500);
+	      });
+
+	      mMZ24.bnd(function () {
+	        // Test login CK#$42
+	        if (extra == "False") {
+	          mM15.ret("You should register before logging in");
+	          return;
+	        }
+	        if (extra == "True") {
+	          if (sender === pMname.x) pMname.ret(v[4]);
+	        }
+	      });
+
+	      mMZ25.bnd(function () {
+	        registered.run4(extra);
+	      });
+
+	      mMZ26.bnd(function () {
+	        socket.send('CJ#$42,' + pMgroup.x + ',' + pMname.x);
 	      });
 	    });
-	    mMtemp.ret(e.data.split(',')[0]).bnd(next, 'CA#$42', mMZ10).bnd(next, 'CD#$42', mMZ13).bnd(next, 'CE#$42', mMZ14).bnd(next, 'EE#$42', mMZ15).bnd(next, 'TG#$41', mMZ16).bnd(next, 'DD#$42', mMZ17).bnd(next, 'NN#$42', mMZ18).bnd(next, 'GG#$42', mMZ19).bnd(next, 'CC#$42', mMZ19).bnd(next, 'CZ#$42', mMZ20);
+	    ret(e.data.split(',')[0]).bnd(next, 'CA#$42', mMZ10).bnd(next, 'GZ#$42', mMZ11).bnd(next, 'CC#$42', mMZ12).bnd(next, 'CD#$42', mMZ13).bnd(next, 'CE#$42', mMZ14).bnd(next, 'EE#$42', mMZ15).bnd(next, 'TG#$41', mMZ16).bnd(next, 'DD#$42', mMZ17).bnd(next, 'NN#$42', mMZ18).bnd(next, 'GG#$42', mMZ19).bnd(next, 'CZ#$42', mMZ20).bnd(next, 'CX#$42', mMZ21).bnd(next, 'CJ#$42', mMZ23).bnd(next, 'CK#$42', mMZ24).bnd(next, 'ZZ#$42', mMZ25).bnd(next, 'CJ#$42', mMZ26);
 	  });
 
+	  console.log('1^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ got this far');
 	  function next(x, y, instance, z) {
 	    if (x == y) {
 	      instance.release(z);
@@ -163,113 +185,95 @@
 	    return ret(x);
 	  };
 
-	  var comClick$ = sources.DOM.select('#save').events('click');
+	  var comClick$ = sources.DOM.select('#comment').events('click');
 
 	  var comClickAction$ = comClick$.map(function (e) {
-	    console.log('In comClickAction$. <q><><><><>(a)(b)(c)(d)(e)<><><><><q> e is', e);
-	    var m = e.path[1].childNodes[4].value;
-	    var tx = pMname.x + '<o>' + m;
-	    var txt = tx.replace(rep2, "<<>>");
-	    socket.send('GG#$42,' + pMgroup.x + ',' + pMname.x + ',<@>' + txt);
-	    console.log('In comClickAction$. <><><><><>(a)(b)(c)(d)(e)<><><><><> txt is', txt);
+	    var com = e.target.value;
+	    var comm = com.replace(rep2, '<<>>');
+	    var commx = '<@>' + pMname.x + '<o>' + comm;
+	    socket.send('GG#$42,' + pMgroup.x + ',' + pMname.x + ',' + commx);
 	  });
 
-	  var edit4$ = sources.DOM.select('button#edit4').events('click');
+	  var edit4$ = sources.DOM.select('buton#edit4').events('click');
 
 	  var edit4Action$ = edit4$.map(function (e) {
 	    showEditB = 'inline-block';
 	    console.log('************ showEditB is', showEditB);
+	    commentMonad.comments[1].children[0].elm.style.display = 'none';
 	    var s = commentMonad.s.slice();
-	    commentMonad.run3(s);
 	  });
 
-	  var edit4B$ = sources.DOM.select('input#edit4B').events('keydown');
+	  var edit4B$ = sources.DOM.select('input#edit4B').events('click');
 
 	  var edit4BAction$ = edit4B$.map(function (e) {
-	    var ar2;
-	    var s = commentMonad.s.slice();
-	    var ar = s.split('@');
+	    var s0 = commentMonad.s.slice();
 	    var index = e.target.parentNode.id;
-	    console.log('In edit4BAction$ - - - index and ar are ', index, ar), ar2 = ar[index].split('<o>');
-	    ar2[1] = e.target.value;
-	    ar2.join('<o>');
-	    ar[index] = ar2;
-	    var str = ar.join('<@>');
-	    console.log('<$><$><$><$><$><$><$><$><$><$><$><$> str in edit4B$', str);
-	    socket.send('GG#$42,' + pMgroup.x + ',' + pMname.x + ',<@>' + str);
+	    s0[index][1] = e.target.value;
+	    var s1 = s0.map(function (v) {
+	      return v.join('<o>');
+	    });
+	    var s2 = s1.join('<@>');
+	    console.log('<$><$><$><$><$><$><$><$><$><$><$><$> s2 in edit4B$', s2);
+	    commentMonad.clear();
+	    socket.send('GS#$42,' + pMgroup.x + ',' + pMname.x + ',<@>' + s2);
 	  });
+
+	  var abcde = 'inline';
+	  var fghij = 'inline';
+
+	  var registerPress$ = sources.DOM.select('input.register').events('keypress');
+
+	  var registerPressAction$ = registerPress$.map(function (e) {
+	    if (e.keyCode === 13) {
+	      mM15.ret('');
+	      console.log('In registerPressAction$. e is', e);
+	      var index1 = e.target.value.indexOf(',');
+	      var index2 = e.target.value.lastIndexOf(',');
+	      if (index1 === -1 || index1 !== index2) {
+	        mM15.ret(' There should be one and only one comma');
+	        return;
+	      }
+	      var ar = e.target.value.split(',');
+	      var combo = ar.join('<o>');
+	      if (!registered.test(e.target.value)) {
+	        socket.send('CJ#$42,' + pMgroup.x + ',' + pMname.x + ',' + ar[0] + ',' + combo);
+	        pMcombo.ret(combo);
+	        pMname.ret(ar[0]);
+	      }
+	    }
+	  });
+
+	  /*
+	  
+	          if (users.s.includes(combo + '\n')) {
+	          console.log("NAME TAKEN OOOOOOOOOOOOOOOOOOOO");  
+	          mM15.ret('That user name is already in the system');
+	          return;
+	        }
+	        else {
+	          socket.send(`CV#$42,${pMgroup.x},${pMname.x},${ar[0]}`);
+	          pMcombo.ret(combo);
+	          pMclicked.ret([]);
+	          var name = ar[0];
+	          pMname.ret(name);
+	          pMpassword.ret(ar[1]);
+	          socket.send(`CG#$42,${pMgroup.x},${ar[0]},${pMscore.x},${pMgoals.x}`);
+	          abcde = 'none';
+	          fghij = 'none';
+	        }
+	      }
+	    });    */
 
 	  var loginPress$ = sources.DOM.select('input.login').events('keypress');
 
 	  var loginPressAction$ = loginPress$.map(function (e) {
-	    var v = e.target.value;
+	    console.log('In loginPressAction$ -<$><$><$><$><$><$><$><$><$><$> - - e is', e);
 	    if (e.keyCode === 13) {
-	      pMname.ret(v);
-	      pMgroup.ret('solo');
-	      socket.send('CC#$42' + v);
-	      pMclicked.ret([]);
-	      mMdice.ret('block');
-	      mMrightPanel.ret('block');
-	      mMrightPanel2.ret('none');
-	      mMgameDiv2.ret('block');
-	      mMlogin.ret('none');
-	      mMlog1.ret('none');
-	      mMlog2.ret('block');
-	      mMcaptionDiv.ret('block');
-	      mMchatDiv.ret('block');
-	      mMtodoDiv.ret('block');
-	      mMgameDiv.ret('block');
-	      mMchat.ret('inline');
-	      mMcaption.ret('inline');
-	      mMgame.ret('inline');
-	      mMtodo.ret('inline');
-	      mMcom2.ret('none');
-	      mMcom3.ret('block');
-	      socket.send('CG#$42,' + pMgroup.x + ',' + pMname.x + ',0,0');
-	      socket.send('GZ#$42,' + pMgroup.x + ',' + pMname.x);
-	      socket.send('CZ#$42,' + pMgroup.x + ',' + pMname.x);
-	    };
-	  });
-
-	  var loginPress2$ = sources.DOM.select('input.login2').events('keypress');
-
-	  var loginPressAction2$ = loginPress2$.map(function (e) {
-	    var index1 = e.target.value.indexOf(',');
-	    var index2 = e.target.value.lastIndexOf(',');
-	    if (index1 === -1 || index1 !== index2) {
-	      mM6.ret(' There should be one and only one comma');
-	      return;
-	    }
-	    var v = e.target.value.split(',');
-	    var combo = v.join('<o>');
-	    mMcombo.ret(combo);
-	    if (e.keyCode === 13) {
-	      pMname.ret(v[0]);
-	      pMpassword.ret(v[1]);
-	      user.run(v[0], v[1]);
-	      pMgroup.ret('solo');
-	      socket.send('CR#$42' + combo);
-	      pMclicked.ret([]);
-	      mMdice.ret('block');
-	      mMrightPanel.ret('block');
-	      mMrightPanel2.ret('none');
-	      mMgameDiv2.ret('block');
-	      mMlogin.ret('none');
-	      mMlog1.ret('none');
-	      mMlog2.ret('block');
-	      mMcaptionDiv.ret('block');
-	      mMchatDiv.ret('block');
-	      mMtodoDiv.ret('block');
-	      mMgameDiv.ret('block');
-	      mMchat.ret('inline');
-	      mMcaption.ret('inline');
-	      mMgame.ret('inline');
-	      mMtodo.ret('inline');
-	      mMcom2.ret('none');
-	      mMcom3.ret('block');
-	      socket.send('CG#$42,' + pMgroup.x + ',' + pMname.x + ',0,0');
-	      socket.send('GZ#$42,' + pMgroup.x + ',' + pMname.x);
-	      socket.send('CZ#$42,' + pMgroup.x + ',' + pMname.x);
+	      console.log('*********************************** In loginPressAction$ -- e.keyCode === 13');
+	      var ar = e.target.value.split(',');
+	      var str = ar.join('<o>');
+	      pMcombo.ret(str);
+	      socket.send('CK#$42,' + pMgroup.x + ',' + pMname.x + ',' + ar[0] + ',' + str);
 	    };
 	  });
 
@@ -289,6 +293,8 @@
 	  var messagePressAction$ = messagePress$.map(function (e) {
 	    if (e.keyCode === 13) {
 	      socket.send('CD#$42,' + pMgroup.x + ',' + pMname.x + ',' + e.target.value);
+	      console.log('In messagePressAction$ pMname.x is', pMname.x);
+	      console.log('$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$');
 	      e.target.value = '';
 	    }
 	  });
@@ -759,8 +765,6 @@
 	    worker.postMessage([mM9.x, e.target.value]);
 	  });
 
-	  mMrightPanel.ret('none');
-
 	  var pr$ = sources.DOM.select('#primeNumbers').events('keypress');
 
 	  var prAction$ = pr$.map(function (e) {
@@ -933,10 +937,10 @@
 
 	  console.log('Just before calcStream@');
 
-	  var calcStream$ = xs.merge(loginClickAction$, cbxAction$, chbox1Action$, chbox2Action$, comClickAction$, messagePressAction$, fA_c$, forwardAction$, backAction$, prAction$, factorsAction_b$, fA$, factorsP$, fA_b$, factorsP_b$, clearprimes$, worker$, workerB$, workerC$, workerD$, workerE$, workerF$, clearAction$, factorsAction$, primeFib$, fibPressAction$, quadAction$, edit1Action$, edit2Action$, edit4Action$, edit4BAction$, testWAction$, testZAction$, testQAction$, deleteAction$, newTaskAction$, chatClickAction$, gameClickAction$, todoClickAction$, captionClickAction$, groupPressAction$, rollClickAction$, loginPressAction$, loginPressAction2$, messages$, numClickAction$, opClickAction$);
+	  var calcStream$ = xs.merge(cbxAction$, chbox1Action$, chbox2Action$, comClickAction$, messagePressAction$, fA_c$, forwardAction$, backAction$, prAction$, factorsAction_b$, fA$, factorsP$, fA_b$, factorsP_b$, clearprimes$, workerB$, workerC$, workerD$, workerE$, workerF$, clearAction$, factorsAction$, primeFib$, fibPressAction$, quadAction$, edit1Action$, edit2Action$, edit4Action$, edit4BAction$, testWAction$, testZAction$, testQAction$, deleteAction$, newTaskAction$, chatClickAction$, gameClickAction$, todoClickAction$, captionClickAction$, groupPressAction$, rollClickAction$, loginPressAction$, registerPressAction$, messages$, numClickAction$, opClickAction$);
 	  return {
 	    DOM: calcStream$.map(function () {
-	      return (0, _dom.h)('div.main', [(0, _dom.h)('div.preContent', [(0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('div', 'FUNCTIONAL REACTIVE PROGRAMMING'), (0, _dom.h)('div', 'WITH CUSTOM MONADS AND CYCLE.JS')]), (0, _dom.h)('br'), (0, _dom.h)('div.image_3', [(0, _dom.h)('img.image_2', { props: { src: "logo.svg" } }), (0, _dom.h)('span', ' '), (0, _dom.h)('a', { props: { href: "https://cycle.js.org/", target: "_blank" } }, 'A Cycle.js application')]), (0, _dom.h)('div.content', [(0, _dom.h)('p', ' Front-end web developers might be interested in seeing how I encapsule procedures and state in objects whose methods conform to a JavaScript version of the Haskell monad laws. It is fascinating to see how reactivity is achieved in Cycle.js. The Haskell server might also be of interest. '), (0, _dom.h)('p', 'People who are developing a feel for function reactive programming can cut through to its essence by seeing it implemented in various contexts. The combination of Lodash, Immutable.js, and RxJS running in Node.js is one possibility. Here we demonstrate how a front-end developer can create monads to suit their purposes, and obtain all the reactivity they need by implementing them in a Cycle.js framework. '), (0, _dom.h)('span.tao', 'None of the monads employed in these demonstrations emit or listen for events, yet they immediately react to user input and websockets messages, causing Snabbdom to modify the DOM. Moreover, none of the virtual DOM elements contain functions that interact with callbacks. A video presentation showing how Cycle.js performs its magic can be fount at '), (0, _dom.h)('a', { props: { href: "https://egghead.io/lessons/rxjs-overview-of-cycle-js", target: "_blank" } }, 'Overview of Cycle.js.'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('span.tao', 'This project was created by, and is actively maintained by me, David Schalk. The code repository is at '), (0, _dom.h)('a', { props: { href: "https://github.com/dschalk/JS-monads-stable", target: "_blank" } }, 'JS-monads'), (0, _dom.h)('span', ' The master branch is a Motorcycle.js application using the Most.js library. That branch has been abandoned. This is an '), (0, _dom.h)('span', ' application using xstream instead of Most. The primary branch is named "xstream". '), (0, _dom.h)('span', ' You can comment at '), (0, _dom.h)('a', { props: { href: 'https://redd.it/60c2xx' } }, 'Reddit'), (0, _dom.h)('span', ' or in the '), (0, _dom.h)('a', { props: { href: '#cmment' } }, 'comment'), (0, _dom.h)('span', ' section below. '), (0, _dom.h)('br'), (0, _dom.h)('p', ' Snabbdom, xstream, and most of the monads and functions presented here are available in browser developer tools consoles and scratch pads. A production site would load these as modules, but this site is for experimention and learning. '), (0, _dom.h)('span.italic', ' These monads are like the Haskell monads in that they resemble the monads of category theory without actually being mathematical monads. See '), (0, _dom.h)('a', { props: { href: "http://math.andrej.com/2016/08/06/hask-is-not-a-category/", target: "_blank" } }, 'Hask is not a category.'), (0, _dom.h)('span', ' by Andrej Bauer and the '), (0, _dom.h)('a', { props: { href: '#discussion' } }, 'Discussion'), (0, _dom.h)('span', ' below. They provide a convenient interface for dealing with uncertainty and side effects in a purely functional manner. Adherence to the monad laws (see below) helps make the monads robust, versatile, and reliable tools for isolating and chaining sequences of javascript functions. State is modified in monads without mutating anything outside of them.'), (0, _dom.h)('p', ' The demonstrations include persistent, shared todo lists, text messaging, and a simulated dice game with a traversable history (all group members see your score decrease or increase as you navegate backwards and forwards). Monads are shown performing lengthy mathematical computations asycronously in web workers. Monads encapsulate state. The error checking monad carries occurances of NaN and runtime errors through sequences of computations much like the Haskell Maybe monad. '), (0, _dom.h)('span.tao', ' The game code is fairly concise and intuitive. A quick walk-through is presented '), (0, _dom.h)('a', { props: { href: '#gameExplanation' } }, 'here'), (0, _dom.h)('span', '. To see monadic functionality at work, I suggest that you take a look at the section captioned '), (0, _dom.h)('a', { props: { href: '#asyncExplanation' } }, 'Asynchronous Processes'), (0, _dom.h)('br'), (0, _dom.h)('p', ' But it might be best to first proceed down the page and see the examples of Monad instances manipulating data. If you are trying to wrap you head around the concept of pure, chainable functions, such as the functions in the Underscore and Jquery libraries, understanding Monad instances might finally put you in the comfort zone you seek. '), (0, _dom.h)('h3', 'The Game'), (0, _dom.h)('p', 'People who are in the same group, other than the default group named "solo", share the same todo list, chat messages, and simulated dice game. In order to see any of these, you must establish a unique identity on the server by logging in. The websockets connection terminates if the first message the server receives does not come from the sign in form. You can enter any random numbers, letters, or special characters you like. The server checks only to make sure someone hasn\'t already signed in with the sequence you have selected. If you log in with a name that is already in use, a message will appear and this page will be re-loaded in the browser after a four-second pause. '), (0, _dom.h)('p', ' Data for the traversable game history accumulates until a player scores three goals and wins. The data array is then erased and the application is ready to start accumulating a new history. '), (0, _dom.h)('div#log1', { style: { display: mMlog1.x } }), (0, _dom.h)('div#log2', { style: { display: 'block' } }, [(0, _dom.h)('p', 'IN ORDER TO SEE THE GAME, TODOLIST, AND CHAT DEMONSTRATIONS, YOU MUST ESTABLISH A WEBSOCKET IDENTITY. You can click the button and get a random identity or you can enter a name.'), (0, _dom.h)('span', 'Random identity'), (0, _dom.h)('button#login', { style: { fontSize: '14px', borderWidth: '0px' } }, 'random identity'), (0, _dom.h)('br'), (0, _dom.h)('span', 'Name: '), (0, _dom.h)('input.login', { props: { autofocus: false } })]), (0, _dom.h)('br'), (0, _dom.h)('p', ' If you would like to save a user name and password, enter both - SEPARATED BY A COMMA. This will enable you to save comments and later edit or delete them.'), (0, _dom.h)('span', 'Name: '), (0, _dom.h)('input.login2', { props: { autofocus: false } }), (0, _dom.h)('p', mM6.x)]), (0, _dom.h)('hr.len90', { style: { display: mMgameDiv2.x } }), (0, _dom.h)('br.len90', { style: { display: mMgameDiv2.x } }), (0, _dom.h)('div.heading', { style: { display: mMgameDiv2.x } }, 'Game, Todo List, Text Messages'), (0, _dom.h)('div#gameDiv2', { style: { display: mMgameDiv2.x } }, [(0, _dom.h)('br'), (0, _dom.h)('div#leftPanel', { style: { display: mMgameDiv2.x } }, [(0, _dom.h)('p', 'RULES: If clicking two numbers and an operator (in any order) results in 20 or 18, the score increases by 1 or 3, respectively. If the score becomes 0 or is evenly divisible by 5, 5 points are added. A score of 25 results in one goal. That can only be achieved by arriving at a score of 20, which jumps the score to 25. Directly computing 25 results in a score of 30, and no goal. Each time RL is clicked, one point is deducted. Three goals wins the game. '), (0, _dom.h)('br'), buttonNode, (0, _dom.h)('br'), (0, _dom.h)('button#4.op', 'add'), (0, _dom.h)('button#5.op', 'subtract'), (0, _dom.h)('button#6.op', 'mult'), (0, _dom.h)('button#7.op', 'div'), (0, _dom.h)('button#8.op', 'concat'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('div#dice', { style: { display: mMdice.x } }, [(0, _dom.h)('button#roll.tao1', 'ROLL'), (0, _dom.h)('button#back.tao100', 'BACK'), (0, _dom.h)('button#ahead.tao1', 'FORWARD'), (0, _dom.h)('div.tao', 'Selected numbers: ' + gameMonad.fetch3().join(', ') + ' '), (0, _dom.h)('div.tao', 'Operator: ' + gameMonad.fetch2() + ' '), (0, _dom.h)('div.tao', 'Index: ' + gameMonad.s[1]), (0, _dom.h)('button#clear', 'Clear selected numbers'), (0, _dom.h)('div#log2', { style: { display: mMlog2.x } }, [(0, _dom.h)('span', 'Change group: '), (0, _dom.h)('input#group', 'test')]), (0, _dom.h)('p', mMsoloAlert.x)])]), (0, _dom.h)('div#rightPanel', { style: { display: mMrightPanel.x } }, [(0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('button#todoButton.cow', { style: { color: '#C6EDB9' } }, 'TOGGLE TODO_LIST'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('button#chat2.cow', { style: { color: '#C6EDB9' } }, 'TOGGLE CHAT'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('div.game', 'Name: ' + pMname.x), (0, _dom.h)('div.game', 'Group: ' + pMgroup.x), (0, _dom.h)('pre.game', 'Currently online:\n(Name score | goals) '), (0, _dom.h)('div.game', { props: { color: "gold" } }, '' + pMdata.x), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('div#a100', ' _________________________________________________ '), (0, _dom.h)('p.italic', ' Join group "t" if you want to see some previously created tasks. '), (0, _dom.h)('br'), (0, _dom.h)('div#todoDiv', { style: { display: mMtodoDiv.x } }, [(0, _dom.h)('div#taskList', taskMonad.html), (0, _dom.h)('div', 'Enter author, responsible person, and task here: '), (0, _dom.h)('input.newTask')]), (0, _dom.h)('br'), (0, _dom.h)('span#alert', mMalert.x), (0, _dom.h)('br'), (0, _dom.h)('span#alert2'), (0, _dom.h)('br'), (0, _dom.h)('div#chatDiv', { style: { display: mMchatDiv.x } }, [(0, _dom.h)('div#messages', [(0, _dom.h)('span', 'Message: '), (0, _dom.h)('input.inputMessage'), (0, _dom.h)('div', messages), (0, _dom.h)('br')])])])]),
+	      return (0, _dom.h)('div.main', [(0, _dom.h)('div.preContent', [(0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('div', 'FUNCTIONAL REACTIVE PROGRAMMING'), (0, _dom.h)('div', 'WITH CUSTOM MONADS AND CYCLE.JS')]), (0, _dom.h)('br'), (0, _dom.h)('div.image_3', [(0, _dom.h)('img.image_2', { props: { src: "logo.svg" } }), (0, _dom.h)('span', ' '), (0, _dom.h)('a', { props: { href: "https://cycle.js.org/", target: "_blank" } }, 'A Cycle.js application')]), (0, _dom.h)('div.content', [(0, _dom.h)('p', ' Front-end web developers might be interested in seeing how I encapsule procedures and state in objects whose methods conform to a JavaScript version of the Haskell monad laws. It is fascinating to see how reactivity is achieved in Cycle.js. The Haskell server might also be of interest. '), (0, _dom.h)('p', 'People who are developing a feel for function reactive programming can cut through to its essence by seeing it implemented in various contexts. The combination of Lodash, Immutable.js, and RxJS running in Node.js is one possibility. Here we demonstrate how a front-end developer can create monads to suit their purposes, and obtain all the reactivity they need by implementing them in a Cycle.js framework. '), (0, _dom.h)('span.tao', 'None of the monads employed in these demonstrations emit or listen for events, yet they immediately react to user input and websockets messages, causing Snabbdom to modify the DOM. Moreover, none of the virtual DOM elements contain functions that interact with callbacks. A video presentation showing how Cycle.js performs its magic can be fount at '), (0, _dom.h)('a', { props: { href: "https://egghead.io/lessons/rxjs-overview-of-cycle-js", target: "_blank" } }, 'Overview of Cycle.js.'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('span.tao', 'This project was created by, and is actively maintained by me, David Schalk. The code repository is at '), (0, _dom.h)('a', { props: { href: "https://github.com/dschalk/JS-monads-stable", target: "_blank" } }, 'JS-monads'), (0, _dom.h)('span', ' The master branch is a Motorcycle.js application using the Most.js library. That branch has been abandoned. This is an '), (0, _dom.h)('span', ' application using xstream instead of Most. The primary branch is named "xstream". '), (0, _dom.h)('span', ' You can comment at '), (0, _dom.h)('a', { props: { href: 'https://redd.it/60c2xx' } }, 'Reddit'), (0, _dom.h)('span', ' or in the '), (0, _dom.h)('a', { props: { href: '#cmment' } }, 'comment'), (0, _dom.h)('span', ' section below. '), (0, _dom.h)('br'), (0, _dom.h)('p', ' Snabbdom, xstream, and most of the monads and functions presented here are available in browser developer tools consoles and scratch pads. A production site would load these as modules, but this site is for experimention and learning. '), (0, _dom.h)('span.italic', ' These monads are like the Haskell monads in that they resemble the monads of category theory without actually being mathematical monads. See '), (0, _dom.h)('a', { props: { href: "http://math.andrej.com/2016/08/06/hask-is-not-a-category/", target: "_blank" } }, 'Hask is not a category.'), (0, _dom.h)('span', ' by Andrej Bauer and the '), (0, _dom.h)('a', { props: { href: '#discussion' } }, 'Discussion'), (0, _dom.h)('span', ' below. They provide a convenient interface for dealing with uncertainty and side effects in a purely functional manner. Adherence to the monad laws (see below) helps make the monads robust, versatile, and reliable tools for isolating and chaining sequences of javascript functions. State is modified in monads without mutating anything outside of them.'), (0, _dom.h)('p', ' The demonstrations include persistent, shared todo lists, text messaging, and a simulated dice game with a traversable history (all group members see your score decrease or increase as you navegate backwards and forwards). Monads are shown performing lengthy mathematical computations asycronously in web workers. Monads encapsulate state. The error checking monad carries occurances of NaN and runtime errors through sequences of computations much like the Haskell Maybe monad. '), (0, _dom.h)('span.tao', ' The game code is fairly concise and intuitive. A quick walk-through is presented '), (0, _dom.h)('a', { props: { href: '#gameExplanation' } }, 'here'), (0, _dom.h)('span', '. To see monadic functionality at work, I suggest that you take a look at the section captioned '), (0, _dom.h)('a', { props: { href: '#asyncExplanation' } }, 'Asynchronous Processes'), (0, _dom.h)('br'), (0, _dom.h)('p', ' But it might be best to first proceed down the page and see the examples of Monad instances manipulating data. If you are trying to wrap you head around the concept of pure, chainable functions, such as the functions in the Underscore and Jquery libraries, understanding Monad instances might finally put you in the comfort zone you seek. '), (0, _dom.h)('h3', 'The Game'), (0, _dom.h)('p', 'People who are in the same group, other than the default group named "solo", share the same todo list, chat messages, and simulated dice game. In order to see any of these, you must establish a unique identity on the server by logging in. The websockets connection terminates if the first message the server receives does not come from the sign in form. You can enter any random numbers, letters, or special characters you like. The server checks only to make sure someone hasn\'t already signed in with the sequence you have selected. If you log in with a name that is already in use, a message will appear and this page will be re-loaded in the browser after a four-second pause. '), (0, _dom.h)('p', ' Data for the traversable game history accumulates until a player scores three goals and wins. The data array is then erased and the application is ready to start accumulating a new history. '), (0, _dom.h)('p', ' Your user name for trying out the game, todo list, and chat demonstrations is a random permutation of the first 14 letters of the alphabet. In the comments section, near the bottom of this page, you can chose your own user name and a password. These facilitate leaving comments which can later be revised or removed.'), (0, _dom.h)('br')]), (0, _dom.h)('hr.len90', { style: { display: mMgameDiv2.x } }), (0, _dom.h)('br.len90', { style: { display: mMgameDiv2.x } }), (0, _dom.h)('div.heading', { style: { display: mMgameDiv2.x } }, 'Game, Todo List, Text Messages'), (0, _dom.h)('div#gameDiv2', { style: { display: mMgameDiv2.x } }, [(0, _dom.h)('br'), (0, _dom.h)('div#leftPanel', { style: { display: mMgameDiv2.x } }, [(0, _dom.h)('p', 'RULES: If clicking two numbers and an operator (in any order) results in 20 or 18, the score increases by 1 or 3, respectively. If the score becomes 0 or is evenly divisible by 5, 5 points are added. A score of 25 results in one goal. That can only be achieved by arriving at a score of 20, which jumps the score to 25. Directly computing 25 results in a score of 30, and no goal. Each time RL is clicked, one point is deducted. Three goals wins the game. '), (0, _dom.h)('br'), buttonNode, (0, _dom.h)('br'), (0, _dom.h)('button#4.op', 'add'), (0, _dom.h)('button#5.op', 'subtract'), (0, _dom.h)('button#6.op', 'mult'), (0, _dom.h)('button#7.op', 'div'), (0, _dom.h)('button#8.op', 'concat'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('div#dice', { style: { display: mMdice.x } }, [(0, _dom.h)('button#roll.tao1', 'ROLL'), (0, _dom.h)('button#back.tao100', 'BACK'), (0, _dom.h)('button#ahead.tao1', 'FORWARD'), (0, _dom.h)('div.tao', 'Selected numbers: ' + gameMonad.fetch3().join(', ') + ' '), (0, _dom.h)('div.tao', 'Operator: ' + gameMonad.fetch2() + ' '), (0, _dom.h)('div.tao', 'Index: ' + gameMonad.s[1]), (0, _dom.h)('button#clear', 'Clear selected numbers'), (0, _dom.h)('p', ' When traversing the game history, any time there are two selected numbers you can click any operator to obtain a result; or you can clear the selected numbers and click numbers of your choice. You can do anything you want with displayed numbers, but if there is a previously selected operater and you click a second number (shown after "Selected numbers:"), a computation will be performed using the previously selected operator. If that happens and it isn\'t what you want, you can back up and select a different operater before clicking a second number.'), (0, _dom.h)('span', 'Change group: '), (0, _dom.h)('input#group', 'test'), (0, _dom.h)('p', mMsoloAlert.x)])]), (0, _dom.h)('div#rightPanel', { style: { display: 'block' } }, [(0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('button#todoButton.cow', 'TOGGLE TODO_LIST'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('button#chat2.cow', 'TOGGLE CHAT'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('div.game', 'Name: ' + pMname.x), (0, _dom.h)('div.game', 'Group: ' + pMgroup.x), (0, _dom.h)('pre.game', 'Currently online:\n(Name score | goals) '), (0, _dom.h)('div.game', { props: { color: "gold" } }, '' + pMdata.x), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('div#a100', ' _________________________________________________ '), (0, _dom.h)('p.italic', ' Join group "t" if you want to see some previously created tasks. '), (0, _dom.h)('br'), (0, _dom.h)('div#todoDiv', { style: { display: mMtodoDiv.x } }, [(0, _dom.h)('div#taskList', taskMonad.html), (0, _dom.h)('div', 'Enter author, responsible person, and task here: '), (0, _dom.h)('input.newTask')]), (0, _dom.h)('br'), (0, _dom.h)('span#alert', mMalert.x), (0, _dom.h)('br'), (0, _dom.h)('span#alert2'), (0, _dom.h)('br'), (0, _dom.h)('div#chatDiv', { style: { display: mMchatDiv.x } }, [(0, _dom.h)('div#messages', [(0, _dom.h)('span', 'Message: '), (0, _dom.h)('input.inputMessage'), (0, _dom.h)('div', messages), (0, _dom.h)('br')])])])]),
 	      // h('div#a100', ' ____________________________________________________________________________________________________________ ' ),
 	      (0, _dom.h)('div.content', [
 
@@ -960,7 +964,10 @@
 	      //************************************************************************** END GameTraversal
 
 
-	      (0, _dom.h)('h2', ' MonadSet '), (0, _dom.h)('p', ' The list of online group members at the bottom of the scoreboard is very responsive to change. When someone joins the group, changes to a different group, or closes a browser session, a message prefixed by NN#$42 goes out from the server providing group members with the updated list of group members. MonadSet acts upon messages prefixed by NN#$42. Here are the definitions of MonadSet and the MonadSet instance sMplayers '), _code2.default.MonadSet, (0, _dom.h)('h3', ' Websocket messages'), (0, _dom.h)('p#demo', ' Incoming websockets messages trigger updates to the game display, the chat display, and the todo list display. The members of a group see what other members are doing; and in the case of the todo list, they see the current list when they sign in to the group. When any member of a group adds a task, crosses it out as completed, edits its description, or removes it, the server updates the persistent file and all members of the group immediately see the revised list.  '), (0, _dom.h)('p', 'The code below shows how incoming websockets messages are routed. For example, mMZ10.release() is called when a new dice roll (prefixed by CA#$42) comes in.   '), _code2.default.messages, (0, _dom.h)('p#cmment', ' The "mMZ" prefix designates instances of MonadItter. An instance\'s bnd() method assigns its argument to its "p" attribute. "p" runs if and when its release() method is called. The next() function releases a specified MonadItter instance when the calling monad\'s value matches the specified value in the expression. In the messages$ stream, the MonadItter instance\'s bnd methods do not take argumants, but next is capable of sending arguments when bnd() is called on functions requiring them. Here is an example: '), (0, _dom.h)('a#tdList2', { props: { href: '#itterLink' } }, 'release() with arguments'), (0, _dom.h)('span#comment', ''), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('h2', 'COMMENTS'), (0, _dom.h)('div#com2', { style: { display: mMcom2.x } }, [(0, _dom.h)('span', 'In order to write a comment, please log in here with a user name and password, separated by a comma. If you are already logged in with only a name, log in again here: '), (0, _dom.h)('input.login2')]), (0, _dom.h)(' Your user name and password will be stored for future use.'), (0, _dom.h)('div#com2', { style: { display: mMcom3.x } }, [(0, _dom.h)('span', ' Since logging in does not involve unique identifiers, such as emal and password, I can either let anyone edit or delete any comment or else not provide a way to edit and delete comments. I chose the latter. If you want a comment edited or deleteted, send a message to '), (0, _dom.h)('a', { props: { href: "mailto:pyschalk@gmail.com" } }, 'email'), (0, _dom.h)('span', ' or send a personal tweet to @schalk1234'), (0, _dom.h)('br'), (0, _dom.h)('textarea.comment'), (0, _dom.h)('button#save', 'Save Comment'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('div', commentMonad.comments)]), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('a', { props: { href: '#top' } }, 'Back To The Top'), (0, _dom.h)('h2', 'Appendix - Under Construction '), (0, _dom.h)('h3', 'The functions that produce the examples'), (0, _dom.h)('p', ' Here are the definitions of MonadEr, its helper functions, and the function that serve as parameters to the bnd() method in the demonstration. '), _code2.default.monadEr, (0, _dom.h)('p', ' and here is the code that produced the Chrome console log entries: '), _code2.default.errorDemo, (0, _dom.h)('span.tao', ' When  a MonadEr instance encounters a function or an argument in quotation marks of types "undefined" or "NaN", a string gets pushed into the instance\'s e attribue. After that, the  bnd() method will not process any function other than clean(). It will stop at the'), (0, _dom.h)('span.turk', 'if (e.length > 0)'), (0, _dom.h)('span', 'block. clean() resets an instance to normal functioning mode by setting its e attribute back to []. '), (0, _dom.h)('br'), (0, _dom.h)('p'), (0, _dom.h)('p'), (0, _dom.h)('p', '.'), (0, _dom.h)('p', '.'), (0, _dom.h)('p', '.'), (0, _dom.h)('p', '.'), (0, _dom.h)('p', '.'), (0, _dom.h)('p'), (0, _dom.h)('p'), (0, _dom.h)('p'), (0, _dom.h)('p'), (0, _dom.h)('p')])]);
+	      (0, _dom.h)('h2', ' MonadSet '), (0, _dom.h)('p', ' The list of online group members at the bottom of the scoreboard is very responsive to change. When someone joins the group, changes to a different group, or closes a browser session, a message prefixed by NN#$42 goes out from the server providing group members with the updated list of group members. MonadSet acts upon messages prefixed by NN#$42. Here are the definitions of MonadSet and the MonadSet instance sMplayers '), _code2.default.MonadSet, (0, _dom.h)('h3', ' Websocket messages'), (0, _dom.h)('p#demo', ' Incoming websockets messages trigger updates to the game display, the chat display, and the todo list display. The members of a group see what other members are doing; and in the case of the todo list, they see the current list when they sign in to the group. When any member of a group adds a task, crosses it out as completed, edits its description, or removes it, the server updates the persistent file and all members of the group immediately see the revised list.  '), (0, _dom.h)('p', 'The code below shows how incoming websockets messages are routed. For example, mMZ10.release() is called when a new dice roll (prefixed by CA#$42) comes in.   '), _code2.default.messages, (0, _dom.h)('p#cmment', ' The "mMZ" prefix designates instances of MonadItter. An instance\'s bnd() method assigns its argument to its "p" attribute. "p" runs if and when its release() method is called. The next() function releases a specified MonadItter instance when the calling monad\'s value matches the specified value in the expression. In the messages$ stream, the MonadItter instance\'s bnd methods do not take argumants, but next is capable of sending arguments when bnd() is called on functions requiring them. Here is an example: '), (0, _dom.h)('a#tdList2', { props: { href: '#itterLink' } }, 'release() with arguments'), (0, _dom.h)('span#comment', ''), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('h1', ' The comments section is undergoing drastic revision. It is down for repairs'), (0, _dom.h)('h2', 'COMMENTS'), (0, _dom.h)('div#com2', { style: { display: abcde } }, [(0, _dom.h)('p', 'In order to write a comment, you need to be logged in with a user name and password. You can register and automatically be logged in below. Just enter some characters, separated by a comma. Everything before the comma is your user name; everything after is your password. '), (0, _dom.h)('input.register', { style: { display: abcde } }), (0, _dom.h)('p', ' If you already have a user name and passwork, you can enter them below, separated by a comma. '), (0, _dom.h)('input.login', { style: { display: fghij } }), (0, _dom.h)('p', 'Your user name and password will be stored for future use.'), (0, _dom.h)('div#com2', { style: { display: 'block' } }), (0, _dom.h)('span', ' When this page loads in the browser, a user name is automatically generated in order to establish a unique Websocket handle, named "socket". This makes it possible to exchange text messages with other group members, play the game, and work on a shared todo list. If you want to leave a comment, you should log in with a user name ')]),
+	      // h('a', { props: {href: "mailto:pyschalk@gmail.com"}}, 'email' ),
+	      // h('span', ' or send a personal tweet to @schalk1234' ),
+	      (0, _dom.h)('br'), (0, _dom.h)('textarea#comment'), (0, _dom.h)('button#commentClick', 'Save Comment'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('div', commentMonad.comments), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('a', { props: { href: '#top' } }, 'Back To The Top'), (0, _dom.h)('h2', 'Appendix - Under Construction '), (0, _dom.h)('h3', 'The functions that produce the examples'), (0, _dom.h)('p', ' Here are the definitions of MonadEr, its helper functions, and the function that serve as parameters to the bnd() method in the demonstration. '), _code2.default.monadEr, (0, _dom.h)('p', ' and here is the code that produced the Chrome console log entries: '), _code2.default.errorDemo, (0, _dom.h)('span.tao', ' When  a MonadEr instance encounters a function or an argument in quotation marks of types "undefined" or "NaN", a string gets pushed into the instance\'s e attribue. After that, the  bnd() method will not process any function other than clean(). It will stop at the'), (0, _dom.h)('span.turk', 'if (e.length > 0)'), (0, _dom.h)('span', 'block. clean() resets an instance to normal functioning mode by setting its e attribute back to []. '), (0, _dom.h)('br'), (0, _dom.h)('p'), (0, _dom.h)('p'), (0, _dom.h)('p', '.'), (0, _dom.h)('p', '.'), (0, _dom.h)('p', '.'), (0, _dom.h)('p', '.'), (0, _dom.h)('p', '.'), (0, _dom.h)('p'), (0, _dom.h)('p'), (0, _dom.h)('p'), (0, _dom.h)('p'), (0, _dom.h)('p')])]);
 	    })
 	  };
 	}
@@ -979,9 +986,9 @@
 
 	console.log('Here are sources.DOM) and typeof sources.DOM', sources.DOM, _typeof(sources.DOM));
 
-/***/ },
+/***/ }),
 /* 1 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	"use strict";
 	var base_1 = __webpack_require__(2);
@@ -1061,9 +1068,9 @@
 	exports.default = Cycle;
 	//# sourceMappingURL=index.js.map
 
-/***/ },
+/***/ }),
 /* 2 */
-/***/ function(module, exports) {
+/***/ (function(module, exports) {
 
 	"use strict";
 	function logToConsoleError(err) {
@@ -1199,9 +1206,9 @@
 	exports.default = Cycle;
 	//# sourceMappingURL=index.js.map
 
-/***/ },
+/***/ }),
 /* 3 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	"use strict";
 	var xstream_1 = __webpack_require__(4);
@@ -1249,9 +1256,9 @@
 	exports.default = XStreamAdapter;
 	//# sourceMappingURL=index.js.map
 
-/***/ },
+/***/ }),
 /* 4 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	"use strict";
 	var __extends = (this && this.__extends) || function (d, b) {
@@ -3125,16 +3132,16 @@
 	exports.default = Stream;
 	//# sourceMappingURL=index.js.map
 
-/***/ },
+/***/ }),
 /* 5 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	module.exports = __webpack_require__(6);
 
 
-/***/ },
+/***/ }),
 /* 6 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(global, module) {'use strict';
 
@@ -3167,9 +3174,9 @@
 	exports['default'] = result;
 	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }()), __webpack_require__(7)(module)))
 
-/***/ },
+/***/ }),
 /* 7 */
-/***/ function(module, exports) {
+/***/ (function(module, exports) {
 
 	module.exports = function(module) {
 		if(!module.webpackPolyfill) {
@@ -3183,9 +3190,9 @@
 	}
 
 
-/***/ },
+/***/ }),
 /* 8 */
-/***/ function(module, exports) {
+/***/ (function(module, exports) {
 
 	'use strict';
 
@@ -3211,9 +3218,9 @@
 		return result;
 	};
 
-/***/ },
+/***/ }),
 /* 9 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	"use strict";
 	var thunk = __webpack_require__(10);
@@ -3500,9 +3507,9 @@
 	exports.video = hyperscript_helpers_1.default.video;
 	//# sourceMappingURL=index.js.map
 
-/***/ },
+/***/ }),
 /* 10 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	var h = __webpack_require__(11);
 
@@ -3552,9 +3559,9 @@
 	};
 
 
-/***/ },
+/***/ }),
 /* 11 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	var VNode = __webpack_require__(12);
 	var is = __webpack_require__(13);
@@ -3591,9 +3598,9 @@
 	};
 
 
-/***/ },
+/***/ }),
 /* 12 */
-/***/ function(module, exports) {
+/***/ (function(module, exports) {
 
 	module.exports = function(sel, data, children, text, elm) {
 	  var key = data === undefined ? undefined : data.key;
@@ -3602,9 +3609,9 @@
 	};
 
 
-/***/ },
+/***/ }),
 /* 13 */
-/***/ function(module, exports) {
+/***/ (function(module, exports) {
 
 	module.exports = {
 	  array: Array.isArray,
@@ -3612,9 +3619,9 @@
 	};
 
 
-/***/ },
+/***/ }),
 /* 14 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	"use strict";
 	var snabbdom_1 = __webpack_require__(15);
@@ -3675,9 +3682,9 @@
 	exports.makeDOMDriver = makeDOMDriver;
 	//# sourceMappingURL=makeDOMDriver.js.map
 
-/***/ },
+/***/ }),
 /* 15 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	// jshint newcap: false
 	/* global require, module, document, Node */
@@ -3939,9 +3946,9 @@
 	module.exports = {init: init};
 
 
-/***/ },
+/***/ }),
 /* 16 */
-/***/ function(module, exports) {
+/***/ (function(module, exports) {
 
 	function createElement(tagName){
 	  return document.createElement(tagName);
@@ -3999,9 +4006,9 @@
 	};
 
 
-/***/ },
+/***/ }),
 /* 17 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	"use strict";
 	var xstream_adapter_1 = __webpack_require__(3);
@@ -4201,9 +4208,9 @@
 	exports.MainDOMSource = MainDOMSource;
 	//# sourceMappingURL=MainDOMSource.js.map
 
-/***/ },
+/***/ }),
 /* 18 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	"use strict";
 	var xstream_1 = __webpack_require__(4);
@@ -4242,9 +4249,9 @@
 	exports.DocumentDOMSource = DocumentDOMSource;
 	//# sourceMappingURL=DocumentDOMSource.js.map
 
-/***/ },
+/***/ }),
 /* 19 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	"use strict";
 	var xstream_1 = __webpack_require__(4);
@@ -4265,9 +4272,9 @@
 	exports.fromEvent = fromEvent;
 	//# sourceMappingURL=fromEvent.js.map
 
-/***/ },
+/***/ }),
 /* 20 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	"use strict";
 	var xstream_1 = __webpack_require__(4);
@@ -4306,9 +4313,9 @@
 	exports.BodyDOMSource = BodyDOMSource;
 	//# sourceMappingURL=BodyDOMSource.js.map
 
-/***/ },
+/***/ }),
 /* 21 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	"use strict";
 	var ScopeChecker_1 = __webpack_require__(22);
@@ -4353,9 +4360,9 @@
 	exports.ElementFinder = ElementFinder;
 	//# sourceMappingURL=ElementFinder.js.map
 
-/***/ },
+/***/ }),
 /* 22 */
-/***/ function(module, exports) {
+/***/ (function(module, exports) {
 
 	"use strict";
 	var ScopeChecker = (function () {
@@ -4380,9 +4387,9 @@
 	exports.ScopeChecker = ScopeChecker;
 	//# sourceMappingURL=ScopeChecker.js.map
 
-/***/ },
+/***/ }),
 /* 23 */
-/***/ function(module, exports) {
+/***/ (function(module, exports) {
 
 	"use strict";
 	function isElement(obj) {
@@ -4420,9 +4427,9 @@
 	exports.getSelectors = getSelectors;
 	//# sourceMappingURL=utils.js.map
 
-/***/ },
+/***/ }),
 /* 24 */
-/***/ function(module, exports) {
+/***/ (function(module, exports) {
 
 	'use strict';
 
@@ -4454,9 +4461,9 @@
 	  return false;
 	}
 
-/***/ },
+/***/ }),
 /* 25 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	"use strict";
 	var utils_1 = __webpack_require__(23);
@@ -4484,9 +4491,9 @@
 	exports.isolateSink = isolateSink;
 	//# sourceMappingURL=isolate.js.map
 
-/***/ },
+/***/ }),
 /* 26 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	"use strict";
 	var ScopeChecker_1 = __webpack_require__(22);
@@ -4623,9 +4630,9 @@
 	exports.EventDelegator = EventDelegator;
 	//# sourceMappingURL=EventDelegator.js.map
 
-/***/ },
+/***/ }),
 /* 27 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	"use strict";
 	var hyperscript_1 = __webpack_require__(28);
@@ -4660,9 +4667,9 @@
 	exports.VNodeWrapper = VNodeWrapper;
 	//# sourceMappingURL=VNodeWrapper.js.map
 
-/***/ },
+/***/ }),
 /* 28 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	"use strict";
 	var is = __webpack_require__(13);
@@ -4728,9 +4735,9 @@
 	;
 	//# sourceMappingURL=hyperscript.js.map
 
-/***/ },
+/***/ }),
 /* 29 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
 
@@ -4774,9 +4781,9 @@
 	  return cn.trim();
 	}
 
-/***/ },
+/***/ }),
 /* 30 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
 
@@ -4836,9 +4843,9 @@
 	  };
 	}
 
-/***/ },
+/***/ }),
 /* 31 */
-/***/ function(module, exports) {
+/***/ (function(module, exports) {
 
 	/*!
 	 * Cross-Browser Split 1.1.1
@@ -4948,9 +4955,9 @@
 	})();
 
 
-/***/ },
+/***/ }),
 /* 32 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	"use strict";
 	var ClassModule = __webpack_require__(33);
@@ -4969,9 +4976,9 @@
 	exports.default = [StyleModule, ClassModule, PropsModule, AttrsModule];
 	//# sourceMappingURL=modules.js.map
 
-/***/ },
+/***/ }),
 /* 33 */
-/***/ function(module, exports) {
+/***/ (function(module, exports) {
 
 	function updateClass(oldVnode, vnode) {
 	  var cur, name, elm = vnode.elm,
@@ -4993,9 +5000,9 @@
 	module.exports = {create: updateClass, update: updateClass};
 
 
-/***/ },
+/***/ }),
 /* 34 */
-/***/ function(module, exports) {
+/***/ (function(module, exports) {
 
 	function updateProps(oldVnode, vnode) {
 	  var key, cur, old, elm = vnode.elm,
@@ -5017,9 +5024,9 @@
 	module.exports = {create: updateProps, update: updateProps};
 
 
-/***/ },
+/***/ }),
 /* 35 */
-/***/ function(module, exports) {
+/***/ (function(module, exports) {
 
 	var booleanAttrs = ["allowfullscreen", "async", "autofocus", "autoplay", "checked", "compact", "controls", "declare", 
 	                "default", "defaultchecked", "defaultmuted", "defaultselected", "defer", "disabled", "draggable", 
@@ -5062,9 +5069,9 @@
 	module.exports = {create: updateAttrs, update: updateAttrs};
 
 
-/***/ },
+/***/ }),
 /* 36 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	var is = __webpack_require__(13);
 
@@ -5126,9 +5133,9 @@
 	module.exports = {create: updateEventListeners, update: updateEventListeners};
 
 
-/***/ },
+/***/ }),
 /* 37 */
-/***/ function(module, exports) {
+/***/ (function(module, exports) {
 
 	var raf = (typeof window !== 'undefined' && window.requestAnimationFrame) || setTimeout;
 	var nextFrame = function(fn) { raf(function() { raf(fn); }); };
@@ -5196,9 +5203,9 @@
 	module.exports = {create: updateStyle, update: updateStyle, destroy: applyDestroyStyle, remove: applyRemoveStyle};
 
 
-/***/ },
+/***/ }),
 /* 38 */
-/***/ function(module, exports) {
+/***/ (function(module, exports) {
 
 	var raf = (typeof window !== 'undefined' && window.requestAnimationFrame) || setTimeout;
 	var nextFrame = function(fn) { raf(function() { raf(fn); }); };
@@ -5354,9 +5361,9 @@
 	module.exports = {pre: pre, create: create, destroy: destroy, post: post};
 
 
-/***/ },
+/***/ }),
 /* 39 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	"use strict";
 	var MapPolyfill = __webpack_require__(40);
@@ -5463,18 +5470,18 @@
 	exports.IsolateModule = IsolateModule;
 	//# sourceMappingURL=isolateModule.js.map
 
-/***/ },
+/***/ }),
 /* 40 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
 
 	module.exports = __webpack_require__(41)() ? Map : __webpack_require__(42);
 
 
-/***/ },
+/***/ }),
 /* 41 */
-/***/ function(module, exports) {
+/***/ (function(module, exports) {
 
 	'use strict';
 
@@ -5510,9 +5517,9 @@
 	};
 
 
-/***/ },
+/***/ }),
 /* 42 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
 
@@ -5620,9 +5627,9 @@
 	Object.defineProperty(MapPoly.prototype, Symbol.toStringTag, d('c', 'Map'));
 
 
-/***/ },
+/***/ }),
 /* 43 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	// Inspired by Google Closure:
 	// http://closure-library.googlecode.com/svn/docs/
@@ -5638,9 +5645,9 @@
 	};
 
 
-/***/ },
+/***/ }),
 /* 44 */
-/***/ function(module, exports) {
+/***/ (function(module, exports) {
 
 	'use strict';
 
@@ -5650,9 +5657,9 @@
 	};
 
 
-/***/ },
+/***/ }),
 /* 45 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
 
@@ -5685,9 +5692,9 @@
 	};
 
 
-/***/ },
+/***/ }),
 /* 46 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
 
@@ -5698,9 +5705,9 @@
 	module.exports = function (value) { return max(0, toInteger(value)); };
 
 
-/***/ },
+/***/ }),
 /* 47 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
 
@@ -5716,9 +5723,9 @@
 	};
 
 
-/***/ },
+/***/ }),
 /* 48 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
 
@@ -5727,9 +5734,9 @@
 		: __webpack_require__(50);
 
 
-/***/ },
+/***/ }),
 /* 49 */
-/***/ function(module, exports) {
+/***/ (function(module, exports) {
 
 	'use strict';
 
@@ -5740,9 +5747,9 @@
 	};
 
 
-/***/ },
+/***/ }),
 /* 50 */
-/***/ function(module, exports) {
+/***/ (function(module, exports) {
 
 	'use strict';
 
@@ -5753,9 +5760,9 @@
 	};
 
 
-/***/ },
+/***/ }),
 /* 51 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
 
@@ -5764,9 +5771,9 @@
 		: __webpack_require__(53);
 
 
-/***/ },
+/***/ }),
 /* 52 */
-/***/ function(module, exports) {
+/***/ (function(module, exports) {
 
 	'use strict';
 
@@ -5781,9 +5788,9 @@
 	};
 
 
-/***/ },
+/***/ }),
 /* 53 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	// Big thanks to @WebReflection for sorting this out
 	// https://gist.github.com/WebReflection/5593554
@@ -5860,9 +5867,9 @@
 	__webpack_require__(55);
 
 
-/***/ },
+/***/ }),
 /* 54 */
-/***/ function(module, exports) {
+/***/ (function(module, exports) {
 
 	'use strict';
 
@@ -5873,9 +5880,9 @@
 	};
 
 
-/***/ },
+/***/ }),
 /* 55 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	// Workaround for http://code.google.com/p/v8/issues/detail?id=2804
 
@@ -5915,9 +5922,9 @@
 	}());
 
 
-/***/ },
+/***/ }),
 /* 56 */
-/***/ function(module, exports) {
+/***/ (function(module, exports) {
 
 	'use strict';
 
@@ -5927,9 +5934,9 @@
 	};
 
 
-/***/ },
+/***/ }),
 /* 57 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
 
@@ -5996,9 +6003,9 @@
 	};
 
 
-/***/ },
+/***/ }),
 /* 58 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
 
@@ -6007,9 +6014,9 @@
 		: __webpack_require__(60);
 
 
-/***/ },
+/***/ }),
 /* 59 */
-/***/ function(module, exports) {
+/***/ (function(module, exports) {
 
 	'use strict';
 
@@ -6022,9 +6029,9 @@
 	};
 
 
-/***/ },
+/***/ }),
 /* 60 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
 
@@ -6050,9 +6057,9 @@
 	};
 
 
-/***/ },
+/***/ }),
 /* 61 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
 
@@ -6061,9 +6068,9 @@
 		: __webpack_require__(63);
 
 
-/***/ },
+/***/ }),
 /* 62 */
-/***/ function(module, exports) {
+/***/ (function(module, exports) {
 
 	'use strict';
 
@@ -6075,9 +6082,9 @@
 	};
 
 
-/***/ },
+/***/ }),
 /* 63 */
-/***/ function(module, exports) {
+/***/ (function(module, exports) {
 
 	'use strict';
 
@@ -6088,9 +6095,9 @@
 	};
 
 
-/***/ },
+/***/ }),
 /* 64 */
-/***/ function(module, exports) {
+/***/ (function(module, exports) {
 
 	'use strict';
 
@@ -6111,9 +6118,9 @@
 	};
 
 
-/***/ },
+/***/ }),
 /* 65 */
-/***/ function(module, exports) {
+/***/ (function(module, exports) {
 
 	// Deprecated
 
@@ -6122,9 +6129,9 @@
 	module.exports = function (obj) { return typeof obj === 'function'; };
 
 
-/***/ },
+/***/ }),
 /* 66 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
 
@@ -6133,9 +6140,9 @@
 		: __webpack_require__(68);
 
 
-/***/ },
+/***/ }),
 /* 67 */
-/***/ function(module, exports) {
+/***/ (function(module, exports) {
 
 	'use strict';
 
@@ -6147,9 +6154,9 @@
 	};
 
 
-/***/ },
+/***/ }),
 /* 68 */
-/***/ function(module, exports) {
+/***/ (function(module, exports) {
 
 	'use strict';
 
@@ -6160,9 +6167,9 @@
 	};
 
 
-/***/ },
+/***/ }),
 /* 69 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
 
@@ -6298,18 +6305,18 @@
 	exports.methods = methods;
 
 
-/***/ },
+/***/ }),
 /* 70 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
 
 	module.exports = __webpack_require__(71)() ? Symbol : __webpack_require__(72);
 
 
-/***/ },
+/***/ }),
 /* 71 */
-/***/ function(module, exports) {
+/***/ (function(module, exports) {
 
 	'use strict';
 
@@ -6330,9 +6337,9 @@
 	};
 
 
-/***/ },
+/***/ }),
 /* 72 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	// ES2015 Symbol polyfill for environments that do not (or partially) support it
 
@@ -6454,9 +6461,9 @@
 		d('c', SymbolPolyfill.prototype[SymbolPolyfill.toPrimitive]));
 
 
-/***/ },
+/***/ }),
 /* 73 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
 
@@ -6468,9 +6475,9 @@
 	};
 
 
-/***/ },
+/***/ }),
 /* 74 */
-/***/ function(module, exports) {
+/***/ (function(module, exports) {
 
 	'use strict';
 
@@ -6483,9 +6490,9 @@
 	};
 
 
-/***/ },
+/***/ }),
 /* 75 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
 
@@ -6497,9 +6504,9 @@
 	};
 
 
-/***/ },
+/***/ }),
 /* 76 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
 
@@ -6518,9 +6525,9 @@
 	};
 
 
-/***/ },
+/***/ }),
 /* 77 */
-/***/ function(module, exports) {
+/***/ (function(module, exports) {
 
 	'use strict';
 
@@ -6531,9 +6538,9 @@
 	module.exports = function (x) { return (toString.call(x) === id); };
 
 
-/***/ },
+/***/ }),
 /* 78 */
-/***/ function(module, exports) {
+/***/ (function(module, exports) {
 
 	'use strict';
 
@@ -6547,9 +6554,9 @@
 	};
 
 
-/***/ },
+/***/ }),
 /* 79 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
 
@@ -6599,9 +6606,9 @@
 	};
 
 
-/***/ },
+/***/ }),
 /* 80 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
 
@@ -6620,9 +6627,9 @@
 	};
 
 
-/***/ },
+/***/ }),
 /* 81 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
 
@@ -6656,9 +6663,9 @@
 	});
 
 
-/***/ },
+/***/ }),
 /* 82 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
 
@@ -6752,9 +6759,9 @@
 	defineProperty(Iterator.prototype, Symbol.toStringTag, d('', 'Iterator'));
 
 
-/***/ },
+/***/ }),
 /* 83 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
 
@@ -6790,9 +6797,9 @@
 	};
 
 
-/***/ },
+/***/ }),
 /* 84 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
 
@@ -6806,9 +6813,9 @@
 	};
 
 
-/***/ },
+/***/ }),
 /* 85 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
 
@@ -6827,18 +6834,18 @@
 	};
 
 
-/***/ },
+/***/ }),
 /* 86 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
 
 	module.exports = __webpack_require__(87)('forEach');
 
 
-/***/ },
+/***/ }),
 /* 87 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	// Internal method, used by iteration functions.
 	// Calls a function for each key-value pair found in object
@@ -6871,9 +6878,9 @@
 	};
 
 
-/***/ },
+/***/ }),
 /* 88 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	// Thanks @mathiasbynens
 	// http://mathiasbynens.be/notes/javascript-unicode#iterating-over-symbols
@@ -6914,9 +6921,9 @@
 	});
 
 
-/***/ },
+/***/ }),
 /* 89 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
 
@@ -6958,9 +6965,9 @@
 		d('c', 'Map Iterator'));
 
 
-/***/ },
+/***/ }),
 /* 90 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
 
@@ -6968,9 +6975,9 @@
 		'value', 'key+value');
 
 
-/***/ },
+/***/ }),
 /* 91 */
-/***/ function(module, exports) {
+/***/ (function(module, exports) {
 
 	'use strict';
 
@@ -6983,9 +6990,9 @@
 	};
 
 
-/***/ },
+/***/ }),
 /* 92 */
-/***/ function(module, exports) {
+/***/ (function(module, exports) {
 
 	// Exports true if environment provides native `Map` implementation,
 	// whatever that is.
@@ -6998,9 +7005,9 @@
 	}());
 
 
-/***/ },
+/***/ }),
 /* 93 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	"use strict";
 	var xstream_adapter_1 = __webpack_require__(3);
@@ -7054,9 +7061,9 @@
 	exports.makeTransposeVNode = makeTransposeVNode;
 	//# sourceMappingURL=transposition.js.map
 
-/***/ },
+/***/ }),
 /* 94 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	"use strict";
 	var xstream_adapter_1 = __webpack_require__(3);
@@ -7087,9 +7094,9 @@
 	exports.makeHTMLDriver = makeHTMLDriver;
 	//# sourceMappingURL=makeHTMLDriver.js.map
 
-/***/ },
+/***/ }),
 /* 95 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	"use strict";
 	var xstream_1 = __webpack_require__(4);
@@ -7119,18 +7126,18 @@
 	exports.HTMLSource = HTMLSource;
 	//# sourceMappingURL=HTMLSource.js.map
 
-/***/ },
+/***/ }),
 /* 96 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	
 	var init = __webpack_require__(97);
 
 	module.exports = init([__webpack_require__(101), __webpack_require__(118)]);
 
-/***/ },
+/***/ }),
 /* 97 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	
 	var parseSelector = __webpack_require__(98);
@@ -7192,9 +7199,9 @@
 	  };
 	};
 
-/***/ },
+/***/ }),
 /* 98 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	
 	// https://github.com/Matt-Esch/virtual-dom/blob/master/virtual-hyperscript/parse-tag.js
@@ -7243,9 +7250,9 @@
 	  };
 	};
 
-/***/ },
+/***/ }),
 /* 99 */
-/***/ function(module, exports) {
+/***/ (function(module, exports) {
 
 	
 	// http://www.w3.org/html/wg/drafts/html/master/syntax.html#void-elements
@@ -7268,9 +7275,9 @@
 	  wbr: true
 	};
 
-/***/ },
+/***/ }),
 /* 100 */
-/***/ function(module, exports) {
+/***/ (function(module, exports) {
 
 	
 	// All SVG children elements, not in this list, should self-close
@@ -7295,9 +7302,9 @@
 	  'title': true
 	};
 
-/***/ },
+/***/ }),
 /* 101 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	
 	var forOwn = __webpack_require__(102);
@@ -7364,9 +7371,9 @@
 	  });
 	}
 
-/***/ },
+/***/ }),
 /* 102 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	/**
 	 * lodash 3.0.2 (Custom Build) <https://lodash.com/>
@@ -7441,9 +7448,9 @@
 	module.exports = forOwn;
 
 
-/***/ },
+/***/ }),
 /* 103 */
-/***/ function(module, exports) {
+/***/ (function(module, exports) {
 
 	/**
 	 * lodash 3.0.3 (Custom Build) <https://lodash.com/>
@@ -7495,9 +7502,9 @@
 	module.exports = baseFor;
 
 
-/***/ },
+/***/ }),
 /* 104 */
-/***/ function(module, exports) {
+/***/ (function(module, exports) {
 
 	/**
 	 * lodash 3.0.1 (Custom Build) <https://lodash.com/>
@@ -7566,9 +7573,9 @@
 	module.exports = bindCallback;
 
 
-/***/ },
+/***/ }),
 /* 105 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	/**
 	 * lodash 3.1.2 (Custom Build) <https://lodash.com/>
@@ -7808,9 +7815,9 @@
 	module.exports = keys;
 
 
-/***/ },
+/***/ }),
 /* 106 */
-/***/ function(module, exports) {
+/***/ (function(module, exports) {
 
 	/**
 	 * lodash 3.9.1 (Custom Build) <https://lodash.com/>
@@ -7951,9 +7958,9 @@
 	module.exports = getNative;
 
 
-/***/ },
+/***/ }),
 /* 107 */
-/***/ function(module, exports) {
+/***/ (function(module, exports) {
 
 	/**
 	 * lodash (Custom Build) <https://lodash.com/>
@@ -8186,9 +8193,9 @@
 	module.exports = isArguments;
 
 
-/***/ },
+/***/ }),
 /* 108 */
-/***/ function(module, exports) {
+/***/ (function(module, exports) {
 
 	/**
 	 * lodash 3.0.4 (Custom Build) <https://lodash.com/>
@@ -8372,9 +8379,9 @@
 	module.exports = isArray;
 
 
-/***/ },
+/***/ }),
 /* 109 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	/**
 	 * lodash 3.2.0 (Custom Build) <https://lodash.com/>
@@ -8558,9 +8565,9 @@
 	module.exports = escape;
 
 
-/***/ },
+/***/ }),
 /* 110 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(module, global) {/**
 	 * lodash 3.0.1 (Custom Build) <https://lodash.com/>
@@ -8624,9 +8631,9 @@
 
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(7)(module), (function() { return this; }())))
 
-/***/ },
+/***/ }),
 /* 111 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	/**
 	 * lodash 3.1.0 (Custom Build) <https://lodash.com/>
@@ -8665,9 +8672,9 @@
 	module.exports = union;
 
 
-/***/ },
+/***/ }),
 /* 112 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	/**
 	 * lodash 3.1.4 (Custom Build) <https://lodash.com/>
@@ -8802,9 +8809,9 @@
 	module.exports = baseFlatten;
 
 
-/***/ },
+/***/ }),
 /* 113 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	/**
 	 * lodash 3.0.3 (Custom Build) <https://lodash.com/>
@@ -8876,9 +8883,9 @@
 	module.exports = baseUniq;
 
 
-/***/ },
+/***/ }),
 /* 114 */
-/***/ function(module, exports) {
+/***/ (function(module, exports) {
 
 	/**
 	 * lodash 3.1.0 (Custom Build) <https://lodash.com/>
@@ -8939,9 +8946,9 @@
 	module.exports = baseIndexOf;
 
 
-/***/ },
+/***/ }),
 /* 115 */
-/***/ function(module, exports) {
+/***/ (function(module, exports) {
 
 	/**
 	 * lodash 3.0.2 (Custom Build) <https://lodash.com/>
@@ -8998,9 +9005,9 @@
 	module.exports = cacheIndexOf;
 
 
-/***/ },
+/***/ }),
 /* 116 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(global) {/**
 	 * lodash 3.1.2 (Custom Build) <https://lodash.com/>
@@ -9096,9 +9103,9 @@
 
 	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }())))
 
-/***/ },
+/***/ }),
 /* 117 */
-/***/ function(module, exports) {
+/***/ (function(module, exports) {
 
 	/**
 	 * lodash 3.6.1 (Custom Build) <https://lodash.com/>
@@ -9169,9 +9176,9 @@
 	module.exports = restParam;
 
 
-/***/ },
+/***/ }),
 /* 118 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
@@ -9200,9 +9207,9 @@
 	  return styles.length ? 'style="' + styles.join('; ') + '"' : '';
 	};
 
-/***/ },
+/***/ }),
 /* 119 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	/**
 	 * lodash 3.1.1 (Custom Build) <https://lodash.com/>
@@ -9278,9 +9285,9 @@
 	module.exports = kebabCase;
 
 
-/***/ },
+/***/ }),
 /* 120 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	/**
 	 * lodash 3.2.0 (Custom Build) <https://lodash.com/>
@@ -9467,9 +9474,9 @@
 	module.exports = deburr;
 
 
-/***/ },
+/***/ }),
 /* 121 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	/**
 	 * lodash 3.2.0 (Custom Build) <https://lodash.com/>
@@ -9671,9 +9678,9 @@
 	module.exports = words;
 
 
-/***/ },
+/***/ }),
 /* 122 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	"use strict";
 	var xstream_adapter_1 = __webpack_require__(3);
@@ -9746,9 +9753,9 @@
 	exports.mockDOMSource = mockDOMSource;
 	//# sourceMappingURL=mockDOMSource.js.map
 
-/***/ },
+/***/ }),
 /* 123 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	"use strict";
 	var hyperscript_1 = __webpack_require__(28);
@@ -9823,9 +9830,9 @@
 	exports.default = exported;
 	//# sourceMappingURL=hyperscript-helpers.js.map
 
-/***/ },
+/***/ }),
 /* 124 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
 
@@ -10053,5 +10060,5 @@
 
 	exports.default = (_todo1$todo2$sco$calc = { todo1: todo1, todo2: todo2, sco: sco, calculations: calculations, prototypeAdditions: prototypeAdditions, styl: styl, num_op: num_op, fetch: fetch, gameMonad_2: gameMonad_2, newRoll: newRoll, primes3: primes3, primes2: primes2, primes: primes, variations: variations, MonadEmitter: MonadEmitter, clicks: clicks, bNode: bNode, MonadState2: MonadState2, gameMonad: gameMonad, cycle: cycle, monad: monad, hardWay: hardWay, hardWay2: hardWay2, async1: async1, async2: async2, execP: execP, workerD$: workerD$, fact_workerC: fact_workerC, fact2_workerD: fact2_workerD, primes_state: primes_state, workerB_Driver: workerB_Driver, workerC: workerC, worker$: worker$, errorDemo: errorDemo, monadEr: monadEr, backAction: backAction, tests: tests, mMZ10: mMZ10, test3: test3 }, _defineProperty(_todo1$todo2$sco$calc, 'monad', monad), _defineProperty(_todo1$todo2$sco$calc, 'equals', equals), _defineProperty(_todo1$todo2$sco$calc, 'fmap', fmap), _defineProperty(_todo1$todo2$sco$calc, 'opM', opM), _defineProperty(_todo1$todo2$sco$calc, 'e2', e2), _defineProperty(_todo1$todo2$sco$calc, 'e2x', e2x), _defineProperty(_todo1$todo2$sco$calc, 'e3', e3), _defineProperty(_todo1$todo2$sco$calc, 'e4', e4), _defineProperty(_todo1$todo2$sco$calc, 'e4x', e4x), _defineProperty(_todo1$todo2$sco$calc, 'e6', e6), _defineProperty(_todo1$todo2$sco$calc, 'e6x', e6x), _defineProperty(_todo1$todo2$sco$calc, 'driver', driver), _defineProperty(_todo1$todo2$sco$calc, 'messages', messages), _defineProperty(_todo1$todo2$sco$calc, 'monadIt', monadIt), _defineProperty(_todo1$todo2$sco$calc, 'MonadSet', MonadSet), _defineProperty(_todo1$todo2$sco$calc, 'updateCalc', updateCalc), _defineProperty(_todo1$todo2$sco$calc, 'arrayFuncs', arrayFuncs), _defineProperty(_todo1$todo2$sco$calc, 'nums', nums), _defineProperty(_todo1$todo2$sco$calc, 'cleanup', cleanup), _defineProperty(_todo1$todo2$sco$calc, 'ret', ret), _defineProperty(_todo1$todo2$sco$calc, 'C42', C42), _defineProperty(_todo1$todo2$sco$calc, 'newTask', newTask), _defineProperty(_todo1$todo2$sco$calc, 'process', process), _defineProperty(_todo1$todo2$sco$calc, 'mM$task', mM$task), _defineProperty(_todo1$todo2$sco$calc, 'colorClick', colorClick), _defineProperty(_todo1$todo2$sco$calc, 'edit', edit), _defineProperty(_todo1$todo2$sco$calc, 'testZ', testZ), _defineProperty(_todo1$todo2$sco$calc, 'quad', quad), _defineProperty(_todo1$todo2$sco$calc, 'runTest', runTest), _defineProperty(_todo1$todo2$sco$calc, 'todoStream', todoStream), _defineProperty(_todo1$todo2$sco$calc, 'inc', inc), _defineProperty(_todo1$todo2$sco$calc, 'seed', seed), _defineProperty(_todo1$todo2$sco$calc, 'add', add), _defineProperty(_todo1$todo2$sco$calc, 'MonadState', MonadState), _defineProperty(_todo1$todo2$sco$calc, 'primesMonad', primesMonad), _defineProperty(_todo1$todo2$sco$calc, 'fibsMonad', fibsMonad), _defineProperty(_todo1$todo2$sco$calc, 'primeFibInterface', primeFibInterface), _defineProperty(_todo1$todo2$sco$calc, 'tr3', tr3), _defineProperty(_todo1$todo2$sco$calc, 'fpTransformer', fpTransformer), _defineProperty(_todo1$todo2$sco$calc, 'factorsMonad', factorsMonad), _defineProperty(_todo1$todo2$sco$calc, 'factorsInput', factorsInput), _defineProperty(_todo1$todo2$sco$calc, 'promise', promise), _defineProperty(_todo1$todo2$sco$calc, 'promiseSnippet', promiseSnippet), _defineProperty(_todo1$todo2$sco$calc, 'timeout', timeout), _defineProperty(_todo1$todo2$sco$calc, 'timeoutSnippet', timeoutSnippet), _defineProperty(_todo1$todo2$sco$calc, 'examples', examples), _defineProperty(_todo1$todo2$sco$calc, 'examples2', examples2), _todo1$todo2$sco$calc);
 
-/***/ }
+/***/ })
 /******/ ]);

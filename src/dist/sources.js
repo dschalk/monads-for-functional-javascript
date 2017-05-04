@@ -1,4 +1,6 @@
 
+var connection;
+
 function createWebSocket(path) {
     var host = window.location.hostname;
     if (host === '')
@@ -11,7 +13,9 @@ function createWebSocket(path) {
 
 var socket = createWebSocket('/');
 
-console.log('########## socket: ', socket);
+setTimeout ( function () {
+  console.log('########## socket.readyState: ', socket.readyState);
+},2000 );
 
 function websocketsDriver() {
   return xs.create({

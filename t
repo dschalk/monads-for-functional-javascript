@@ -1,1 +1,1 @@
-@1000 hornets. Be careful<<>> be smart<<>> and be safe., false,                    a,                    b,  none@Put out the dog and bring in the cat., true,                   a,                   b,   none
+@1000 hornets. Be careful<<>> be smart<<>> and be safe., false,                          a,                          b,        none@Put out the dog and bring in the cat., true,                         a,                         b,         none
