@@ -1,58 +1,39 @@
 
+function showFunc (name, name2) {return name == name2 ? 'inline-block' : 'none'}
+
+function extract ([x]) {return x};
 
 var MonadState3 = function MonadState3(g, state) {
-  console.log('someone called with g and state', g, state);
+  console.log('MonadState3 says: here are g and state', g, state);
   this.id = g;
   this.s = state;
-  this.bnd = (func, ...args) => func(this.s, ...args);  
+  this.bnd = (func, ...args) => func(this.s, ...args);
   this.ret = function (a) {
     return window[this.id] = new MonadState(this.id, a);
   };
 };
 
+var commentMonad = new MonadState3('commentMonad', [ '','', ['','',[]]]);
 
-MonadState3.prototype.comments = [];
-var showEdit = 'none';
-var showEditB = 'none';
-
-MonadState3.prototype.clear = function() {
-  this.s = []; 
-  this.comments  = [];
-  return this;
-};
-
-MonadState3.prototype.init = function (str) {
-  this.s = str.split('<@>')
-}
-
-MonadState3.prototype.run3 = function (str)  {
-  var s = this.s.slice();
-  var s0 = str.split('<@>');
-  s.push(str)
-  var n = -1
-  var a1 = this.s.slice()
-  a1.map(a => {
-    n += 1;
-    console.log('******************************* this is a:', a);
-    let show = pMname.x == a[0] ? 'inline-block' : 'none'
-    this.comments.push(h('div#' + n, [
-      h('div', a[0] + ' commented: ' + a[1]),
-      h('button#edit4', {props: {innerHTML: 'edit'}, style: {display: show}}),
-      h('input#edit4B', { props: { type:'textarea', value: a[1]}, style: {display: show}}),
-      h('button#delete4', {props: {innerHTML: 'delete'}, style: {display: show}}),
+MonadState3.prototype.run = function (st, sender) {
+  var str = st.replace(/<n>/g, "\n");
+  var ar = str.split('<@>');
+  var ar2 = ar.filter(x => x !== "")
+  var arr = ar2.filter(x => x !== "\n"))
+  this.s[0] = str;
+  this.s[1] = sender;
+  this.s[2] = arr.map(v => v = v.split('<o>'));
+  var n = -1;
+  this.s[2].shift();
+  this.s[2].map(a => {
+    var show = showFunc(a[0],this.s[1]);
+    n+=1;
+    mMcomments.bnd(push, h('div#'+n, [
+      h('div', a[0] + ' commented: ' + a[2]),
+      h('input#editB', { props: { type:'textarea', value: a[1]}, style: {display: show}}),
+      h('button#deleteB', {props: {innerHTML: 'delete'}, style: {display: show, fontSize:14}}),
       h('br' ),
-      h('span', '***************************************************************'),
+      h('span', '***************************************************************')
     ]))
-    console.log('In run3. this is', this);
-  }) 
-};
-
-var commentMonad = new MonadState3( 'commentMonad', [] );
-// commentMonad.comments.map(v => v.children[0].elm.style.display = 'none')
-
-
-
-
-
-
-
+  })
+}

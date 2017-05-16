@@ -574,7 +574,7 @@ function primes(n, ar) {
   var mM34 = M(0, 'mM34');
   var mM35 = M(3, 'mM35');
   var mM36 = M('', 'mM36');
-  var mM37 = M(0, 'mM37');
+  var mM37 = M('', 'mM37');
   var mM38 = M(0, 'mM38');
   var mM39 = M(0, 'mM39');
   var mMscbd = M([], 'mMscbd');
@@ -634,7 +634,7 @@ function primes(n, ar) {
   var mMallRolls = new Monad([[0, 0, 0, 0]], 'mMallRolls');
   var mMcurrentList = new Monad([], 'mMcurrentList');
   var mMtaskList = new Monad([], 'mMtaskList');
-  var mMcommentsList = new Monad(['Comments'], 'mMtaskList');
+  var mMcomments = new Monad(['Comments'], 'mMcomments');
   var mMtaskL = new Monad([], 'mMtaskL');
   var mMsenderList = new Monad([], 'mMsenderList');
   var mMsoloAlert = new Monad('', 'mMsoloAlert');
@@ -774,6 +774,7 @@ var mMchat = new Monad('inline-block','mMchatDiv');
 var mMcaption = new Monad('block','mMcaptionDiv');
 var mMtodo = new Monad('inline','mMtodoDiv');
 var mMgame = new Monad('block','mMgameDiv');
+var mMerror = new Monad('','mMerror');
 
   function numProtect (x) {return (new Number (x))*1; }; 
 
@@ -1917,19 +1918,28 @@ function MonadState4(g, state) {
   this.s = state;
   this.bnd = (func, ...args) => func(this.s, ...args);  
   this.ret = function (a) {
-    return window[this.id] = new MonadState4(this.id, a);
+    return new MonadState4(this.id, a);
   };
 };
 
-var registered = new MonadState4('registered', [] );
+var registered = new MonadState4('registered', {} );
 
-MonadState4.prototype.run4 = function (str) {
-  var s = str.split(',');
-  return window[this.id] = new MonadState4(this.id, s);
+MonadState4.prototype.run = function (str) {
+var s = {};  
+str.split('@')
+.filter(v => v.length > 0)
+.map(x => x = x.split('<o>'))
+.map(v => s[v[0]] = v[1])
+this.s = s;
+console.log('In MonadState4.run. &&&&&&&&&&&&&&&&&& s is', s);
 };
 
 MonadState4.prototype.test = function (name) {
-  return this.s.some(v => v === name);
+  var result = false;
+  for (var a in this.s) {
+    if (a == name) result = true
+  }
+  return result;
 };
 
 MonadState4.prototype.reg = 'inline';

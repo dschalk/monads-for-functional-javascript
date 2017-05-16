@@ -1,0 +1,24 @@
+
+      else if "ZZ#$42" `T.isPrefixOf` msg                              -- TEST AND ADD NAME AND NAME<o>PASSWORD
+        then
+            do
+                let newName = head $ splitOn "<o>" (T.unpack extra)
+                let nameFile = "nameFile" :: FilePath
+                st <- atomically $ readTMVar state
+                let subSt = subState sender group st
+                names <- readFile nameFile
+                let result = T.pack $ show $ (any (\x -> x == newName) $ splitOn "<&>" names >> print $ T.unpack result
+            do
+              if result
+                then
+                  let newNames = (newName ++ "<&>" ++ names) >> writeFile newNames nameFile >> TIO.appendFile xnames extra >> broadcast ("KZ#$42," `mappend` group `mappend` "," `mappend` sender `mappend` "," `mappend` (T.pack newName)) `mappend` result) subSt
+
+
+
+
+
+
+
+                if result
+                  then
+                    let newNames = (newName ++ "<&>" ++ names) >> writeFile newNames nameFile >> TIO.appendFile xnames extra >> broadcast ("KZ#$42," `mappend` group `mappend` "," `mappend` sender `mappend` "," `mappend` (T.pack newName)) `mappend` result) subSt

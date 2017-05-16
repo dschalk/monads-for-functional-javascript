@@ -83,6 +83,11 @@
     border-radius: 10px;
   }
 
+  #buttonB {
+    font-size: 18;
+    margin-right: 2%;
+  }
+
   #roll {
     margin-left: 8%;
   }

@@ -68,12 +68,28 @@
 	});
 
 	socket.onopen = function login() {
-	  var v = rand();
-	  var v2 = rand();
-	  pMname.ret(v);
-	  pMgroup.ret('solo');
-	  socket.send('CC#$42' + v + '<o>' + v2);
-	  pMclicked.ret([]);
+	  if (document.cookie.substring(0, 6) === "DC#$42") {
+	    var n = document.cookie.length;
+	    var s = document.cookie.substring(6, n);
+	    var ar = s.split('<o>');
+	    socket.send('CC#$42' + ar[0]);
+	    pMname.ret(ar[0]);
+	    pMgroup.ret('solo');
+	    socket.send('GZ#$42,solo,' + ar[0]);
+	    document.cookie = "";
+	    var combo = ar.join('<o>');
+	    pMcombo.ret(combo);
+	  } else {
+	    var v = rand();
+	    var v2 = rand();
+	    pMname.ret(v);
+	    pMgroup.ret('solo');
+	    var combo = v + '<o>' + v2;
+	    socket.send('CC#$42' + combo);
+	    pMcombo.ret(combo);
+	    pMclicked.ret([]);
+	    socket.send('GZ#$42,solo,' + v);
+	  }
 	};
 
 	function main(sources) {
@@ -89,13 +105,15 @@
 	        gameMonad.run([v[7], v[8], 0, [], [v[3], v[4], v[5], v[6]]]);
 	      });
 	      mMZ11.bnd(function () {
-	        commentMonad.init(extra);
-	        socket.send('GZ#$42,' + pMgroup.x + ',' + v[2]); // Load the comments
+	        commentMonad.run(extra, sender);
 	      });
 	      mMZ12.bnd(function () {
-	        mM6.ret(v[2] + ' successfully logged in.');
-	        socket.send('ZZ#$42,' + pMgroup.x + ',' + v[2]); // Load the registered names 
+	        registered.run(extra);
+	        var combo = ar.join('<o>');
+	        pMcombo.ret(combo);
+	        pMname.ret(ar[0]);
 	      });
+
 	      mMZ13.bnd(function () {
 	        console.log('The message arrived', messages);
 	        var message = v.slice(3, v.length).join(', ');
@@ -130,35 +148,23 @@
 
 	      //*********************************************************************** BEGIN NAMES
 
-	      /* mMZ20.bnd( () => {
-	         var ar = extra.split('<@>');              // Get names and passwords
-	         users.run(ar);
-	       });   
-	        mMZ21.bnd( () => {                                   // Append a name
-	         console.log('In mMZ21.bnd - - extra is', extra );
-	         users.run(extra);
-	       });  */
-
 	      mMZ19.bnd(function () {
 	        // Clear all comments
 	        commentMonad.clear();
 	        var str = e.data.substring(e.data.indexOf('<@>') + 3, e.data.length);
-	        commentMonad.run3(str); // Receive all comments from server  
+	        commentMonad.run(str, sender); // Receive all comments from server  
 	        console.log('Another message from mMZ19. str typeof str are', str, typeof str === 'undefined' ? 'undefined' : _typeof(str));
 	      });
 
 	      mMZ23.bnd(function () {
-	        // Test registration CJ#$42
-	        socket.close();
-	        setTimeout(function () {
-	          socket = createWebSocket('/');
-	        }, 1500);
+	        console.log('In mMZ23.bnd - - - extra and sender are', extra, sender);
+	        commentMonad.run(extra, sender);
 	      });
 
 	      mMZ24.bnd(function () {
 	        // Test login CK#$42
 	        if (extra == "False") {
-	          mM15.ret("You should register before logging in");
+	          mMerror.ret("You should register before logging in");
 	          return;
 	        }
 	        if (extra == "True") {
@@ -167,14 +173,33 @@
 	      });
 
 	      mMZ25.bnd(function () {
-	        registered.run4(extra);
+	        // Register
+	        if (v[4] === "False") {
+	          extra.replace(/<<>>/g, ',');
+	          var ar = extra.split("<o>");
+	          socket.send('AB#$42,' + pMgroup.x + ',' + ar[0] + ',' + ar[0] + ',' + ar[1]);
+	          pMname.ret(ar[0]);
+	        } else mMerror.ret('The name you chose is already registered');
 	      });
 
 	      mMZ26.bnd(function () {
-	        socket.send('CJ#$42,' + pMgroup.x + ',' + pMname.x);
+	        // Log in
+	        console.log('In mMZ26. extra and v[4] are', extra, v[4]);
+	        if (extra === 'False') {
+	          // The name was extracted from namesFile
+	          mMerror.ret('The name you entered has not been registered');
+	          return;
+	        }
+	        if (v[4] === 'True') {
+	          mMerror.ret('The password you entered does not match the registered password');
+	          return;
+	        }
+	        var ar = extra.split("<o>");
+	        socket.send('AB#$42,' + pMgroup.x + ',' + ar[0] + ',' + ar[0] + ',' + ar[1]);
+	        pMname.ret(ar[0]);
 	      });
 	    });
-	    ret(e.data.split(',')[0]).bnd(next, 'CA#$42', mMZ10).bnd(next, 'GZ#$42', mMZ11).bnd(next, 'CC#$42', mMZ12).bnd(next, 'CD#$42', mMZ13).bnd(next, 'CE#$42', mMZ14).bnd(next, 'EE#$42', mMZ15).bnd(next, 'TG#$41', mMZ16).bnd(next, 'DD#$42', mMZ17).bnd(next, 'NN#$42', mMZ18).bnd(next, 'GG#$42', mMZ19).bnd(next, 'CZ#$42', mMZ20).bnd(next, 'CX#$42', mMZ21).bnd(next, 'CJ#$42', mMZ23).bnd(next, 'CK#$42', mMZ24).bnd(next, 'ZZ#$42', mMZ25).bnd(next, 'CJ#$42', mMZ26);
+	    ret(e.data.split(',')[0]).bnd(next, 'CA#$42', mMZ10).bnd(next, 'GZ#$42', mMZ11).bnd(next, 'KZ#$42', mMZ12).bnd(next, 'CD#$42', mMZ13).bnd(next, 'CE#$42', mMZ14).bnd(next, 'EE#$42', mMZ15).bnd(next, 'DD#$42', mMZ17).bnd(next, 'NN#$42', mMZ18).bnd(next, 'GG#$42', mMZ19).bnd(next, 'CZ#$42', mMZ20).bnd(next, 'CX#$42', mMZ21).bnd(next, 'ZZ#$42', mMZ23).bnd(next, 'CK#$42', mMZ24).bnd(next, 'YY#$42', mMZ25).bnd(next, 'XX#$42', mMZ26);
 	  });
 
 	  console.log('1^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ got this far');
@@ -185,21 +210,22 @@
 	    return ret(x);
 	  };
 
-	  var comClick$ = sources.DOM.select('#comment').events('click');
+	  var comment$ = sources.DOM.select('#comment').events('keydown');
 
-	  var comClickAction$ = comClick$.map(function (e) {
-	    var com = e.target.value;
-	    var comm = com.replace(rep2, '<<>>');
-	    var commx = '<@>' + pMname.x + '<o>' + comm;
-	    socket.send('GG#$42,' + pMgroup.x + ',' + pMname.x + ',' + commx);
-	  });
+	  var commentAction$ = comment$.map(function (e) {
+	    console.log('CommentAction$ e', e);
+	    if (e.key === 'Control' && e.ctrlKey) {
+	      var com = e.target.value.replace(/,/g, "<<>>").replace(/\n/g, "<n>");
+	      var commx = '<@>' + pMname.x + '<o>' + com + '<@>';
+	      socket.send('GG#$42,' + pMgroup.x + ',' + pMname.x + ',' + commx);
+	    }
+	  }, false);
 
 	  var edit4$ = sources.DOM.select('buton#edit4').events('click');
 
 	  var edit4Action$ = edit4$.map(function (e) {
 	    showEditB = 'inline-block';
 	    console.log('************ showEditB is', showEditB);
-	    commentMonad.comments[1].children[0].elm.style.display = 'none';
 	    var s = commentMonad.s.slice();
 	  });
 
@@ -224,57 +250,41 @@
 	  var registerPress$ = sources.DOM.select('input.register').events('keypress');
 
 	  var registerPressAction$ = registerPress$.map(function (e) {
+	    mMerror.ret('');
+	    var ar = e.target.value.split(',');
+	    var name = ar[0];
+	    var combo = ar.join('<o>');
 	    if (e.keyCode === 13) {
-	      mM15.ret('');
-	      console.log('In registerPressAction$. e is', e);
-	      var index1 = e.target.value.indexOf(',');
-	      var index2 = e.target.value.lastIndexOf(',');
-	      if (index1 === -1 || index1 !== index2) {
-	        mM15.ret(' There should be one and only one comma');
+	      mMerror.ret('');
+	      if (ar.length != 2) {
+	        mMerror.ret(' There should be one and only one comma');
 	        return;
-	      }
-	      var ar = e.target.value.split(',');
-	      var combo = ar.join('<o>');
-	      if (!registered.test(e.target.value)) {
-	        socket.send('CJ#$42,' + pMgroup.x + ',' + pMname.x + ',' + ar[0] + ',' + combo);
-	        pMcombo.ret(combo);
-	        pMname.ret(ar[0]);
+	      } else {
+	        socket.send('XX#$42,solo,' + pMname.x + ',' + combo + '<&>');
+	        /*   document.cookie = ('DC#$42' + combo);
+	           mMerror.ret('...wait Page refresh in progress.');
+	           refresh();  */
 	      }
 	    }
 	  });
-
-	  /*
-	  
-	          if (users.s.includes(combo + '\n')) {
-	          console.log("NAME TAKEN OOOOOOOOOOOOOOOOOOOO");  
-	          mM15.ret('That user name is already in the system');
-	          return;
-	        }
-	        else {
-	          socket.send(`CV#$42,${pMgroup.x},${pMname.x},${ar[0]}`);
-	          pMcombo.ret(combo);
-	          pMclicked.ret([]);
-	          var name = ar[0];
-	          pMname.ret(name);
-	          pMpassword.ret(ar[1]);
-	          socket.send(`CG#$42,${pMgroup.x},${ar[0]},${pMscore.x},${pMgoals.x}`);
-	          abcde = 'none';
-	          fghij = 'none';
-	        }
-	      }
-	    });    */
 
 	  var loginPress$ = sources.DOM.select('input.login').events('keypress');
 
 	  var loginPressAction$ = loginPress$.map(function (e) {
 	    console.log('In loginPressAction$ -<$><$><$><$><$><$><$><$><$><$> - - e is', e);
+	    mMerror.ret('');
+	    var ar = e.target.value.split(',');
+	    var name = ar[0];
+	    var combo = ar.join('<O>');
 	    if (e.keyCode === 13) {
-	      console.log('*********************************** In loginPressAction$ -- e.keyCode === 13');
-	      var ar = e.target.value.split(',');
-	      var str = ar.join('<o>');
-	      pMcombo.ret(str);
-	      socket.send('CK#$42,' + pMgroup.x + ',' + pMname.x + ',' + ar[0] + ',' + str);
-	    };
+	      mMerror.ret('');
+	      if (ar.length != 2) {
+	        mMerror.ret(' There should be one and only one comma');
+	        return;
+	      } else {
+	        socket.send('YY#$42,solo,' + ar[0] + ',' + combo + '<&>');
+	      }
+	    }
 	  });
 
 	  var groupPress$ = sources.DOM.select('input#group').events('keypress');
@@ -783,7 +793,7 @@
 	    var index = e.target.parentNode.id;
 	    s[index][1] = eval(s[index][1]) === true ? false : true;
 	    s.map(function (v) {
-	      return v[0] = v[0].replace(rep2, '<<>>');
+	      return v[0] = v[0].replace(/'<<>>'/g, ",");
 	    });
 	    console.log('2 in cbxAction$. s is', s);
 	    var str = s.join('@');
@@ -801,7 +811,7 @@
 	    var index = e.target.parentNode.id;
 	    s[index][1] = false;
 	    s.map(function (v) {
-	      return v[0] = v[0].replace(rep2, '<<>>');
+	      return v[0] = v[0].replace(/<<>>/g, ",");
 	    });
 	    var str = s.join('@');
 	    console.log('In chbox1Action. str is', str);
@@ -817,7 +827,7 @@
 	    var index = e.target.parentNode.id;
 	    s[index][1] = true;
 	    s.map(function (v) {
-	      return v[0] = v[0].replace(rep2, '<<>>');
+	      return v[0] = v[0].replace(/<<>>/g, ",");
 	    });
 	    var str = s.join('@');
 	    socket.send('TD#$42,' + get(pMgroup) + ',' + get(pMname) + ',@' + str);
@@ -838,7 +848,7 @@
 	      var index = e.target.parentNode.id;
 	      s.splice(index, 1);
 	      s.map(function (v) {
-	        return v[0] = v[0].replace(rep2, '<<>>');
+	        return v[0] = v[0].replace(/<<>>/g, ",");
 	      });
 	      var str = s.join('@');
 	      socket.send('TD#$42,' + get(pMgroup) + ',' + get(pMname) + ',@' + str);
@@ -855,7 +865,7 @@
 	    var s = taskMonad.s.slice();
 	    var str;
 	    s.map(function (v) {
-	      return v[0] = v[0].replace(rep2, '<<>>');
+	      return v[0] = v[0].replace(/'<<>>'/g, ",");
 	    });
 	    s[index][4] = 'inline-block';
 	    str = s.join('@');
@@ -876,7 +886,7 @@
 	      s[index][1] = false;
 	      s[index][4] = "none";
 	      s.map(function (v) {
-	        return v[0] = v[0].replace(rep2, '<<>>');
+	        return v[0] = v[0].replace(/<<>>/g, ",");
 	      });
 	      var str = s.join('@');
 	      socket.send('TD#$42,' + get(pMgroup) + ',' + get(pMname) + ',@' + str);
@@ -911,7 +921,7 @@
 	      var alert = '';
 	      var s = taskMonad.s.slice();
 	      s.map(function (v) {
-	        return v[0] = v[0].replace(rep2, '<<>>');
+	        return v[0] = v[0].replace(/<<>>/g, ",");
 	      });
 	      console.log('In newTaskAction$. <><><><><><><> s is', s);
 	      var todo = [];
@@ -922,7 +932,7 @@
 	      } else {
 	        todo[2] = ar.shift();
 	        todo[3] = ar.shift();
-	        todo[0] = ar.join(',').replace(rep2, '<<>>');
+	        todo[0] = ar.join(',').replace(/<<>>/g, ",");
 	        todo[1] = false;
 	        todo[4] = "none";
 	        s.push(todo);
@@ -937,10 +947,10 @@
 
 	  console.log('Just before calcStream@');
 
-	  var calcStream$ = xs.merge(cbxAction$, chbox1Action$, chbox2Action$, comClickAction$, messagePressAction$, fA_c$, forwardAction$, backAction$, prAction$, factorsAction_b$, fA$, factorsP$, fA_b$, factorsP_b$, clearprimes$, workerB$, workerC$, workerD$, workerE$, workerF$, clearAction$, factorsAction$, primeFib$, fibPressAction$, quadAction$, edit1Action$, edit2Action$, edit4Action$, edit4BAction$, testWAction$, testZAction$, testQAction$, deleteAction$, newTaskAction$, chatClickAction$, gameClickAction$, todoClickAction$, captionClickAction$, groupPressAction$, rollClickAction$, loginPressAction$, registerPressAction$, messages$, numClickAction$, opClickAction$);
+	  var calcStream$ = xs.merge(commentAction$, cbxAction$, chbox1Action$, chbox2Action$, messagePressAction$, fA_c$, forwardAction$, backAction$, prAction$, factorsAction_b$, fA$, factorsP$, fA_b$, factorsP_b$, clearprimes$, workerB$, workerC$, workerD$, workerE$, workerF$, clearAction$, factorsAction$, primeFib$, fibPressAction$, quadAction$, edit1Action$, edit2Action$, edit4Action$, edit4BAction$, testWAction$, testZAction$, testQAction$, deleteAction$, newTaskAction$, chatClickAction$, gameClickAction$, todoClickAction$, captionClickAction$, groupPressAction$, rollClickAction$, loginPressAction$, registerPressAction$, messages$, numClickAction$, opClickAction$);
 	  return {
 	    DOM: calcStream$.map(function () {
-	      return (0, _dom.h)('div.main', [(0, _dom.h)('div.preContent', [(0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('div', 'FUNCTIONAL REACTIVE PROGRAMMING'), (0, _dom.h)('div', 'WITH CUSTOM MONADS AND CYCLE.JS')]), (0, _dom.h)('br'), (0, _dom.h)('div.image_3', [(0, _dom.h)('img.image_2', { props: { src: "logo.svg" } }), (0, _dom.h)('span', ' '), (0, _dom.h)('a', { props: { href: "https://cycle.js.org/", target: "_blank" } }, 'A Cycle.js application')]), (0, _dom.h)('div.content', [(0, _dom.h)('p', ' Front-end web developers might be interested in seeing how I encapsule procedures and state in objects whose methods conform to a JavaScript version of the Haskell monad laws. It is fascinating to see how reactivity is achieved in Cycle.js. The Haskell server might also be of interest. '), (0, _dom.h)('p', 'People who are developing a feel for function reactive programming can cut through to its essence by seeing it implemented in various contexts. The combination of Lodash, Immutable.js, and RxJS running in Node.js is one possibility. Here we demonstrate how a front-end developer can create monads to suit their purposes, and obtain all the reactivity they need by implementing them in a Cycle.js framework. '), (0, _dom.h)('span.tao', 'None of the monads employed in these demonstrations emit or listen for events, yet they immediately react to user input and websockets messages, causing Snabbdom to modify the DOM. Moreover, none of the virtual DOM elements contain functions that interact with callbacks. A video presentation showing how Cycle.js performs its magic can be fount at '), (0, _dom.h)('a', { props: { href: "https://egghead.io/lessons/rxjs-overview-of-cycle-js", target: "_blank" } }, 'Overview of Cycle.js.'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('span.tao', 'This project was created by, and is actively maintained by me, David Schalk. The code repository is at '), (0, _dom.h)('a', { props: { href: "https://github.com/dschalk/JS-monads-stable", target: "_blank" } }, 'JS-monads'), (0, _dom.h)('span', ' The master branch is a Motorcycle.js application using the Most.js library. That branch has been abandoned. This is an '), (0, _dom.h)('span', ' application using xstream instead of Most. The primary branch is named "xstream". '), (0, _dom.h)('span', ' You can comment at '), (0, _dom.h)('a', { props: { href: 'https://redd.it/60c2xx' } }, 'Reddit'), (0, _dom.h)('span', ' or in the '), (0, _dom.h)('a', { props: { href: '#cmment' } }, 'comment'), (0, _dom.h)('span', ' section below. '), (0, _dom.h)('br'), (0, _dom.h)('p', ' Snabbdom, xstream, and most of the monads and functions presented here are available in browser developer tools consoles and scratch pads. A production site would load these as modules, but this site is for experimention and learning. '), (0, _dom.h)('span.italic', ' These monads are like the Haskell monads in that they resemble the monads of category theory without actually being mathematical monads. See '), (0, _dom.h)('a', { props: { href: "http://math.andrej.com/2016/08/06/hask-is-not-a-category/", target: "_blank" } }, 'Hask is not a category.'), (0, _dom.h)('span', ' by Andrej Bauer and the '), (0, _dom.h)('a', { props: { href: '#discussion' } }, 'Discussion'), (0, _dom.h)('span', ' below. They provide a convenient interface for dealing with uncertainty and side effects in a purely functional manner. Adherence to the monad laws (see below) helps make the monads robust, versatile, and reliable tools for isolating and chaining sequences of javascript functions. State is modified in monads without mutating anything outside of them.'), (0, _dom.h)('p', ' The demonstrations include persistent, shared todo lists, text messaging, and a simulated dice game with a traversable history (all group members see your score decrease or increase as you navegate backwards and forwards). Monads are shown performing lengthy mathematical computations asycronously in web workers. Monads encapsulate state. The error checking monad carries occurances of NaN and runtime errors through sequences of computations much like the Haskell Maybe monad. '), (0, _dom.h)('span.tao', ' The game code is fairly concise and intuitive. A quick walk-through is presented '), (0, _dom.h)('a', { props: { href: '#gameExplanation' } }, 'here'), (0, _dom.h)('span', '. To see monadic functionality at work, I suggest that you take a look at the section captioned '), (0, _dom.h)('a', { props: { href: '#asyncExplanation' } }, 'Asynchronous Processes'), (0, _dom.h)('br'), (0, _dom.h)('p', ' But it might be best to first proceed down the page and see the examples of Monad instances manipulating data. If you are trying to wrap you head around the concept of pure, chainable functions, such as the functions in the Underscore and Jquery libraries, understanding Monad instances might finally put you in the comfort zone you seek. '), (0, _dom.h)('h3', 'The Game'), (0, _dom.h)('p', 'People who are in the same group, other than the default group named "solo", share the same todo list, chat messages, and simulated dice game. In order to see any of these, you must establish a unique identity on the server by logging in. The websockets connection terminates if the first message the server receives does not come from the sign in form. You can enter any random numbers, letters, or special characters you like. The server checks only to make sure someone hasn\'t already signed in with the sequence you have selected. If you log in with a name that is already in use, a message will appear and this page will be re-loaded in the browser after a four-second pause. '), (0, _dom.h)('p', ' Data for the traversable game history accumulates until a player scores three goals and wins. The data array is then erased and the application is ready to start accumulating a new history. '), (0, _dom.h)('p', ' Your user name for trying out the game, todo list, and chat demonstrations is a random permutation of the first 14 letters of the alphabet. In the comments section, near the bottom of this page, you can chose your own user name and a password. These facilitate leaving comments which can later be revised or removed.'), (0, _dom.h)('br')]), (0, _dom.h)('hr.len90', { style: { display: mMgameDiv2.x } }), (0, _dom.h)('br.len90', { style: { display: mMgameDiv2.x } }), (0, _dom.h)('div.heading', { style: { display: mMgameDiv2.x } }, 'Game, Todo List, Text Messages'), (0, _dom.h)('div#gameDiv2', { style: { display: mMgameDiv2.x } }, [(0, _dom.h)('br'), (0, _dom.h)('div#leftPanel', { style: { display: mMgameDiv2.x } }, [(0, _dom.h)('p', 'RULES: If clicking two numbers and an operator (in any order) results in 20 or 18, the score increases by 1 or 3, respectively. If the score becomes 0 or is evenly divisible by 5, 5 points are added. A score of 25 results in one goal. That can only be achieved by arriving at a score of 20, which jumps the score to 25. Directly computing 25 results in a score of 30, and no goal. Each time RL is clicked, one point is deducted. Three goals wins the game. '), (0, _dom.h)('br'), buttonNode, (0, _dom.h)('br'), (0, _dom.h)('button#4.op', 'add'), (0, _dom.h)('button#5.op', 'subtract'), (0, _dom.h)('button#6.op', 'mult'), (0, _dom.h)('button#7.op', 'div'), (0, _dom.h)('button#8.op', 'concat'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('div#dice', { style: { display: mMdice.x } }, [(0, _dom.h)('button#roll.tao1', 'ROLL'), (0, _dom.h)('button#back.tao100', 'BACK'), (0, _dom.h)('button#ahead.tao1', 'FORWARD'), (0, _dom.h)('div.tao', 'Selected numbers: ' + gameMonad.fetch3().join(', ') + ' '), (0, _dom.h)('div.tao', 'Operator: ' + gameMonad.fetch2() + ' '), (0, _dom.h)('div.tao', 'Index: ' + gameMonad.s[1]), (0, _dom.h)('button#clear', 'Clear selected numbers'), (0, _dom.h)('p', ' When traversing the game history, any time there are two selected numbers you can click any operator to obtain a result; or you can clear the selected numbers and click numbers of your choice. You can do anything you want with displayed numbers, but if there is a previously selected operater and you click a second number (shown after "Selected numbers:"), a computation will be performed using the previously selected operator. If that happens and it isn\'t what you want, you can back up and select a different operater before clicking a second number.'), (0, _dom.h)('span', 'Change group: '), (0, _dom.h)('input#group', 'test'), (0, _dom.h)('p', mMsoloAlert.x)])]), (0, _dom.h)('div#rightPanel', { style: { display: 'block' } }, [(0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('button#todoButton.cow', 'TOGGLE TODO_LIST'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('button#chat2.cow', 'TOGGLE CHAT'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('div.game', 'Name: ' + pMname.x), (0, _dom.h)('div.game', 'Group: ' + pMgroup.x), (0, _dom.h)('pre.game', 'Currently online:\n(Name score | goals) '), (0, _dom.h)('div.game', { props: { color: "gold" } }, '' + pMdata.x), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('div#a100', ' _________________________________________________ '), (0, _dom.h)('p.italic', ' Join group "t" if you want to see some previously created tasks. '), (0, _dom.h)('br'), (0, _dom.h)('div#todoDiv', { style: { display: mMtodoDiv.x } }, [(0, _dom.h)('div#taskList', taskMonad.html), (0, _dom.h)('div', 'Enter author, responsible person, and task here: '), (0, _dom.h)('input.newTask')]), (0, _dom.h)('br'), (0, _dom.h)('span#alert', mMalert.x), (0, _dom.h)('br'), (0, _dom.h)('span#alert2'), (0, _dom.h)('br'), (0, _dom.h)('div#chatDiv', { style: { display: mMchatDiv.x } }, [(0, _dom.h)('div#messages', [(0, _dom.h)('span', 'Message: '), (0, _dom.h)('input.inputMessage'), (0, _dom.h)('div', messages), (0, _dom.h)('br')])])])]),
+	      return (0, _dom.h)('div.main', [(0, _dom.h)('div.preContent', [(0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('div', 'FUNCTIONAL REACTIVE PROGRAMMING'), (0, _dom.h)('div', 'WITH CUSTOM MONADS AND CYCLE.JS')]), (0, _dom.h)('br'), (0, _dom.h)('div.image_3', [(0, _dom.h)('img.image_2', { props: { src: "cycle.png" } }), (0, _dom.h)('span', ' '), (0, _dom.h)('a', { props: { href: "https://cycle.js.org/", target: "_blank" } }, 'A Cycle.js application')]), (0, _dom.h)('div.content', [(0, _dom.h)('p', ' Front-end web developers might be interested in seeing how I encapsule procedures and state in objects whose methods conform to a JavaScript version of the Haskell monad laws. It is fascinating to see how reactivity is achieved in Cycle.js. The Haskell server might also be of interest. '), (0, _dom.h)('p', 'People who are developing a feel for function reactive programming can cut through to its essence by seeing it implemented in various contexts. The combination of Lodash, Immutable.js, and RxJS running in Node.js is one possibility. Here we demonstrate how a front-end developer can create monads to suit their purposes, and obtain all the reactivity they need by implementing them in a Cycle.js framework. '), (0, _dom.h)('span.tao', 'None of the monads employed in these demonstrations emit or listen for events, yet they immediately react to user input and websockets messages, causing Snabbdom to modify the DOM. Moreover, none of the virtual DOM elements contain functions that interact with callbacks. A video presentation showing how Cycle.js performs its magic can be fount at '), (0, _dom.h)('a', { props: { href: "https://egghead.io/lessons/rxjs-overview-of-cycle-js", target: "_blank" } }, 'Overview of Cycle.js.'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('span.tao', 'This project was created by, and is actively maintained by me, David Schalk. The code repository is at '), (0, _dom.h)('a', { props: { href: "https://github.com/dschalk/JS-monads-stable", target: "_blank" } }, 'JS-monads'), (0, _dom.h)('span', ' The master branch is a Motorcycle.js application using the Most.js library. That branch has been abandoned. This is an '), (0, _dom.h)('span', ' application using xstream instead of Most. The primary branch is named "xstream". '), (0, _dom.h)('span', ' You can comment at '), (0, _dom.h)('a', { props: { href: 'https://redd.it/60c2xx' } }, 'Reddit'), (0, _dom.h)('span', ' or in the '), (0, _dom.h)('a', { props: { href: '#cmment' } }, 'comment'), (0, _dom.h)('span', ' section below. '), (0, _dom.h)('br'), (0, _dom.h)('p', ' Snabbdom, xstream, and most of the monads and functions presented here are available in browser developer tools consoles and scratch pads. A production site would load these as modules, but this site is for experimention and learning. '), (0, _dom.h)('span.italic', ' These monads are like the Haskell monads in that they resemble the monads of category theory without actually being mathematical monads. See '), (0, _dom.h)('a', { props: { href: "http://math.andrej.com/2016/08/06/hask-is-not-a-category/", target: "_blank" } }, 'Hask is not a category.'), (0, _dom.h)('span', ' by Andrej Bauer and the '), (0, _dom.h)('a', { props: { href: '#discussion' } }, 'Discussion'), (0, _dom.h)('span', ' below. They provide a convenient interface for dealing with uncertainty and side effects in a purely functional manner. Adherence to the monad laws (see below) helps make the monads robust, versatile, and reliable tools for isolating and chaining sequences of javascript functions. State is modified in monads without mutating anything outside of them.'), (0, _dom.h)('p', ' The demonstrations include persistent, shared todo lists, text messaging, and a simulated dice game with a traversable history (all group members see your score decrease or increase as you navegate backwards and forwards). Monads are shown performing lengthy mathematical computations asycronously in web workers. Monads encapsulate state. The error checking monad carries occurances of NaN and runtime errors through sequences of computations much like the Haskell Maybe monad. '), (0, _dom.h)('span.tao', ' The game code is fairly concise and intuitive. A quick walk-through is presented '), (0, _dom.h)('a', { props: { href: '#gameExplanation' } }, 'here'), (0, _dom.h)('span', '. To see monadic functionality at work, I suggest that you take a look at the section captioned '), (0, _dom.h)('a', { props: { href: '#asyncExplanation' } }, 'Asynchronous Processes'), (0, _dom.h)('br'), (0, _dom.h)('p', ' But it might be best to first proceed down the page and see the examples of Monad instances manipulating data. If you are trying to wrap you head around the concept of pure, chainable functions, such as the functions in the Underscore and Jquery libraries, understanding Monad instances might finally put you in the comfort zone you seek. '), (0, _dom.h)('h3', 'The Game'), (0, _dom.h)('p', 'People who are in the same group, other than the default group named "solo", share the same todo list, chat messages, and simulated dice game. In order to see any of these, you must establish a unique identity on the server by logging in. The websockets connection terminates if the first message the server receives does not come from the sign in form. You can enter any random numbers, letters, or special characters you like. The server checks only to make sure someone hasn\'t already signed in with the sequence you have selected. If you log in with a name that is already in use, a message will appear and this page will be re-loaded in the browser after a four-second pause. '), (0, _dom.h)('p', ' Data for the traversable game history accumulates until a player scores three goals and wins. The data array is then erased and the application is ready to start accumulating a new history. '), (0, _dom.h)('p', ' Your user name for trying out the game, todo list, and chat demonstrations is a random permutation of the first 14 letters of the alphabet. In the comments section, near the bottom of this page, you can chose your own user name and a password. These facilitate leaving comments which can later be revised or removed.'), (0, _dom.h)('br')]), (0, _dom.h)('hr.len90', { style: { display: mMgameDiv2.x } }), (0, _dom.h)('br.len90', { style: { display: mMgameDiv2.x } }), (0, _dom.h)('div.heading', { style: { display: mMgameDiv2.x } }, 'Game, Todo List, Text Messages'), (0, _dom.h)('div#gameDiv2', { style: { display: mMgameDiv2.x } }, [(0, _dom.h)('br'), (0, _dom.h)('div#leftPanel', { style: { display: mMgameDiv2.x } }, [(0, _dom.h)('p', 'RULES: If clicking two numbers and an operator (in any order) results in 20 or 18, the score increases by 1 or 3, respectively. If the score becomes 0 or is evenly divisible by 5, 5 points are added. A score of 25 results in one goal. That can only be achieved by arriving at a score of 20, which jumps the score to 25. Directly computing 25 results in a score of 30, and no goal. Each time RL is clicked, one point is deducted. Three goals wins the game. '), (0, _dom.h)('br'), buttonNode, (0, _dom.h)('br'), (0, _dom.h)('button#4.op', 'add'), (0, _dom.h)('button#5.op', 'subtract'), (0, _dom.h)('button#6.op', 'mult'), (0, _dom.h)('button#7.op', 'div'), (0, _dom.h)('button#8.op', 'concat'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('div#dice', { style: { display: mMdice.x } }, [(0, _dom.h)('button#roll.tao1', 'ROLL'), (0, _dom.h)('button#back.tao100', 'BACK'), (0, _dom.h)('button#ahead.tao1', 'FORWARD'), (0, _dom.h)('div.tao', 'Selected numbers: ' + gameMonad.fetch3().join(', ') + ' '), (0, _dom.h)('div.tao', 'Operator: ' + gameMonad.fetch2() + ' '), (0, _dom.h)('div.tao', 'Index: ' + gameMonad.s[1]), (0, _dom.h)('button#clear', 'Clear selected numbers'), (0, _dom.h)('p', ' When traversing the game history, any time there are two selected numbers you can click any operator to obtain a result; or you can clear the selected numbers and click numbers of your choice. You can do anything you want with displayed numbers, but if there is a previously selected operater and you click a second number (shown after "Selected numbers:"), a computation will be performed using the previously selected operator. If that happens and it isn\'t what you want, you can back up and select a different operater before clicking a second number.'), (0, _dom.h)('span', 'Change group: '), (0, _dom.h)('input#group', 'test'), (0, _dom.h)('p', mMsoloAlert.x)])]), (0, _dom.h)('div#rightPanel', { style: { display: 'block' } }, [(0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('button#todoButton.cow', 'TOGGLE TODO_LIST'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('button#chat2.cow', 'TOGGLE CHAT'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('div.game', 'Name: ' + pMname.x), (0, _dom.h)('div.game', 'Group: ' + pMgroup.x), (0, _dom.h)('pre.game', 'Currently online:\n(Name score | goals) '), (0, _dom.h)('div.game', { props: { color: "gold" } }, '' + pMdata.x), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('div#a100', ' _________________________________________________ '), (0, _dom.h)('p.italic', ' Join group "t" if you want to see some previously created tasks. '), (0, _dom.h)('br'), (0, _dom.h)('div#todoDiv', { style: { display: mMtodoDiv.x } }, [(0, _dom.h)('div#taskList', taskMonad.html), (0, _dom.h)('div', 'Enter author, responsible person, and task here: '), (0, _dom.h)('input.newTask')]), (0, _dom.h)('br'), (0, _dom.h)('span#alert', mMalert.x), (0, _dom.h)('br'), (0, _dom.h)('span#alert2'), (0, _dom.h)('br'), (0, _dom.h)('div#chatDiv', { style: { display: mMchatDiv.x } }, [(0, _dom.h)('div#messages', [(0, _dom.h)('span', 'Message: '), (0, _dom.h)('input.inputMessage'), (0, _dom.h)('div', messages), (0, _dom.h)('br')])])])]),
 	      // h('div#a100', ' ____________________________________________________________________________________________________________ ' ),
 	      (0, _dom.h)('div.content', [
 
@@ -964,10 +974,10 @@
 	      //************************************************************************** END GameTraversal
 
 
-	      (0, _dom.h)('h2', ' MonadSet '), (0, _dom.h)('p', ' The list of online group members at the bottom of the scoreboard is very responsive to change. When someone joins the group, changes to a different group, or closes a browser session, a message prefixed by NN#$42 goes out from the server providing group members with the updated list of group members. MonadSet acts upon messages prefixed by NN#$42. Here are the definitions of MonadSet and the MonadSet instance sMplayers '), _code2.default.MonadSet, (0, _dom.h)('h3', ' Websocket messages'), (0, _dom.h)('p#demo', ' Incoming websockets messages trigger updates to the game display, the chat display, and the todo list display. The members of a group see what other members are doing; and in the case of the todo list, they see the current list when they sign in to the group. When any member of a group adds a task, crosses it out as completed, edits its description, or removes it, the server updates the persistent file and all members of the group immediately see the revised list.  '), (0, _dom.h)('p', 'The code below shows how incoming websockets messages are routed. For example, mMZ10.release() is called when a new dice roll (prefixed by CA#$42) comes in.   '), _code2.default.messages, (0, _dom.h)('p#cmment', ' The "mMZ" prefix designates instances of MonadItter. An instance\'s bnd() method assigns its argument to its "p" attribute. "p" runs if and when its release() method is called. The next() function releases a specified MonadItter instance when the calling monad\'s value matches the specified value in the expression. In the messages$ stream, the MonadItter instance\'s bnd methods do not take argumants, but next is capable of sending arguments when bnd() is called on functions requiring them. Here is an example: '), (0, _dom.h)('a#tdList2', { props: { href: '#itterLink' } }, 'release() with arguments'), (0, _dom.h)('span#comment', ''), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('h1', ' The comments section is undergoing drastic revision. It is down for repairs'), (0, _dom.h)('h2', 'COMMENTS'), (0, _dom.h)('div#com2', { style: { display: abcde } }, [(0, _dom.h)('p', 'In order to write a comment, you need to be logged in with a user name and password. You can register and automatically be logged in below. Just enter some characters, separated by a comma. Everything before the comma is your user name; everything after is your password. '), (0, _dom.h)('input.register', { style: { display: abcde } }), (0, _dom.h)('p', ' If you already have a user name and passwork, you can enter them below, separated by a comma. '), (0, _dom.h)('input.login', { style: { display: fghij } }), (0, _dom.h)('p', 'Your user name and password will be stored for future use.'), (0, _dom.h)('div#com2', { style: { display: 'block' } }), (0, _dom.h)('span', ' When this page loads in the browser, a user name is automatically generated in order to establish a unique Websocket handle, named "socket". This makes it possible to exchange text messages with other group members, play the game, and work on a shared todo list. If you want to leave a comment, you should log in with a user name ')]),
+	      (0, _dom.h)('h2', ' MonadSet '), (0, _dom.h)('p', ' The list of online group members at the bottom of the scoreboard is very responsive to change. When someone joins the group, changes to a different group, or closes a browser session, a message prefixed by NN#$42 goes out from the server providing group members with the updated list of group members. MonadSet acts upon messages prefixed by NN#$42. Here are the definitions of MonadSet and the MonadSet instance sMplayers '), _code2.default.MonadSet, (0, _dom.h)('h3', ' Websocket messages'), (0, _dom.h)('p#demo', ' Incoming websockets messages trigger updates to the game display, the chat display, and the todo list display. The members of a group see what other members are doing; and in the case of the todo list, they see the current list when they sign in to the group. When any member of a group adds a task, crosses it out as completed, edits its description, or removes it, the server updates the persistent file and all members of the group immediately see the revised list.  '), (0, _dom.h)('p', 'The code below shows how incoming websockets messages are routed. For example, mMZ10.release() is called when a new dice roll (prefixed by CA#$42) comes in.   '), _code2.default.messages, (0, _dom.h)('p#cmment', ' The "mMZ" prefix designates instances of MonadItter. An instance\'s bnd() method assigns its argument to its "p" attribute. "p" runs if and when its release() method is called. The next() function releases a specified MonadItter instance when the calling monad\'s value matches the specified value in the expression. In the messages$ stream, the MonadItter instance\'s bnd methods do not take argumants, but next is capable of sending arguments when bnd() is called on functions requiring them. Here is an example: '), (0, _dom.h)('a#tdList2', { props: { href: '#itterLink' } }, 'release() with arguments'), (0, _dom.h)('br'), (0, _dom.h)('h2.red', ' The comments section is undergoing drastic revision. The delete and revise features are currently not working.'), (0, _dom.h)('h2', 'COMMENTS'), (0, _dom.h)('div#com2', { style: { display: abcde } }, [(0, _dom.h)('p', 'In order to revise or delete a comment, you need to be logged in with a user name and password. You can register and automatically be logged in below. Just enter some characters, separated by a comma. Everything before the comma is your user name; everything after is your password. '), (0, _dom.h)('h3', 'Register'), (0, _dom.h)('input.register', { style: { display: abcde } }), (0, _dom.h)('h3', 'Login'), (0, _dom.h)('div.red', mMerror.x), (0, _dom.h)('p', ' If you already have a user name and passwork, you can enter them below, separated by a comma. '), (0, _dom.h)('input.login', { style: { display: fghij } }), (0, _dom.h)('p', 'Your user name and password will be stored for future use.'), (0, _dom.h)('div#com2', { style: { display: 'block' } }), (0, _dom.h)('span', ' When this page loads in the browser, a user name is automatically generated in order to establish a unique Websocket handle, named "socket". This makes it possible to exchange text messages with other group members, play the game, and work on a shared todo list. If you want to leave a comment, you should log in with a user name ')]),
 	      // h('a', { props: {href: "mailto:pyschalk@gmail.com"}}, 'email' ),
 	      // h('span', ' or send a personal tweet to @schalk1234' ),
-	      (0, _dom.h)('br'), (0, _dom.h)('textarea#comment'), (0, _dom.h)('button#commentClick', 'Save Comment'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('div', commentMonad.comments), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('a', { props: { href: '#top' } }, 'Back To The Top'), (0, _dom.h)('h2', 'Appendix - Under Construction '), (0, _dom.h)('h3', 'The functions that produce the examples'), (0, _dom.h)('p', ' Here are the definitions of MonadEr, its helper functions, and the function that serve as parameters to the bnd() method in the demonstration. '), _code2.default.monadEr, (0, _dom.h)('p', ' and here is the code that produced the Chrome console log entries: '), _code2.default.errorDemo, (0, _dom.h)('span.tao', ' When  a MonadEr instance encounters a function or an argument in quotation marks of types "undefined" or "NaN", a string gets pushed into the instance\'s e attribue. After that, the  bnd() method will not process any function other than clean(). It will stop at the'), (0, _dom.h)('span.turk', 'if (e.length > 0)'), (0, _dom.h)('span', 'block. clean() resets an instance to normal functioning mode by setting its e attribute back to []. '), (0, _dom.h)('br'), (0, _dom.h)('p'), (0, _dom.h)('p'), (0, _dom.h)('p', '.'), (0, _dom.h)('p', '.'), (0, _dom.h)('p', '.'), (0, _dom.h)('p', '.'), (0, _dom.h)('p', '.'), (0, _dom.h)('p'), (0, _dom.h)('p'), (0, _dom.h)('p'), (0, _dom.h)('p'), (0, _dom.h)('p')])]);
+	      (0, _dom.h)('br'), (0, _dom.h)('textarea#comment'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('div', mMcomments.x), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('a', { props: { href: '#top' } }, 'Back To The Top'), (0, _dom.h)('h2', 'Appendix - Under Construction '), (0, _dom.h)('h3', 'The functions that produce the examples'), (0, _dom.h)('p', ' Here are the definitions of MonadEr, its helper functions, and the function that serve as parameters to the bnd() method in the demonstration. '), _code2.default.monadEr, (0, _dom.h)('p', ' and here is the code that produced the Chrome console log entries: '), _code2.default.errorDemo, (0, _dom.h)('span.tao', ' When  a MonadEr instance encounters a function or an argument in quotation marks of types "undefined" or "NaN", a string gets pushed into the instance\'s e attribue. After that, the  bnd() method will not process any function other than clean(). It will stop at the'), (0, _dom.h)('span.turk', 'if (e.length > 0)'), (0, _dom.h)('span', 'block. clean() resets an instance to normal functioning mode by setting its e attribute back to []. '), (0, _dom.h)('br'), (0, _dom.h)('p'), (0, _dom.h)('p'), (0, _dom.h)('p', '.'), (0, _dom.h)('p', '.'), (0, _dom.h)('p', '.'), (0, _dom.h)('p', '.'), (0, _dom.h)('p', '.'), (0, _dom.h)('p'), (0, _dom.h)('p'), (0, _dom.h)('p'), (0, _dom.h)('p'), (0, _dom.h)('p')])]);
 	    })
 	  };
 	}

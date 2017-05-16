@@ -12,12 +12,29 @@ socket.addEventListener('message', function (event) {
 });
 
 socket.onopen = function login () {
+  if (document.cookie.substring(0,6) === "DC#$42") {  
+    var n = document.cookie.length;
+    var s = document.cookie.substring(6,n);
+    var ar = s.split('<o>');
+    socket.send('CC#$42' + ar[0]);
+    pMname.ret(ar[0]);
+    pMgroup.ret('solo');
+    socket.send(`GZ#$42,solo,${ar[0]}`);
+    document.cookie = ""
+    var combo = ar.join('<o>');
+    pMcombo.ret(combo);
+  }
+  else {
     var v = rand();
     var v2 = rand();
     pMname.ret(v);
     pMgroup.ret('solo');
-    socket.send('CC#$42' + v + '<o>' + v2 );
+    var combo = v + '<o>' + v2;
+    socket.send('CC#$42' + combo );
+    pMcombo.ret(combo);
     pMclicked.ret([]);
+    socket.send(`GZ#$42,solo,${v}`);
+  }
 };
   
 function main(sources) {
@@ -33,13 +50,15 @@ function main(sources) {
         gameMonad.run([v[7], v[8], 0, [], [v[3], v[4], v[5], v[6]]]);
       });
       mMZ11.bnd( () => {
-        commentMonad.init(extra);
-        socket.send(`GZ#$42,${pMgroup.x},${v[2]}`);    // Load the comments
+        commentMonad.run(extra,sender);
       });
       mMZ12.bnd( () => {
-        mM6.ret(v[2] + ' successfully logged in.');
-        socket.send(`ZZ#$42,${pMgroup.x},${v[2]}`);    // Load the registered names 
+        registered.run(extra);
+        var combo = ar.join('<o>');
+        pMcombo.ret(combo);
+        pMname.ret(ar[0]);
       });
+
       mMZ13.bnd( () => {
         console.log('The message arrived', messages);
         var message = v.slice(3,v.length).join(', ');
@@ -71,36 +90,24 @@ function main(sources) {
       if (pMgroup.x != 'solo' || pMname.x === v[2] ) updatePlayers(e.data)  
     });
 
-
 //*********************************************************************** BEGIN NAMES
-
-   /* mMZ20.bnd( () => {
-      var ar = extra.split('<@>');              // Get names and passwords
-      users.run(ar);
-    });   
-
-    mMZ21.bnd( () => {                                   // Append a name
-      console.log('In mMZ21.bnd - - extra is', extra );
-      users.run(extra);
-    });  */
 
     mMZ19.bnd( () => {                          // Clear all comments
       commentMonad.clear();
       var str = e.data.substring(e.data.indexOf('<@>')+3, e.data.length);
-      commentMonad.run3(str)                    // Receive all comments from server  
+      commentMonad.run(str,sender)                    // Receive all comments from server  
       console.log('Another message from mMZ19. str typeof str are', str, typeof str )
     });
 
-    mMZ23.bnd( () => {                             // Test registration CJ#$42
-      socket.close();
-      setTimeout ( function () {
-        socket = createWebSocket('/');
-      },1500 );
-    })   
+
+    mMZ23.bnd( () => {
+      console.log('In mMZ23.bnd - - - extra and sender are', extra, sender);
+      commentMonad.run(extra,sender);  
+    });
 
     mMZ24.bnd( () => {                                  // Test login CK#$42
       if (extra == "False") { 
-        mM15.ret("You should register before logging in");
+        mMerror.ret("You should register before logging in");
         return;
       }
       if (extra == "True") {
@@ -108,32 +115,49 @@ function main(sources) {
       }
     });
 
-    mMZ25.bnd( () => {
-      registered.run4(extra);
+    mMZ25.bnd( () => {            // Register
+      if (v[4] === "False") {
+        extra.replace(/<<>>/g,',');
+        var ar = extra.split("<o>");
+        socket.send(`AB#$42,${pMgroup.x},${ar[0]},${ar[0]},${ar[1]}`);
+        pMname.ret(ar[0]);
+      }  
+      else mMerror.ret('The name you chose is already registered');
     });
 
-    mMZ26.bnd( () => {
-      socket.send(`CJ#$42,${pMgroup.x},${pMname.x}`);
+    mMZ26.bnd( () => {          // Log in
+      console.log('In mMZ26. extra and v[4] are', extra, v[4]);
+      if (extra === 'False') {   // The name was extracted from namesFile
+        mMerror.ret('The name you entered has not been registered'); 
+        return;
+      }
+      if (v[4] === 'True') {
+        mMerror.ret( 'The password you entered does not match the registered password');
+        return;
+      }
+      var ar = extra.split("<o>");
+      socket.send(`AB#$42,${pMgroup.x},${ar[0]},${ar[0]},${ar[1]}`);
+      pMname.ret(ar[0]);
     });
+
 
   })
   ret(e.data.split(',')[0])
   .bnd(next, 'CA#$42', mMZ10)
   .bnd(next, 'GZ#$42', mMZ11)
-  .bnd(next, 'CC#$42', mMZ12)
+  .bnd(next, 'KZ#$42', mMZ12)
   .bnd(next, 'CD#$42', mMZ13)
   .bnd(next, 'CE#$42', mMZ14)
   .bnd(next, 'EE#$42', mMZ15)
-  .bnd(next, 'TG#$41', mMZ16)
   .bnd(next, 'DD#$42', mMZ17)
   .bnd(next, 'NN#$42', mMZ18)
   .bnd(next, 'GG#$42', mMZ19)
   .bnd(next, 'CZ#$42', mMZ20)
   .bnd(next, 'CX#$42', mMZ21)
-  .bnd(next, 'CJ#$42', mMZ23)
+  .bnd(next, 'ZZ#$42', mMZ23)
   .bnd(next, 'CK#$42', mMZ24)
-  .bnd(next, 'ZZ#$42', mMZ25)
-  .bnd(next, 'CJ#$42', mMZ26)
+  .bnd(next, 'YY#$42', mMZ25)
+  .bnd(next, 'XX#$42', mMZ26)
   });
 
  console.log('1^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ got this far');
@@ -144,14 +168,18 @@ function next(x, y, instance, z) {
   return ret(x);
 };
 
-var comClick$ = sources.DOM.select('#comment').events('click');
+var comment$ = sources.DOM.select('#comment').events('keydown');
 
-var comClickAction$ = comClick$.map( e => {
-  var com = e.target.value;
-  var comm = com.replace(rep2,'<<>>')
-  var commx = '<@>' + pMname.x + '<o>' + comm;
-  socket.send(`GG#$42,${pMgroup.x},${pMname.x},${commx}`);
-});
+var commentAction$ = comment$.map(e => { 
+  console.log('CommentAction$ e', e );
+  if (e.key === 'Control' && e.ctrlKey) {
+    var com = e.target.value
+    .replace(/,/g, "<<>>")
+    .replace(/\n/g, "<n>")
+    var commx = '<@>' + pMname.x + '<o>' + com + '<@>';
+    socket.send(`GG#$42,${pMgroup.x},${pMname.x},${commx}`);
+  }
+}, false);
 
 var edit4$ = sources.DOM
     .select('buton#edit4').events('click');
@@ -159,7 +187,6 @@ var edit4$ = sources.DOM
 var edit4Action$ = edit4$.map(function (e) {
   showEditB = 'inline-block'; 
   console.log('************ showEditB is', showEditB );
-commentMonad.comments[1].children[0].elm.style.display = 'none'
   var s = commentMonad.s.slice();
 });
 
@@ -177,7 +204,6 @@ var edit4BAction$ = edit4B$.map( function (e) {
   socket.send('GS#$42,' + pMgroup.x + ',' + pMname.x + ',<@>' + s2);
 })  
 
-
 var abcde = 'inline';
 var fghij = 'inline';
 
@@ -185,58 +211,44 @@ var fghij = 'inline';
       .select('input.register').events('keypress');
 
   var registerPressAction$ = registerPress$.map(e => {
+    mMerror.ret('');
+    var ar = (e.target.value).split(',');
+    var name = ar[0];
+    var combo = ar.join('<o>');
     if (e.keyCode === 13) {
-      mM15.ret('');
-      console.log('In registerPressAction$. e is', e );
-      var index1 = e.target.value.indexOf(',');
-      var index2 = e.target.value.lastIndexOf(',');
-      if (index1 === -1 || index1 !== index2) {
-        mM15.ret(' There should be one and only one comma' );
+      mMerror.ret('');
+      if (ar.length != 2) {
+        mMerror.ret(' There should be one and only one comma' );
         return;
       }
-      var ar = (e.target.value).split(',');
-      var combo = ar.join('<o>');
-      if (!registered.test(e.target.value)) {
-        socket.send(`CJ#$42,${pMgroup.x},${pMname.x},${ar[0]},${combo}`);
-        pMcombo.ret(combo);
-        pMname.ret(ar[0]);
+      else {  
+        socket.send(`XX#$42,solo,${pMname.x},${combo}<&>`);
+     /*   document.cookie = ('DC#$42' + combo);
+        mMerror.ret('...wait Page refresh in progress.');
+        refresh();  */
       } 
     }
   });
-
-/*
-
-        if (users.s.includes(combo + '\n')) {
-        console.log("NAME TAKEN OOOOOOOOOOOOOOOOOOOO");  
-        mM15.ret('That user name is already in the system');
-        return;
-      }
-      else {
-        socket.send(`CV#$42,${pMgroup.x},${pMname.x},${ar[0]}`);
-        pMcombo.ret(combo);
-        pMclicked.ret([]);
-        var name = ar[0];
-        pMname.ret(name);
-        pMpassword.ret(ar[1]);
-        socket.send(`CG#$42,${pMgroup.x},${ar[0]},${pMscore.x},${pMgoals.x}`);
-        abcde = 'none';
-        fghij = 'none';
-      }
-    }
-  });    */
 
   var loginPress$ = sources.DOM
       .select('input.login').events('keypress');
 
   var loginPressAction$ = loginPress$.map (e => {
     console.log('In loginPressAction$ -<$><$><$><$><$><$><$><$><$><$> - - e is', e );
+    mMerror.ret('');
+    var ar = (e.target.value).split(',');
+    var name = ar[0];
+    var combo = ar.join('<O>');
     if (e.keyCode === 13) {
-      console.log('*********************************** In loginPressAction$ -- e.keyCode === 13');
-      var ar = e.target.value.split(',');
-      var str = ar.join('<o>');
-      pMcombo.ret(str);
-      socket.send(`CK#$42,${pMgroup.x},${pMname.x},${ar[0]},${str}`);
-    };
+      mMerror.ret('');
+      if (ar.length != 2) {
+        mMerror.ret(' There should be one and only one comma' );
+        return;
+      }
+      else {
+        socket.send(`YY#$42,solo,${ar[0]},${combo}<&>`);
+      }
+    } 
   });
 
   var groupPress$ = sources.DOM
@@ -762,7 +774,7 @@ var cbxAction$ = cbx$.map(e => {
   console.log('1 in cbxAction$. s is', s );
   var index = e.target.parentNode.id;
   s[index][1] = eval(s[index][1]) === true ? false : true
-  s.map(v => v[0] = v[0].replace(rep2, '<<>>'));
+  s.map(v => v[0] = v[0].replace(/'<<>>'/g, ","));
   console.log('2 in cbxAction$. s is', s );
   var str = s.join('@');
   console.log('3 in cbxAction$. str is', str);
@@ -778,7 +790,7 @@ var chbox1Action$ = chbox1Click$.map( e => {
   console.log('In chbox1Action. $$$$$$$$$$$$$$$$$$$$$ e and s are', e, s); 
   var index = e.target.parentNode.id;
   s[index][1] = false;
-  s.map(v => v[0] = v[0].replace(rep2, '<<>>'));
+  s.map(v => v[0] = v[0].replace(/<<>>/g, ","));
   var str = s.join('@');
   console.log('In chbox1Action. str is', str); 
   socket.send(`TD#$42,${get(pMgroup)},${get(pMname)},@${str}`);  
@@ -792,7 +804,7 @@ var chbox2Action$ = chbox2Click$.map( e => {
   console.log('In chbox2Action. e and s are', e, s); 
   var index = e.target.parentNode.id;
   s[index][1] = true;
-  s.map(v => v[0] = v[0].replace(rep2, '<<>>'));
+  s.map(v => v[0] = v[0].replace(/<<>>/g, ","));
   var str = s.join('@');
   socket.send(`TD#$42,${get(pMgroup)},${get(pMname)},@${str}`);
 });
@@ -813,7 +825,7 @@ var deleteAction$ = deleteClick$.map(function (e) {
     var s = taskMonad.s.slice();
     var index = e.target.parentNode.id;
     s.splice(index, 1);
-    s.map(v => v[0] = v[0].replace(rep2, '<<>>'));
+    s.map(v => v[0] = v[0].replace(/<<>>/g, ","));
     var str = s.join('@');
     socket.send(`TD#$42,${get(pMgroup)},${get(pMname)},@${str}`);
   }
@@ -829,7 +841,7 @@ var edit1Action$ = edit1$.map(function (e) {
   var index = getIndex2(e);
   var s = taskMonad.s.slice();
   var str;
-  s.map(v => v[0] = v[0].replace(rep2, '<<>>'));
+  s.map(v => v[0] = v[0].replace(/'<<>>'/g, ","));
   s[index][4] = 'inline-block';
   str = s.join('@');
   taskMonad.run2(str);  
@@ -849,7 +861,7 @@ var edit2Action$ = edit2$.map(function (e) {
     s[index][0] = e.target.value;
     s[index][1] = false;
     s[index][4] = "none";
-    s.map(v => v[0] = v[0].replace(rep2, '<<>>'));
+    s.map(v => v[0] = v[0].replace(/<<>>/g, ","));
     var str = s.join('@');
     socket.send(`TD#$42,${get(pMgroup)},${get(pMname)},@${str}`);
   }
@@ -883,7 +895,7 @@ var newTaskAction$ = newTask$.map(function (e) {
   if (e.keyCode === 13) {
   var alert = '';
   var s = taskMonad.s.slice();
-  s.map(v => v[0] = v[0].replace(rep2, '<<>>'));
+  s.map(v => v[0] = v[0].replace(/<<>>/g, ","));
   console.log('In newTaskAction$. <><><><><><><> s is', s);
   var todo = [];
     var ar = e.target.value.split(',');
@@ -894,7 +906,7 @@ var newTaskAction$ = newTask$.map(function (e) {
     else {
       todo[2] = ar.shift();
       todo[3] = ar.shift();
-      todo[0] = ar.join(',').replace(rep2, '<<>>');
+      todo[0] = ar.join(',').replace(/<<>>/g, ",")
       todo[1] = false;
       todo[4] = "none";
       s.push(todo);
@@ -909,7 +921,7 @@ var newTaskAction$ = newTask$.map(function (e) {
 
 console.log('Just before calcStream@');
 
-  var calcStream$ = xs.merge( cbxAction$, chbox1Action$, chbox2Action$, comClickAction$, messagePressAction$, fA_c$, forwardAction$, backAction$, prAction$, factorsAction_b$, fA$, factorsP$, fA_b$, factorsP_b$, clearprimes$, workerB$, workerC$, workerD$, workerE$, workerF$, clearAction$, factorsAction$, primeFib$, fibPressAction$, quadAction$, edit1Action$, edit2Action$, edit4Action$, edit4BAction$, testWAction$, testZAction$, testQAction$, deleteAction$, newTaskAction$, chatClickAction$, gameClickAction$, todoClickAction$, captionClickAction$, groupPressAction$, rollClickAction$, loginPressAction$, registerPressAction$, messages$, numClickAction$, opClickAction$);
+  var calcStream$ = xs.merge( commentAction$, cbxAction$, chbox1Action$, chbox2Action$, messagePressAction$, fA_c$, forwardAction$, backAction$, prAction$, factorsAction_b$, fA$, factorsP$, fA_b$, factorsP_b$, clearprimes$, workerB$, workerC$, workerD$, workerE$, workerF$, clearAction$, factorsAction$, primeFib$, fibPressAction$, quadAction$, edit1Action$, edit2Action$, edit4Action$, edit4BAction$, testWAction$, testZAction$, testQAction$, deleteAction$, newTaskAction$, chatClickAction$, gameClickAction$, todoClickAction$, captionClickAction$, groupPressAction$, rollClickAction$, loginPressAction$, registerPressAction$, messages$, numClickAction$, opClickAction$);
   return {
   DOM: calcStream$.map(function () {
   return h('div.main', [
@@ -920,7 +932,7 @@ console.log('Just before calcStream@');
       h('div', 'WITH CUSTOM MONADS AND CYCLE.JS') ]),
       h('br'),
       h('div.image_3', [
-      h('img.image_2', {props: {src: "logo.svg" }}  ),
+      h('img.image_2', {props: {src: "cycle.png" }}  ),
       h('span', ' ' ),
       h('a', { props: { href: "https://cycle.js.org/", target: "_blank" } }, 'A Cycle.js application') ]),
 h('div.content', [
@@ -1284,35 +1296,31 @@ code.MonadSet,
   code.messages,
   h('p#cmment', ' The "mMZ" prefix designates instances of MonadItter. An instance\'s bnd() method assigns its argument to its "p" attribute. "p" runs if and when its release() method is called. The next() function releases a specified MonadItter instance when the calling monad\'s value matches the specified value in the expression. In the messages$ stream, the MonadItter instance\'s bnd methods do not take argumants, but next is capable of sending arguments when bnd() is called on functions requiring them. Here is an example: '),
   h('a#tdList2', { props: { href: '#itterLink' } }, 'release() with arguments'),
-  h('span#comment', '' ),
-  h('br'),
-  h('br'),
   h('br'),
 
-  h('h1', ' The comments section is undergoing drastic revision. It is down for repairs' ),
+  h('h2.red', ' The comments section is undergoing drastic revision. The delete and revise features are currently not working.' ),
   h('h2', 'COMMENTS' ),
   h('div#com2',  { style: { display: abcde} }, [
-  h('p', 'In order to write a comment, you need to be logged in with a user name and password. You can register and automatically be logged in below. Just enter some characters, separated by a comma. Everything before the comma is your user name; everything after is your password. '),
+  h('p', 'In order to revise or delete a comment, you need to be logged in with a user name and password. You can register and automatically be logged in below. Just enter some characters, separated by a comma. Everything before the comma is your user name; everything after is your password. '),
+  h('h3', 'Register' ),  
   h('input.register', {style: {display: abcde }}, ),
+  h('h3', 'Login' ), 
+  h('div.red', mMerror.x ),   
   h('p', ' If you already have a user name and passwork, you can enter them below, separated by a comma. '),
   h('input.login', {style: {display: fghij }}, ),
   h('p', 'Your user name and password will be stored for future use.' ),
   h('div#com2',  {style: { display: 'block' }}, ),
-    h('span', ' When this page loads in the browser, a user name is automatically generated in order to establish a unique Websocket handle, named "socket". This makes it possible to exchange text messages with other group members, play the game, and work on a shared todo list. If you want to leave a comment, you should log in with a user name '), ]),
-    // h('a', { props: {href: "mailto:pyschalk@gmail.com"}}, 'email' ),
-    // h('span', ' or send a personal tweet to @schalk1234' ),
-    h('br' ),
-    h('textarea#comment', ),
-    h('button#commentClick', 'Save Comment' ),   
-    h('br' ),
-    h('br' ),
-    h('div', commentMonad.comments ),
+  h('span', ' When this page loads in the browser, a user name is automatically generated in order to establish a unique Websocket handle, named "socket". This makes it possible to exchange text messages with other group members, play the game, and work on a shared todo list. If you want to leave a comment, you should log in with a user name '), ]),
+  // h('a', { props: {href: "mailto:pyschalk@gmail.com"}}, 'email' ),
+  // h('span', ' or send a personal tweet to @schalk1234' ),
+  h('br' ),
+  h('textarea#comment', ),
+  h('br' ),
+  h('br' ),
+  h('div', mMcomments.x ),
   h('br'),
   h('br'),
   h('a', { props: { href: '#top' } }, 'Back To The Top'),
-
-
-
   h('h2', 'Appendix - Under Construction ' ),
   h('h3', 'The functions that produce the examples' ),
 

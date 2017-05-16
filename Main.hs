@@ -1,26 +1,28 @@
-{-# LANGUAGE OverloadedStrings, DataKinds, TemplateHaskell #-}
-import Data.Monoid (mappend)
-import Data.Text (Text)
-import Control.Exception (finally)
-import Control.Monad (forM_, forever)
-import Control.Concurrent (forkIO)
-import Control.Concurrent.STM
-import Control.Monad.IO.Class (liftIO)
-import Network.WebSockets (sendClose)
-import qualified Data.Text as T
-import qualified Data.Text.IO as TIO
-import qualified Network.WebSockets as WS
+{-# LANGUAGE DataKinds         #-}
+{-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE TemplateHaskell   #-}
+import           Control.Concurrent             (forkIO)
+import           Control.Concurrent.STM
+import           Control.Exception              (finally)
+import           Control.Exception.Base         (mask_)
+import           Control.Monad                  (forM_, forever)
+import           Control.Monad.IO.Class         (liftIO)
+import           Data.FileEmbed                 (embedDir)
+import           Data.List                      (intersperse)
+import           Data.List.Split                (splitOn)
+import           Data.Monoid                    (mappend)
+import           Data.Text                      (Text)
+import qualified Data.Text                      as T
+import qualified Data.Text.IO                   as TIO
+import           Fm                             (rText, truck)
 import qualified Network.Wai
-import qualified Network.Wai.Handler.Warp as Warp
-import qualified Network.Wai.Handler.WebSockets as WaiWS
 import qualified Network.Wai.Application.Static as Static
-import Data.FileEmbed (embedDir)
-import Fm (rText, truck)
-import Data.List (intersperse)
-import Control.Exception.Base (mask_)
-import Data.List.Split (splitOn)
-import Tasks hiding (main)
-import System.Directory
+import qualified Network.Wai.Handler.Warp       as Warp
+import qualified Network.Wai.Handler.WebSockets as WaiWS
+import           Network.WebSockets             (sendClose)
+import qualified Network.WebSockets             as WS
+import           System.Directory
+import           Tasks                          hiding (main)
 -- import System.Environment (getEnv)
 
 solo :: Text
@@ -59,7 +61,7 @@ checkName n f = do
   let b = splitOn "<@>" f
   let c = map (splitOn "<o>") b
   let d = [a | [a,b] <- c]
-  let e = any (n==) d
+  let e = n `elem` d
   return e
 
 checkCombo nt ft = do
@@ -69,9 +71,9 @@ checkCombo nt ft = do
   print f
   let c = splitOn "<@>" f
   print c
-  let d = filter (\x -> (length x) > 0)  c
+  let d = filter (\x -> not (null x))  c
   print d
-  let e = any (n==) c
+  let e = n `elem` c
   print $ show e
   return e
 
@@ -128,6 +130,12 @@ extractName combo = do
   let a = splitOn "<o>" combo
   let b = T.pack $ head a
   return b
+
+extractHead [a,b] = a
+extractHead _ = T.pack "Error. ExtractHead is being applied to something other than a two item list of Text"
+
+extractTail [a,b] = b
+extractTail _ = T.pack "Error. ExtractTail is being applied to something other than a two item list of Text"
 
 newName :: Text -> Text -> Text -> Client -> Client
 newName name1 name2 name3(a, b, c, d, e, f) | name1 == a  = (name2, b, c, d, e, name3)
@@ -201,7 +209,7 @@ main = do
     state <- atomically $ newTMVar newServerState
     Warp.runSettings
      (Warp.setPort 3055 $
-       Warp.setTimeout 36000 $
+       Warp.setTimeout 36000
          Warp.defaultSettings) $
            WaiWS.websocketsOr WS.defaultConnectionOptions (application state) staticApp
 staticApp :: Network.Wai.Application
@@ -233,12 +241,12 @@ application state pending = do
          where
                 prefix     = "CC#$42"
                 namePword = T.splitOn oh $ T.drop (T.length prefix) msg
-                client     = ((head namePword) :: Name, 0, 0, solo, conn, (namePword !! 1) :: Password)
+                client = (head namePword :: Name, 0, 0, solo, conn, last namePword :: Password)
                 disconnect = do
                     let name = getName client
                     print $ T.unpack name ++ " is leaving"
                     s <- atomically $ takeTMVar state
-                    let grp = getGroup name s 
+                    let grp = getGroup name s
                     let s' = removeClient client s
                     atomically $ putTMVar state s'
                     let subSt = subState name grp s'
@@ -251,7 +259,7 @@ talk conn state client = forever $ do
     msg <- WS.receiveData conn
     let msg2 = T.unpack msg
     print $ "In talk. The incoming message is " ++ msg2
-    let mArr = splitOn "," msg2 
+    let mArr = splitOn "," msg2
     let msgArray = T.splitOn "," msg
     let group = msgArray !! 1
     let sender = msgArray !! 2
@@ -262,12 +270,85 @@ talk conn state client = forever $ do
     let mes = "<><><><><> Outgoing message from Main.hs " :: Text
     let xcomments = "xcomments" :: FilePath
     let xnames = "xnames" :: FilePath
+    let namesFile = "namesFile" :: FilePath
     let at = T.pack "<@>"
     let oh = T.pack "<o>"
     let comma = T.pack ", "
     let comma2 = T.pack ","
 
-    if "CA#$42" `T.isPrefixOf` msg
+    if "XX#$42" `T.isPrefixOf` msg
+      then
+        do
+          let newName = (T.unpack extra)
+          nams <- readFile namesFile
+          let namses = splitOn "<&>"nams
+          let result = any (==newName) namses
+          if (not result)
+            then
+              do
+                appendFile namesFile newName
+                let newNameList = T.splitOn (T.pack "<&>") extra
+                st <- atomically $ readTMVar state
+                let newState = changeName sender (extractHead newNameList) (extractTail newNameList) st
+                print "Have arrived in XX"
+                st <- atomically $ readTMVar state
+                let subSt = subState sender group st
+                names <- readFile namesFile
+                print "*******************************************  of XX#$42"
+                print names
+                print newName
+                let nam = splitOn "<&>" names
+                let nameList = map (head . splitOn"<o>") nam
+                print nameList
+                print $ "Hello Nurse " ++ (show result)
+                print "******************************************* End of XX#$42"
+                st <- atomically $ readTMVar state
+                let subSt = subState sender group st
+                broadcast ("XX#$42," `mappend` group `mappend` ","
+                 `mappend` (extractHead    newNameList) `mappend` ","
+                  `mappend` extra `mappend` ","
+                   `mappend` (T.pack (show result)) `mappend` ",") subSt
+            else
+              print "Hello Nurse"
+      else
+        print "Hello Nurse, how do you do?"
+
+    if "YY#$42" `T.isPrefixOf` msg                              -- TEST AND ADD NAME AND NAME<o>PASSWORD
+        then
+            do
+                let check = splitOn "<o>" (T.unpack extra)
+                let checkName = head check
+                st <- atomically $ readTMVar state
+                let subSt = subState sender group st
+                names <- readFile namesFile
+                print "*******************************************  of YY#$42"
+                print names
+                print checkName
+                let nam = splitOn "<&>" names
+                let nameList = map (head . splitOn "<o>") nam
+                let result = checkName `elem` nameList
+                let result2 = T.unpack extra `elem` nam
+                print nameList
+                print $ "Hello Nurse. Here are result and result2 from YY" ++ show result ++ "***" ++ show result2
+                print "******************************************* End of YY#$42"
+                st <- atomically $ readTMVar state
+                let subSt = subState sender group st
+                broadcast ("YY#$42," `mappend` group `mappend` "," `mappend` sender `mappend` ","
+                       `mappend` T.pack (show result) `mappend` "," `mappend` (T.pack (show result2))) subSt
+
+    else if "AB#$42" `T.isPrefixOf` msg                             -- CHANGE A NAME, KEEPING THE SOCKET
+        then
+            do
+                appendFile namesFile (T.unpack extra ++ "<&>")
+                old <- atomically $ takeTMVar state
+                let new = changeName sender extra extra2 old
+                atomically $ putTMVar state new
+                st <- atomically $ readTMVar state
+                let subSt = subState sender group st
+                broadcast ("NN#$42," `mappend` group `mappend` "," `mappend` extra `mappend` ","
+                    `mappend` (T.pack "<br>") `mappend` T.concat (intersperse "<br>" (textState subSt))) subSt
+
+    else if "CA#$42" `T.isPrefixOf` msg
         then
             do
                 old <- atomically $ takeTMVar state
@@ -318,7 +399,7 @@ talk conn state client = forever $ do
                 atomically $ putTMVar state new
                 let subSt1 = subState sender extra new
                 tasks <- liftIO $ read2 (mArr !! 3)
-                print $ "The server is sending: " ++ (T.unpack tasks)
+                print $ "The server is sending: " ++ T.unpack tasks
                 st <- atomically $ readTMVar state
                 let subSt2 = subState sender group st
                 broadcast ("DD#$42," `mappend` group `mappend` "," `mappend` sender `mappend` "," `mappend` tasks) subSt1
@@ -330,7 +411,7 @@ talk conn state client = forever $ do
             mask_ $ do
                 s <- atomically $ takeTMVar state
                 let new = filter (\(a,_,_,_,_,_) -> a == sender) s
-                atomically $ putTMVar state new 
+                atomically $ putTMVar state new
 
     else if "CG#$42" `T.isPrefixOf` msg
         then
@@ -351,119 +432,41 @@ talk conn state client = forever $ do
                 let shorter = drop 3 mArr
                 let tex = Prelude.map T.pack shorter
                 let trunc = T.intercalate comma tex
-                save (mArr !! 1) $ trunc
-                print $ "The server is sending: " ++ (T.unpack trunc)
+                save (mArr !! 1) trunc
+                print $ "The server is sending: " ++ T.unpack trunc
                 broadcast ("DD#$42," `mappend` group `mappend` ","
                     `mappend` sender `mappend` "," `mappend` trunc) subSt
-
-    else if "TG#$42" `T.isPrefixOf` msg
-        then
-            do
-                let comment = (T.splitOn "@" msg) !! 1
-                print comment
-                old <- TIO.readFile "COMMENTS.txt"
-                let allComments = old `mappend` "\n" `mappend` sender `mappend ` " commented: " `mappend` comment
-                TIO.writeFile "COMMENTS.txt" allComments
-                st <- atomically $ readTMVar state
-                broadcast ("GG#$42," `mappend` group `mappend` ","
-                    `mappend` sender `mappend` ",@" `mappend` allComments) st
-
-    else if "TG#$41" `T.isPrefixOf` msg
-        then
-            do
-                old <- TIO.readFile "COMMENTS.txt"
-                st <- atomically $ readTMVar state
-                broadcast ("TG#$41," `mappend` group `mappend` ","
-                    `mappend` sender `mappend` ",@" `mappend` old) st
-
-    else if "TG#$40" `T.isPrefixOf` msg
-        then
-            do
-                old <- TIO.readFile "_count"
-                let new = (read (T.unpack old) :: Integer) + 1
-                let new2 = T.pack(show new)
-                TIO.writeFile "_count" new2
-                print new
-                st <- atomically $ readTMVar state
-                let subSt = subState sender group st
-                broadcast ("TG#$40," `mappend` group `mappend` ","
-                    `mappend` sender `mappend` ","  `mappend` old) subSt
 
 
     else if "TX#$42" `T.isPrefixOf` msg
         then
-            do
-                removeFile (mArr !! 1)
+            removeFile (mArr !! 1)
 
-    else if "NT#$42" `T.isPrefixOf` msg
+-- ****************************************************************************** START COMMENTS
+
+     else if "GZ#$42" `T.isPrefixOf` msg                            -- SEND ALL COMMENTS
         then
             do
-                let task = (T.splitOn "@" (msg)) !! 1
-                save(mArr !! 1) $ task
+                com <- liftIO $ read2 xcomments
                 st <- atomically $ readTMVar state
                 let subSt = subState sender group st
-                tasks <- liftIO $ read2 (mArr !! 1)
-                broadcast ("DD#$42," `mappend` group `mappend` ","
-                    `mappend` sender `mappend` "," `mappend` tasks) subSt
-
--- ************************************************************************************ START COMMENTS
-
-    else if "GG#$42" `T.isPrefixOf` msg                              --APPEND
-        then
-            do
-                TIO.appendFile xcomments extra                       -- Append a comment
-                st <- atomically $ readTMVar state
-                broadcast ("GG#$42," `mappend` group `mappend` ","   -- Send the comment
-                    `mappend` sender `mappend` "," `mappend` extra ) st
-
-
-
-    else if "GZ#$42" `T.isPrefixOf` msg                            -- SEND ALL ON LOAD 
-        then
-            do
-                comms <- liftIO $ read2 xcomments
-                st <- atomically $ readTMVar state
-                broadcast ("GZ#$42," `mappend` group `mappend` ","
-                    `mappend` sender `mappend` "," `mappend` comms) st
-
-
-
-    else if "GR#$42" `T.isPrefixOf` msg                          -- REPLACE A COMMENT 
-        then
-            do
-                comms <- liftIO $ read2 xcomments
-                st <- atomically $ readTMVar state
-                -- let new = replace extra extra2 comms
-                broadcast ("GR#$42," `mappend` group `mappend` ","
-                    `mappend` sender `mappend` "," `mappend` comms) st
-
-
-
- 
--- ********************************************************************************** END  COMMENTS                   
-
--- ********************************************************************************** BEGIN LOGIN
-
-
-    else if "ZZ#$42" `T.isPrefixOf` msg                                  -- Load names on browser boot 
-        then
-            do
-                st <- atomically $ readTMVar state
-                names <- read2 xnames
-                let na = T.splitOn at names
-                let nam = fmap (T.splitOn oh) na
-                let namz = [a | [a,b] <- nam]
-                let namzes = T.intercalate comma2 namz;
                 broadcast ("ZZ#$42," `mappend` group `mappend` ","
-                    `mappend` sender `mappend` "," `mappend` namzes) st
+                    `mappend` sender `mappend` "," `mappend` com) subSt
 
-    
+    else if "GG#$42" `T.isPrefixOf` msg                              -- APPEND AND SEND
+        then
+            do
+                TIO.appendFile xcomments extra
+                com <- liftIO $ read2 xcomments
+                st <- atomically $ readTMVar state
+                let subSt = subState sender group st
+                broadcast ("ZZ#$42," `mappend` group `mappend` ","
+                    `mappend` sender `mappend` "," `mappend` com) subSt
+
+
+
     else do
         print "*********************************************************"
         print "Message fell through to the bottom in Main.hs"
         print msg
         print "*********************************************************"
-
-    
-
-        
