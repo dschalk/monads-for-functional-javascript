@@ -1,5 +1,5 @@
 'use strict';
-var todoData, mMt3VAL; 
+var todoData, mMt3VAL;
 var taskL = [];
 var namesList;
 var MESSAGES = [];
@@ -36,7 +36,7 @@ function Monad(z = 'default', ID = 'generic') {
     var m = func(this.x, ...args)
     var ID;
     if (m instanceof Monad) {
-      ID = testPrefix(args, _this.id); 
+      ID = testPrefix(args, _this.id);
       window[ID] = new Monad(m.x, ID);
       return window[ID];
     }
@@ -55,7 +55,7 @@ function MonadEvents(z = 'default', ID = 'generic') {
     var m = func(this.x, ...args)
     var ID;
     if (m instanceof MonadEvents) {
-      ID = testPrefix(args, _this.id); 
+      ID = testPrefix(args, _this.id);
       window[ID] = new MonadEvents(m.x, ID);
       return window[ID];
     }
@@ -74,7 +74,7 @@ var pMop = new Monad (0, 'pMop');
 var mMfactors = new Monad ([], 'mMfactors');
 
 var mMfactors_b = new Monad ([], 'mMfactors_b');
- 
+
 function Monad2 (z, ID = 'default') {
     var x = z;
     var ob = {
@@ -92,16 +92,17 @@ function Monad2 (z, ID = 'default') {
 function get (m) {
   let v = m.bnd(x => x);
   return v;
-}  
+}
 
 function get2 (m) {
-  let v = m.bnd('x => x');  
+  let v = m.bnd('x => x');
   return v;
-}  
+}
 var mMob = new Monad (0, 'mMob')
-var pMname = new Monad('1v65n$%pqw3*@#9', 'pMname'); 
+var pMname = new Monad('1v65n$%pqw3*@#9', 'pMname');
+var pMbackupName = new Monad('backup', 'pMbackupName'); 
 var pMpassword = new Monad('password', 'pMpassword');
-var pMcombo = new Monad('1v65n$%pqw3*@#9<o>none', 'pMcombo'); 
+var pMcombo = new Monad('1v65n$%pqw3*@#9<o>none', 'pMcombo');
 var pMgroup = new Monad('solo', 'pMgroup');
 var pMscore = new Monad(0, 'pMscore');
 var pMgoals = new Monad(0, 'pMgoals');
@@ -116,7 +117,7 @@ var pMnewName = new Monad('', 'pMnewName');
 var mMnums = new Monad([0,0,0,0], 'mMnums');
 var mMnumEls = new Monad([], 'mMnumEls');
 var mMstyle = new Monad(['inline', 'inline', 'inline', 'inline'], 'mMstyle')
- 
+
 var a = 3;
 var b = 4;
 var c = a + b;
@@ -131,7 +132,7 @@ var equals = function equals (mon1, mon2) {
   else return false
 }
 
-var mMtemp5 = new Monad(0, 'mMtemp5') 
+var mMtemp5 = new Monad(0, 'mMtemp5')
 
   function add (x, b) {
     return ret(parseInt(x,10) + parseInt(b,10));
@@ -155,8 +156,8 @@ var cuB = function (v, id = 'default') {
 
 var m = new Monad(3, 'm');
 
-function fmap(x, g, id) { 
-  var mon = new Monad(g(x), id); 
+function fmap(x, g, id) {
+  var mon = new Monad(g(x), id);
   window[id] = mon;
   return mon;
 }
@@ -171,12 +172,12 @@ function MonadSet(z, ID) {
     var m = func(this.s, ...args)
     var ID;
     if (m instanceof Monad) {
-      ID = testPrefix(args, _this.id); 
+      ID = testPrefix(args, _this.id);
       window[ID] = new Monad(m.x, ID);
       return window[ID];
     }
     if (m instanceof MonadSet) {
-      ID = testPrefix(args, _this.id); 
+      ID = testPrefix(args, _this.id);
       window[ID] = new Monad(m.s, ID);
       return window[ID];
     }
@@ -197,8 +198,8 @@ function MonadArchive(g, state, p) {
   this.s = state;
   this.process = p;
   this.a = s[0];
-  this.bnd = (func, ...args) => func(this.s, ...args);  
-  this.run = ar => { 
+  this.bnd = (func, ...args) => func(this.s, ...args);
+  this.run = ar => {
     var ar2 = this.process(ar);
     this.a = ar2[pMindex.x];
     this.s = ar2;
@@ -213,7 +214,7 @@ function MonadState(g, state) {
   console.log('someone called with g and state', g, state);
   this.id = g;
   this.s = state;
-  this.bnd = (func, ...args) => func(this.s, ...args);  
+  this.bnd = (func, ...args) => func(this.s, ...args);
   this.ret = function (a) {
     return window[this.id] = new MonadState(this.id, a);
   };
@@ -225,13 +226,13 @@ var mMg = new Monad([], 'mMg');
 function tP (x) {
   if (eval('typeof ' + x) === 'undefined') return "code4"
   else if (eval(x) !== eval(x)) return "code5"
-  else return "code6"  
+  else return "code6"
 }
 
 function testP (x) {
   if ( eval('typeof ' + x) === 'undefined') return "code4"
   else if (eval(x) !== eval(x)) return "code5"
-  else return "code6"  
+  else return "code6"
 }
 
 function testPrefix3 (x,y) {
@@ -239,7 +240,7 @@ function testPrefix3 (x,y) {
   var s;
   if ( eval('typeof ' + x) === 'undefined') return "code4"
   else if (eval(x) !== eval(x)) return "code5"
-  else return "code6"  
+  else return "code6"
     x.some(v => {
       if (typeof v == 'string' && v.charAt() == '$') {
          t = v.slice(1);
@@ -249,7 +250,7 @@ function testPrefix3 (x,y) {
 }
 
 function testPrefix2 (x,y) {
-  ar.map( v => {  
+  ar.map( v => {
     code = testP(v);
     if (code === 'code4') ar.push(v + ' is undefined.');
     else if (code === 'code5') ar.push(v + ' is NaN.');
@@ -257,10 +258,10 @@ function testPrefix2 (x,y) {
   })
   if (code === 'code6') return y;
   else if (ar.length > 0) return ar;
-}   
+}
 function evalF(x) {
   var v;
-  if (typeof x == "string") {v = eval("typeof x")}  
+  if (typeof x == "string") {v = eval("typeof x")}
   else if (isNaN(x)) v = "NaN";
   return v;
 }
@@ -269,15 +270,15 @@ function evalF(x) {
     return ret2(x*1 + y*1);
   };
 
-  
+
   function square2 (x, str) {
     return ret2(x*x);
   };
-  
+
   function mult2 (x,y,str) {
     return ret2(x*y);
   };
-  
+
   function sqroot2 (x) {
     return ret2(Math.sqrt(x));
   }
@@ -311,11 +312,11 @@ function push2(x, v, id) {
 
 function unshift(x, y, id) {
   var ar = x.slice();
-  ar.unshift(y);  
+  ar.unshift(y);
   window[id] = new Monad(ar, id);
   return window[id];
-}  
-  
+}
+
 function splice2(x, start, how_many, id) {
     var ar = x.slice();
     ar.splice(start, how_many)
@@ -364,7 +365,7 @@ var fibs_state = function fibs_state(ar) {
 };
 
 var fibsMonad = new MonadState('fibsMonad', [0, 1, 2, [0]], fibs_state);
- 
+
 factor_state([[], [], 24, [2, 3, 5]]);
 
 factor_state2([[], [], 24, [2, 3, 5]]);
@@ -391,7 +392,7 @@ function factor_state2(a) {
           break;
       };
       result = v;
-    }; 
+    };
   }
   return result;
 }
@@ -413,7 +414,7 @@ function factors_state3(a) {
         return a - b;
       });
       result = v[1];
-    }; 
+    };
   }
   return result;
 }
@@ -430,9 +431,9 @@ function primes_state(v) {
     console.log('In main thread Daddy-Oh and v is ', v );
     worker.postMessage(v)
   }
-  else { 
-    console.log('ERROR', v, 'does not have the form [\"CE#$42\", array, number] in prime_state'  ) 
-  }   
+  else {
+    console.log('ERROR', v, 'does not have the form [\"CE#$42\", array, number] in prime_state'  )
+  }
 }
 
 function message_state(v) {
@@ -450,7 +451,7 @@ function message_state(v) {
   return [ ar];
 };
 
-var messageMonad = new MonadState('messageMonad', [], message_state); 
+var messageMonad = new MonadState('messageMonad', [], message_state);
 
 var mMsetArchive = new Monad([], 'mMsetArchive');
 mMsetArchive.ret([]);
@@ -699,6 +700,7 @@ function primes(n, ar) {
   var mMchange = new Monad(0, 'mMchange')
   var mMchange2 = new Monad(0, 'mMchange2')
   var mMchange3 = new Monad(0, 'mMchange3')
+  var backupMonad = new Monad('', 'backupMonad')
 
 
   var mMZ1 = MI();
@@ -756,7 +758,7 @@ function primes(n, ar) {
   var mMitterPF = MI();
   var mMitterPF2 = MI();
   var style = ['inline', 'inline', 'inline', 'inline'];
-  var nums = [0,0,0,0];  
+  var nums = [0,0,0,0];
 var mMdice = new Monad('block','mMdice');
 var mMrightPanel = new Monad('block','mMrightPanel');
 var mMrightPanel2 = new Monad('block','mMrightPanel2');
@@ -776,7 +778,7 @@ var mMtodo = new Monad('inline','mMtodoDiv');
 var mMgame = new Monad('block','mMgameDiv');
 var mMerror = new Monad('','mMerror');
 
-  function numProtect (x) {return (new Number (x))*1; }; 
+  function numProtect (x) {return (new Number (x))*1; };
 
   var qS1 = function qS1(a, b, c) {
       var n = (b * (-1)) + (Math.sqrt(b * b - 4 * a * c));
@@ -797,9 +799,9 @@ var mMerror = new Monad('','mMerror');
   };
       var qS4 = function qS4 ([x,y,z]) {
         let [a,b,c] = [numProtect(x),numProtect(y),numProtect(z)]
-        return [qS1(a,b,c), qS2(a,b,c)]    
-      }  
-      
+        return [qS1(a,b,c), qS2(a,b,c)]
+      }
+
   var qS4 = function qS4(_a) {
       var x = _a[0], y = _a[1], z = _a[2];
       var _b = [x, y, z], a = _b[0], b = _b[1], c = _b[2];
@@ -854,13 +856,13 @@ function calc (a, op, b) {
       switch (op) {
           case "concat":
               result = parseInt(a.toString().concat(b.toString()), 10)
-              break;         
+              break;
           case "add":
               result = parseInt(a, 10) + parseInt(b, 10);
               break;
           case "subtract":
               result = parseInt(a, 10) - parseInt(b, 10);
-              break;       
+              break;
           case "mult":
               result = parseInt(a, 10) * parseInt(b, 10);
               break;
@@ -874,13 +876,13 @@ function calc (a, op, b) {
 
   function noComma (s) {
     s.trim();
-    while (s.trim()[0] == ",") { 
+    while (s.trim()[0] == ",") {
       s.trim();
       s = s.slice(1);
     }
     return s;
   }
-  
+
   var equals2 = function equals(x, mon1, mon2) {
       if (mon1.id === mon2.id && get(mon1) === get(mon2)) {
           ret.ret('true');
@@ -913,7 +915,7 @@ function calc (a, op, b) {
       ar.splice(0,3)
       return ret(ar)
   }
-    
+
   function sqroot (x) {
     return ret(Math.sqrt(x));
   }
@@ -940,7 +942,7 @@ function calc (a, op, b) {
       return ret(ar);
   };
 
-  var concat = function concat(x, v) {  
+  var concat = function concat(x, v) {
       var ar = x.slice();
       var ar2 = ar.concat(v);
       return ret(ar2);
@@ -1121,11 +1123,11 @@ function testP (x,id) {
     }
     if (eval(x) !== eval(x)) {
       console.log(`............... ERROR parameter ${x} is not a number`);
-      window[id].e = [`${x} is not a number`]; 
+      window[id].e = [`${x} is not a number`];
       return 'STOP';
-    } 
+    }
     mMZ12.release([]);
-    return []  
+    return []
 }
 
 function MonadEr (val, ID, er = []) {
@@ -1143,47 +1145,47 @@ function MonadEr (val, ID, er = []) {
       return window[this.id];
     }
     if (this.e.length > 0) {
-      console.log('BYPASSING COMPUTATION in MonadEr instance', this.id, f, '.  PROPAGATING ERROR:',  this.e[0]); 
-      return this;  
+      console.log('BYPASSING COMPUTATION in MonadEr instance', this.id, f, '.  PROPAGATING ERROR:',  this.e[0]);
+      return this;
     }
-    
+
     if (args.length > 0) {
       arr = args.filter(v => !(typeof v == 'string' && v.charAt() == '$' && v.slice(0,4) !== 'Math'))
-        
+
       arr.map(v => {
         test = testP(v, this.id)
         if (test === 'STOP') {
-          console.log('\"STOP\" returned from testP. Ending code execution in ',this.id, '.' ) 
+          console.log('\"STOP\" returned from testP. Ending code execution in ',this.id, '.' )
           this.e.push('STOP');
           return this;
-        } 
-      }); 
+        }
+      });
     }
     if (test !== "STOP") {
     try {
-      var testId = testPrefix(args, this.id);  
+      var testId = testPrefix(args, this.id);
       var ar = arr.map(v => eval(v))
-      var m = eval(f)(this.x, ...ar)  
+      var m = eval(f)(this.x, ...ar)
       var id = testPrefix(ar, c.id);
       window[testId] = new MonadEr(m.x, testId, []);
       return window[testId];
-      }      
+      }
       catch(error) {
         this.e.push('STOP -- Execution Aborted. ');
         console.log(f, 'ERROR in ',id,error,' No further computations will be attempted');
         return this;
-      } 
+      }
     }
     else {
       this.e.push('STOP -- Execution Aborted. ');
       console.log(f, 'ERROR "STOP" returned from testP. No further computations will be attempted');
       return this;
-    }  
+    }
   }
   this.ret = function (a) {
     window[this.id] = new MonadEr(a, this.id, []);
     return window[this.id];
-  }  
+  }
 };
 
 console.log('.');
@@ -1200,7 +1202,7 @@ t.bnd('add3',3,'$t2').bnd(cube3, '$t3')
 console.log('Values of t, t2, and t3', t.x,t2.x,t3.x)
 var t = new MonadEr(0,'t', []);
 var t2 = new MonadEr(0,'t2', []);
-var t3 = new MonadEr(0,'t3', []); 
+var t3 = new MonadEr(0,'t3', []);
 console.log('Values of t, t2, and t3', t.x,t2.x,t3.x)
 console.log("executing t.bnd('add3','three', '$t2').bnd(cube3, '$t3') " );
 t.bnd('add3','three','$t2').bnd(cube3, '$t3')
@@ -1233,8 +1235,8 @@ console.log('.');
 console.log('Current values of the monads:', a.x,b.x,c.x,d.x,e.x,f.x,g.x);
 var testArray = [a.x,b.x,c.x,d.x,e.x,f.x,g.x];
 console.log('testArray:',testArray.join(', '));
-console.log("a.ret(7); b.ret(7); c.ret(7); d.ret(7); e.ret(7); f.ret(7); g.ret(7);"); 
-a.ret(7); b.ret(7); c.ret(7); d.ret(7); e.ret(7); f.ret(7); g.ret(7); 
+console.log("a.ret(7); b.ret(7); c.ret(7); d.ret(7); e.ret(7); f.ret(7); g.ret(7);");
+a.ret(7); b.ret(7); c.ret(7); d.ret(7); e.ret(7); f.ret(7); g.ret(7);
 console.log('Current values of the monads:',a.x,b.x,c.x,d.x,e.x,f.x,g.x);
 console.log("'testArray:',testArray.join(', ')");
 console.log('testArray:',testArray.join(', '));
@@ -1266,7 +1268,7 @@ function monadConstructor (v,b) {
     console.log(m);
     var ID;
     if (m instanceof MonadEmitter) {
-      ID = testPrefix(args, c.id); 
+      ID = testPrefix(args, c.id);
       window[ID] = monadConstructor(m.x, ID);
       return window[ID];
     }
@@ -1289,7 +1291,7 @@ function monadConstructor (v,b) {
   this.id = g;
   this.s = state;
   this.c = new EventEmitter();
-  this.bnd = (func, ...args) => func(this.s, ...args);  
+  this.bnd = (func, ...args) => func(this.s, ...args);
   this.ret = function (a) {
     return window[this.id] = new MonadState(this.id, a);
   };
@@ -1315,14 +1317,14 @@ console.log('************************ Here is mMstream.x', mMstream.x)
 
 function mMstreamDriver () {
   return xs.create({
-    start: listener => { mMstream.x.on(1,msg) = msg => listener.next(msg)}, 
+    start: listener => { mMstream.x.on(1,msg) = msg => listener.next(msg)},
     stop: () => { mMstream.removeAllListeners() }
   });
 };
 
 function mMstream2Driver () {
   return xs.create({
-    start: listener => { mMstream2.x.on(1,msg) = msg => listener.next(msg)}, 
+    start: listener => { mMstream2.x.on(1,msg) = msg => listener.next(msg)},
     stop: () => { mMstream.removeAllListeners() }
   });
 };
@@ -1343,7 +1345,7 @@ class Polygon {
     this.width = width;
   }
 }
- 
+
 class G extends Polygon {
   constructor (na) {
     this.name = na;
@@ -1358,12 +1360,12 @@ var eM2 = monadConstructor(0,'eM2');
 var eM3 = monadConstructor(0,'eM3');
 var eM4 = monadConstructor(0,'eM4');
 // eM2.on('EC42', (...args) => console.log('Here is a received message:', args.join(', ')));
-eM2.bnd(v => ['Hello girls', 'Here is the value of eM2', v, 256000 - 245997, 'you bet.']) 
+eM2.bnd(v => ['Hello girls', 'Here is the value of eM2', v, 256000 - 245997, 'you bet.'])
 //eM2.emitEvent(1,[888]);
 //console.log(eM2.emitEvent(1,[444]));
 //console.log('2()()()()()()() Here is eM2.x:', eM2.x);
 // eM3.on('3', (x,y,z) => m.ret(z*z*z).bnd((a) => console.log(a,x,y)))
-eM3.bnd(v => ret(['em3.x squared is', v*v, 'Here are more numbers:', 23, 44, 3]));  
+eM3.bnd(v => ret(['em3.x squared is', v*v, 'Here are more numbers:', 23, 44, 3]));
 var a = 'a';
 console.log('3()()()()()()() Here is eM2.x:', eM2.x);
 
@@ -1377,9 +1379,9 @@ for (var a of [2,4,6,8]) {
     }
   }
 }
-return ar  
+return ar
 }
- 
+
 var x = f7();
 console.log(x)
 
@@ -1437,7 +1439,7 @@ function execP (state, num) {
     temp.push(primes[q + 1]);
     result = new MonadState('primesMonad', [primes[q+1], temp, top, primes]);
   }
-    
+
   else {
     while (top2 <=  num ) {
       if (primes2.every(e =>  (top / e != Math.floor(top / e))))  {
@@ -1467,7 +1469,7 @@ function execD(listState, primeState, n) {
   var d = listState[2];
   var g;
   var ds;
-  
+
   if (n == listState[0] || n == d)           {
     ds = new MonadState('decompMonad', listState);
   }
@@ -1476,7 +1478,7 @@ function execD(listState, primeState, n) {
     var cn = c.slice(n);
     ds = new MonadState('decompMonad', [n, cn, d, c]);
   }
-  else {  
+  else {
     execP(s, n)
     .bnd(newState => {
       while (d <= n) {
@@ -1654,7 +1656,7 @@ function simpleWay (a,b) {
     let z = a;
     a = b % a;
     b = z;
-  }  
+  }
   console.log(a2, b2, a, a2*b2/a);
   return [a2, b2, a2*b2/a, a];
 }
@@ -1754,7 +1756,7 @@ function execP (state, num) {
     temp.push(primes[q + 1]);
     result = new MonadState('primesMonad', [primes[q+1], temp, top, primes]);
   }
-    
+
   else {
     while (top2 <=  num ) {
       if (primes2.every(e =>  (top / e != Math.floor(top / e))))  {
@@ -1831,33 +1833,33 @@ MonadState.prototype.inc = function () {
 MonadState.prototype.fetch0 = function () {
     return this.s[0][this.s[1]][0];
 }
- 
+
 MonadState.prototype.fetch1 = function () {
     return this.s[0][this.s[1]][1];
 }
- 
+
 MonadState.prototype.fetch2 = function () {
     return this.s[0][this.s[1]][2];
 }
- 
+
 MonadState.prototype.fetch3 = function () {
     return this.s[0][this.s[1]][3].slice();
 }
- 
+
 MonadState.prototype.fetch4 = function () {
     return this.s[0][this.s[1]][4].slice();
 }
- 
+
 MonadState.prototype.clearPicked = function () {
   var st = this.s.slice();
   st[0][st[1]][3] = [];
   st[1] += 1;
-  st.splice(this.s[1]+1, 0, st[0]); 
+  st.splice(this.s[1]+1, 0, st[0]);
   return new MonadState('gameMonad', st);
 }
 
 MonadState.prototype.run = function ([
-  score = this.s[0][this.s[1]][0], 
+  score = this.s[0][this.s[1]][0],
   goals = this.s[0][this.s[1]][1],
   operator = this.s[0][this.s[1]][2],
   picked = this.s[0][this.s[1]][3].slice(),
@@ -1866,9 +1868,9 @@ MonadState.prototype.run = function ([
   console.log('In MonadState run ***************%%%%%%%^^^^^^&&&&&&&');
   this.s[1] += 1;
   var newState = this.s.slice();
-  newState[0].splice(this.s[1], 0, [score, goals, operator, picked, display])  
-   console.log('[score, goals, operator, picked, display]', 
-    [score, goals, operator, picked, display]);  
+  newState[0].splice(this.s[1], 0, [score, goals, operator, picked, display])
+   console.log('[score, goals, operator, picked, display]',
+    [score, goals, operator, picked, display]);
   this.s = newState;
   buttonNode = bNode(display);
   return window['gameMonad'] = new MonadState('gameMonad', newState);
@@ -1916,7 +1918,7 @@ function MonadState4(g, state) {
   console.log('someone called with g and state in MonadState4', g, state);
   this.id = g;
   this.s = state;
-  this.bnd = (func, ...args) => func(this.s, ...args);  
+  this.bnd = (func, ...args) => func(this.s, ...args);
   this.ret = function (a) {
     return new MonadState4(this.id, a);
   };
@@ -1925,7 +1927,7 @@ function MonadState4(g, state) {
 var registered = new MonadState4('registered', {} );
 
 MonadState4.prototype.run = function (str) {
-var s = {};  
+var s = {};
 str.split('@')
 .filter(v => v.length > 0)
 .map(x => x = x.split('<o>'))
@@ -1953,8 +1955,3 @@ function rand () {
 };
 
 var rand$ = xs.of(rand());
-
-
-
-
-

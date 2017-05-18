@@ -123,7 +123,7 @@
     text-decoration: "none";
   }
 
-  #edit1 { 
+  #edit1 {
     margin: 5px
     padding-top: 6px;
     font-size: 16px;
@@ -137,7 +137,7 @@
   color: #0000CC;
 }
 
-  #edit4 { 
+  #edit4 {
     margin: 5px
     padding-top: 6px;
     font-size: 16px;
@@ -151,7 +151,7 @@
   color: #0000CC;
 }
 
-  #edit4B { 
+  #edit4B {
     margin: 5px
     padding-top: 6px;
     font-size: 16px;
@@ -165,7 +165,7 @@
   color: #0000CC;
 }
 
-#delete { 
+#delete {
   margin-top: 4px;
   margin-bottom: 3px;
   margin-left: 4%;
@@ -178,7 +178,7 @@
   color: #0000CC;
 }
 
-#delete4 { 
+#delete4 {
   margin-top: 4px;
   margin-bottom: 3px;
   margin-left: 4%;
@@ -221,7 +221,7 @@
   background-color: rgb(7, 4, 94)
 }
 
-#chbox1 { 
+#chbox1 {
   margin: 5px
   padding-top: 6px;
   font-size: 16px;
@@ -232,7 +232,7 @@
   color: #0000CC;
 }
 
-#chbox2 { 
+#chbox2 {
   margin: 5px
   padding-top: 6px;
   font-size: 16px;
@@ -243,7 +243,7 @@
   color: #0000CC;
 }
 
-.edit3 { 
+.edit3 {
   margin: 5px;
   font-size: 16px;
   color: green;
@@ -251,7 +251,7 @@
   vertical-align: middle;
 }
 
-.edit4B { 
+.edit4B {
   width: 30%;
   margin: 5px;
   font-size: 16px;
@@ -373,8 +373,8 @@ a {
 #rightPanel {
  width: 35%;
  float: right;
- margin-right: 15px;
- margin-left: 50px;
+ margin-right: 1.5%;
+ margin-left: 4%;
 }
 
 #leftPanel {
@@ -398,10 +398,10 @@ a {
 .image_2 {
   height: 5%;
   width: 5%;
-  background-color: #331903;
+  background-color: transparent;
   left-margin: 20px;
 }
- 
+
 .image_3 {
  padding-left: 2%;
 }
@@ -779,4 +779,3 @@ h3 {
 #responsibility {
   font-size: 14px;
 }
-

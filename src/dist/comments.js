@@ -18,14 +18,14 @@ var commentMonad = new MonadState3('commentMonad', [ '','', ['','',[]]]);
 MonadState3.prototype.run = function (st, sender) {
   var str = st.replace(/<n>/g, "\n");
   var ar = str.split('<@>');
-  var ar2 = ar.filter(x => x !== "")
-  var arr = ar2.filter(x => x !== "\n"))
+  var arr = ar.filter(x => x !== "")
   this.s[0] = str;
   this.s[1] = sender;
   this.s[2] = arr.map(v => v = v.split('<o>'));
   var n = -1;
   this.s[2].shift();
   this.s[2].map(a => {
+    console.log("In comments.js a[0], a[1], and a[2] are", a[0], a[1], a[2]);
     var show = showFunc(a[0],this.s[1]);
     n+=1;
     mMcomments.bnd(push, h('div#'+n, [

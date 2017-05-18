@@ -23,7 +23,11 @@ import           Network.WebSockets             (sendClose)
 import qualified Network.WebSockets             as WS
 import           System.Directory
 import           Tasks                          hiding (main)
--- import System.Environment (getEnv)
+-- import System.Environment (getEnv)a
+--
+xcomments = "xcomments" :: FilePath
+xnames = "xnames" :: FilePath
+namesFile = "namesFile" :: FilePath
 
 solo :: Text
 solo = "solo"
@@ -40,6 +44,60 @@ type Group = Text
 type Password = Text
 type Client = (Name, Score, Goal, Group, WS.Connection, Password)
 type ServerState = [Client]
+
+head2 :: [Text] -> Text
+head2 [a,b] = a
+head2 _ = T.pack "Inappropriate head2 argument"
+
+tail2 :: [Text] -> Text
+tail2 [a,b] = b
+tail2 _ = T.pack "Inappropriate tail2 argument"
+
+head3 :: [String] -> String
+head3 [a,b] = a
+head3 _ = "Inappropriate head2 argument"
+
+tail3 :: [String] -> String
+tail3 [a,b] = b
+tail3 _ = "Inappropriate tail2 argument"
+
+f2 :: FilePath -> Text -> IO String
+f2 fp v = do
+  let name_pw = T.splitOn (T.pack "<o>") v
+  print "name_pw"
+  print name_pw
+  print "********************************"
+  let nm = head2 name_pw
+  print "nm"
+  print nm
+  print "********************************"
+  nams <- read2 namesFile
+  print "nams"
+  print nams
+  print "********************************"
+  let namses = T.splitOn (T.pack "&") nams
+  let res_1 = show (v `elem` namses)
+  print "namses"
+  print namses
+  print "res_1"
+  print res_1
+  print "********************************"
+  let nmAr = map (T.splitOn (T.pack "<o>")) namses
+  print "nmAr"
+  print nmAr
+  print "********************************"
+  let namesAr = map head2 nmAr
+  print "namesAr"
+  print namesAr
+  print "********************************"
+  let namAr = filter (/= (T.pack "\n")) namesAr 
+  print "namAr"
+  print namAr
+  let res_2 = show (nm `elem` namesAr)
+  print "res_2"
+  print res_2
+  print "********************************"
+  return (res_1 `mappend` "," `mappend` res_2)
 
 getName :: Client -> Text
 getName (a,_,_,_,_,_) = a
@@ -268,73 +326,56 @@ talk conn state client = forever $ do
     let extraNum = read (mArr !! 3) :: Int
     let extraNum2 = read (mArr !! 4) :: Int
     let mes = "<><><><><> Outgoing message from Main.hs " :: Text
-    let xcomments = "xcomments" :: FilePath
-    let xnames = "xnames" :: FilePath
-    let namesFile = "namesFile" :: FilePath
     let at = T.pack "<@>"
     let oh = T.pack "<o>"
+    let false = T.pack "false"
+    let true = T.pack "true"
     let comma = T.pack ", "
     let comma2 = T.pack ","
 
-    if "XX#$42" `T.isPrefixOf` msg
+    if "RR#$42" `T.isPrefixOf` msg
       then
-        do
-          let newName = (T.unpack extra)
-          nams <- readFile namesFile
-          let namses = splitOn "<&>"nams
-          let result = any (==newName) namses
-          if (not result)
+        do                                               -- Is the name/password registered
+          let name_pw = T.splitOn (T.pack ",") extra
+          let nm = extractHead name_pw
+          let pw = extractTail name_pw
+          nams <- read2 namesFile
+          let namses = T.splitOn (T.pack "<&>") nams
+          let nmAr = map (T.splitOn (T.pack "<o>")) namses
+          let namAr = filter (/= (T.pack "\n")) (concat nmAr) 
+          let namesAr = map head nmAr
+          resu <- f2 namesFile extra;
+          let results = splitOn "," resu
+          let res1 = head3 results
+          let res2 = tail3 results;
+          if res1 == "true"
             then
               do
-                appendFile namesFile newName
-                let newNameList = T.splitOn (T.pack "<&>") extra
-                st <- atomically $ readTMVar state
-                let newState = changeName sender (extractHead newNameList) (extractTail newNameList) st
-                print "Have arrived in XX"
                 st <- atomically $ readTMVar state
                 let subSt = subState sender group st
-                names <- readFile namesFile
-                print "*******************************************  of XX#$42"
-                print names
-                print newName
-                let nam = splitOn "<&>" names
-                let nameList = map (head . splitOn"<o>") nam
-                print nameList
-                print $ "Hello Nurse " ++ (show result)
-                print "******************************************* End of XX#$42"
-                st <- atomically $ readTMVar state
-                let subSt = subState sender group st
-                broadcast ("XX#$42," `mappend` group `mappend` ","
-                 `mappend` (extractHead    newNameList) `mappend` ","
-                  `mappend` extra `mappend` ","
-                   `mappend` (T.pack (show result)) `mappend` ",") subSt
+                print "In RR#$42. A recognized name/password combination was entered"
+                print "code1"
+                broadcast ("RR#$42," `mappend` group `mappend` "," `mappend` sender
+                  `mappend` "," `mappend` nm `mappend` "," `mappend` (T.pack "code1")) subSt
             else
-              print "Hello Nurse"
-      else
-        print "Hello Nurse, how do you do?"
-
-    if "YY#$42" `T.isPrefixOf` msg                              -- TEST AND ADD NAME AND NAME<o>PASSWORD
-        then
-            do
-                let check = splitOn "<o>" (T.unpack extra)
-                let checkName = head check
-                st <- atomically $ readTMVar state
-                let subSt = subState sender group st
-                names <- readFile namesFile
-                print "*******************************************  of YY#$42"
-                print names
-                print checkName
-                let nam = splitOn "<&>" names
-                let nameList = map (head . splitOn "<o>") nam
-                let result = checkName `elem` nameList
-                let result2 = T.unpack extra `elem` nam
-                print nameList
-                print $ "Hello Nurse. Here are result and result2 from YY" ++ show result ++ "***" ++ show result2
-                print "******************************************* End of YY#$42"
-                st <- atomically $ readTMVar state
-                let subSt = subState sender group st
-                broadcast ("YY#$42," `mappend` group `mappend` "," `mappend` sender `mappend` ","
-                       `mappend` T.pack (show result) `mappend` "," `mappend` (T.pack (show result2))) subSt
+              if res2 == "false"                 -- A new name will be registered
+                  then
+                    do
+                      append namesFile (extra `mappend` (T.pack "<&>"))
+                      old <- atomically $ takeTMVar state
+                      let new = changeName sender nm pw old
+                      print "In RR#$42 second if block."
+                      atomically $ putTMVar state new
+                      broadcast ("RR#$42," `mappend` group `mappend` "," `mappend` sender
+                       `mappend` "," `mappend` nm `mappend` "," `mappend` (T.pack "code2")) new
+                  else            -- The name is taken but the password does not match.
+                    do
+                        print "The password does not match the registered password"
+                        print "In RR#$42, third if block."
+                        st <- atomically $ readTMVar state
+                        let sb = subState sender group st
+                        broadcast ("RR#$42," `mappend` group `mappend` "," `mappend` sender
+                         `mappend` "," `mappend` nm `mappend` "," `mappend` (T.pack "code3")) sb
 
     else if "AB#$42" `T.isPrefixOf` msg                             -- CHANGE A NAME, KEEPING THE SOCKET
         then
@@ -447,21 +488,21 @@ talk conn state client = forever $ do
      else if "GZ#$42" `T.isPrefixOf` msg                            -- SEND ALL COMMENTS
         then
             do
-                com <- liftIO $ read2 xcomments
+                com <- readFile xcomments
                 st <- atomically $ readTMVar state
                 let subSt = subState sender group st
                 broadcast ("ZZ#$42," `mappend` group `mappend` ","
-                    `mappend` sender `mappend` "," `mappend` com) subSt
+                    `mappend` sender `mappend` "," `mappend` (T.pack com)) subSt
 
     else if "GG#$42" `T.isPrefixOf` msg                              -- APPEND AND SEND
         then
             do
                 TIO.appendFile xcomments extra
-                com <- liftIO $ read2 xcomments
+                com <- readFile xcomments
                 st <- atomically $ readTMVar state
                 let subSt = subState sender group st
                 broadcast ("ZZ#$42," `mappend` group `mappend` ","
-                    `mappend` sender `mappend` "," `mappend` com) subSt
+                    `mappend` sender `mappend` "," `mappend` (T.pack com)) subSt
 
 
 

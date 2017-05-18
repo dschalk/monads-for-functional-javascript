@@ -12,19 +12,6 @@ socket.addEventListener('message', function (event) {
 });
 
 socket.onopen = function login () {
-  if (document.cookie.substring(0,6) === "DC#$42") {  
-    var n = document.cookie.length;
-    var s = document.cookie.substring(6,n);
-    var ar = s.split('<o>');
-    socket.send('CC#$42' + ar[0]);
-    pMname.ret(ar[0]);
-    pMgroup.ret('solo');
-    socket.send(`GZ#$42,solo,${ar[0]}`);
-    document.cookie = ""
-    var combo = ar.join('<o>');
-    pMcombo.ret(combo);
-  }
-  else {
     var v = rand();
     var v2 = rand();
     pMname.ret(v);
@@ -34,17 +21,18 @@ socket.onopen = function login () {
     pMcombo.ret(combo);
     pMclicked.ret([]);
     socket.send(`GZ#$42,solo,${v}`);
-  }
 };
-  
+
 function main(sources) {
  console.log('0^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ got this far');
-  const messages$ = sources.WS.map( e => {
-    console.log(e);
-    mMtem.ret(e.data.split(',')).bnd( v => {
+
+ const messages$ = sources.WS.map( e => {
+   console.log(e);
+   mMtem.ret(e.data.split(',')).bnd( v => {
       var group = v[1]
       var sender =  v[2];
       var extra = v[3];
+      var extra2 = v[4];
       console.log('Websockets e.data.split message v: ', v );
       mMZ10.bnd( () => {
         gameMonad.run([v[7], v[8], 0, [], [v[3], v[4], v[5], v[6]]]);
@@ -76,7 +64,7 @@ function main(sources) {
       refresh() });
     mMZ17.bnd( () => {
       if (v[3] === "no file" || typeof v[3] == 'undefined') {
-        console.log('"no file" or "undefined" arrived at mMZ17'); 
+        console.log('"no file" or "undefined" arrived at mMZ17');
         taskMonad.s = [];
         taskMonad.html = "";
       }
@@ -87,7 +75,7 @@ function main(sources) {
       }
     });
     mMZ18.bnd( () => {
-      if (pMgroup.x != 'solo' || pMname.x === v[2] ) updatePlayers(e.data)  
+      if (pMgroup.x != 'solo' || pMname.x === v[2] ) updatePlayers(e.data)
     });
 
 //*********************************************************************** BEGIN NAMES
@@ -95,19 +83,19 @@ function main(sources) {
     mMZ19.bnd( () => {                          // Clear all comments
       commentMonad.clear();
       var str = e.data.substring(e.data.indexOf('<@>')+3, e.data.length);
-      commentMonad.run(str,sender)                    // Receive all comments from server  
+      commentMonad.run(str,sender)                    // Receive all comments from server
       console.log('Another message from mMZ19. str typeof str are', str, typeof str )
     });
 
 
     mMZ23.bnd( () => {
       console.log('In mMZ23.bnd - - - extra and sender are', extra, sender);
-      commentMonad.run(extra,sender);  
+      commentMonad.run(extra,sender);
     });
 
     mMZ24.bnd( () => {                                  // Test login CK#$42
-      if (extra == "False") { 
-        mMerror.ret("You should register before logging in");
+      if (extra == "False") {
+        mMerror.ret("You should register before logging in");e
         return;
       }
       if (extra == "True") {
@@ -116,30 +104,15 @@ function main(sources) {
     });
 
     mMZ25.bnd( () => {            // Register
-      if (v[4] === "False") {
-        extra.replace(/<<>>/g,',');
-        var ar = extra.split("<o>");
-        socket.send(`AB#$42,${pMgroup.x},${ar[0]},${ar[0]},${ar[1]}`);
-        pMname.ret(ar[0]);
-      }  
-      else mMerror.ret('The name you chose is already registered');
-    });
-
-    mMZ26.bnd( () => {          // Log in
-      console.log('In mMZ26. extra and v[4] are', extra, v[4]);
-      if (extra === 'False') {   // The name was extracted from namesFile
-        mMerror.ret('The name you entered has not been registered'); 
-        return;
+      console.log('In mMZ25.bnd <#><$><%><$><#><@><*><*><*><*><*><*><*><*> extra, extra2', extra, extra2);
+      if (sender === pMname.x) {
+        if (extra2 !== "code3") {
+          socket.send(`CG#$42,${pMgroup.x},${sender},${pMscore.x},${pMgoals.x}`)
+        }
+        else mMerror.ret('The name you chose is already registered with a defferent password');
+        backupMonad.bnd(pMname.ret);
       }
-      if (v[4] === 'True') {
-        mMerror.ret( 'The password you entered does not match the registered password');
-        return;
-      }
-      var ar = extra.split("<o>");
-      socket.send(`AB#$42,${pMgroup.x},${ar[0]},${ar[0]},${ar[1]}`);
-      pMname.ret(ar[0]);
-    });
-
+    })
 
   })
   ret(e.data.split(',')[0])
@@ -154,10 +127,9 @@ function main(sources) {
   .bnd(next, 'GG#$42', mMZ19)
   .bnd(next, 'CZ#$42', mMZ20)
   .bnd(next, 'CX#$42', mMZ21)
-  .bnd(next, 'ZZ#$42', mMZ23)
+  .bnd(next, 'RR#$42', mMZ23)
   .bnd(next, 'CK#$42', mMZ24)
-  .bnd(next, 'YY#$42', mMZ25)
-  .bnd(next, 'XX#$42', mMZ26)
+  .bnd(next, 'RR#$42', mMZ25)
   });
 
  console.log('1^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ got this far');
@@ -170,9 +142,9 @@ function next(x, y, instance, z) {
 
 var comment$ = sources.DOM.select('#comment').events('keydown');
 
-var commentAction$ = comment$.map(e => { 
+var commentAction$ = comment$.map(e => {
   console.log('CommentAction$ e', e );
-  if (e.key === 'Control' && e.ctrlKey) {
+  if (e.key.code === 17) {
     var com = e.target.value
     .replace(/,/g, "<<>>")
     .replace(/\n/g, "<n>")
@@ -185,7 +157,7 @@ var edit4$ = sources.DOM
     .select('buton#edit4').events('click');
 
 var edit4Action$ = edit4$.map(function (e) {
-  showEditB = 'inline-block'; 
+  showEditB = 'inline-block';
   console.log('************ showEditB is', showEditB );
   var s = commentMonad.s.slice();
 });
@@ -195,14 +167,14 @@ var edit4B$ = sources.DOM
 
 var edit4BAction$ = edit4B$.map( function (e) {
   var s0 = commentMonad.s.slice();
-  var index = e.target.parentNode.id; 
+  var index = e.target.parentNode.id;
   s0[index][1] = e.target.value;
   var s1 = s0.map(v => v.join('<o>'));
   var s2 = s1.join('<@>');
   console.log('<$><$><$><$><$><$><$><$><$><$><$><$> s2 in edit4B$', s2 );
   commentMonad.clear();
   socket.send('GS#$42,' + pMgroup.x + ',' + pMname.x + ',<@>' + s2);
-})  
+})
 
 var abcde = 'inline';
 var fghij = 'inline';
@@ -214,31 +186,7 @@ var fghij = 'inline';
     mMerror.ret('');
     var ar = (e.target.value).split(',');
     var name = ar[0];
-    var combo = ar.join('<o>');
-    if (e.keyCode === 13) {
-      mMerror.ret('');
-      if (ar.length != 2) {
-        mMerror.ret(' There should be one and only one comma' );
-        return;
-      }
-      else {  
-        socket.send(`XX#$42,solo,${pMname.x},${combo}<&>`);
-     /*   document.cookie = ('DC#$42' + combo);
-        mMerror.ret('...wait Page refresh in progress.');
-        refresh();  */
-      } 
-    }
-  });
-
-  var loginPress$ = sources.DOM
-      .select('input.login').events('keypress');
-
-  var loginPressAction$ = loginPress$.map (e => {
-    console.log('In loginPressAction$ -<$><$><$><$><$><$><$><$><$><$> - - e is', e );
-    mMerror.ret('');
-    var ar = (e.target.value).split(',');
-    var name = ar[0];
-    var combo = ar.join('<O>');
+    var comb = ar.join('<o>');
     if (e.keyCode === 13) {
       mMerror.ret('');
       if (ar.length != 2) {
@@ -246,9 +194,10 @@ var fghij = 'inline';
         return;
       }
       else {
-        socket.send(`YY#$42,solo,${ar[0]},${combo}<&>`);
-      }
-    } 
+        pMname.bnd(backupMonad.ret)
+        pMname.ret(name);
+        socket.send(`RR#$42,${pMgroup.x},${name},${comb}`); }
+    }
   });
 
   var groupPress$ = sources.DOM
@@ -300,7 +249,6 @@ var fghij = 'inline';
     socket.send(`CA#$42,${pMgroup.x},${pMname.x},6,6,12,20,${a},${b}`);
   });
 
-
   var numClick$ = sources.DOM
       .select('.num').events('click');
 
@@ -312,7 +260,7 @@ var fghij = 'inline';
       var a = gameMonad.fetch3();
       var b = gameMonad.fetch4();
       a.push(b.splice(e.target.id, 1)[0]);
-      console.log('In numClickAction$ - - - gameMonad.index and gameMonad.s ', gameMonad.index, gameMonad.s ); 
+      console.log('In numClickAction$ - - - gameMonad.index and gameMonad.s ', gameMonad.index, gameMonad.s );
       gameMonad.run([score,goals,op,a,b]);
       if (a.length === 2 && gameMonad.fetch2() != 0) {
         updateCalc(a, gameMonad.fetch2())
@@ -345,7 +293,7 @@ var fghij = 'inline';
 
 var backAction$ = backClick$.map(() => {
   if (gameMonad.s[1] > 0) {
-    gameMonad.dec(); 
+    gameMonad.dec();
   }
 });
 
@@ -719,8 +667,8 @@ var forwardAction$ = forwardClick$.map(() => {
         .select('#chat2').events('click');
 
     var chatClickAction$ = chatClick$.map(function () {
-        (get(mMchatDiv)  === 'none') 
-            mMchatDiv.ret('block') 
+        (get(mMchatDiv)  === 'none')
+            mMchatDiv.ret('block')
             mMchatDiv.ret('none')
     });
 
@@ -787,13 +735,13 @@ var chbox1Click$ = sources.DOM.select('#chbox1').events('click');
 var chbox1Action$ = chbox1Click$.map( e => {
   console.log('************************************ event detected');
   var s = taskMonad.s.slice();
-  console.log('In chbox1Action. $$$$$$$$$$$$$$$$$$$$$ e and s are', e, s); 
+  console.log('In chbox1Action. $$$$$$$$$$$$$$$$$$$$$ e and s are', e, s);
   var index = e.target.parentNode.id;
   s[index][1] = false;
   s.map(v => v[0] = v[0].replace(/<<>>/g, ","));
   var str = s.join('@');
-  console.log('In chbox1Action. str is', str); 
-  socket.send(`TD#$42,${get(pMgroup)},${get(pMname)},@${str}`);  
+  console.log('In chbox1Action. str is', str);
+  socket.send(`TD#$42,${get(pMgroup)},${get(pMname)},@${str}`);
 });
 
 var chbox2Click$ = sources.DOM.select('#chbox2').events('click');
@@ -801,7 +749,7 @@ var chbox2Click$ = sources.DOM.select('#chbox2').events('click');
 var chbox2Action$ = chbox2Click$.map( e => {
   console.log('************************************ event detected');
   var s = taskMonad.s.slice();
-  console.log('In chbox2Action. e and s are', e, s); 
+  console.log('In chbox2Action. e and s are', e, s);
   var index = e.target.parentNode.id;
   s[index][1] = true;
   s.map(v => v[0] = v[0].replace(/<<>>/g, ","));
@@ -844,7 +792,7 @@ var edit1Action$ = edit1$.map(function (e) {
   s.map(v => v[0] = v[0].replace(/'<<>>'/g, ","));
   s[index][4] = 'inline-block';
   str = s.join('@');
-  taskMonad.run2(str);  
+  taskMonad.run2(str);
 });
 
 var edit2$ = sources.DOM
@@ -880,7 +828,7 @@ var edit4BAction$ = edit4B$.map(function (e) {
     var s = commentMonad.s.slice().split('@');
     s.push(pMname.x + '<o>' + e.target.value);
     var str = s.join('@');
-    console.log('<*><*><*><*>*<*><*><*><*> In edit4BAction$. s and str are', s, str); 
+    console.log('<*><*><*><*>*<*><*><*><*> In edit4BAction$. s and str are', s, str);
     socket.send(`TD#$42,${get(pMgroup)},${get(pMname)},@${str}`);
     showEditB = 'none';
   }
@@ -921,7 +869,7 @@ var newTaskAction$ = newTask$.map(function (e) {
 
 console.log('Just before calcStream@');
 
-  var calcStream$ = xs.merge( commentAction$, cbxAction$, chbox1Action$, chbox2Action$, messagePressAction$, fA_c$, forwardAction$, backAction$, prAction$, factorsAction_b$, fA$, factorsP$, fA_b$, factorsP_b$, clearprimes$, workerB$, workerC$, workerD$, workerE$, workerF$, clearAction$, factorsAction$, primeFib$, fibPressAction$, quadAction$, edit1Action$, edit2Action$, edit4Action$, edit4BAction$, testWAction$, testZAction$, testQAction$, deleteAction$, newTaskAction$, chatClickAction$, gameClickAction$, todoClickAction$, captionClickAction$, groupPressAction$, rollClickAction$, loginPressAction$, registerPressAction$, messages$, numClickAction$, opClickAction$);
+  var calcStream$ = xs.merge( commentAction$, cbxAction$, chbox1Action$, chbox2Action$, messagePressAction$, fA_c$, forwardAction$, backAction$, prAction$, factorsAction_b$, fA$, factorsP$, fA_b$, factorsP_b$, clearprimes$, workerB$, workerC$, workerD$, workerE$, workerF$, clearAction$, factorsAction$, primeFib$, fibPressAction$, quadAction$, edit1Action$, edit2Action$, edit4Action$, edit4BAction$, testWAction$, testZAction$, testQAction$, deleteAction$, newTaskAction$, chatClickAction$, gameClickAction$, todoClickAction$, captionClickAction$, groupPressAction$, rollClickAction$, registerPressAction$, messages$, numClickAction$, opClickAction$);
   return {
   DOM: calcStream$.map(function () {
   return h('div.main', [
@@ -932,16 +880,19 @@ console.log('Just before calcStream@');
       h('div', 'WITH CUSTOM MONADS AND CYCLE.JS') ]),
       h('br'),
       h('div.image_3', [
-      h('img.image_2', {props: {src: "cycle.png" }}  ),
+      h('img.image_2', {props: {src: "cycle.png" }, style: {backgroundColor: "red" }}  ),
       h('span', ' ' ),
       h('a', { props: { href: "https://cycle.js.org/", target: "_blank" } }, 'A Cycle.js application') ]),
 h('div.content', [
       h('p', ' Front-end web developers might be interested in seeing how I encapsule procedures and state in objects whose methods conform to a JavaScript version of the Haskell monad laws. It is fascinating to see how reactivity is achieved in Cycle.js. The Haskell server might also be of interest. '),
 h('p', 'People who are developing a feel for function reactive programming can cut through to its essence by seeing it implemented in various contexts. The combination of Lodash, Immutable.js, and RxJS running in Node.js is one possibility. Here we demonstrate how a front-end developer can create monads to suit their purposes, and obtain all the reactivity they need by implementing them in a Cycle.js framework. ' ),
-h('span.tao', 'None of the monads employed in these demonstrations emit or listen for events, yet they immediately react to user input and websockets messages, causing Snabbdom to modify the DOM. Moreover, none of the virtual DOM elements contain functions that interact with callbacks. A video presentation showing how Cycle.js performs its magic can be fount at '),
+
+h('p', ' This site is not a paradyme of functional programming. If it were, the user name and score would not be maintained in the globally accessable monads pMname and pMscore. Functions should not fish for values in the global space. All of the values that a function needs should be provided in arguments. But what about the arguments? Fishing those out of the global space is very unsatisfying. As refactoring continues, mutable state will increasingly be confined to streams.'),
+
+h('span.tao', 'None of the monads employed in these demonstrations emit or listen for events, yet they immediately react to user input and websockets messages, causing Snabbdom to modify the DOM. Moreover, none of the virtual DOM elements call callbacks. A video presentation showing how Cycle.js performs its magic can be fount at '),
 h('a', { props: { href: "https://egghead.io/lessons/rxjs-overview-of-cycle-js", target: "_blank" } }, 'Overview of Cycle.js.'),
-h('br' ),  
-h('br' ),  
+h('br' ),
+h('br' ),
 h('span.tao', 'This project was created by, and is actively maintained by me, David Schalk. The code repository is at '),
 h('a', { props: { href: "https://github.com/dschalk/JS-monads-stable", target: "_blank" } }, 'JS-monads'),
 h('span', ' The master branch is a Motorcycle.js application using the Most.js library. That branch has been abandoned. This is an '),
@@ -973,7 +924,7 @@ h('p', ' Your user name for trying out the game, todo list, and chat demonstrati
 h('br') ]),
 h('hr.len90', {style: { display: mMgameDiv2.x }}, ),
 h('br.len90', {style: { display: mMgameDiv2.x }}, ),
-h('div.heading',  {style: { display: mMgameDiv2.x }}, 'Game, Todo List, Text Messages' ), 
+h('div.heading',  {style: { display: mMgameDiv2.x }}, 'Game, Todo List, Text Messages' ),
 
 h('div#gameDiv2', {style: { display: mMgameDiv2.x }}, [
   h('br'),
@@ -1011,7 +962,7 @@ h('div#gameDiv2', {style: { display: mMgameDiv2.x }}, [
     h('br'),
     h('br'),
     h('br'),
-    h('button#todoButton.cow', 'TOGGLE TODO_LIST'), 
+    h('button#todoButton.cow', 'TOGGLE TODO_LIST'),
     h('br'),
     h('br'),
     h('button#chat2.cow', 'TOGGLE CHAT'),
@@ -1049,7 +1000,7 @@ h('div#gameDiv2', {style: { display: mMgameDiv2.x }}, [
     ])
   ])
 ]),
-// h('div#a100', ' ____________________________________________________________________________________________________________ ' ),
+h('div#a100', ' ____________________________________________________________________________________________________________ ' ),
 h('div.content', [
 
 
@@ -1256,7 +1207,7 @@ h('p', ' gameMonad.s[0][ganeMonad.s[1]] is the state in gameMonad.s[0] that is d
 h('p', ' gameMonad methods are responsible for everything that happens when the BACK or FORWARD buttons are clicked. These methods do not obtain information outside of the scope of gameMonad, and their side effects are confined to sending websockets messages and updating the DOM. gameMonad was designed to be secure against unpredictable behavior caused by code outside of its scope, and to also not interfere with code that is outside of its scope. gameMonad is an object whose methods conform to functional programming best practices. ' ),
 h('p', ' The traversal methods are additions to MonadState.prototype as defined in the monad.js file. monad.js is accessed only by functions working in the main thread. Web workers access an identical version of MonadState, only without the prototype additions. It is available to them in the script2.js file, which is never accessed by functions operating in the main thread. Here are the additions to MonadState.prototype: ' ),
     code.prototypeAdditions,
-h('h3', 'Scoring' ),  
+h('h3', 'Scoring' ),
 h('p', ' One goal is awarded each time a player lands on the number 25. The limit for the number of score changes in one turn is two. If the number of increases were not limited, landing on 5 would launch you into an series of increases through all the multiples of five terminating with a stack overflow error message. As a consequence of this rule, only one five-point jump is allowed per turn. '),
 h('p', ' Another way to increase a score, other than computing an number which equals 0 modulo 5, is to compute the number 20 for one additional point, or the number 18 for three additional points. A quick way to arrive at 20 is to start at -1, compute 18 twice, which takes you from -1 to 2 to 5 and jumps you to 10. Then click roll, which sets you back to 9, and compute 18 twice. That takes you from 9 to 12, to 15, jumping you to 20. You don\'t get another jump, so click ROLL and compute 20 or click ROLL three times and compute 18, taking your score from 19 or 17 to 20 and then on to 25 and back to 0, with an increase of one goal. If it is your third goal, you win the game. ' ),
 h('p', ' Now let\'s take a look at the code that responds to number and operator clicks: ' ),
@@ -1273,14 +1224,14 @@ h('p', ' If the calculation yields 18 or 20, score(result) is called. Here is th
 h('p', ' If the score is computed to be 25, the result of increasing goals by 1 determines how state is modified. If the result is not 3, goals is incremented and newRoll() is called with arguments score and goals. If the result is 3, a winner is declared and gameMonad.s reverts to [[[0,0,0,[],[0,0,0,0]]], 0]. ' ),
 h('p', ' gameMonad does not use its bnd() method, but I stayed with the usual practice of preserving state in instances of MonadState. “A foolish consistency is the hobgoblin of little minds, adored by little statesmen and philosophers and divines." - Ralph Waldo Emerson. Very true, but keeping code easy to reason about is never foolish. ' ),
 
-h('br'),  
+h('br'),
 //************************************************************************** END GAME
 h('h2', 'The Todo List' ),
 h('p', ' The todo list is shared be the members of each group. It is stored by the server in a file bearing the groups name. Changing to a group causes that group\'s todo list to display. Changes made by one member are immediately seen by other members. ' ),
 h('p', ' Tasks are held in taskMonad.s (Nested arrays of values) and in taskMonad.html (finished HTML residing in the virtural DOM). MonadState2 has the same basic definition as MonadState, but the run 2() method added to its prototype is not the same as MonadState.run. Rather than burden MonadState.prototype with both run() and run2(), I named taskMonad\'s constructor MonadState2. ' ),
 h('p', ' When a todo is created, edited, marked as completed, or deleteted, the modified list of all todos is sent to the server, where the new version replaces the former version in the file named after the group and the new version is broadcast to all group members. Here is the code that runs when a todo list arrives at a browser: ' ),
     code.todo1,
-h('p', ' And here is the code that creates, modifies and adds to a list of tasks. It is the entire contents of a file named "tasks.js", which is placed in script tags in index.html. Code in script tags is readily available in the browser consoles, unlike modules loaded in main.js. '),  
+h('p', ' And here is the code that creates, modifies and adds to a list of tasks. It is the entire contents of a file named "tasks.js", which is placed in script tags in index.html. Code in script tags is readily available in the browser consoles, unlike modules loaded in main.js. '),
     code.todo2,
 h('p', ' Tasks can be marked a complete or not complete by clicking the checkbox or the complete / not complete buttons. When the checkbox is clicked, the index of the todo is determined and the value of a clone of taskMonad.s named "s" is changed at s[index][1]. If its value is true, it becomes false and if it is false, it becomes true. The color of the task and the line-through attribute are controlled by s[index][1]. Whether or not the completed or not completed button shows also depends on the value of s[index][1]. When one of those buttons is clicked, the value of s[index][1] is changed, causing the check mark in the checkbox to appear or diappear, changing the task color and its line-through attribute, and changing which button ("complete" or "not complete") displays.  ' ),
 
@@ -1302,10 +1253,10 @@ code.MonadSet,
   h('h2', 'COMMENTS' ),
   h('div#com2',  { style: { display: abcde} }, [
   h('p', 'In order to revise or delete a comment, you need to be logged in with a user name and password. You can register and automatically be logged in below. Just enter some characters, separated by a comma. Everything before the comma is your user name; everything after is your password. '),
-  h('h3', 'Register' ),  
+  h('h3', 'Register' ),
   h('input.register', {style: {display: abcde }}, ),
-  h('h3', 'Login' ), 
-  h('div.red', mMerror.x ),   
+  h('h3', 'Login' ),
+  h('div.red', mMerror.x ),
   h('p', ' If you already have a user name and passwork, you can enter them below, separated by a comma. '),
   h('input.login', {style: {display: fghij }}, ),
   h('p', 'Your user name and password will be stored for future use.' ),
@@ -1364,5 +1315,3 @@ const sources = {
 run(main, sources);
 
 console.log('Here are sources.DOM) and typeof sources.DOM', sources.DOM, typeof sources.DOM);
-
-
