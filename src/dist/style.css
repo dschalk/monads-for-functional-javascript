@@ -62,6 +62,11 @@
     text-indent: 3%;
   }
 
+  #logo {
+    background-color: transparent;
+    padding-left: 2%;
+  }
+
   button {
     margin-left: 5%;
     background-color: #331903;

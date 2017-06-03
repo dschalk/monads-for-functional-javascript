@@ -12,15 +12,17 @@ socket.addEventListener('message', function (event) {
 });
 
 socket.onopen = function login () {
-    var v = rand();
-    var v2 = rand();
-    pMname.ret(v);
-    pMgroup.ret('solo');
-    var combo = v + '<o>' + v2;
-    socket.send('CC#$42' + combo );
-    pMcombo.ret(combo);
-    pMclicked.ret([]);
-    socket.send(`GZ#$42,solo,${v}`);
+  var v = rand();
+  var v2 = rand();
+  mMshowRegister.ret('inline');
+  pMname.ret(v);
+  pMoldName.ret(v);
+  pMgroup.ret('solo');
+  var combo = v + '<o>' + v2;
+  socket.send('CC#$42' + combo );
+  pMcombo.ret(combo);
+  pMclicked.ret([]);
+  socket.send(`GZ#$42,solo,${v}`);
 };
 
 function main(sources) {
@@ -29,40 +31,30 @@ function main(sources) {
  const messages$ = sources.WS.map( e => {
    console.log(e);
    mMtem.ret(e.data.split(',')).bnd( v => {
-      var group = v[1]
-      var sender =  v[2];
-      var extra = v[3];
-      var extra2 = v[4];
-      console.log('Websockets e.data.split message v: ', v );
-      mMZ10.bnd( () => {
-        gameMonad.run([v[7], v[8], 0, [], [v[3], v[4], v[5], v[6]]]);
-      });
-      mMZ11.bnd( () => {
-        commentMonad.run(extra,sender);
-      });
-      mMZ12.bnd( () => {
-        registered.run(extra);
-        var combo = ar.join('<o>');
-        pMcombo.ret(combo);
-        pMname.ret(ar[0]);
-      });
-
-      mMZ13.bnd( () => {
-        console.log('The message arrived', messages);
-        var message = v.slice(3,v.length).join(', ');
-        var str = v[2] + ': ' + message;
-        messages.unshift(h('span', str ), h('br'));
-        console.log('The message was added to messages', messages);
-      });
-      mMZ14.bnd( () => {
-        mMgoals2.ret('The winner is ' + v[2]);
-        setTimeout(() => mMgoals2.ret(''), 5000 );
-      });
-    mMZ15.bnd( () => {
+    var group = v[1]
+    var sender =  v[2];
+    var extra = v[3];
+    var extra2 = v[4];
+    console.log('Websockets e.data.split message v: ', v );
+    mMZ10.bnd( () => {
+      gameMonad.run([v[7], v[8], 0, [], [v[3], v[4], v[5], v[6]]]);
+    });
+    mMZ11.bnd( () => {
+      console.log('The message arrived', messages);
+      var message = v.slice(3,v.length).join(', ');
+      var str = v[2] + ': ' + message;
+      messages.unshift(h('span', str ), h('br'));
+      console.log('The message was added to messages', messages);
+    });
+    mMZ12.bnd( () => {
+      mMgoals2.ret('The winner is ' + v[2]);
+      setTimeout( function () {mMgoals2.ret('')},7000);
+    });
+    mMZ13.bnd( () => {
       mMgoals2.ret('A player named ' + v[2] +
         ' is currently logged in. Page will refresh in 4 seconds.')
       refresh() });
-    mMZ17.bnd( () => {
+    mMZ14.bnd( () => {
       if (v[3] === "no file" || typeof v[3] == 'undefined') {
         console.log('"no file" or "undefined" arrived at mMZ17');
         taskMonad.s = [];
@@ -70,66 +62,69 @@ function main(sources) {
       }
       else {
         var str = e.data.substring(e.data.indexOf('@')+1, e.data.length) ;
-        console.log('Greetings from mMZ17. str is: ', str );
         taskMonad.run2(str);
       }
     });
-    mMZ18.bnd( () => {
-      if (pMgroup.x != 'solo' || pMname.x === v[2] ) updatePlayers(e.data)
+    mMZ15.bnd( () => {
+      var ar = [];
+      var g = e.data.split('<br>')
+      g.shift()
+      g.map(v => {
+        ar.push(h('div', v));
+      });     
+      gameData = ar;
     });
 
-//*********************************************************************** BEGIN NAMES
 
-    mMZ19.bnd( () => {                          // Clear all comments
+    mMZ16.bnd( () => {                          // Prefix ZZ#$42
       commentMonad.clear();
       var str = e.data.substring(e.data.indexOf('<@>')+3, e.data.length);
-      commentMonad.run(str,sender)                    // Receive all comments from server
-      console.log('Another message from mMZ19. str typeof str are', str, typeof str )
+      mMcommentStr.ret(str);
+      var ar = [];
+      var n = -1;
+      var artsie = str.split('<@>');
+      console.log('artsie, smarty, and arr');
+      console.log(artsie);
+      var smarty = artsie.map(v => v = v.replace(/<<>>/g, ','));
+      console.log(smarty);
+      var arr = smarty.map(v => v = v.split('<o>')) 
+      console.log(arr)
+      console.log('Done presenting artsie, smarty, and arr');
+      arr.map(a => {
+        var show = showFunc(a[0],sender);
+        n+=1;
+        ar.push(h('div#' + n +'.todo', [
+          h('span', a[0] + ' commented ' + a[1]),
+          h('br'),
+          h('input#editB', { props: {type:'textarea'}, style: {display: show}} ),
+          h('button#deleteB', {props: {innerHTML: 'delete'}, style: {fontSize:14, display: show}}),
+          h('br' ),
+        ]));
+      });
+      mMcomments.ret(ar);
     });
 
 
-    mMZ23.bnd( () => {
-      console.log('In mMZ23.bnd - - - extra and sender are', extra, sender);
-      commentMonad.run(extra,sender);
-    });
-
-    mMZ24.bnd( () => {                                  // Test login CK#$42
-      if (extra == "False") {
-        mMerror.ret("You should register before logging in");e
-        return;
-      }
-      if (extra == "True") {
-        if (sender === pMname.x) pMname.ret(v[4]);
+    mMZ17.bnd( () => {                          // Prefix RR#$42
+      if (extra2 === "code1") mMregister.ret('The registered name' + extra + ' and the associated password were recognized. ' ); 
+      if (extra2 === "code2") mMregister.ret('The new name ' + extra + ' was registered.' );  
+      if (extra2 === "code3") {
+        pMname.ret(sender);
+        mMregister.ret('The password you entered is not the password that is registered for ' + extra + '.' ); 
       }
     });
-
-    mMZ25.bnd( () => {            // Register
-      console.log('In mMZ25.bnd <#><$><%><$><#><@><*><*><*><*><*><*><*><*> extra, extra2', extra, extra2);
-      if (sender === pMname.x) {
-        if (extra2 !== "code3") {
-          socket.send(`CG#$42,${pMgroup.x},${sender},${pMscore.x},${pMgoals.x}`)
-        }
-        else mMerror.ret('The name you chose is already registered with a defferent password');
-        backupMonad.bnd(pMname.ret);
-      }
-    })
 
   })
   ret(e.data.split(',')[0])
   .bnd(next, 'CA#$42', mMZ10)
-  .bnd(next, 'GZ#$42', mMZ11)
-  .bnd(next, 'KZ#$42', mMZ12)
-  .bnd(next, 'CD#$42', mMZ13)
-  .bnd(next, 'CE#$42', mMZ14)
-  .bnd(next, 'EE#$42', mMZ15)
-  .bnd(next, 'DD#$42', mMZ17)
-  .bnd(next, 'NN#$42', mMZ18)
-  .bnd(next, 'GG#$42', mMZ19)
-  .bnd(next, 'CZ#$42', mMZ20)
-  .bnd(next, 'CX#$42', mMZ21)
-  .bnd(next, 'RR#$42', mMZ23)
-  .bnd(next, 'CK#$42', mMZ24)
-  .bnd(next, 'RR#$42', mMZ25)
+  .bnd(next, 'CD#$42', mMZ11)
+  .bnd(next, 'CE#$42', mMZ12)
+  .bnd(next, 'EE#$42', mMZ13)
+  .bnd(next, 'DD#$42', mMZ14)
+  .bnd(next, 'NN#$42', mMZ15)
+  .bnd(next, 'ZZ#$42', mMZ16)
+  .bnd(next, 'RR#$42', mMZ17)
+  .bnd(next, 'WW#$42', mMZ18)
   });
 
  console.log('1^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ got this far');
@@ -144,36 +139,37 @@ var comment$ = sources.DOM.select('#comment').events('keydown');
 
 var commentAction$ = comment$.map(e => {
   console.log('CommentAction$ e', e );
-  if (e.key.code === 17) {
+  if (e.keyCode == 13) {
     var com = e.target.value
     .replace(/,/g, "<<>>")
-    .replace(/\n/g, "<n>")
-    var commx = '<@>' + pMname.x + '<o>' + com + '<@>';
+    var commx = pMname.x + '<o>' + com + '<@>';
     socket.send(`GG#$42,${pMgroup.x},${pMname.x},${commx}`);
   }
 }, false);
 
-var edit4$ = sources.DOM
-    .select('buton#edit4').events('click');
+var deleteClick2$ = sources.DOM
+    .select('#deleteB').events('click');
 
-var edit4Action$ = edit4$.map(function (e) {
-  showEditB = 'inline-block';
-  console.log('************ showEditB is', showEditB );
-  var s = commentMonad.s.slice();
+var deleteAction2$ = deleteClick2$.map(function (e) {
+    var s = mMcommentStr.x;
+    console.log('>>>>>>>>>>>>>>> deleteAction2$ s is', s );
+    var indian = e.target.parentNode.id;
+    var arr = s.split('<@>');
+    arr.splice(indian, 1);
+    var str = arr.join('<@>');
+    console.log('>>>>>>>>>>>>>>> deleteAction2$ s is', str );
+    socket.send(`GX#$42,${get(pMgroup)},${get(pMname)},${str}`);
 });
 
-var edit4B$ = sources.DOM
-    .select('input#edit4B').events('click');
+var editB$ = sources.DOM
+    .select('input#editB').events('click');
 
-var edit4BAction$ = edit4B$.map( function (e) {
-  var s0 = commentMonad.s.slice();
+var editBAction$ = editB$.map( function (e) {
+  var s = mMcommentStr.x.slice();
   var index = e.target.parentNode.id;
-  s0[index][1] = e.target.value;
-  var s1 = s0.map(v => v.join('<o>'));
-  var s2 = s1.join('<@>');
-  console.log('<$><$><$><$><$><$><$><$><$><$><$><$> s2 in edit4B$', s2 );
+  s[index] = pMname.x + '<o>' + e.target.value + '<@>';
   commentMonad.clear();
-  socket.send('GS#$42,' + pMgroup.x + ',' + pMname.x + ',<@>' + s2);
+  socket.send('GX#$42,' + pMgroup.x + ',' + pMname.x + ',<@>' + s);
 })
 
 var abcde = 'inline';
@@ -184,9 +180,8 @@ var fghij = 'inline';
 
   var registerPressAction$ = registerPress$.map(e => {
     mMerror.ret('');
-    var ar = (e.target.value).split(',');
-    var name = ar[0];
-    var comb = ar.join('<o>');
+    var str = e.target.value;
+    var ar = str.split(',');
     if (e.keyCode === 13) {
       mMerror.ret('');
       if (ar.length != 2) {
@@ -194,9 +189,13 @@ var fghij = 'inline';
         return;
       }
       else {
+        var name = ar[0];
+        var comb = ar.join('<o>');
+        mMshowRegister.ret('none');
         pMname.bnd(backupMonad.ret)
         pMname.ret(name);
-        socket.send(`RR#$42,${pMgroup.x},${name},${comb}`); }
+        console.log('pMname.x is', pMname.x );
+        socket.send(`RR#$42,${pMgroup.x},${pMoldName.x},${comb}`); }
     }
   });
 
@@ -228,24 +227,24 @@ var fghij = 'inline';
     sMplayers.s.clear();
     var namesL = data.split("<br>");
     namesList = namesL.slice(1);
-    updateScoreboard2(namesList);
+    updateScore(namesList);
     namesList.forEach(player => sMplayers.s.add(player.trim()));
   }
 
-  function updateScoreboard2(v) {
-    var ar = [];
+  function updateScore(v) {
+    var g = [];
     for (let k of v) {
-        ar.push(['  ' + k]);
+        g.push(h('div', '  ' + k));
     };
-    pMdata.ret(ar);
+    return g
   };
 
   var rollClick$ = sources.DOM
     .select('#roll').events('click');
 
   var rollClickAction$ = rollClick$.map(() => {
-    var a = gameMonad.fetch0().valueOf() - 1;
-    var b = gameMonad.fetch1().valueOf();
+    var a = gameMonad.fetch0() - 1;
+    var b = gameMonad.fetch1();
     socket.send(`CA#$42,${pMgroup.x},${pMname.x},6,6,12,20,${a},${b}`);
   });
 
@@ -315,8 +314,7 @@ var forwardAction$ = forwardClick$.map(() => {
   var fibPress$ = sources.DOM
       .select('input#code').events('keydown');
 
-  var fibPressAction$ = fibPress$.map(function (e) {
-      if (e.target.value === '') {
+  var fibPressAction$ = fibPress$.map(function (e) { if (e.target.value === '') {
           return;
       }
       ;
@@ -609,70 +607,7 @@ var forwardAction$ = forwardClick$.map(() => {
   };
 
 // **********************************************************************END TODO LIST
-    var chatClick$ = sources.DOM
-        .select('#chat2').events('click');
-
-    var chatClickAction$ = chatClick$.map(function () {
-        var el = document.getElementById('chatDiv');
-        (el.style.display === 'none') ?
-            el.style.display = 'inline' :
-            el.style.display = 'none';
-    });
-
-    var captionClick$ = sources.DOM
-        .select('#caption').events('click');
-    var captionClickAction$ = captionClick$.map(function () {
-        var el = document.getElementById('captionDiv');
-        (el.style.display === 'none') ?
-            el.style.display = 'inline' :
-            el.style.display = 'none';
-    });
-
-    var todoClick$ = sources.DOM
-        .select('#todoButton').events('click');
-
-    var todoClickAction$ = todoClick$.map(function (e) {
-        var el = document.getElementById('todoDiv');
-        (el.style.display === 'none') ?
-            el.style.display = 'inline' :
-            el.style.display = 'none';
-    });
-
-    var gameClick$ = sources.DOM
-        .select('#game').events('click');
-
-    var gameClickAction$ = gameClick$.map(function () {
-        var el = document.getElementById('gameDiv');
-        (el.style.display === 'none') ?
-            el.style.display = 'inline' :
-            el.style.display = 'none';
-
-       // updateScoreboard2(namesList)
-        var el2 = document.getElementById('gameDiv2');
-        (el2.style.display === 'none') ?
-            el2.style.display = 'inline' :
-            el2.style.display = 'none';
-    });
-
-    var todoClick$ = sources.DOM
-        .select('#todoButton').events('click');
-
-    var todoClickAction$ = todoClick$.map(function (e) {
-        (get(mMtodoDiv)  === 'none') ?
-            mMtodoDiv.ret('block') :
-            mMtodoDiv.ret('none')
-    });
-
-    var chatClick$ = sources.DOM
-        .select('#chat2').events('click');
-
-    var chatClickAction$ = chatClick$.map(function () {
-        (get(mMchatDiv)  === 'none')
-            mMchatDiv.ret('block')
-            mMchatDiv.ret('none')
-    });
-
-    var captionClick$ = sources.DOM
+     var captionClick$ = sources.DOM
         .select('#caption').events('click');
 
     var captionClickAction$ = captionClick$.map(function () {
@@ -722,7 +657,7 @@ var cbxAction$ = cbx$.map(e => {
   console.log('1 in cbxAction$. s is', s );
   var index = e.target.parentNode.id;
   s[index][1] = eval(s[index][1]) === true ? false : true
-  s.map(v => v[0] = v[0].replace(/'<<>>'/g, ","));
+  s.map(v => v[0] = v[0].replace(/','/g, "<<>>"));
   console.log('2 in cbxAction$. s is', s );
   var str = s.join('@');
   console.log('3 in cbxAction$. str is', str);
@@ -738,7 +673,7 @@ var chbox1Action$ = chbox1Click$.map( e => {
   console.log('In chbox1Action. $$$$$$$$$$$$$$$$$$$$$ e and s are', e, s);
   var index = e.target.parentNode.id;
   s[index][1] = false;
-  s.map(v => v[0] = v[0].replace(/<<>>/g, ","));
+  s.map(v => v[0] = v[0].replace(/,/g, "<<>>"));
   var str = s.join('@');
   console.log('In chbox1Action. str is', str);
   socket.send(`TD#$42,${get(pMgroup)},${get(pMname)},@${str}`);
@@ -752,7 +687,7 @@ var chbox2Action$ = chbox2Click$.map( e => {
   console.log('In chbox2Action. e and s are', e, s);
   var index = e.target.parentNode.id;
   s[index][1] = true;
-  s.map(v => v[0] = v[0].replace(/<<>>/g, ","));
+  s.map(v => v[0] = v[0].replace(/,/g, "<<>>"));
   var str = s.join('@');
   socket.send(`TD#$42,${get(pMgroup)},${get(pMname)},@${str}`);
 });
@@ -773,7 +708,7 @@ var deleteAction$ = deleteClick$.map(function (e) {
     var s = taskMonad.s.slice();
     var index = e.target.parentNode.id;
     s.splice(index, 1);
-    s.map(v => v[0] = v[0].replace(/<<>>/g, ","));
+    s.map(v => v[0] = v[0].replace(/,/g, "<<>>"));
     var str = s.join('@');
     socket.send(`TD#$42,${get(pMgroup)},${get(pMname)},@${str}`);
   }
@@ -789,7 +724,7 @@ var edit1Action$ = edit1$.map(function (e) {
   var index = getIndex2(e);
   var s = taskMonad.s.slice();
   var str;
-  s.map(v => v[0] = v[0].replace(/'<<>>'/g, ","));
+  s.map(v => v[0] = v[0].replace(/','/g, "<<>>"));
   s[index][4] = 'inline-block';
   str = s.join('@');
   taskMonad.run2(str);
@@ -806,10 +741,11 @@ var edit2Action$ = edit2$.map(function (e) {
   if (e.keyCode === 13) {
     var s = taskMonad.s.slice();
     var index = e.target.parentNode.id;
-    s[index][0] = e.target.value;
+    s[index][0] = e.target.value
+      .split(",")
+      .join("<<>>")
     s[index][1] = false;
     s[index][4] = "none";
-    s.map(v => v[0] = v[0].replace(/<<>>/g, ","));
     var str = s.join('@');
     socket.send(`TD#$42,${get(pMgroup)},${get(pMname)},@${str}`);
   }
@@ -843,7 +779,7 @@ var newTaskAction$ = newTask$.map(function (e) {
   if (e.keyCode === 13) {
   var alert = '';
   var s = taskMonad.s.slice();
-  s.map(v => v[0] = v[0].replace(/<<>>/g, ","));
+  s.map(v => v[0] = v[0].replace(/,/g, "<<>>"));
   console.log('In newTaskAction$. <><><><><><><> s is', s);
   var todo = [];
     var ar = e.target.value.split(',');
@@ -854,7 +790,7 @@ var newTaskAction$ = newTask$.map(function (e) {
     else {
       todo[2] = ar.shift();
       todo[3] = ar.shift();
-      todo[0] = ar.join(',').replace(/<<>>/g, ",")
+      todo[0] = ar.join('<<>>')
       todo[1] = false;
       todo[4] = "none";
       s.push(todo);
@@ -869,7 +805,15 @@ var newTaskAction$ = newTask$.map(function (e) {
 
 console.log('Just before calcStream@');
 
-  var calcStream$ = xs.merge( commentAction$, cbxAction$, chbox1Action$, chbox2Action$, messagePressAction$, fA_c$, forwardAction$, backAction$, prAction$, factorsAction_b$, fA$, factorsP$, fA_b$, factorsP_b$, clearprimes$, workerB$, workerC$, workerD$, workerE$, workerF$, clearAction$, factorsAction$, primeFib$, fibPressAction$, quadAction$, edit1Action$, edit2Action$, edit4Action$, edit4BAction$, testWAction$, testZAction$, testQAction$, deleteAction$, newTaskAction$, chatClickAction$, gameClickAction$, todoClickAction$, captionClickAction$, groupPressAction$, rollClickAction$, registerPressAction$, messages$, numClickAction$, opClickAction$);
+var chatClick$ = sources.DOM
+    .select('#chat2').events('click')
+    .map(() => showChatDiv = showChatDiv === "none" ? "block" : "none")
+
+ var todoClick$ = sources.DOM
+    .select('#todoButton').events('click')
+    .map(() => showTodoDiv = showTodoDiv === "none" ? "block" : "none")
+
+  var calcStream$ = xs.merge( commentAction$, cbxAction$, chbox1Action$, chbox2Action$, messagePressAction$, fA_c$, forwardAction$, backAction$, prAction$, factorsAction_b$, fA$, factorsP$, fA_b$, factorsP_b$, clearprimes$, workerB$, workerC$, workerD$, workerE$, workerF$, clearAction$, factorsAction$, primeFib$, fibPressAction$, quadAction$, edit1Action$, edit2Action$, editBAction$, testWAction$, testZAction$, testQAction$, deleteAction$, deleteAction2$, newTaskAction$, chatClick$, gameClickAction$, todoClick$, captionClickAction$, groupPressAction$, rollClickAction$, registerPressAction$, messages$, numClickAction$, opClickAction$);
   return {
   DOM: calcStream$.map(function () {
   return h('div.main', [
@@ -880,11 +824,12 @@ console.log('Just before calcStream@');
       h('div', 'WITH CUSTOM MONADS AND CYCLE.JS') ]),
       h('br'),
       h('div.image_3', [
-      h('img.image_2', {props: {src: "cycle.png" }, style: {backgroundColor: "red" }}  ),
+      h('img.image_2', {props: {src: "logo.svg" }}  ),
       h('span', ' ' ),
       h('a', { props: { href: "https://cycle.js.org/", target: "_blank" } }, 'A Cycle.js application') ]),
 h('div.content', [
-      h('p', ' Front-end web developers might be interested in seeing how I encapsule procedures and state in objects whose methods conform to a JavaScript version of the Haskell monad laws. It is fascinating to see how reactivity is achieved in Cycle.js. The Haskell server might also be of interest. '),
+h('p', "one, \ two,\ three" ),  
+h('p', ' Front-end web developers might be interested in seeing how I encapsule procedures and state in objects whose methods conform to a JavaScript version of the Haskell monad laws. It is fascinating to see how reactivity is achieved in Cycle.js. The Haskell server might also be of interest. '),
 h('p', 'People who are developing a feel for function reactive programming can cut through to its essence by seeing it implemented in various contexts. The combination of Lodash, Immutable.js, and RxJS running in Node.js is one possibility. Here we demonstrate how a front-end developer can create monads to suit their purposes, and obtain all the reactivity they need by implementing them in a Cycle.js framework. ' ),
 
 h('p', ' This site is not a paradyme of functional programming. If it were, the user name and score would not be maintained in the globally accessable monads pMname and pMscore. Functions should not fish for values in the global space. All of the values that a function needs should be provided in arguments. But what about the arguments? Fishing those out of the global space is very unsatisfying. As refactoring continues, mutable state will increasingly be confined to streams.'),
@@ -917,6 +862,7 @@ h('br' ),
       h('a', { props: { href: '#asyncExplanation' } }, 'Asynchronous Processes'),
       h('br'),
       h('p', ' But it might be best to first proceed down the page and see the examples of Monad instances manipulating data. If you are trying to wrap you head around the concept of pure, chainable functions, such as the functions in the Underscore and Jquery libraries, understanding Monad instances might finally put you in the comfort zone you seek. ' ),
+h('p', ' More and more, I am transforming this project into a showcase of functional reactive programming. I still have global objects holding things together, such as pMscore, pMname, and pMgroup. These are instances of Monad, so it is convenient to avoid mutation. pMscore.ret(x) seems to replace the value held by pMscore with x, but underneath the hood an instance of Monad is created during each update. The next refactoring will put almost everything that updates into streams. "A foolish consistency is the hobgoblin of little minds" -- Emerson. JavaScript allows the mutation of objects. It, along with "eval" and other frowned-upon features, can be useful. ' ), 
 h('h3', 'The Game'),
 h('p', 'People who are in the same group, other than the default group named "solo", share the same todo list, chat messages, and simulated dice game. In order to see any of these, you must establish a unique identity on the server by logging in. The websockets connection terminates if the first message the server receives does not come from the sign in form. You can enter any random numbers, letters, or special characters you like. The server checks only to make sure someone hasn\'t already signed in with the sequence you have selected. If you log in with a name that is already in use, a message will appear and this page will be re-loaded in the browser after a four-second pause. '),
 h('p', ' Data for the traversable game history accumulates until a player scores three goals and wins. The data array is then erased and the application is ready to start accumulating a new history. '),
@@ -930,7 +876,7 @@ h('div#gameDiv2', {style: { display: mMgameDiv2.x }}, [
   h('br'),
   h('div#leftPanel', {style: { display: mMgameDiv2.x }}, [
     h('p', 'RULES: If clicking two numbers and an operator (in any order) results in 20 or 18, the score increases by 1 or 3, respectively. If the score becomes 0 or is evenly divisible by 5, 5 points are added. A score of 25 results in one goal. That can only be achieved by arriving at a score of 20, which jumps the score to 25. Directly computing 25 results in a score of 30, and no goal. Each time RL is clicked, one point is deducted. Three goals wins the game. '),
-    h('br'),
+    h('p', {style: {color:'red', fontSize:  '20px'}}, mMgoals2.x ),
     buttonNode,
     h('br'),
     h('button#4.op', 'add'),
@@ -972,16 +918,13 @@ h('div#gameDiv2', {style: { display: mMgameDiv2.x }}, [
     h('br'),
     h('div.game', 'Name: ' + pMname.x ),
     h('div.game', 'Group: ' + pMgroup.x ),
-    h('pre.game', `Currently online:
-(Name score | goals) `  ),
-    h('div.game', {props: {color: "gold"}}, '' + pMdata.x  ),
     h('br'),
+    h('div', gameData ),
     h('br'),
     h('div#a100', ' _________________________________________________ ' ),
     h('p.italic', ' Join group "t" if you want to see some previously created tasks. ' ),
-    h('br'),
-    h('div#todoDiv',  { style: { display: mMtodoDiv.x } }, [
-      h('div#taskList', taskMonad.html ),
+    h('div',  { style: { display: showTodoDiv } }, [
+      h('div', taskMonad.html ),
       h('div', 'Enter author, responsible person, and task here: '),
       h('input.newTask') ]),
     h('br'),
@@ -990,7 +933,7 @@ h('div#gameDiv2', {style: { display: mMgameDiv2.x }}, [
     h('span#alert2'),
 
     h('br'),
-    h('div#chatDiv', { style: { display: mMchatDiv.x } }, [
+    h('div#chatDiv', { style: { display: showChatDiv } }, [
       h('div#messages', [
         h('span', 'Message: '),
         h('input.inputMessage'),
@@ -1249,28 +1192,32 @@ code.MonadSet,
   h('a#tdList2', { props: { href: '#itterLink' } }, 'release() with arguments'),
   h('br'),
 
-  h('h2.red', ' The comments section is undergoing drastic revision. The delete and revise features are currently not working.' ),
   h('h2', 'COMMENTS' ),
-  h('div#com2',  { style: { display: abcde} }, [
-  h('p', 'In order to revise or delete a comment, you need to be logged in with a user name and password. You can register and automatically be logged in below. Just enter some characters, separated by a comma. Everything before the comma is your user name; everything after is your password. '),
+  h('h2.red', 'Edit is still not defined.'),
+  h('h2.red', 'New comments and delete comment are working' ),
+  h('div#com2',  { style: { display: abcde} }, ), 
+  h('p', ' When this page loads in the browser, a user name is automatically generated in order to establish a unique Websocket connection. This makes it possible to exchange text messages with other group members, play the game, and work on a shared todo list. If you want to leave a comment, you need to log in with a user name and a password of your choice. Each can be a single character or you could use a hard-to-hack combination of alphabet letter, numbers, and special characters. The main requirement is that there be only one comma, and that it be placed between the name and the password. ' ),
+  h('p', 'The server will keep your user name and password in a text file. If you use your saved user name and password sometime in the future, you will be able to edit or delete any comments you previously made. '),
+  h('p', ' If you enter a user name that has not been recorded, you will be logged in as that user. The user name and password will be saved. This means that you do not need to first register and then log in. This is an all-in-one process. If you enter a recognized user name but the passord does not match the password in the record, you will be asked to try again. ' ),
+  h('p', ' Testing and tweaking the comment section has just begun. Don\'t expect it to work today.'),   
+  
+    h('p', '   '),  
   h('h3', 'Register' ),
-  h('input.register', {style: {display: abcde }}, ),
-  h('h3', 'Login' ),
-  h('div.red', mMerror.x ),
-  h('p', ' If you already have a user name and passwork, you can enter them below, separated by a comma. '),
-  h('input.login', {style: {display: fghij }}, ),
-  h('p', 'Your user name and password will be stored for future use.' ),
-  h('div#com2',  {style: { display: 'block' }}, ),
-  h('span', ' When this page loads in the browser, a user name is automatically generated in order to establish a unique Websocket handle, named "socket". This makes it possible to exchange text messages with other group members, play the game, and work on a shared todo list. If you want to leave a comment, you should log in with a user name '), ]),
+  h('span.red', mMregister.x ),
+  h('input.register', {style: {display: mMshowRegister.x }} ),
   // h('a', { props: {href: "mailto:pyschalk@gmail.com"}}, 'email' ),
   // h('span', ' or send a personal tweet to @schalk1234' ),
   h('br' ),
+  h('br' ),
+  h('h3', 'COMMENTS' ),
   h('textarea#comment', ),
   h('br' ),
   h('br' ),
-  h('div', mMcomments.x ),
+  h('p', 'play'),
+  h('div', mMcomments.x),
+  h('p', 'bingo' ),
   h('br'),
-  h('br'),
+  h('br'),  
   h('a', { props: { href: '#top' } }, 'Back To The Top'),
   h('h2', 'Appendix - Under Construction ' ),
   h('h3', 'The functions that produce the examples' ),

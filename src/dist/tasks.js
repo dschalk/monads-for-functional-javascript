@@ -17,9 +17,13 @@ taskMonad = new MonadState2( 'taskMonad', [] );
 MonadState2.prototype.html = "";
 
 MonadState2.prototype.run2 = function (str) {
- var newAr = str.split('@').map(v => v.split(','));
+  var showCheck, showUnCheck, showGreen, showLineThrough;
+  var newAr = str.split('@').map(v => v = v.split(','));
+  console.log('In MonadState2.run2 (Tasks) str and newAr', str, newAr );
   newAr.map(v => {
-    v[0] = v[0].replace(rep, ',');
+    console.log('In MonadState2.run2 (Tasks) v ', v );
+    v[0] = v[0].slice().replace(/<<>>/g, ',');
+    console.log('Still in MonadState2.run2 (Tasks) v ', v );
     v[1] = eval(v[1]);
   });
   this.s = newAr;
@@ -29,15 +33,12 @@ MonadState2.prototype.run2 = function (str) {
   console.log('In MonadState.run2. <o><o><o><o><o><o><o> this.s is', this.s );
   var nodeObject = [];
   var n = -1
-  var showCheck, showUnCheck, showGreen, showLineThrough;
   arr.map(a => {
     n+=1
     showCheck = a[1] ? "none" : "inline"
     showUnCheck = a[1] ? "inline" : "none"
     showGreen = a[1] ? "green" : "yellow"
     showLineThrough = a[1] ? "line-through" : "none"
-    console.log('In MonadState2.prototype.run2. a[1], showCheck, showUnCheck, showGreen, showLineThrough', a[1] === "checked", showCheck, showUnCheck, showGreen, showLineThrough);
-
     nodeObject.push(h('div#' + n +'.todo', [
       h('span.task3', { style: { color: showGreen, textDecoration: showLineThrough } }, 'Task: ' + a[0]),
       h('br'),
