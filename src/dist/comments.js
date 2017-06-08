@@ -13,25 +13,22 @@ var MonadState3 = function MonadState3(g, state) {
   };
 };
 
-var commentMonad = new MonadState3('commentMonad',   [ '', '', [], [] ]);
+var commentMonad = new MonadState3('commentMonad',   [ '', [], [] ]);
 
-MonadState3.prototype.clear = function () { this.s = [ '', '', [], [] ]; }
+MonadState3.prototype.clear = function () { this.s = [ '', [], [] ]; }
 
-MonadState3.prototype.run = function (st, sender) {
-  var str = st.replace(/<n>/g, "\n");
-  var ar = str.split('<@>');
-  var arr = ar.filter(x => x !== "")
-  console.log('In MonadState3 run. arr is', arr ); 
+MonadState3.prototype.run = function (s0) {
+  var st = s0.replace(/(\r\n|\n|\r)/gm,"");   // Remove newlines
+  var str = st.replace(/<<>>/g, ",");
+  this.s = [ '', [], [] ];
   this.s[0] = str;
-  this.s[1] = sender;
-  this.s[2] = arr.map(v => v = v.split('<o>'));
-  var n = -1;
-  this.s[2].shift();
-  this.s[2].map(a => {
-    console.log("In comments.js a[0], a[1], and a[2] are", a[0], a[1], a[2]);
-    var show = showFunc(a[0],this.s[1]);
+  var ar = str.split('<@>');
+  this.s[1] = ar.map(v => v = v.split('<o>'));
+  var n = 0;
+  this.s[1].map(a => {
+    var show = showFunc(a[0], pMname.x);
     n+=1;
-    this.s[3].push(h('div#'+n, [
+    this.s[2].push(h('div#'+n, [
       h('div', a[0] + ' commented: ' + a[1]),
       h('input#editB', { props: { type:'textarea', value: a[1]}, style: {display: show}}),
       h('button#deleteB', {props: {innerHTML: 'delete'}, style: {display: show, fontSize:14}}),
@@ -39,5 +36,8 @@ MonadState3.prototype.run = function (st, sender) {
       h('span', '***************************************************************')
     ]))
   })
-  console.log('In MonadState3. this.s is', this.s);
 }
+
+
+
+

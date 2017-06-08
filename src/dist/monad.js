@@ -638,8 +638,8 @@ function primes(n, ar) {
   var mMallRolls = new Monad([[0, 0, 0, 0]], 'mMallRolls');
   var mMcurrentList = new Monad([], 'mMcurrentList');
   var mMtaskList = new Monad([], 'mMtaskList');
-  var mMcomments = new Monad(['Comments'], 'mMcomments');
-  var mMcommentStr = new Monad(['Comments'], 'mMcommentStr');
+  var mMcomments = new Monad([], 'mMcomments');
+  var mMcommentStr = new Monad([], 'mMcommentStr');
   var mMtaskL = new Monad([], 'mMtaskL');
   var mMsenderList = new Monad([], 'mMsenderList');
   var mMsoloAlert = new Monad('', 'mMsoloAlert');

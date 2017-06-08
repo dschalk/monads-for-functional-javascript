@@ -75,39 +75,21 @@ function main(sources) {
       gameData = ar;
     });
 
-
     mMZ16.bnd( () => {                          // Prefix ZZ#$42
-      commentMonad.clear();
-      var str = e.data.substring(e.data.indexOf('<@>')+3, e.data.length);
-      mMcommentStr.ret(str);
-      var ar = [];
-      var n = -1;
-      var artsie = str.split('<@>');
-      console.log('artsie, smarty, and arr');
-      console.log(artsie);
-      var smarty = artsie.map(v => v = v.replace(/<<>>/g, ','));
-      console.log(smarty);
-      var arr = smarty.map(v => v = v.split('<o>')) 
-      console.log(arr)
-      console.log('Done presenting artsie, smarty, and arr');
-      arr.map(a => {
-        var show = showFunc(a[0],sender);
-        n+=1;
-        ar.push(h('div#' + n +'.todo', [
-          h('span', a[0] + ' commented ' + a[1]),
-          h('br'),
-          h('input#editB', { props: {type:'textarea'}, style: {display: show}} ),
-          h('button#deleteB', {props: {innerHTML: 'delete'}, style: {fontSize:14, display: show}}),
-          h('br' ),
-        ]));
-      });
-      mMcomments.ret(ar);
+      commentMonad.run(extra);
     });
 
 
     mMZ17.bnd( () => {                          // Prefix RR#$42
-      if (extra2 === "code1") mMregister.ret('The registered name' + extra + ' and the associated password were recognized. ' ); 
-      if (extra2 === "code2") mMregister.ret('The new name ' + extra + ' was registered.' );  
+      var str = mMcommentStr.x;
+      if (extra2 === "code1") {
+        mMregister.ret('The registered name ' + extra + ' and the associated password were recognized. ' ); 
+        socket.send('GZ#$42,' + pMgroup.x + ',' + pMname.x + ',<@>' + str);
+      } 
+      if (extra2 === "code2") {
+        mMregister.ret('The new name ' + extra + ' was registered.' );  
+        socket.send('GZ#$42,' + pMgroup.x + ',' + pMname.x + ',<@>' + str);
+      }
       if (extra2 === "code3") {
         pMname.ret(sender);
         mMregister.ret('The password you entered is not the password that is registered for ' + extra + '.' ); 
@@ -138,38 +120,36 @@ function next(x, y, instance, z) {
 var comment$ = sources.DOM.select('#comment').events('keydown');
 
 var commentAction$ = comment$.map(e => {
-  console.log('CommentAction$ e', e );
   if (e.keyCode == 13) {
-    var com = e.target.value
-    .replace(/,/g, "<<>>")
-    var commx = pMname.x + '<o>' + com + '<@>';
-    socket.send(`GG#$42,${pMgroup.x},${pMname.x},${commx}`);
+    var comment = e.target.value.replace(/,/g, "<<>>");
+    socket.send(`GG#$42,${pMgroup.x},${pMname.x},<@>${pMname.x}<o>${comment}<@>`);
   }
-}, false);
+});
 
 var deleteClick2$ = sources.DOM
     .select('#deleteB').events('click');
 
 var deleteAction2$ = deleteClick2$.map(function (e) {
-    var s = mMcommentStr.x;
-    console.log('>>>>>>>>>>>>>>> deleteAction2$ s is', s );
-    var indian = e.target.parentNode.id;
-    var arr = s.split('<@>');
-    arr.splice(indian, 1);
+    var i = e.target.parentNode.id;
+    var arr = commentMonad.s[1];
+    arr.splice(i, 1);
     var str = arr.join('<@>');
-    console.log('>>>>>>>>>>>>>>> deleteAction2$ s is', str );
+    console.log('*&*&*&*&*&*&* arr, str in delete', arr, str);
     socket.send(`GX#$42,${get(pMgroup)},${get(pMname)},${str}`);
 });
 
 var editB$ = sources.DOM
-    .select('input#editB').events('click');
+    .select('input#editB').events('keydown');
 
 var editBAction$ = editB$.map( function (e) {
-  var s = mMcommentStr.x.slice();
-  var index = e.target.parentNode.id;
-  s[index] = pMname.x + '<o>' + e.target.value + '<@>';
-  commentMonad.clear();
-  socket.send('GX#$42,' + pMgroup.x + ',' + pMname.x + ',<@>' + s);
+  if (e.keyCode == 13) {
+    var s = mMcommentStr.x;
+    var index = e.target.parentNode.id;
+    var ar = s.split('<@>');
+    ar[index] = '<@>' + pMname.x + '<o>' + e.target.value;
+    var str = ar.join('<@>');
+    socket.send('GX#$42,' + pMgroup.x + ',' + pMname.x + ',' + str);
+  }
 })
 
 var abcde = 'inline';
@@ -190,12 +170,13 @@ var fghij = 'inline';
       }
       else {
         var name = ar[0];
-        var comb = ar.join('<o>');
+        var x = ar.join('<o>');
         mMshowRegister.ret('none');
         pMname.bnd(backupMonad.ret)
+        console.log('In registerPressAction$. str and ar are', str, ar );
         pMname.ret(name);
         console.log('pMname.x is', pMname.x );
-        socket.send(`RR#$42,${pMgroup.x},${pMoldName.x},${comb}`); }
+        socket.send(`RR#$42,${pMgroup.x},${pMoldName.x},${x}`); }
     }
   });
 
@@ -1193,15 +1174,12 @@ code.MonadSet,
   h('br'),
 
   h('h2', 'COMMENTS' ),
-  h('h2.red', 'Edit is still not defined.'),
-  h('h2.red', 'New comments and delete comment are working' ),
   h('div#com2',  { style: { display: abcde} }, ), 
   h('p', ' When this page loads in the browser, a user name is automatically generated in order to establish a unique Websocket connection. This makes it possible to exchange text messages with other group members, play the game, and work on a shared todo list. If you want to leave a comment, you need to log in with a user name and a password of your choice. Each can be a single character or you could use a hard-to-hack combination of alphabet letter, numbers, and special characters. The main requirement is that there be only one comma, and that it be placed between the name and the password. ' ),
   h('p', 'The server will keep your user name and password in a text file. If you use your saved user name and password sometime in the future, you will be able to edit or delete any comments you previously made. '),
   h('p', ' If you enter a user name that has not been recorded, you will be logged in as that user. The user name and password will be saved. This means that you do not need to first register and then log in. This is an all-in-one process. If you enter a recognized user name but the passord does not match the password in the record, you will be asked to try again. ' ),
-  h('p', ' Testing and tweaking the comment section has just begun. Don\'t expect it to work today.'),   
-  
-    h('p', '   '),  
+  h('p', ' Comments are stored on the server in an MVar. The MVar blocks access while an addition, modification, or delete action takes place. Attempts to access the comments in the MVar at such times do not result in error. Processes attempting to gain access que up. They gain access on a first in first out basis, so no process attempting to add, modify, or delete a comment will hang indefinitely. Soon, the registered names and passwords will be in an MVar. ' ),
+  h('br'),  
   h('h3', 'Register' ),
   h('span.red', mMregister.x ),
   h('input.register', {style: {display: mMshowRegister.x }} ),
@@ -1213,9 +1191,7 @@ code.MonadSet,
   h('textarea#comment', ),
   h('br' ),
   h('br' ),
-  h('p', 'play'),
-  h('div', mMcomments.x),
-  h('p', 'bingo' ),
+  h('div', commentMonad.s[2]),
   h('br'),
   h('br'),  
   h('a', { props: { href: '#top' } }, 'Back To The Top'),
