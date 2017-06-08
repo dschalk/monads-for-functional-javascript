@@ -809,13 +809,14 @@ var chatClick$ = sources.DOM
       h('span', ' ' ),
       h('a', { props: { href: "https://cycle.js.org/", target: "_blank" } }, 'A Cycle.js application') ]),
 h('div.content', [
-h('p', "one, \ two,\ three" ),  
-h('p', ' Front-end web developers might be interested in seeing how I encapsule procedures and state in objects whose methods conform to a JavaScript version of the Haskell monad laws. It is fascinating to see how reactivity is achieved in Cycle.js. The Haskell server might also be of interest. '),
-h('p', 'People who are developing a feel for function reactive programming can cut through to its essence by seeing it implemented in various contexts. The combination of Lodash, Immutable.js, and RxJS running in Node.js is one possibility. Here we demonstrate how a front-end developer can create monads to suit their purposes, and obtain all the reactivity they need by implementing them in a Cycle.js framework. ' ),
+h('p', ' This site started as a place for me (David Schalk) to experiment. But now this project is mature enough to possibly be of some interest or use to others. ' ),
+h('p', ' Front-end web developers might be interested in seeing how I encapsulate procedures and state in objects whose methods conform to a JavaScript version of the Haskell monad laws. It is fascinating to see how reactivity is achieved in Cycle.js. The Haskell server, which I wouldn\'t swap for anything, might also be of interest. '),
+h('p', 'People who are developing a feel for function reactive programming can cut through to its essence by seeing it implemented in various contexts. The combination of Lodash, Immutable.js, and RxJS running in Node.js is one possibility. Here I demonstrate how easy it is to create monads to suit various purposes, and make them reactive by implementing them in a Cycle.js framework. ' ),
 
-h('p', ' This site is not a paradyme of functional programming. If it were, the user name and score would not be maintained in the globally accessable monads pMname and pMscore. Functions should not fish for values in the global space. All of the values that a function needs should be provided in arguments. But what about the arguments? Fishing those out of the global space is very unsatisfying. As refactoring continues, mutable state will increasingly be confined to streams.'),
+h('p', ' This site is not a paradyme of functional programming. If it were, the user name and score would not be maintained in the globally accessable monads pMname and pMscore. But with few exceptions, the unctions you will see here do not_fish for values in the global space. As refactoring continues, mutable state will increasingly be confined to streams.'),
 
-h('span.tao', 'None of the monads employed in these demonstrations emit or listen for events, yet they immediately react to user input and websockets messages, causing Snabbdom to modify the DOM. Moreover, none of the virtual DOM elements call callbacks. A video presentation showing how Cycle.js performs its magic can be fount at '),
+h('span.tao', 'None of the monads currently being employed in these demonstrations emit or listen for events and the virtual DOM elements contain no callbacks. A video presentation showing how Cycle.js performs its magic can be fount at '),
+  
 h('a', { props: { href: "https://egghead.io/lessons/rxjs-overview-of-cycle-js", target: "_blank" } }, 'Overview of Cycle.js.'),
 h('br' ),
 h('br' ),
