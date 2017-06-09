@@ -131,11 +131,8 @@ var deleteClick2$ = sources.DOM
 
 var deleteAction2$ = deleteClick2$.map(function (e) {
     var i = e.target.parentNode.id;
-    var arr = commentMonad.s[1];
-    arr.splice(i, 1);
-    var str = arr.join('<@>');
-    console.log('*&*&*&*&*&*&* arr, str in delete', arr, str);
-    socket.send(`GX#$42,${get(pMgroup)},${get(pMname)},${str}`);
+    console.log('In deleteAction2 ***   ***   ***   ***   ***   ***   ***   *** i is', i );
+    socket.send(`GD#$42,${pMgroup.x},${pMname.x},${i}`);
 });
 
 var editB$ = sources.DOM
@@ -143,12 +140,9 @@ var editB$ = sources.DOM
 
 var editBAction$ = editB$.map( function (e) {
   if (e.keyCode == 13) {
-    var s = mMcommentStr.x;
-    var index = e.target.parentNode.id;
-    var ar = s.split('<@>');
-    ar[index] = '<@>' + pMname.x + '<o>' + e.target.value;
-    var str = ar.join('<@>');
-    socket.send('GX#$42,' + pMgroup.x + ',' + pMname.x + ',' + str);
+    var i = e.target.parentNode.id;
+    var comment = e.target.value.replace(/,/g, "<<>>");
+    socket.send('GE#$42,' + pMgroup.x + ',' + pMname.x + ',' + i + ',' + pMname.x + "<o>" + comment);
   }
 })
 

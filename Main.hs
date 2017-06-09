@@ -10,7 +10,7 @@ import           Control.Exception.Base         (mask_)
 import           Control.Monad                  (forM_, forever)
 import           Control.Monad.IO.Class         (liftIO)
 import           Data.FileEmbed                 (embedDir)
-import           Data.List                      (intersperse, intercalate, delete)
+import           Data.List                      (intersperse, intercalate, delete, splitAt)
 import           Data.List.Split                (splitOn)
 import           Data.Monoid                    (mappend)
 import           Data.Text                      (Text)
@@ -60,16 +60,13 @@ type Goal = Int
 type Group = Text
 type Password = Text
 type ID = Int
-type Client = (Name, Score, Goal, Group, WS.Connection, Password, ID)
-type CommentState = Text
+type Comments = Text
+type Client = (Name, Score, Goal, Group, WS.Connection, Password, ID, Comments)
 
 type ServerState = [Client]
 
 newServerState :: ServerState
 newServerState = []
-
-newCommentState :: CommentState
-newCommentState = empty
 
 newId :: ID
 newId = 0
@@ -82,6 +79,21 @@ makeCounter = do
   return (\i -> do modifyIORef r (+i) >> readIORef r)
 
 counter = unsafePerformIO makeCounter
+
+remove :: Int -> Text -> IO Text
+remove n a = do
+  let b = T.splitOn at a
+  let c = splitAt n b
+  let d = fst c `mappend` drop 1 (snd c)
+  return $ T.pack $ intercalate "<@>" (map T.unpack d)
+
+substitute :: Int -> Text -> Text -> IO Text
+substitute n a comment = do
+  let b = T.splitOn at a
+  let c = splitAt n b
+  let d = drop 1 (snd c)
+  let e = (fst c) `mappend` [comment] `mappend` d
+  return $ T.pack $ intercalate "<@>" (map T.unpack e)
 
 head2 :: [Text] -> Text
 head2 [a,b] = a
@@ -108,8 +120,8 @@ head4 :: [Text] -> Text
 head4 [] = empty
 head4 xs = head xs
 
-head5 [[(a,b,c,d,e,f,g)]] = [(a,b,c,d,e,f,g)]
-head5 _ = [("a","b","c","d","e","f","g")]
+head5 [[(a,b,c,d,e,f,g,h)]] = [(a,b,c,d,e,f,g,h)]
+head5 _ = [("a","b","c","d","e","f","g","h")]
 
 safeTail [] = []
 safeTail v  = tail v
@@ -121,20 +133,20 @@ getConn = sel5
 getNm id s = head [ sel1 cl | cl <- s, (sel7 cl) == id]
 
 getN :: [Client] -> Text
-getN [(a,_,_,_,_,_,_)] = a
+getN [(a,_,_,_,_,_,_,_)] = a
 getN [] = T.pack "Mr. Nobody"
 
 getScore :: Client -> Score
-getScore (_,b,_,_,_,_,_) = b
+getScore (_,b,_,_,_,_,_,_) = b
 
 getGoal :: Client -> Goal
-getGoal (_,_,c,_,_,_,_) = c
+getGoal (_,_,c,_,_,_,_,_) = c
 
 findGroup :: Client -> Group
-findGroup (_,_,_,d,_,_,_) = d
+findGroup (_,_,_,d,_,_,_,_) = d
 
 -- getConn :: Client -> WS.Connection
--- getConn (_,_,_,_,e,_) = e
+-- getConn (_,_,_,_,e,_,_) = e
 
 checkName :: String -> String -> IO Bool
 checkName n f = do
@@ -166,22 +178,22 @@ get5 [_,_,_,a,b,c,d,e] = fmap read [a,b,c,d,e]
 get5 _ = [-1,-1,-1,-1,-1]
 
 get2 :: [String] -> Text
-get2 [_,_,_,_,_,_,_,e,f] = T.intercalate com (fmap T.pack [e,f])
+get2 [_,_,_,_,_,e,f,_] = T.intercalate com (fmap T.pack [e,f])
 get2 _ = T.pack "error in get2"
 
 get2G :: [String] -> [Int]
 get2G [_,_,_,_,_,_,_,e,f] = fmap read [e,f]
 get2G _ = [8888, 8888]
 
-subState :: Text -> Text -> [(Text,Int,Int,Text,WS.Connection,Text,Int)] -> [(Text,Int,Int,Text,WS.Connection,Text,Int)]
-subState name gr state  | gr /= solo  = [ (a,b,c,d,e,f,g) | (a,b,c,d,e,f,g) <- state, gr == d ]
-                        | gr == solo = [ (a,b,c,d,e,f,g) | (a,b,c,d,e,f,g) <- state, name == a]
+subState :: Text -> Text -> [(Text,Int,Int,Text,WS.Connection,Text,Int,Text)] -> [(Text,Int,Int,Text,WS.Connection,Text,Int,Text)]
+subState name gr state  | gr /= solo  = [ (a,b,c,d,e,f,g,h) | (a,b,c,d,e,f,g,h) <- state, gr == d ]
+                        | gr == solo = [ (a,b,c,d,e,f,g,h) | (a,b,c,d,e,f,g,h) <- state, name == a]
 
 extract :: [Text] -> Text
 extract [x] = x
 extract _ = "Error in extract"
 
-getGroup name state = extract [ d | (a,_,_,d,_,_,_) <- state, name == a ]
+getGroup name state = extract [ d | (a,_,_,d,_,_,_,_) <- state, name == a ]
 
 content :: [String] -> String
 content [] = "Empty List"
@@ -191,9 +203,9 @@ content _ = "Major malfunction in the function named 'content'."
 bcast :: Text -> ServerState -> IO ()
 bcast message clients = do
     TIO.putStrLn message
-    forM_ clients $ \(_ ,_, _, _, conn,_,_) -> WS.sendTextData conn message
+    forM_ clients $ \(_ ,_, _, _, conn,_,_,_) -> WS.sendTextData conn message
 
-textState s = [ a  `mappend` " | score: " `mappend` T.pack (show b) `mappend` " | goals: " `mappend` T.pack (show c) `mappend` " | " | (a,b,c,_,_,_,_) <- s]
+textState s = [ a  `mappend` " | score: " `mappend` T.pack (show b) `mappend` " | goals: " `mappend` T.pack (show c) `mappend` " | " | (a,b,c,_,_,_,_,_) <- s]
 
 extractName :: String -> IO Text
 extractName combo = do
@@ -209,32 +221,32 @@ extractTail [a,b] = b
 extractTail _ = T.pack "Error. ExtractTail is being applied to something other than a two item list of Text"
 
 newName :: Text -> Text -> Text -> Client -> Client
-newName name1 name2 name3 (a, b, c, d, e, f, g) | name1 == a  = (name2, b, c, d, e, name3,g)
-                                    | otherwise = (a, b, c, d, e, f, g)
+newName name1 name2 name3 (a, b, c, d, e, f, g, h) | name1 == a  = (name2, b, c, d, e, name3,g, h)
+                                    | otherwise = (a, b, c, d, e, f, g, h)
 
 changeName :: Text -> Text -> Text -> ServerState -> ServerState
 changeName name1 name2 name3 = map (newName name1 name2 name3)
 
 newGroupKeepScore :: Text -> Text -> Client -> Client
-newGroupKeepScore name group (a, b, c, d, e, f, g)  | name == a  = (a, b, c, group, e, f, g)
-                                   | otherwise = (a, b, c, d, e, f, g)
+newGroupKeepScore name group (a, b, c, d, e, f, g, h)  | name == a  = (a, b, c, group, e, f, g, h)
+                                   | otherwise = (a, b, c, d, e, f, g, h)
 changeGroupKeepScore :: Text -> Text -> ServerState -> ServerState
 changeGroupKeepScore name group = map (newGroupKeepScore name group)
 
 newGroup :: Text -> Text -> Client -> Client
-newGroup name group (a, b, c, d, e, f, g) | name == a  = (a, 0, 0, group, e, f, g)
-                                       | otherwise = (a, b, c, d, e, f, g)
+newGroup name group (a, b, c, d, e, f, g, h) | name == a  = (a, 0, 0, group, e, f, g, h)
+                                       | otherwise = (a, b, c, d, e, f, g, h)
 
 changeGroup :: Text -> Text -> ServerState -> ServerState
 changeGroup name group = map (newGroup name group)
 
 changeS :: Text -> Int -> Int -> Client -> Client
-changeS x y z (a, b, c, d, e, f, g) | x == a    = (a, y, z, d, e, f, g)
-                         | otherwise = (a, b, c, d, e, f, g)
+changeS x y z (a, b, c, d, e, f, g, h) | x == a    = (a, y, z, d, e, f, g, h)
+                         | otherwise = (a, b, c, d, e, f, g, h)
 
 chg6 :: Text -> Int -> Int -> Client -> Client
-chg6 x y z (a, b, c, d, e, f, g) | x == a    = (a, y, z, d, e, f, g)
-                         | otherwise = (a, b, c, d, e, f, g)
+chg6 x y z (a, b, c, d, e, f, g, h) | x == a    = (a, y, z, d, e, f, g, h)
+                         | otherwise = (a, b, c, d, e, f, g, h)
 
 changeScore :: Text -> Int -> Int -> ServerState -> ServerState
 changeScore name k q = map (changeS name k q)
@@ -281,7 +293,7 @@ closeClientConn client s = do
 broadcast :: Text -> ServerState -> IO ()
 broadcast message clients = do
     TIO.putStrLn message
-    forM_ clients $ \(_ , _, _, _, conn,_,_) -> WS.sendTextData conn message
+    forM_ clients $ \(_ , _, _, _, conn,_,_,_) -> WS.sendTextData conn message
 
 player = newTVar nobody
 
@@ -290,7 +302,6 @@ main = do
     -- por <- getEnv "PORT"
     -- let port = read por
     state <- atomically $ newTVar newServerState
-    commentState <- atomically $ newTVar newServerState
     largestId <- atomically $ newTVar newId
     Warp.runSettings
      (Warp.setPort 3055 $
@@ -327,7 +338,7 @@ application state pending = do
                 prefix = "CC#$42"
                 namePword = T.splitOn oh $ T.drop (T.length prefix) msg
                 id = unsafePerformIO $ counter 1  
-                client = (head namePword :: Name, 0, 0, solo, conn, last namePword :: Password, id)
+                client = (head namePword :: Name, 0, 0, solo, conn, last namePword :: Password, id, (T.pack "david<o>Still testing"))
                 disconnect = do
                     st <- atomically $ readTVar state
                     let name = getNm id st
@@ -344,7 +355,6 @@ application state pending = do
 talk :: WS.Connection -> TVar ServerState -> Client -> IO ()
 talk conn state client = forever $ do
   msg <- WS.receiveData conn
-  commentState <- atomically $ newTVar newCommentState
   let msg2 = T.unpack msg
   print $ "In talk. The incoming message is " ++ msg2
   let mArr = splitOn "," msg2
@@ -352,7 +362,6 @@ talk conn state client = forever $ do
   let group = msgArray !! 1
   let sender = msgArray !! 2
   let extra = msgArray !! 3
-  let comments = (msgArray !! 3) :: CommentState
   let extraStr = mArr !! 3
   let extra2 = msgArray !! 4
   let extraNum = read (mArr !! 3) :: Int
@@ -370,11 +379,6 @@ talk conn state client = forever $ do
     then
       do                                               -- Is the name/password registered
         coms1 <- TIO.readFile xcomments
-        coms2 <- atomically $ readTVar commentState
-        print "***********************************************************"
-        print coms1
-        print coms2
-        print "***********************************************************"
         let name_pw = T.splitOn (T.pack "<o>") extra
         let nm = head2 name_pw
         nams <- read2 namesFile
@@ -397,7 +401,7 @@ talk conn state client = forever $ do
         print res_1
         print res_2 
         st <- atomically $ readTVar state
-        let names = [a | (a,_,_,_,_,_,_) <- st]
+        let names = [a | (a,_,_,_,_,_,_,_) <- st]
         print "In RR before the if blocks --- names are"
         print names
         if res_1 == "True" && res_2 == "True"
@@ -405,20 +409,20 @@ talk conn state client = forever $ do
             do
               print "True True in RR#$42. A recognized name/password combination was entered"
               st <- atomically $ readTVar state
-              let names = [a | (a,_,_,_,_,_,_) <- st]
+              let names = [a | (a,_,_,_,_,_,_,_) <- st]
               print "In RR again. In the res_1 == True block --- names are"
               print names
 
               s <- atomically $ readTVar state
-              let (a,b,c,d,e,f,g) = head (getClient sender s)
-              let new = (nm,b,c,d,e,pw,g):s 
+              let (a,b,c,d,e,f,g,h) = head (getClient sender s)
+              let new = (nm,b,c,d,e,pw,g,h):s 
               st <- atomically $ readTVar state
               atomically $ writeTVar state new
 
               st' <- atomically $ readTVar state
               atomically $ writeTVar state $ filter (\v -> not ((sel1 v) == sender)) st'
 
-              let names = [a | (a,_,_,_,_,_,_) <- new]
+              let names = [a | (a,_,_,_,_,_,_,_) <- new]
               print "In RR --- names are"
               print names
 
@@ -436,7 +440,7 @@ talk conn state client = forever $ do
               st <- atomically $ readTVar state
               print "length five times"
               print $ length st
-              let names = [a | (a,_,_,_,_,_,_) <- st]
+              let names = [a | (a,_,_,_,_,_,_,_) <- st]
               print "In RR again. In False, False --- names are"
               print names
               print $ length st
@@ -444,8 +448,8 @@ talk conn state client = forever $ do
               Tasks.append namesFile (extra `mappend` (T.pack "<&>"))
               
               s <- atomically $ readTVar state
-              let (a,b,c,d,e,f,g) = head (getClient sender s)
-              let new = (nm,b,c,d,e,pw,g):s 
+              let (a,b,c,d,e,f,g,h) = head (getClient sender s)
+              let new = (nm,b,c,d,e,pw,g,h):s 
               st <- atomically $ readTVar state
               atomically $ writeTVar state new
 
@@ -465,7 +469,7 @@ talk conn state client = forever $ do
               print nm   -}
               
               st <- atomically $ readTVar state
-              let names = [a | (a,_,_,_,_,_,_) <- st]
+              let names = [a | (a,_,_,_,_,_,_,_) <- st]
               print "In RR --- names are"
               print names
 
@@ -475,7 +479,7 @@ talk conn state client = forever $ do
               broadcast ("NN#$42," `mappend` group `mappend` "," `mappend` nm `mappend` ","
                   `mappend` (T.pack "<br>") `mappend` T.concat (intersperse "<br>" (textState subSt))) subSt
 
-              let names = [a | (a,_,_,_,_,_,_) <- st]
+              let names = [a | (a,_,_,_,_,_,_,_) <- st]
               broadcast ("RR#$42," `mappend` group `mappend` "," `mappend` nm
                `mappend` "," `mappend` nm `mappend` "," `mappend` (T.pack "code2")) subSt
           else print "The name is already taken"      
@@ -520,7 +524,6 @@ talk conn state client = forever $ do
                 let b = T.splitOn at a
                 let c = [ x | x <- b, x /= empty]
                 let d = T.pack $ intercalate "<@>" (map T.unpack c)
-                atomically $ writeTVar commentState d -- On startup. Prepare the TVar
                 TIO.writeFile xcomments d             -- Save the cleaned-up text
                 st <- atomically $ readTVar state
                 broadcast ("ZZ#$42," `mappend` group `mappend` "," 
@@ -529,7 +532,6 @@ talk conn state client = forever $ do
      else if "GX#$42" `T.isPrefixOf` msg      -- RECEIVE, SAVE, AND BROADCAST ALL COMMENTS
         then
             do
-                atomically $ writeTVar commentState extra    -- Replace all comments
                 TIO.writeFile xcomments extra                 -- Replace all comments
                 st <- atomically $ readTVar state
                 broadcast ("ZZ#$42," `mappend` group `mappend` ","
@@ -548,24 +550,30 @@ talk conn state client = forever $ do
                 print old
                 print updated
                 print "*******************************************************"
-                atomically $ writeTVar commentState updated 
                 st <- atomically $ readTVar state
                 broadcast ("ZZ#$42," `mappend` group `mappend` ","
                     `mappend` sender `mappend` "," `mappend` updated) st
 
-     else if "GD#$42" `T.isPrefixOf` msg          -- DELETE AN ITEM
+     else if "GD#$42" `T.isPrefixOf` msg              -- DELETE A COMMENT
         then
             do
-                a <- atomically $ readTVar commentState
-                let b = T.splitOn at a
-                let c = splitAt extraNum b
-                let d = (fst c) ++ safeTail (snd c)
-                let e = T.pack $ intercalate "<@>" (map T.unpack d)
-                atomically $ writeTVar commentState e
+                a <- TIO.readFile xcomments
+                b <- remove extraNum a
+                TIO.writeFile xcomments b
                 st <- atomically $ readTVar state
                 broadcast ("ZZ#$42," `mappend` group `mappend` ","
-                    `mappend` sender `mappend` "," `mappend` e) st
+                    `mappend` sender `mappend` "," `mappend` b) st
                     
+     else if "GE#$42" `T.isPrefixOf` msg              -- DELETE A COMMENT
+        then
+            do
+                a <- TIO.readFile xcomments
+                b <- substitute extraNum a extra2
+                TIO.writeFile xcomments b
+                st <- atomically $ readTVar state
+                broadcast ("ZZ#$42," `mappend` group `mappend` ","
+                    `mappend` sender `mappend` "," `mappend` b) st
+
 
 
 
@@ -592,7 +600,7 @@ talk conn state client = forever $ do
                 let subSt = subState sender group st
                 broadcast msg subSt
                 print $ mes `mappend` msg
-                let names = [a | (a,_,_,_,_,_,_) <- st]
+                let names = [a | (a,_,_,_,_,_,_,_) <- st]
                 print "Here are the names which are currently being served"
                 mapM_ print names
 
@@ -615,7 +623,7 @@ talk conn state client = forever $ do
         then
             mask_ $ do
                 s <- atomically $ readTVar state
-                let new = filter (\(a,_,_,_,_,_,_) -> a == sender) s
+                let new = filter (\(a,_,_,_,_,_,_,_) -> a == sender) s
                 atomically $ writeTVar state new
 
      else if "CG#$42" `T.isPrefixOf` msg
@@ -660,7 +668,7 @@ talk conn state client = forever $ do
         st <- atomically $ readTVar state
         print "length of ServerState: "
         print (length st);
-        let names = [a | (a,_,_,_,_,_,_) <- st]
+        let names = [a | (a,_,_,_,_,_,_,_) <- st]
         print "Here are the names which are currently being served"
         mapM_ print names
         print "<@><#><$><#><@>"

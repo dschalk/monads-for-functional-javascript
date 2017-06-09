@@ -22,9 +22,10 @@ MonadState3.prototype.run = function (s0) {
   var str = st.replace(/<<>>/g, ",");
   this.s = [ '', [], [] ];
   this.s[0] = str;
-  var ar = str.split('<@>');
+  var ar0 = str.split('<@>');
+  var ar = ar0.filter(v => v !== "");
   this.s[1] = ar.map(v => v = v.split('<o>'));
-  var n = 0;
+  var n = -1;
   this.s[1].map(a => {
     var show = showFunc(a[0], pMname.x);
     n+=1;
