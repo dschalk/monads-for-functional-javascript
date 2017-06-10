@@ -1,6 +1,4 @@
 {-# LANGUAGE DataKinds, GeneralizedNewtypeDeriving, OverloadedStrings, TemplateHaskell #-}
-import           Data.IORef
-import           System.IO.Unsafe
 import           Data.Tuple.Select 
 import           Control.Concurrent             (forkIO)
 import           Control.Concurrent.STM
@@ -71,14 +69,7 @@ newServerState = []
 newId :: ID
 newId = 0
 
-type Counter = Int -> IO Int
-
-makeCounter :: IO Counter
-makeCounter = do
-  r <- newIORef 0
-  return (\i -> do modifyIORef r (+i) >> readIORef r)
-
-counter = unsafePerformIO makeCounter
+counter = newTVar 0
 
 remove :: Int -> Text -> IO Text
 remove n a = do
@@ -98,11 +89,6 @@ substitute n a comment = do
 head2 :: [Text] -> Text
 head2 [a,b] = a
 head2 _ = T.pack "Inappropriate head2 argument"
-
-idRef = do 
-  x <- newIORef 0
-  modifyIORef x (+1)
-  readIORef x
 
 tail2 :: [Text] -> Text
 tail2 [a,b] = b
@@ -316,6 +302,10 @@ application state pending = do
     conn <- WS.acceptRequest pending
     msg <- WS.receiveData conn
     print $ T.unpack msg
+    count <- atomically counter
+    id0 <- atomically $ readTVar count
+    let id = id0 + 1
+    atomically $ writeTVar count id
     clients <- atomically $ readTVar state
     case msg of
         _   | not (prefix `T.isPrefixOf` msg) ->
@@ -337,7 +327,6 @@ application state pending = do
          where
                 prefix = "CC#$42"
                 namePword = T.splitOn oh $ T.drop (T.length prefix) msg
-                id = unsafePerformIO $ counter 1  
                 client = (head namePword :: Name, 0, 0, solo, conn, last namePword :: Password, id, (T.pack "david<o>Still testing"))
                 disconnect = do
                     st <- atomically $ readTVar state
