@@ -1,2 +1,2 @@
 david<o>edit and delete are working now. Minimal data is transported over the socket to the server.<@>david<o>The server does the work and sends all of the comments back. Hmm.<@>david<o>Perhaps<<>> after saving the modified collection of comments in commentsFile and the state TVar<<>> it could send only an index number and<<>> in the case of an edit<<>> the revised comment. The browsers could then do what is needed and traffic over the socket would be slight. 
-<@>david<o>The counter is now in a TVar. No more IOref.<@>
+<@>david<o>The counter is now in a TVar. No more IOref.

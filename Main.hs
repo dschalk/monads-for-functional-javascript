@@ -164,7 +164,7 @@ get5 [_,_,_,a,b,c,d,e] = fmap read [a,b,c,d,e]
 get5 _ = [-1,-1,-1,-1,-1]
 
 get2 :: [String] -> Text
-get2 [_,_,_,_,_,e,f,_] = T.intercalate com (fmap T.pack [e,f])
+get2 [_,_,_,_,_,_,_,e,f] = T.intercalate com (fmap T.pack [e,f])
 get2 _ = T.pack "error in get2"
 
 get2G :: [String] -> [Int]
