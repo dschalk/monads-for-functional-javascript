@@ -1,4 +1,5 @@
 {-# LANGUAGE DataKinds, GeneralizedNewtypeDeriving, OverloadedStrings, TemplateHaskell #-}
+import           System.IO
 import           Data.Tuple.Select 
 import           Control.Concurrent             (forkIO)
 import           Control.Concurrent.STM
@@ -278,17 +279,35 @@ closeClientConn client s = do
 
 broadcast :: Text -> ServerState -> IO ()
 broadcast message clients = do
+    print $ "Message being broadcast: " ++ (T.unpack message)
     TIO.putStrLn message
     forM_ clients $ \(_ , _, _, _, conn,_,_,_) -> WS.sendTextData conn message
 
 player = newTVar nobody
+
+rain = do
+    -- por <- getEnv "PORT"
+    -- let port = read por
+    state <- atomically $ newTVar newServerState
+    Warp.runSettings
+     (Warp.setPort 3055 $
+       Warp.setTimeout 36000
+         Warp.defaultSettings) $
+           WaiWS.websocketsOr WS.defaultConnectionOptions (application state) staticApp
+taticApp :: Network.Wai.Application
+taticApp = Static.staticApp $ Static.embeddedSettings $(embedDir "./src/dist")
+plication :: TVar ServerState -> WS.ServerApp
+plication state pending = do
+    print "App is fired up"
+    conn <- WS.acceptRequest pending
+    msg <- WS.receiveData conn
+    print $ "Message arring at the server: " ++ T.unpack msg
 
 main :: IO ()
 main = do
     -- por <- getEnv "PORT"
     -- let port = read por
     state <- atomically $ newTVar newServerState
-    largestId <- atomically $ newTVar newId
     Warp.runSettings
      (Warp.setPort 3055 $
        Warp.setTimeout 36000
@@ -327,7 +346,7 @@ application state pending = do
          where
                 prefix = "CC#$42"
                 namePword = T.splitOn oh $ T.drop (T.length prefix) msg
-                client = (head namePword :: Name, 0, 0, solo, conn, last namePword :: Password, id, (T.pack "david<o>Still testing"))
+                client = (head namePword, 0, 0, solo, conn, last namePword, id, (T.pack "david<o>Still testing"))
                 disconnect = do
                     st <- atomically $ readTVar state
                     let name = getNm id st
@@ -362,8 +381,11 @@ talk conn state client = forever $ do
   let true = T.pack "true"
   let comma = T.pack ", "
   let comma2 = T.pack ","
-
-
+  cos <- TIO.readFile xcomments
+  ns <- TIO.readFile namesFile
+  comms <- atomically $ newTVar cos
+  names <- atomically $ newTVar ns
+  
   if "RR#$42" `T.isPrefixOf` msg
     then
       do                                               -- Is the name/password registered
@@ -507,61 +529,48 @@ talk conn state client = forever $ do
 -- ******************************** Comments are maintained in a file and in a TVar ****** START
 
      else if "GZ#$42" `T.isPrefixOf` msg               -- FETCH AND BROADCAST ALL COMMENTS
-        then
+        then                                           -- PERFORM ON LOAD
             do
-                a <- TIO.readFile xcomments  -- First of four steps to remove "<@>" from both ends.
-                let b = T.splitOn at a
-                let c = [ x | x <- b, x /= empty]
-                let d = T.pack $ intercalate "<@>" (map T.unpack c)
-                TIO.writeFile xcomments d             -- Save the cleaned-up text
+                comments <- atomically $ readTVar comms
                 st <- atomically $ readTVar state
                 broadcast ("ZZ#$42," `mappend` group `mappend` "," 
-                    `mappend` sender `mappend` "," `mappend` d) st
+                    `mappend` sender `mappend` "," `mappend` comments) st
 
-     else if "GX#$42" `T.isPrefixOf` msg      -- RECEIVE, SAVE, AND BROADCAST ALL COMMENTS
+     else if "GN#$42" `T.isPrefixOf` msg -- RECEIVE A NEW COMMENT, UPDATE THE FILE AND THE TVAR,
+                                         --  AND BROADCAST THE NEW COMMENTCOMMENT 
         then
             do
-                TIO.writeFile xcomments extra                 -- Replace all comments
-                st <- atomically $ readTVar state
-                broadcast ("ZZ#$42," `mappend` group `mappend` ","
-                    `mappend` sender `mappend` "," `mappend` extra) st
-
-     else if "GG#$42" `T.isPrefixOf` msg          -- APPEND A NEW COMMENT AND BROADCAST ALL
-        then
-            do
-                let new = T.replace (T.pack "\n") (T.pack "") extra
-                old <- TIO.readFile xcomments
-                let updat = old `mappend` new
+                old <- atomically $ readTVar comms
+                let updat = old `mappend` extra
                 let updated = T.replace (T.pack "<@><@>") (T.pack "<@>") updat
                 TIO.writeFile xcomments updated
-                print "******************* text ************************************"
-                print new
-                print old
-                print updated
-                print "*******************************************************"
+                atomically $ writeTVar comms updated
                 st <- atomically $ readTVar state
-                broadcast ("ZZ#$42," `mappend` group `mappend` ","
-                    `mappend` sender `mappend` "," `mappend` updated) st
+                broadcast ("ZN#$42," `mappend` group `mappend` ","
+                    `mappend` sender `mappend` "," `mappend` extra) st
 
      else if "GD#$42" `T.isPrefixOf` msg              -- DELETE A COMMENT
         then
             do
+                old <- atomically $ readTVar comms
                 a <- TIO.readFile xcomments
                 b <- remove extraNum a
                 TIO.writeFile xcomments b
                 st <- atomically $ readTVar state
-                broadcast ("ZZ#$42," `mappend` group `mappend` ","
-                    `mappend` sender `mappend` "," `mappend` b) st
+                broadcast ("ZD#$42," `mappend` group `mappend` ","
+                    `mappend` sender `mappend` "," `mappend` extra) st
                     
-     else if "GE#$42" `T.isPrefixOf` msg              -- DELETE A COMMENT
+     else if "GE#$42" `T.isPrefixOf` msg              -- EDIT A COMMENT
         then
             do
-                a <- TIO.readFile xcomments
+                a <- atomically $ readTVar comms
                 b <- substitute extraNum a extra2
                 TIO.writeFile xcomments b
+                atomically $ writeTVar comms b
                 st <- atomically $ readTVar state
-                broadcast ("ZZ#$42," `mappend` group `mappend` ","
-                    `mappend` sender `mappend` "," `mappend` b) st
+                broadcast ("ZE#$42," `mappend` group `mappend` ","
+                    `mappend` sender `mappend` "," `mappend` extra `mappend` "," `mappend` extra2) st
+
 
 
 

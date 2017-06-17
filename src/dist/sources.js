@@ -11,7 +11,18 @@ function createWebSocket(path) {
     return new Socket(uri);
 }
 
+function createWebSocket(path) {
+    var host = window.location.hostname;
+    if (host === '')
+        host = 'localhost';
+    var uri = 'ws://' + host + ':3055' + path;
+    var Socket = "MozWebSocket" in window ? MozWebSocket : WebSocket;
+
+    return new Socket(uri);
+}
+
 var socket = createWebSocket('/');
+var ws = createWebSocket('/');
 
 setTimeout ( function () {
   console.log('########## socket.readyState: ', socket.readyState);

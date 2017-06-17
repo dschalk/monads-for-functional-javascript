@@ -76,9 +76,14 @@ function main(sources) {
     });
 
     mMZ16.bnd( () => {                          // Prefix ZZ#$42
-      commentMonad.run(extra);
+      console.log('<#><$><$><@><@><@><@><@>@@@@->-> 000000000000');
+      console.log('extra from mMZ16', extra);
+      var a = extra.replace(/(\r\n|\n|\r)/gm,"");   // Remove newlines
+      console.log('extra cleaned up', a );  
+      mMcomments.ret(commentMonad.run(extra));
+      console.log('result', mMcomments.x );  
+      console.log('<#><$><$><@><@><@><@><@>@@@@->-> 000000000000');
     });
-
 
     mMZ17.bnd( () => {                          // Prefix RR#$42
       var str = mMcommentStr.x;
@@ -96,6 +101,32 @@ function main(sources) {
       }
     });
 
+    mMZ19.bnd( () => {                          // Prefix ZN#$42  NEW COMMENT
+      var a = commentMonad.s[0];
+      var b = a + '<@>' + sender + '<o>' + extra + '<@>'
+      mMcomments.ret(commentMonad.run(b));
+    });
+
+    mMZ20.bnd( () => {                          // Prefix ZE#$42  EDIT A COMMENT
+      console.log('****c -> artimus -> ar -> ar -> c -> commentMonad.run(c)** mM20 edit');
+      var ar = commentMonad.s[1].slice().map(v => v = v.join('<o>'));
+      console.log('ar', ar)
+      ar[extra] = extra2;
+      console.log('ar', ar)
+      var str = ar.join('<@>');
+      console.log('str', str)
+      console.log('******************************************************** mM20 edit');
+      mMcomments.ret(commentMonad.run(str));
+    });
+
+    mMZ21.bnd( () => {                          // Prefix ZD#$42  DELETE A COMMENT
+      var c = commentMonad.s[0];
+      var ar = c.split('<@>');
+      ar.splice(extra,1);
+      c = ar.join('<@>');
+      mMcomments.ret(commentMonad.run(c));
+    });
+
   })
   ret(e.data.split(',')[0])
   .bnd(next, 'CA#$42', mMZ10)
@@ -107,6 +138,9 @@ function main(sources) {
   .bnd(next, 'ZZ#$42', mMZ16)
   .bnd(next, 'RR#$42', mMZ17)
   .bnd(next, 'WW#$42', mMZ18)
+  .bnd(next, 'ZN#$42', mMZ19)
+  .bnd(next, 'ZE#$42', mMZ20)
+  .bnd(next, 'ZD#$42', mMZ21)
   });
 
  console.log('1^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ got this far');
@@ -121,8 +155,9 @@ var comment$ = sources.DOM.select('#comment').events('keydown');
 
 var commentAction$ = comment$.map(e => {
   if (e.keyCode == 13) {
-    var comment = e.target.value.replace(/,/g, "<<>>");
-    socket.send(`GG#$42,${pMgroup.x},${pMname.x},<@>${pMname.x}<o>${comment}<@>`);
+    var com = e.target.value.replace(/,/g, "<<>>");
+    var comm = com.replace(/(\r\n|\n|\r)/gm,"");   // Remove newlines
+    socket.send(`GN#$42,${pMgroup.x},${pMname.x},<@>${pMname.x}<o>${comm}<@>`);
   }
 });
 
@@ -140,8 +175,10 @@ var editB$ = sources.DOM
 
 var editBAction$ = editB$.map( function (e) {
   if (e.keyCode == 13) {
+    console.log('Editing a comment. Here is e', e);
     var i = e.target.parentNode.id;
     var comment = e.target.value.replace(/,/g, "<<>>");
+    console.log('Still in edit. Here is comment:', comment);
     socket.send('GE#$42,' + pMgroup.x + ',' + pMname.x + ',' + i + ',' + pMname.x + "<o>" + comment);
   }
 })
@@ -1100,7 +1137,7 @@ h('p', ' cube() is defined in the Monad section (above). If you click "mMZ1.rele
 h('p#quad4.red2', mMquad4.x  ),
 h('p#quad5.red2', mMquad5.x  ),
 h('p#quad6.red2', mMquad6.x  ),
-h('p', 'Run mMZ3.release(v) three times for three numbers. The numbers are a, b, and c in ax*x + b*x + c = 0: '),
+h('p', 'Run mMZ3.release(v) three times for three numbers. The numbers are a, b, and c in ax*x + b*x + c = 0. Remember to press <ENTER> after each number. '),
 h('input#quad'),
 h('p', 'Here is the code:'),
 code.quad,
@@ -1173,7 +1210,7 @@ code.MonadSet,
   h('p', ' When this page loads in the browser, a user name is automatically generated in order to establish a unique Websocket connection. This makes it possible to exchange text messages with other group members, play the game, and work on a shared todo list. If you want to leave a comment, you need to log in with a user name and a password of your choice. Each can be a single character or you could use a hard-to-hack combination of alphabet letter, numbers, and special characters. The main requirement is that there be only one comma, and that it be placed between the name and the password. ' ),
   h('p', 'The server will keep your user name and password in a text file. If you use your saved user name and password sometime in the future, you will be able to edit or delete any comments you previously made. '),
   h('p', ' If you enter a user name that has not been recorded, you will be logged in as that user. The user name and password will be saved. This means that you do not need to first register and then log in. This is an all-in-one process. If you enter a recognized user name but the passord does not match the password in the record, you will be asked to try again. ' ),
-  h('p', ' Comments are stored on the server in an MVar. The MVar blocks access while an addition, modification, or delete action takes place. Attempts to access the comments in the MVar at such times do not result in error. Processes attempting to gain access que up. They gain access on a first in first out basis, so no process attempting to add, modify, or delete a comment will hang indefinitely. Soon, the registered names and passwords will be in an MVar. ' ),
+  h('p', ' Comments are stored on the server in a TVar. The TVar blocks access while an addition, modification, or delete action takes place. Attempts to access the comments in the MVar at such times do not result in error. Processes attempting to gain access que up. They gain access on a first in first out basis, so no process attempting to add, modify, or delete a comment will hang indefinitely. Soon, the registered names and passwords will be in an MVar. ' ),
   h('br'),  
   h('h3', 'Register' ),
   h('span.red', mMregister.x ),
@@ -1186,7 +1223,10 @@ code.MonadSet,
   h('textarea#comment', ),
   h('br' ),
   h('br' ),
-  h('div', commentMonad.s[2]),
+  h('div', mMcomments.x ),
+  h('br'),
+  h('br'),  
+  h('p', ' Adding, revising, and deleting comments entails sending only short strings to the server. All of the comments are loaded into browsers when they load. After that, the browsers send instructions for modification of the comment file to the server and the server broadcases the modification parameters to every online browser. ' ),
   h('br'),
   h('br'),  
   h('a', { props: { href: '#top' } }, 'Back To The Top'),
@@ -1232,4 +1272,3 @@ const sources = {
 }
 run(main, sources);
 
-console.log('Here are sources.DOM) and typeof sources.DOM', sources.DOM, typeof sources.DOM);

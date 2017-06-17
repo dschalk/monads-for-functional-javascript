@@ -46,13 +46,11 @@
 
 	"use strict";
 
-	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
-
 	var _xstreamRun = __webpack_require__(1);
 
 	var _dom = __webpack_require__(9);
 
-	var _code = __webpack_require__(124);
+	var _code = __webpack_require__(129);
 
 	var _code2 = _interopRequireDefault(_code);
 
@@ -134,7 +132,13 @@
 
 	      mMZ16.bnd(function () {
 	        // Prefix ZZ#$42
-	        commentMonad.run(extra);
+	        console.log('<#><$><$><@><@><@><@><@>@@@@->-> 000000000000');
+	        console.log('extra from mMZ16', extra);
+	        var a = extra.replace(/(\r\n|\n|\r)/gm, ""); // Remove newlines
+	        console.log('extra cleaned up', a);
+	        mMcomments.ret(commentMonad.run(extra));
+	        console.log('result', mMcomments.x);
+	        console.log('<#><$><$><@><@><@><@><@>@@@@->-> 000000000000');
 	      });
 
 	      mMZ17.bnd(function () {
@@ -153,8 +157,40 @@
 	          mMregister.ret('The password you entered is not the password that is registered for ' + extra + '.');
 	        }
 	      });
+
+	      mMZ19.bnd(function () {
+	        // Prefix ZN#$42  NEW COMMENT
+	        var a = commentMonad.s[0];
+	        var b = a + '<@>' + sender + '<o>' + extra + '<@>';
+	        mMcomments.ret(commentMonad.run(b));
+	      });
+
+	      mMZ20.bnd(function () {
+	        // Prefix ZE#$42  EDIT A COMMENT
+	        console.log('****c -> artimus -> ar -> ar -> c -> commentMonad.run(c)** mM20 edit');
+	        var ar = commentMonad.s[1].slice().map(function (v) {
+	          return v = v.join('<o>');
+	        });
+	        console.log('ar', ar
+	        // ar.splice(extra,1);
+	        );ar[extra] = extra2;
+	        console.log('ar', ar);
+	        var str = ar.join('<@>');
+	        console.log('str', str);
+	        console.log('******************************************************** mM20 edit');
+	        mMcomments.ret(commentMonad.run(str));
+	      });
+
+	      mMZ21.bnd(function () {
+	        // Prefix ZD#$42  DELETE A COMMENT
+	        var c = commentMonad.s[0];
+	        var ar = c.split('<@>');
+	        ar.splice(extra, 1);
+	        c = ar.join('<@>');
+	        mMcomments.ret(commentMonad.run(c));
+	      });
 	    });
-	    ret(e.data.split(',')[0]).bnd(next, 'CA#$42', mMZ10).bnd(next, 'CD#$42', mMZ11).bnd(next, 'CE#$42', mMZ12).bnd(next, 'EE#$42', mMZ13).bnd(next, 'DD#$42', mMZ14).bnd(next, 'NN#$42', mMZ15).bnd(next, 'ZZ#$42', mMZ16).bnd(next, 'RR#$42', mMZ17).bnd(next, 'WW#$42', mMZ18);
+	    ret(e.data.split(',')[0]).bnd(next, 'CA#$42', mMZ10).bnd(next, 'CD#$42', mMZ11).bnd(next, 'CE#$42', mMZ12).bnd(next, 'EE#$42', mMZ13).bnd(next, 'DD#$42', mMZ14).bnd(next, 'NN#$42', mMZ15).bnd(next, 'ZZ#$42', mMZ16).bnd(next, 'RR#$42', mMZ17).bnd(next, 'WW#$42', mMZ18).bnd(next, 'ZN#$42', mMZ19).bnd(next, 'ZE#$42', mMZ20).bnd(next, 'ZD#$42', mMZ21);
 	  });
 
 	  console.log('1^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ got this far');
@@ -169,8 +205,9 @@
 
 	  var commentAction$ = comment$.map(function (e) {
 	    if (e.keyCode == 13) {
-	      var comment = e.target.value.replace(/,/g, "<<>>");
-	      socket.send('GG#$42,' + pMgroup.x + ',' + pMname.x + ',<@>' + pMname.x + '<o>' + comment + '<@>');
+	      var com = e.target.value.replace(/,/g, "<<>>");
+	      var comm = com.replace(/(\r\n|\n|\r)/gm, ""); // Remove newlines
+	      socket.send('GN#$42,' + pMgroup.x + ',' + pMname.x + ',<@>' + pMname.x + '<o>' + comm + '<@>');
 	    }
 	  });
 
@@ -186,8 +223,10 @@
 
 	  var editBAction$ = editB$.map(function (e) {
 	    if (e.keyCode == 13) {
+	      console.log('Editing a comment. Here is e', e);
 	      var i = e.target.parentNode.id;
 	      var comment = e.target.value.replace(/,/g, "<<>>");
+	      console.log('Still in edit. Here is comment:', comment);
 	      socket.send('GE#$42,' + pMgroup.x + ',' + pMname.x + ',' + i + ',' + pMname.x + "<o>" + comment);
 	    }
 	  });
@@ -850,7 +889,7 @@
 	      _code2.default.cycle, (0, _dom.h)('p#asyncExplanation', ' '), (0, _dom.h)('p', ' '), (0, _dom.h)('p', ' '), (0, _dom.h)('p', ' '), (0, _dom.h)('p', ' '), (0, _dom.h)('p', ' '), (0, _dom.h)('p', ' '), (0, _dom.h)('p', ' '), (0, _dom.h)('p', ' '), (0, _dom.h)('p', ' '), (0, _dom.h)('p', ' '),
 	      // ************************************************** OOOOOOOOOOOOOO ********    BEGIN ASYNC
 
-	      (0, _dom.h)('a', { props: { href: '#top' } }, 'Back To The Top'), (0, _dom.h)('h2', ' Asynchronous Processes '), _code2.default.async1, (0, _dom.h)('br'), (0, _dom.h)('span', '' + mMfibBlurb.x), (0, _dom.h)('span', [(0, _dom.h)('svg', { attrs: { width: 50, height: 50 } }, [(0, _dom.h)('circle', { attrs: { cx: 25, cy: 25, r: 20, stroke: 'purple', 'stroke-width': 4, fill: fill1Monad.x } })])]), (0, _dom.h)('span', '' + mMprimeBlurb.x), (0, _dom.h)('span', [(0, _dom.h)('svg', { attrs: { width: 50, height: 50 } }, [(0, _dom.h)('circle', { attrs: { cx: 25, cy: 25, r: 20, stroke: 'purple', 'stroke-width': 4, fill: fill2Monad.x } })])]), (0, _dom.h)('span', '' + mMprimeFibBlurb.x), (0, _dom.h)('span', [(0, _dom.h)('svg', { attrs: { width: 50, height: 50 } }, [(0, _dom.h)('circle', { attrs: { cx: 25, cy: 25, r: 20, stroke: 'purple', 'stroke-width': 4, fill: fill3Monad.x } })])]), (0, _dom.h)('br'), (0, _dom.h)('p.red', 'The elapsed time is ' + mMelapsed.x + ' milliseconds.'), (0, _dom.h)('input#fib92'), (0, _dom.h)('br'), (0, _dom.h)('span#PF_7.red6', 'Fibonacci Numbers'), (0, _dom.h)('br'), (0, _dom.h)('span#PF_9.turk', mMres.x[0]), (0, _dom.h)('br'), (0, _dom.h)('span#PF_8.red6', 'Prime Fibonacci Numbers'), (0, _dom.h)('br'), (0, _dom.h)('span#primeFibs.turk', mMres.x[2]), (0, _dom.h)('br'), (0, _dom.h)('span#PF_21.red6', 'The largest generated prime number.'), (0, _dom.h)('br'), (0, _dom.h)('span#PF_22.turk', mMres.x[1]), (0, _dom.h)('br'), (0, _dom.h)('p', ' The second demonstration in this series decomposes numbers into its their prime factors. Testing with sequences of 9\'s, the first substantial lag occurs at 9,999,999 - unless a large array of prime numbers has already been generated in the previous demonstration or elsewhere. Here it is:'), (0, _dom.h)('input#factors_1'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('span', mMfactors.x), (0, _dom.h)('span.tao3', mMfactors23.x), (0, _dom.h)('p', ' Next, two comma-separated numbers are decomposed into arrays of their prime factors, and those arrays are used to compute their lowest common multiple (lcm). For example, the lcm of 6 and 9 is 18 because 3*6 and 2*9 are both 18. The lcm of the denominators of two fractions is useful in fraction arithmetic; specifically, addition and subtraction. On my desktop computer, two seven digit numbers resulted in a lag of a few seconds when prime numbers had not been previously generated. '), (0, _dom.h)('input#factors_5'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('div.tao3', mMfactors7.x), (0, _dom.h)('span', 'The least common multiple of  ' + mMfactors8.x[0] + ' and ' + mMfactors8.x[1] + ' is '), (0, _dom.h)('span.tao3', '' + mMfactors8.x[2]), (0, _dom.h)('br'), (0, _dom.h)('span', 'The largest common factor of ' + mMfactors8.x[0] + ' and ' + mMfactors8.x[1] + ' is '), (0, _dom.h)('span.tao3', '' + mMfactors8.x[3]), (0, _dom.h)('br'), (0, _dom.h)('div', 'TEST: ' + mMfactors8.x[0] + ' * ' + mMfactors8.x[1] + ' === ' + mMfactors8.x[2] + ' * ' + mMfactors8.x[3] + ' '), (0, _dom.h)('span', 'RESULT: '), (0, _dom.h)('span.tao3', '' + (mMfactors8.x[0] * mMfactors8.x[1] === mMfactors8.x[2] * mMfactors8.x[3])), _code2.default.hardWay, (0, _dom.h)('label', ' Enter a number here: '), (0, _dom.h)('input#factors_1b'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('div.tao3', mMfactors_b.x), _code2.default.hardWay2, (0, _dom.h)('div.tao3', mMfactors7_b.x), (0, _dom.h)('span', 'The least common multiple of  ' + mMfactors8_b.x[0] + ' and ' + mMfactors8_b.x[1] + ' is '), (0, _dom.h)('span.tao3', '' + mMfactors8_b.x[2]), (0, _dom.h)('br'), (0, _dom.h)('span', 'The largest common factor of ' + mMfactors8_b.x[0] + ' and ' + mMfactors8_b.x[1] + ' is '), (0, _dom.h)('span.tao3', '' + mMfactors8_b.x[3]), (0, _dom.h)('br'), (0, _dom.h)('div', 'TEST: ' + mMfactors8_b.x[0] + ' * ' + mMfactors8_b.x[1] + ' === ' + mMfactors8_b.x[2] + ' * ' + mMfactors8_b.x[3] + ' '), (0, _dom.h)('span', 'RESULT: '), (0, _dom.h)('span.tao3', '' + (mMfactors8_b.x[0] * mMfactors8_b.x[1] === mMfactors8_b.x[2] * mMfactors8_b.x[3])), (0, _dom.h)('h3', ' The Easy Way '), (0, _dom.h)('p', ' This has been a demonstration of MonadState and MonadState transformers. If you really want the least common multiple or the largest common factor of two positive integers, there is no need to generate prime numbers. The next and final demonstration in this section does not use a web worker. The computations block the main thread, but only for a few microseconds.'), (0, _dom.h)('br'), (0, _dom.h)('input#factors800'), (0, _dom.h)('br'), (0, _dom.h)('span', 'The least common multiple of  ' + mMfactors800.x[0] + ' and ' + mMfactors800.x[1] + ' is '), (0, _dom.h)('span.tao3', '' + mMfactors800.x[2]), (0, _dom.h)('br'), (0, _dom.h)('span', 'The largest common factor of ' + mMfactors800.x[0] + ' and ' + mMfactors800.x[1] + ' is '), (0, _dom.h)('span.tao3', '' + mMfactors800.x[3]), (0, _dom.h)('br'), (0, _dom.h)('div', 'TEST: ' + mMfactors800.x[0] + ' * ' + mMfactors800.x[1] + ' === ' + mMfactors800.x[2] + ' * ' + mMfactors800.x[3] + ' '), (0, _dom.h)('span', 'RESULT: '), (0, _dom.h)('span.tao3', '' + (mMfactors800.x[0] * mMfactors800.x[1] === mMfactors800.x[2] * mMfactors800.x[3])), (0, _dom.h)('p', ' The code for the previous demonstrations is available at the Github repository, and will soon be available here in an appendex. primesMonad and the functions primarily involved in its transformation are shown below: '), _code2.default.primes, (0, _dom.h)('p', ' primesMonad state updates are generated in workerB.js and stored in the main thread. Users set new upper bounds on the size of the largest Fibonacci number in the series to be considered by entering a number in a browser input box. Here is the rele2ant code: '), _code2.default.primes3, (0, _dom.h)('p', ' The user\'s selected number along with the current state of primesMonad (primesMonad.s) gets posted to workerB, which gets functionality beyond its prototype from workerB.js, which orchestrates preparation of the return message that will be posted back to the main thread. workerB.js delegates the job to functions in script2.js by calling: '), _code2.default.primes4, (0, _dom.h)('p', ' execF prepares the Fibonacci series and sends its state, along with the state of primesMonad that it received from workerB.js, to fpTransformer. execP is called with the current state and the largest Fibonacci number that had been recently produced by execF as arguments. The updated state is an array with four elements, [new upper bound, new series, largest prime produced in the current browser session, largest series]. If the new result is larger than any previous one, the first and second elements of the state array are identical to the third and fourth. Otherwise, they are smaller. As is apparent in the following code, primesMonad is re-created in the main thread using the state array that was posted by workerB. '), _code2.default.primes2, (0, _dom.h)('h2', ' MonadEr - An Error-Catching Monad '), (0, _dom.h)('p', ' Instances of MonadEr function much the same as instances of Monad, but when an instance of MonadEr encounters an error, it ceases to perform any further computations. Instead, it passes through every subsequent stage of a sequence of MonadEr expressions, reporting where it is and repeating the error message. It will continue to do this until it is re-instantiated or until its bnd() method runs on the function clean(). '), (0, _dom.h)('p', 'Functions used as arguments to the MonadEr bnd() method can be placed in quotation marks to prevent the browser engine from throwing reference errors. Arguments can be protected in the same manner. Using MonadEr can prevent the silent proliferation of NaN results in math computations, and can prevent browser crashes due to attempts to evaluate undefined variables. Sometimes crashes are desired when testing code, but MonadEr provides instant feedback pinpointing the exact location of the error. '), (0, _dom.h)('p', ' The following demonstration shows the Chrome console log entries that result from running '), (0, _dom.h)('pre', '    t.bnd(\'add3\', 3, \'$t2\').bnd(cube3, \'$t3\')\n    t.bnd(\'add3\',\'three\', \'$t2\').bnd(cube3, \'$t3\')\n    t.bnd(\'add3\',\'Math.sqrt(-1)\', \'$t2\').bnd(cube3, \'$t3\')\n    t.bnd(\'addd3\', 3, \'$t2\').bnd(cube3, \'$t3\' '), (0, _dom.h)('br'), (0, _dom.h)('img.image', { props: { src: "error2.png" } }), (0, _dom.h)('br'), (0, _dom.h)('p.tao1b', ' The monad laws hold for MonadEr instances. The following relationships were verified in the Chrome console: '), (0, _dom.h)('pre', '    ret3(0,\'t\',[])  // t is now an instance of MonadEr with t.x = 0 and t.e = [].\n\n    t.ret(3).bnd(cube3).x === cube(3).x\n    ret3(3).bnd(cube3).x === cube3(3).x\n\n    t.bnd(t.ret) === t\n    t.bnd(ret) === t\n\n    t.ret(0).bnd(add3, 3).bnd(cube3).x ===\n    t.ret(0).bnd(v => add3(v,3).bnd(cube3)).x  '), (0, _dom.h)('br#itterLink'), (0, _dom.h)('br'), (0, _dom.h)('a', { props: { href: '#top' } }, 'Back To The Top'), (0, _dom.h)('h2', 'MonadItter'), _code2.default.monadIt, (0, _dom.h)('p', ' MonadItter instances don\'t link to one another. They exist to facilitate the work of instances of Monad, MonadState, etc. Here\'s how they work: '), (0, _dom.h)('p', 'For any instance of MonadItter, say "it", "it.bnd(func)" causes it.p === func. Calling the method "it.release(...args)" causes p(...args) to run, possibly with arguments supplied by the caller. '), (0, _dom.h)('p', ' As shown later on this page, MonadItter instances control the routing of incoming websockets messages. In one of the demonstrations below, they behave much like ES2015 iterators.'), (0, _dom.h)('h3', ' A Basic Itterator '), (0, _dom.h)('p', 'The following example illustrates the use of release() with an argument. It also shows a lambda expressions being provided as an argument for the method mMZ1.bnd() (thereby becoming the value of mMZ1.p), and then mMZ1.release providing an arguments for the function mMZ1.p. The code is shown beneith the following two buttons. '), (0, _dom.h)('button#testZ', 'mMZ1.release(1)'), (0, _dom.h)('p.code2', mMt3.x), (0, _dom.h)('span', 'Refresh button: '), (0, _dom.h)('button#testQ', 'mMt1.ret(0).bnd(v => mMZ2.release(v)) '), (0, _dom.h)('br'), _code2.default.testZ, (0, _dom.h)('span.tao', ' The expression mMt3.x sits permanently in the Motorcycle virtual DOM description. You can call '), (0, _dom.h)('span.green', 'mMZ2.release(v)'), (0, _dom.h)('span', ' by entering a value for v below: '), (0, _dom.h)('br'), (0, _dom.h)('span', 'Please enter an integer here: '), (0, _dom.h)('input#testW'), (0, _dom.h)('p', ' cube() is defined in the Monad section (above). If you click "mMZ1.release(1)" several times, the code (above) will run several times, each time with v === 1. The result, mMt3.x, is shown below the button. mMZ1.p (bnd()\'s argument) remains constant while mMZ1.release(1) is repeatedly called, incrementing the number being cubed each time. '), (0, _dom.h)('p', ' Here is another example. It demonstrates lambda expressions passing values to a remote location for use in a computation. If you enter three numbers consecutively below, call them a, b, and c, then the quadratic equation will be used to find solutions for a*x**2 + b*x + c = 0. The a, b, and c you select might not have a solution. If a and b are positive numbers, you are likely to see solutions if c is a negative number. For example, 12, 12, and -24 yields the solutions 1 and -2. '), (0, _dom.h)('p#quad4.red2', mMquad4.x), (0, _dom.h)('p#quad5.red2', mMquad5.x), (0, _dom.h)('p#quad6.red2', mMquad6.x), (0, _dom.h)('p', 'Run mMZ3.release(v) three times for three numbers. The numbers are a, b, and c in ax*x + b*x + c = 0: '), (0, _dom.h)('input#quad'), (0, _dom.h)('p', 'Here is the code:'), _code2.default.quad, (0, _dom.h)('p', ' fmap (above) facilitated using qS4 in a monadic sequence. qS4 returns an array, not an instance of Monad, but fmap lifts qS4 into the monadic sequence. '), (0, _dom.h)('p', ' The function solve() is recursive. It invokes itself after release() executes three times. The expression "solve()" resets solve to the top, where mMZ3.p becomes a function containing two nested occurrances of mMZ3.bnd. After mMZ3.release() executes, mMZ3.p becomes the function that is the argument to the next occurrance of mMZ3.bnd. That function contains yet another occurrance of mMZ3.bnd. MonadItter is syntactic sugar for nested callbacks. '),
+	      (0, _dom.h)('a', { props: { href: '#top' } }, 'Back To The Top'), (0, _dom.h)('h2', ' Asynchronous Processes '), _code2.default.async1, (0, _dom.h)('br'), (0, _dom.h)('span', '' + mMfibBlurb.x), (0, _dom.h)('span', [(0, _dom.h)('svg', { attrs: { width: 50, height: 50 } }, [(0, _dom.h)('circle', { attrs: { cx: 25, cy: 25, r: 20, stroke: 'purple', 'stroke-width': 4, fill: fill1Monad.x } })])]), (0, _dom.h)('span', '' + mMprimeBlurb.x), (0, _dom.h)('span', [(0, _dom.h)('svg', { attrs: { width: 50, height: 50 } }, [(0, _dom.h)('circle', { attrs: { cx: 25, cy: 25, r: 20, stroke: 'purple', 'stroke-width': 4, fill: fill2Monad.x } })])]), (0, _dom.h)('span', '' + mMprimeFibBlurb.x), (0, _dom.h)('span', [(0, _dom.h)('svg', { attrs: { width: 50, height: 50 } }, [(0, _dom.h)('circle', { attrs: { cx: 25, cy: 25, r: 20, stroke: 'purple', 'stroke-width': 4, fill: fill3Monad.x } })])]), (0, _dom.h)('br'), (0, _dom.h)('p.red', 'The elapsed time is ' + mMelapsed.x + ' milliseconds.'), (0, _dom.h)('input#fib92'), (0, _dom.h)('br'), (0, _dom.h)('span#PF_7.red6', 'Fibonacci Numbers'), (0, _dom.h)('br'), (0, _dom.h)('span#PF_9.turk', mMres.x[0]), (0, _dom.h)('br'), (0, _dom.h)('span#PF_8.red6', 'Prime Fibonacci Numbers'), (0, _dom.h)('br'), (0, _dom.h)('span#primeFibs.turk', mMres.x[2]), (0, _dom.h)('br'), (0, _dom.h)('span#PF_21.red6', 'The largest generated prime number.'), (0, _dom.h)('br'), (0, _dom.h)('span#PF_22.turk', mMres.x[1]), (0, _dom.h)('br'), (0, _dom.h)('p', ' The second demonstration in this series decomposes numbers into its their prime factors. Testing with sequences of 9\'s, the first substantial lag occurs at 9,999,999 - unless a large array of prime numbers has already been generated in the previous demonstration or elsewhere. Here it is:'), (0, _dom.h)('input#factors_1'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('span', mMfactors.x), (0, _dom.h)('span.tao3', mMfactors23.x), (0, _dom.h)('p', ' Next, two comma-separated numbers are decomposed into arrays of their prime factors, and those arrays are used to compute their lowest common multiple (lcm). For example, the lcm of 6 and 9 is 18 because 3*6 and 2*9 are both 18. The lcm of the denominators of two fractions is useful in fraction arithmetic; specifically, addition and subtraction. On my desktop computer, two seven digit numbers resulted in a lag of a few seconds when prime numbers had not been previously generated. '), (0, _dom.h)('input#factors_5'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('div.tao3', mMfactors7.x), (0, _dom.h)('span', 'The least common multiple of  ' + mMfactors8.x[0] + ' and ' + mMfactors8.x[1] + ' is '), (0, _dom.h)('span.tao3', '' + mMfactors8.x[2]), (0, _dom.h)('br'), (0, _dom.h)('span', 'The largest common factor of ' + mMfactors8.x[0] + ' and ' + mMfactors8.x[1] + ' is '), (0, _dom.h)('span.tao3', '' + mMfactors8.x[3]), (0, _dom.h)('br'), (0, _dom.h)('div', 'TEST: ' + mMfactors8.x[0] + ' * ' + mMfactors8.x[1] + ' === ' + mMfactors8.x[2] + ' * ' + mMfactors8.x[3] + ' '), (0, _dom.h)('span', 'RESULT: '), (0, _dom.h)('span.tao3', '' + (mMfactors8.x[0] * mMfactors8.x[1] === mMfactors8.x[2] * mMfactors8.x[3])), _code2.default.hardWay, (0, _dom.h)('label', ' Enter a number here: '), (0, _dom.h)('input#factors_1b'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('div.tao3', mMfactors_b.x), _code2.default.hardWay2, (0, _dom.h)('div.tao3', mMfactors7_b.x), (0, _dom.h)('span', 'The least common multiple of  ' + mMfactors8_b.x[0] + ' and ' + mMfactors8_b.x[1] + ' is '), (0, _dom.h)('span.tao3', '' + mMfactors8_b.x[2]), (0, _dom.h)('br'), (0, _dom.h)('span', 'The largest common factor of ' + mMfactors8_b.x[0] + ' and ' + mMfactors8_b.x[1] + ' is '), (0, _dom.h)('span.tao3', '' + mMfactors8_b.x[3]), (0, _dom.h)('br'), (0, _dom.h)('div', 'TEST: ' + mMfactors8_b.x[0] + ' * ' + mMfactors8_b.x[1] + ' === ' + mMfactors8_b.x[2] + ' * ' + mMfactors8_b.x[3] + ' '), (0, _dom.h)('span', 'RESULT: '), (0, _dom.h)('span.tao3', '' + (mMfactors8_b.x[0] * mMfactors8_b.x[1] === mMfactors8_b.x[2] * mMfactors8_b.x[3])), (0, _dom.h)('h3', ' The Easy Way '), (0, _dom.h)('p', ' This has been a demonstration of MonadState and MonadState transformers. If you really want the least common multiple or the largest common factor of two positive integers, there is no need to generate prime numbers. The next and final demonstration in this section does not use a web worker. The computations block the main thread, but only for a few microseconds.'), (0, _dom.h)('br'), (0, _dom.h)('input#factors800'), (0, _dom.h)('br'), (0, _dom.h)('span', 'The least common multiple of  ' + mMfactors800.x[0] + ' and ' + mMfactors800.x[1] + ' is '), (0, _dom.h)('span.tao3', '' + mMfactors800.x[2]), (0, _dom.h)('br'), (0, _dom.h)('span', 'The largest common factor of ' + mMfactors800.x[0] + ' and ' + mMfactors800.x[1] + ' is '), (0, _dom.h)('span.tao3', '' + mMfactors800.x[3]), (0, _dom.h)('br'), (0, _dom.h)('div', 'TEST: ' + mMfactors800.x[0] + ' * ' + mMfactors800.x[1] + ' === ' + mMfactors800.x[2] + ' * ' + mMfactors800.x[3] + ' '), (0, _dom.h)('span', 'RESULT: '), (0, _dom.h)('span.tao3', '' + (mMfactors800.x[0] * mMfactors800.x[1] === mMfactors800.x[2] * mMfactors800.x[3])), (0, _dom.h)('p', ' The code for the previous demonstrations is available at the Github repository, and will soon be available here in an appendex. primesMonad and the functions primarily involved in its transformation are shown below: '), _code2.default.primes, (0, _dom.h)('p', ' primesMonad state updates are generated in workerB.js and stored in the main thread. Users set new upper bounds on the size of the largest Fibonacci number in the series to be considered by entering a number in a browser input box. Here is the rele2ant code: '), _code2.default.primes3, (0, _dom.h)('p', ' The user\'s selected number along with the current state of primesMonad (primesMonad.s) gets posted to workerB, which gets functionality beyond its prototype from workerB.js, which orchestrates preparation of the return message that will be posted back to the main thread. workerB.js delegates the job to functions in script2.js by calling: '), _code2.default.primes4, (0, _dom.h)('p', ' execF prepares the Fibonacci series and sends its state, along with the state of primesMonad that it received from workerB.js, to fpTransformer. execP is called with the current state and the largest Fibonacci number that had been recently produced by execF as arguments. The updated state is an array with four elements, [new upper bound, new series, largest prime produced in the current browser session, largest series]. If the new result is larger than any previous one, the first and second elements of the state array are identical to the third and fourth. Otherwise, they are smaller. As is apparent in the following code, primesMonad is re-created in the main thread using the state array that was posted by workerB. '), _code2.default.primes2, (0, _dom.h)('h2', ' MonadEr - An Error-Catching Monad '), (0, _dom.h)('p', ' Instances of MonadEr function much the same as instances of Monad, but when an instance of MonadEr encounters an error, it ceases to perform any further computations. Instead, it passes through every subsequent stage of a sequence of MonadEr expressions, reporting where it is and repeating the error message. It will continue to do this until it is re-instantiated or until its bnd() method runs on the function clean(). '), (0, _dom.h)('p', 'Functions used as arguments to the MonadEr bnd() method can be placed in quotation marks to prevent the browser engine from throwing reference errors. Arguments can be protected in the same manner. Using MonadEr can prevent the silent proliferation of NaN results in math computations, and can prevent browser crashes due to attempts to evaluate undefined variables. Sometimes crashes are desired when testing code, but MonadEr provides instant feedback pinpointing the exact location of the error. '), (0, _dom.h)('p', ' The following demonstration shows the Chrome console log entries that result from running '), (0, _dom.h)('pre', '    t.bnd(\'add3\', 3, \'$t2\').bnd(cube3, \'$t3\')\n    t.bnd(\'add3\',\'three\', \'$t2\').bnd(cube3, \'$t3\')\n    t.bnd(\'add3\',\'Math.sqrt(-1)\', \'$t2\').bnd(cube3, \'$t3\')\n    t.bnd(\'addd3\', 3, \'$t2\').bnd(cube3, \'$t3\' '), (0, _dom.h)('br'), (0, _dom.h)('img.image', { props: { src: "error2.png" } }), (0, _dom.h)('br'), (0, _dom.h)('p.tao1b', ' The monad laws hold for MonadEr instances. The following relationships were verified in the Chrome console: '), (0, _dom.h)('pre', '    ret3(0,\'t\',[])  // t is now an instance of MonadEr with t.x = 0 and t.e = [].\n\n    t.ret(3).bnd(cube3).x === cube(3).x\n    ret3(3).bnd(cube3).x === cube3(3).x\n\n    t.bnd(t.ret) === t\n    t.bnd(ret) === t\n\n    t.ret(0).bnd(add3, 3).bnd(cube3).x ===\n    t.ret(0).bnd(v => add3(v,3).bnd(cube3)).x  '), (0, _dom.h)('br#itterLink'), (0, _dom.h)('br'), (0, _dom.h)('a', { props: { href: '#top' } }, 'Back To The Top'), (0, _dom.h)('h2', 'MonadItter'), _code2.default.monadIt, (0, _dom.h)('p', ' MonadItter instances don\'t link to one another. They exist to facilitate the work of instances of Monad, MonadState, etc. Here\'s how they work: '), (0, _dom.h)('p', 'For any instance of MonadItter, say "it", "it.bnd(func)" causes it.p === func. Calling the method "it.release(...args)" causes p(...args) to run, possibly with arguments supplied by the caller. '), (0, _dom.h)('p', ' As shown later on this page, MonadItter instances control the routing of incoming websockets messages. In one of the demonstrations below, they behave much like ES2015 iterators.'), (0, _dom.h)('h3', ' A Basic Itterator '), (0, _dom.h)('p', 'The following example illustrates the use of release() with an argument. It also shows a lambda expressions being provided as an argument for the method mMZ1.bnd() (thereby becoming the value of mMZ1.p), and then mMZ1.release providing an arguments for the function mMZ1.p. The code is shown beneith the following two buttons. '), (0, _dom.h)('button#testZ', 'mMZ1.release(1)'), (0, _dom.h)('p.code2', mMt3.x), (0, _dom.h)('span', 'Refresh button: '), (0, _dom.h)('button#testQ', 'mMt1.ret(0).bnd(v => mMZ2.release(v)) '), (0, _dom.h)('br'), _code2.default.testZ, (0, _dom.h)('span.tao', ' The expression mMt3.x sits permanently in the Motorcycle virtual DOM description. You can call '), (0, _dom.h)('span.green', 'mMZ2.release(v)'), (0, _dom.h)('span', ' by entering a value for v below: '), (0, _dom.h)('br'), (0, _dom.h)('span', 'Please enter an integer here: '), (0, _dom.h)('input#testW'), (0, _dom.h)('p', ' cube() is defined in the Monad section (above). If you click "mMZ1.release(1)" several times, the code (above) will run several times, each time with v === 1. The result, mMt3.x, is shown below the button. mMZ1.p (bnd()\'s argument) remains constant while mMZ1.release(1) is repeatedly called, incrementing the number being cubed each time. '), (0, _dom.h)('p', ' Here is another example. It demonstrates lambda expressions passing values to a remote location for use in a computation. If you enter three numbers consecutively below, call them a, b, and c, then the quadratic equation will be used to find solutions for a*x**2 + b*x + c = 0. The a, b, and c you select might not have a solution. If a and b are positive numbers, you are likely to see solutions if c is a negative number. For example, 12, 12, and -24 yields the solutions 1 and -2. '), (0, _dom.h)('p#quad4.red2', mMquad4.x), (0, _dom.h)('p#quad5.red2', mMquad5.x), (0, _dom.h)('p#quad6.red2', mMquad6.x), (0, _dom.h)('p', 'Run mMZ3.release(v) three times for three numbers. The numbers are a, b, and c in ax*x + b*x + c = 0. Remember to press <ENTER> after each number. '), (0, _dom.h)('input#quad'), (0, _dom.h)('p', 'Here is the code:'), _code2.default.quad, (0, _dom.h)('p', ' fmap (above) facilitated using qS4 in a monadic sequence. qS4 returns an array, not an instance of Monad, but fmap lifts qS4 into the monadic sequence. '), (0, _dom.h)('p', ' The function solve() is recursive. It invokes itself after release() executes three times. The expression "solve()" resets solve to the top, where mMZ3.p becomes a function containing two nested occurrances of mMZ3.bnd. After mMZ3.release() executes, mMZ3.p becomes the function that is the argument to the next occurrance of mMZ3.bnd. That function contains yet another occurrance of mMZ3.bnd. MonadItter is syntactic sugar for nested callbacks. '),
 
 	      // **************************************************************************
 	      (0, _dom.h)('p#gameExplanation', ' '), (0, _dom.h)('p', ' '), (0, _dom.h)('p', ' '), (0, _dom.h)('p', ' '), (0, _dom.h)('p', ' '), (0, _dom.h)('a', { props: { href: '#top' } }, 'Back To The Top'),
@@ -867,7 +906,7 @@
 	      (0, _dom.h)('h2', ' MonadSet '), (0, _dom.h)('p', ' The list of online group members at the bottom of the scoreboard is very responsive to change. When someone joins the group, changes to a different group, or closes a browser session, a message prefixed by NN#$42 goes out from the server providing group members with the updated list of group members. MonadSet acts upon messages prefixed by NN#$42. Here are the definitions of MonadSet and the MonadSet instance sMplayers '), _code2.default.MonadSet, (0, _dom.h)('h3', ' Websocket messages'), (0, _dom.h)('p#demo', ' Incoming websockets messages trigger updates to the game display, the chat display, and the todo list display. The members of a group see what other members are doing; and in the case of the todo list, they see the current list when they sign in to the group. When any member of a group adds a task, crosses it out as completed, edits its description, or removes it, the server updates the persistent file and all members of the group immediately see the revised list.  '), (0, _dom.h)('p', 'The code below shows how incoming websockets messages are routed. For example, mMZ10.release() is called when a new dice roll (prefixed by CA#$42) comes in.   '), _code2.default.messages, (0, _dom.h)('p#cmment', ' The "mMZ" prefix designates instances of MonadItter. An instance\'s bnd() method assigns its argument to its "p" attribute. "p" runs if and when its release() method is called. The next() function releases a specified MonadItter instance when the calling monad\'s value matches the specified value in the expression. In the messages$ stream, the MonadItter instance\'s bnd methods do not take argumants, but next is capable of sending arguments when bnd() is called on functions requiring them. Here is an example: '), (0, _dom.h)('a#tdList2', { props: { href: '#itterLink' } }, 'release() with arguments'), (0, _dom.h)('br'), (0, _dom.h)('h2', 'COMMENTS'), (0, _dom.h)('div#com2', { style: { display: abcde } }), (0, _dom.h)('p', ' When this page loads in the browser, a user name is automatically generated in order to establish a unique Websocket connection. This makes it possible to exchange text messages with other group members, play the game, and work on a shared todo list. If you want to leave a comment, you need to log in with a user name and a password of your choice. Each can be a single character or you could use a hard-to-hack combination of alphabet letter, numbers, and special characters. The main requirement is that there be only one comma, and that it be placed between the name and the password. '), (0, _dom.h)('p', 'The server will keep your user name and password in a text file. If you use your saved user name and password sometime in the future, you will be able to edit or delete any comments you previously made. '), (0, _dom.h)('p', ' If you enter a user name that has not been recorded, you will be logged in as that user. The user name and password will be saved. This means that you do not need to first register and then log in. This is an all-in-one process. If you enter a recognized user name but the passord does not match the password in the record, you will be asked to try again. '), (0, _dom.h)('p', ' Comments are stored on the server in an MVar. The MVar blocks access while an addition, modification, or delete action takes place. Attempts to access the comments in the MVar at such times do not result in error. Processes attempting to gain access que up. They gain access on a first in first out basis, so no process attempting to add, modify, or delete a comment will hang indefinitely. Soon, the registered names and passwords will be in an MVar. '), (0, _dom.h)('br'), (0, _dom.h)('h3', 'Register'), (0, _dom.h)('span.red', mMregister.x), (0, _dom.h)('input.register', { style: { display: mMshowRegister.x } }),
 	      // h('a', { props: {href: "mailto:pyschalk@gmail.com"}}, 'email' ),
 	      // h('span', ' or send a personal tweet to @schalk1234' ),
-	      (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('h3', 'COMMENTS'), (0, _dom.h)('textarea#comment'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('div', commentMonad.s[2]), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('a', { props: { href: '#top' } }, 'Back To The Top'), (0, _dom.h)('h2', 'Appendix - Under Construction '), (0, _dom.h)('h3', 'The functions that produce the examples'), (0, _dom.h)('p', ' Here are the definitions of MonadEr, its helper functions, and the function that serve as parameters to the bnd() method in the demonstration. '), _code2.default.monadEr, (0, _dom.h)('p', ' and here is the code that produced the Chrome console log entries: '), _code2.default.errorDemo, (0, _dom.h)('span.tao', ' When  a MonadEr instance encounters a function or an argument in quotation marks of types "undefined" or "NaN", a string gets pushed into the instance\'s e attribue. After that, the  bnd() method will not process any function other than clean(). It will stop at the'), (0, _dom.h)('span.turk', 'if (e.length > 0)'), (0, _dom.h)('span', 'block. clean() resets an instance to normal functioning mode by setting its e attribute back to []. '), (0, _dom.h)('br'), (0, _dom.h)('p'), (0, _dom.h)('p'), (0, _dom.h)('p', '.'), (0, _dom.h)('p', '.'), (0, _dom.h)('p', '.'), (0, _dom.h)('p', '.'), (0, _dom.h)('p', '.'), (0, _dom.h)('p'), (0, _dom.h)('p'), (0, _dom.h)('p'), (0, _dom.h)('p'), (0, _dom.h)('p')])]);
+	      (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('h3', 'COMMENTS'), (0, _dom.h)('textarea#comment'), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('div', mMcomments.x), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('p', ' Adding, revising, and deleting comments entails sending only short strings to the server. The server sends only a short string (Data.Text on the server side) when a new comment is added, but modifying a comment currently requires the server to send a long string containing all of the comments. This is not satisfactory. I plan to optimise the code to take this unnecessary load off of the network, but it might be a while before I get around to doing it. '), (0, _dom.h)('br'), (0, _dom.h)('br'), (0, _dom.h)('a', { props: { href: '#top' } }, 'Back To The Top'), (0, _dom.h)('h2', 'Appendix - Under Construction '), (0, _dom.h)('h3', 'The functions that produce the examples'), (0, _dom.h)('p', ' Here are the definitions of MonadEr, its helper functions, and the function that serve as parameters to the bnd() method in the demonstration. '), _code2.default.monadEr, (0, _dom.h)('p', ' and here is the code that produced the Chrome console log entries: '), _code2.default.errorDemo, (0, _dom.h)('span.tao', ' When  a MonadEr instance encounters a function or an argument in quotation marks of types "undefined" or "NaN", a string gets pushed into the instance\'s e attribue. After that, the  bnd() method will not process any function other than clean(). It will stop at the'), (0, _dom.h)('span.turk', 'if (e.length > 0)'), (0, _dom.h)('span', 'block. clean() resets an instance to normal functioning mode by setting its e attribute back to []. '), (0, _dom.h)('br'), (0, _dom.h)('p'), (0, _dom.h)('p'), (0, _dom.h)('p', '.'), (0, _dom.h)('p', '.'), (0, _dom.h)('p', '.'), (0, _dom.h)('p', '.'), (0, _dom.h)('p', '.'), (0, _dom.h)('p'), (0, _dom.h)('p'), (0, _dom.h)('p'), (0, _dom.h)('p'), (0, _dom.h)('p')])]);
 	    })
 	  };
 	}
@@ -883,8 +922,6 @@
 	  WW: workerDriver
 	};
 	(0, _xstreamRun.run)(main, sources);
-
-	console.log('Here are sources.DOM) and typeof sources.DOM', sources.DOM, _typeof(sources.DOM));
 
 /***/ }),
 /* 1 */
@@ -3209,7 +3246,7 @@
 	 * of VNode as input, and outputs the DOMSource object.
 	 * @function makeHTMLDriver
 	 */
-	var makeHTMLDriver_1 = __webpack_require__(94);
+	var makeHTMLDriver_1 = __webpack_require__(99);
 	exports.makeHTMLDriver = makeHTMLDriver_1.makeHTMLDriver;
 	/**
 	 * A factory function to create mocked DOMSource objects, for testing purposes.
@@ -3259,7 +3296,7 @@
 	 *
 	 * @function mockDOMSource
 	 */
-	var mockDOMSource_1 = __webpack_require__(122);
+	var mockDOMSource_1 = __webpack_require__(127);
 	exports.mockDOMSource = mockDOMSource_1.mockDOMSource;
 	/**
 	 * The hyperscript function `h()` is a function to create virtual DOM objects,
@@ -3303,7 +3340,7 @@
 	 */
 	var hyperscript_1 = __webpack_require__(28);
 	exports.h = hyperscript_1.h;
-	var hyperscript_helpers_1 = __webpack_require__(123);
+	var hyperscript_helpers_1 = __webpack_require__(128);
 	exports.svg = hyperscript_helpers_1.default.svg;
 	exports.a = hyperscript_helpers_1.default.a;
 	exports.abbr = hyperscript_helpers_1.default.abbr;
@@ -3531,7 +3568,7 @@
 	var utils_1 = __webpack_require__(23);
 	var modules_1 = __webpack_require__(32);
 	var isolateModule_1 = __webpack_require__(39);
-	var transposition_1 = __webpack_require__(93);
+	var transposition_1 = __webpack_require__(98);
 	var xstream_adapter_1 = __webpack_require__(3);
 	var MapPolyfill = __webpack_require__(40);
 	function makeDOMDriverInputGuard(modules) {
@@ -5433,8 +5470,8 @@
 	  , Symbol         = __webpack_require__(70)
 	  , iterator       = __webpack_require__(75)
 	  , forOf          = __webpack_require__(79)
-	  , Iterator       = __webpack_require__(89)
-	  , isNative       = __webpack_require__(92)
+	  , Iterator       = __webpack_require__(94)
+	  , isNative       = __webpack_require__(97)
 
 	  , call = Function.prototype.call
 	  , defineProperties = Object.defineProperties, getPrototypeOf = Object.getPrototypeOf
@@ -6515,7 +6552,7 @@
 	var isArguments    = __webpack_require__(77)
 	  , isString       = __webpack_require__(78)
 	  , ArrayIterator  = __webpack_require__(81)
-	  , StringIterator = __webpack_require__(88)
+	  , StringIterator = __webpack_require__(93)
 	  , iterable       = __webpack_require__(75)
 	  , iteratorSymbol = __webpack_require__(70).iterator;
 
@@ -6668,7 +6705,7 @@
 	var copy             = __webpack_require__(84)
 	  , normalizeOptions = __webpack_require__(64)
 	  , ensureCallable   = __webpack_require__(56)
-	  , map              = __webpack_require__(85)
+	  , map              = __webpack_require__(90)
 	  , callable         = __webpack_require__(56)
 	  , validValue       = __webpack_require__(44)
 
@@ -6703,13 +6740,22 @@
 
 	'use strict';
 
-	var assign = __webpack_require__(58)
+	var aFrom  = __webpack_require__(85)
+	  , assign = __webpack_require__(58)
 	  , value  = __webpack_require__(44);
 
-	module.exports = function (obj) {
-		var copy = Object(value(obj));
-		if (copy !== obj) return copy;
-		return assign({}, obj);
+	module.exports = function (obj/*, propertyNames, options*/) {
+		var copy = Object(value(obj)), propertyNames = arguments[1], options = Object(arguments[2]);
+		if (copy !== obj && !propertyNames) return copy;
+		var result = {};
+		if (propertyNames) {
+			aFrom(propertyNames, function (propertyName) {
+				if (options.ensure || propertyName in obj) result[propertyName] = obj[propertyName];
+			});
+		} else {
+			assign(result, obj);
+		}
+		return result;
 	};
 
 
@@ -6719,8 +6765,170 @@
 
 	'use strict';
 
+	module.exports = __webpack_require__(86)()
+		? Array.from
+		: __webpack_require__(87);
+
+
+/***/ }),
+/* 86 */
+/***/ (function(module, exports) {
+
+	'use strict';
+
+	module.exports = function () {
+		var from = Array.from, arr, result;
+		if (typeof from !== 'function') return false;
+		arr = ['raz', 'dwa'];
+		result = from(arr);
+		return Boolean(result && (result !== arr) && (result[1] === 'dwa'));
+	};
+
+
+/***/ }),
+/* 87 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var iteratorSymbol = __webpack_require__(70).iterator
+	  , isArguments    = __webpack_require__(77)
+	  , isFunction     = __webpack_require__(88)
+	  , toPosInt       = __webpack_require__(46)
+	  , callable       = __webpack_require__(56)
+	  , validValue     = __webpack_require__(44)
+	  , isString       = __webpack_require__(78)
+
+	  , isArray = Array.isArray, call = Function.prototype.call
+	  , desc = { configurable: true, enumerable: true, writable: true, value: null }
+	  , defineProperty = Object.defineProperty;
+
+	module.exports = function (arrayLike/*, mapFn, thisArg*/) {
+		var mapFn = arguments[1], thisArg = arguments[2], Constructor, i, j, arr, l, code, iterator
+		  , result, getIterator, value;
+
+		arrayLike = Object(validValue(arrayLike));
+
+		if (mapFn != null) callable(mapFn);
+		if (!this || (this === Array) || !isFunction(this)) {
+			// Result: Plain array
+			if (!mapFn) {
+				if (isArguments(arrayLike)) {
+					// Source: Arguments
+					l = arrayLike.length;
+					if (l !== 1) return Array.apply(null, arrayLike);
+					arr = new Array(1);
+					arr[0] = arrayLike[0];
+					return arr;
+				}
+				if (isArray(arrayLike)) {
+					// Source: Array
+					arr = new Array(l = arrayLike.length);
+					for (i = 0; i < l; ++i) arr[i] = arrayLike[i];
+					return arr;
+				}
+			}
+			arr = [];
+		} else {
+			// Result: Non plain array
+			Constructor = this;
+		}
+
+		if (!isArray(arrayLike)) {
+			if ((getIterator = arrayLike[iteratorSymbol]) !== undefined) {
+				// Source: Iterator
+				iterator = callable(getIterator).call(arrayLike);
+				if (Constructor) arr = new Constructor();
+				result = iterator.next();
+				i = 0;
+				while (!result.done) {
+					value = mapFn ? call.call(mapFn, thisArg, result.value, i) : result.value;
+					if (!Constructor) {
+						arr[i] = value;
+					} else {
+						desc.value = value;
+						defineProperty(arr, i, desc);
+					}
+					result = iterator.next();
+					++i;
+				}
+				l = i;
+			} else if (isString(arrayLike)) {
+				// Source: String
+				l = arrayLike.length;
+				if (Constructor) arr = new Constructor();
+				for (i = 0, j = 0; i < l; ++i) {
+					value = arrayLike[i];
+					if ((i + 1) < l) {
+						code = value.charCodeAt(0);
+						if ((code >= 0xD800) && (code <= 0xDBFF)) value += arrayLike[++i];
+					}
+					value = mapFn ? call.call(mapFn, thisArg, value, j) : value;
+					if (!Constructor) {
+						arr[j] = value;
+					} else {
+						desc.value = value;
+						defineProperty(arr, j, desc);
+					}
+					++j;
+				}
+				l = j;
+			}
+		}
+		if (l === undefined) {
+			// Source: array or array-like
+			l = toPosInt(arrayLike.length);
+			if (Constructor) arr = new Constructor(l);
+			for (i = 0; i < l; ++i) {
+				value = mapFn ? call.call(mapFn, thisArg, arrayLike[i], i) : arrayLike[i];
+				if (!Constructor) {
+					arr[i] = value;
+				} else {
+					desc.value = value;
+					defineProperty(arr, i, desc);
+				}
+			}
+		}
+		if (Constructor) {
+			desc.value = null;
+			arr.length = l;
+		}
+		return arr;
+	};
+
+
+/***/ }),
+/* 88 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var toString = Object.prototype.toString
+
+	  , id = toString.call(__webpack_require__(89));
+
+	module.exports = function (f) {
+		return (typeof f === "function") && (toString.call(f) === id);
+	};
+
+
+/***/ }),
+/* 89 */
+/***/ (function(module, exports) {
+
+	'use strict';
+
+	module.exports = function () {};
+
+
+/***/ }),
+/* 90 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	'use strict';
+
 	var callable = __webpack_require__(56)
-	  , forEach  = __webpack_require__(86)
+	  , forEach  = __webpack_require__(91)
 
 	  , call = Function.prototype.call;
 
@@ -6735,16 +6943,16 @@
 
 
 /***/ }),
-/* 86 */
+/* 91 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	module.exports = __webpack_require__(87)('forEach');
+	module.exports = __webpack_require__(92)('forEach');
 
 
 /***/ }),
-/* 87 */
+/* 92 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	// Internal method, used by iteration functions.
@@ -6779,7 +6987,7 @@
 
 
 /***/ }),
-/* 88 */
+/* 93 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	// Thanks @mathiasbynens
@@ -6822,7 +7030,7 @@
 
 
 /***/ }),
-/* 89 */
+/* 94 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -6831,7 +7039,7 @@
 	  , d                 = __webpack_require__(57)
 	  , Iterator          = __webpack_require__(82)
 	  , toStringTagSymbol = __webpack_require__(70).toStringTag
-	  , kinds             = __webpack_require__(90)
+	  , kinds             = __webpack_require__(95)
 
 	  , defineProperties = Object.defineProperties
 	  , unBind = Iterator.prototype._unBind
@@ -6866,17 +7074,17 @@
 
 
 /***/ }),
-/* 90 */
+/* 95 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	module.exports = __webpack_require__(91)('key',
+	module.exports = __webpack_require__(96)('key',
 		'value', 'key+value');
 
 
 /***/ }),
-/* 91 */
+/* 96 */
 /***/ (function(module, exports) {
 
 	'use strict';
@@ -6891,7 +7099,7 @@
 
 
 /***/ }),
-/* 92 */
+/* 97 */
 /***/ (function(module, exports) {
 
 	// Exports true if environment provides native `Map` implementation,
@@ -6906,7 +7114,7 @@
 
 
 /***/ }),
-/* 93 */
+/* 98 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -6962,14 +7170,14 @@
 	//# sourceMappingURL=transposition.js.map
 
 /***/ }),
-/* 94 */
+/* 99 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	"use strict";
 	var xstream_adapter_1 = __webpack_require__(3);
-	var transposition_1 = __webpack_require__(93);
-	var HTMLSource_1 = __webpack_require__(95);
-	var toHTML = __webpack_require__(96);
+	var transposition_1 = __webpack_require__(98);
+	var HTMLSource_1 = __webpack_require__(100);
+	var toHTML = __webpack_require__(101);
 	var noop = function () { };
 	function makeHTMLDriver(effect, options) {
 	    if (!options) {
@@ -6995,7 +7203,7 @@
 	//# sourceMappingURL=makeHTMLDriver.js.map
 
 /***/ }),
-/* 95 */
+/* 100 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -7027,22 +7235,22 @@
 	//# sourceMappingURL=HTMLSource.js.map
 
 /***/ }),
-/* 96 */
+/* 101 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	
-	var init = __webpack_require__(97);
+	var init = __webpack_require__(102);
 
-	module.exports = init([__webpack_require__(101), __webpack_require__(118)]);
+	module.exports = init([__webpack_require__(106), __webpack_require__(123)]);
 
 /***/ }),
-/* 97 */
+/* 102 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	
-	var parseSelector = __webpack_require__(98);
-	var VOID_ELEMENTS = __webpack_require__(99);
-	var CONTAINER_ELEMENTS = __webpack_require__(100);
+	var parseSelector = __webpack_require__(103);
+	var VOID_ELEMENTS = __webpack_require__(104);
+	var CONTAINER_ELEMENTS = __webpack_require__(105);
 
 	module.exports = function init(modules) {
 	  function parse(data) {
@@ -7100,7 +7308,7 @@
 	};
 
 /***/ }),
-/* 98 */
+/* 103 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	
@@ -7151,7 +7359,7 @@
 	};
 
 /***/ }),
-/* 99 */
+/* 104 */
 /***/ (function(module, exports) {
 
 	
@@ -7176,7 +7384,7 @@
 	};
 
 /***/ }),
-/* 100 */
+/* 105 */
 /***/ (function(module, exports) {
 
 	
@@ -7203,15 +7411,15 @@
 	};
 
 /***/ }),
-/* 101 */
+/* 106 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	
-	var forOwn = __webpack_require__(102);
-	var escape = __webpack_require__(109);
-	var union = __webpack_require__(111);
+	var forOwn = __webpack_require__(107);
+	var escape = __webpack_require__(114);
+	var union = __webpack_require__(116);
 
-	var parseSelector = __webpack_require__(98);
+	var parseSelector = __webpack_require__(103);
 
 	// data.attrs, data.props, data.class
 
@@ -7272,7 +7480,7 @@
 	}
 
 /***/ }),
-/* 102 */
+/* 107 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	/**
@@ -7283,9 +7491,9 @@
 	 * Copyright 2009-2015 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
 	 * Available under MIT license <https://lodash.com/license>
 	 */
-	var baseFor = __webpack_require__(103),
-	    bindCallback = __webpack_require__(104),
-	    keys = __webpack_require__(105);
+	var baseFor = __webpack_require__(108),
+	    bindCallback = __webpack_require__(109),
+	    keys = __webpack_require__(110);
 
 	/**
 	 * The base implementation of `_.forOwn` without support for callback
@@ -7349,7 +7557,7 @@
 
 
 /***/ }),
-/* 103 */
+/* 108 */
 /***/ (function(module, exports) {
 
 	/**
@@ -7403,7 +7611,7 @@
 
 
 /***/ }),
-/* 104 */
+/* 109 */
 /***/ (function(module, exports) {
 
 	/**
@@ -7474,7 +7682,7 @@
 
 
 /***/ }),
-/* 105 */
+/* 110 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	/**
@@ -7485,9 +7693,9 @@
 	 * Copyright 2009-2015 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
 	 * Available under MIT license <https://lodash.com/license>
 	 */
-	var getNative = __webpack_require__(106),
-	    isArguments = __webpack_require__(107),
-	    isArray = __webpack_require__(108);
+	var getNative = __webpack_require__(111),
+	    isArguments = __webpack_require__(112),
+	    isArray = __webpack_require__(113);
 
 	/** Used to detect unsigned integer values. */
 	var reIsUint = /^\d+$/;
@@ -7716,7 +7924,7 @@
 
 
 /***/ }),
-/* 106 */
+/* 111 */
 /***/ (function(module, exports) {
 
 	/**
@@ -7859,7 +8067,7 @@
 
 
 /***/ }),
-/* 107 */
+/* 112 */
 /***/ (function(module, exports) {
 
 	/**
@@ -8094,7 +8302,7 @@
 
 
 /***/ }),
-/* 108 */
+/* 113 */
 /***/ (function(module, exports) {
 
 	/**
@@ -8280,7 +8488,7 @@
 
 
 /***/ }),
-/* 109 */
+/* 114 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	/**
@@ -8291,7 +8499,7 @@
 	 * Copyright 2009-2016 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
 	 * Available under MIT license <https://lodash.com/license>
 	 */
-	var root = __webpack_require__(110);
+	var root = __webpack_require__(115);
 
 	/** Used as references for various `Number` constants. */
 	var INFINITY = 1 / 0;
@@ -8466,7 +8674,7 @@
 
 
 /***/ }),
-/* 110 */
+/* 115 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(module, global) {/**
@@ -8532,7 +8740,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(7)(module), (function() { return this; }())))
 
 /***/ }),
-/* 111 */
+/* 116 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	/**
@@ -8543,9 +8751,9 @@
 	 * Copyright 2009-2015 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
 	 * Available under MIT license <https://lodash.com/license>
 	 */
-	var baseFlatten = __webpack_require__(112),
-	    baseUniq = __webpack_require__(113),
-	    restParam = __webpack_require__(117);
+	var baseFlatten = __webpack_require__(117),
+	    baseUniq = __webpack_require__(118),
+	    restParam = __webpack_require__(122);
 
 	/**
 	 * Creates an array of unique values, in order, of the provided arrays using
@@ -8573,7 +8781,7 @@
 
 
 /***/ }),
-/* 112 */
+/* 117 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	/**
@@ -8584,8 +8792,8 @@
 	 * Copyright 2009-2015 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
 	 * Available under MIT license <https://lodash.com/license>
 	 */
-	var isArguments = __webpack_require__(107),
-	    isArray = __webpack_require__(108);
+	var isArguments = __webpack_require__(112),
+	    isArray = __webpack_require__(113);
 
 	/**
 	 * Checks if `value` is object-like.
@@ -8710,7 +8918,7 @@
 
 
 /***/ }),
-/* 113 */
+/* 118 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	/**
@@ -8721,9 +8929,9 @@
 	 * Copyright 2009-2015 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
 	 * Available under MIT license <https://lodash.com/license>
 	 */
-	var baseIndexOf = __webpack_require__(114),
-	    cacheIndexOf = __webpack_require__(115),
-	    createCache = __webpack_require__(116);
+	var baseIndexOf = __webpack_require__(119),
+	    cacheIndexOf = __webpack_require__(120),
+	    createCache = __webpack_require__(121);
 
 	/** Used as the size to enable large array optimizations. */
 	var LARGE_ARRAY_SIZE = 200;
@@ -8784,7 +8992,7 @@
 
 
 /***/ }),
-/* 114 */
+/* 119 */
 /***/ (function(module, exports) {
 
 	/**
@@ -8847,7 +9055,7 @@
 
 
 /***/ }),
-/* 115 */
+/* 120 */
 /***/ (function(module, exports) {
 
 	/**
@@ -8906,7 +9114,7 @@
 
 
 /***/ }),
-/* 116 */
+/* 121 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(global) {/**
@@ -8917,7 +9125,7 @@
 	 * Copyright 2009-2015 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
 	 * Available under MIT license <https://lodash.com/license>
 	 */
-	var getNative = __webpack_require__(106);
+	var getNative = __webpack_require__(111);
 
 	/** Native method references. */
 	var Set = getNative(global, 'Set');
@@ -9004,7 +9212,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }())))
 
 /***/ }),
-/* 117 */
+/* 122 */
 /***/ (function(module, exports) {
 
 	/**
@@ -9077,14 +9285,14 @@
 
 
 /***/ }),
-/* 118 */
+/* 123 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
-	var forOwn = __webpack_require__(102);
-	var escape = __webpack_require__(109);
-	var kebabCase = __webpack_require__(119);
+	var forOwn = __webpack_require__(107);
+	var escape = __webpack_require__(114);
+	var kebabCase = __webpack_require__(124);
 
 	// data.style
 
@@ -9108,7 +9316,7 @@
 	};
 
 /***/ }),
-/* 119 */
+/* 124 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	/**
@@ -9119,8 +9327,8 @@
 	 * Copyright 2009-2016 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
 	 * Available under MIT license <https://lodash.com/license>
 	 */
-	var deburr = __webpack_require__(120),
-	    words = __webpack_require__(121);
+	var deburr = __webpack_require__(125),
+	    words = __webpack_require__(126);
 
 	/**
 	 * A specialized version of `_.reduce` for arrays without support for
@@ -9186,7 +9394,7 @@
 
 
 /***/ }),
-/* 120 */
+/* 125 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	/**
@@ -9197,7 +9405,7 @@
 	 * Copyright 2009-2016 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
 	 * Available under MIT license <https://lodash.com/license>
 	 */
-	var root = __webpack_require__(110);
+	var root = __webpack_require__(115);
 
 	/** Used as references for various `Number` constants. */
 	var INFINITY = 1 / 0;
@@ -9375,7 +9583,7 @@
 
 
 /***/ }),
-/* 121 */
+/* 126 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	/**
@@ -9386,7 +9594,7 @@
 	 * Copyright 2009-2016 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
 	 * Available under MIT license <https://lodash.com/license>
 	 */
-	var root = __webpack_require__(110);
+	var root = __webpack_require__(115);
 
 	/** Used as references for various `Number` constants. */
 	var INFINITY = 1 / 0;
@@ -9579,7 +9787,7 @@
 
 
 /***/ }),
-/* 122 */
+/* 127 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -9654,7 +9862,7 @@
 	//# sourceMappingURL=mockDOMSource.js.map
 
 /***/ }),
-/* 123 */
+/* 128 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -9731,7 +9939,7 @@
 	//# sourceMappingURL=hyperscript-helpers.js.map
 
 /***/ }),
-/* 124 */
+/* 129 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
