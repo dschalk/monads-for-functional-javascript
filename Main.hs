@@ -87,6 +87,11 @@ substitute n a comment = do
   let e = (fst c) `mappend` [comment] `mappend` d
   return $ T.pack $ intercalate "<@>" (map T.unpack e)
 
+mappend3 a b c = mappend a (mappend b c)
+mappend4 a b c d = mappend a (mappend b (mappend c d))
+mappend5 a b c d e = mappend a (mappend b (mappend c (mappend d e))) 
+mappend6 a b c d e f = mappend a (mappend b (mappend c (mappend d (mappend e f)))) 
+
 head2 :: [Text] -> Text
 head2 [a,b] = a
 head2 _ = T.pack "Inappropriate head2 argument"
@@ -178,7 +183,7 @@ subState name gr state  | gr /= solo  = [ (a,b,c,d,e,f,g,h) | (a,b,c,d,e,f,g,h) 
 
 extract :: [Text] -> Text
 extract [x] = x
-extract _ = "Error in extract"
+extract _ = (T.pack "Message from extract: You seem to have provided a bad argument to getGroup. ")
 
 getGroup name state = extract [ d | (a,_,_,d,_,_,_,_) <- state, name == a ]
 
@@ -356,9 +361,8 @@ application state pending = do
                     sta' <- atomically $ readTVar state  
                     let grp = getGroup name sta'
                     let subSt = subState name grp sta'
-                    broadcast ("NN#$42," `mappend` grp `mappend` ",nobody,"
-                      `mappend` (T.pack "<br>") `mappend`
-                        T.concat (intersperse "<br>" (textState subSt))) subSt   
+                    print "Hello Nurse"
+                    -- broadcast ("NN#$42,"  br T.concat (intersperse "<br>" (textState subSt))) subSt   
 
 talk :: WS.Connection -> TVar ServerState -> Client -> IO ()
 talk conn state client = forever $ do
@@ -377,6 +381,7 @@ talk conn state client = forever $ do
   let mes = "<><><><><> Outgoing message from Main.hs " :: Text
   let at = T.pack "<@>"
   let oh = T.pack "<o>"
+  let br = T.pack "br"
   let false = T.pack "false"
   let true = T.pack "true"
   let comma = T.pack ", "
@@ -385,6 +390,8 @@ talk conn state client = forever $ do
   ns <- TIO.readFile namesFile
   comms <- atomically $ newTVar cos
   names <- atomically $ newTVar ns
+  print at
+  print at
   
   if "RR#$42" `T.isPrefixOf` msg
     then
@@ -533,8 +540,7 @@ talk conn state client = forever $ do
             do
                 comments <- atomically $ readTVar comms
                 st <- atomically $ readTVar state
-                broadcast ("ZZ#$42," `mappend` group `mappend` "," 
-                    `mappend` sender `mappend` "," `mappend` comments) st
+                broadcast (mappend6 (T.pack "ZZ#$42,") group com sender com comments) st
 
      else if "GN#$42" `T.isPrefixOf` msg -- RECEIVE A NEW COMMENT, UPDATE THE FILE AND THE TVAR,
                                          --  AND BROADCAST THE NEW COMMENTCOMMENT 

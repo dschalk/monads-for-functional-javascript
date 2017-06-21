@@ -120,11 +120,16 @@ function main(sources) {
     });
 
     mMZ21.bnd( () => {                          // Prefix ZD#$42  DELETE A COMMENT
-      var c = commentMonad.s[0];
-      var ar = c.split('<@>');
-      ar.splice(extra,1);
-      c = ar.join('<@>');
+      var a = commentMonad.s[1].slice();
+      console.log('JESUS CHRIST in mM21 a is', a );
+      a.splice(extra,1);
+      console.log('JESUS CHRIST still in mM21 a is', a );
+      var b = a.map(v => v.join('<o>'));
+      console.log('JESUS CHRIST in mM21 b is', b );
+      var c = b.join('<@>'); 
+      console.log('JESUS CHRIST in mM21 c is', c );
       mMcomments.ret(commentMonad.run(c));
+      console.log('JESUS CHRIST in mM21 mMcomments.x is', mMcomments );
     });
 
   })
@@ -1226,10 +1231,20 @@ code.MonadSet,
   h('div', mMcomments.x ),
   h('br'),
   h('br'),  
-  h('p', ' Adding, revising, and deleting comments entails sending only short strings to the server. All of the comments are loaded into browsers when they load. After that, the browsers send instructions for modification of the comment file to the server and the server broadcases the modification parameters to every online browser. ' ),
-  h('br'),
+  h('p', ' A comment is added by sending the comment to the server. The server preserves the comment and broadcasts it to all online browsers. This is the server code:' ),
+    code.comments2,
   h('br'),  
+  /*   comments2, */
   h('a', { props: { href: '#top' } }, 'Back To The Top'),
+  h('p', ' *************************************************************************** ' ),
+  h('p', ' *************************************************************************** ' ),
+  h('p', ' *************************************************************************** ' ),
+  h('p', ' *************************************************************************** ' ),
+  h('p', ' *************************************************************************** ' ),
+  h('p', ' *************************************************************************** ' ),
+  h('p', ' *************************************************************************** ' ),
+  h('p', ' *************************************************************************** ' ),
+  h('p', ' *************************************************************************** ' ),
   h('h2', 'Appendix - Under Construction ' ),
   h('h3', 'The functions that produce the examples' ),
 
