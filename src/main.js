@@ -102,8 +102,9 @@ function main(sources) {
       mMcomments.ret(commentMonad.run(b));
     });
 
-    mMZ20.bnd( () => {                          
-      var ar = commentMonad.s[1].slice().map(v => v = v.join('<o>'));
+    mMZ20.bnd( () => {                 
+      var ar = commentMonad.s[1].slice()
+      .map(v => v = v.join('<o>'));
       ar[extra] = extra2;   // The comment at index extra becomes extra2 
       var str = ar.join('<@>');
       mMcomments.ret(commentMonad.run(str));
