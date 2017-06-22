@@ -76,13 +76,8 @@ function main(sources) {
     });
 
     mMZ16.bnd( () => {                          // Prefix ZZ#$42
-      console.log('<#><$><$><@><@><@><@><@>@@@@->-> 000000000000');
-      console.log('extra from mMZ16', extra);
       var a = extra.replace(/(\r\n|\n|\r)/gm,"");   // Remove newlines
-      console.log('extra cleaned up', a );  
       mMcomments.ret(commentMonad.run(extra));
-      console.log('result', mMcomments.x );  
-      console.log('<#><$><$><@><@><@><@><@>@@@@->-> 000000000000');
     });
 
     mMZ17.bnd( () => {                          // Prefix RR#$42
@@ -1211,11 +1206,14 @@ code.MonadSet,
   h('br'),
 
   h('h2', 'COMMENTS' ),
-  h('div#com2',  { style: { display: abcde} }, ), 
-  h('p', ' When this page loads in the browser, a user name is automatically generated in order to establish a unique Websocket connection. This makes it possible to exchange text messages with other group members, play the game, and work on a shared todo list. If you want to leave a comment, you need to log in with a user name and a password of your choice. Each can be a single character or you could use a hard-to-hack combination of alphabet letter, numbers, and special characters. The main requirement is that there be only one comma, and that it be placed between the name and the password. ' ),
-  h('p', 'The server will keep your user name and password in a text file. If you use your saved user name and password sometime in the future, you will be able to edit or delete any comments you previously made. '),
-  h('p', ' If you enter a user name that has not been recorded, you will be logged in as that user. The user name and password will be saved. This means that you do not need to first register and then log in. This is an all-in-one process. If you enter a recognized user name but the passord does not match the password in the record, you will be asked to try again. ' ),
-  h('p', ' Comments are stored on the server in a TVar. The TVar blocks access while an addition, modification, or delete action takes place. Attempts to access the comments in the MVar at such times do not result in error. Processes attempting to gain access que up. They gain access on a first in first out basis, so no process attempting to add, modify, or delete a comment will hang indefinitely. Soon, the registered names and passwords will be in an MVar. ' ),
+  h('div#com2',  { style: { display: abcde} }, ),
+
+h('p', ' When this page loads in the browser, a user name is automatically generated in order to establish a unique Websocket connection. This makes it possible to exchange text messages with other group members, play the game, and work on a shared todo list.'),
+
+h('p', ' Comments are distributed to all groups. If you want to leave a comment, you need to log in with some text containing one comma. What you enter before the comma will be your user name and what you put after the comma will be your password. This information will be permanently stored in a text file accessible by the Haskell server. The server, on start up, loads the file into a TVar to prevent clashes when two or more browsers simultaneously yupload user names and passwords. The permanent file will make it possible for you to log in and modify or delete your comment in the future.' ),
+
+h('p', ' If you enter user name that is already recorded with a different password, you will be asked to try again. Otherwise, you will be logged in as the user whose name you entered. If you enter a user name that has not been recorded, you will be logged in with that name when you register. Group membership and game scores will not be affected. '),
+
   h('br'),  
   h('h3', 'Register' ),
   h('span.red', mMregister.x ),
@@ -1230,10 +1228,18 @@ code.MonadSet,
   h('br' ),
   h('div', mMcomments.x ),
   h('br'),
+  h('p', ' When the server starts, the following code puts the comments file in a TVar ' ),
+      code.comments0,
+  h('p', ' When a browser loads, the server responds as follows: ' ),
+      code.comments1, 
+  h('p', ' The browser then processes the information it receives as follows: ' ),
+      code.comments2,
+  h('p', ' mMcomments.x is embedded in the virtual DOM code, so when a browser loads the comments are automatically displayed. commentMonad (above) and its method "run" are defined below.' ),
+      code.comments3,
   h('br'),  
-  h('p', ' A comment is added by sending the comment to the server. The server preserves the comment and broadcasts it to all online browsers. This is the server code:' ),
-    code.comments2,
-  h('br'),  
+  
+  
+  
   /*   comments2, */
   h('a', { props: { href: '#top' } }, 'Back To The Top'),
   h('p', ' *************************************************************************** ' ),

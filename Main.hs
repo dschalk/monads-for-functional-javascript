@@ -386,9 +386,9 @@ talk conn state client = forever $ do
   let true = T.pack "true"
   let comma = T.pack ", "
   let comma2 = T.pack ","
-  cos <- TIO.readFile xcomments
+  comz <- TIO.readFile xcomments
+  comms <- atomically $ newTVar comz
   ns <- TIO.readFile namesFile
-  comms <- atomically $ newTVar cos
   names <- atomically $ newTVar ns
   print at
   print at
