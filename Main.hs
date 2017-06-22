@@ -76,7 +76,7 @@ remove :: Int -> Text -> IO Text
 remove n a = do
   let b = T.splitOn at a
   let c = splitAt n b
-  let d = fst c `mappend` drop 1 (snd c)
+  let d = mappend (fst c) (drop 1 (snd c))
   return $ T.pack $ intercalate "<@>" (map T.unpack d)
 
 substitute :: Int -> Text -> Text -> IO Text
@@ -90,7 +90,14 @@ substitute n a comment = do
 mappend3 a b c = mappend a (mappend b c)
 mappend4 a b c d = mappend a (mappend b (mappend c d))
 mappend5 a b c d e = mappend a (mappend b (mappend c (mappend d e))) 
+mappend6 :: Text -> Text -> Text -> Text -> Text -> Text -> Text
 mappend6 a b c d e f = mappend a (mappend b (mappend c (mappend d (mappend e f)))) 
+mappend7 :: Text -> Text -> Text -> Text -> Text -> Text -> Text -> Text
+mappend7 a b c d e f g = mappend a (mappend b (mappend c (mappend d (mappend e (mappend f g))))) 
+
+mappend8 :: Text -> Text -> Text -> Text -> Text -> Text -> Text -> Text -> Text
+mappend8 a b c d e f g h = mappend a (mappend b (mappend c (mappend d (mappend e (mappend f (mappend g h)))))) 
+
 
 head2 :: [Text] -> Text
 head2 [a,b] = a
@@ -555,7 +562,7 @@ talk conn state client = forever $ do
                 broadcast ("ZN#$42," `mappend` group `mappend` ","
                     `mappend` sender `mappend` "," `mappend` extra) st
 
-     else if "GD#$42" `T.isPrefixOf` msg              -- DELETE A COMMENT
+     else if T.isPrefixOf (T.pack "GD#$42") msg              -- DELETE A COMMENT
         then
             do
                 old <- atomically $ readTVar comms
@@ -563,10 +570,9 @@ talk conn state client = forever $ do
                 b <- remove extraNum a
                 TIO.writeFile xcomments b
                 st <- atomically $ readTVar state
-                broadcast ("ZD#$42," `mappend` group `mappend` ","
-                    `mappend` sender `mappend` "," `mappend` extra) st
+                broadcast (mappend6 (T.pack "ZD#$42,") group com sender com extra) st 
                     
-     else if "GE#$42" `T.isPrefixOf` msg              -- EDIT A COMMENT
+     else if "GE#$42" `T.isPrefixOf` msg 
         then
             do
                 a <- atomically $ readTVar comms
@@ -574,8 +580,7 @@ talk conn state client = forever $ do
                 TIO.writeFile xcomments b
                 atomically $ writeTVar comms b
                 st <- atomically $ readTVar state
-                broadcast ("ZE#$42," `mappend` group `mappend` ","
-                    `mappend` sender `mappend` "," `mappend` extra `mappend` "," `mappend` extra2) st
+                broadcast (mappend8 "ZE#$42," group com sender com extra com extra2) st
 
 
 

@@ -1957,9 +1957,10 @@ var comments1 = h('pre',  `    else if T.isPrefixOf "GZ#$42" msg
 
     mappend6 a b c d e f = mappend a (mappend b (mappend c (mappend d (mappend e f)))) ` )
 
-var comments2 = h('pre',  `    mMZ16.bnd( () => {   // Called when the socket receives the comments.
+var comments2 = h('pre',  `    mMZ16.bnd( () => {   
     var a = extra.replace(/(\r\\n|\\n|\r)/gm,"");   // Remove newlines
-    mMcomments.ret(commentMonad.run(extra));  // Process in commentMonad.run and display the result. `)
+    mMcomments.ret(commentMonad.run(extra));  // Process in commentMonad.run()
+                                              // commentMonad.s[2] displays the result. `)
 
 var comments3 = h('pre', `    var MonadState3 = function MonadState3(g, state) {
       this.id = g;
@@ -1985,11 +1986,12 @@ var comments3 = h('pre', `    var MonadState3 = function MonadState3(g, state) {
       ar.map(a => {
         var show = showFunc(a[0], pMname.x);
         n+=1;
-        console.log("JESUS H. CHRIST n a", n, a );
         html.push(h('div#'+n, [
           h('div', a[0] + ' commented: ' + a[1]),
-          h('input#editB', { props: { type:'textarea', value: a[1]}, style: {display: show}}),
-          h('button#deleteB', {props: {innerHTML: 'delete'}, style: {display: show, fontSize:14}}),
+          h('input#editB', { props: { type:'textarea', value: a[1]}, 
+            style: {display: show}}),
+          h('button#deleteB', {props: {innerHTML: 'delete'},
+            style: {display: show, fontSize:14}}),
           h('br' ),
           h('span', '***************************************************************')
         ]))
@@ -1998,8 +2000,56 @@ var comments3 = h('pre', `    var MonadState3 = function MonadState3(g, state) {
       return html;
     }    `  )
 
-    var monCon5 = h('pre',  `
+   var comments4 = h('pre',  `  else if T.isPrefixOf "GE#$42" msg 
+     then
+       do
+         a <- atomically $ readTVar comms
+         b <- substitute extraNum a extra2
+         TIO.writeFile xcomments b
+         atomically $ writeTVar comms b
+         st <- atomically $ readTVar state
+         broadcast (mappend8 "ZE#$42," group com sender com extra com extra2) st   `  )
+
+    var comments5 = h('pre',  `  mMZ20.bnd( () => {                 
+    var ar = commentMonad.s[1].slice()
+    .map(v => v = v.join('<o>'));
+    ar[extra] = extra2;           // The comment at index extra becomes extra2 
+    var str = ar.join('<@>');
+    mMcomments.ret(commentMonad.run(str));  // Run it through commentMonad.run
+  });                                       // and update mMcomments
+`  )
+
+    var comments6 = h('pre',  `  else if T.isPrefixOf (T.pack "GD#$42") msg              -- DELETE A COMMENT
+    then
+      do
+        old <- atomically $ readTVar comms
+        a <- TIO.readFile xcomments
+        b <- remove extraNum a
+        TIO.writeFile xcomments b
+        st <- atomically $ readTVar state
+        broadcast (mappend6 (T.pack "ZD#$42,") group com sender com extra) st 
+    
+  remove :: Int -> Text -> IO Text
+  remove n a = do
+    let b = T.splitOn at a
+    let c = splitAt n b
+    let d = mappend (fst c) (drop 1 (snd c))
+    return $ T.pack $ intercalate "<@>" (map T.unpack d)
+
+  at :: Text
+  at = "<@>"
+
+  mMZ21.bnd( () => {    
+    var a = commentMonad.s[1].slice();        // commentMonad.s[1] is useful here too.
+    a.splice(extra,1);                        // Remove a comment.
+    var b = a.map(v => v.join('<o>'));        // re-stringify the comments.
+    var c = b.join('<@>'); 
+    mMcomments.ret(commentMonad.run(c));      // Re-set the div ids and update the display.
+  });
+`  )
+
+    var monCon0 = h('pre',  `
 `  )
 
 
-  export default { comments0, comments1, comments2, comments3, todo1, todo2, sco, calculations, prototypeAdditions, styl, num_op, fetch, gameMonad_2, newRoll, primes3, primes2, primes, variations, MonadEmitter, clicks, bNode, MonadState2, gameMonad, cycle, monad, hardWay, hardWay2, async1, async2, execP, workerD$, fact_workerC, fact2_workerD, primes_state, workerB_Driver, workerC, worker$, errorDemo, monadEr, backAction, tests, mMZ10, test3, monad, equals, fmap, opM, e2, e2x, e3, e4, e4x, e6, e6x, driver, messages, monadIt, MonadSet, updateCalc, arrayFuncs, nums, cleanup, ret, C42, newTask, process, mM$task, colorClick, edit, testZ, quad, runTest, todoStream, inc, seed,  add, MonadState, primesMonad, fibsMonad, primeFibInterface, tr3, fpTransformer, factorsMonad, factorsInput, promise, promiseSnippet, timeout, timeoutSnippet, examples, examples2 }
+  export default { comments0, comments1, comments2, comments3, comments4, comments5, comments6, todo1, todo2, sco, calculations, prototypeAdditions, styl, num_op, fetch, gameMonad_2, newRoll, primes3, primes2, primes, variations, MonadEmitter, clicks, bNode, MonadState2, gameMonad, cycle, monad, hardWay, hardWay2, async1, async2, execP, workerD$, fact_workerC, fact2_workerD, primes_state, workerB_Driver, workerC, worker$, errorDemo, monadEr, backAction, tests, mMZ10, test3, monad, equals, fmap, opM, e2, e2x, e3, e4, e4x, e6, e6x, driver, messages, monadIt, MonadSet, updateCalc, arrayFuncs, nums, cleanup, ret, C42, newTask, process, mM$task, colorClick, edit, testZ, quad, runTest, todoStream, inc, seed,  add, MonadState, primesMonad, fibsMonad, primeFibInterface, tr3, fpTransformer, factorsMonad, factorsInput, promise, promiseSnippet, timeout, timeoutSnippet, examples, examples2 }

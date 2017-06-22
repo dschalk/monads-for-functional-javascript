@@ -102,29 +102,19 @@ function main(sources) {
       mMcomments.ret(commentMonad.run(b));
     });
 
-    mMZ20.bnd( () => {                          // Prefix ZE#$42  EDIT A COMMENT
-      console.log('****c -> artimus -> ar -> ar -> c -> commentMonad.run(c)** mM20 edit');
+    mMZ20.bnd( () => {                          
       var ar = commentMonad.s[1].slice().map(v => v = v.join('<o>'));
-      console.log('ar', ar)
-      ar[extra] = extra2;
-      console.log('ar', ar)
+      ar[extra] = extra2;   // The comment at index extra becomes extra2 
       var str = ar.join('<@>');
-      console.log('str', str)
-      console.log('******************************************************** mM20 edit');
       mMcomments.ret(commentMonad.run(str));
     });
 
     mMZ21.bnd( () => {                          // Prefix ZD#$42  DELETE A COMMENT
-      var a = commentMonad.s[1].slice();
-      console.log('JESUS CHRIST in mM21 a is', a );
-      a.splice(extra,1);
-      console.log('JESUS CHRIST still in mM21 a is', a );
-      var b = a.map(v => v.join('<o>'));
-      console.log('JESUS CHRIST in mM21 b is', b );
+      var a = commentMonad.s[1].slice();        // commentMonad.s[1] is useful.
+      a.splice(extra,1);                        // Remove a comment.
+      var b = a.map(v => v.join('<o>'));        // re-stringify the comments.
       var c = b.join('<@>'); 
-      console.log('JESUS CHRIST in mM21 c is', c );
-      mMcomments.ret(commentMonad.run(c));
-      console.log('JESUS CHRIST in mM21 mMcomments.x is', mMcomments );
+      mMcomments.ret(commentMonad.run(c));      // Re-set the div ids and update the display.
     });
 
   })
@@ -1234,8 +1224,15 @@ h('p', ' If you enter user name that is already recorded with a different passwo
       code.comments1, 
   h('p', ' The browser then processes the information it receives as follows: ' ),
       code.comments2,
-  h('p', ' mMcomments.x is embedded in the virtual DOM code, so when a browser loads the comments are automatically displayed. commentMonad (above) and its method "run" are defined below.' ),
+  h('p', ' mMcomments.x is embedded in the virtual DOM code, so when a browser loads, the comments are automatically displayed. commentMonad (above) and its method "run" are defined below.' ),
       code.comments3,
+  h('p', ' commentMonad.run places a string containing all of the comments in commentMonad.s[0]. It places in commentMonad.s[1] an array of the comments produced by splitting up the comments (attached by "<@>") and splitting the commenter from the comment (attached by "<O>"). This array of arrays is used to produce the html that is displayed, and to modify comments. There is no reason to use JSON or a Haskell parsing library. The JavaScript methods "join" and "split" make it easy to send and receive strings over a socket and parse them into arrays for display. Here is what the server does when it receives an id and modified comment:  ' ),
+  h('p', ' Each comment is placed in a div with a unique numerical id. This id is used for deleting comments and for modifying them. Here is the code that executes when the server receives an id and revised comment: ' ),
+      code.comments4,
+  h('p', ' And here is what the browsers do with the index number and text broadcast by the server: ' ),
+      code.comments5, 
+  h('p', ' The code for deleting a comment is similar: ' ),
+      code.comments6,
   h('br'),  
   
   
