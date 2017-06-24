@@ -837,7 +837,7 @@ h('p', 'People who are developing a feel for function reactive programming can c
 
 h('p', ' This site is not a paradyme of functional programming. If it were, the user name and score would not be maintained in the globally accessable monads pMname and pMscore. But with few exceptions, the unctions you will see here do not_fish for values in the global space. As refactoring continues, mutable state will increasingly be confined to streams.'),
 
-h('span.tao', 'None of the monads currently being employed in these demonstrations emit or listen for events and the virtual DOM elements contain no callbacks. A video presentation showing how Cycle.js performs its magic can be fount at '),
+h('span.tao', 'None of the monads currently being employed in these demonstrations emit or listen for events, and the virtual DOM elements contain no callbacks. DOM updates are prompted by adding elements to driver streams or by changing the values of monads embedded in the virtual DOM. A video presentation by the author of Cycle.js showing how it so elegantly performs its magic can be fount at '),
   
 h('a', { props: { href: "https://egghead.io/lessons/rxjs-overview-of-cycle-js", target: "_blank" } }, 'Overview of Cycle.js.'),
 h('br' ),
@@ -859,7 +859,8 @@ h('br' ),
           h('a', { props: { href: '#discussion' } }, 'Discussion'),
           h('span', ' below. They provide a convenient interface for dealing with uncertainty and side effects in a purely functional manner. Adherence to the monad laws (see below) helps make the monads robust, versatile, and reliable tools for isolating and chaining sequences of javascript functions. State is modified in monads without mutating anything outside of them.' ),
 
-          h('p', ' The demonstrations include persistent, shared todo lists, text messaging, and a simulated dice game with a traversable history (all group members see your score decrease or increase as you navegate backwards and forwards). Monads are shown performing lengthy mathematical computations asycronously in web workers. Monads encapsulate state. The error checking monad carries occurances of NaN and runtime errors through sequences of computations much like the Haskell Maybe monad. ' ),
+          h('p', ' The demonstrations include comments, shared todo lists, text messaging, and a simulated dice game with a traversable history (all group members see your score decrease or increase as you navegate backwards and forwards, optionally branching out from an earlier state). The game history is a persistent, immutable data structure. The comments and todo lists are persistent mutable data structures. '),
+  h('p', ' The monad demonstrations range from showing the versitility and potential utility of members of the Monad class. Their bnd() methods accept functions which return instances of Monad, so     performing lengthy mathematical computations asycronously in web workers. Monads encapsulate state. The error checking monad carries occurances of NaN and runtime errors through sequences of computations much like the Haskell Maybe monad. ' ),
       h('span.tao', ' The game code is fairly concise and intuitive. A quick walk-through is presented ' ),
       h('a', { props: { href: '#gameExplanation' } }, 'here'),
       h('span', '. To see monadic functionality at work, I suggest that you take a look at the section captioned ' ),
@@ -1101,6 +1102,67 @@ h('p', ' execF prepares the Fibonacci series and sends its state, along with the
 
     t.ret(0).bnd(add3, 3).bnd(cube3).x ===
     t.ret(0).bnd(v => add3(v,3).bnd(cube3)).x  ` ),
+
+
+
+
+
+  h('h2', 'COMMENTS' ),
+  // h('div#com2',  { style: { display: abcde} }, ),
+
+h('p', ' When this page loads in the browser, a user name is automatically generated in order to establish a unique Websocket connection. This makes it possible to exchange text messages with other group members, play the game, and work on a shared todo list.'),
+
+h('h2', 'More About State'),
+h('p', ' Comments are distributed to all groups. If you want to leave a comment, you need to log in with some text containing one comma. What you enter before the comma will be your user name and what you put after the comma will be your password. This information will be permanently stored in a text file accessible by the Haskell server. The server, on start up, loads the file into a TVar to prevent clashes when two or more browsers simultaneously yupload user names and passwords. The permanent file will make it possible for you to log in and modify or delete your comment in the future.' ),
+
+h('p', ' If you enter user name that is already recorded with a different password, you will be asked to try again. Otherwise, you will be logged in as the user whose name you entered. If you enter a user name that has not been recorded, you will be logged in with that name when you register. Group membership and game scores will not be affected. '),
+
+  h('br'),  
+  h('h3', 'Register' ),
+  h('span.red', mMregister.x ),
+  h('input.register', {style: {display: mMshowRegister.x }} ),
+  // h('a', { props: {href: "mailto:pyschalk@gmail.com"}}, 'email' ),
+  // h('span', ' or send a personal tweet to @schalk1234' ),
+  h('br' ),
+  h('br' ),
+  h('h3', 'COMMENTS' ),
+  h('textarea#comment', ),
+  h('br' ),
+  h('br' ),
+  h('div', mMcomments.x ),
+  h('br'),
+  h('p', ' When the server starts, the following code puts the comments file in a TVar ' ),
+      code.comments0,
+  h('p', ' When a browser loads, the server responds as follows: ' ),
+      code.comments1, 
+  h('p', ' The browser then processes the information it receives as follows: ' ),
+      code.comments2,
+  h('p', ' mMcomments.x is embedded in the virtual DOM code, so when a browser loads, the comments are automatically displayed. commentMonad (above) and its method "run" are defined below.' ),
+      code.comments3,
+  h('p', ' commentMonad.run places a string containing all of the comments in commentMonad.s[0]. It places in commentMonad.s[1] an array of the comments produced by splitting up the comments (attached by "<@>") and splitting the commenter from the comment (attached by "<O>"). This array of arrays is used to produce the html that is displayed, and to modify comments. There is no reason to use JSON or a Haskell parsing library. The JavaScript methods "join" and "split" make it easy to send and receive strings over a socket and parse them into arrays for display. Here is what the server does when it receives an id and modified comment:  ' ),
+  h('p', ' Each comment is placed in a div with a unique numerical id. This id is used for deleting comments and for modifying them. Here is the code that executes when the server receives an id and revised comment: ' ),
+      code.comments4,
+  h('p', ' And here is what the browsers do with the index number and text broadcast by the server: ' ),
+      code.comments5, 
+  h('p', ' The code for deleting a comment is similar: ' ),
+      code.comments6,
+  h('br'),  
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  
+  h('a', { props: { href: '#top' } }, 'Back To The Top'),
+
   h('br#itterLink'),
   h('br'),
   h('a', { props: { href: '#top' } }, 'Back To The Top'),
@@ -1196,50 +1258,6 @@ code.MonadSet,
   h('a#tdList2', { props: { href: '#itterLink' } }, 'release() with arguments'),
   h('br'),
 
-  h('h2', 'COMMENTS' ),
-  h('div#com2',  { style: { display: abcde} }, ),
-
-h('p', ' When this page loads in the browser, a user name is automatically generated in order to establish a unique Websocket connection. This makes it possible to exchange text messages with other group members, play the game, and work on a shared todo list.'),
-
-h('p', ' Comments are distributed to all groups. If you want to leave a comment, you need to log in with some text containing one comma. What you enter before the comma will be your user name and what you put after the comma will be your password. This information will be permanently stored in a text file accessible by the Haskell server. The server, on start up, loads the file into a TVar to prevent clashes when two or more browsers simultaneously yupload user names and passwords. The permanent file will make it possible for you to log in and modify or delete your comment in the future.' ),
-
-h('p', ' If you enter user name that is already recorded with a different password, you will be asked to try again. Otherwise, you will be logged in as the user whose name you entered. If you enter a user name that has not been recorded, you will be logged in with that name when you register. Group membership and game scores will not be affected. '),
-
-  h('br'),  
-  h('h3', 'Register' ),
-  h('span.red', mMregister.x ),
-  h('input.register', {style: {display: mMshowRegister.x }} ),
-  // h('a', { props: {href: "mailto:pyschalk@gmail.com"}}, 'email' ),
-  // h('span', ' or send a personal tweet to @schalk1234' ),
-  h('br' ),
-  h('br' ),
-  h('h3', 'COMMENTS' ),
-  h('textarea#comment', ),
-  h('br' ),
-  h('br' ),
-  h('div', mMcomments.x ),
-  h('br'),
-  h('p', ' When the server starts, the following code puts the comments file in a TVar ' ),
-      code.comments0,
-  h('p', ' When a browser loads, the server responds as follows: ' ),
-      code.comments1, 
-  h('p', ' The browser then processes the information it receives as follows: ' ),
-      code.comments2,
-  h('p', ' mMcomments.x is embedded in the virtual DOM code, so when a browser loads, the comments are automatically displayed. commentMonad (above) and its method "run" are defined below.' ),
-      code.comments3,
-  h('p', ' commentMonad.run places a string containing all of the comments in commentMonad.s[0]. It places in commentMonad.s[1] an array of the comments produced by splitting up the comments (attached by "<@>") and splitting the commenter from the comment (attached by "<O>"). This array of arrays is used to produce the html that is displayed, and to modify comments. There is no reason to use JSON or a Haskell parsing library. The JavaScript methods "join" and "split" make it easy to send and receive strings over a socket and parse them into arrays for display. Here is what the server does when it receives an id and modified comment:  ' ),
-  h('p', ' Each comment is placed in a div with a unique numerical id. This id is used for deleting comments and for modifying them. Here is the code that executes when the server receives an id and revised comment: ' ),
-      code.comments4,
-  h('p', ' And here is what the browsers do with the index number and text broadcast by the server: ' ),
-      code.comments5, 
-  h('p', ' The code for deleting a comment is similar: ' ),
-      code.comments6,
-  h('br'),  
-  
-  
-  
-  /*   comments2, */
-  h('a', { props: { href: '#top' } }, 'Back To The Top'),
   h('p', ' *************************************************************************** ' ),
   h('p', ' *************************************************************************** ' ),
   h('p', ' *************************************************************************** ' ),

@@ -1194,6 +1194,7 @@ var execP = h('pre',  `    function execP (x) {
 
 var hardWay = h('div',  [
 h('h3', ' Doing Things The Hard Way ' ),
+h('h2.red', 'WARNING: EVEN SIMPLE COMPUTATIONS TEND TO HANG' ),  
 h('p', ' The next two demonstration generate the same results as the previous two; but in doing so, they also generate and add to a shared and persistent (for the duration of the browser session) array of arrays of prime decompositions of the positive integers. The array is the value of decompMonad.s. It is re-used as the starting point for generating larger arrays, or as a sort of lookup table if a required prime decomposition has already been computed. The index of an array is the number whose decomposition is in the array so, for example, array-of-arrays[12] is [2,2,3]. The actual code will be shown later and is also available at the Github repository. ' ) ])
 
 var hardWay2 = h('div', [
@@ -1223,7 +1224,7 @@ console.log(m.x, arr[0].x, p.x);
 // 100, 5, 5
 ` ),
 
-h('p', ' In global scope (window in the browser), m.x changed to 100; but p and arr still refer to 5, the previous value of m.x. Similarly, when a monad uses its bnd() method to modify its x attribute, the change is seen globally, but nowhere else. Previous references to the monad remain stable, as this example illustrates: ' ),
+h('p', ' In global scope (window in the browser), m.x changed to 100; but p and arr still refer to 5, the orininal value of m.x. Similarly, when a monad uses its bnd() method to modify its x attribute, the change is seen globally, but nowhere else. Previous references to the monad remain unchanged, as this example illustrates: ' ),
 
 h('pre',
 `var m = new Monad (5, 'm');
@@ -1247,24 +1248,21 @@ console.log(m.x, m2.x, m3.x)  // 0 3 27
 
 h('p', ' The definition of Monad (below) shows how bnd() checks to see if func(m.x, ...args) returns a monad. If it does, "testPrefix" looks for a pattern that matches "$val" in the arguments that were provided to m.bnd(func, ...args). If the pattern is found, the global space acquires a monad named "val" with val.x === func(m.x, ...args). If no monad named "val" previously existed, one is created. Otherwise, val\'s global definition gets superseded. val can be any sequence of characters that constitute a valid javascript identifier. ' ),
 h('p', ' Instances of Monad facilitate changing values without mutation. They also provide a way to chain function calls. For example, m.ret(2).bnd(add, 1).bnd(cube) causes m.x === 27 to return true. This works because ret(), add, and cube all return monads when they are applied to m.x. The definition of add and cube are shown below and can be found in the Github repository. ' ),
-h('p', ' If the three numbers from the previous sequence were all that we required, we could obtain them more efficiently by running: ' ),
+h('p', ' If we don\'t need to keep references to the values obtained in a computation, we might write something like: ' ),
 h('pre',
-`var demoResult = ret(0).bnd(x => add(x, 3).bnd(y => cube(y).bnd(z => [x,y,z])));
-console.log('We started with', demoResult[0], 
-    'and got', demoResult[1], 'and', demoResult[2]);
-The console displays "We started with 0 and got 3 and 27"
-` ),
-h('p', ' Doing it that was leaves only one monad - the one named "temp" - for the garbage collector. It also eliminates concern about name collisions among the monads. There is little danger that a monad named "temp" is being used to store a value somewhere else in the application code. The temp monad is obviously not a monad for preserving values. The result could have been logged to the console or used in further computations without creating a reference to it.' ),
-h('pre',
-`ret(0).bnd(x => add(x, 3).bnd(y => cube(y).bnd(z =>
-console.log('We started with', x, 'and got', y, 'and', z))));
-The console displays "We started with 0 and got 3 and 27"
-` ),
+`ret(0).bnd(x => add(x, 3).bnd(y => cube(y).bnd(z => 
+  console.log("The computation went from", x, "to", y, "and on to", z)
+))) ` ),
+h('p', ' Three instances of Monad with id == "temp" were created in rapid succession and left for the garbage collector. Other processes might be creating instances of Monad named "temp", but as long as the code conforms to the "no mutations" protocol there is never any danger of collisions. Myriad instances might populate an applications memory while the garbage collector is marking them for removal' ),
+h('p', '  The protocol referenced above has two requirements: (1) use the bnd() method only with functions that return fresh instances of Monad, not mutated instances , and (2) update a monad\'s value only through the use of its ret() and bnd() methods. Instances of Monad are globally available, but if everyone working on an application follows the protocol, monads won\'t cause unexpected behavior the way global variables tend to do. ' ),  
+h('p', ' Monads should be pulled out of the global space only for function calls. The function being called should not be required to access monads, unless it is using them in function calls. ' ),
+h('p', ' pMname is a monad. pMname.x is the user\'s name, which is either the random sequence that was originally assigned or a login name. It is often needed for socket messages. Passing the user\'s name from function to function would be combersome, and placing it in a globally accessible monad poses no danger since nobody in their right mind would change the user\'s name other than through through the login process.'),
+h('p', '  pMscore.x is the user\'s current game score. It comes into play when a user rolls the dice or enters game data resulting in the number 18 or the number 20. As with user name, no reasonable developer would write code that altered the score, other than tweaking the implementation of the game rules. ' ), 
 h('p', ' More complex, multi-stage computations in sequenced monads are demonstrated later in this presentation. If such monads don\'t depend on information that exists outside of their scope, their effects in a running application are easier to grasp, and opportunities for unintended behavior in edge cases are minimized. Developers can gain further control and confidence in their applications by allowing only the last monad in any sequence to make changes in global scope. Code is easier to write and maintain when you can readily pinpoint a minimal number of places where an application\'s state gets updated. ' ),
 h('p', ' So, with that out of the way, here are the definitions of Monad and testPrefix: ' ),
 
 h('h3', ' Monad '),
-h('pre',  `  var Monad = function Monad(z = 42, g = 'generic') {
+h('pre',  `  var Monad = function Monad(z = 42, g = 'temp') {
     this.x = z;
     this.id = g;
     this.bnd = function (func, ...args) {
@@ -1298,7 +1296,7 @@ var variations = h('div',  [
 h('h3', 'Variations on the Theme' ),
 h('p', ' Variations on the Monad theme serve diverse purposes. Instances of MonadState preserve computations so they won\'t have to be performed again. An instance of MonadState2 keeps a record of game play allowing players to back up and resume play from a previous display of numbers. It also keeps the current game parameters - score, goals, operator, selected numbers, and remaining numbers - in a single array which is stored in the archive whenever a new state is created. MonadItter instances are used to parse websockets messages and organize the callbacks neatly. MonadEr catches NaN and prefents crashes when undefined variables are encountered. I defined a message emitting monad but it seemed useless in this Cycle application where reactivity is pervasive. When you want to emit and listen for messages, it is better to build a driver and merge its stream of messages into the application cycle. '),
 
-h('p', ' The various monad constructors demonstrate a way of encapsulating procedures and state in chainable objects. You might incorporate Monad or one of the other constructors presented here in your application, but I think the thing that is most valuable is the general concept. I prefer Cycle.js, but I think the monads might make Node, React and some of the other frameworks more manageable. ' ),
+h('p', ' The various monad constructors demonstrate a way of encapsulating procedures and state in chainable objects. You might incorporate Monad or one of the other constructors presented here in your application, but I hope you will consiter modifying it or defining a new monad to suit your purposes. ' ),
 
 h('h3', 'Computations' ),
 h('p', ' Computations are easy to link if each result is returned in an instance of Monad. Here are a few examples of functions that return instances of Monad: '),
@@ -1322,7 +1320,7 @@ h('p', ' Computations are easy to link if each result is returned in an instance
 h('p', ' The "$" prefix provides control over the destination of computation results. In the following example, m1, m2, and m3 have already been declared. Here is a comparison of the results obtained when the "$" prefix is used and when it is omitted: ' ),
 
 h('pre', `    m1.ret(7).bnd(m2.ret).bnd(m3.ret)  // All three monads get the value 7.
-    m1.ret(0).bnd(add,3,'m2').bnd(cube,'m3')  // \'m1\', \'m2\', and \'m3\' are ignored` ),
+    m1.ret(0).bnd(add,3,'m2').bnd(cube,'m3')  //  \'m2\', and \'m3\' are ignored` ),
 h('pre', `    Result: m1.x === 27
             m2.x === 7
             m3.x === 7  ` ),
@@ -2009,7 +2007,7 @@ var comments3 = h('pre', `    var MonadState3 = function MonadState3(g, state) {
          atomically $ writeTVar comms b
          st <- atomically $ readTVar state
          broadcast (mappend8 "ZE#$42," group com sender com extra com extra2) st   `  )
-
+    
     var comments5 = h('pre',  `  mMZ20.bnd( () => {                 
     var ar = commentMonad.s[1].slice()
     .map(v => v = v.join('<o>'));
@@ -2038,7 +2036,7 @@ var comments3 = h('pre', `    var MonadState3 = function MonadState3(g, state) {
 
   at :: Text
   at = "<@>"
-
+  // All browsers receive extra (below)
   mMZ21.bnd( () => {    
     var a = commentMonad.s[1].slice();        // commentMonad.s[1] is useful here too.
     a.splice(extra,1);                        // Remove a comment.
