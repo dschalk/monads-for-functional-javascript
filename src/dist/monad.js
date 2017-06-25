@@ -30,6 +30,7 @@ function testPrefix (x,y) {
   }
   return t;
 }
+
 function Monad(z = 'default', ID = 'generic') {
   var _this = this;
   this.x = z;
@@ -49,7 +50,28 @@ function Monad(z = 'default', ID = 'generic') {
   };
 };
 
-function MonadEvents(z = 'default', ID = 'generic') {
+function M3(z = 'default', ID = 'generic') {
+  var _this = this;
+  this.x = z;
+  this.id = ID;
+};
+
+  function bind (monad, func, ...args) {
+    var m = func(monad.x, ...args)
+    var ID;
+    if (m instanceof Monad) {
+      ID = testPrefix(args, monad.id);
+      window[ID] = new Monad(m.x, ID);
+      return window[ID];
+    }
+    else return m;
+  };
+
+  function retrn (monad, value) {
+    return window[monad.id] = new Monad(a, monad.id);
+  };
+
+function MonadEvents(z = 'default', ID = 'temp') {
   var _this = this;
   this.x = z;
   this.id = ID;

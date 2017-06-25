@@ -396,8 +396,10 @@ a {
   }
 
 .image {
-  height: 145%;
-  width: 145%;
+  height: 100%;
+  width: 100%;
+  left-align: "auto";
+  right-align: "auto"
 }
 
 .image_2 {

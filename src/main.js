@@ -954,7 +954,12 @@ h('div.content', [
 
  // **************************************************************************** START MONAD
    code.monad,
-    code.variations,
+   code.variations ]),
+h('img.image', {props: {src: "demo_000.png"}, style: {marginLeft: "auto", marginRight: "auto"}}),
+   h('div.content', [ 
+   code.variations2,
+
+
  // **************************************************************************** END MONAD
    code.cycle,
 h('p#asyncExplanation', ' ' ),
@@ -1082,15 +1087,7 @@ h('p', ' execF prepares the Fibonacci series and sends its state, along with the
     code.primes2,
   h('h2', ' MonadEr - An Error-Catching Monad ' ),
   h('p', ' Instances of MonadEr function much the same as instances of Monad, but when an instance of MonadEr encounters an error, it ceases to perform any further computations. Instead, it passes through every subsequent stage of a sequence of MonadEr expressions, reporting where it is and repeating the error message. It will continue to do this until it is re-instantiated or until its bnd() method runs on the function clean(). ' ),
-  h('p', 'Functions used as arguments to the MonadEr bnd() method can be placed in quotation marks to prevent the browser engine from throwing reference errors. Arguments can be protected in the same manner. Using MonadEr can prevent the silent proliferation of NaN results in math computations, and can prevent browser crashes due to attempts to evaluate undefined variables. Sometimes crashes are desired when testing code, but MonadEr provides instant feedback pinpointing the exact location of the error. ' ),
-  h('p', ' The following demonstration shows the Chrome console log entries that result from running ' ),
-  h('pre', `    t.bnd('add3', 3, '$t2').bnd(cube3, '$t3')
-    t.bnd('add3','three', '$t2').bnd(cube3, '$t3')
-    t.bnd('add3','Math.sqrt(-1)', '$t2').bnd(cube3, '$t3')
-    t.bnd('addd3', 3, '$t2').bnd(cube3, '$t3' ` ),
-  h('br'),
-  h('img.image', {props: {src: "error2.png"}}  ),
-  h('br'),
+  h('p', 'Functions used as arguments to the MonadEr bnd() method can be placed in quotation marks to prevent the browser engine from throwing reference errors. Arguments can be protected in the same manner. Using MonadEr can prevent the silent proliferation of NaN results in math computations, and can prevent browser crashes due to attempts to evaluate undefined variables. ' ),
   h('p.tao1b', ' The monad laws hold for MonadEr instances. The following relationships were verified in the Chrome console: ' ),
   h('pre', `    ret3(0,'t',[])  // t is now an instance of MonadEr with t.x = 0 and t.e = [].
 
